@@ -10,6 +10,7 @@ struct ToastBannerView: View {
     var body: some View {
         let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showProgress = (state.progress ?? 0) > 0
         let measuring = (state.flags["measuring"] as? Bool) ?? false
 
@@ -33,8 +34,16 @@ struct ToastBannerView: View {
                             .minimumScaleFactor(0.9)
                             .foregroundStyle(Color(uiColor: state.textColor))
                     }
-                    if showSubtitle, let s = state.subtitle {
-                        Text(s)
+                    if showSubtitle, let subtitle = state.subtitle {
+                        Text(subtitle)
+                            .font(.caption)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(3)
+                            .truncationMode(.tail)
+                            .foregroundStyle(Color(uiColor: state.textColor))
+                    }
+                    if showFootnote, let footnote = state.footnote {
+                        Text(footnote)
                             .font(.caption)
                             .multilineTextAlignment(.leading)
                             .lineLimit(3)
@@ -108,6 +117,7 @@ private extension View {
             state: LucidBannerState(
                 title: "Downloading …",
                 subtitle: "Keep application active until the transfers are completed …",
+                footnote: "Touch for cancel",
                 textColor: .label,
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageColor: .red,

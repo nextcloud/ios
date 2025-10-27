@@ -17,6 +17,7 @@ import UIKit
 internal final class LucidBannerState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
+    @Published var footnote: String?
     @Published var textColor: UIColor
 
     @Published var systemImage: String?
@@ -33,6 +34,7 @@ internal final class LucidBannerState: ObservableObject {
 
     init(title: String,
          subtitle: String? = nil,
+         footnote: String? = nil,
          textColor: UIColor,
          systemImage: String? = nil,
          imageColor: UIColor,
@@ -42,12 +44,16 @@ internal final class LucidBannerState: ObservableObject {
          stage: String? = nil) {
         self.title = title
         self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
+        self.footnote = (footnote?.isEmpty == true) ? nil : footnote
         self.textColor = textColor
+
         self.systemImage = systemImage
         self.imageColor = imageColor
         self.imageAnimation = imageAnimation
+
         self.progress = progress
         self.progressColor = progressColor
+
         self.stage = stage
     }
 }
@@ -102,6 +108,7 @@ final class LucidBanner {
     private struct PendingShow {
         let title: String
         let subtitle: String?
+        let footnote: String?
         let textColor: UIColor
         let systemImage: String?
         let imageColor: UIColor
@@ -151,6 +158,7 @@ final class LucidBanner {
     // Shared state
     let state = LucidBannerState(title: "",
                                  subtitle: nil,
+                                 footnote: nil,
                                  textColor: .label,
                                  systemImage: nil,
                                  imageColor: .label,
@@ -178,6 +186,7 @@ final class LucidBanner {
     /// - Parameters:
     ///   - title: Main text shown on the banner.
     ///   - subtitle: Optional smaller text below the title.
+    ///   - footnote: Optional smaller text below the subtitle.
     ///   - textColor: Color for textual elements.
     ///   - systemImage: Optional SF Symbol displayed to the left of text.
     ///   - imageColor: Tint color for the symbol.
@@ -197,6 +206,7 @@ final class LucidBanner {
     @discardableResult
     func show<Content: View>(title: String,
                              subtitle: String? = nil,
+                             footnote: String? = nil,
                              textColor: UIColor = .label,
                              systemImage: String? = nil,
                              imageColor: UIColor = .label,
@@ -216,21 +226,37 @@ final class LucidBanner {
                              onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         self.scene = scene
+
+        // Title
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
-        state.textColor = textColor
 
+        // Subtitle
         if let s = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !s.isEmpty {
             state.subtitle = s
         } else {
             state.subtitle = nil
         }
 
+        // footnote
+        if let f = footnote?.trimmingCharacters(in: .whitespacesAndNewlines), !f.isEmpty {
+            state.footnote = f
+        } else {
+            state.footnote = nil
+        }
+
+        // Text color
+        state.textColor = textColor
+
+        // Image
         state.systemImage = systemImage
         state.imageColor = imageColor
         state.imageAnimation = imageAnimation
+
+        // State
         state.stage = stage
 
+        // Progress
         if let progress,
            progress > 0 {
             state.progress = progress
@@ -251,8 +277,10 @@ final class LucidBanner {
 
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
+        let hasFootnote = !(state.footnote?.isEmpty ?? true)
+
         let hasProgress = (state.progress ?? 0) > 0
-        guard hasTitle || hasSubtitle || hasProgress else {
+        guard hasTitle || hasSubtitle || hasFootnote || hasProgress else {
             return activeToken
         }
 
@@ -266,6 +294,7 @@ final class LucidBanner {
             case .enqueue:
                 queue.append(PendingShow(title: state.title,
                                          subtitle: state.subtitle,
+                                         footnote: state.footnote,
                                          textColor: textColor,
                                          systemImage: systemImage,
                                          imageColor: imageColor,
@@ -286,6 +315,7 @@ final class LucidBanner {
             case .replace:
                 let next = PendingShow(title: state.title,
                                        subtitle: state.subtitle,
+                                       footnote: state.footnote,
                                        textColor: textColor,
                                        systemImage: systemImage,
                                        imageColor: imageColor,
@@ -326,6 +356,7 @@ final class LucidBanner {
     /// - Parameters:
     ///   - title: Optional new title.
     ///   - subtitle: Optional new subtitle.
+    ///   - footnote: Optional new footnote.
     ///   - systemImage: Optional new icon.
     ///   - imageColor: Optional new tint color.
     ///   - imageAnimation: Optional new animation style.
@@ -335,6 +366,7 @@ final class LucidBanner {
     ///   - token: Token of the banner to update.
     func update(title: String? = nil,
                 subtitle: String? = nil,
+                footnote: String? = nil,
                 systemImage: String? = nil,
                 imageColor: UIColor? = nil,
                 imageAnimation: LucidBannerAnimationStyle? = nil,
@@ -348,11 +380,12 @@ final class LucidBanner {
 
         // Snapshot old values for change detection
         let oldTitle = state.title
-        let oldSub   = state.subtitle
+        let oldSub = state.subtitle
+        let olfFootnote = state.footnote
         let oldImage = state.systemImage
         let oldStage = state.stage
 
-        // Normalize title/subtitle
+        // Normalize title/subtitle/footnote
         if let title {
             let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
             state.title = trimmed.isEmpty ? "" : trimmed
@@ -360,6 +393,10 @@ final class LucidBanner {
         if let subtitle {
             let trimmed = subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
             state.subtitle = trimmed.isEmpty ? nil : trimmed
+        }
+        if let footnote {
+            let trimmed = footnote.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.footnote = trimmed.isEmpty ? nil : trimmed
         }
 
         // Clamp progress to [0,1] and hide when <= 0
@@ -377,7 +414,7 @@ final class LucidBanner {
         hostController?.view.invalidateIntrinsicContentSize()
 
         // Detect what actually changed
-        let textChanged  = (oldTitle != state.title) || (oldSub != state.subtitle)
+        let textChanged  = (oldTitle != state.title) || (oldSub != state.subtitle) || (olfFootnote != state.footnote)
         let imageChanged = (oldImage != state.systemImage)
         let stageChanged = (oldStage != state.stage)
 
@@ -515,6 +552,7 @@ final class LucidBanner {
         // State
         state.title = next.title
         state.subtitle = next.subtitle
+        state.footnote = next.footnote
         state.progress = next.progress
         state.textColor = next.textColor
         state.systemImage = next.systemImage
