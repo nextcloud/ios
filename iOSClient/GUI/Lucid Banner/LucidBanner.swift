@@ -123,17 +123,17 @@ final class LucidBanner {
         let imageAnimation: LucidBannerAnimationStyle
         let progress: Double?
         let progressColor: UIColor
-        let stage: String?
-        let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
         let minWidth: CGFloat
         let maxWidth: CGFloat
-        let swipeToDismiss: Bool
-        let blocksTouches: Bool
         let vPosition: VerticalPosition
         let hAlignment: HorizontalAlignment
         let horizontalMargin: CGFloat
         let verticalMargin: CGFloat
+        let autoDismissAfter: TimeInterval
+        let swipeToDismiss: Bool
+        let blocksTouches: Bool
+        let stage: String?
         let onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)?
         let viewUI: (LucidBannerState) -> AnyView
     }
@@ -200,48 +200,38 @@ final class LucidBanner {
     /// Displays a new banner.
     ///
     /// - Parameters:
-    ///   - title: Main text shown on the banner.
-    ///   - subtitle: Optional smaller text below the title.
-    ///   - footnote: Optional smaller text below the subtitle.
-    ///   - textColor: Color for textual elements.
-    ///   - systemImage: Optional SF Symbol displayed to the left of text.
-    ///   - imageColor: Tint color for the symbol.
-    ///   - imageAnimation: Animation style for the icon.
-    ///   - progress: Progress value (0…1).
-    ///   - progressColor: Tint color for the progress bar.
-    ///   - stage: Arbitrary string used to identify logical steps (e.g. “uploading”).
-    ///   - autoDismissAfter: Automatically dismiss after N seconds.
-    ///   - policy: Behavior when another banner is visible.
-    ///   - fixedWidth: Optional fixed width constraint.
-    ///   - swipeToDismiss: Enables swipe-up gesture to dismiss.
-    ///   - blocksTouches: Prevents touch events from reaching underlying views.
-    ///   - scene: Target UIScene when running on iPad with multiple windows.
-    ///   - onTapWithContext: Called when the banner is tapped, providing token/revision/stage.
-    ///   - content: SwiftUI view builder bound to a shared `LucidBannerState`.
+
     /// - Returns: A unique token identifying this banner instance.
     @discardableResult
-    func show<Content: View>(title: String,
+    func show<Content: View>(scene: UIScene? = nil,
+                             title: String,
                              subtitle: String? = nil,
                              footnote: String? = nil,
                              textColor: UIColor = .label,
+
                              systemImage: String? = nil,
                              imageColor: UIColor = .label,
                              imageAnimation: LucidBannerAnimationStyle = .none,
+
                              progress: Double? = nil,
                              progressColor: UIColor = .label,
-                             stage: String? = nil,
-                             autoDismissAfter: TimeInterval = 0,
-                             policy: ShowPolicy = .enqueue,
+
                              fixedWidth: CGFloat? = nil,
                              minWidth: CGFloat = 220,
                              maxWidth: CGFloat = 420,
-                             swipeToDismiss: Bool = true,
-                             blocksTouches: Bool = false,
-                             scene: UIScene? = nil,
                              vPosition: VerticalPosition = .top,
                              hAlignment: HorizontalAlignment = .center,
                              horizontalMargin: CGFloat = 12,
                              verticalMargin: CGFloat = 10,
+
+                             autoDismissAfter: TimeInterval = 0,
+                             swipeToDismiss: Bool = true,
+                             blocksTouches: Bool = false,
+
+                             stage: String? = nil,
+
+                             policy: ShowPolicy = .enqueue,
+
                              onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         self.scene = scene
@@ -325,17 +315,17 @@ final class LucidBanner {
                                          imageAnimation: imageAnimation,
                                          progress: state.progress,
                                          progressColor: progressColor,
-                                         stage: stage,
-                                         autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
                                          minWidth: minWidth,
                                          maxWidth: maxWidth,
-                                         swipeToDismiss: self.swipeToDismiss,
-                                         blocksTouches: blocksTouches,
                                          vPosition: vPosition,
                                          hAlignment: hAlignment,
                                          horizontalMargin: horizontalMargin,
                                          verticalMargin: verticalMargin,
+                                         autoDismissAfter: autoDismissAfter,
+                                         swipeToDismiss: self.swipeToDismiss,
+                                         blocksTouches: blocksTouches,
+                                         stage: stage,
                                          onTapWithContext: onTapWithContext,
                                          viewUI: anyViewUI))
                 return activeToken
@@ -349,17 +339,17 @@ final class LucidBanner {
                                        imageAnimation: imageAnimation,
                                        progress: state.progress,
                                        progressColor: progressColor,
-                                       stage: stage,
-                                       autoDismissAfter: autoDismissAfter,
                                        fixedWidth: fixedWidth,
                                        minWidth: minWidth,
                                        maxWidth: maxWidth,
-                                       swipeToDismiss: self.swipeToDismiss,
-                                       blocksTouches: blocksTouches,
                                        vPosition: vPosition,
                                        hAlignment: hAlignment,
                                        horizontalMargin: horizontalMargin,
                                        verticalMargin: verticalMargin,
+                                       autoDismissAfter: autoDismissAfter,
+                                       swipeToDismiss: self.swipeToDismiss,
+                                       blocksTouches: blocksTouches,
+                                       stage: stage,
                                        onTapWithContext: onTapWithContext,
                                        viewUI: anyViewUI)
                 queue.removeAll()

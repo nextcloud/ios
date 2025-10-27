@@ -359,10 +359,10 @@ actor NCNetworkingProcess {
             imageColor: NCBrandColor.shared.customer,
             imageAnimation: .rotate,
             progressColor: NCBrandColor.shared.customer,
-            stage: "wait",
-            blocksTouches: false,
             vPosition: .bottom,
             hAlignment: .left,
+            blocksTouches: false,
+            stage: "wait",
             onTapWithContext: { _, _, stage in
                 switch stage {
                 case "chunk", "wait":
