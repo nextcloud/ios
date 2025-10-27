@@ -9,7 +9,7 @@ struct CertificatePicker: View {
     @State private var model = CertificatePickerModel()
     @State private var showingPicker = false
     @State private var fileName: String = ""
-    @State private var pickedURL: URL? = nil
+    @State private var pickedURL: URL? 
     @State private var password: String = ""
 
     let urlBase: String
