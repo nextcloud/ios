@@ -65,7 +65,9 @@ internal final class LucidBannerWindow: UIWindow {
 final class LucidBanner {
     static let shared = LucidBanner()
 
-    enum ShowPolicy { case replace, enqueue, drop }
+    enum ShowPolicy {
+        case replace, enqueue, drop
+    }
 
     enum LucidBannerAnimationStyle {
         case none, rotate, pulse, pulsebyLayer, breathe, bounce, wiggle, scale
@@ -95,6 +97,7 @@ final class LucidBanner {
     // View factory
     private var contentView: ((LucidBannerState) -> AnyView)?
 
+    private var scene: UIScene?
     private var blocksTouches = false
     private var window: LucidBannerWindow?
     private weak var scrimView: UIControl?
@@ -161,8 +164,10 @@ final class LucidBanner {
                              topAnchor: CGFloat = 10,
                              swipeToDismiss: Bool = true,
                              blocksTouches: Bool = false,
+                             scene: UIScene? = nil,
                              onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
+        self.scene = scene
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
         state.textColor = textColor
@@ -178,7 +183,12 @@ final class LucidBanner {
         state.imageAnimation = imageAnimation
         state.stage = stage
 
-        if let p = progress, p > 0 { state.progress = p } else { state.progress = nil }
+        if let progress,
+           progress > 0 {
+            state.progress = progress
+        } else {
+            state.progress = nil
+        }
         state.progressColor = progressColor
 
         self.autoDismissAfter = autoDismissAfter
@@ -287,7 +297,6 @@ final class LucidBanner {
                 stage: String? = nil,
                 onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                 for token: Int? = nil) {
-
         if let token,
             token != activeToken,
             window == nil {
@@ -337,8 +346,7 @@ final class LucidBanner {
         if let width {
             if let widthConstraint {
                 widthConstraint.constant = width
-            }
-            else {
+            } else {
                 let constraint = view.widthAnchor.constraint(equalToConstant: width)
                 constraint.isActive = true
                 widthConstraint = constraint
@@ -454,14 +462,15 @@ final class LucidBanner {
     }
 
     private func attachWindowAndPresent() {
-        guard let scene = UIApplication.shared.connectedScenes
+        guard let scene: UIWindowScene = (self.scene as? UIWindowScene) ?? UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState != .background }) else {
+            .first(where: { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive })
+        else {
             return
         }
 
         let window = LucidBannerWindow(windowScene: scene)
-        window.frame = scene.screen.bounds
+        // window.frame = scene.screen.bounds
         window.windowLevel = .statusBar + 1
         window.backgroundColor = .clear
         window.isPassthrough = !blocksTouches
