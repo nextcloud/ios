@@ -114,6 +114,7 @@ final class LucidBanner {
 
     /// Internal structure for queued banners.
     private struct PendingShow {
+        let scene: UIScene?
         let title: String
         let subtitle: String?
         let footnote: String?
@@ -306,7 +307,8 @@ final class LucidBanner {
             case .drop:
                 return activeToken
             case .enqueue:
-                queue.append(PendingShow(title: state.title,
+                queue.append(PendingShow(scene: scene,
+                                         title: state.title,
                                          subtitle: state.subtitle,
                                          footnote: state.footnote,
                                          textColor: textColor,
@@ -330,7 +332,8 @@ final class LucidBanner {
                                          viewUI: anyViewUI))
                 return activeToken
             case .replace:
-                let next = PendingShow(title: state.title,
+                let next = PendingShow(scene: scene,
+                                       title: state.title,
                                        subtitle: state.subtitle,
                                        footnote: state.footnote,
                                        textColor: textColor,
@@ -387,10 +390,12 @@ final class LucidBanner {
     func update(title: String? = nil,
                 subtitle: String? = nil,
                 footnote: String? = nil,
+                textColor: UIColor? = nil,
                 systemImage: String? = nil,
                 imageColor: UIColor? = nil,
                 imageAnimation: LucidBannerAnimationStyle? = nil,
                 progress: Double? = nil,
+                progressColor: UIColor? = nil,
                 stage: String? = nil,
                 onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                 for token: Int? = nil) {
@@ -418,18 +423,36 @@ final class LucidBanner {
             let trimmed = footnote.trimmingCharacters(in: .whitespacesAndNewlines)
             state.footnote = trimmed.isEmpty ? nil : trimmed
         }
+        if let textColor {
+            state.textColor = textColor
+        }
+
+        if let systemImage {
+            state.systemImage = systemImage
+        }
+        if let imageColor {
+            state.imageColor = imageColor
+        }
+        if let imageAnimation {
+            state.imageAnimation = imageAnimation
+        }
 
         // Clamp progress to [0,1] and hide when <= 0
         if let progress {
             let clamped = max(0, min(1, progress))
             state.progress = (clamped > 0) ? clamped : nil
         }
+        if let progressColor {
+            state.progressColor = progressColor
+        }
 
-        if let systemImage { state.systemImage = systemImage }
-        if let imageColor { state.imageColor = imageColor }
-        if let imageAnimation { state.imageAnimation = imageAnimation }
-        if let stage { state.stage = stage }
-        if let onTapWithContext { self.onTapWithContext = onTapWithContext }
+
+        if let stage {
+            state.stage = stage
+        }
+        if let onTapWithContext {
+            self.onTapWithContext = onTapWithContext
+        }
 
         hostController?.view.invalidateIntrinsicContentSize()
 
@@ -577,7 +600,6 @@ final class LucidBanner {
         }
         let next = queue.removeFirst()
 
-        // State
         state.title = next.title
         state.subtitle = next.subtitle
         state.footnote = next.footnote
@@ -590,6 +612,7 @@ final class LucidBanner {
         state.stage = next.stage
 
         // Present
+        scene = next.scene
         autoDismissAfter = next.autoDismissAfter
         fixedWidth = next.fixedWidth
         minWidth = next.minWidth
