@@ -137,6 +137,7 @@ final class LucidBanner {
         let stage: String?
         let onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)?
         let viewUI: (LucidBannerState) -> AnyView
+        let token: Int
     }
 
     // View factory
@@ -209,14 +210,11 @@ final class LucidBanner {
                              subtitle: String? = nil,
                              footnote: String? = nil,
                              textColor: UIColor = .label,
-
                              systemImage: String? = nil,
                              imageColor: UIColor = .label,
                              imageAnimation: LucidBannerAnimationStyle = .none,
-
                              progress: Double? = nil,
                              progressColor: UIColor = .label,
-
                              fixedWidth: CGFloat? = nil,
                              minWidth: CGFloat = 220,
                              maxWidth: CGFloat = 420,
@@ -224,15 +222,11 @@ final class LucidBanner {
                              hAlignment: HorizontalAlignment = .center,
                              horizontalMargin: CGFloat = 12,
                              verticalMargin: CGFloat = 10,
-
                              autoDismissAfter: TimeInterval = 0,
                              swipeToDismiss: Bool = true,
                              blocksTouches: Bool = false,
-
                              stage: String? = nil,
-
                              policy: ShowPolicy = .enqueue,
-
                              onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         self.scene = scene
@@ -302,6 +296,10 @@ final class LucidBanner {
         let currentState = self.state
         let anyViewUI: (LucidBannerState) -> AnyView = { _ in AnyView(content(currentState)) }
 
+        // Pre-generate new token for this banner
+        generation &+= 1
+        let newToken = generation
+
         if window != nil || isAnimatingIn || isDismissing {
             switch policy {
             case .drop:
@@ -329,7 +327,8 @@ final class LucidBanner {
                                          blocksTouches: blocksTouches,
                                          stage: stage,
                                          onTapWithContext: onTapWithContext,
-                                         viewUI: anyViewUI))
+                                         viewUI: anyViewUI,
+                                         token: newToken))
                 return activeToken
             case .replace:
                 let next = PendingShow(scene: scene,
@@ -354,21 +353,21 @@ final class LucidBanner {
                                        blocksTouches: blocksTouches,
                                        stage: stage,
                                        onTapWithContext: onTapWithContext,
-                                       viewUI: anyViewUI)
+                                       viewUI: anyViewUI,
+                                       token: newToken)
                 queue.removeAll()
                 queue.append(next)
                 dismiss { [weak self] in
                     self?.dequeueAndStartIfNeeded()
                 }
-                return activeToken
+                return newToken
             }
         }
 
-        generation &+= 1
-        activeToken = generation
+        activeToken = newToken
         startShow(with: anyViewUI)
 
-        return activeToken
+        return newToken
     }
 
     /// Updates the current banner’s content and appearance.
@@ -445,7 +444,6 @@ final class LucidBanner {
         if let progressColor {
             state.progressColor = progressColor
         }
-
 
         if let stage {
             state.stage = stage
@@ -600,6 +598,7 @@ final class LucidBanner {
         }
         let next = queue.removeFirst()
 
+        // State
         state.title = next.title
         state.subtitle = next.subtitle
         state.footnote = next.footnote
@@ -612,7 +611,7 @@ final class LucidBanner {
         state.stage = next.stage
 
         // Present
-        scene = next.scene
+        self.scene = next.scene
         autoDismissAfter = next.autoDismissAfter
         fixedWidth = next.fixedWidth
         minWidth = next.minWidth
@@ -626,8 +625,7 @@ final class LucidBanner {
         onTapWithContext = next.onTapWithContext
         revisionForVisible = 0
 
-        generation &+= 1
-        activeToken = generation
+        activeToken = next.token
         startShow(with: next.viewUI)
     }
 
