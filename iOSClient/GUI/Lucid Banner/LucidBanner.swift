@@ -329,7 +329,7 @@ final class LucidBanner {
                                          onTapWithContext: onTapWithContext,
                                          viewUI: anyViewUI,
                                          token: newToken))
-                return activeToken
+                return newToken
             case .replace:
                 let next = PendingShow(scene: scene,
                                        title: state.title,
