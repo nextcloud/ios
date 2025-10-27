@@ -5,11 +5,62 @@
 import SwiftUI
 import UIKit
 
-/// - Each banner is displayed in its own UIWindow above the status bar.
-/// - Only one banner is visible at a time; others are queued if `enqueue` policy is used.
-/// - Tap events trigger the `onTapWithContext` closure with contextual info.
-/// - Supports swipe-to-dismiss and automatic timed dismissal.
-/// - Resizes dynamically when content or orientation changes.
+/// Shows a transient, SwiftUI-based banner in its own window above the status bar.
+///
+/// The banner is rendered inside a transparent `UIWindow` tied to the provided `scene` (or the
+/// first active scene if `nil`). Only one banner is visible at a time:
+/// - `.enqueue`: the new banner is queued and will appear after the current one is dismissed.
+/// - `.replace`: the current banner is dismissed and the new one is shown next.
+/// - `.drop`: the request is ignored if a banner is already visible.
+///
+/// The banner auto-sizes within `minWidth...maxWidth` (or `fixedWidth` if provided) and can be
+/// positioned at the top/center/bottom (`vPosition`) with left/center/right alignment (`hAlignment`).
+/// Horizontal/vertical margins are respected. When `blocksTouches` is `true`, a light scrim consumes
+/// background interactions; otherwise, touches pass through except over the banner. A swipe gesture
+/// can dismiss the banner if `swipeToDismiss` is enabled.
+///
+/// You can update the banner later using `update(...)` with the returned token. Tap events invoke
+/// `onTapWithContext`, which provides the banner token, a monotonic revision number, and the current
+/// `stage` string (useful to disambiguate tap intentions across state changes).
+///
+/// Token semantics:
+/// - If the banner is shown immediately (no banner visible), this returns the **new token**.
+/// - If `policy == .replace`, this returns the **new token** that will replace the current banner.
+/// - If `policy == .enqueue`, this returns the **current active token** (the queued banner will receive
+///   its own token, but the return value here remains the active one).
+///
+/// - Parameters:
+///   - scene: Target `UIScene` (multiwindow/iPad). If `nil`, the first foreground scene is used.
+///   - title: Main text of the banner. Empty/whitespace-only values are normalized to an empty string.
+///   - subtitle: Optional secondary text below the title. Empty strings are treated as `nil`.
+///   - footnote: Optional tertiary line below the subtitle. Empty strings are treated as `nil`.
+///   - textColor: Color used for textual elements.
+///   - systemImage: Optional SF Symbol name to display beside the text.
+///   - imageColor: Tint for the SF Symbol.
+///   - imageAnimation: Animation to apply to the icon (e.g., `.rotate`, `.breathe`).
+///   - progress: Optional progress (0…1). Values `<= 0` hide the progress bar.
+///   - progressColor: Tint color for the progress bar.
+///   - fixedWidth: If set, forces the banner width. Otherwise the banner fits content within bounds.
+///   - minWidth: Minimum width when auto-sizing (ignored if `fixedWidth` is set).
+///   - maxWidth: Maximum width when auto-sizing (ignored if `fixedWidth` is set).
+///   - vPosition: Vertical placement (`.top`, `.center`, `.bottom`).
+///   - hAlignment: Horizontal alignment (`.left`, `.center`, `.right`).
+///   - horizontalMargin: Horizontal inset from screen edges (when not center-aligned).
+///   - verticalMargin: Vertical inset from safe areas at top/bottom.
+///   - autoDismissAfter: Auto-dismiss delay in seconds; `0` disables auto-dismiss.
+///   - swipeToDismiss: Enables swipe gesture to dismiss the banner.
+///   - blocksTouches: If `true`, blocks touches behind the banner and shows a light scrim.
+///   - stage: Arbitrary label for the current logical phase (e.g., `"uploading"`). Passed to tap handler.
+///   - policy: How to handle the request when another banner is visible: `.enqueue`, `.replace`, or `.drop`.
+///   - onTapWithContext: Called on tap with `(token, revision, stage)`.
+///   - content: SwiftUI view builder bound to the shared `LucidBannerState`.
+///
+/// - Returns: An `Int` token identifying the banner instance you can later pass to `update(...)` or
+///            `dismiss(for:)`. See “Token semantics” above for values returned under each policy.
+///
+/// - Note:
+///   - This API is `@MainActor`; call it from the main thread.
+///   - The banner will not appear if **all** of `title`, `subtitle`, `footnote`, and `progress` are empty/zero.
 
 /// LucidBannerState holds all observable data shared with the SwiftUI view.
 /// It is updated whenever the banner’s appearance or content changes.
@@ -201,8 +252,6 @@ final class LucidBanner {
 
     /// Displays a new banner.
     ///
-    /// - Parameters:
-
     /// - Returns: A unique token identifying this banner instance.
     @discardableResult
     func show<Content: View>(scene: UIScene? = nil,
