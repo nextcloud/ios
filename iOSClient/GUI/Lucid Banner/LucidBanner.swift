@@ -104,6 +104,14 @@ final class LucidBanner {
         case none, rotate, pulse, pulsebyLayer, breathe, bounce, wiggle, scale
     }
 
+    enum VerticalPosition {
+        case top, center, bottom
+    }
+
+    enum HorizontalAlignment {
+        case left, center, right
+    }
+
     /// Internal structure for queued banners.
     private struct PendingShow {
         let title: String
@@ -120,9 +128,12 @@ final class LucidBanner {
         let fixedWidth: CGFloat?
         let minWidth: CGFloat
         let maxWidth: CGFloat
-        let topAnchor: CGFloat
         let swipeToDismiss: Bool
         let blocksTouches: Bool
+        let vPosition: VerticalPosition
+        let hAlignment: HorizontalAlignment
+        let horizontalMargin: CGFloat
+        let verticalMargin: CGFloat
         let onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)?
         let viewUI: (LucidBannerState) -> AnyView
     }
@@ -150,7 +161,12 @@ final class LucidBanner {
     private var maxWidth: CGFloat = 420
     private let minHeight: CGFloat = 44
     private var fixedWidth: CGFloat?
-    private var topAnchor: CGFloat = 10
+
+    // Position
+    private var vPosition: VerticalPosition = .top
+    private var hAlignment: HorizontalAlignment = .center
+    private var horizontalMargin: CGFloat = 12
+    private var verticalMargin: CGFloat = 10
 
     // Queue
     private var queue: [PendingShow] = []
@@ -219,10 +235,13 @@ final class LucidBanner {
                              fixedWidth: CGFloat? = nil,
                              minWidth: CGFloat = 220,
                              maxWidth: CGFloat = 420,
-                             topAnchor: CGFloat = 10,
                              swipeToDismiss: Bool = true,
                              blocksTouches: Bool = false,
                              scene: UIScene? = nil,
+                             vPosition: VerticalPosition = .top,
+                             hAlignment: HorizontalAlignment = .center,
+                             horizontalMargin: CGFloat = 12,
+                             verticalMargin: CGFloat = 10,
                              onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         self.scene = scene
@@ -269,9 +288,14 @@ final class LucidBanner {
         self.fixedWidth = fixedWidth
         self.minWidth = minWidth
         self.maxWidth = maxWidth
-        self.topAnchor = topAnchor
         self.blocksTouches = blocksTouches
         self.swipeToDismiss = blocksTouches ? false : swipeToDismiss
+
+        self.vPosition = vPosition
+        self.hAlignment = hAlignment
+        self.horizontalMargin = horizontalMargin
+        self.verticalMargin = verticalMargin
+
         self.onTapWithContext = onTapWithContext
         self.revisionForVisible = 0
 
@@ -306,9 +330,12 @@ final class LucidBanner {
                                          fixedWidth: fixedWidth,
                                          minWidth: minWidth,
                                          maxWidth: maxWidth,
-                                         topAnchor: topAnchor,
                                          swipeToDismiss: self.swipeToDismiss,
                                          blocksTouches: blocksTouches,
+                                         vPosition: vPosition,
+                                         hAlignment: hAlignment,
+                                         horizontalMargin: horizontalMargin,
+                                         verticalMargin: verticalMargin,
                                          onTapWithContext: onTapWithContext,
                                          viewUI: anyViewUI))
                 return activeToken
@@ -327,9 +354,12 @@ final class LucidBanner {
                                        fixedWidth: fixedWidth,
                                        minWidth: minWidth,
                                        maxWidth: maxWidth,
-                                       topAnchor: topAnchor,
                                        swipeToDismiss: self.swipeToDismiss,
                                        blocksTouches: blocksTouches,
+                                       vPosition: vPosition,
+                                       hAlignment: hAlignment,
+                                       horizontalMargin: horizontalMargin,
+                                       verticalMargin: verticalMargin,
                                        onTapWithContext: onTapWithContext,
                                        viewUI: anyViewUI)
                 queue.removeAll()
@@ -381,7 +411,7 @@ final class LucidBanner {
         // Snapshot old values for change detection
         let oldTitle = state.title
         let oldSub = state.subtitle
-        let olfFootnote = state.footnote
+        let oldFootnote = state.footnote
         let oldImage = state.systemImage
         let oldStage = state.stage
 
@@ -414,7 +444,7 @@ final class LucidBanner {
         hostController?.view.invalidateIntrinsicContentSize()
 
         // Detect what actually changed
-        let textChanged  = (oldTitle != state.title) || (oldSub != state.subtitle) || (olfFootnote != state.footnote)
+        let textChanged = (oldTitle != state.title) || (oldSub != state.subtitle) || (oldFootnote != state.footnote)
         let imageChanged = (oldImage != state.systemImage)
         let stageChanged = (oldStage != state.stage)
 
@@ -448,13 +478,21 @@ final class LucidBanner {
         }
         isDismissing = true
         hostView.isUserInteractionEnabled = false
-        let offsetY = -hostView.bounds.height - 60
+
+        let offsetY: CGFloat = {
+            switch vPosition {
+            case .top: return -hostView.bounds.height - 60
+            case .bottom: return hostView.bounds.height + 60
+            case .center: return 0
+            }
+        }()
 
         UIView.animate(withDuration: 0.35,
                        delay: 0,
                        options: [.curveEaseIn, .beginFromCurrentState]) { [weak self] in
-            hostView.alpha = 0
-            hostView.transform = CGAffineTransform(translationX: 0, y: offsetY)
+            hostView.transform = (self?.vPosition == .center)
+                ? CGAffineTransform(scaleX: 0.9, y: 0.9)
+                : CGAffineTransform(translationX: 0, y: offsetY)
             hostView.layer.shadowOpacity = 0
             self?.window?.layoutIfNeeded()
         } completion: { [weak self] _ in
@@ -566,7 +604,10 @@ final class LucidBanner {
         fixedWidth = next.fixedWidth
         minWidth = next.minWidth
         maxWidth = next.maxWidth
-        topAnchor = next.topAnchor
+        vPosition = next.vPosition
+        hAlignment = next.hAlignment
+        horizontalMargin = next.horizontalMargin
+        verticalMargin = next.verticalMargin
         blocksTouches = next.blocksTouches
         swipeToDismiss = next.blocksTouches ? false : next.swipeToDismiss
         onTapWithContext = next.onTapWithContext
@@ -613,17 +654,45 @@ final class LucidBanner {
         root.addSubview(host.view)
 
         host.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
+
+        var constraints: [NSLayoutConstraint] = []
+        // Scrim full screen
+        constraints += [
             scrim.topAnchor.constraint(equalTo: root.topAnchor),
             scrim.leadingAnchor.constraint(equalTo: root.leadingAnchor),
             scrim.trailingAnchor.constraint(equalTo: root.trailingAnchor),
-            scrim.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            scrim.bottomAnchor.constraint(equalTo: root.bottomAnchor)
+        ]
 
-            host.view.topAnchor.constraint(equalTo: root.safeAreaLayoutGuide.topAnchor, constant: self.topAnchor),
-            host.view.centerXAnchor.constraint(equalTo: root.centerXAnchor),
-            host.view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight)
-        ])
+        // Vertical position
+        switch vPosition {
+        case .top:
+            constraints.append(host.view.topAnchor.constraint(equalTo: root.safeAreaLayoutGuide.topAnchor,
+                                                              constant: verticalMargin))
+        case .center:
+            constraints.append(host.view.centerYAnchor.constraint(equalTo: root.centerYAnchor))
+        case .bottom:
+            constraints.append(host.view.bottomAnchor.constraint(equalTo: root.safeAreaLayoutGuide.bottomAnchor,
+                                                                 constant: -verticalMargin))
+        }
 
+        // Horizontal alignment
+        switch hAlignment {
+        case .center:
+            constraints.append(host.view.centerXAnchor.constraint(equalTo: root.centerXAnchor))
+        case .left:
+            constraints.append(host.view.leadingAnchor.constraint(equalTo: root.leadingAnchor,
+                                                                  constant: horizontalMargin))
+        case .right:
+            constraints.append(host.view.trailingAnchor.constraint(equalTo: root.trailingAnchor,
+                                                                   constant: -horizontalMargin))
+        }
+
+        // Min height stays
+        constraints.append(host.view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight))
+        NSLayoutConstraint.activate(constraints)
+
+        // Hugging/Compression as before
         host.view.setContentHuggingPriority(.required, for: .vertical)
         host.view.setContentCompressionResistancePriority(.required, for: .vertical)
         host.view.setContentHuggingPriority(.required, for: .horizontal)
@@ -645,7 +714,7 @@ final class LucidBanner {
         host.view.addGestureRecognizer(tap)
 
         host.view.isAccessibilityElement = true
-        host.view.accessibilityTraits.insert(.button)
+        host.view.accessibilityTraits.insert(UIAccessibilityTraits.button)
         host.view.accessibilityLabel = state.title.isEmpty ? "Banner" : state.title
 
         self.window = window
@@ -663,7 +732,14 @@ final class LucidBanner {
         window.makeKeyAndVisible()
         window.layoutIfNeeded()
         host.view.alpha = 0
-        host.view.transform = CGAffineTransform(translationX: 0, y: -host.view.bounds.height - 60)
+        switch vPosition {
+        case .top:
+            host.view.transform = CGAffineTransform(translationX: 0, y: -host.view.bounds.height - 60)
+        case .bottom:
+            host.view.transform = CGAffineTransform(translationX: 0, y: host.view.bounds.height + 60)
+        case .center:
+            host.view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }
 
         UIView.animate(withDuration: 0.5,
                        delay: 0,
@@ -717,7 +793,8 @@ final class LucidBanner {
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
-        let widthCap = min(max(0, window.bounds.width - 24), maxWidth)
+        let availableWidth = window.bounds.width - (horizontalMargin * 2)
+        let widthCap = min(max(0, availableWidth), maxWidth)
         let fitting = host.sizeThatFits(in: CGSize(width: widthCap, height: UIView.layoutFittingCompressedSize.height))
         let target = min(max(fitting.width, minWidth), widthCap)
 
@@ -754,19 +831,35 @@ final class LucidBanner {
     }
 
     @objc private func handlePanGesture(_ g: UIPanGestureRecognizer) {
-        guard let view = hostController?.view else {
-            return
-        }
+        guard let view = hostController?.view else { return }
         let dy = g.translation(in: view).y
+
+        func transformFor(_ y: CGFloat) {
+            switch vPosition {
+            case .top:
+                view.transform = CGAffineTransform(translationX: 0, y: min(0, y))
+            case .bottom:
+                view.transform = CGAffineTransform(translationX: 0, y: max(0, y))
+            case .center:
+                let t = max(-80, min(80, y))
+                let s = max(0.9, 1.0 - abs(t) / 800.0)
+                view.transform = CGAffineTransform(translationX: 0, y: t).scaledBy(x: s, y: s)
+            }
+        }
 
         switch g.state {
         case .changed:
-            let y = min(0, dy)
-            view.transform = CGAffineTransform(translationX: 0, y: y)
-            view.alpha = max(0.4, 1.0 + y / 120.0)
+            transformFor(dy)
+            view.alpha = max(0.4, 1.0 - abs(view.transform.ty) / 120.0)
         case .ended, .cancelled:
             let vy = g.velocity(in: view).y
-            let shouldDismiss = (dy < -30) || (vy < -500)
+            let shouldDismiss: Bool = {
+                switch vPosition {
+                case .top:    return (dy < -30) || (vy < -500)
+                case .bottom: return (dy > 30) || (vy > 500)
+                case .center: return abs(dy) > 40 || abs(vy) > 600
+                }
+            }()
             if shouldDismiss {
                 dismiss(for: activeToken)
             } else {
@@ -785,6 +878,7 @@ final class LucidBanner {
     }
 
     @objc private func handleBannerTap() {
+        guard !isDismissing else { return }
         onTapWithContext?(activeToken, revisionForVisible, state.stage)
     }
 }
