@@ -372,7 +372,6 @@ actor NCNetworkingProcess {
             vPosition: .bottom,
             hAlignment: .left,
             verticalMargin: 55,
-            blocksTouches: false,
             stage: "wait",
             onTapWithContext: { _, _, stage in
                 switch stage {
