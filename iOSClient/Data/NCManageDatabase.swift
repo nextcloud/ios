@@ -95,6 +95,7 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
+    @discardableResult
     func openRealmBackground() -> Bool {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)

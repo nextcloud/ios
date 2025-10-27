@@ -158,9 +158,9 @@
 "_replace_all_action_title_" = "Replace all";
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
-"_wait_file_preparation_" = "Please wait, preparing file upload…";
-"_keep_active_for_upload_" = "Keep the application active until the sending is completed…";
-"_keep_active_for_transfers_" = "Keep the application active until the transfers are completed…";
+"_wait_file_preparation_" = "Preparing file upload. Please wait …";
+"_keep_active_for_upload_" = "Keep application active until upload is completed …";
+"_keep_active_for_transfers_" = "Keep application active until the transfers are completed …";
 "_wait_file_encryption_"  = "Please wait, encrypting file…";
 "_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
 "_seconds_"               = "seconds";
@@ -663,6 +663,7 @@
 "_retry_minutes_"           = "min left to retry";
 "_retry_seconds_"           = "sec left to retry";
 "_retry_soon_"              = "retrying soon …";
+"_large_upload_tip_"        = "Large files require the app to remain open until the transfer is complete";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

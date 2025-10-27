@@ -411,7 +411,33 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
+            var numChunks = 0
+            var countUpload: Int = 0
+            var taskHandler: URLSessionTask?
+
+            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
+                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+            }
+
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+                numChunks = num
+            } counterChunk: { counter in
+                self.hud.progress(num: Float(counter), total: Float(numChunks))
+            } startFilesChunk: { _ in
+                self.hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                    taskHandler?.cancel()
+                }
+            } requestHandler: { _ in
+                self.hud.progress(num: Float(countUpload), total: Float(numChunks))
+                countUpload += 1
+            } taskHandler: { task in
+                taskHandler = task
+            } assembling: {
+                self.hud.setText(NSLocalizedString("_wait_", comment: ""))
+            }
+
+            hud.dismiss()
+
             error = results.error
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
