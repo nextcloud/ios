@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import LucidBanner
 
 struct ToastBannerView: View {
     @ObservedObject var state: LucidBannerState

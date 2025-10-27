@@ -4,6 +4,7 @@
 
 import UIKit
 import NextcloudKit
+import LucidBanner
 import Photos
 import RealmSwift
 import Alamofire

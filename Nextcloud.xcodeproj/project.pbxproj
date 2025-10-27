@@ -254,9 +254,9 @@
 		F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */; };
 		F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerMedia.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerMediaPage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */; };
+		F70787672EAFCDBD00CE1625 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F70787662EAFCDBD00CE1625 /* LucidBanner */; };
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
 		F70821D829E59E6D001CA2D7 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F70821D729E59E6D001CA2D7 /* TagListView */; };
-		F70846CA2EACC425006D3F33 /* LucidBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70846C92EACC424006D3F33 /* LucidBanner.swift */; };
 		F70846CC2EADE246006D3F33 /* LucidBannerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */; };
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
@@ -1436,7 +1436,6 @@
 		F70753F02542A9A200972D44 /* NCViewerMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMedia.swift; sourceTree = "<group>"; };
 		F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerMediaPage.storyboard; sourceTree = "<group>"; };
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
-		F70846C92EACC424006D3F33 /* LucidBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidBanner.swift; sourceTree = "<group>"; };
 		F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidBannerViews.swift; sourceTree = "<group>"; };
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2081,6 +2080,7 @@
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
+				F70787672EAFCDBD00CE1625 /* LucidBanner in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
@@ -2372,7 +2372,6 @@
 		F70846CE2EADE293006D3F33 /* Lucid Banner */ = {
 			isa = PBXGroup;
 			children = (
-				F70846C92EACC424006D3F33 /* LucidBanner.swift */,
 				F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */,
 			);
 			path = "Lucid Banner";
@@ -3769,6 +3768,7 @@
 				F3374AF32D78B01B002A38F9 /* DequeModule */,
 				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
 				F3374AF72D78B01B002A38F9 /* HeapModule */,
+				F70787662EAFCDBD00CE1625 /* LucidBanner */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3952,6 +3952,7 @@
 				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				F70787652EAFCDBD00CE1625 /* XCRemoteSwiftPackageReference "LucidBanner" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -5001,7 +5002,6 @@
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
 				AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */,
 				AF4BF614275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
-				F70846CA2EACC425006D3F33 /* LucidBanner.swift in Sources */,
 				F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F711A4DC2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
 				AF4BF61E27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
@@ -6259,6 +6259,14 @@
 				minimumVersion = 2.9.1;
 			};
 		};
+		F70787652EAFCDBD00CE1625 /* XCRemoteSwiftPackageReference "LucidBanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -6663,6 +6671,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		F70787662EAFCDBD00CE1625 /* LucidBanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70787652EAFCDBD00CE1625 /* XCRemoteSwiftPackageReference "LucidBanner" */;
+			productName = LucidBanner;
 		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;
