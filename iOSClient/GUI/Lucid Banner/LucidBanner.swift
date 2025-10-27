@@ -470,7 +470,6 @@ final class LucidBanner {
         }
 
         let window = LucidBannerWindow(windowScene: scene)
-        // window.frame = scene.screen.bounds
         window.windowLevel = .statusBar + 1
         window.backgroundColor = .clear
         window.isPassthrough = !blocksTouches
