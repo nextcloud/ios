@@ -45,6 +45,7 @@ internal final class LucidBannerState: ObservableObject {
 }
 
 // MARK: - Window
+
 @MainActor
 internal final class LucidBannerWindow: UIWindow {
     var isPassthrough: Bool = true
@@ -54,13 +55,17 @@ internal final class LucidBannerWindow: UIWindow {
         guard isPassthrough else {
             return super.hitTest(point, with: event)
         }
-        guard let target = hitTargetView else { return nil }
+        guard let target = hitTargetView else {
+            return nil
+        }
+
         let p = target.convert(point, from: self)
         return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
     }
 }
 
 // MARK: - Manager
+
 @MainActor
 final class LucidBanner {
     static let shared = LucidBanner()
@@ -145,7 +150,8 @@ final class LucidBanner {
 
     func isAlive(_ token: Int) -> Bool { token == activeToken && window != nil }
 
-    // MARK: - SHOW
+    // MARK: - PUBLIC
+
     @discardableResult
     func show<Content: View>(title: String,
                              subtitle: String? = nil,
@@ -270,24 +276,6 @@ final class LucidBanner {
         return activeToken
     }
 
-    private func startShow(with viewUI: @escaping (LucidBannerState) -> AnyView) {
-        lockWidthUntilSettled = true
-        isAnimatingIn = true
-        pendingRelayout = false
-        contentView = viewUI
-
-        if window == nil {
-            attachWindowAndPresent()
-        } else {
-            replaceContentInternal(remeasureWidth: false)
-            remeasureAndSetWidthConstraint(animated: false, force: true)
-        }
-
-        scheduleAutoDismiss()
-    }
-
-    // MARK: - UPDATE
-
     func update(title: String? = nil,
                 subtitle: String? = nil,
                 systemImage: String? = nil,
@@ -333,49 +321,6 @@ final class LucidBanner {
             remeasureAndSetWidthConstraint(animated: true, force: false)
         }
     }
-
-    // MARK: - SIZE
-
-    func setSize(width: CGFloat?, height: CGFloat?, animated: Bool = true) {
-        self.fixedWidth = width
-        guard let window,
-              let view = hostController?.view else {
-            return
-        }
-
-        if let width {
-            if let widthConstraint {
-                widthConstraint.constant = width
-            } else {
-                let constraint = view.widthAnchor.constraint(equalToConstant: width)
-                constraint.isActive = true
-                widthConstraint = constraint
-            }
-        } else {
-            remeasureAndSetWidthConstraint(animated: animated, force: true)
-        }
-
-        if let height {
-            if let heightConstraint {
-                heightConstraint.constant = height
-            } else {
-                let constraint = view.heightAnchor.constraint(equalToConstant: height)
-                constraint.isActive = true
-                heightConstraint = constraint
-            }
-        } else {
-            heightConstraint?.isActive = false
-            heightConstraint = nil
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.2) { window.layoutIfNeeded() }
-        } else {
-            window.layoutIfNeeded()
-        }
-    }
-
-    // MARK: - DISMISS
 
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel()
@@ -424,6 +369,61 @@ final class LucidBanner {
     }
 
     // MARK: - Private
+
+    private func setSize(width: CGFloat?, height: CGFloat?, animated: Bool = true) {
+        self.fixedWidth = width
+        guard let window,
+              let view = hostController?.view else {
+            return
+        }
+
+        if let width {
+            if let widthConstraint {
+                widthConstraint.constant = width
+            } else {
+                let constraint = view.widthAnchor.constraint(equalToConstant: width)
+                constraint.isActive = true
+                widthConstraint = constraint
+            }
+        } else {
+            remeasureAndSetWidthConstraint(animated: animated, force: true)
+        }
+
+        if let height {
+            if let heightConstraint {
+                heightConstraint.constant = height
+            } else {
+                let constraint = view.heightAnchor.constraint(equalToConstant: height)
+                constraint.isActive = true
+                heightConstraint = constraint
+            }
+        } else {
+            heightConstraint?.isActive = false
+            heightConstraint = nil
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.2) { window.layoutIfNeeded() }
+        } else {
+            window.layoutIfNeeded()
+        }
+    }
+
+    private func startShow(with viewUI: @escaping (LucidBannerState) -> AnyView) {
+        lockWidthUntilSettled = true
+        isAnimatingIn = true
+        pendingRelayout = false
+        contentView = viewUI
+
+        if window == nil {
+            attachWindowAndPresent()
+        } else {
+            replaceContentInternal(remeasureWidth: false)
+            remeasureAndSetWidthConstraint(animated: false, force: true)
+        }
+
+        scheduleAutoDismiss()
+    }
 
     private func dequeueAndStartIfNeeded() {
         guard window == nil,
@@ -637,7 +637,6 @@ final class LucidBanner {
         }
     }
 
-    // Gesture
     @objc private func handlePanGesture(_ g: UIPanGestureRecognizer) {
         guard let view = hostController?.view else {
             return
