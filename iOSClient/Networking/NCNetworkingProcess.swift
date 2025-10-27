@@ -395,7 +395,7 @@ actor NCNetworkingProcess {
                     systemImage: "arrowshape.up.circle",
                     imageAnimation: .breathe,
                     progress: 0,
-                    stage: "chunk",
+                    stage: "uploading",
                     for: token)
             }
         } requestHandler: { request in
@@ -420,7 +420,6 @@ actor NCNetworkingProcess {
         Task {@MainActor in
             LucidBanner.shared.dismiss(for: token)
         }
-
     }
 
     // MARK: - Helper

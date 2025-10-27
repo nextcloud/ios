@@ -285,39 +285,52 @@ final class LucidBanner {
                 stage: String? = nil,
                 onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                 for token: Int? = nil) {
-        if let token,
-            token != activeToken,
-            window == nil {
+        if (token != nil && token != activeToken) || window == nil {
             return
         }
+
+        // Snapshot old values for change detection
         let oldTitle = state.title
-        let oldSub = state.subtitle
+        let oldSub   = state.subtitle
         let oldImage = state.systemImage
         let oldStage = state.stage
 
+        // Normalize title/subtitle
         if let title {
-            let trim = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.title = trim.isEmpty ? "" : trim
+            let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.title = trimmed.isEmpty ? "" : trimmed
         }
         if let subtitle {
-            let trim = subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.subtitle = trim.isEmpty ? nil : trim
+            let trimmed = subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.subtitle = trimmed.isEmpty ? nil : trimmed
         }
-        if let progress { state.progress = (progress > 0) ? progress : nil }
+
+        // Clamp progress to [0,1] and hide when <= 0
+        if let progress {
+            let clamped = max(0, min(1, progress))
+            state.progress = (clamped > 0) ? clamped : nil
+        }
+
         if let systemImage { state.systemImage = systemImage }
-        if let imageColor = imageColor { state.imageColor = imageColor }
+        if let imageColor { state.imageColor = imageColor }
         if let imageAnimation { state.imageAnimation = imageAnimation }
         if let stage { state.stage = stage }
         if let onTapWithContext { self.onTapWithContext = onTapWithContext }
 
         hostController?.view.invalidateIntrinsicContentSize()
 
-        let textChanged = (oldTitle != state.title) || (oldSub != state.subtitle)
+        // Detect what actually changed
+        let textChanged  = (oldTitle != state.title) || (oldSub != state.subtitle)
         let imageChanged = (oldImage != state.systemImage)
         let stageChanged = (oldStage != state.stage)
 
+        // Bump revision for any meaningful state change so tap handlers can disambiguate
         if textChanged || imageChanged || stageChanged {
             revisionForVisible &+= 1
+        }
+
+        // Re-measure only when text or image changed (stage-only changes shouldn't resize)
+        if textChanged || imageChanged {
             remeasureAndSetWidthConstraint(animated: true, force: false)
         }
     }
