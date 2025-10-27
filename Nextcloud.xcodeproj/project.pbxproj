@@ -95,6 +95,7 @@
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F30E77E92EAB716900B1EFAB /* CertificatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30E77E82EAB716900B1EFAB /* CertificatePicker.swift */; };
 		F30E77EC2EAB7C9B00B1EFAB /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30E77EB2EAB7C9800B1EFAB /* DocumentPicker.swift */; };
+		F30E77EF2EAF9BCD00B1EFAB /* CertificatePickerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30E77EE2EAF9BC700B1EFAB /* CertificatePickerModel.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
@@ -1384,6 +1385,7 @@
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F30E77E82EAB716900B1EFAB /* CertificatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificatePicker.swift; sourceTree = "<group>"; };
 		F30E77EB2EAB7C9800B1EFAB /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
+		F30E77EE2EAF9BC700B1EFAB /* CertificatePickerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificatePickerModel.swift; sourceTree = "<group>"; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
 		F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
@@ -2264,6 +2266,7 @@
 		F30E77EA2EAB7C1700B1EFAB /* CertificatePicker */ = {
 			isa = PBXGroup;
 			children = (
+				F30E77EE2EAF9BC700B1EFAB /* CertificatePickerModel.swift */,
 				F30E77EB2EAB7C9800B1EFAB /* DocumentPicker.swift */,
 				F30E77E82EAB716900B1EFAB /* CertificatePicker.swift */,
 			);
@@ -4856,6 +4859,7 @@
 				F75D90212D2BE26F003E740B /* NCRecommendationsCell.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
+				F30E77EF2EAF9BCD00B1EFAB /* CertificatePickerModel.swift in Sources */,
 				F76882222C0DD1E7001CF441 /* NCCapabilitiesView.swift in Sources */,
 				F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,

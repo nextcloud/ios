@@ -446,7 +446,7 @@ extension NCLogin: ClientCertificateDelegate, CertificatePickerDelegate {
 #if DEBUG
 import Security
 
-func clearKeychain() {
+private func clearKeychain() {
     let secItemClasses = [
         kSecClassGenericPassword,
         kSecClassInternetPassword,
