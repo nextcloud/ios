@@ -350,17 +350,28 @@ actor NCNetworkingProcess {
         var numChunks = 0
         var countUpload: Int = 0
         var urlRequest: UploadRequest?
+        var maxWidth: CGFloat = 0
+
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            maxWidth = 450
+        } else {
+            let bounds = UIScreen.main.bounds
+            maxWidth = min(bounds.width, bounds.height) - 80
+        }
 
         let token = LucidBanner.shared.show(
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
             subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+            footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
             textColor: .label,
             systemImage: "gearshape.arrow.triangle.2.circlepath",
             imageColor: NCBrandColor.shared.customer,
             imageAnimation: .rotate,
             progressColor: NCBrandColor.shared.customer,
+            maxWidth: maxWidth,
             vPosition: .bottom,
             hAlignment: .left,
+            verticalMargin: 55,
             blocksTouches: false,
             stage: "wait",
             onTapWithContext: { _, _, stage in
