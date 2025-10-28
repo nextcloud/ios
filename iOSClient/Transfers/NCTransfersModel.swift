@@ -167,7 +167,7 @@ final class TransfersViewModel: ObservableObject {
     }
 }
 
-extension TransfersViewModel: @MainActor NCTransferDelegate {
+extension TransfersViewModel: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         Task { @MainActor in
             let key = "\(serverUrl)|\(fileName)"
