@@ -15,84 +15,80 @@ struct ToastBannerView: View {
         let showProgress = (state.progress ?? 0) > 0
         let measuring = (state.flags["measuring"] as? Bool) ?? false
 
-        if #available(iOS 26, *) {
-            container {
-                VStack(spacing: 15) {
-                    HStack(alignment: .top, spacing: 10) {
-                        if let systemImage = state.systemImage {
-                            Image(systemName: systemImage)
-                                .symbolRenderingMode(.monochrome)
-                                .applyBannerAnimation(state.imageAnimation)
-                                .font(.system(size: 20, weight: .regular))
-                                .foregroundStyle(Color(uiColor: state.imageColor))
-                        }
-
-                        VStack(alignment: .leading, spacing: 7) {
-                            if showTitle {
-                                Text(state.title)
-                                    .font(.subheadline.weight(.bold))
-                                    .multilineTextAlignment(.leading)
-                                    .lineLimit(2)
-                                    .truncationMode(.tail)
-                                    .minimumScaleFactor(0.9)
-                                    .foregroundStyle(Color(uiColor: state.textColor))
-                            }
-                            if showSubtitle, let subtitle = state.subtitle {
-                                Text(subtitle)
-                                    .font(.caption)
-                                    .multilineTextAlignment(.leading)
-                                    .lineLimit(3)
-                                    .truncationMode(.tail)
-                                    .foregroundStyle(Color(uiColor: state.textColor))
-                            }
-                            if showFootnote, let footnote = state.footnote {
-                                Text(footnote)
-                                    .font(.caption2)
-                                    .multilineTextAlignment(.leading)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .foregroundStyle(Color(uiColor: state.textColor))
-                            }
-                        }
+        containerView {
+            VStack(spacing: 15) {
+                HStack(alignment: .top, spacing: 10) {
+                    if let systemImage = state.systemImage {
+                        Image(systemName: systemImage)
+                            .symbolRenderingMode(.monochrome)
+                            .applyBannerAnimation(state.imageAnimation)
+                            .font(.system(size: 20, weight: .regular))
+                            .foregroundStyle(Color(uiColor: state.imageColor))
                     }
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    if showProgress && !measuring {
-                        ProgressView(value: min(state.progress ?? 0, 1))
-                            .progressViewStyle(.linear)
-                            .tint(Color(uiColor: state.progressColor))
-                            .scaleEffect(x: 1, y: 0.8, anchor: .center)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    VStack(alignment: .leading, spacing: 7) {
+                        if showTitle {
+                            Text(state.title)
+                                .font(.subheadline.weight(.bold))
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                                .truncationMode(.tail)
+                                .minimumScaleFactor(0.9)
+                                .foregroundStyle(Color(uiColor: state.textColor))
+                        }
+                        if showSubtitle, let subtitle = state.subtitle {
+                            Text(subtitle)
+                                .font(.caption)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(3)
+                                .truncationMode(.tail)
+                                .foregroundStyle(Color(uiColor: state.textColor))
+                        }
+                        if showFootnote, let footnote = state.footnote {
+                            Text(footnote)
+                                .font(.caption2)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundStyle(Color(uiColor: state.textColor))
+                        }
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 12)
-                .frame(minHeight: 44, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                if showProgress && !measuring {
+                    ProgressView(value: min(state.progress ?? 0, 1))
+                        .progressViewStyle(.linear)
+                        .tint(Color(uiColor: state.progressColor))
+                        .scaleEffect(x: 1, y: 0.8, anchor: .center)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 12)
+            .frame(minHeight: 44, alignment: .leading)
         }
     }
-}
 
-/// Wraps the whole content in Apple's Liquid Glass container on iOS 26+.
-/// Falls back to a material-backed rounded container on earlier systems.
-@ViewBuilder
-func container<Content: View>(cornerRadius: CGFloat = 16, @ViewBuilder _ content: () -> Content) -> some View {
-    if #available(iOS 26, *) {
-        GlassEffectContainer {
+    @ViewBuilder
+    func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        if #available(iOS 26, *) {
+            GlassEffectContainer {
+                content()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .stroke(.white.opacity(0.9), lineWidth: 0.6)
+                    )
+            }
+        } else {
             content()
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
                 .overlay(
-                  RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .strokeBorder(.separator.opacity(0.1), lineWidth: 0.75)
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(.white.opacity(0.9), lineWidth: 0.6)
                 )
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
-    } else {
-        content()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
-            .overlay(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(.white.opacity(0.9), lineWidth: 0.6)
-            )
-            .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
     }
 }
 

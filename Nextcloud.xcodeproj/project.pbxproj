@@ -254,7 +254,6 @@
 		F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */; };
 		F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerMedia.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerMediaPage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */; };
-		F70787672EAFCDBD00CE1625 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F70787662EAFCDBD00CE1625 /* LucidBanner */; };
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
 		F70821D829E59E6D001CA2D7 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F70821D729E59E6D001CA2D7 /* TagListView */; };
 		F70846CC2EADE246006D3F33 /* LucidBannerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */; };
@@ -744,6 +743,7 @@
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F78B87E72B62527100C65ADC /* NCMediaDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */; };
 		F78B87E92B62550800C65ADC /* NCMediaDownloadThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B87E82B62550800C65ADC /* NCMediaDownloadThumbnail.swift */; };
+		F78C24552EB22E67009F3517 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F78C24542EB22E67009F3517 /* LucidBanner */; };
 		F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C6FDD296D677300C952C3 /* NCContextMenu.swift */; };
 		F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
 		F78E2D6629AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
@@ -2080,7 +2080,7 @@
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
-				F70787672EAFCDBD00CE1625 /* LucidBanner in Frameworks */,
+				F78C24552EB22E67009F3517 /* LucidBanner in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
@@ -3768,7 +3768,7 @@
 				F3374AF32D78B01B002A38F9 /* DequeModule */,
 				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
 				F3374AF72D78B01B002A38F9 /* HeapModule */,
-				F70787662EAFCDBD00CE1625 /* LucidBanner */,
+				F78C24542EB22E67009F3517 /* LucidBanner */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3952,7 +3952,7 @@
 				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
-				F70787652EAFCDBD00CE1625 /* XCRemoteSwiftPackageReference "LucidBanner" */,
+				F78C24532EB22E67009F3517 /* XCRemoteSwiftPackageReference "LucidBanner" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -6259,14 +6259,6 @@
 				minimumVersion = 2.9.1;
 			};
 		};
-		F70787652EAFCDBD00CE1625 /* XCRemoteSwiftPackageReference "LucidBanner" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -6409,6 +6401,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.7.1;
+			};
+		};
+		F78C24532EB22E67009F3517 /* XCRemoteSwiftPackageReference "LucidBanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */ = {
@@ -6672,11 +6672,6 @@
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
-		F70787662EAFCDBD00CE1625 /* LucidBanner */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F70787652EAFCDBD00CE1625 /* XCRemoteSwiftPackageReference "LucidBanner" */;
-			productName = LucidBanner;
-		};
 		F70821D729E59E6D001CA2D7 /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */;
@@ -6911,6 +6906,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
+		};
+		F78C24542EB22E67009F3517 /* LucidBanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F78C24532EB22E67009F3517 /* XCRemoteSwiftPackageReference "LucidBanner" */;
+			productName = LucidBanner;
 		};
 		F7A1050D29E587AF00FFD92B /* TagListView */ = {
 			isa = XCSwiftPackageProductDependency;

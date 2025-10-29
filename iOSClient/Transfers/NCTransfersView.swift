@@ -48,7 +48,7 @@ struct TransfersView: View {
     }
 
     @ViewBuilder
-    private var contentView: some View {
+    var contentView: some View {
         if model.showFlushMessage || (model.metadatas.isEmpty && model.inWaitingCount == 0) {
             EmptyTransfersView(model: model)
         } else {
