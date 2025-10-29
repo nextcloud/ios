@@ -87,6 +87,97 @@ extension NCNetworking {
 
     // MARK: - Upload chunk file in foreground
 
+    func uploadChunkFile(metadata: tableMetadata,
+                         performPostProcessing: Bool = true,
+                         customHeaders: [String: String]? = nil,
+                         chunkCountHandler: @escaping (_ num: Int) -> Void = { _ in },
+                         chunkProgressHandler: @escaping (_ counter: Int) -> Void = { _ in },
+                         uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
+                         uploadTaskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                         uploadProgressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
+                         uploaded: @escaping (_ fileChunk: (fileName: String, size: Int64)) -> Void = { _ in },
+                         assembling: @escaping () -> Void = { }) async -> (account: String,
+                                                                           remainingChunks: [(fileName: String, size: Int64)]?,
+                                                                           file: NKFile?,
+                                                                           error: NKError) {
+
+        let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+        let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
+        let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
+        var chunkSize = self.global.chunkSizeMBCellular
+        if networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
+            chunkSize = self.global.chunkSizeMBEthernetOrWiFi
+        }
+        let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        do {
+            let (account, remaining, file) = try await NextcloudKit.shared.uploadChunkAsync(
+                directory: directory,
+                fileName: metadata.fileName,
+                date: metadata.date as Date,
+                creationDate: metadata.creationDate as Date,
+                serverUrl: metadata.serverUrl,
+                chunkFolder: chunkFolder,
+                filesChunk: filesChunk,
+                chunkSize: chunkSize,
+                account: metadata.account,
+                options: options) { num in
+
+                } chunkProgressHandler: { count in
+
+                } uploadStart: { filesChunk in
+
+                } uploadTaskHandler: { task in
+
+                } uploadProgressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+
+                } uploaded: { fileChunk in
+
+                } assembling: {
+
+                }
+
+            if performPostProcessing, let file {
+                await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
+            }
+
+            return (account, remaining, file, NKError())
+
+        } catch let nk as NKError {
+            // Known NextcloudKit error path
+            let err = nk
+
+            // Decide cleanup policy based on error code severity
+            if [-1, -2, -3, -4, -5, -6].contains(err.errorCode) {
+                // Fatal: clean chunks and metadata, remove local file
+                await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                                ocId: metadata.ocId,
+                                                                directory: directory)
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                utilityFileSystem.removeFile(atPath: directory)
+                NCContentPresenter().showError(error: err)
+            }
+
+            return (metadata.account, nil, nil, err)
+
+        } catch let ns as NSError where ns.domain == "chunkedFile" {
+            let err = NKError(error: ns)
+
+            if [-1, -2, -3, -4, -5, -6].contains(err.errorCode) {
+                await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                                ocId: metadata.ocId,
+                                                                directory: directory)
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                utilityFileSystem.removeFile(atPath: directory)
+                NCContentPresenter().showError(error: err)
+            }
+
+            return (metadata.account, nil, nil, err)
+        } catch {
+            return (metadata.account, nil, nil, NKError(error: error))
+        }
+    }
+    /*
     @discardableResult
     func uploadChunkFile(metadata: tableMetadata,
                          performPostProcessing: Bool = true,
@@ -204,6 +295,7 @@ extension NCNetworking {
 
         return results
     }
+    */
 
     // MARK: - Upload file in background
 
