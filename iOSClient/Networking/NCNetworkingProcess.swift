@@ -6,7 +6,8 @@ import UIKit
 import NextcloudKit
 import Photos
 import RealmSwift
-import JDStatusBarNotification
+import Alamofire
+import LucidBanner
 
 actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
@@ -345,73 +346,95 @@ actor NCNetworkingProcess {
 
     // MARK: - Upload in chunk mode
 
+    @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var numChunks = 0
         var countUpload: Int = 0
+        var urlRequest: UploadRequest?
+        var maxWidth: CGFloat = 0
 
-        NotificationPresenter.shared.updateDefaultStyle { style in
-            style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
-            style.backgroundStyle.pillStyle.height = 55
-
-            style.textStyle.textColor = .white
-
-            style.subtitleStyle.textColor = .white
-            style.animationType = .move
-
-            style.progressBarStyle.barColor = .white
-            style.progressBarStyle.barHeight = 2
-            style.progressBarStyle.horizontalInsets = 30
-            style.progressBarStyle.offsetY = -4
-
-            return style
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            maxWidth = 450
+        } else {
+            let bounds = UIScreen.main.bounds
+            maxWidth = min(bounds.width, bounds.height) - 80
         }
 
-        Task { @MainActor in
-            NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                                 subtitle: NSLocalizedString("_large_upload_tip_", comment: ""))
+        let token = LucidBanner.shared.show(
+            title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+            subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+            footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
+            textColor: .label,
+            systemImage: "gearshape.arrow.triangle.2.circlepath",
+            imageColor: NCBrandColor.shared.customer,
+            imageAnimation: .rotate,
+            progressColor: NCBrandColor.shared.customer,
+            maxWidth: maxWidth,
+            vPosition: .bottom,
+            hAlignment: .left,
+            verticalMargin: 55,
+            stage: "wait",
+            onTapWithContext: { _, _, stage in
+                switch stage {
+                case "chunk", "wait":
+                    NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+                case "uploading":
+                    if let urlRequest {
+                        urlRequest.cancel()
+                    }
+                case "assembling":
+                    break
+                default:
+                    break
+                }
+            }) { state in
+                ToastBannerView(state: state)
+            }
 
-            let view = makeHostingNotificationPresenterView(NotificationPresenterGearSymbol(),
-                                                            size: .init(width: 28, height: 28))
-            NotificationPresenter.shared.displayLeftView(view)
-        }
         await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
             numChunks = num
         } counterChunk: { counter in
-            Task { @MainActor in
+            Task {@MainActor in
                 let progress = Double(counter) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
+                LucidBanner.shared.update(
+                    progress: progress,
+                    stage: "chunk",
+                    for: token)
             }
         } startFilesChunk: { _ in
-            Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-
-                let view = makeHostingNotificationPresenterView(NotificationPresenterArrowShapeSymbol(),
-                                                                size: .init(width: 28, height: 28))
-                NotificationPresenter.shared.displayLeftView(view)
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
+            Task {@MainActor in
+                LucidBanner.shared.update(
+                    title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                    systemImage: "arrowshape.up.circle",
+                    imageAnimation: .breathe,
+                    progress: 0,
+                    stage: "uploading",
+                    for: token)
             }
-        } requestHandler: { _ in
-            Task { @MainActor in
+        } requestHandler: { request in
+            Task {@MainActor in
                 let progress = Double(countUpload) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
+                LucidBanner.shared.update(progress: progress, stage: "uploading", for: token)
+                urlRequest = request
                 countUpload += 1
             }
         } assembling: {
-            Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_wait_", comment: ""))
-
-                let view = makeHostingNotificationPresenterView(NotificationPresenterTryArrowSymbol(),
-                                                                size: .init(width: 28, height: 28))
-                NotificationPresenter.shared.displayLeftView(view)
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
+            Task {@MainActor in
+                LucidBanner.shared.update(
+                    title: NSLocalizedString("_finalizing_wait_", comment: ""),
+                    systemImage: "tray.and.arrow.down",
+                    imageAnimation: .pulsebyLayer,
+                    progress: 0,
+                    stage: "assembling",
+                    for: token)
             }
         }
 
-        Task { @MainActor in
-            NotificationPresenter.shared.dismiss()
+        Task {@MainActor in
+            LucidBanner.shared.dismiss(for: token)
         }
-
     }
+
 
     // MARK: - Helper
 
