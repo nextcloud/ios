@@ -164,18 +164,16 @@ actor NCNetworkingProcess {
                 return
             }
 
-            // UPDATE INWAIT & BADGE
+            // UPDATE INWAITINGCOUNT & BADGE
             //
             let count = await inWaitingCount()
-            if count != inWaitingCount {
-                inWaitingCount = count
-                Task { @MainActor in
-                    UNUserNotificationCenter.current().setBadgeCount(count)
+            inWaitingCount = count
+            Task { @MainActor in
+                UNUserNotificationCenter.current().setBadgeCount(count)
 
-                    if let controller = getRootController(),
-                        let files = controller.tabBar.items?.first {
-                        files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
-                    }
+                if let controller = getRootController(),
+                    let files = controller.tabBar.items?.first {
+                    files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
                 }
             }
 
@@ -348,10 +346,12 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        var numChunks = 0
-        var countUpload: Int = 0
-        var urlRequest: UploadRequest?
+        var chunkCountHandler = 0
         var maxWidth: CGFloat = 0
+        var currentUploadTask: Task<(account: String,
+                                     remainingChunks: [(fileName: String, size: Int64)]?,
+                                     file: NKFile?,
+                                     error: NKError), Never>?
 
         if UIDevice.current.userInterfaceIdiom == .pad {
             maxWidth = 450
@@ -364,7 +364,6 @@ actor NCNetworkingProcess {
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
             subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
             footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
-            textColor: .label,
             systemImage: "gearshape.arrow.triangle.2.circlepath",
             imageColor: NCBrandColor.shared.customer,
             imageAnimation: .rotate,
@@ -374,67 +373,55 @@ actor NCNetworkingProcess {
             hAlignment: .left,
             verticalMargin: 55,
             stage: "wait",
-            onTapWithContext: { _, _, stage in
-                switch stage {
-                case "chunk", "wait":
-                    NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
-                case "uploading":
-                    if let urlRequest {
-                        urlRequest.cancel()
-                    }
-                case "assembling":
-                    break
-                default:
-                    break
-                }
+            onTapWithContext: { _, _, _ in
+                currentUploadTask?.cancel()
             }) { state in
                 ToastBannerView(state: state)
             }
 
-        await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-            numChunks = num
-        } counterChunk: { counter in
-            Task {@MainActor in
-                let progress = Double(counter) / Double(numChunks)
-                LucidBanner.shared.update(
-                    progress: progress,
-                    stage: "chunk",
-                    for: token)
+        currentUploadTask = Task { () -> (account: String,
+                                          remainingChunks: [(fileName: String, size: Int64)]?,
+                                          file: NKFile?,
+                                          error: NKError) in
+            let result = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+                chunkCountHandler = num
+            } chunkProgressHandler: { counter in
+                Task {@MainActor in
+                    let progress = Double(counter) / Double(chunkCountHandler)
+                    LucidBanner.shared.update(progress: progress, for: token)
+                }
+            } uploadStart: { _ in
+                Task {@MainActor in
+                    LucidBanner.shared.update(
+                        title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                        systemImage: "arrowshape.up.circle",
+                        imageAnimation: .breathe,
+                        progress: 0,
+                        for: token)
+                }
+            } uploadProgressHandler: { _, _, progress in
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: progress, for: token)
+                }
+            } assembling: {
+                Task {@MainActor in
+                    LucidBanner.shared.update(
+                        title: NSLocalizedString("_finalizing_wait_", comment: ""),
+                        systemImage: "tray.and.arrow.down",
+                        imageAnimation: .pulsebyLayer,
+                        progress: 0,
+                        for: token)
+                }
             }
-        } startFilesChunk: { _ in
-            Task {@MainActor in
-                LucidBanner.shared.update(
-                    title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
-                    systemImage: "arrowshape.up.circle",
-                    imageAnimation: .breathe,
-                    progress: 0,
-                    stage: "uploading",
-                    for: token)
-            }
-        } requestHandler: { request in
-            Task {@MainActor in
-                let progress = Double(countUpload) / Double(numChunks)
-                LucidBanner.shared.update(progress: progress, stage: "uploading", for: token)
-                urlRequest = request
-                countUpload += 1
-            }
-        } assembling: {
-            Task {@MainActor in
-                LucidBanner.shared.update(
-                    title: NSLocalizedString("_finalizing_wait_", comment: ""),
-                    systemImage: "tray.and.arrow.down",
-                    imageAnimation: .pulsebyLayer,
-                    progress: 0,
-                    stage: "assembling",
-                    for: token)
-            }
-        }
 
-        Task {@MainActor in
-            LucidBanner.shared.dismiss(for: token)
+            // Dismiss banner (on main) once finished
+            await MainActor.run {
+                LucidBanner.shared.dismiss(for: token)
+            }
+
+            return result
         }
     }
-
 
     // MARK: - Helper
 
