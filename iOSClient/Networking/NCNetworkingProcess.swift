@@ -351,9 +351,6 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var chunkCountHandler = 0
-        let maxWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad
-            ? 450
-            : min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) - 80
         var currentUploadTask: Task<(account: String,
                                      remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
@@ -367,9 +364,7 @@ actor NCNetworkingProcess {
             imageColor: NCBrandColor.shared.customer,
             imageAnimation: .rotate,
             progressColor: NCBrandColor.shared.customer,
-            maxWidth: maxWidth,
-            vPosition: .top,
-            hAlignment: .left,
+            vPosition: .bottom,
             verticalMargin: 55,
             stage: "wait",
             onTapWithContext: { _, _, _ in

@@ -73,13 +73,8 @@ struct ToastBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         if #available(iOS 26, *) {
-            GlassEffectContainer {
-                content()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .stroke(.white.opacity(0.9), lineWidth: 0.6)
-                    )
-            }
+            content()
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
         } else {
             content()
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
