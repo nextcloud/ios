@@ -411,34 +411,44 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            var numChunks = 0
-            var countUpload: Int = 0
-            var taskHandler: URLSessionTask?
+            var chunkCountHandler = 0
+            var currentUploadTask: Task<(account: String,
+                                         remainingChunks: [(fileName: String, size: Int64)]?,
+                                         file: NKFile?,
+                                         error: NKError), Never>?
 
             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
-                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+                currentUploadTask?.cancel()
             }
 
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                numChunks = num
-            } counterChunk: { counter in
-                self.hud.progress(num: Float(counter), total: Float(numChunks))
-            } startFilesChunk: { _ in
-                self.hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
-                    taskHandler?.cancel()
+            let task = Task { () -> (account: String,
+                                     remainingChunks: [(fileName: String, size: Int64)]?,
+                                     file: NKFile?,
+                                     error: NKError) in
+                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+                    chunkCountHandler = num
+                } chunkProgressHandler: { counter in
+                    self.hud.progress(num: Float(counter), total: Float(chunkCountHandler))
+                } uploadStart: { _ in
+                    self.hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                        currentUploadTask?.cancel()
+                    }
+                } uploadProgressHandler: { _, _, progress in
+                    self.hud.progress(progress)
+                } assembling: {
+                    self.hud.setText(NSLocalizedString("_wait_", comment: ""))
                 }
-            } requestHandler: { _ in
-                self.hud.progress(num: Float(countUpload), total: Float(numChunks))
-                countUpload += 1
-            } taskHandler: { task in
-                taskHandler = task
-            } assembling: {
-                self.hud.setText(NSLocalizedString("_wait_", comment: ""))
+
+                return results
             }
+
+            currentUploadTask = task
+            let results = await task.value
 
             hud.dismiss()
 
             error = results.error
+        
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
