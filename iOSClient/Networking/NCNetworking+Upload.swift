@@ -195,6 +195,10 @@ extension NCNetworking {
                                                                 directory: directory)
                 await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+            } else {
+                if performPostProcessing {
+                    await uploadError(withMetadata: metadata, error: NKError(error: error))
+                }
             }
 
             return (metadata.account, nil, nil, NKError(error: error))

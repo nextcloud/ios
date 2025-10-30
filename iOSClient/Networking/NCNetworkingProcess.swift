@@ -331,6 +331,7 @@ actor NCNetworkingProcess {
                 //
                 } else if metadata.chunk > 0 {
                     await uploadChunk(metadata: metadata)
+                    print ("dcccc")
                 // UPLOAD IN BACKGROUND
                 //
                 } else {
@@ -347,18 +348,13 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var chunkCountHandler = 0
-        var maxWidth: CGFloat = 0
+        let maxWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad
+            ? 450
+            : min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) - 80
         var currentUploadTask: Task<(account: String,
                                      remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
                                      error: NKError), Never>?
-
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            maxWidth = 450
-        } else {
-            let bounds = UIScreen.main.bounds
-            maxWidth = min(bounds.width, bounds.height) - 80
-        }
 
         let token = LucidBanner.shared.show(
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
@@ -369,7 +365,7 @@ actor NCNetworkingProcess {
             imageAnimation: .rotate,
             progressColor: NCBrandColor.shared.customer,
             maxWidth: maxWidth,
-            vPosition: .bottom,
+            vPosition: .top,
             hAlignment: .left,
             verticalMargin: 55,
             stage: "wait",
@@ -379,10 +375,10 @@ actor NCNetworkingProcess {
                 ToastBannerView(state: state)
             }
 
-        currentUploadTask = Task { () -> (account: String,
-                                          remainingChunks: [(fileName: String, size: Int64)]?,
-                                          file: NKFile?,
-                                          error: NKError) in
+        let task = Task { () -> (account: String,
+                                 remainingChunks: [(fileName: String, size: Int64)]?,
+                                 file: NKFile?,
+                                 error: NKError) in
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
                 chunkCountHandler = num
             } chunkProgressHandler: { counter in
@@ -415,16 +411,16 @@ actor NCNetworkingProcess {
                 }
             }
 
-            // Dismiss banner
-            await MainActor.run {
-                LucidBanner.shared.dismiss(for: token)
-            }
-
-            if results.error != .success {
-                NCContentPresenter().showError(error: results.error)
-            }
-
             return results
+        }
+
+        currentUploadTask = task
+        let results = await task.value
+
+        LucidBanner.shared.dismiss(for: token)
+
+        if results.error != .success {
+            NCContentPresenter().showError(error: results.error)
         }
     }
 
