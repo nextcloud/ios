@@ -241,12 +241,8 @@ class NCNetworkingE2EEUpload: NSObject {
 
             hud.dismiss()
 
-
-
-            hud.dismiss()
-
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
-           
+
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
