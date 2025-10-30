@@ -383,7 +383,7 @@ actor NCNetworkingProcess {
                                           remainingChunks: [(fileName: String, size: Int64)]?,
                                           file: NKFile?,
                                           error: NKError) in
-            let result = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
                 chunkCountHandler = num
             } chunkProgressHandler: { counter in
                 Task {@MainActor in
@@ -407,6 +407,7 @@ actor NCNetworkingProcess {
                 Task {@MainActor in
                     LucidBanner.shared.update(
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
+                        footnote: "",
                         systemImage: "tray.and.arrow.down",
                         imageAnimation: .pulsebyLayer,
                         progress: 0,
@@ -414,12 +415,16 @@ actor NCNetworkingProcess {
                 }
             }
 
-            // Dismiss banner (on main) once finished
+            // Dismiss banner
             await MainActor.run {
                 LucidBanner.shared.dismiss(for: token)
             }
 
-            return result
+            if results.error != .success {
+                NCContentPresenter().showError(error: results.error)
+            }
+
+            return results
         }
     }
 
