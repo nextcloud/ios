@@ -255,7 +255,9 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0, timer != nil else { return }
+        guard availableProcess > 0, timer != nil else {
+            return
+        }
 
         // DOWNLOAD
         //
@@ -273,7 +275,9 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0, timer != nil else { return }
+        guard availableProcess > 0, timer != nil else {
+            return
+        }
 
         // UPLOAD IN ERROR (check > 5 minute ago)
         //
@@ -331,7 +335,6 @@ actor NCNetworkingProcess {
                 //
                 } else if metadata.chunk > 0 {
                     await uploadChunk(metadata: metadata)
-                    print ("dcccc")
                 // UPLOAD IN BACKGROUND
                 //
                 } else {
