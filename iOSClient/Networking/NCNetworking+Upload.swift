@@ -94,9 +94,7 @@ extension NCNetworking {
                          chunkCountHandler: @escaping (_ num: Int) -> Void = { _ in },
                          chunkProgressHandler: @escaping (_ counter: Int) -> Void = { _ in },
                          uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
-                         // uploadTaskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                          uploadProgressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                         // uploaded: @escaping (_ fileChunk: (fileName: String, size: Int64)) -> Void = { _ in },
                          assembling: @escaping () -> Void = { }) async -> (account: String,
                                                                            remainingChunks: [(fileName: String, size: Int64)]?,
                                                                            file: NKFile?,
@@ -185,11 +183,7 @@ extension NCNetworking {
 
             return (account, remaining, file, NKError())
         } catch let error as NKError {
-            if error.errorCode == -1 ||
-                error.errorCode == -2 ||
-                error.errorCode == -3 ||
-                error.errorCode == -4 ||
-                error.errorCode == -5 {
+            if error.errorCode == -1 || error.errorCode == -2 || error.errorCode == -3 || error.errorCode == -4 || error.errorCode == -5 {
                 await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                                 ocId: metadata.ocId,
                                                                 directory: directory)
