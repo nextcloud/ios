@@ -91,8 +91,7 @@ extension NCNetworking {
     func uploadChunkFile(metadata: tableMetadata,
                          performPostProcessing: Bool = true,
                          customHeaders: [String: String]? = nil,
-                         chunkCountHandler: @escaping (_ num: Int) -> Void = { _ in },
-                         chunkProgressHandler: @escaping (_ counter: Int) -> Void = { _ in },
+                         chunkProgressHandler: @escaping (_ total: Int, _ counter: Int) -> Void = { _, _ in },
                          uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
                          uploadProgressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          assembling: @escaping () -> Void = { }) async -> (account: String,
@@ -120,10 +119,8 @@ extension NCNetworking {
                 filesChunk: filesChunk,
                 chunkSize: chunkSize,
                 account: metadata.account,
-                options: options) { num in
-                    chunkCountHandler(num)
-                } chunkProgressHandler: { counter in
-                    chunkProgressHandler(counter)
+                options: options) { total, counter in
+                    chunkProgressHandler(total, counter)
                 } uploadStart: { filesChunk in
                     Task {
                         await NCManageDatabase.shared.addChunksAsync(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
@@ -195,7 +192,7 @@ extension NCNetworking {
                 }
             }
 
-            return (metadata.account, nil, nil, NKError(error: error))
+            return (metadata.account, nil, nil, error)
         } catch {
             if performPostProcessing {
                 await uploadError(withMetadata: metadata, error: NKError(error: error))

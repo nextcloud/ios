@@ -120,7 +120,7 @@ private extension View {
 #Preview {
     ZStack {
         LinearGradient(
-            colors: [.white, .red],
+            colors: [.white, .gray.opacity(0.1)],
             startPoint: .top,
             endPoint: .bottom
         )

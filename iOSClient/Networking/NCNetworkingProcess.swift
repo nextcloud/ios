@@ -350,7 +350,6 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        var chunkCountHandler = 0
         var currentUploadTask: Task<(account: String,
                                      remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
@@ -377,11 +376,9 @@ actor NCNetworkingProcess {
                                  remainingChunks: [(fileName: String, size: Int64)]?,
                                  file: NKFile?,
                                  error: NKError) in
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                chunkCountHandler = num
-            } chunkProgressHandler: { counter in
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                 Task {@MainActor in
-                    let progress = Double(counter) / Double(chunkCountHandler)
+                    let progress = Double(counter) / Double(total)
                     LucidBanner.shared.update(progress: progress, for: token)
                 }
             } uploadStart: { _ in
@@ -409,17 +406,17 @@ actor NCNetworkingProcess {
                 }
             }
 
+            if results.error != .success {
+                NCContentPresenter().showError(error: results.error)
+            }
+
             return results
         }
 
         currentUploadTask = task
-        let results = await task.value
+        _ = await task.value
 
         LucidBanner.shared.dismiss(for: token)
-
-        if results.error != .success {
-            NCContentPresenter().showError(error: results.error)
-        }
     }
 
     // MARK: - Helper

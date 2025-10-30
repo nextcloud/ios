@@ -205,7 +205,6 @@ class NCNetworkingE2EEUpload: NSObject {
     //
     private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
         if metadata.chunk > 0 {
-            var chunkCountHandler = 0
             var currentUploadTask: Task<(account: String,
                                          remainingChunks: [(fileName: String, size: Int64)]?,
                                          file: NKFile?,
@@ -219,10 +218,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                      remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
                                      error: NKError) in
-                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                    chunkCountHandler = num
-                } chunkProgressHandler: { counter in
-                    hud.progress(num: Float(counter), total: Float(chunkCountHandler))
+                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+                    hud.progress(num: Float(counter), total: Float(total))
                 } uploadStart: { _ in
                     hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
                         currentUploadTask?.cancel()

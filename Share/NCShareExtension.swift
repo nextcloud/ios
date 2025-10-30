@@ -411,7 +411,6 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            var chunkCountHandler = 0
             var currentUploadTask: Task<(account: String,
                                          remainingChunks: [(fileName: String, size: Int64)]?,
                                          file: NKFile?,
@@ -425,10 +424,8 @@ extension NCShareExtension {
                                      remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
                                      error: NKError) in
-                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                    chunkCountHandler = num
-                } chunkProgressHandler: { counter in
-                    self.hud.progress(num: Float(counter), total: Float(chunkCountHandler))
+                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+                    self.hud.progress(num: Float(counter), total: Float(total))
                 } uploadStart: { _ in
                     self.hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
                         currentUploadTask?.cancel()
@@ -448,7 +445,6 @@ extension NCShareExtension {
             hud.dismiss()
 
             error = results.error
-        
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
