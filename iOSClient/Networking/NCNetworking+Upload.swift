@@ -98,7 +98,6 @@ extension NCNetworking {
                                                                            remainingChunks: [(fileName: String, size: Int64)]?,
                                                                            file: NKFile?,
                                                                            error: NKError) {
-
         let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
@@ -179,13 +178,18 @@ extension NCNetworking {
             }
 
             return (account, remaining, file, NKError())
+        } catch is CancellationError {
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directory)
+            await uploadCancelFile(metadata: metadata)
+            return (metadata.account, nil, nil, NKError(errorCode: -5, errorDescription: "Transfers was cancelled."))
         } catch let error as NKError {
             if error.errorCode == -1 || error.errorCode == -2 || error.errorCode == -3 || error.errorCode == -4 || error.errorCode == -5 {
                 await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                                 ocId: metadata.ocId,
                                                                 directory: directory)
-                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+                await uploadCancelFile(metadata: metadata)
             } else {
                 if performPostProcessing {
                     await uploadError(withMetadata: metadata, error: NKError(error: error))
