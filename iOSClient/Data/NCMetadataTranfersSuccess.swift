@@ -31,12 +31,12 @@ actor NCMetadataTranfersSuccess {
         }
     }
 
-    func count() async -> Int {
-        return tranfersSuccess.count
+    func count() -> Int {
+        tranfersSuccess.count
     }
 
-    func getAll() async -> [tableMetadata] {
-        return tranfersSuccess
+    func getAll() -> [tableMetadata] {
+        tranfersSuccess
     }
 
     func getMetadata(ocIdTransfer: String) async -> tableMetadata? {
@@ -45,16 +45,22 @@ actor NCMetadataTranfersSuccess {
 
     func flush() async {
         let isInBackground = NCNetworking.shared.isInBackground()
-        let metadataUploaded: [tableMetadata] = tranfersSuccess
+        let snapshot: [tableMetadata] = tranfersSuccess
+        tranfersSuccess.removeAll(keepingCapacity: true)
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
+
+        guard !snapshot.isEmpty else {
+            nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush skipped (no items)", consoleOnly: true)
+            return
+        }
+
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
-
-        for metadata in metadataUploaded {
+        for metadata in snapshot {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
-
             if let localFile = results.localFile {
                 metadatasLocalFiles.append(localFile)
             }
@@ -64,36 +70,36 @@ actor NCMetadataTranfersSuccess {
             if let autoUpload = results.autoUpload {
                 autoUploads.append(autoUpload)
             }
-            tranfersSuccess.removeAll {
-                $0.ocIdTransfer == metadata.ocIdTransfer
-            }
         }
 
-        // Metadatas
-        let ocIdTransfers = metadataUploaded.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: metadataUploaded)
+        let ocIdTransfers = snapshot.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: snapshot)
 
         // Local File
-        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
+        if !metadatasLocalFiles.isEmpty {
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
+        }
 
         // Auto Upload
-        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
+        if !autoUploads.isEmpty {
+            await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
+        }
 
         // Live Photo
-        let accounts = Set(metadatasLivePhoto.map { $0.account })
-        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-        #if !EXTENSION
-        for account in accounts {
-            await NCNetworking.shared.setLivePhoto(account: account)
+        if !metadatasLivePhoto.isEmpty {
+            let accounts = Set(metadatasLivePhoto.map { $0.account })
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
+            #if !EXTENSION
+            for account in accounts {
+                await NCNetworking.shared.setLivePhoto(account: account)
+            }
+            #endif
         }
-        #endif
 
-        // TransferDispatcher
-        //
-        if !metadataUploaded.isEmpty,
-           !isInBackground {
+        // TransferDispatcher — notify outside of shared-state mutation
+        if !isInBackground {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for metadata in metadataUploaded {
+                for metadata in snapshot {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             metadata: metadata,
                                             destination: nil,
@@ -102,6 +108,6 @@ actor NCMetadataTranfersSuccess {
             }
         }
 
-        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(snapshot.count))", consoleOnly: true)
     }
 }
