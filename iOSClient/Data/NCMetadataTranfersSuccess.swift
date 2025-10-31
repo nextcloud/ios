@@ -76,26 +76,23 @@ actor NCMetadataTranfersSuccess {
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: snapshot)
 
         // Local File
-        if !metadatasLocalFiles.isEmpty {
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
-        }
+        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
 
         // Auto Upload
-        if !autoUploads.isEmpty {
-            await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
-        }
+        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
 
-        // Live Photo
-        if !metadatasLivePhoto.isEmpty,
-           !isInBackground {
+        // Create Live Photo metadatas
+        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
+
+        // Set livePhoto on Server
+#if !EXTENSION
+        if !isInBackground {
             let accounts = Set(metadatasLivePhoto.map { $0.account })
-            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-            #if !EXTENSION
             for account in accounts {
                 await NCNetworking.shared.setLivePhoto(account: account)
             }
-            #endif
         }
+#endif
 
         // TransferDispatcher — notify outside of shared-state mutation
         if !isInBackground {
