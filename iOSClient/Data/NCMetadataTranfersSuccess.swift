@@ -50,11 +50,6 @@ actor NCMetadataTranfersSuccess {
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
 
-        guard !snapshot.isEmpty else {
-            nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush skipped (no items)", consoleOnly: true)
-            return
-        }
-
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
