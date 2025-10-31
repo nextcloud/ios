@@ -86,7 +86,8 @@ actor NCMetadataTranfersSuccess {
         }
 
         // Live Photo
-        if !metadatasLivePhoto.isEmpty {
+        if !metadatasLivePhoto.isEmpty,
+           !isInBackground {
             let accounts = Set(metadatasLivePhoto.map { $0.account })
             await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
             #if !EXTENSION
