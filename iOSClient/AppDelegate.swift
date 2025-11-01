@@ -208,6 +208,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             task.setTaskCompleted(success: false)
             return
         }
+        var expired = false
+        task.expirationHandler = {
+            expired = true
+        }
 
         // Schedule next processing task
         scheduleAppProcessing()
@@ -217,12 +221,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                task.setTaskCompleted(success: true)
            }
 
-           // If possible, every week
-           if NCPreferences().cleaningWeek {
+           // If possible, cleaning every week
+           if NCPreferences().cleaningWeek() {
+               // BGTask expiration flag
+               nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Start cleaning week")
+               let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
+               for tblAccount in tblAccounts {
+                   await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+                   guard !expired else { return }
+               }
+               await NCUtilityFileSystem().cleanUpAsync()
 
+               NCPreferences().setDoneCleaningWeek()
+               nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Stop cleaning week")
+           } else {
+               await backgroundSync(task: task)
            }
-
-           await backgroundSync(task: task)
        }
     }
 
