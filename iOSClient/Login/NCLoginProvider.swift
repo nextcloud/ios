@@ -267,11 +267,49 @@ extension NCLoginProvider: WKNavigationDelegate {
         }
     }
 
+    func retrieveIdentityFromKeychain(label: String) -> SecIdentity? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassIdentity,
+            kSecAttrLabel as String: label,
+            kSecReturnRef as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        // swiftlint:disable force_cast
+        return status == errSecSuccess ? (item as! SecIdentity) : nil
+        // swiftlint:enable force_cast
+    }
+
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         nkLog(debug: "Web view did receive authentication challenge.")
 
-        DispatchQueue.global().async {
-            if let serverTrust = challenge.protectionSpace.serverTrust {
+        DispatchQueue.global().async { [self] in
+            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
+                let label = "client_identity_\(challenge.protectionSpace.host):\(challenge.protectionSpace.port)"
+                if let identity = retrieveIdentityFromKeychain(label: label) {
+                    let credential = URLCredential(identity: identity, certificates: nil, persistence: .forSession)
+                    //                    completionHandler(.useCredential, credential)
+
+                    challenge.sender?.use(credential, for: challenge)
+                    completionHandler(.useCredential, credential)
+
+                } else {
+//                    self.certificateDelegate?.didAskForClientCertificate()
+                    completionHandler(.cancelAuthenticationChallenge, nil)
+                }
+                //            if let p12Data = self.p12Data,
+                //               let cert = (p12Data, self.p12Password) as? UserCertificate,
+                //               let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
+                //                   self.certificateDelegate?.onIncorrectPassword()
+                //               }) {
+                //                let creds = PKCS12.urlCredential(for: pkcs12)
+                //                completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
+                //            } else {
+                //                completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
+                //            }
+            } else if let serverTrust = challenge.protectionSpace.serverTrust {
                 completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
             } else {
                 completionHandler(URLSession.AuthChallengeDisposition.useCredential, nil)

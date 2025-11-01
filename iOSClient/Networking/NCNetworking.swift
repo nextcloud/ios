@@ -10,7 +10,6 @@ import Queuer
 import SwiftUI
 
 @objc protocol ClientCertificateDelegate {
-    func onIncorrectPassword()
     func didAskForClientCertificate()
 }
 
@@ -242,8 +241,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var lastReachability: Bool = true
     var networkReachability: NKTypeReachability?
     weak var certificateDelegate: ClientCertificateDelegate?
-    var p12Data: Data?
-    var p12Password: String?
     var tapHudStopDelete = false
     var controller: UIViewController?
 
@@ -291,21 +288,39 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
     }
 
+    func retrieveIdentityFromKeychain(label: String) -> SecIdentity? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassIdentity,
+            kSecAttrLabel as String: label,
+            kSecReturnRef as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        // swiftlint:disable force_cast
+        return status == errSecSuccess ? (item as! SecIdentity) : nil
+        // swiftlint:enable force_cast
+    }
+
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        nkLog(debug: "Auth challenge method: \(challenge.protectionSpace.authenticationMethod), host: \(challenge.protectionSpace.host):\(challenge.protectionSpace.port)")
+
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
-            if let p12Data = self.p12Data,
-               let cert = (p12Data, self.p12Password) as? UserCertificate,
-               let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
-                   self.certificateDelegate?.onIncorrectPassword()
-               }) {
-                let creds = PKCS12.urlCredential(for: pkcs12)
-                completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
-            } else {
-                self.certificateDelegate?.didAskForClientCertificate()
-                completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
-            }
+            let label = "client_identity_\(challenge.protectionSpace.host):\(challenge.protectionSpace.port)"
+
+            if let identity = retrieveIdentityFromKeychain(label: label) {
+                    let credential = URLCredential(identity: identity, certificates: nil, persistence: .forSession)
+
+                    challenge.sender?.use(credential, for: challenge)
+                    completionHandler(.useCredential, credential)
+
+                } else {
+                    self.certificateDelegate?.didAskForClientCertificate()
+                    completionHandler(.cancelAuthenticationChallenge, nil)
+                }
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
@@ -410,10 +425,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
 
         BIO_free(mem)
-    }
-
-    func activeAccountCertificate(account: String) {
-        (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
 
     // MARK: - Helper

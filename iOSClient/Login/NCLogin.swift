@@ -41,9 +41,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     var configPassword: String?
     var configAppPassword: String?
 
-    private var p12Data: Data?
-    private var p12Password: String?
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -270,8 +267,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionButtonLogin(_ sender: Any) {
-        NCNetworking.shared.p12Data = nil
-        NCNetworking.shared.p12Password = nil
         login()
     }
 
@@ -435,46 +430,36 @@ extension NCLogin: NCShareAccountsDelegate {
 
 // MARK: - UIDocumentPickerDelegate
 
-extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
+extension NCLogin: ClientCertificateDelegate, CertificatePickerDelegate {
     func didAskForClientCertificate() {
-        let alertNoCertFound = UIAlertController(title: NSLocalizedString("_no_client_cert_found_", comment: ""), message: NSLocalizedString("_no_client_cert_found_desc_", comment: ""), preferredStyle: .alert)
-        alertNoCertFound.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-        alertNoCertFound.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
-            documentProviderMenu.delegate = self
-            self.present(documentProviderMenu, animated: true, completion: nil)
-        }))
-        DispatchQueue.main.async {
-            self.present(alertNoCertFound, animated: true)
+        DispatchQueue.main.async { [self] in
+            let certPicker = UIHostingController(rootView: CertificatePicker(urlBase: baseUrlTextField.text ?? "", delegate: self))
+            self.present(certPicker, animated: true)
         }
     }
 
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
-        alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-        alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
-            NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
-            self.login()
-        }))
-        alertEnterPassword.addTextField { textField in
-            textField.isSecureTextEntry = true
-        }
-        DispatchQueue.main.async {
-            self.present(alertEnterPassword, animated: true)
-        }
-    }
-
-    func onIncorrectPassword() {
-        NCNetworking.shared.p12Data = nil
-        NCNetworking.shared.p12Password = nil
-        let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
-        alertWrongPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
-        DispatchQueue.main.async {
-            self.present(alertWrongPassword, animated: true)
-        }
+    func certificatePickerDidImportIdentity(_ picker: CertificatePickerModel, for urlBase: String) {
+        login()
     }
 }
+
+#if DEBUG
+import Security
+
+private func clearKeychain() {
+    let secItemClasses = [
+        kSecClassGenericPassword,
+        kSecClassInternetPassword,
+        kSecClassCertificate,
+        kSecClassKey,
+        kSecClassIdentity
+    ]
+    for itemClass in secItemClasses {
+        let query = [kSecClass as String: itemClass]
+        SecItemDelete(query as CFDictionary)
+    }
+}
+#endif
 
 // MARK: - NCLoginProviderDelegate
 
