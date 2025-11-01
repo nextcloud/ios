@@ -576,7 +576,24 @@ final class NCPreferences: NSObject {
 
     func getUploadUseAutoUploadSubFolder(account: String) -> Bool {
         return getBoolPreference(key: "UploadUseAutoUploadSubFolder", account: account, defaultValue: false)
+    }
 
+    func cleaningWeek() -> Bool {
+        let date = Date()
+        let year = Calendar.current.component(.yearForWeekOfYear, from: date)
+        let week = Calendar.current.component(.weekOfYear, from: date)
+        let weekString = String(format: "%04d-W%02d", year, week) // "2025-W44"
+        let value = getStringPreference(key: "cleaningWeek", defaultValue: "")
+
+        return (value == weekString) ? false : true
+    }
+
+    func setDoneCleaningWeek() {
+        let date = Date()
+        let year = Calendar.current.component(.yearForWeekOfYear, from: date)
+        let week = Calendar.current.component(.weekOfYear, from: date)
+        let weekString = String(format: "%04d-W%02d", year, week) // "2025-W44"
+        setUserDefaults(weekString, forKey: "cleaningWeek")
     }
 
     // MARK: -
