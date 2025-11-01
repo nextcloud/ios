@@ -217,6 +217,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                task.setTaskCompleted(success: true)
            }
 
+           // If possible, every week
+           if NCPreferences().cleaningWeek {
+
+           }
+
            await backgroundSync(task: task)
        }
     }
