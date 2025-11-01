@@ -583,7 +583,7 @@ final class NCPreferences: NSObject {
         let year = Calendar.current.component(.yearForWeekOfYear, from: date)
         let week = Calendar.current.component(.weekOfYear, from: date)
         let weekString = String(format: "%04d-W%02d", year, week) // "2025-W44"
-        let value = getStringPreference(key: "cleaningWeek", defaultValue: weekString)
+        let value = getStringPreference(key: "cleaningWeek", defaultValue: "")
 
         return (value == weekString) ? false : true
     }
