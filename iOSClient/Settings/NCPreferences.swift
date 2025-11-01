@@ -348,6 +348,25 @@ final class NCPreferences: NSObject {
         }
     }
 
+    var cleaningWeek: Bool {
+        get {
+            let date = Date()
+            let year = Calendar.current.component(.yearForWeekOfYear, from: date)
+            let week = Calendar.current.component(.weekOfYear, from: date)
+            let weekString = String(format: "%04d-W%02d", year, week) // "2025-W44"
+            let value = getStringPreference(key: "cleaningWeek", defaultValue: weekString)
+
+            return (value == weekString) ? false : true
+        }
+        set {
+            let date = Date()
+            let year = Calendar.current.component(.yearForWeekOfYear, from: date)
+            let week = Calendar.current.component(.weekOfYear, from: date)
+            let weekString = String(format: "%04d-W%02d", year, week) // "2025-W44"
+            setUserDefaults(weekString, forKey: "cleaningWeek")
+        }
+    }
+
     // MARK: -
 
     func getPassword(account: String) -> String {
