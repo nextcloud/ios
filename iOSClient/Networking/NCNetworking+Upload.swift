@@ -179,14 +179,13 @@ extension NCNetworking {
             }
 
             returnFile = file
-        } catch is CancellationError {
-            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
-                                                            ocId: metadata.ocId,
-                                                            directory: directory)
-            await uploadCancelFile(metadata: metadata)
-            returnError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
         } catch let error as NKError {
-            if error.errorCode == -1 || error.errorCode == -2 || error.errorCode == -3 || error.errorCode == -4 || error.errorCode == -5 {
+            // Error generate by chunks creation
+            if error.errorCode == -1 ||
+                error.errorCode == -2 ||
+                error.errorCode == -3 ||
+                error.errorCode == -4 ||
+                error.errorCode == -5 {
                 await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                                 ocId: metadata.ocId,
                                                                 directory: directory)
