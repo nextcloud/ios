@@ -411,17 +411,13 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            var currentUploadTask: Task<(account: String,
-                                         file: NKFile?,
-                                         error: NKError), Never>?
+            var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
 
             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
                 currentUploadTask?.cancel()
             }
 
-            let task = Task { () -> (account: String,
-                                     file: NKFile?,
-                                     error: NKError) in
+            let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     self.hud.progress(num: Float(counter), total: Float(total))
                 } uploadStart: { _ in

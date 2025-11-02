@@ -350,10 +350,7 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        var currentUploadTask: Task<(account: String,
-                                     file: NKFile?,
-                                     error: NKError), Never>?
-
+        var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
         let token = LucidBanner.shared.show(
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
             subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
@@ -369,9 +366,7 @@ actor NCNetworkingProcess {
                 ToastBannerView(state: state)
             }
 
-        let task = Task { () -> (account: String,
-                                 file: NKFile?,
-                                 error: NKError) in
+        let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                 Task {@MainActor in
                     let progress = Double(counter) / Double(total)

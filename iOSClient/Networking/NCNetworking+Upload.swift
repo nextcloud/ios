@@ -109,7 +109,7 @@ extension NCNetworking {
         var returnFile: NKFile?
 
         do {
-            let (account, file) = try await NextcloudKit.shared.uploadChunkAsync(
+            let (_, file) = try await NextcloudKit.shared.uploadChunkAsync(
                 directory: directory,
                 fileName: metadata.fileName,
                 date: metadata.date as Date,
@@ -196,7 +196,6 @@ extension NCNetworking {
                     await uploadError(withMetadata: metadata, error: NKError(error: error))
                 }
             }
-
             returnError = error
         } catch is CancellationError {
             await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
@@ -204,7 +203,9 @@ extension NCNetworking {
                                                             directory: directory)
             await uploadCancelFile(metadata: metadata)
             returnError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
-        } catch { }
+        } catch let error {
+            returnError = NKError(error: error)
+        }
 
         return(metadata.account, returnFile, returnError)
     }
