@@ -257,10 +257,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // Timeout auto
             let didFinish = await withTaskGroup(of: Bool.self) { group -> Bool in
                 group.addTask {
-                    // BACKUP
-                    await NCManageDatabase.shared.backupTableAccountToFileAsync()
                     // QUEUE
                     NCNetworking.shared.cancelAllQueue()
+                    // FLUSH TRANSFERS SUCCESS
+                    await NCNetworking.shared.metadataTranfersSuccess.flush()
+                    // BACKUP
+                    await NCManageDatabase.shared.backupTableAccountToFileAsync()
                     // LOG
                     nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
                     nkLog(info: "Update in background: \(isBackgroundRefreshStatus)")
@@ -274,12 +276,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     if let error = await NCAccount().updateAppsShareAccounts() {
                         nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
                     }
-                    // CLEAR OLDER FILES
-                    await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
-                    await NCUtilityFileSystem().cleanUpAsync()
-                    // TRANSFERS SUCCESS
-                    await NCNetworking.shared.metadataTranfersSuccess.flush()
-
                     return true
                 }
                 group.addTask {
