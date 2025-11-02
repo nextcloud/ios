@@ -257,10 +257,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             expired = true
         }
 
-        // Transfer success flush
-        await NCNetworking.shared.metadataTranfersSuccess.flush()
-        guard !expired else { return }
-
         // Discover new items for Auto Upload
         let numAutoUpload = await NCAutoUpload.shared.initAutoUpload()
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload found \(numAutoUpload) new items")
