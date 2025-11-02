@@ -198,11 +198,14 @@ extension NCNetworking {
 
             return (metadata.account, nil, nil, error)
         } catch is CancellationError {
-            if performPostProcessing {
-                await uploadError(withMetadata: metadata, error: NKError(error: error))
-            }
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directory)
+            await uploadCancelFile(metadata: metadata)
 
-            return (metadata.account, nil, nil, NKError(error: error))
+            return (metadata.account, nil, nil, NKError())
+        } catch {
+            return (metadata.account, nil, nil, NKError())
         }
     }
 
