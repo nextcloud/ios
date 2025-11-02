@@ -206,7 +206,6 @@ class NCNetworkingE2EEUpload: NSObject {
     private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
         if metadata.chunk > 0 {
             var currentUploadTask: Task<(account: String,
-                                         remainingChunks: [(fileName: String, size: Int64)]?,
                                          file: NKFile?,
                                          error: NKError), Never>?
 
@@ -215,7 +214,6 @@ class NCNetworkingE2EEUpload: NSObject {
             }
 
             let task = Task { () -> (account: String,
-                                     remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
                                      error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in

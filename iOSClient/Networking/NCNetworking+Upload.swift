@@ -95,7 +95,6 @@ extension NCNetworking {
                          uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
                          uploadProgressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          assembling: @escaping () -> Void = { }) async -> (account: String,
-                                                                           remainingChunks: [(fileName: String, size: Int64)]?,
                                                                            file: NKFile?,
                                                                            error: NKError) {
         let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -106,9 +105,11 @@ extension NCNetworking {
             chunkSize = self.global.chunkSizeMBEthernetOrWiFi
         }
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        var returnError = NKError()
+        var returnFile: NKFile?
 
         do {
-            let (account, remaining, file) = try await NextcloudKit.shared.uploadChunkAsync(
+            let (account, file) = try await NextcloudKit.shared.uploadChunkAsync(
                 directory: directory,
                 fileName: metadata.fileName,
                 date: metadata.date as Date,
@@ -177,13 +178,13 @@ extension NCNetworking {
                 await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
             }
 
-            return (account, remaining, file, NKError())
+            returnFile = file
         } catch is CancellationError {
             await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                             ocId: metadata.ocId,
                                                             directory: directory)
             await uploadCancelFile(metadata: metadata)
-            return (metadata.account, nil, nil, NKError(errorCode: -5, errorDescription: "Transfers was cancelled."))
+            returnError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
         } catch let error as NKError {
             if error.errorCode == -1 || error.errorCode == -2 || error.errorCode == -3 || error.errorCode == -4 || error.errorCode == -5 {
                 await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
@@ -196,17 +197,16 @@ extension NCNetworking {
                 }
             }
 
-            return (metadata.account, nil, nil, error)
+            returnError = error
         } catch is CancellationError {
             await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                             ocId: metadata.ocId,
                                                             directory: directory)
             await uploadCancelFile(metadata: metadata)
+            returnError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
+        } catch { }
 
-            return (metadata.account, nil, nil, NKError())
-        } catch {
-            return (metadata.account, nil, nil, NKError())
-        }
+        return(metadata.account, returnFile, returnError)
     }
 
     // MARK: - Upload file in background

@@ -412,7 +412,6 @@ extension NCShareExtension {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
             var currentUploadTask: Task<(account: String,
-                                         remainingChunks: [(fileName: String, size: Int64)]?,
                                          file: NKFile?,
                                          error: NKError), Never>?
 
@@ -421,7 +420,6 @@ extension NCShareExtension {
             }
 
             let task = Task { () -> (account: String,
-                                     remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
                                      error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in

@@ -351,7 +351,6 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var currentUploadTask: Task<(account: String,
-                                     remainingChunks: [(fileName: String, size: Int64)]?,
                                      file: NKFile?,
                                      error: NKError), Never>?
 
@@ -371,7 +370,6 @@ actor NCNetworkingProcess {
             }
 
         let task = Task { () -> (account: String,
-                                 remainingChunks: [(fileName: String, size: Int64)]?,
                                  file: NKFile?,
                                  error: NKError) in
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
