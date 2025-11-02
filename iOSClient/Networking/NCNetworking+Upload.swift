@@ -186,10 +186,7 @@ extension NCNetworking {
                 error.errorCode == -3 ||
                 error.errorCode == -4 ||
                 error.errorCode == -5 {
-                await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
-                                                                ocId: metadata.ocId,
-                                                                directory: directory)
-                await uploadCancelFile(metadata: metadata)
+                await uploadCancelFile(metadata: metadata, directoryChunks: directory)
             } else {
                 if performPostProcessing {
                     await uploadError(withMetadata: metadata, error: NKError(error: error))
@@ -197,10 +194,7 @@ extension NCNetworking {
             }
             returnError = error
         } catch is CancellationError {
-            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
-                                                            ocId: metadata.ocId,
-                                                            directory: directory)
-            await uploadCancelFile(metadata: metadata)
+            await uploadCancelFile(metadata: metadata, directoryChunks: directory)
             returnError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
         } catch let error {
             returnError = NKError(error: error)
@@ -359,7 +353,12 @@ extension NCNetworking {
 
     // MARK: -
 
-    func uploadCancelFile(metadata: tableMetadata) async {
+    func uploadCancelFile(metadata: tableMetadata, directoryChunks: String? = nil) async {
+        if let directoryChunks {
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directoryChunks)
+        }
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
     }
