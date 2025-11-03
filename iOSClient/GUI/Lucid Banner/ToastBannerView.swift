@@ -9,7 +9,7 @@ struct ToastBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
-        let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let showTitle = !(state.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showProgress = (state.progress ?? 0) > 0
@@ -27,8 +27,8 @@ struct ToastBannerView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
-                        if showTitle {
-                            Text(state.title)
+                        if showTitle, let title = state.title {
+                            Text(title)
                                 .font(.subheadline.weight(.bold))
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(2)
@@ -38,7 +38,7 @@ struct ToastBannerView: View {
                         }
                         if showSubtitle, let subtitle = state.subtitle {
                             Text(subtitle)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(3)
                                 .truncationMode(.tail)
@@ -46,7 +46,7 @@ struct ToastBannerView: View {
                         }
                         if showFootnote, let footnote = state.footnote {
                             Text(footnote)
-                                .font(.caption2)
+                                .font(.caption)
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
@@ -87,7 +87,7 @@ struct ToastBannerView: View {
     }
 }
 
-private extension View {
+public extension View {
     @ViewBuilder
     func applyBannerAnimation(_ style: LucidBanner.LucidBannerAnimationStyle) -> some View {
         if #available(iOS 18, *) {
@@ -106,6 +106,8 @@ private extension View {
                 self.symbolEffect(.wiggle, options: .repeat(.continuous))
             case .scale:
                 self.symbolEffect(.scale, options: .repeat(.continuous))
+            case .scaleUpbyLayer:
+                self.symbolEffect(.scale.up.byLayer, options: .repeat(.continuous))
             case .none:
                 self
             }

@@ -7,6 +7,7 @@ import SwiftUI
 import RealmSwift
 import NextcloudKit
 import EasyTipView
+import LucidBanner
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
@@ -348,7 +349,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if error != .success,
            error.errorCode != global.errorResourceNotFound {
-            NCContentPresenter().showError(error: error)
+            LucidBanner.shared.show(
+                subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+                footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
+                vPosition: .top,
+                verticalMargin: 55) { state in
+                    ErrorBannerView(state: state)
+                }
         }
 
         self.debouncer.call {
