@@ -350,10 +350,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if error != .success,
            error.errorCode != global.errorResourceNotFound {
             LucidBanner.shared.show(
-                subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
-                footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
-                vPosition: .top,
-                verticalMargin: 55) { state in
+                subtitle: error.errorDescription,
+                footnote: "(Error code: \(error.errorCode))",
+                autoDismissAfter: NCGlobal.shared.dismissAfterSecond) { state in
                     ErrorBannerView(state: state)
                 }
         }

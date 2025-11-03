@@ -189,7 +189,7 @@ extension NCNetworking {
                 await uploadCancelFile(metadata: metadata, directoryChunks: directory)
             } else {
                 if performPostProcessing {
-                    await uploadError(withMetadata: metadata, error: NKError(error: error))
+                    await uploadError(withMetadata: metadata, error: error)
                 }
             }
             returnError = error

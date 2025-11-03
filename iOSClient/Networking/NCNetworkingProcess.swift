@@ -397,10 +397,6 @@ actor NCNetworkingProcess {
                 }
             }
 
-            if results.error != .success {
-                NCContentPresenter().showError(error: results.error)
-            }
-
             return results
         }
 
