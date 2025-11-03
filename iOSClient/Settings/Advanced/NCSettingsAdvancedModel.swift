@@ -94,6 +94,13 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         NKLogFileManager.shared.logLevel = selectedLogLevel
     }
 
+    /// Remove directory LOG
+    func clearLogFile() {
+        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let logsFolder = documents.appendingPathComponent("Logs", isDirectory: true)
+        try? FileManager.default.removeItem(at: logsFolder)
+    }
+
     /// Updates the value of `selectedInterval` in the keychain.
     func updateSelectedInterval() {
         keychain.cleanUpDay = selectedInterval.rawValue
