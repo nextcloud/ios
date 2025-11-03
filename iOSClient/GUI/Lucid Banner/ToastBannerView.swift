@@ -20,9 +20,8 @@ struct ToastBannerView: View {
                 HStack(alignment: .top, spacing: 10) {
                     if let systemImage = state.systemImage {
                         Image(systemName: systemImage)
-                            .symbolRenderingMode(.monochrome)
                             .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 20, weight: .regular))
+                            .font(.system(size: 30, weight: .regular))
                             .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                     }
 

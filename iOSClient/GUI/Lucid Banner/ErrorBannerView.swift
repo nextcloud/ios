@@ -15,10 +15,8 @@ struct ErrorBannerView: View {
         containerView {
             VStack(spacing: 15) {
                 HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "x.circle.fill")
-                        .symbolRenderingMode(.monochrome)
-                        .applyBannerAnimation(state.imageAnimation)
-                        .font(.system(size: 22, weight: .bold))
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 30, weight: .bold))
                         .foregroundStyle(.white)
 
                     VStack(alignment: .leading, spacing: 7) {
@@ -92,7 +90,7 @@ struct ErrorBannerView: View {
                 title: "Error",
                 subtitle: "Not avalilable",
                 footnote: "ErroCode. 12",
-                imageAnimation: .scaleUpbyLayer)
+                imageAnimation: .breathe)
         )
         .padding()
     }
