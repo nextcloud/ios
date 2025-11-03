@@ -39,7 +39,7 @@ struct ToastBannerView: View {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(3)
+                                .lineLimit(4)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.primary)
                         }
@@ -47,7 +47,7 @@ struct ToastBannerView: View {
                             Text(footnote)
                                 .font(.caption)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(1)
+                                .lineLimit(2)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.primary)
                         }

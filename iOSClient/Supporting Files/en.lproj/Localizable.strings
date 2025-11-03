@@ -664,6 +664,7 @@
 "_retry_seconds_"           = "sec left to retry";
 "_retry_soon_"              = "retrying soon …";
 "_large_upload_tip_"        = "Large files require the app to remain open until the transfer is complete";
+"_e2ee_upload_tip_"         = "End-to-end files require the app to remain open until the transfer is complete";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
