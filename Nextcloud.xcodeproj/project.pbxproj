@@ -743,7 +743,7 @@
 		F78B87E72B62527100C65ADC /* NCMediaDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */; };
 		F78B87E92B62550800C65ADC /* NCMediaDownloadThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B87E82B62550800C65ADC /* NCMediaDownloadThumbnail.swift */; };
 		F78C24632EB233DD009F3517 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F78C24622EB233DD009F3517 /* LucidBanner */; };
-		F78C246C2EB2342C009F3517 /* LucidBannerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C246A2EB2342C009F3517 /* LucidBannerViews.swift */; };
+		F78C246C2EB2342C009F3517 /* ToastBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C246A2EB2342C009F3517 /* ToastBannerView.swift */; };
 		F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C6FDD296D677300C952C3 /* NCContextMenu.swift */; };
 		F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
 		F78E2D6629AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
@@ -1675,7 +1675,7 @@
 		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
 		F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaDataSource.swift; sourceTree = "<group>"; };
 		F78B87E82B62550800C65ADC /* NCMediaDownloadThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaDownloadThumbnail.swift; sourceTree = "<group>"; };
-		F78C246A2EB2342C009F3517 /* LucidBannerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidBannerViews.swift; sourceTree = "<group>"; };
+		F78C246A2EB2342C009F3517 /* ToastBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastBannerView.swift; sourceTree = "<group>"; };
 		F78C6FDD296D677300C952C3 /* NCContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenu.swift; sourceTree = "<group>"; };
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2844,7 +2844,7 @@
 		F78C246B2EB2342C009F3517 /* Lucid Banner */ = {
 			isa = PBXGroup;
 			children = (
-				F78C246A2EB2342C009F3517 /* LucidBannerViews.swift */,
+				F78C246A2EB2342C009F3517 /* ToastBannerView.swift */,
 			);
 			path = "Lucid Banner";
 			sourceTree = "<group>";
@@ -4774,7 +4774,7 @@
 				AFCE353927E5DE0500FEA6C2 /* Shareable.swift in Sources */,
 				F77BB746289984CA0090FC19 /* UIViewController+Extension.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
-				F78C246C2EB2342C009F3517 /* LucidBannerViews.swift in Sources */,
+				F78C246C2EB2342C009F3517 /* ToastBannerView.swift in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F76882362C0DD1E7001CF441 /* NCAcknowledgementsView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,

@@ -23,7 +23,7 @@ struct ToastBannerView: View {
                             .symbolRenderingMode(.monochrome)
                             .applyBannerAnimation(state.imageAnimation)
                             .font(.system(size: 20, weight: .regular))
-                            .foregroundStyle(Color(uiColor: .label))
+                            .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
@@ -34,7 +34,7 @@ struct ToastBannerView: View {
                                 .lineLimit(2)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
-                                .foregroundStyle(Color(uiColor: .label))
+                                .foregroundStyle(.primary)
                         }
                         if showSubtitle, let subtitle = state.subtitle {
                             Text(subtitle)
@@ -42,7 +42,7 @@ struct ToastBannerView: View {
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(3)
                                 .truncationMode(.tail)
-                                .foregroundStyle(Color(uiColor: .label))
+                                .foregroundStyle(.primary)
                         }
                         if showFootnote, let footnote = state.footnote {
                             Text(footnote)
@@ -50,7 +50,7 @@ struct ToastBannerView: View {
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
-                                .foregroundStyle(Color(uiColor: .label))
+                                .foregroundStyle(.primary)
                         }
                     }
                 }
@@ -59,7 +59,7 @@ struct ToastBannerView: View {
                 if showProgress && !measuring {
                     ProgressView(value: min(state.progress ?? 0, 1))
                         .progressViewStyle(.linear)
-                        .tint(Color(uiColor: .label))
+                        .tint(Color(uiColor: NCBrandColor.shared.customer))
                         .scaleEffect(x: 1, y: 0.8, anchor: .center)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
