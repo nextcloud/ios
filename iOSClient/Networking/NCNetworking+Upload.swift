@@ -105,8 +105,8 @@ extension NCNetworking {
             chunkSize = self.global.chunkSizeMBEthernetOrWiFi
         }
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        var returnError = NKError()
-        var returnFile: NKFile?
+        var backupError = NKError()
+        var backupFile: NKFile?
 
         do {
             let (_, file) = try await NextcloudKit.shared.uploadChunkAsync(
@@ -178,29 +178,27 @@ extension NCNetworking {
                 await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
             }
 
-            returnFile = file
+            backupFile = file
+        } catch is CancellationError {
+            backupError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
+            await uploadCancelFile(metadata: metadata, directoryChunks: directory)
         } catch let error as NKError {
-            // Error generate by chunks creation
-            if error.errorCode == -1 ||
-                error.errorCode == -2 ||
-                error.errorCode == -3 ||
-                error.errorCode == -4 ||
-                error.errorCode == -5 {
+            backupError = error
+            if error.errorCode == -5 {
                 await uploadCancelFile(metadata: metadata, directoryChunks: directory)
             } else {
                 if performPostProcessing {
                     await uploadError(withMetadata: metadata, error: error)
                 }
             }
-            returnError = error
-        } catch is CancellationError {
-            await uploadCancelFile(metadata: metadata, directoryChunks: directory)
-            returnError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
         } catch let error {
-            returnError = NKError(error: error)
+            backupError = NKError(error: error)
+            if performPostProcessing {
+                await uploadError(withMetadata: metadata, error: backupError)
+            }
         }
 
-        return(metadata.account, returnFile, returnError)
+        return(metadata.account, backupFile, backupError)
     }
 
     // MARK: - Upload file in background
