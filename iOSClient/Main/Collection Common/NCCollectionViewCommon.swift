@@ -349,12 +349,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if error != .success,
            error.errorCode != global.errorResourceNotFound {
-            LucidBanner.shared.show(
-                subtitle: error.errorDescription,
-                footnote: "(Error code: \(error.errorCode))",
-                autoDismissAfter: NCGlobal.shared.dismissAfterSecond) { state in
-                    ErrorBannerView(state: state)
-                }
+            LucidBanner.shared.show(subtitle: error.errorDescription,
+                                    footnote: "(Code: \(error.errorCode))",
+                                    autoDismissAfter: NCGlobal.shared.dismissAfterSecond) { state in
+                                        ErrorBannerView(state: state)
+            }
         }
 
         self.debouncer.call {
