@@ -5,7 +5,6 @@
 #import <Foundation/Foundation.h>
 #import <OpenSSL/OpenSSL.h>
 
-
 @class tableMetadata;
 
 @interface NCEndToEndEncryption : NSObject

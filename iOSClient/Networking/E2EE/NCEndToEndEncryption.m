@@ -317,6 +317,7 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
 #
 #pragma mark - Verify X.509 certificate
 #
+
 //  This method verifies that the provided X.509 certificate (issued by the server)
 //  was actually signed using the server's own public key.
 - (BOOL)verifyCertificate:(NSString *)certificate PublicKey:(NSString *)publicKey
