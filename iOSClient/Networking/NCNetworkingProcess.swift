@@ -350,9 +350,6 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        let maxWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad
-            ? 450
-            : min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) - 80
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
 
         let token = LucidBanner.shared.show(
@@ -361,11 +358,9 @@ actor NCNetworkingProcess {
             footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
             systemImage: "gearshape.arrow.triangle.2.circlepath",
             imageAnimation: .rotate,
-            maxWidth: maxWidth,
             vPosition: .bottom,
             hAlignment: .left,
             verticalMargin: 55,
-            stage: "wait",
             onTapWithContext: { _, _, _ in
                 currentUploadTask?.cancel()
             }) { state in

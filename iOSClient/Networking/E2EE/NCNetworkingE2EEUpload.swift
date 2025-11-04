@@ -37,18 +37,13 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // BANNER ENCRYPTION
         //
-        let maxWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad
-            ? 450
-            : min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) - 80
         bannerToken = LucidBanner.shared.show(
             title: NSLocalizedString("_wait_file_encryption_", comment: ""),
             subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
             systemImage: "lock.circle.fill",
-            maxWidth: maxWidth,
             vPosition: .bottom,
             hAlignment: .left,
             verticalMargin: 55,
-            stage: "wait",
             onTapWithContext: { _, _, _ in
                 self.currentUploadTask?.cancel()
                 self.request?.cancel()
