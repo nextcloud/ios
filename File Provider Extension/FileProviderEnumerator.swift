@@ -158,14 +158,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], isPaginated: Bool) {
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-        var items: [NSFileProviderItem] = []
 
-        func metadatasToItems() async {
+        func getItemsFromDatabase() async -> [NSFileProviderItem] {
+            var items: [NSFileProviderItem] = []
             let directoryServerUrl = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
             let parentItemIdentifier = await self.providerUtility.getParentItemIdentifierAsync(session: session, directory: directoryServerUrl)
             guard let parentItemIdentifier,
                   let metadatas = await database.getResultsMetadatasAsync(predicate: predicate) else {
-                return
+                return []
             }
             for metadata in metadatas {
                 // Not include root filename
@@ -176,6 +176,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 items.append(item)
             }
+
+            return items
         }
 
         if pageNumber == 0 {
@@ -183,7 +185,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             //
             let resultsDirectory = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "0", account: session.account)
             guard resultsDirectory.error == .success else {
-                await metadatasToItems()
+                let items = await getItemsFromDatabase()
                 return (items, false)
             }
 
@@ -192,7 +194,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             if let file = resultsDirectory.files?.first,
                let directory = await database.getTableDirectoryAsync(ocId: file.ocId),
                file.etag == directory.etag {
-                await metadatasToItems()
+                let items = await getItemsFromDatabase()
                 return (items, false)
             }
         }
@@ -232,6 +234,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
 
         if resultsRead.error == .success, let files = resultsRead.files {
+            var items: [NSFileProviderItem] = []
             var parentItemIdentifier: NSFileProviderItemIdentifier?
             if pageNumber == 0 {
                 await self.database.deleteMetadataAsync(predicate: predicate)
@@ -253,7 +256,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             // Must have parentItemIdentifier
             //
             guard let parentItemIdentifier else {
-                return (items, false)
+                return ([], false)
             }
 
             for file in files {
@@ -273,7 +276,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             return (items, isPaginated)
         } else {
-            await metadatasToItems()
+            let items = await getItemsFromDatabase()
             return (items, false)
         }
     }
