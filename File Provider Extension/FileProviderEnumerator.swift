@@ -17,7 +17,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var anchor: UInt64 = 0
 
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 10
+    var recordsPerPage: Int = 50
     // X-NC-PAGINATE
 
     var paginateToken: String?
@@ -168,6 +168,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 return
             }
             for metadata in metadatas {
+                // Not include root filename
+                //
                 if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                     continue
                 }
@@ -214,7 +216,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         print("PAGINATE OFFSET: \(offset) COUNT: \(paginateCount) TOTAL: \(self.paginatedTotal)")
 
         // Read folder metadata
-
+        //
         let resultsRead = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl,
                                                                           depth: "1",
                                                                           showHiddenFiles: showHiddenFiles,
@@ -235,6 +237,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             // Parent Item Identifier
+            //
             if serverUrl == homeServerUrl {
                 parentItemIdentifier = NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
@@ -246,6 +249,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     parentItemIdentifier = NSFileProviderItemIdentifier(file.ocId)
                 }
             }
+            // Must have parentItemIdentifier
+            //
             guard let parentItemIdentifier else {
                 return (items, false)
             }
@@ -256,6 +261,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 if metadata.directory {
                     await self.database.createDirectory(metadata: metadata, withEtag: false)
                 }
+                // Not include root filename
+                //
                 if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                     continue
                 }
