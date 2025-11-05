@@ -222,7 +222,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                                                                           showHiddenFiles: showHiddenFiles,
                                                                           account: session.account,
                                                                           options: options)
-
+        // Header for paginate
+        //
         if let headers = resultsRead.responseData?.response?.allHeaderFields as? [String: String] {
             let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
             isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
