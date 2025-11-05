@@ -42,7 +42,7 @@ extension NCManageDatabase {
     /// - Parameter metadata: The `tableMetadata` object containing directory information such as
     ///   account, server URL, file name, etag, fileId, ocId, permissions, and workspace.
     /// - Note: The operation is performed asynchronously and thread-safely within `performRealmWriteAsync`.
-    func createDirectory(metadata: tableMetadata) async {
+    func createDirectory(metadata: tableMetadata, withEtag: Bool = true) async {
         let detached = metadata.detachedCopy()
 
         await performRealmWriteAsync { realm in
@@ -53,7 +53,9 @@ extension NCManageDatabase {
 
             // tableDirectory
             if let tableDirectory = realm.object(ofType: tableDirectory.self, forPrimaryKey: metadata.ocId) {
-                tableDirectory.etag = metadata.etag
+                if withEtag {
+                    tableDirectory.etag = metadata.etag
+                }
                 tableDirectory.favorite = metadata.favorite
                 tableDirectory.permissions = metadata.permissions
                 tableDirectory.richWorkspace = metadata.richWorkspace
@@ -61,7 +63,9 @@ extension NCManageDatabase {
             } else {
                 let directory = tableDirectory()
                 directory.account = metadata.account
-                directory.etag = metadata.etag
+                if withEtag {
+                    directory.etag = metadata.etag
+                }
                 directory.favorite = metadata.favorite
                 directory.fileId = metadata.fileId
                 directory.ocId = metadata.ocId

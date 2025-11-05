@@ -84,8 +84,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.finishEnumerating(upTo: nil)
 
             } else {
-
-                // ServerUrl
                 guard let serverUrl = serverUrl else {
                     observer.finishEnumerating(upTo: nil)
                     return
@@ -97,8 +95,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
 
                 let (items, isPaginated) = await fetchItemsForPage(session: session,
-                                                                       serverUrl: serverUrl,
-                                                                       pageNumber: pageNumber)
+                                                                   serverUrl: serverUrl,
+                                                                   pageNumber: pageNumber)
                 observer.didEnumerate(items)
 
                 if !items.isEmpty,
@@ -256,7 +254,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 let metadata = await database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
                 await database.addMetadataAsync(metadata)
                 if metadata.directory {
-                    await self.database.createDirectory(metadata: metadata)
+                    await self.database.createDirectory(metadata: metadata, withEtag: false)
                 }
                 if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                     continue
