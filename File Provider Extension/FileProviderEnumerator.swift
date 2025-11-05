@@ -103,7 +103,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     isPaginated,
                     items.count == self.recordsPerPage {
                     pageNumber += 1
-                    let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
+                    let data = Data("\(self.anchor)".utf8)
+                    let providerPage = NSFileProviderPage(data)
                     observer.finishEnumerating(upTo: providerPage)
                 } else {
                     observer.finishEnumerating(upTo: nil)
@@ -145,14 +146,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
 
-        let data = "\(self.anchor)".data(using: .utf8)
-        observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
+        let data = Data("\(self.anchor)".utf8)
+        observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data), moreComing: false)
     }
 
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(self.anchor)".data(using: .utf8)
-
-        completionHandler(NSFileProviderSyncAnchor(data!))
+        let data = Data("\(self.anchor)".utf8)
+        completionHandler(NSFileProviderSyncAnchor(data))
     }
 
     func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], isPaginated: Bool) {
