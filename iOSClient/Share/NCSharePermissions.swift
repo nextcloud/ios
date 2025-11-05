@@ -23,16 +23,9 @@
 
 import UIKit
 import Foundation
+import NextcloudKit
 
 enum NCSharePermissions {
-    // Share permission
-    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = Reshare; 31 = all
-    //
-    static let permissionReadShare: Int = 1
-    static let permissionEditShare: Int = 2
-    static let permissionCreateShare: Int = 4
-    static let permissionDeleteShare: Int = 8
-    static let permissionReshareShare: Int = 16
 
     static let permissionMinFileShare: Int = 1
     static let permissionMaxFileShare: Int = 19
@@ -46,23 +39,23 @@ enum NCSharePermissions {
     static let permissionDownloadShare: Int = 0
 
     static func hasPermissionToRead(_ permission: Int) -> Bool {
-        return ((permission & permissionReadShare) > 0)
+        return ((permission & NKShare.Permission.read.rawValue) > 0)
     }
 
     static func hasPermissionToDelete(_ permission: Int) -> Bool {
-        return ((permission & permissionDeleteShare) > 0)
+        return ((permission & NKShare.Permission.delete.rawValue) > 0)
     }
 
     static func hasPermissionToCreate(_ permission: Int) -> Bool {
-        return ((permission & permissionCreateShare) > 0)
+        return ((permission & NKShare.Permission.create.rawValue) > 0)
     }
 
     static func hasPermissionToEdit(_ permission: Int) -> Bool {
-        return ((permission & permissionEditShare) > 0)
+        return ((permission & NKShare.Permission.update.rawValue) > 0)
     }
 
     static func hasPermissionToShare(_ permission: Int) -> Bool {
-        return ((permission & permissionReshareShare) > 0)
+        return ((permission & NKShare.Permission.share.rawValue) > 0)
     }
 
     static func isAnyPermissionToEdit(_ permission: Int) -> Bool {
@@ -86,20 +79,20 @@ enum NCSharePermissions {
         var permission = 0
 
         if canRead {
-            permission = permission + permissionReadShare
+            permission = permission + NKShare.Permission.read.rawValue
         }
 
         if canCreate && isDirectory {
-            permission = permission + permissionCreateShare
+            permission = permission + NKShare.Permission.create.rawValue
         }
         if canEdit {
-            permission = permission + permissionEditShare
+            permission = permission + NKShare.Permission.update.rawValue
         }
         if canDelete && isDirectory {
-            permission = permission + permissionDeleteShare
+            permission = permission + NKShare.Permission.delete.rawValue
         }
         if canShare {
-            permission = permission + permissionReshareShare
+            permission = permission + NKShare.Permission.share.rawValue
         }
 
         return permission

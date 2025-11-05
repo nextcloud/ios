@@ -31,7 +31,7 @@ class TransientShare: Shareable {
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         if metadata.e2eEncrypted, capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
-            self.permissions = NCSharePermissions.permissionCreateShare
+            self.permissions = NKShare.Permission.create.rawValue
         } else {
             self.permissions = capabilities.fileSharingDefaultPermission & metadata.sharePermissionsCollaborationServices
         }
@@ -51,6 +51,6 @@ class TransientShare: Shareable {
     }
 
     static func shareLink(metadata: tableMetadata, password: String?) -> TransientShare {
-        TransientShare(shareType: NCShareCommon.shareTypeLink, metadata: metadata, password: password)
+        TransientShare(shareType: NKShare.ShareType.publicLink.rawValue, metadata: metadata, password: password)
     }
 }
