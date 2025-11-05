@@ -178,21 +178,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
         }
 
-        // Read root directory
+        if pageNumber == 0 {
+            // Read root directory
+            //
+            let resultsDirectory = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "0", account: session.account)
+            guard resultsDirectory.error == .success else {
+                await metadatasToItems()
+                return (items, false)
+            }
 
-        let resultsDirectory = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "0", account: session.account)
-        guard resultsDirectory.error == .success else {
-            await metadatasToItems()
-            return (items, false)
-        }
-
-        // Check etag
-
-        if let file = resultsDirectory.files?.first,
-           let directory = await database.getTableDirectoryAsync(ocId: file.ocId),
-           file.etag == directory.etag {
-            await metadatasToItems()
-            return (items, false)
+            // Check etag
+            //
+            if let file = resultsDirectory.files?.first,
+               let directory = await database.getTableDirectoryAsync(ocId: file.ocId),
+               file.etag == directory.etag {
+                await metadatasToItems()
+                return (items, false)
+            }
         }
 
         var isPaginated: Bool = false
