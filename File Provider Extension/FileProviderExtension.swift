@@ -71,15 +71,17 @@ final class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer, let session = FileProviderData.shared.session {
-            let metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: NextcloudKit.shared.nkCommonInstance.rootFileName,
-                                                                           ocId: NSFileProviderItemIdentifier.rootContainer.rawValue,
-                                                                           serverUrl: NCUtilityFileSystem().getHomeServer(session: session),
-                                                                           session: session)
+            let metadata = NCManageDatabase.shared.createMetadataDirectory(
+                fileName: NextcloudKit.shared.nkCommonInstance.rootFileName,
+                ocId: NSFileProviderItemIdentifier.rootContainer.rawValue,
+                serverUrl: NCUtilityFileSystem().getHomeServer(session: session),
+                session: session)
 
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
-            guard let metadata = fileProviderUtility().getTableMetadataFromItemIdentifier(identifier),
-                  let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
+            let fileProviderUtility = fileProviderUtility()
+            guard let metadata = fileProviderUtility.getTableMetadataFromItemIdentifier(identifier),
+                  let parentItemIdentifier = fileProviderUtility.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
