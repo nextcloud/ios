@@ -12,7 +12,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     /// Providing Required Properties
     var itemIdentifier: NSFileProviderItemIdentifier {
-        return fileProviderUtility().getItemIdentifier(metadata: metadata)
+        return NSFileProviderItemIdentifier(metadata.ocId)
     }
     var filename: String {
         return metadata.fileNameView
@@ -58,11 +58,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.etag.data(using: .utf8)
     }
     var isMostRecentVersionDownloaded: Bool {
-        if NCManageDatabase.shared.getResultTableLocalFile(ocId: metadata.ocId) == nil {
-            return false
-        } else {
+        if metadata.directory {
             return true
         }
+        let path = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: path),
+                  let fileSize = attributes[.size] as? UInt64 else {
+                return false
+            }
+        return fileSize > 0
     }
     /// Monitoring File Transfers
     var isUploading: Bool {
@@ -90,11 +94,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var isDownloaded: Bool {
-        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+        if metadata.directory {
             return true
-        } else {
-            return false
         }
+        let path = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: path),
+                  let fileSize = attributes[.size] as? UInt64 else {
+                return false
+            }
+        return fileSize > 0
     }
     var downloadingError: Error? {
         if metadata.status == NCGlobal.shared.metadataStatusDownloadError {
@@ -106,11 +114,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     /// Sharing
     /// Managing Metadata
     var tagData: Data? {
-        if let tableTag = NCManageDatabase.shared.getTag(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-            return tableTag.tagIOS
-        } else {
-            return nil
-        }
+        return nil
     }
     var favoriteRank: NSNumber? {
         if let rank = FileProviderData.shared.listFavoriteIdentifierRank[metadata.ocId] {
