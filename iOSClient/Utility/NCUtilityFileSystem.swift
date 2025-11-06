@@ -94,21 +94,21 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     /// Returns a stable document storage path as String, based on the shared App Group and domain info.
     /// Useful for storing per-domain data (DB, cache, etc.) accessible from both app and File Provider extension.
     func getDocumentStorage(userId: String, urlBase: String) -> String {
-        guard let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup),
+        guard let groupURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup),
               let urlBase = NSURL(string: urlBase),
               let host = urlBase.host else {
             return ""
         }
-        let relativePath = NCUtilityFileSystem().getPathDomain(userId: userId, host: host)
+        let relativePath = getPathDomain(userId: userId, host: host)
         let path = groupURL
                 .appendingPathComponent(NCGlobal.shared.directoryProviderStorage, isDirectory: true)
                 .appendingPathComponent(relativePath, isDirectory: true)
                 .path
 
         // Create directory if needed
-        if !FileManager.default.fileExists(atPath: path) {
+        if !fileManager.fileExists(atPath: path) {
             do {
-                try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true)
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
             } catch {
                 print(error)
                 return ""
@@ -333,7 +333,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     // MARK: -
 
     func getFileSize(filePath: String) -> Int64 {
-        guard FileManager.default.fileExists(atPath: filePath)
+        guard fileManager.fileExists(atPath: filePath)
         else {
             return 0
         }
@@ -369,7 +369,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     func writeFile(fileURL: URL, text: String) -> Bool {
         do {
-            try FileManager.default.removeItem(at: fileURL)
+            try fileManager.removeItem(at: fileURL)
         } catch {
             print(error)
         }
@@ -386,7 +386,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     func removeFile(atPath path: String) {
         fileIO.async {
             do {
-                try FileManager.default.removeItem(atPath: path)
+                try self.fileManager.removeItem(atPath: path)
             } catch {
                 print(error)
             }
@@ -405,10 +405,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 do {
-                    if FileManager.default.fileExists(atPath: toPath) {
-                        try FileManager.default.removeItem(atPath: toPath)
+                    if self.fileManager.fileExists(atPath: toPath) {
+                        try self.fileManager.removeItem(atPath: toPath)
                     }
-                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                    try self.fileManager.moveItem(atPath: atPath, toPath: toPath)
                 } catch {
                     print("Error moving \(atPath) -> \(toPath): \(error)")
                 }
@@ -424,10 +424,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
 
         do {
-            if FileManager.default.fileExists(atPath: toPath) {
-                try FileManager.default.removeItem(atPath: toPath)
+            if fileManager.fileExists(atPath: toPath) {
+                try fileManager.removeItem(atPath: toPath)
             }
-            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+            try fileManager.moveItem(atPath: atPath, toPath: toPath)
         } catch {
             print(error)
             return false
@@ -442,10 +442,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
 
         do {
-            if FileManager.default.fileExists(atPath: toPath) {
-                try FileManager.default.removeItem(atPath: toPath)
+            if fileManager.fileExists(atPath: toPath) {
+                try fileManager.removeItem(atPath: toPath)
             }
-            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            try fileManager.copyItem(atPath: atPath, toPath: toPath)
             return true
         } catch {
             print(error)
@@ -454,8 +454,8 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func linkItem(atPath: String, toPath: String) {
-        try? FileManager.default.removeItem(atPath: toPath)
-        try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
+        try? fileManager.removeItem(atPath: toPath)
+        try? fileManager.linkItem(atPath: atPath, toPath: toPath)
     }
 
     /// Asynchronously returns the size (in bytes) of the file at the given path.
@@ -465,7 +465,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 do {
-                    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                    let attributes = try self.fileManager.attributesOfItem(atPath: path)
                     if let size = attributes[.size] as? NSNumber {
                         continuation.resume(returning: size.int64Value)
                     } else {
@@ -713,7 +713,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
         let url = URL(fileURLWithPath: getDirectoryProviderStorage())
         var offlineDir: [String] = []
-        let manager = FileManager.default
 
         let tblDirectories = await database.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
         for tblDirectory in tblDirectories {
@@ -726,7 +725,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
         let fileURLs = await enumerateFilesAsync(at: url, includingPropertiesForKeys: [.isRegularFileKey])
         for fileURL in fileURLs {
-            if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+            if let attributes = try? fileManager.attributesOfItem(atPath: fileURL.path) {
                 if attributes[.size] as? Double == 0 { continue }
                 if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
                 // check directory offline
@@ -739,7 +738,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                    modificationDate < minimumDate {
                     let fileName = fileURL.lastPathComponent
                     if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
-                        try? manager.removeItem(atPath: fileURL.path)
+                        try? fileManager.removeItem(atPath: fileURL.path)
                     }
                 }
                 // -----------------------
@@ -748,9 +747,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                 if let tblLocalFile = tblLocalFiles.filter({ $0.ocId == ocId }).first,
                     (tblLocalFile.lastOpeningDate as Date) < minimumDate {
                     do {
-                        try manager.removeItem(atPath: fileURL.path)
+                        try fileManager.removeItem(atPath: fileURL.path)
                     } catch { }
-                    manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                    fileManager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
                     await NCManageDatabase.shared.deleteLocalFileAsync(id: ocId)
                 }
             }
@@ -761,7 +760,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 var urls: [URL] = []
-                if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: keys, options: []) {
+                if let enumerator = self.fileManager.enumerator(at: url, includingPropertiesForKeys: keys, options: []) {
                     for case let fileURL as URL in enumerator {
                         urls.append(fileURL)
                     }

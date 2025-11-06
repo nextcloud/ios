@@ -51,6 +51,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
 
                 // Tags
+                /*
                 if let tags = await NCManageDatabase.shared.getTagsAsync(predicate: NSPredicate(format: "account == %@", session.account)) {
                     for tag in tags {
                         guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(tag.ocId) else {
@@ -59,6 +60,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         itemIdentifierMetadata[fileProviderUtility().getItemIdentifier(metadata: metadata)] = metadata
                     }
                 }
+                */
 
                 // Favorite
                 FileProviderData.shared.listFavoriteIdentifierRank = await NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: session.account)
