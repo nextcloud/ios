@@ -17,7 +17,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var anchor: UInt64 = 0
 
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 50
+    var recordsPerPage: Int = 10
     // X-NC-PAGINATE
 
     var paginateToken: String?
