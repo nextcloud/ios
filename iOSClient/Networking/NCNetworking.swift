@@ -328,6 +328,16 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        #if EXTENSION
+        DispatchQueue.main.async {
+            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+               let trust = challenge.protectionSpace.serverTrust {
+                completionHandler(.useCredential, URLCredential(trust: trust))
+            } else {
+                completionHandler(.performDefaultHandling, nil)
+            }
+        }
+        #else
         let protectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = protectionSpace.host
@@ -365,13 +375,12 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 if isTrusted {
                     completionHandler(.useCredential, URLCredential(trust: trust))
                 } else {
-    #if !EXTENSION
                     (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
-    #endif
                     completionHandler(.performDefaultHandling, nil)
                 }
             }
         }
+        #endif
     }
 
     func writeCertificate(host: String) {

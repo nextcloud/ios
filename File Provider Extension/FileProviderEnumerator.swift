@@ -270,8 +270,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                     continue
                 }
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                items.append(item)
+                autoreleasepool {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                    items.append(item)
+                }
             }
 
             return (items, isPaginated)
