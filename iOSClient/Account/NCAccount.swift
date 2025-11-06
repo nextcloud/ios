@@ -62,8 +62,6 @@ class NCAccount: NSObject {
         await changeAccount(account, userProfile: userProfile, controller: controller)
         nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")
 
-        NCPreferences().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-
         if let controller {
             controller.account = account
             nkLog(debug: "Dismissing login provider view controller...")
@@ -95,8 +93,6 @@ class NCAccount: NSObject {
             if let userProfile {
                 await database.setAccountUserProfileAsync(account: account, userProfile: userProfile)
             }
-            // Networking Certificate
-            NCNetworking.shared.activeAccountCertificate(account: account)
             // Subscribing Push Notification
             await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
             // Start the service
