@@ -44,7 +44,7 @@ extension NCManageDatabase {
     ///   - recommendations: The array of new recommended files to insert.
     /// - Returns: Void. Executed inside a Realm write transaction on a background serial queue.
     func createRecommendedFilesAsync(account: String, recommendations: [NKRecommendation]) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             // Remove all existing recommended files for the given account
             let results = realm.objects(tableRecommendedFiles.self)
                 .filter("account == %@", account)
@@ -72,7 +72,7 @@ extension NCManageDatabase {
     ///   - account: The account identifier whose recommended files should be deleted.
     ///   - async: Whether the Realm write should be executed asynchronously (default is true).
     func deleteAllRecommendedFilesAsync(account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableRecommendedFiles.self)
                 .filter("account == %@", account)
             realm.delete(results)
@@ -82,7 +82,7 @@ extension NCManageDatabase {
     // MARK: - Realm read
 
     func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             let results = realm.objects(tableRecommendedFiles.self)
                 .filter("account == %@", account)
                 .sorted(byKeyPath: "timestamp", ascending: false)

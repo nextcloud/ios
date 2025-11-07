@@ -38,7 +38,7 @@ extension NCManageDatabase {
     ///   - account: The account string used to associate each trash item.
     ///   - items: An array of `NKTrash` items to be added to the database.
     func addTrashAsync(items: [NKTrash], account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             items.forEach { trash in
                 let object = tableTrash()
                 object.account = account
@@ -68,7 +68,7 @@ extension NCManageDatabase {
             predicate = NSPredicate(format: "account == %@", account)
         }
 
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             let results = realm.objects(tableTrash.self).filter(predicate)
             realm.delete(results)
         }
@@ -82,7 +82,7 @@ extension NCManageDatabase {
             predicate = NSPredicate(format: "account == %@", account)
         }
 
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             let results = realm.objects(tableTrash.self).filter(predicate)
             realm.delete(results)
         }
@@ -100,7 +100,7 @@ extension NCManageDatabase {
             predicate = NSPredicate(format: "account == %@", account)
         }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableTrash.self).filter(predicate)
             realm.delete(results)
         }
@@ -109,7 +109,7 @@ extension NCManageDatabase {
     // MARK: - Realm read
 
     func getTableTrash(fileId: String, account: String) -> tableTrash? {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableTrash.self)
                 .filter("account == %@ AND fileId == %@", account, fileId)
                 .first
@@ -120,7 +120,7 @@ extension NCManageDatabase {
     /// Asynchronously retrieves sorted trash results by filePath and account.
     /// - Returns: A `Results<tableTrash>` collection, or `nil` if Realm fails to open.
     func getTableTrashAsync(filePath: String, account: String) async -> [tableTrash] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let results = realm.objects(tableTrash.self)
                 .filter("account == %@ AND filePath == %@", account, filePath)
                 .sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
@@ -134,7 +134,7 @@ extension NCManageDatabase {
     ///   - account: The account associated with the file.
     /// - Returns: The matching `tableTrash` object, or `nil` if not found.
     func getTableTrashAsync(fileId: String, account: String) async -> tableTrash? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             return realm.objects(tableTrash.self)
                 .filter("account == %@ AND fileId == %@", account, fileId)
                 .first

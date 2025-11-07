@@ -32,7 +32,7 @@ extension NCManageDatabase {
     func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil, currentAudioTrackIndex: Int? = nil, currentVideoSubTitleIndex: Int? = nil) {
         if metadata.isLivePhoto { return }
 
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
                 if let position {
                     result.position = position
@@ -82,7 +82,7 @@ extension NCManageDatabase {
     }
 
     func deleteVideoAsync(_ ocId: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableVideo.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -96,7 +96,7 @@ extension NCManageDatabase {
     func getVideo(metadata: tableMetadata?) -> tableVideo? {
         guard let metadata else { return nil }
 
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableVideo.self)
                 .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
                 .first

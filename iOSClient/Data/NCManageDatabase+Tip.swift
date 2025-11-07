@@ -16,7 +16,7 @@ extension NCManageDatabase {
     // MARK: - Realm write
 
     func addTip(_ tipName: String) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             let addObject = tableTip()
             addObject.tipName = tipName
             realm.add(addObject, update: .all)
@@ -26,7 +26,7 @@ extension NCManageDatabase {
     // MARK: - Realm read
 
     func tipExists(_ tipName: String) -> Bool {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableTip.self)
                 .where { $0.tipName == tipName }
                 .first != nil

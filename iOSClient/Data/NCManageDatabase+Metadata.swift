@@ -366,11 +366,11 @@ extension NCManageDatabase {
     func addAndReturnMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         let detached = metadata.detachedCopy()
 
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             realm.add(detached, update: .all)
         }
 
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
                 .first
@@ -381,11 +381,11 @@ extension NCManageDatabase {
     func addAndReturnMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata? {
         let detached = metadata.detachedCopy()
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
                 .first?
@@ -396,7 +396,7 @@ extension NCManageDatabase {
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
         let detached = metadata.detachedCopy()
 
-        performRealmWrite(sync: sync) { realm in
+        core.performRealmWrite(sync: sync) { realm in
             realm.add(detached, update: .all)
         }
     }
@@ -404,7 +404,7 @@ extension NCManageDatabase {
     func addMetadataAsync(_ metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
         }
     }
@@ -412,7 +412,7 @@ extension NCManageDatabase {
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
         let detached = metadatas.map { $0.detachedCopy() }
 
-        performRealmWrite(sync: sync) { realm in
+        core.performRealmWrite(sync: sync) { realm in
             realm.add(detached, update: .all)
         }
     }
@@ -420,7 +420,7 @@ extension NCManageDatabase {
     func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
         let detached = metadatas.map { $0.detachedCopy() }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
         }
     }
@@ -428,7 +428,7 @@ extension NCManageDatabase {
     func addMetadataIfNotExistsAsync(_ metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
                 realm.add(detached)
             }
@@ -436,7 +436,7 @@ extension NCManageDatabase {
     }
 
     func deleteMetadataAsync(predicate: NSPredicate) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter(predicate)
             realm.delete(result)
@@ -446,7 +446,7 @@ extension NCManageDatabase {
     func deleteMetadataAsync(id: String?) async {
         guard let id else { return }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR fileId == %@", id, id)
             realm.delete(result)
@@ -456,7 +456,7 @@ extension NCManageDatabase {
     func replaceMetadataAsync(id: String, metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR ocIdTransfer == %@", id, id)
             realm.delete(result)
@@ -473,7 +473,7 @@ extension NCManageDatabase {
             detached.append(metadata.detachedCopy())
         }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocIdTransfer IN %@", ocIdTransfersToDelete)
             realm.delete(result)
@@ -489,7 +489,7 @@ extension NCManageDatabase {
         }
         let detached = metadatas.map { $0.detachedCopy() }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             for detached in detached {
                 if let managed = realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId) {
                     realm.delete(managed)
@@ -499,7 +499,7 @@ extension NCManageDatabase {
     }
 
     func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first else {
@@ -535,7 +535,7 @@ extension NCManageDatabase {
     /// Asynchronously restores the file name of a metadata entry and updates related file system and Realm entries.
     /// - Parameter ocId: The object ID (ocId) of the file to restore.
     func restoreMetadataFileNameAsync(ocId: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first,
@@ -588,7 +588,7 @@ extension NCManageDatabase {
     }
 
     func setMetadataServerUrlFileNameStatusNormalAsync(ocId: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -602,7 +602,7 @@ extension NCManageDatabase {
     func setMetadataLivePhotoByServerAsync(account: String,
                                            ocId: String,
                                            livePhotoFile: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
@@ -615,7 +615,7 @@ extension NCManageDatabase {
     func updateMetadatasFavoriteAsync(account: String, metadatas: [tableMetadata]) async {
         guard !metadatas.isEmpty else { return }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let oldFavorites = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND favorite == true", account)
             for item in oldFavorites {
@@ -638,7 +638,7 @@ extension NCManageDatabase {
     ///   - serverUrl: The server URL associated with the metadata entries.
     ///   - account: The account identifier used to scope the metadata update.
     func updateMetadatasFilesAsync(_ metadatas: [tableMetadata], serverUrl: String, account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let ocIdsToSkip = Set(
                 realm.objects(tableMetadata.self)
                     .filter("status != %d", NCGlobal.shared.metadataStatusNormal)
@@ -665,7 +665,7 @@ extension NCManageDatabase {
     }
 
     func setMetadataEncryptedAsync(ocId: String, encrypted: Bool) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -674,7 +674,7 @@ extension NCManageDatabase {
     }
 
     func setMetadataFileNameViewAsync(serverUrl: String, fileName: String, newFileNameView: String, account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
                 .first
@@ -683,7 +683,7 @@ extension NCManageDatabase {
     }
 
     func moveMetadataAsync(ocId: String, serverUrlTo: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -693,7 +693,7 @@ extension NCManageDatabase {
     }
 
     func setLivePhotoFile(fileId: String, livePhotoFile: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("fileId == %@", fileId)
                 .first
@@ -702,7 +702,7 @@ extension NCManageDatabase {
     }
 
     func clearAssetLocalIdentifiersAsync(_ assetLocalIdentifiers: [String]) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter("assetLocalIdentifier IN %@", assetLocalIdentifiers)
             for result in results {
@@ -714,7 +714,7 @@ extension NCManageDatabase {
     /// Asynchronously sets the favorite status of a `tableMetadata` entry.
     /// Optionally stores the previous favorite flag and updates the sync status.
     func setMetadataFavoriteAsync(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first else {
@@ -733,7 +733,7 @@ extension NCManageDatabase {
 
     /// Asynchronously updates a `tableMetadata` entry to set copy/move status and target server URL.
     func setMetadataCopyMoveAsync(ocId: String, destination: String, overwrite: String?, status: Int) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first else {
@@ -748,7 +748,7 @@ extension NCManageDatabase {
     }
 
     func clearMetadatasUploadAsync(account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
             realm.delete(results)
@@ -772,7 +772,7 @@ extension NCManageDatabase {
 
         let toDeleteKeys = Array(toDeleteOcIds)
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let toAdd = remoteMetadatas.filter { toAddOcIds.contains($0.ocId) }
             let toDelete = toDeleteKeys.compactMap {
                 realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
@@ -788,13 +788,13 @@ extension NCManageDatabase {
     // MARK: - Realm Read
 
     func getAllTableMetadataAsync() async -> [tableMetadata] {
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self).map { tableMetadata(value: $0) }
         } ?? []
     }
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
@@ -803,7 +803,7 @@ extension NCManageDatabase {
     }
 
     func getMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
@@ -812,7 +812,7 @@ extension NCManageDatabase {
     }
 
     func getResultsMetadatasAsync(predicate: NSPredicate) async -> Results<tableMetadata>? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
             return results.freeze()
@@ -820,7 +820,7 @@ extension NCManageDatabase {
     }
 
     func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .map { $0.detachedCopy() }
@@ -830,7 +830,7 @@ extension NCManageDatabase {
     func getMetadatas(predicate: NSPredicate,
                       sortedByKeyPath: String,
                       ascending: Bool = false) -> [tableMetadata]? {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
@@ -842,7 +842,7 @@ extension NCManageDatabase {
                            sortedByKeyPath: String,
                            ascending: Bool = false,
                            limit: Int? = nil) async -> [tableMetadata]? {
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath,
@@ -861,7 +861,7 @@ extension NCManageDatabase {
                       numItems: Int,
                       sorted: String,
                       ascending: Bool) -> [tableMetadata] {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)
@@ -873,7 +873,7 @@ extension NCManageDatabase {
     func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
         guard let ocId else { return nil }
 
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -884,7 +884,7 @@ extension NCManageDatabase {
     func getMetadataFromOcIdAsync(_ ocId: String?) async -> tableMetadata? {
         guard let ocId else { return nil }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -897,7 +897,7 @@ extension NCManageDatabase {
             return nil
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
                 .first
@@ -921,7 +921,7 @@ extension NCManageDatabase {
             }
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
                 .first
@@ -935,7 +935,7 @@ extension NCManageDatabase {
         }
         let detached = metadata.detachedCopy()
 
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
                                     detached.account,
@@ -952,7 +952,7 @@ extension NCManageDatabase {
         }
         let detached = metadata.detachedCopy()
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
                                     detached.account,
@@ -985,7 +985,7 @@ extension NCManageDatabase {
     func getMetadatasFromGroupfoldersAsync(session: NCSession.Session, layoutForView: NCDBLayoutForView?) async -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        let detachedMetadatas: [tableMetadata] = await performRealmReadAsync { realm in
+        let detachedMetadatas: [tableMetadata] = await core.performRealmReadAsync { realm in
             var ocIds: [String] = []
 
             // Safely fetch and detach groupfolders
@@ -1019,7 +1019,7 @@ extension NCManageDatabase {
     }
 
     func getRootContainerMetadataAsync(accout: String) async -> tableMetadata? {
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("fileName == %@ AND account == %@", NextcloudKit.shared.nkCommonInstance.rootFileName, accout)
                 .first
@@ -1028,7 +1028,7 @@ extension NCManageDatabase {
     }
 
     func getMetadatasAsync(predicate: NSPredicate) async -> [tableMetadata] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .map { $0.detachedCopy() }
@@ -1036,7 +1036,7 @@ extension NCManageDatabase {
     }
 
     func getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: String) async -> [String: NSNumber] {
-        let result = await performRealmReadAsync { realm in
+        let result = await core.performRealmReadAsync { realm in
             var listIdentifierRank: [String: NSNumber] = [:]
             var counter = Int64(10)
 
@@ -1055,7 +1055,7 @@ extension NCManageDatabase {
     }
 
     func getAssetLocalIdentifiersUploadedAsync() async -> [String]? {
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self).filter("assetLocalIdentifier != ''")
             return results.map { $0.assetLocalIdentifier }
         }
@@ -1066,7 +1066,7 @@ extension NCManageDatabase {
             return nil
         }
 
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter("fileId == %@", fileId)
                 .first
@@ -1082,7 +1082,7 @@ extension NCManageDatabase {
             return nil
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             let object = realm.objects(tableMetadata.self)
                 .filter("fileId == %@", fileId)
                 .first
@@ -1094,7 +1094,7 @@ extension NCManageDatabase {
     func getMetadatasAsync(predicate: NSPredicate,
                            withLayout layoutForView: NCDBLayoutForView?,
                            withAccount account: String) async -> [tableMetadata] {
-        let detachedMetadatas = await performRealmReadAsync { realm in
+        let detachedMetadatas = await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .map { $0.detachedCopy() }
@@ -1120,7 +1120,7 @@ extension NCManageDatabase {
             predicate = predicateSource
         }
 
-        let detachedMetadatas = await performRealmReadAsync { realm in
+        let detachedMetadatas = await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .map { $0.detachedCopy() }
@@ -1135,7 +1135,7 @@ extension NCManageDatabase {
     func getMetadatasAsync(predicate: NSPredicate,
                            withSort sortDescriptors: [RealmSwift.SortDescriptor] = [],
                            withLimit limit: Int? = nil) async -> [tableMetadata]? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             var results = realm.objects(tableMetadata.self)
                 .filter(predicate)
 
@@ -1153,7 +1153,7 @@ extension NCManageDatabase {
     }
 
     func hasUploadingMetadataWithChunksOrE2EE() -> Bool {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter("status == %d AND (chunk > 0 OR e2eEncrypted == true)", NCGlobal.shared.metadataStatusUploading)
                 .first != nil
@@ -1173,7 +1173,7 @@ extension NCManageDatabase {
             return nil
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             let object = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, decodedBaseUrl, fileName)
                 .first
@@ -1194,7 +1194,7 @@ extension NCManageDatabase {
             return nil
         }
 
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             let object = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, decodedBaseUrl, fileName)
                 .first
@@ -1203,7 +1203,7 @@ extension NCManageDatabase {
     }
 
     func getMetadataProcess() async -> [tableMetadata] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
@@ -1222,7 +1222,7 @@ extension NCManageDatabase {
     }
 
     func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
@@ -1241,7 +1241,7 @@ extension NCManageDatabase {
     }
 
     func getMetadatasInWaitingCountAsync() async -> Int {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting)
                 .count

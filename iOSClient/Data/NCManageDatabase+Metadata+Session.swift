@@ -45,7 +45,7 @@ extension NCManageDatabase {
             return nil
         }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter(query)
                 .first else {
@@ -99,7 +99,7 @@ extension NCManageDatabase {
             }
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(query)
                 .first?
@@ -119,7 +119,7 @@ extension NCManageDatabase {
                                                session: String,
                                                selector: String,
                                                sceneIdentifier: String? = nil) async -> tableMetadata? {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first else {
@@ -135,7 +135,7 @@ extension NCManageDatabase {
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first?
@@ -166,7 +166,7 @@ extension NCManageDatabase {
         }
 
         // Write to Realm asynchronously
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             detachedMetadatas.forEach { metadata in
                 realm.add(metadata, update: .all)
             }

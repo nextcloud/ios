@@ -65,7 +65,7 @@ extension NCManageDatabase {
         downloadLimit.limit = limit
         downloadLimit.token = token
 
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             realm.add(downloadLimit, update: .all)
         }
 
@@ -89,7 +89,7 @@ extension NCManageDatabase {
         downloadLimit.limit = limit
         downloadLimit.token = token
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             // Add or update the download limit object in Realm
             realm.add(downloadLimit, update: .all)
         }
@@ -103,7 +103,7 @@ extension NCManageDatabase {
     ///     - token: The `token` of the associated ``Nextcloud/tableShare/token``.
     ///
     func deleteDownloadLimit(byAccount account: String, shareToken token: String, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
+        core.performRealmWrite(sync: sync) { realm in
             if let object = realm.object(ofType: TableDownloadLimit.self, forPrimaryKey: self.formatId(by: account, token: token)) {
                 realm.delete(object)
             }
@@ -118,7 +118,7 @@ extension NCManageDatabase {
     ///     - token: The `token` of the associated ``Nextcloud/tableShare/token``.
     ///
     func deleteDownloadLimitAsync(byAccount account: String, shareToken token: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let object = realm.object(ofType: TableDownloadLimit.self, forPrimaryKey: self.formatId(by: account, token: token)) {
                 realm.delete(object)
             }
@@ -136,7 +136,7 @@ extension NCManageDatabase {
     ///
     func getDownloadLimit(byAccount account: String, shareToken token: String) throws -> TableDownloadLimit? {
         var limit: TableDownloadLimit?
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             limit = realm.object(ofType: TableDownloadLimit.self, forPrimaryKey: self.formatId(by: account, token: token))
         }
         return limit
