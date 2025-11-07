@@ -83,8 +83,7 @@ class NCShareDateCell: UITableViewCell {
         let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
 
         switch self.shareType {
-        case
-            NKShare.ShareType.publicLink.rawValue,
+        case NKShare.ShareType.publicLink.rawValue,
             NKShare.ShareType.email.rawValue,
             NKShare.ShareType.guest.rawValue:
             return capabilities.fileSharingPubExpireDateDays
