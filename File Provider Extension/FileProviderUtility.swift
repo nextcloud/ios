@@ -9,8 +9,6 @@ import FileProvider
 class fileProviderUtility: NSObject {
     let fileManager = FileManager()
 
-    /// Returns the expected documentStorageURL for a specific domain or constructs a fallback path manually.
-    /// This is used to ensure consistency even in single-domain fallback mode.
     func getDocumentStorageURL(for domain: NSFileProviderDomain?, userId: String, urlBase: String) -> URL? {
         guard let urlBase = NSURL(string: urlBase),
               let host = urlBase.host else {

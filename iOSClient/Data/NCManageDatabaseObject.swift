@@ -225,6 +225,10 @@ extension tableMetadata {
         }
         return true
     }
+
+    var hasPreviewBorder: Bool {
+        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase)
+    }
 #endif
 
     var isCreatable: Bool {
@@ -261,10 +265,6 @@ extension tableMetadata {
 
     var imageSize: CGSize {
         CGSize(width: width, height: height)
-    }
-
-    var hasPreviewBorder: Bool {
-        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase)
     }
 
     var isAvailableEditorView: Bool {
