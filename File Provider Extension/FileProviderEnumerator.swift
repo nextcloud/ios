@@ -31,7 +31,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             self.serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         } else {
             if let metadata = fileProviderUtility().getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
-               let directorySource = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+               let directorySource = NCManageDatabaseFPE.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
                 serverUrl = NCUtilityFileSystem().createServerUrl(serverUrl: directorySource.serverUrl, fileName: metadata.fileName)
             }
         }
@@ -63,9 +63,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 */
 
                 // Favorite
-                FileProviderData.shared.listFavoriteIdentifierRank = await NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: session.account)
+                FileProviderData.shared.listFavoriteIdentifierRank = await NCManageDatabaseFPE.shared.getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: session.account)
                 for (identifier, _) in FileProviderData.shared.listFavoriteIdentifierRank {
-                    guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(identifier) else {
+                    guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(identifier) else {
                         continue
                     }
                     itemIdentifierMetadata[fileProviderUtility().getItemIdentifier(metadata: metadata)] = metadata
@@ -157,10 +157,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         func getItemsFromDatabase() async -> [NSFileProviderItem] {
             var items: [NSFileProviderItem] = []
-            let directoryServerUrl = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+            let directoryServerUrl = await NCManageDatabaseFPE.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
             let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(session: session, directory: directoryServerUrl)
             guard let parentItemIdentifier,
-                  let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicate) else {
+                  let metadatas = await NCManageDatabaseFPE.shared.getResultsMetadatasAsync(predicate: predicate) else {
                 return []
             }
             for metadata in metadatas {
@@ -232,7 +232,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var items: [NSFileProviderItem] = []
             var parentItemIdentifier: NSFileProviderItemIdentifier?
             if pageNumber == 0 {
-                await NCManageDatabase.shared.deleteMetadataAsync(predicate: predicate)
+                await NCManageDatabaseFPE.shared.deleteMetadataAsync(predicate: predicate)
             }
 
             // Parent Item Identifier
@@ -255,10 +255,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             for file in files {
-                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
-                await NCManageDatabase.shared.addMetadataAsync(metadata)
+                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file, isDirectoryE2EE: false)
+                await NCManageDatabaseFPE.shared.addMetadataAsync(metadata)
                 if metadata.directory {
-                    await NCManageDatabase.shared.createDirectory(metadata: metadata, withEtag: false)
+                    await NCManageDatabaseFPE.shared.createDirectory(metadata: metadata, withEtag: false)
                 }
                 // Not include root filename
                 //

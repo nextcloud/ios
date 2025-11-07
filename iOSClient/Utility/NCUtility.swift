@@ -1,25 +1,6 @@
-//
-//  NCUtility.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 25/06/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -241,6 +222,7 @@ final class NCUtility: NSObject, Sendable {
         return isEqual
     }
 
+    #if !EXTENSION_FILE_PROVIDER_EXTENSION
     func getLocation(latitude: Double, longitude: Double, completion: @escaping (String?) -> Void) {
         let geocoder = CLGeocoder()
         let llocation = CLLocation(latitude: latitude, longitude: longitude)
@@ -261,6 +243,7 @@ final class NCUtility: NSObject, Sendable {
             }
         }
     }
+    #endif
 
     // https://stackoverflow.com/questions/5887248/ios-app-maximum-memory-budget/19692719#19692719
     // https://stackoverflow.com/questions/27556807/swift-pointer-problems-with-mach-task-basic-info/27559770#27559770

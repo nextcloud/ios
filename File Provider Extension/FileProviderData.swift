@@ -4,6 +4,7 @@
 
 import UIKit
 import NextcloudKit
+import FileProvider
 
 class FileProviderData: NSObject {
     static let shared = FileProviderData()
@@ -37,7 +38,7 @@ class FileProviderData: NSObject {
                       tblAccount: tableAccount? = nil,
                       providerExtension: NSFileProviderExtension) -> tableAccount? {
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionBuild()) as String
-        let tblAccounts = NCManageDatabase.shared.getAllTableAccount()
+        let tblAccounts = NCManageDatabaseFPE.shared.getAllTableAccount()
         var matchAccount: tableAccount?
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
@@ -51,9 +52,9 @@ class FileProviderData: NSObject {
                 }
                 let accountDomain = "\($0.userId) (\(host))"
                 return accountDomain == domain.identifier.rawValue
-            }) ?? NCManageDatabase.shared.getActiveTableAccount()
+            }) ?? NCManageDatabaseFPE.shared.getActiveTableAccount()
         } else {
-            matchAccount = NCManageDatabase.shared.getActiveTableAccount()
+            matchAccount = NCManageDatabaseFPE.shared.getActiveTableAccount()
         }
 
         guard let matchAccount else {
@@ -86,7 +87,7 @@ class FileProviderData: NSObject {
 
     @discardableResult
     func signalEnumerator(ocId: String, type: TypeSignal) async -> FileProviderItem? {
-        guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId),
+        guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(ocId),
               let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
             return nil
         }
@@ -139,7 +140,7 @@ class FileProviderData: NSObject {
                           task: URLSessionTask,
                           error: NKError) async {
         let taskIdentifier = task.taskIdentifier
-        let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))
+        let metadata = await NCManageDatabaseFPE.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))
 
         guard let metadata else {
             downloadPendingCompletionHandlers[taskIdentifier]?(nil)
@@ -151,16 +152,16 @@ class FileProviderData: NSObject {
 
         let ocId = metadata.ocId
 
-        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                              session: "",
-                                                              sessionTaskIdentifier: 0,
-                                                              sessionError: "",
-                                                              status: NCGlobal.shared.metadataStatusNormal,
-                                                              etag: etag)
+        await NCManageDatabaseFPE.shared.setMetadataSessionAsync(ocId: ocId,
+                                                                 session: "",
+                                                                 sessionTaskIdentifier: 0,
+                                                                 sessionError: "",
+                                                                 status: NCGlobal.shared.metadataStatusNormal,
+                                                                 etag: etag)
 
         if error == .success {
-            if let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
-                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
+            if let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(ocId) {
+                await NCManageDatabaseFPE.shared.addLocalFilesAsync(metadatas: [metadata])
             }
         }
 
@@ -184,9 +185,9 @@ class FileProviderData: NSObject {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) async {
-        guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
+        guard let metadata = await NCManageDatabaseFPE.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
             let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)
-            await NCManageDatabase.shared.deleteMetadataAsync(predicate: predicate)
+            await NCManageDatabaseFPE.shared.deleteMetadataAsync(predicate: predicate)
 
             return
         }
@@ -202,7 +203,7 @@ class FileProviderData: NSObject {
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
-                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
+                await NCManageDatabaseFPE.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
             }
 
             metadata.fileName = fileName
@@ -223,14 +224,14 @@ class FileProviderData: NSObject {
             metadata.sessionTaskIdentifier = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            await NCManageDatabase.shared.addMetadataAsync(metadata)
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
+            await NCManageDatabaseFPE.shared.addMetadataAsync(metadata)
+            await NCManageDatabaseFPE.shared.addLocalFilesAsync(metadatas: [metadata])
 
             await signalEnumerator(ocId: ocId, type: .update)
 
         } else {
 
-            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
+            await NCManageDatabaseFPE.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
 
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }

@@ -7,12 +7,6 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
-class tableCapabilities: Object {
-    @Persisted(primaryKey: true) var account = ""
-    @Persisted var capabilities: Data?
-    @Persisted var editors: Data?
-}
-
 extension NCManageDatabase {
 
     // MARK: - Realm write

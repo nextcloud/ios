@@ -6,6 +6,9 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
+// Global flag used to control Realm write/read operations
+var isSuspendingDatabaseOperation: Bool = false
+
 final class NCManageDatabaseCore {
     static let realmQueueKey = DispatchSpecificKey<Void>()
 
@@ -197,4 +200,9 @@ final class NCManageDatabaseCore {
             }
         }
     }
+}
+
+class NCKeyValue: Object {
+    @Persisted var key: String = ""
+    @Persisted var value: String?
 }

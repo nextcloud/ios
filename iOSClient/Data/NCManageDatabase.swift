@@ -14,9 +14,6 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-// Global flag used to control Realm write/read operations
-var isSuspendingDatabaseOperation: Bool = false
-
 final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
@@ -474,9 +471,4 @@ final class NCManageDatabase: @unchecked Sendable {
         userProfile2.email = "cloudtest@nextcloud.com"
         await setAccountUserProfileAsync(account: account2, userProfile: userProfile2)
     }
-}
-
-class NCKeyValue: Object {
-    @Persisted var key: String = ""
-    @Persisted var value: String?
 }

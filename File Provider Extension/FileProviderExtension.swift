@@ -71,7 +71,7 @@ final class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer, let session = FileProviderData.shared.session {
-            let metadata = NCManageDatabase.shared.createMetadataDirectory(
+            let metadata = NCManageDatabaseCreateMetadata().createMetadataDirectory(
                 fileName: NextcloudKit.shared.nkCommonInstance.rootFileName,
                 ocId: NSFileProviderItemIdentifier.rootContainer.rawValue,
                 serverUrl: NCUtilityFileSystem().getHomeServer(session: session),
@@ -141,7 +141,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                     let pathComponents = url.pathComponents
                     let utilityFileSystem = NCUtilityFileSystem()
                     let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-                    guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue) else {
+                    guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue) else {
                         completionHandler(NSFileProviderError(.noSuchItem))
                         return
                     }
@@ -157,7 +157,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                     let ocId = metadata.ocId
 
                     // Exists
-                    if let tableLocalFile = await NCManageDatabase.shared.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+                    if let tableLocalFile = await NCManageDatabaseFPE.shared.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
                        fileProviderUtility().fileProviderStorageExists(metadata),
                        tableLocalFile.etag == metadata.etag {
                         completionHandler(nil)
@@ -173,12 +173,13 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                    sessionIdentifier: NCNetworking.shared.sessionDownloadBackgroundExt)
 
                     if let task, error == .success {
-                        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                              session: NCNetworking.shared.sessionDownload,
-                                                                              sessionTaskIdentifier: task.taskIdentifier,
-                                                                              sessionError: "",
-                                                                              selector: "",
-                                                                              status: NCGlobal.shared.metadataStatusDownloading)
+                        await NCManageDatabaseFPE.shared.setMetadataSessionAsync(
+                            ocId: metadata.ocId,
+                            session: NCNetworking.shared.sessionDownload,
+                            sessionTaskIdentifier: task.taskIdentifier,
+                            sessionError: "",
+                            selector: "",
+                            status: NCGlobal.shared.metadataStatusDownloading)
                         do {
                             if let domain = self.domain,
                                let manager = NSFileProviderManager(for: domain) {
@@ -210,7 +211,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                     assert(pathComponents.count > 2)
                     let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
                     let fileName = pathComponents[pathComponents.count - 1]
-                    guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue),
+                    guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue),
                           metadata.status == NCGlobal.shared.metadataStatusNormal else {
                         return
                     }
@@ -218,12 +219,13 @@ final class FileProviderExtension: NSFileProviderExtension {
                     let ocId = metadata.ocId
                     let account = metadata.account
 
-                    await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                                          session: NCNetworking.shared.sessionUploadBackgroundExt,
-                                                                          sessionTaskIdentifier: 0,
-                                                                          sessionError: "",
-                                                                          selector: "",
-                                                                          status: NCGlobal.shared.metadataStatusUploading)
+                    await NCManageDatabaseFPE.shared.setMetadataSessionAsync(
+                        ocId: ocId,
+                        session: NCNetworking.shared.sessionUploadBackgroundExt,
+                        sessionTaskIdentifier: 0,
+                        sessionError: "",
+                        selector: "",
+                        status: NCGlobal.shared.metadataStatusUploading)
 
                     let (task, error) = await backgroundSession.uploadAsync(serverUrlFileName: serverUrlFileName,
                                                                             fileNameLocalPath: url.path,
@@ -235,9 +237,10 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                             sessionIdentifier: NCNetworking.shared.sessionUploadBackgroundExt)
 
                     if let task, error == .success {
-                        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                                              sessionTaskIdentifier: task.taskIdentifier,
-                                                                              status: NCGlobal.shared.metadataStatusUploading)
+                        await NCManageDatabaseFPE.shared.setMetadataSessionAsync(
+                            ocId: ocId,
+                            sessionTaskIdentifier: task.taskIdentifier,
+                            status: NCGlobal.shared.metadataStatusUploading)
 
                         do {
                             if let domain = self.domain,
@@ -264,7 +267,7 @@ final class FileProviderExtension: NSFileProviderExtension {
             let pathComponents = url.pathComponents
             assert(pathComponents.count > 2)
             let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue) else {
+            guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue) else {
                 return
             }
 
@@ -317,9 +320,9 @@ final class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    let fileName = utilityFileSystem.createFileName(fileURL.lastPathComponent,
-                                                                    serverUrl: tableDirectory.serverUrl,
-                                                                    account: session.account)
+                    let fileName = fileProviderUtility().createFileName(fileURL.lastPathComponent,
+                                                                        serverUrl: tableDirectory.serverUrl,
+                                                                        account: session.account)
                     let ocIdTransfer = UUID().uuidString.lowercased()
 
                     NSFileCoordinator().coordinate(readingItemAt: fileURL,
@@ -335,17 +338,18 @@ final class FileProviderExtension: NSFileProviderExtension {
 
                     fileURL.stopAccessingSecurityScopedResource()
 
-                    let metadata = await NCManageDatabase.shared.createMetadataAsync(fileName: fileName,
-                                                                                     ocId: ocIdTransfer,
-                                                                                     serverUrl: tableDirectory.serverUrl,
-                                                                                     session: session,
-                                                                                     sceneIdentifier: nil)
+                    let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                        fileName: fileName,
+                        ocId: ocIdTransfer,
+                        serverUrl: tableDirectory.serverUrl,
+                        session: session,
+                        sceneIdentifier: nil)
 
                     metadata.session = NCNetworking.shared.sessionUploadBackgroundExt
                     metadata.size = size
                     metadata.status = NCGlobal.shared.metadataStatusUploading
 
-                    await NCManageDatabase.shared.addMetadataAsync(metadata)
+                    await NCManageDatabaseFPE.shared.addMetadataAsync(metadata)
                     let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: tableDirectory.serverUrl, fileName: fileName)
                     let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer,
                                                                                               fileName: fileName,
@@ -363,9 +367,10 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                       sessionIdentifier: metadata.session)
 
                     if let task, error == .success {
-                        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                              sessionTaskIdentifier: task.taskIdentifier,
-                                                                              status: NCGlobal.shared.metadataStatusUploading)
+                        await NCManageDatabaseFPE.shared.setMetadataSessionAsync(
+                            ocId: metadata.ocId,
+                            sessionTaskIdentifier: task.taskIdentifier,
+                            status: NCGlobal.shared.metadataStatusUploading)
 
                         do {
                             if let domain = self.domain,

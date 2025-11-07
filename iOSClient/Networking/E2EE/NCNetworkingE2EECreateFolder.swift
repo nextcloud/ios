@@ -138,9 +138,10 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: session.account) { task in
             Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                            path: serverUrlFileName,
-                                                                                            name: "readFileOrFolder")
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: session.account,
+                    path: serverUrlFileName,
+                    name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -148,7 +149,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsReadFileOrFolder.error
         }
-        let metadata = await self.database.convertFileToMetadataAsync(file)
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
 
         await self.database.createDirectory(metadata: metadata)
 

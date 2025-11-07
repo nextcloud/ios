@@ -77,12 +77,17 @@ class FileProviderDomain: NSObject {
     /// Compares registered domains with the actual accounts in the database, and removes the obsolete ones.
     func cleanOrphanedFileProviderDomains() async {
         do {
+            var validAccounts: [tableAccount] = []
+
             // Get all registered domains
             let registeredDomains = try await NSFileProviderManager.domains()
 
             // Get all valid accounts
-            let validAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
-
+#if EXTENSION_FILE_PROVIDER_EXTENSION
+            validAccounts = await NCManageDatabaseFPE.shared.getAllTableAccountAsync()
+#else
+            validAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
+#endif
             // Build the list of valid domain identifiers
             let validIdentifiers: Set<String> = Set(validAccounts.compactMap { tblAccount -> String? in
                 guard let host = NSURL(string: tblAccount.urlBase)?.host else {

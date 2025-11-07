@@ -141,12 +141,13 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                let viewController = self.viewController {
                 let ocId = NSUUID().uuidString
                 let fileName = url.lastPathComponent
-                let metadata = await database.createMetadataAsync(fileName: fileName,
-                                                                  ocId: ocId,
-                                                                  serverUrl: "",
-                                                                  url: url.path,
-                                                                  session: session,
-                                                                  sceneIdentifier: self.controller.sceneIdentifier)
+                let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                    fileName: fileName,
+                    ocId: ocId,
+                    serverUrl: "",
+                    url: url.path,
+                    session: session,
+                    sceneIdentifier: self.controller.sceneIdentifier)
 
                 if metadata.classFile == NKTypeClassFile.unknow.rawValue {
                     metadata.classFile = NKTypeClassFile.video.rawValue
@@ -179,12 +180,13 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else {
                         continue
                     }
-                    let metadataForUpload = await database.createMetadataAsync(fileName: newFileName,
-                                                                               ocId: ocId,
-                                                                               serverUrl: serverUrl,
-                                                                               url: "",
-                                                                               session: session,
-                                                                               sceneIdentifier: self.controller.sceneIdentifier)
+                    let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                        fileName: newFileName,
+                        ocId: ocId,
+                        serverUrl: serverUrl,
+                        url: "",
+                        session: session,
+                        sceneIdentifier: self.controller.sceneIdentifier)
 
                     metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                     metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

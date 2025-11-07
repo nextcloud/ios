@@ -26,11 +26,11 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
-                    let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                    let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                     await NCManageDatabase.shared.createDirectory(metadata: metadata)
                 } else {
                     if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
-                        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                         metadata.session = self.sessionDownloadBackground
                         metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
                         metadata.sessionTaskIdentifier = 0

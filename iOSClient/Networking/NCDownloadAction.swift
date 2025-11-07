@@ -214,7 +214,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             return
         }
 
-        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
         await NCManageDatabase.shared.addMetadataAsync(metadata)
 
         let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,

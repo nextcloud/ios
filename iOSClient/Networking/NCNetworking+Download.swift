@@ -43,9 +43,10 @@ extension NCNetworking {
                                                                                             name: "download")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
-                if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                        sessionTaskIdentifier: task.taskIdentifier,
-                                                                                        status: self.global.metadataStatusDownloading) {
+                if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(
+                    ocId: metadata.ocId,
+                    sessionTaskIdentifier: task.taskIdentifier,
+                    status: self.global.metadataStatusDownloading) {
 
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusDownloading,
@@ -134,10 +135,10 @@ extension NCNetworking {
 
     // MARK: - DOWNLOAD SUCCESS
 
-    private func downloadSuccess(withMetadata metadata: tableMetadata, etag: String?) async {
+    func downloadSuccess(withMetadata metadata: tableMetadata, etag: String?) async {
         nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
 
-        #if !EXTENSION
+#if !EXTENSION
         if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
             NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
                                                       fileNameView: metadata.fileNameView,
@@ -148,7 +149,7 @@ extension NCNetworking {
                                                       initializationVector: result.initializationVector,
                                                       authenticationTag: result.authenticationTag)
         }
-        #endif
+#endif
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
 
         if let downloadedMetadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -206,86 +207,6 @@ extension NCNetworking {
                                             destination: nil,
                                             error: error)
                 }
-            }
-        }
-    }
-
-    // MARK: - Download NextcloudKitDelegate
-
-    func downloadComplete(fileName: String,
-                          serverUrl: String,
-                          etag: String?,
-                          date: Date?,
-                          dateLastModified: Date?,
-                          length: Int64,
-                          task: URLSessionTask,
-                          error: NKError) {
-        Task {
-            await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
-
-            #if EXTENSION_FILE_PROVIDER_EXTENSION
-            await FileProviderData.shared.downloadComplete(fileName: fileName,
-                                                           serverUrl: serverUrl,
-                                                           etag: etag,
-                                                           date: date,
-                                                           dateLastModified: dateLastModified,
-                                                           length: length,
-                                                           task: task,
-                                                           error: error)
-            #else
-            guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
-                return
-            }
-            if error == .success {
-                await downloadSuccess(withMetadata: metadata, etag: etag)
-            } else {
-                await downloadError(withMetadata: metadata, error: error)
-            }
-            #endif
-        }
-    }
-
-    func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
-               let url = downloadTask.currentRequest?.url,
-               var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
-                let fileName = url.lastPathComponent
-                if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
-                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-                    do {
-                        if FileManager.default.fileExists(atPath: destinationFilePath) {
-                            try FileManager.default.removeItem(atPath: destinationFilePath)
-                        }
-                        try FileManager.default.copyItem(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
-        }
-    }
-
-    func downloadProgress(_ progress: Float,
-                          totalBytes: Int64,
-                          totalBytesExpected: Int64,
-                          fileName: String,
-                          serverUrl: String,
-                          session: URLSession,
-                          task: URLSessionTask) {
-
-        Task {
-            guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
-                return
-            }
-
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferProgressDidUpdate(progress: progress,
-                                                   totalBytes: totalBytes,
-                                                   totalBytesExpected: totalBytesExpected,
-                                                   fileName: fileName,
-                                                   serverUrl: serverUrl)
             }
         }
     }

@@ -216,7 +216,7 @@ actor ProgressQuantizer {
     }
 }
 
-class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
+class NCNetworking: @unchecked Sendable {
     static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
@@ -261,7 +261,10 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let transferDispatcher = NCTransferDelegateDispatcher()
     let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
+
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     let metadataTranfersSuccess = NCMetadataTranfersSuccess()
+#endif
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -276,7 +279,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     init() { }
 
     // MARK: - Communication Delegate
-
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
         if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
             lastReachability = true
@@ -290,6 +293,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         networkReachability = typeReachability
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
     }
+#endif
 
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
@@ -328,7 +332,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        #if EXTENSION
+#if EXTENSION
         DispatchQueue.main.async {
             if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
                let trust = challenge.protectionSpace.serverTrust {
@@ -337,7 +341,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 completionHandler(.performDefaultHandling, nil)
             }
         }
-        #else
+#else
         let protectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = protectionSpace.host
@@ -463,15 +467,15 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
 
-    #if !EXTENSION
+#if !EXTENSION
     @inline(__always)
     func isInBackground() -> Bool {
        return isAppInBackground
     }
-    #else
+#else
     @inline(__always)
     func isInBackground() -> Bool {
         return false
     }
-    #endif
+#endif
 }

@@ -86,11 +86,12 @@ extension UIAlertController {
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
                     metadata = result
                 } else {
-                    metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: fileNameFolder,
-                                                                               ocId: NSUUID().uuidString,
-                                                                               serverUrl: serverUrl,
-                                                                               session: session,
-                                                                               sceneIdentifier: sceneIdentifier)
+                    metadata = NCManageDatabaseCreateMetadata().createMetadataDirectory(
+                        fileName: fileNameFolder,
+                        ocId: NSUUID().uuidString,
+                        serverUrl: serverUrl,
+                        session: session,
+                        sceneIdentifier: sceneIdentifier)
                 }
 
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
