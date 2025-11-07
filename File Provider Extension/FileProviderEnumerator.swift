@@ -92,18 +92,16 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     pageNumber = intPage
                 }
 
-                let (items, isPaginated) = await fetchItemsForPage(session: session,
-                                                                   serverUrl: serverUrl,
-                                                                   pageNumber: pageNumber)
+                let (items, countItems, isPaginated) = await fetchItemsForPage(session: session,
+                                                                               serverUrl: serverUrl,
+                                                                               pageNumber: pageNumber)
                 observer.didEnumerate(items)
 
                 if !items.isEmpty,
-                    isPaginated,
-                    items.count == self.recordsPerPage {
+                   isPaginated,
+                   countItems == self.recordsPerPage {
                     pageNumber += 1
-                    let data = Data("\(self.anchor)".utf8)
-                    let providerPage = NSFileProviderPage(data)
-                    observer.finishEnumerating(upTo: providerPage)
+                    observer.finishEnumerating(upTo: NSFileProviderPage(Data("\(pageNumber)".utf8)))
                 } else {
                     observer.finishEnumerating(upTo: nil)
                 }
@@ -153,7 +151,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data))
     }
 
-    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], isPaginated: Bool) {
+    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], countItems: Int, isPaginated: Bool) {
         let homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: session.urlBase, userId: session.userId)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
 
@@ -178,6 +176,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return items
         }
 
+        /*
         if pageNumber == 0 {
             // Read root directory
             //
@@ -196,12 +195,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 return (items, false)
             }
         }
+        */
 
         var isPaginated: Bool = false
-        var paginateCount = recordsPerPage
-        if pageNumber == 0 {
-            paginateCount += 1
-        }
         var offset = pageNumber * recordsPerPage
         if pageNumber > 0 {
             offset += 1
@@ -210,10 +206,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let options = NKRequestOptions(paginate: true,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
-                                       paginateCount: paginateCount,
+                                       paginateCount: recordsPerPage,
                                        queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        print("PAGINATE OFFSET: \(offset) COUNT: \(paginateCount) TOTAL: \(self.paginatedTotal)")
 
         // Read folder metadata
         //
@@ -222,6 +216,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                                                                           showHiddenFiles: showHiddenFiles,
                                                                           account: session.account,
                                                                           options: options)
+
+        print("PAGINATE OFFSET: \(offset) COUNT: \(resultsRead.files?.count ?? 0) PAGE NUMBER: \(pageNumber) TOTAL: \(self.paginatedTotal) SERVERURL: \(serverUrl)")
+
         // Header for paginate
         //
         if let headers = resultsRead.responseData?.response?.allHeaderFields as? [String: String] {
@@ -254,7 +251,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             // Must have parentItemIdentifier
             //
             guard let parentItemIdentifier else {
-                return ([], false)
+                return ([], 0, false)
             }
 
             for file in files {
@@ -274,10 +271,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
             }
 
-            return (items, isPaginated)
+            return (items, resultsRead.files?.count ?? 0, isPaginated)
         } else {
             let items = await getItemsFromDatabase()
-            return (items, false)
+            return (items, items.count, false)
         }
     }
 }
