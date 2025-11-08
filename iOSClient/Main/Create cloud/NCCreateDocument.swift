@@ -58,12 +58,13 @@ class NCCreateDocument: NSObject {
             guard results.error == .success, let url = results.url else {
                 return NCContentPresenter().showError(error: results.error)
             }
-            let metadata = await self.database.createMetadataAsync(fileName: fileName,
-                                                                   ocId: UUID,
-                                                                   serverUrl: serverUrl,
-                                                                   url: url,
-                                                                   session: session,
-                                                                   sceneIdentifier: controller.sceneIdentifier)
+            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: UUID,
+                serverUrl: serverUrl,
+                url: url,
+                session: session,
+                sceneIdentifier: controller.sceneIdentifier)
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
@@ -82,12 +83,13 @@ class NCCreateDocument: NSObject {
                 return NCContentPresenter().showError(error: results.error)
             }
 
-            let metadata = await self.database.createMetadataAsync(fileName: fileName,
-                                                                   ocId: UUID,
-                                                                   serverUrl: serverUrl,
-                                                                   url: url,
-                                                                   session: session,
-                                                                   sceneIdentifier: controller.sceneIdentifier)
+            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: UUID,
+                serverUrl: serverUrl,
+                url: url,
+                session: session,
+                sceneIdentifier: controller.sceneIdentifier)
 
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
                 viewController.navigationController?.pushViewController(vc, animated: true)

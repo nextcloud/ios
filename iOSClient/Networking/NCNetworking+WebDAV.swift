@@ -30,7 +30,7 @@ extension NCNetworking {
         guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
             return(account, nil, nil, resultsReadFolder.error)
         }
-        let (metadataFolder, metadatas) = await NCManageDatabase.shared.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
+        let (metadataFolder, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
 
         await NCManageDatabase.shared.createDirectory(metadata: metadataFolder)
         await NCManageDatabase.shared.updateMetadatasFilesAsync(metadatas, serverUrl: serverUrl, account: account)
@@ -57,7 +57,7 @@ extension NCNetworking {
                 return completion(account, nil, nil, error)
             }
             Task {
-                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
 
                 completion(account, metadata, file, error)
             }
@@ -83,7 +83,7 @@ extension NCNetworking {
         guard results.error == .success, results.files?.count == 1, let file = results.files?.first else {
             return (account, nil, results.error)
         }
-        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
 
         return(account, metadata, results.error)
     }
@@ -416,7 +416,7 @@ extension NCNetworking {
 
                 ocIds.insert(metadata.ocId)
                 if metadata.livePhotoFile.isEmpty == false {
-                    if let ocId = utility.getLivePhotoOcId(metadata: metadata) {
+                    if let ocId = NCUtility().getLivePhotoOcId(metadata: metadata) {
                         ocIds.insert(ocId)
                     }
                 }
@@ -789,7 +789,7 @@ extension NCNetworking {
             guard error == .success, let files else { return completion(nil, error) }
 
             Task {
-                let (_, metadatas) = await NCManageDatabase.shared.convertFilesToMetadatasAsync(files)
+                let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
                 NCManageDatabase.shared.addMetadatas(metadatas)
                 completion(metadatas, error)
             }
@@ -874,16 +874,17 @@ extension NCNetworking {
             default:
                 Task {
                     for entry in partialResult.entries {
-                        let metadata = await NCManageDatabase.shared.createMetadataAsync(fileName: entry.title,
-                                                                                         ocId: NSUUID().uuidString,
-                                                                                         serverUrl: session.urlBase,
-                                                                                         url: entry.resourceURL,
-                                                                                         isUrl: true,
-                                                                                         name: partialResult.id,
-                                                                                         subline: entry.subline,
-                                                                                         iconUrl: entry.thumbnailURL,
-                                                                                         session: session,
-                                                                                         sceneIdentifier: nil)
+                        let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                            fileName: entry.title,
+                            ocId: NSUUID().uuidString,
+                            serverUrl: session.urlBase,
+                            url: entry.resourceURL,
+                            isUrl: true,
+                            name: partialResult.id,
+                            subline: entry.subline,
+                            iconUrl: entry.thumbnailURL,
+                            session: session,
+                            sceneIdentifier: nil)
                         metadatas.append(metadata)
                     }
                     update(account, provider.id, partialResult, metadatas)
@@ -953,16 +954,17 @@ extension NCNetworking {
             default:
                 Task {
                     for entry in searchResult.entries {
-                        let metadata = await NCManageDatabase.shared.createMetadataAsync(fileName: entry.title,
-                                                                                         ocId: NSUUID().uuidString,
-                                                                                         serverUrl: session.urlBase,
-                                                                                         url: entry.resourceURL,
-                                                                                         isUrl: true,
-                                                                                         name: searchResult.name.lowercased(),
-                                                                                         subline: entry.subline,
-                                                                                         iconUrl: entry.thumbnailURL,
-                                                                                         session: session,
-                                                                                         sceneIdentifier: nil)
+                        let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                            fileName: entry.title,
+                            ocId: NSUUID().uuidString,
+                            serverUrl: session.urlBase,
+                            url: entry.resourceURL,
+                            isUrl: true,
+                            name: searchResult.name.lowercased(),
+                            subline: entry.subline,
+                            iconUrl: entry.thumbnailURL,
+                            session: session,
+                            sceneIdentifier: nil)
                         metadatas.append(metadata)
                     }
                     completion(account, searchResult, metadatas, error)

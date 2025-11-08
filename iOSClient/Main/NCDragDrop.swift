@@ -127,11 +127,12 @@ class NCDragDrop: NSObject {
 
             try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-            let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
-                                                                       ocId: ocId,
-                                                                       serverUrl: serverUrl,
-                                                                       session: session,
-                                                                       sceneIdentifier: controller?.sceneIdentifier)
+            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: ocId,
+                serverUrl: serverUrl,
+                session: session,
+                sceneIdentifier: controller?.sceneIdentifier)
 
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
             metadataForUpload.sessionSelector = global.selectorUploadFile

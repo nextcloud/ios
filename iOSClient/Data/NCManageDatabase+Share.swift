@@ -145,7 +145,7 @@ extension NCManageDatabase {
     ///   - home: The home directory path used to compute the `serverUrl`.
     ///   - shares: An array of `NKShare` objects to be stored in the database.
     func addShareAsync(account: String, home: String, shares: [NKShare]) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             for share in shares {
                 guard let serverDirectoryUp = self.utilityFileSystem.serverDirectoryUp(serverUrl: home + share.path, home: home) else {
                     continue
@@ -215,7 +215,7 @@ extension NCManageDatabase {
     /// - Parameter account: The account identifier to filter the shares.
     /// - Returns: An array of detached `tableShare` objects.
     func getTableSharesAsync(account: String) async -> [tableShare] {
-        let results: [tableShare]? = await performRealmReadAsync { realm in
+        let results: [tableShare]? = await core.performRealmReadAsync { realm in
             let sortProperties = [
                 SortDescriptor(keyPath: "shareType", ascending: false),
                 SortDescriptor(keyPath: "idShare", ascending: false)
@@ -295,7 +295,7 @@ extension NCManageDatabase {
     ///   - fileName: The file name used to filter shares.
     /// - Returns: An array of detached `tableShare` objects, or an empty array if an error occurs.
     func getTableSharesAsync(account: String, serverUrl: String, fileName: String) async -> [tableShare] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             // Define sorting by shareType descending, then idShare descending
             let sortProperties = [
                 SortDescriptor(keyPath: "shareType", ascending: false),
@@ -350,7 +350,7 @@ extension NCManageDatabase {
     /// Asynchronously deletes all `tableShare` entries for a specific account.
     /// - Parameter account: The account identifier used to filter the `tableShare` objects.
     func deleteTableShareAsync(account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableShare.self).filter("account == %@", account)
             realm.delete(result)
         }

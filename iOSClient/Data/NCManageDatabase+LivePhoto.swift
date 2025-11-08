@@ -35,7 +35,7 @@ extension NCManageDatabase {
             return
         }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             for metadata in metadatas {
                 let serverUrlFileNameNoExt = (metadata.serverUrlFileName as NSString).deletingPathExtension
                 let primaryKey = metadata.account + serverUrlFileNameNoExt
@@ -68,7 +68,7 @@ extension NCManageDatabase {
     func deleteLivePhoto(account: String, serverUrlFileNameNoExt: String) async {
         let primaryKey = account + serverUrlFileNameNoExt
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
                 realm.delete(result)
             }
@@ -76,7 +76,7 @@ extension NCManageDatabase {
     }
 
     func deleteLivePhotoError() async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableLivePhoto.self)
                 .where {
                     $0.errorCount >= 3
@@ -88,7 +88,7 @@ extension NCManageDatabase {
     func setLivePhotoError(account: String, serverUrlFileNameNoExt: String) async {
         let primaryKey = account + serverUrlFileNameNoExt
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
                 result.errorCount = result.errorCount + 1
             }
@@ -99,7 +99,7 @@ extension NCManageDatabase {
 
     // swiftlint:disable empty_string
     func getLivePhotos(account: String) async -> [tableLivePhoto]? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let results = realm.objects(tableLivePhoto.self)
                 .where {
                     $0.account == account &&

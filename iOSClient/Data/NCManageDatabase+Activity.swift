@@ -85,7 +85,7 @@ extension NCManageDatabase {
     // MARK: - Realm write
 
     func addActivity(_ activities: [NKActivity], account: String) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             for activity in activities {
                 let addObjectActivity = tableActivity()
 
@@ -166,7 +166,7 @@ extension NCManageDatabase {
     }
 
     func updateLatestActivityId(activityFirstKnown: Int, activityLastGiven: Int, account: String) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             let object = tableActivityLatestId()
             object.activityFirstKnown = activityFirstKnown
             object.activityLastGiven = activityLastGiven
@@ -181,7 +181,7 @@ extension NCManageDatabase {
         var allActivity: [tableActivity] = []
         var filteredActivity: [tableActivity] = []
 
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             let results = realm.objects(tableActivity.self)
                 .filter(predicate)
                 .sorted(byKeyPath: "idActivity", ascending: false)
@@ -201,7 +201,7 @@ extension NCManageDatabase {
     }
 
     func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableActivitySubjectRich.self)
                 .filter("account == %@ AND idActivity == %d AND key == %@", account, idActivity, key)
                 .first
@@ -210,7 +210,7 @@ extension NCManageDatabase {
     }
 
     func getActivitySubjectRich(account: String, idActivity: Int, id: String) -> tableActivitySubjectRich? {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             let results = realm.objects(tableActivitySubjectRich.self)
                 .filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id)
 
@@ -221,7 +221,7 @@ extension NCManageDatabase {
     }
 
     func getLatestActivityId(account: String) -> tableActivityLatestId? {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableActivityLatestId.self)
                 .filter("account == %@", account)
                 .first

@@ -36,7 +36,7 @@ extension NCManageDatabase {
                                     fileName: String,
                                     assetLocalIdentifier: String,
                                     date: Date) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = tableAutoUploadTransfer(account: account,
                                                  serverUrlBase: serverUrlBase,
                                                  fileName: fileName,
@@ -51,14 +51,14 @@ extension NCManageDatabase {
             return
         }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             realm.add(items, update: .all)
         }
     }
 
     func deleteAutoUploadTransferAsync(account: String,
                                        autoUploadServerUrlBase: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
             realm.delete(result)
@@ -76,7 +76,7 @@ extension NCManageDatabase {
     /// - Returns: A set of file names that are either in metadata with a relevant status or currently being transferred.
     func fetchSkipFileNamesAsync(account: String,
                                  autoUploadServerUrlBase: String) async -> Set<String> {
-        let result: Set<String>? = await performRealmReadAsync { realm in
+        let result: Set<String>? = await core.performRealmReadAsync { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
                 .map(\.fileNameView)
@@ -98,7 +98,7 @@ extension NCManageDatabase {
     /// - Returns: The most recent upload `Date`, or `nil` if no entry exists.
     func fetchLastAutoUploadedDateAsync(account: String,
                                         autoUploadServerUrlBase: String) async -> Date? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .sorted(byKeyPath: "date", ascending: false)
@@ -108,7 +108,7 @@ extension NCManageDatabase {
 
     func existsAutoUpload(account: String,
                           autoUploadServerUrlBase: String) -> Bool {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .first != nil
@@ -117,7 +117,7 @@ extension NCManageDatabase {
 
     func existsAutoUploadAsync(account: String,
                                autoUploadServerUrlBase: String) async -> Bool {
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .first != nil

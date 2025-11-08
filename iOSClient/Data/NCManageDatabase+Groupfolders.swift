@@ -37,7 +37,7 @@ extension NCManageDatabase {
     // MARK: - Realm write
 
     func addGroupfolders(account: String, groupfolders: [NKGroupfolders]) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             let tableGroupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
             realm.delete(tableGroupfolders)
 
@@ -67,7 +67,7 @@ extension NCManageDatabase {
     /// Asynchronously adds and stores the given groupfolders for the specified account.
     /// Deletes all previous entries for that account before inserting the new ones.
     func addGroupfoldersAsync(account: String, groupfolders: [NKGroupfolders]) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let tableGroupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
             realm.delete(tableGroupfolders)
 
