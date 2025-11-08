@@ -118,24 +118,15 @@ final class NCManageDatabase: @unchecked Sendable {
         }
         let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
-        var objectTypes: [Object.Type]
-
-        if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
-            objectTypes = [
-                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
-                tableDirectory.self, tableTag.self, tableAccount.self
-            ]
-        } else {
-            objectTypes = [
-                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
-                tableDirectory.self, tableTag.self, tableAccount.self,
-                tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,
-                tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
-                tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
-                tableDashboardWidget.self, tableDashboardWidgetButton.self,
-                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self, tableLivePhoto.self
-            ]
-        }
+        var objectTypes = [
+            NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+            tableDirectory.self, tableTag.self, tableAccount.self,
+            tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,
+            tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
+            tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
+            tableDashboardWidget.self, tableDashboardWidgetButton.self,
+            NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self, tableLivePhoto.self
+        ]
 
         do {
             // Migration configuration
