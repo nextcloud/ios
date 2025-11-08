@@ -325,15 +325,17 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                         account: session.account)
                     let ocIdTransfer = UUID().uuidString.lowercased()
 
-                    NSFileCoordinator().coordinate(readingItemAt: fileURL,
-                                                   options: .withoutChanges,
-                                                   error: &errorCoordinator) { url in
-                                                        fileProviderUtility().copyFile(url.path,
-                                                        toPath: utilityFileSystem.getDirectoryProviderStorageOcId(
-                                                            ocIdTransfer,
-                                                            fileName: fileName,
-                                                            userId: session.userId,
-                                                            urlBase: session.urlBase))
+                    NSFileCoordinator().coordinate(
+                        readingItemAt: fileURL,
+                        options: .withoutChanges,
+                        error: &errorCoordinator) { url in
+                            NCUtilityFileSystem().copyFile(
+                                atPath: url.path,
+                                toPath: utilityFileSystem.getDirectoryProviderStorageOcId(
+                                    ocIdTransfer,
+                                    fileName: fileName,
+                                    userId: session.userId,
+                                    urlBase: session.urlBase))
                     }
 
                     fileURL.stopAccessingSecurityScopedResource()

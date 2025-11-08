@@ -386,7 +386,6 @@ final class NCManageDatabaseFPE {
         }
     }
 
-
     func setMetadataServerUrlFileNameStatusNormalAsync(ocId: String) async {
         await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)

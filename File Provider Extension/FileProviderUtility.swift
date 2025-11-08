@@ -131,36 +131,6 @@ class fileProviderUtility: NSObject {
         return directory
     }
 
-    func copyFile(_ atPath: String, toPath: String) {
-        if !fileManager.fileExists(atPath: atPath) { return }
-
-        do {
-            try fileManager.removeItem(atPath: toPath)
-        } catch let error {
-            print("Error: \(error.localizedDescription)")
-        }
-        do {
-            try fileManager.copyItem(atPath: atPath, toPath: toPath)
-        } catch let error {
-            print("Error: \(error.localizedDescription)")
-        }
-    }
-
-    func moveFile(_ atPath: String, toPath: String) {
-        if !fileManager.fileExists(atPath: atPath) { return }
-
-        do {
-            try fileManager.removeItem(atPath: toPath)
-        } catch let error {
-            print("Error: \(error.localizedDescription)")
-        }
-        do {
-            try fileManager.moveItem(atPath: atPath, toPath: toPath)
-        } catch let error {
-            print("Error: \(error.localizedDescription)")
-        }
-    }
-
     func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         var resultFileName = fileName
         var exitLoop = false
