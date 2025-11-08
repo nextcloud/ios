@@ -502,11 +502,8 @@
 		F763412D2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */; };
 		F763412E2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */; };
 		F763412F2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */; };
-		F76341302EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */; };
 		F76341312EBE29510056F538 /* NCNetworking+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */; };
-		F76341322EBE29510056F538 /* NCNetworking+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */; };
 		F76341332EBE29620056F538 /* NCNetworking+Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71916102E2901E800E13E96 /* NCNetworking+Upload.swift */; };
-		F76341342EBE29620056F538 /* NCNetworking+Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71916102E2901E800E13E96 /* NCNetworking+Upload.swift */; };
 		F76341352EBE2A000056F538 /* NCMetadataTranfersSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CADEFA2EA1591D0057849E /* NCMetadataTranfersSuccess.swift */; };
 		F76341362EBE2A000056F538 /* NCMetadataTranfersSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CADEFA2EA1591D0057849E /* NCMetadataTranfersSuccess.swift */; };
 		F76341372EBE2A000056F538 /* NCMetadataTranfersSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CADEFA2EA1591D0057849E /* NCMetadataTranfersSuccess.swift */; };
@@ -4169,7 +4166,6 @@
 				F3E173C62C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F7D61EA12EBF163E007F865B /* NCManageDatabase+TableDirectory.swift in Sources */,
 				F73EF7DD2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
-				F76341302EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F7F1FBA22E27CFBC00C79E20 /* NCContentPresenter.swift in Sources */,
 				F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
@@ -4189,7 +4185,6 @@
 				F749B64F297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F73EF7AD2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7D61E962EBF15A8007F865B /* NCManageDatabase+TableMetadata.swift in Sources */,
-				F76341322EBE29510056F538 /* NCNetworking+Download.swift in Sources */,
 				F76340F52EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
 				F7C9B9232B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F76341382EBE2A000056F538 /* NCMetadataTranfersSuccess.swift in Sources */,
@@ -4202,7 +4197,6 @@
 				F757CC8829E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F79B646326CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F7C687EF2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
-				F76341342EBE29620056F538 /* NCNetworking+Upload.swift in Sources */,
 				F3F442F42DDE2A7700FD701F /* NCMetadataPermissions.swift in Sources */,
 				F77DD6AE2C5CC093009448FB /* NCSession.swift in Sources */,
 				F78A10C429322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
