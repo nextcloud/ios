@@ -2,12 +2,15 @@
 // SPDX-FileCopyrightText: 2019 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
 import OpenSSL
-import NextcloudKit
-import Alamofire
 import Queuer
 import SwiftUI
+#endif
+
+import UIKit
+import NextcloudKit
+import Alamofire
 
 @objc protocol ClientCertificateDelegate {
     func onIncorrectPassword()
@@ -263,7 +266,6 @@ class NCNetworking: @unchecked Sendable {
 
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
     let metadataTranfersSuccess = NCMetadataTranfersSuccess()
-#endif
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -272,6 +274,7 @@ class NCNetworking: @unchecked Sendable {
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+#endif
 
     // MARK: - init
 
@@ -396,6 +399,7 @@ class NCNetworking: @unchecked Sendable {
         #endif
     }
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func writeCertificate(host: String) {
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
@@ -437,6 +441,7 @@ class NCNetworking: @unchecked Sendable {
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
+#endif
 
     // MARK: - Helper
 

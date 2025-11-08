@@ -361,8 +361,6 @@
 		F7386E4B2DA90E0F009A00F6 /* NCAppVersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7386E452DA90E02009A00F6 /* NCAppVersionManager.swift */; };
 		F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD1B265546890069EA0D /* SwiftEntryKit */; };
 		F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD2026554F8E0069EA0D /* SwiftEntryKit */; };
-		F73C619B2EBC856E006E795D /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F73C619A2EBC856E006E795D /* Queuer */; };
-		F73C619D2EBC858C006E795D /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F73C619C2EBC858C006E795D /* Queuer */; };
 		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
 		F73D11FA253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D11F9253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard */; };
 		F73EF7A32B021FAC0087E6E9 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
@@ -1986,7 +1984,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F73C619D2EBC858C006E795D /* Queuer in Frameworks */,
 				F7490E8B29882CE4009DCE94 /* NextcloudKit in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
 				F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */,
@@ -2034,7 +2031,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F73C619B2EBC856E006E795D /* Queuer in Frameworks */,
 				F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */,
 				F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */,
 				F72AD71328C24BCC006CB92D /* NextcloudKit in Frameworks */,
@@ -3601,7 +3597,6 @@
 				F7490E7129882BB4009DCE94 /* RealmSwift */,
 				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
 				F760DE0C2AE66EDF0027D78A /* KeychainAccess */,
-				F73C619C2EBC858C006E795D /* Queuer */,
 			);
 			productName = "File Provider Extension UI";
 			productReference = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */;
@@ -3688,7 +3683,6 @@
 				F710FC83277B7D3500AA9FBF /* RealmSwift */,
 				F72AD71228C24BCC006CB92D /* NextcloudKit */,
 				F760DE0A2AE66ED80027D78A /* KeychainAccess */,
-				F73C619A2EBC856E006E795D /* Queuer */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -6698,16 +6692,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
 			productName = SwiftEntryKit;
-		};
-		F73C619A2EBC856E006E795D /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
-		};
-		F73C619C2EBC858C006E795D /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
 		};
 		F7490E7129882BB4009DCE94 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
