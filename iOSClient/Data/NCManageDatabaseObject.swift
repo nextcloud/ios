@@ -282,8 +282,6 @@ extension tableMetadata {
         return (contentType == "application/pdf" || contentType == "com.adobe.pdf")
     }
 
-#endif
-
     var isCreatable: Bool {
         if isDirectory {
             return NCMetadataPermissions.canCreateFolder(self)
@@ -291,6 +289,8 @@ extension tableMetadata {
             return NCMetadataPermissions.canCreateFile(self)
         }
     }
+
+#endif
 
     var canShare: Bool {
         return session.isEmpty && !directory && !NCBrandOptions.shared.disable_openin_file
@@ -319,7 +319,6 @@ extension tableMetadata {
     var imageSize: CGSize {
         CGSize(width: width, height: height)
     }
-
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
