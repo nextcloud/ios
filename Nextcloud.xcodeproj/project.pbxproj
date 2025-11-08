@@ -528,7 +528,6 @@
 		F763413D2EBE5DBB0056F538 /* FileProviderExtension+Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */; };
 		F763413E2EBE5DC00056F538 /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F763413F2EBE5DC40056F538 /* FileProviderUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EF22C90433007ED366 /* FileProviderUtility.swift */; };
-		F76341402EBE5DD40056F538 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F76341412EBE5E3D0056F538 /* NCNetworking+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */; };
 		F76341422EBE5E3D0056F538 /* NCNetworking+LivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */; };
 		F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
@@ -809,7 +808,6 @@
 		F7BF9D872934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BFFD282C8846020029A201 /* NCHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BFFD272C8846020029A201 /* NCHud.swift */; };
 		F7BFFD2A2C8854200029A201 /* NCHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BFFD272C8846020029A201 /* NCHud.swift */; };
-		F7C1DAEF2C3D1DF4000BDC69 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F7C1EEA525053A9C00866ACC /* NCCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */; };
 		F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
 		F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
@@ -4328,7 +4326,6 @@
 				F33918C92C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				F763413A2EBE5DAB0056F538 /* FileProviderEnumerator.swift in Sources */,
 				F7D61EBA2EBF1742007F865B /* NCManageDatabase+TableLocalFile.swift in Sources */,
-				F76341402EBE5DD40056F538 /* FileProviderDomain.swift in Sources */,
 				F763412F2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F7F5EABC2EBF251200D33D39 /* NCManageDatabaseFPE+LocalFile.swift in Sources */,
 				F7D61E9C2EBF1610007F865B /* NCManageDatabase+TableMetadata.swift in Sources */,
@@ -4604,7 +4601,6 @@
 				F76340EE2EBDE74C0056F538 /* NCManageDatabaseFPE.swift in Sources */,
 				F763410A2EBDFCB10056F538 /* NCManageDatabase+CreateMetadata.swift in Sources */,
 				F7F5EAB62EBF23E300D33D39 /* NCManageDatabaseFPE+Metadata.swift in Sources */,
-				F7C1DAEF2C3D1DF4000BDC69 /* FileProviderDomain.swift in Sources */,
 				F763412E2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F78E2D6929AF02DB0024D4F3 /* Database.swift in Sources */,
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
