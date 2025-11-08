@@ -38,7 +38,7 @@ extension NCNetworking {
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
 
-#if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_FILE_PROVIDER_EXTENSION_UI
+#if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(fileName: fileName,
                                                            serverUrl: serverUrl,
                                                            etag: etag,
