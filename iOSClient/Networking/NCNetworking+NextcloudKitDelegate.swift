@@ -7,7 +7,23 @@ import UIKit
 import NextcloudKit
 import Alamofire
 
-extension NCNetworking: NextcloudKitDelegate {
+extension NCNetworking {
+
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
+        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
+            lastReachability = true
+        } else {
+            if lastReachability {
+                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
+                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            }
+            lastReachability = false
+        }
+        networkReachability = typeReachability
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
+    }
+#endif
 
     // MARK: - Download NextcloudKitDelegate
 
@@ -22,7 +38,7 @@ extension NCNetworking: NextcloudKitDelegate {
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
 
-#if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_FILE_PROVIDER_EXTENSION_UI
+#if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(fileName: fileName,
                                                            serverUrl: serverUrl,
                                                            etag: etag,
@@ -132,10 +148,12 @@ extension NCNetworking: NextcloudKitDelegate {
                                             etag: etag,
                                             date: date)
                     } else {
+#if !EXTENSION
                         await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
                                                                                  ocId: ocId,
                                                                                  date: date,
                                                                                  etag: etag)
+#endif
                     }
                 } else {
                     await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))

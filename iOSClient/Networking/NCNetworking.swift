@@ -219,7 +219,7 @@ actor ProgressQuantizer {
     }
 }
 
-class NCNetworking: @unchecked Sendable {
+class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
@@ -264,7 +264,7 @@ class NCNetworking: @unchecked Sendable {
     let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION
     let metadataTranfersSuccess = NCMetadataTranfersSuccess()
 
     // OPERATIONQUEUE
@@ -280,27 +280,10 @@ class NCNetworking: @unchecked Sendable {
 
     init() { }
 
-    // MARK: - Communication Delegate
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
-    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
-        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            lastReachability = true
-        } else {
-            if lastReachability {
-                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
-                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
-            }
-            lastReachability = false
-        }
-        networkReachability = typeReachability
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
-    }
-#endif
-
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-#if EXTENSION_FILE_PROVIDER_EXTENSION
+#if EXTENSION
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
            let serverTrust = challenge.protectionSpace.serverTrust {
             let credential = URLCredential(trust: serverTrust)
@@ -399,7 +382,7 @@ class NCNetworking: @unchecked Sendable {
         #endif
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION
     func writeCertificate(host: String) {
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
@@ -442,7 +425,6 @@ class NCNetworking: @unchecked Sendable {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
 #endif
-
     // MARK: - Helper
 
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
