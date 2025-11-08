@@ -80,7 +80,6 @@ extension NCManageDatabaseFPE {
         }
     }
 
-
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
         return core.performRealmRead { realm in
             guard let result = realm.objects(tableDirectory.self).filter(predicate).first
