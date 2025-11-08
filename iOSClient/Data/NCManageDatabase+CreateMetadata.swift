@@ -9,8 +9,6 @@ import NextcloudKit
 import Photos
 
 final class NCManageDatabaseCreateMetadata {
-    let utilityFileSystem = NCUtilityFileSystem()
-
     func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false, isDirectoryE2EE: Bool? = nil) async -> tableMetadata {
         let metadata = self.createMetadata(file)
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
@@ -24,7 +22,6 @@ final class NCManageDatabaseCreateMetadata {
                 userId: file.userId,
                 account: file.account)
         }
-
 
         // E2EE find the fileName for fileNameView
         if e2eEncryptedDirectory || file.e2eEncrypted {
@@ -197,7 +194,7 @@ final class NCManageDatabaseCreateMetadata {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: file.serverUrl, fileName: file.fileName)
+        metadata.serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: file.serverUrl, fileName: file.fileName)
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
 
         for element in file.shareType {
@@ -283,7 +280,7 @@ final class NCManageDatabaseCreateMetadata {
             metadata.ocIdTransfer = ocId
             metadata.permissions = "RGDNVW"
             metadata.serverUrl = serverUrl
-            metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+            metadata.serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileName)
             metadata.subline = subline
             metadata.uploadDate = Date() as NSDate
             metadata.url = url
@@ -347,7 +344,7 @@ final class NCManageDatabaseCreateMetadata {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+        metadata.serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileName)
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
@@ -384,7 +381,7 @@ final class NCManageDatabaseCreateMetadata {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+        metadata.serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileName)
         metadata.uploadDate = Date() as NSDate
         metadata.urlBase = session.urlBase
         metadata.user = session.user
@@ -407,6 +404,7 @@ final class NCManageDatabaseCreateMetadata {
                                        autoUploadServerUrlBase: String,
                                        autoUploadSubfolderGranularity: Int,
                                        session: NCSession.Session) -> [tableMetadata] {
+        let utilityFileSystem = NCUtilityFileSystem()
         var foldersCreated: Set<String> = []
         var metadatas: [tableMetadata] = []
         let autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName(account: session.account)
@@ -446,7 +444,7 @@ final class NCManageDatabaseCreateMetadata {
         if useSubFolder {
             let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
             let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
-            let folders = Set(assets.map { self.utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
+            let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
 
             for folder in folders {
                 let componentsDate = folder.split(separator: "/")
