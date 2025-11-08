@@ -258,4 +258,13 @@ class fileProviderUtility: NSObject {
         }
         return ""
     }
+
+    func ocIdToFileId(ocId: String?) -> String? {
+        guard let ocId = ocId else { return nil }
+        let items = ocId.components(separatedBy: "oc")
+
+        if items.count < 2 { return nil }
+        guard let intFileId = Int(items[0]) else { return nil }
+        return String(intFileId)
+    }
 }

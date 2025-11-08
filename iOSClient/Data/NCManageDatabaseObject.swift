@@ -229,43 +229,6 @@ extension tableMetadata {
     var hasPreviewBorder: Bool {
         !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase)
     }
-#endif
-
-    var isCreatable: Bool {
-        if isDirectory {
-            return NCMetadataPermissions.canCreateFolder(self)
-        } else {
-            return NCMetadataPermissions.canCreateFile(self)
-        }
-    }
-
-    var canShare: Bool {
-        return session.isEmpty && !directory && !NCBrandOptions.shared.disable_openin_file
-    }
-
-    var isDownload: Bool {
-        status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading
-    }
-
-    var isUpload: Bool {
-        status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploading
-    }
-
-    var isDirectory: Bool {
-        directory
-    }
-
-    var isLivePhoto: Bool {
-        !livePhotoFile.isEmpty
-    }
-
-    var isNotFlaggedAsLivePhotoByServer: Bool {
-        !isFlaggedAsLivePhotoByServer
-    }
-
-    var imageSize: CGSize {
-        CGSize(width: width, height: height)
-    }
 
     var isAvailableEditorView: Bool {
         guard !isPDF,
@@ -318,6 +281,45 @@ extension tableMetadata {
     var isPDF: Bool {
         return (contentType == "application/pdf" || contentType == "com.adobe.pdf")
     }
+
+#endif
+
+    var isCreatable: Bool {
+        if isDirectory {
+            return NCMetadataPermissions.canCreateFolder(self)
+        } else {
+            return NCMetadataPermissions.canCreateFile(self)
+        }
+    }
+
+    var canShare: Bool {
+        return session.isEmpty && !directory && !NCBrandOptions.shared.disable_openin_file
+    }
+
+    var isDownload: Bool {
+        status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading
+    }
+
+    var isUpload: Bool {
+        status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploading
+    }
+
+    var isDirectory: Bool {
+        directory
+    }
+
+    var isLivePhoto: Bool {
+        !livePhotoFile.isEmpty
+    }
+
+    var isNotFlaggedAsLivePhotoByServer: Bool {
+        !isFlaggedAsLivePhotoByServer
+    }
+
+    var imageSize: CGSize {
+        CGSize(width: width, height: height)
+    }
+
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {

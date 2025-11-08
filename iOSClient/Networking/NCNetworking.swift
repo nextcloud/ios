@@ -234,7 +234,6 @@ class NCNetworking: @unchecked Sendable {
     let sessionUploadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
 
     let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 

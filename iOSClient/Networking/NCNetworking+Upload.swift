@@ -264,7 +264,7 @@ extension NCNetworking {
         metadata.ocId = ocId
         metadata.chunk = 0
 
-        if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
+        if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
 

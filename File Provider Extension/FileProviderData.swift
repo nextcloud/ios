@@ -212,7 +212,7 @@ class FileProviderData: NSObject {
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
             metadata.size = size
-            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+            if let fileId = fileProviderUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
 
