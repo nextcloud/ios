@@ -6,8 +6,6 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
-// MARK: - TABLE METADATA
-
 class tableMetadata: Object {
     override func isEqual(_ object: Any?) -> Bool {
         if let object = object as? tableMetadata,
@@ -171,6 +169,10 @@ extension tableMetadata {
         !directory
     }
 
+    @objc var isDirectoryE2EE: Bool {
+        return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+    }
+
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
     var isCopyableMovable: Bool {
         !isDirectoryE2EE && !e2eEncrypted
@@ -209,10 +211,6 @@ extension tableMetadata {
 
     var canSetAsAvailableOffline: Bool {
         return session.isEmpty && !isDirectoryE2EE && !e2eEncrypted
-    }
-
-    @objc var isDirectoryE2EE: Bool {
-        return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
     }
 
     // Return if is sharable
@@ -341,204 +339,5 @@ extension tableMetadata {
         detached.exifPhotos.append(objectsIn: self.exifPhotos.map { NCKeyValue(value: $0) })
 
         return detached
-    }
-}
-
-// MARK: - TABLE DIRECTORY
-
-class tableDirectory: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var colorFolder: String?
-    @objc dynamic var etag = ""
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileId = ""
-    @objc dynamic var lastOpeningDate = NSDate()
-    @objc dynamic var lastSyncDate: NSDate?
-    @objc dynamic var ocId = ""
-    @objc dynamic var offline: Bool = false
-    @objc dynamic var permissions = ""
-    @objc dynamic var richWorkspace: String?
-    @objc dynamic var serverUrl = ""
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
-}
-
-// MARK: - TABLE CAPABILITIES
-
-class tableCapabilities: Object {
-    @Persisted(primaryKey: true) var account = ""
-    @Persisted var capabilities: Data?
-    @Persisted var editors: Data?
-}
-
-// MARK: - TABLE ACCOUNT
-
-class tableAccount: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var active: Bool = false
-    @objc dynamic var address = ""
-    @objc dynamic var alias = ""
-    @objc dynamic var autoUploadCreateSubfolder: Bool = false
-    @objc dynamic var autoUploadSubfolderGranularity: Int = NCGlobal.shared.subfolderGranularityMonthly
-    @objc dynamic var autoUploadDirectory = ""
-    @objc dynamic var autoUploadFileName = ""
-    @objc dynamic var autoUploadStart: Bool = false
-    @objc dynamic var autoUploadImage: Bool = false
-    @objc dynamic var autoUploadVideo: Bool = false
-    @objc dynamic var autoUploadWWAnPhoto: Bool = false
-    @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var autoUploadSinceDate: Date?
-    @objc dynamic var backend = ""
-    @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
-    @objc dynamic var backendCapabilitiesSetPassword: Bool = false
-    @objc dynamic var displayName = ""
-    @objc dynamic var email = ""
-    @objc dynamic var enabled: Bool = false
-    @objc dynamic var groups = ""
-    @objc dynamic var language = ""
-    @objc dynamic var lastLogin: Int64 = 0
-    @objc dynamic var locale = ""
-    @objc dynamic var mediaPath = ""
-    @objc dynamic var organisation = ""
-    @objc dynamic var phone = ""
-    @objc dynamic var quota: Int64 = 0
-    @objc dynamic var quotaFree: Int64 = 0
-    @objc dynamic var quotaRelative: Double = 0
-    @objc dynamic var quotaTotal: Int64 = 0
-    @objc dynamic var quotaUsed: Int64 = 0
-    @objc dynamic var storageLocation = ""
-    @objc dynamic var subadmin = ""
-    @objc dynamic var twitter = ""
-    @objc dynamic var urlBase = ""
-    @objc dynamic var user = ""
-    @objc dynamic var userId = ""
-    @objc dynamic var userStatusClearAt: NSDate?
-    @objc dynamic var userStatusIcon: String?
-    @objc dynamic var userStatusMessage: String?
-    @objc dynamic var userStatusMessageId: String?
-    @objc dynamic var userStatusMessageIsPredefined: Bool = false
-    @objc dynamic var userStatusStatus: String?
-    @objc dynamic var userStatusStatusIsUserDefined: Bool = false
-    @objc dynamic var website = ""
-
-    override static func primaryKey() -> String {
-        return "account"
-    }
-
-    func tableAccountToCodable() -> tableAccountCodable {
-        return tableAccountCodable(account: self.account,
-                                   active: self.active,
-                                   alias: self.alias,
-                                   autoUploadCreateSubfolder: self.autoUploadCreateSubfolder,
-                                   autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity,
-                                   autoUploadDirectory: self.autoUploadDirectory,
-                                   autoUploadFileName: self.autoUploadFileName,
-                                   autoUploadStart: self.autoUploadStart,
-                                   autoUploadImage: self.autoUploadImage,
-                                   autoUploadVideo: self.autoUploadVideo,
-                                   autoUploadWWAnPhoto: self.autoUploadWWAnPhoto,
-                                   autoUploadWWAnVideo: self.autoUploadWWAnVideo,
-                                   autoUploadSinceDate: self.autoUploadSinceDate,
-                                   user: self.user,
-                                   userId: self.userId,
-                                   urlBase: self.urlBase)
-    }
-
-    convenience init(codableObject: tableAccountCodable) {
-        self.init()
-        self.account = codableObject.account
-        self.active = codableObject.active
-        self.alias = codableObject.alias
-
-        self.autoUploadCreateSubfolder = codableObject.autoUploadCreateSubfolder
-        self.autoUploadSubfolderGranularity = codableObject.autoUploadSubfolderGranularity
-        self.autoUploadDirectory = codableObject.autoUploadDirectory
-        self.autoUploadFileName = codableObject.autoUploadFileName
-        self.autoUploadStart = codableObject.autoUploadStart
-        self.autoUploadImage = codableObject.autoUploadImage
-        self.autoUploadVideo = codableObject.autoUploadVideo
-        self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
-        self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
-
-        self.user = codableObject.user
-        self.userId = codableObject.userId
-        self.urlBase = codableObject.urlBase
-    }
-}
-
-struct tableAccountCodable: Codable {
-    var account: String
-    var active: Bool
-    var alias: String
-
-    var autoUploadCreateSubfolder: Bool
-    var autoUploadSubfolderGranularity: Int
-    var autoUploadDirectory = ""
-    var autoUploadFileName: String
-    var autoUploadStart: Bool
-    var autoUploadImage: Bool
-    var autoUploadVideo: Bool
-    var autoUploadWWAnPhoto: Bool
-    var autoUploadWWAnVideo: Bool
-    var autoUploadSinceDate: Date?
-
-    var user: String
-    var userId: String
-    var urlBase: String
-}
-
-// MARK: - TABLE LOCALFILE
-
-class tableLocalFile: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var etag = ""
-    @objc dynamic var exifDate: NSDate?
-    @objc dynamic var exifLatitude = ""
-    @objc dynamic var exifLongitude = ""
-    @objc dynamic var exifLensModel: String?
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileName = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var offline: Bool = false
-    @objc dynamic var lastOpeningDate = NSDate()
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
-}
-
-// MARK: - TABLE AutoUploadTransfer
-
-class tableAutoUploadTransfer: Object {
-    @Persisted(primaryKey: true) var primaryKey: String
-    @Persisted var account: String
-    @Persisted var serverUrlBase: String
-    @Persisted var fileName: String
-    @Persisted var assetLocalIdentifier: String
-    @Persisted var date: Date
-
-    convenience init(account: String, serverUrlBase: String, fileName: String, assetLocalIdentifier: String, date: Date) {
-        self.init()
-
-        self.primaryKey = account + serverUrlBase + fileName
-        self.account = account
-        self.serverUrlBase = serverUrlBase
-        self.fileName = fileName
-        self.assetLocalIdentifier = assetLocalIdentifier
-        self.date = date
-    }
-}
-
-// MARK: - TABLE TAG
-
-class tableTag: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var tagIOS: Data?
-
-    override static func primaryKey() -> String {
-        return "ocId"
     }
 }

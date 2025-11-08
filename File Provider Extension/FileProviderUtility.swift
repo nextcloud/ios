@@ -177,6 +177,7 @@ class fileProviderUtility: NSObject {
         }
     }
 
+    /*
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
         let utilityFileSystem = NCUtilityFileSystem()
         let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -187,6 +188,7 @@ class fileProviderUtility: NSObject {
 
         return sizeB == metadata.size && metadata.size > 0
     }
+    */
 
     private func fileSize(at path: String) -> UInt64 {
         do {

@@ -7,6 +7,25 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
+class tableAutoUploadTransfer: Object {
+    @Persisted(primaryKey: true) var primaryKey: String
+    @Persisted var account: String
+    @Persisted var serverUrlBase: String
+    @Persisted var fileName: String
+    @Persisted var assetLocalIdentifier: String
+    @Persisted var date: Date
+
+    convenience init(account: String, serverUrlBase: String, fileName: String, assetLocalIdentifier: String, date: Date) {
+        self.init()
+
+        self.primaryKey = account + serverUrlBase + fileName
+        self.account = account
+        self.serverUrlBase = serverUrlBase
+        self.fileName = fileName
+        self.assetLocalIdentifier = assetLocalIdentifier
+        self.date = date
+    }
+}
 
 extension NCManageDatabase {
 

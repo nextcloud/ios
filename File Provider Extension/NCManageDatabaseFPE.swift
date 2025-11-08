@@ -352,7 +352,6 @@ final class NCManageDatabaseFPE {
         }
     }
 
-
     func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal) async {
         await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)

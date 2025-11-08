@@ -430,6 +430,7 @@ class NCNetworking: @unchecked Sendable {
 
     // MARK: - Helper
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         var localFile: tableMetadata?
         var livePhoto: tableMetadata?
@@ -465,6 +466,7 @@ class NCNetworking: @unchecked Sendable {
 
         return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
+#endif
 
 #if !EXTENSION
     @inline(__always)

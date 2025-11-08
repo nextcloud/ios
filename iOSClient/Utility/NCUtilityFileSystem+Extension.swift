@@ -72,7 +72,7 @@ extension NCUtilityFileSystem {
         } catch { }
         return false
     }
-    
+
     func fileProviderStorageImageExists(_ ocId: String, etag: String, userId: String, urlBase: String) -> Bool {
         if fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase),
            fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt512, userId: userId, urlBase: urlBase),
@@ -133,37 +133,6 @@ extension NCUtilityFileSystem {
             print(error)
         }
         return nil
-    }
-
-    func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
-        let fileNamePath = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-        let fileNameViewPath = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
-        do {
-            let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
-            let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            let fileNameViewAttribute = try fileManager.attributesOfItem(atPath: fileNameViewPath)
-            let fileNameViewSize: UInt64 = fileNameViewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            if metadata.isDirectoryE2EE == true {
-                if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0 {
-                    return true
-                } else {
-                    return false
-                }
-            } else {
-                return (fileNameViewSize == metadata.size) && metadata.size > 0
-            }
-        } catch { print("Error: \(error)") }
-        return false
-    }
-    
-    func isDirectoryE2EE(serverUrl: String, urlBase: String, userId: String, account: String) -> Bool {
-        guard serverUrl != getHomeServer(urlBase: urlBase, userId: userId) else {
-            return false
-        }
-        if let metadata = NCManageDatabase.shared.getMetadataDirectory(serverUrl: serverUrl, account: account) {
-            return metadata.e2eEncrypted
-        }
-        return false
     }
 
     func isDirectoryE2EEAsync(serverUrl: String, urlBase: String, userId: String, account: String) async -> Bool {

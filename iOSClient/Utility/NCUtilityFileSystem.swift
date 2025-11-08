@@ -46,6 +46,27 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
+    func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
+        let fileNamePath = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+        let fileNameViewPath = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        do {
+            let fileNameAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
+            let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            let fileNameViewAttribute = try fileManager.attributesOfItem(atPath: fileNameViewPath)
+            let fileNameViewSize: UInt64 = fileNameViewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            if metadata.isDirectoryE2EE == true {
+                if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0 {
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                return (fileNameViewSize == metadata.size) && metadata.size > 0
+            }
+        } catch { print("Error: \(error)") }
+        return false
+    }
+
     // MARK: -
 
     func getPathDomain(userId: String, host: String) -> String {
