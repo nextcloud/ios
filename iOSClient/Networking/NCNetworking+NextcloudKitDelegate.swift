@@ -7,7 +7,7 @@ import UIKit
 import NextcloudKit
 import Alamofire
 
-extension NCNetworking: NextcloudKitDelegate {
+extension NCNetworking {
 
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
     func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {

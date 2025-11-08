@@ -44,7 +44,6 @@ extension NCNetworking {
         groupDefaults.synchronize()
     }
 
-#if !EXTENSION
     func checkServerError(account: String, controller: NCMainTabBarController?) async {
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
         else {
@@ -89,5 +88,4 @@ extension NCNetworking {
             await NCNetworking.shared.termsOfService(account: account)
         }
     }
-#endif
 }

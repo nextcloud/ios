@@ -219,7 +219,7 @@ actor ProgressQuantizer {
     }
 }
 
-class NCNetworking: @unchecked Sendable {
+class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
