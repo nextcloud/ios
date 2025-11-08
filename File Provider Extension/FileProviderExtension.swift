@@ -158,7 +158,7 @@ final class FileProviderExtension: NSFileProviderExtension {
 
                     // Exists
                     if let tableLocalFile = await NCManageDatabaseFPE.shared.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
-                       fileProviderUtility().fileProviderStorageExists(metadata),
+                       NCUtilityFileSystem().fileProviderStorageExists(metadata),
                        tableLocalFile.etag == metadata.etag {
                         completionHandler(nil)
                         return

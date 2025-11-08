@@ -161,45 +161,6 @@ class fileProviderUtility: NSObject {
         }
     }
 
-    func getFileSize(from url: URL) -> Int64? {
-        do {
-            let attributes = try fileManager.attributesOfItem(atPath: url.path)
-
-            if let fileSize = attributes[FileAttributeKey.size] as? Int64 {
-                return fileSize
-            } else {
-                print("Failed to retrieve file size.")
-                return nil
-            }
-        } catch {
-            print("Error: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
-    /*
-    func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
-        let utilityFileSystem = NCUtilityFileSystem()
-        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
-
-        let sizeA = fileSize(at: pathA)
-        let sizeB = fileSize(at: pathB)
-
-        return sizeB == metadata.size && metadata.size > 0
-    }
-    */
-
-    private func fileSize(at path: String) -> UInt64 {
-        do {
-            let attr = try fileManager.attributesOfItem(atPath: path)
-            return attr[.size] as? UInt64 ?? 0
-        } catch {
-            nkLog(error: " [fileSize] Errore accesso a '\(path)': \(error)")
-            return 0
-        }
-    }
-
     func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         var resultFileName = fileName
         var exitLoop = false

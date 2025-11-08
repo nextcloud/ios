@@ -169,11 +169,11 @@ extension tableMetadata {
         !directory
     }
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     @objc var isDirectoryE2EE: Bool {
         return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
     var isCopyableMovable: Bool {
         !isDirectoryE2EE && !e2eEncrypted
     }

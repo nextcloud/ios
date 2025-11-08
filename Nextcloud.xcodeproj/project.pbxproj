@@ -505,11 +505,6 @@
 		F763410A2EBDFCB10056F538 /* NCManageDatabaseCreateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabaseCreateMetadata.swift */; };
 		F763410B2EBDFCB10056F538 /* NCManageDatabaseCreateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabaseCreateMetadata.swift */; };
 		F76341182EBE0BC60056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */; };
-		F763411A2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */; };
-		F763411B2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */; };
-		F763411E2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */; };
-		F763411F2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */; };
-		F76341202EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */; };
 		F76341292EBE10F00056F538 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F763412A2EBE10F00056F538 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F763412B2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */; };
@@ -1534,7 +1529,6 @@
 		F76340F32EBDE9740056F538 /* NCManageDatabaseCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageDatabaseCore.swift; sourceTree = "<group>"; };
 		F76340FB2EBDF64A0056F538 /* tableTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tableTag.swift; sourceTree = "<group>"; };
 		F76341172EBE0BB80056F538 /* NCNetworking+NextcloudKitDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+NextcloudKitDelegate.swift"; sourceTree = "<group>"; };
-		F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtilityFileSystem+Extension.swift"; sourceTree = "<group>"; };
 		F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Capabilities.swift"; sourceTree = "<group>"; };
 		F765608E23BF813500765969 /* NCContentPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContentPresenter.swift; sourceTree = "<group>"; };
 		F765E9CC295C585800A09ED8 /* NCUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUploadScanDocument.swift; sourceTree = "<group>"; };
@@ -3041,7 +3035,6 @@
 				F359D8662A7D03420023F405 /* NCUtility+Exif.swift */,
 				AF93474B27E34120002537EE /* NCUtility+Image.swift */,
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
-				F76341192EBE0F800056F538 /* NCUtilityFileSystem+Extension.swift */,
 				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
 				AF36077027BFA4E8001A243D /* ParallelWorker.swift */,
 				F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */,
@@ -4191,7 +4184,6 @@
 				F73EF7AD2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7D61E962EBF15A8007F865B /* tableMetadata.swift in Sources */,
 				F76341322EBE29510056F538 /* NCNetworking+Download.swift in Sources */,
-				F763411B2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */,
 				F76340F52EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
 				F7C9B9232B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F76341382EBE2A000056F538 /* NCMetadataTranfersSuccess.swift in Sources */,
@@ -4342,7 +4334,6 @@
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F76340F82EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
-				F763411E2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */,
 				F79ED0F12D2FCA5B00A389D9 /* NCSectionFirstHeader.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
@@ -4520,7 +4511,6 @@
 				F77E8C242E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift in Sources */,
 				F76340F72EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
 				F33918C52C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
-				F763411A2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */,
 				F7D61E9A2EBF15A8007F865B /* tableMetadata.swift in Sources */,
 				F7D7A7702DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
 				F343A4BC2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
@@ -4843,7 +4833,6 @@
 				F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				AA8D316E2D4123B200FE2775 /* NCShareDownloadLimitTableViewControllerDelegate.swift in Sources */,
-				F76341202EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */,
 				F7D61EA02EBF163E007F865B /* tableDirectory.swift in Sources */,
 				F36C514F2E89393C0097E5F7 /* UIView+BlurVibrancy.swift in Sources */,
 				AA8D316F2D4123B200FE2775 /* NCShareDownloadLimitTableViewController.swift in Sources */,
@@ -4999,7 +4988,6 @@
 				F72FD3B7297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7A8D74128F18254008BBE1C /* UIColor+Extension.swift in Sources */,
 				F76340F62EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
-				F763411F2EBE0F830056F538 /* NCUtilityFileSystem+Extension.swift in Sources */,
 				F76341412EBE5E3D0056F538 /* NCNetworking+LivePhoto.swift in Sources */,
 				F73EF7D92B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F3E173C22C9B1067006D177A /* AwakeMode.swift in Sources */,
