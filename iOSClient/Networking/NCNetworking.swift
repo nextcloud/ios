@@ -264,7 +264,7 @@ class NCNetworking: @unchecked Sendable {
     let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION
     let metadataTranfersSuccess = NCMetadataTranfersSuccess()
 
     // OPERATIONQUEUE

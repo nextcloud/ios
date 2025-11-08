@@ -148,10 +148,12 @@ extension NCNetworking: NextcloudKitDelegate {
                                             etag: etag,
                                             date: date)
                     } else {
+#if !EXTENSION
                         await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
                                                                                  ocId: ocId,
                                                                                  date: date,
                                                                                  etag: etag)
+#endif
                     }
                 } else {
                     await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
