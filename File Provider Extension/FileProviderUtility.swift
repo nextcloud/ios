@@ -241,4 +241,21 @@ class fileProviderUtility: NSObject {
 
         return resultFileName
     }
+
+    func getVersionBuild() -> String {
+        if let dictionary = Bundle.main.infoDictionary,
+           let version = dictionary["CFBundleShortVersionString"],
+           let build = dictionary["CFBundleVersion"] {
+            return "\(version).\(build)"
+        }
+        return ""
+    }
+
+    func getVersionMaintenance() -> String {
+        if let dictionary = Bundle.main.infoDictionary,
+           let version = dictionary["CFBundleShortVersionString"] {
+            return "\(version)"
+        }
+        return ""
+    }
 }

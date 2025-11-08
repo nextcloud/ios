@@ -37,7 +37,7 @@ class FileProviderData: NSObject {
     func setupAccount(domain: NSFileProviderDomain? = nil,
                       tblAccount: tableAccount? = nil,
                       providerExtension: NSFileProviderExtension) -> tableAccount? {
-        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionBuild()) as String
+        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, fileProviderUtility().getVersionBuild()) as String
         let tblAccounts = NCManageDatabaseFPE.shared.getAllTableAccount()
         var matchAccount: tableAccount?
 

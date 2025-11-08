@@ -37,7 +37,7 @@ final class FileProviderExtension: NSFileProviderExtension {
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
         // Skip authentication checks for the working set container
         if containerItemIdentifier != .workingSet {
-            let versionApp = NCUtility().getVersionMaintenance()
+            let versionApp = fileProviderUtility().getVersionMaintenance()
 
             // Verify version
             if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
