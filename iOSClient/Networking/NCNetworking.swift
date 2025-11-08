@@ -283,7 +283,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-#if EXTENSION_FILE_PROVIDER_EXTENSION
+#if EXTENSION
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
            let serverTrust = challenge.protectionSpace.serverTrust {
             let credential = URLCredential(trust: serverTrust)
@@ -382,7 +382,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         #endif
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION
     func writeCertificate(host: String) {
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
@@ -424,9 +424,10 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
-
+#endif
     // MARK: - Helper
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         var localFile: tableMetadata?
         var livePhoto: tableMetadata?
