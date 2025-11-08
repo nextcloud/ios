@@ -178,7 +178,7 @@ class NCRecent: NCCollectionViewCommon {
             return
         }
 
-        let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
+        let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
 
         await self.database.addMetadatasAsync(metadatas)
         await self.reloadDataSource()

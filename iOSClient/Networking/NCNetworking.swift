@@ -2,12 +2,15 @@
 // SPDX-FileCopyrightText: 2019 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
 import OpenSSL
-import NextcloudKit
-import Alamofire
 import Queuer
 import SwiftUI
+#endif
+
+import UIKit
+import NextcloudKit
+import Alamofire
 
 @objc protocol ClientCertificateDelegate {
     func onIncorrectPassword()
@@ -216,7 +219,7 @@ actor ProgressQuantizer {
     }
 }
 
-class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
+class NCNetworking: @unchecked Sendable {
     static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
@@ -234,7 +237,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let sessionUploadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
 
     let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
@@ -261,6 +263,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let transferDispatcher = NCTransferDelegateDispatcher()
     let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
+
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     let metadataTranfersSuccess = NCMetadataTranfersSuccess()
 
     // OPERATIONQUEUE
@@ -270,13 +274,14 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+#endif
 
     // MARK: - init
 
     init() { }
 
     // MARK: - Communication Delegate
-
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
         if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
             lastReachability = true
@@ -290,10 +295,20 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         networkReachability = typeReachability
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
     }
+#endif
 
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+#if EXTENSION_FILE_PROVIDER_EXTENSION
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+           let serverTrust = challenge.protectionSpace.serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
+#else
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             if let p12Data = self.p12Data,
                let cert = (p12Data, self.p12Password) as? UserCertificate,
@@ -309,6 +324,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
+#endif
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
@@ -328,6 +344,16 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+#if EXTENSION
+        DispatchQueue.main.async {
+            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+               let trust = challenge.protectionSpace.serverTrust {
+                completionHandler(.useCredential, URLCredential(trust: trust))
+            } else {
+                completionHandler(.performDefaultHandling, nil)
+            }
+        }
+#else
         let protectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = protectionSpace.host
@@ -365,15 +391,15 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 if isTrusted {
                     completionHandler(.useCredential, URLCredential(trust: trust))
                 } else {
-    #if !EXTENSION
                     (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
-    #endif
                     completionHandler(.performDefaultHandling, nil)
                 }
             }
         }
+        #endif
     }
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func writeCertificate(host: String) {
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
@@ -415,9 +441,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
+#endif
 
     // MARK: - Helper
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         var localFile: tableMetadata?
         var livePhoto: tableMetadata?
@@ -453,16 +481,17 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
         return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
+#endif
 
-    #if !EXTENSION
+#if !EXTENSION
     @inline(__always)
     func isInBackground() -> Bool {
        return isAppInBackground
     }
-    #else
+#else
     @inline(__always)
     func isInBackground() -> Bool {
         return false
     }
-    #endif
+#endif
 }

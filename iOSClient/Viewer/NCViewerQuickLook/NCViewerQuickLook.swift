@@ -240,12 +240,13 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                                                                                  urlBase: metadata.urlBase)
             guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
-            let metadataForUpload = await NCManageDatabase.shared.createMetadataAsync(fileName: metadata.fileName,
-                                                                                      ocId: ocId,
-                                                                                      serverUrl: metadata.serverUrl,
-                                                                                      url: url.path,
-                                                                                      session: session,
-                                                                                      sceneIdentifier: nil)
+            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: metadata.fileName,
+                ocId: ocId,
+                serverUrl: metadata.serverUrl,
+                url: url.path,
+                session: session,
+                sceneIdentifier: nil)
 
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
             if override {

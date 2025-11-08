@@ -7,24 +7,6 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
-class tableLocalFile: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var etag = ""
-    @objc dynamic var exifDate: NSDate?
-    @objc dynamic var exifLatitude = ""
-    @objc dynamic var exifLongitude = ""
-    @objc dynamic var exifLensModel: String?
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileName = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var offline: Bool = false
-    @objc dynamic var lastOpeningDate = NSDate()
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
-}
-
 extension NCManageDatabase {
 
     // MARK: - Realm Write
@@ -46,7 +28,7 @@ extension NCManageDatabase {
         }
 
         // Preload existing entries to avoid creating duplicates
-        let existingMap: [String: tableLocalFile] = await performRealmReadAsync { realm in
+        let existingMap: [String: tableLocalFile] = await core.performRealmReadAsync { realm in
                 let existing = realm.objects(tableLocalFile.self)
                     .filter(NSPredicate(format: "ocId IN %@", ocIds))
                 return Dictionary(uniqueKeysWithValues:
@@ -54,7 +36,7 @@ extension NCManageDatabase {
                 )
             } ?? [:]
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             for metadata in metadatas {
                 // Reuse existing object or create a new one
                 let local = existingMap[metadata.ocId] ?? tableLocalFile()
@@ -77,7 +59,7 @@ extension NCManageDatabase {
     }
 
     func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
            let addObject = tableLocalFile()
            addObject.account = account
            addObject.etag = etag
@@ -93,7 +75,7 @@ extension NCManageDatabase {
     func deleteLocalFileAsync(id: String?) async {
         guard let id else { return }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", id)
             realm.delete(results)
@@ -101,7 +83,7 @@ extension NCManageDatabase {
     }
 
     func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             if let result = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -116,7 +98,7 @@ extension NCManageDatabase {
     }
 
     func setOffLocalFileAsync(ocId: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -126,7 +108,7 @@ extension NCManageDatabase {
     }
 
     func setLocalFileLastOpeningDateAsync(metadata: tableMetadata) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", metadata.ocId)
                 .first {
@@ -148,7 +130,7 @@ extension NCManageDatabase {
     // MARK: - Realm Read
 
     func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String = "fileName", ascending: Bool = true) async -> [tableLocalFile] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)
@@ -157,7 +139,7 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .first
@@ -166,7 +148,7 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFileAsync(predicate: NSPredicate) async -> tableLocalFile? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .first
@@ -176,7 +158,7 @@ extension NCManageDatabase {
 
     func getTableLocal(predicate: NSPredicate,
                        completion: @escaping (_ localFile: tableLocalFile?) -> Void) {
-        performRealmRead({ realm in
+        core.performRealmRead({ realm in
             return realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .first
@@ -191,7 +173,7 @@ extension NCManageDatabase {
     }
 
     func getResultTableLocalFile(ocId: String) -> tableLocalFile? {
-        return performRealmRead { realm in
+        return core.performRealmRead { realm in
             realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
                 .first

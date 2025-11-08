@@ -33,7 +33,7 @@ extension NCManageDatabase {
     // MARK: - Realm write
 
     func addComments(_ comments: [NKComments], account: String, objectId: String) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             let existing = realm.objects(tableComments.self)
                 .filter("account == %@ AND objectId == %@", account, objectId)
             realm.delete(existing)
@@ -62,7 +62,7 @@ extension NCManageDatabase {
     // MARK: - Realm read
 
     func getComments(account: String, objectId: String) -> [tableComments] {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
            let results = realm.objects(tableComments.self)
                .filter("account == %@ AND objectId == %@", account, objectId)
                .sorted(byKeyPath: "creationDateTime", ascending: false)

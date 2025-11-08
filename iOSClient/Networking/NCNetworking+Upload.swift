@@ -253,10 +253,10 @@ extension NCNetworking {
 
     // MARK: - UPLOAD SUCCESS
 
-    private func uploadSuccess(withMetadata metadata: tableMetadata,
-                               ocId: String,
-                               etag: String?,
-                               date: Date?) async {
+    func uploadSuccess(withMetadata metadata: tableMetadata,
+                       ocId: String,
+                       etag: String?,
+                       date: Date?) async {
         nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
 
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -264,7 +264,7 @@ extension NCNetworking {
         metadata.ocId = ocId
         metadata.chunk = 0
 
-        if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
+        if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
 
@@ -454,78 +454,4 @@ extension NCNetworking {
         return controller
     }
 #endif
-
-    // MARK: - Upload NextcloudKitDelegate
-
-    func uploadComplete(fileName: String,
-                        serverUrl: String,
-                        ocId: String?,
-                        etag: String?,
-                        date: Date?,
-                        size: Int64,
-                        task: URLSessionTask,
-                        error: NKError) {
-        Task {
-            await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
-
-            #if EXTENSION_FILE_PROVIDER_EXTENSION
-                await FileProviderData.shared.uploadComplete(fileName: fileName,
-                                                             serverUrl: serverUrl,
-                                                             ocId: ocId,
-                                                             etag: etag,
-                                                             date: date,
-                                                             size: size,
-                                                             task: task,
-                                                             error: error)
-
-            #else
-            guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
-                await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
-                return
-            }
-
-            if error == .success {
-                if let ocId {
-                    if isInBackground() {
-                        await uploadSuccess(withMetadata: metadata,
-                                            ocId: ocId,
-                                            etag: etag,
-                                            date: date)
-                    } else {
-                        await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
-                                                                                 ocId: ocId,
-                                                                                 date: date,
-                                                                                 etag: etag)
-                    }
-                } else {
-                    await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
-                }
-            } else {
-                await uploadError(withMetadata: metadata, error: error)
-            }
-            #endif
-        }
-    }
-
-    func uploadProgress(_ progress: Float,
-                        totalBytes: Int64,
-                        totalBytesExpected: Int64,
-                        fileName: String,
-                        serverUrl: String,
-                        session: URLSession,
-                        task: URLSessionTask) {
-        Task {
-            guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
-                return
-            }
-
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferProgressDidUpdate(progress: progress,
-                                                   totalBytes: totalBytes,
-                                                   totalBytesExpected: totalBytesExpected,
-                                                   fileName: fileName,
-                                                   serverUrl: serverUrl)
-            }
-        }
-    }
 }

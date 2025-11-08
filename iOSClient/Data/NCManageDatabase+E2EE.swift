@@ -130,13 +130,13 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: tableE2eEncryption
     func addE2eEncryptionAsync(_ object: tableE2eEncryption) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             realm.add(object, update: .all)
         }
     }
 
     func deleteE2eEncryptionAsync(predicate: NSPredicate) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableE2eEncryption.self)
                 .filter(predicate)
             realm.delete(results)
@@ -144,7 +144,7 @@ extension NCManageDatabase {
     }
 
     func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableE2eEncryption.self)
                 .filter(predicate)
                 .sorted(byKeyPath: "metadataKeyIndex", ascending: false)
@@ -154,7 +154,7 @@ extension NCManageDatabase {
     }
 
     func getE2eEncryptionAsync(predicate: NSPredicate) async -> tableE2eEncryption? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eEncryption.self)
                 .filter(predicate)
                 .first
@@ -163,7 +163,7 @@ extension NCManageDatabase {
     }
 
     func getE2eEncryptionsAsync(predicate: NSPredicate) async -> [tableE2eEncryption] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let results = realm.objects(tableE2eEncryption.self)
                 .filter(predicate)
             return results.map { tableE2eEncryption(value: $0) }
@@ -171,7 +171,7 @@ extension NCManageDatabase {
     }
 
     func renameFileE2eEncryptionAsync(account: String, serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let result = realm.objects(tableE2eEncryption.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, serverUrl, fileNameIdentifier)
                 .first else { return }
@@ -185,7 +185,7 @@ extension NCManageDatabase {
     // MARK: Table e2e Encryption Lock
 
     func getE2ETokenLockAsync(account: String, serverUrl: String) async -> tableE2eEncryptionLock? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eEncryptionLock.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first
@@ -194,7 +194,7 @@ extension NCManageDatabase {
     }
 
     func getE2EAllTokenLockAsync(account: String) async -> [tableE2eEncryptionLock] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let results = realm.objects(tableE2eEncryptionLock.self)
                 .filter("account == %@", account)
             return results.map { tableE2eEncryptionLock(value: $0) }
@@ -202,7 +202,7 @@ extension NCManageDatabase {
     }
 
     func setE2ETokenLockAsync(account: String, serverUrl: String, fileId: String, e2eToken: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = tableE2eEncryptionLock()
             object.account = account
             object.fileId = fileId
@@ -214,7 +214,7 @@ extension NCManageDatabase {
     }
 
     func deleteE2ETokenLockAsync(account: String, serverUrl: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableE2eEncryptionLock.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
             realm.delete(results)
@@ -225,7 +225,7 @@ extension NCManageDatabase {
     // MARK: V1
 
     func getE2eMetadataAsync(account: String, serverUrl: String) async -> tableE2eMetadata12? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eMetadata12.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first
@@ -234,7 +234,7 @@ extension NCManageDatabase {
     }
 
     func setE2eMetadataAsync(account: String, serverUrl: String, metadataKey: String, version: Double) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = tableE2eMetadata12()
             object.account = account
             object.metadataKey = metadataKey
@@ -254,7 +254,7 @@ extension NCManageDatabase {
                           certificate: String,
                           encryptedMetadataKey: String?,
                           metadataKey: Data?) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = tableE2eUsers(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId)
 
             object.certificate = certificate
@@ -267,7 +267,7 @@ extension NCManageDatabase {
     }
 
     func deleteE2EUsersAsync(account: String, ocIdServerUrl: String, userId: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableE2eUsers.self)
                 .filter("account == %@ AND ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId)
                 .first {
@@ -277,7 +277,7 @@ extension NCManageDatabase {
     }
 
     func getE2EUsersAsync(account: String, directoryTopOcId: String) async -> [tableE2eUsers] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eUsers.self)
                 .filter("account == %@ AND ocIdServerUrl == %@", account, directoryTopOcId)
                 .map { tableE2eUsers(value: $0) } // detached copy
@@ -285,7 +285,7 @@ extension NCManageDatabase {
     }
 
     func getE2EUserAsync(account: String, directoryTopOcId: String, userId: String) async -> tableE2eUsers? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eUsers.self)
                 .filter("account == %@ AND ocIdServerUrl == %@ AND userId == %@", account, directoryTopOcId, userId)
                 .first
@@ -294,7 +294,7 @@ extension NCManageDatabase {
     }
 
     func getE2eMetadataAsync(account: String, ocIdServerUrl: String) async -> tableE2eMetadata? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eMetadata.self)
                 .filter("account == %@ AND ocIdServerUrl == %@", account, ocIdServerUrl)
                 .first
@@ -309,7 +309,7 @@ extension NCManageDatabase {
                              deleted: Bool,
                              folders: [String: String]?,
                              version: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = tableE2eMetadata(account: account, ocIdServerUrl: ocIdServerUrl)
 
             if let keyChecksums {
@@ -332,14 +332,14 @@ extension NCManageDatabase {
     }
 
     func updateCounterE2eMetadataAsync(account: String, ocIdServerUrl: String, counter: Int) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = tableE2eCounter(account: account, ocIdServerUrl: ocIdServerUrl, counter: counter)
             realm.add(object, update: .all)
         }
     }
 
     func getCounterE2eMetadataAsync(account: String, ocIdServerUrl: String) async -> Int? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableE2eCounter.self)
                 .filter("account == %@ AND ocIdServerUrl == %@", account, ocIdServerUrl)
                 .first?

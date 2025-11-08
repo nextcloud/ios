@@ -86,11 +86,12 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     func uploadMetadata() {
         Task {
             let fileNamePath = NSTemporaryDirectory() + self.fileName
-            let metadata = await NCManageDatabase.shared.createMetadataAsync(fileName: fileName,
-                                                                             ocId: UUID().uuidString,
-                                                                             serverUrl: controller.currentServerUrl(),
-                                                                             session: self.session,
-                                                                             sceneIdentifier: self.controller?.sceneIdentifier)
+            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: UUID().uuidString,
+                serverUrl: controller.currentServerUrl(),
+                session: self.session,
+                sceneIdentifier: self.controller?.sceneIdentifier)
 
             metadata.session = NCNetworking.shared.sessionUploadBackground
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile

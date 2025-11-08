@@ -7,12 +7,6 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
-class tableCapabilities: Object {
-    @Persisted(primaryKey: true) var account = ""
-    @Persisted var capabilities: Data?
-    @Persisted var editors: Data?
-}
-
 extension NCManageDatabase {
 
     // MARK: - Realm write
@@ -23,7 +17,7 @@ extension NCManageDatabase {
     ///   - account: The account identifier.
     /// - Throws: Rethrows any error encountered during the Realm write operation.
     func setDataCapabilities(data: Data, account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
             let addObject: tableCapabilities
 
@@ -47,7 +41,7 @@ extension NCManageDatabase {
     ///   - account: The account identifier.
     /// - Throws: Rethrows any error encountered during the Realm write operation.
     func setDataCapabilitiesEditors(data: Data, account: String) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let object = realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
             let addObject: tableCapabilities
 
@@ -80,7 +74,7 @@ extension NCManageDatabase {
     /// - Parameter account: The identifier of the account whose cached capabilities should be applied.
     @discardableResult
     func getCapabilities(account: String) async -> NKCapabilities.Capabilities? {
-        let results = await performRealmReadAsync { realm in
+        let results = await core.performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
                 .map { tableCapabilities(value: $0) }
         }

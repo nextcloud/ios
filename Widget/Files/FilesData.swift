@@ -249,7 +249,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     useTypeIconFile = true
                 }
 
-                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
 
                 // DATA
                 let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
