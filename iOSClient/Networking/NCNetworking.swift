@@ -297,6 +297,15 @@ class NCNetworking: @unchecked Sendable {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+#if EXTENSION_FILE_PROVIDER_EXTENSION
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+           let serverTrust = challenge.protectionSpace.serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
+#else
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             if let p12Data = self.p12Data,
                let cert = (p12Data, self.p12Password) as? UserCertificate,
@@ -312,6 +321,7 @@ class NCNetworking: @unchecked Sendable {
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
+#endif
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
