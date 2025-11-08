@@ -30,7 +30,7 @@ final class NCImageCache: @unchecked Sendable {
     public var controller: UITabBarController?
 
     init() {
-        observerToken = NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
+        observerToken = NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAll()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }

@@ -117,8 +117,7 @@ final class NCManageDatabase: @unchecked Sendable {
             return
         }
         let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-        let bundleUrl: URL = Bundle.main.bundleURL
-        var objectTypes = [
+        let objectTypes = [
             NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
             tableDirectory.self, tableTag.self, tableAccount.self,
             tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,

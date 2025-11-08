@@ -119,7 +119,6 @@
 		F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F359D8672A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
-		F36C514E2E89393C0097E5F7 /* UIView+BlurVibrancy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36C514D2E89393C0097E5F7 /* UIView+BlurVibrancy.swift */; };
 		F36C514F2E89393C0097E5F7 /* UIView+BlurVibrancy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36C514D2E89393C0097E5F7 /* UIView+BlurVibrancy.swift */; };
 		F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */; };
 		F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E41315294A19B300839300 /* UIView+Extension.swift */; };
@@ -388,7 +387,6 @@
 		F74BAE172C7E2F4E0028D4FA /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F74C0436253F1CDC009762AB /* NCShares.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C0434253F1CDC009762AB /* NCShares.swift */; };
 		F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74C0435253F1CDC009762AB /* NCShares.storyboard */; };
-		F74C86382AEFBE64009A1D4A /* NCImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B649B2ADFFAED00014640 /* NCImageCache.swift */; };
 		F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F74C863C2AEFBFD9009A1D4A /* LRUCache */; };
 		F74D50352C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D50342C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */; };
 		F74D50362C9856D300BBBF4C /* NCCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */; };
@@ -770,6 +768,7 @@
 		F7D368DF2DAFE19E0037E7C6 /* NCActivityNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D368DE2DAFE19E0037E7C6 /* NCActivityNavigationController.swift */; };
 		F7D496FC2EBFA541004F9823 /* NCRecommendationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D90202D2BE26C003E740B /* NCRecommendationsCell.swift */; };
 		F7D496FD2EBFA6D9004F9823 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
+		F7D497082EBFAFD6004F9823 /* NCImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B649B2ADFFAED00014640 /* NCImageCache.swift */; };
 		F7D4BF012CA1831900A5E746 /* NCCollectionViewCommonPinchGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF002CA1831600A5E746 /* NCCollectionViewCommonPinchGesture.swift */; };
 		F7D4BF2C2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF102CA2E8D800A5E746 /* TOPasscodeKeypadView.m */; };
 		F7D4BF2D2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D4BF172CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m */; };
@@ -2800,8 +2799,6 @@
 		F7A0D14E259229FA008F8A13 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				F351D1A52D0AF24A00930F94 /* PHAssetCollection+Extension.swift */,
-				F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */,
 				F7AC1CAF28AB94490032D99F /* Array+Extension.swift */,
 				F7817CF729801A3500FFBC65 /* Data+Extension.swift */,
 				AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */,
@@ -2809,10 +2806,12 @@
 				F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift */,
 				F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */,
 				F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */,
+				F351D1A52D0AF24A00930F94 /* PHAssetCollection+Extension.swift */,
 				F7A0D1342591FBC5008F8A13 /* String+Extension.swift */,
 				AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */,
 				F7EB9B122BBC12F300EDF036 /* UIApplication+Extension.swift */,
 				AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */,
+				F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extension.swift */,
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
@@ -2820,9 +2819,9 @@
 				F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */,
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
 				F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */,
-				F77BB747289985270090FC19 /* UITabBarController+Extension.swift */,
 				F743C89D2E5B2595000173A9 /* UIScene+Extension.swift */,
 				F77C3F5A2D9BF8B500F3C471 /* UITabBar+Extension.swift */,
+				F77BB747289985270090FC19 /* UITabBarController+Extension.swift */,
 				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
 				F7E41315294A19B300839300 /* UIView+Extension.swift */,
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
@@ -4280,7 +4279,6 @@
 				F799DF832C4B7DCC003410B5 /* NCSectionFooter.swift in Sources */,
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F799DF862C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
-				F36C514E2E89393C0097E5F7 /* UIView+BlurVibrancy.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F72437802C10B92400C7C68D /* NCSharePermissions.swift in Sources */,
 				F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */,
@@ -4291,6 +4289,7 @@
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				AF730AFA27843E4C00B7520E /* NCShareExtension+NCAccountRequestDelegate.swift in Sources */,
 				F7327E232B73A42F00A462C7 /* NCNetworking+Download.swift in Sources */,
+				F7D497082EBFAFD6004F9823 /* NCImageCache.swift in Sources */,
 				F749B64D297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F763412D2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F72FD3B8297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
@@ -4318,7 +4317,6 @@
 				F7D61EB42EBF1719007F865B /* NCManageDatabase+TableLocalFile.swift in Sources */,
 				F749B654297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */,
-				F74C86382AEFBE64009A1D4A /* NCImageCache.swift in Sources */,
 				F73EF7C22B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				F7148041262EBE4000693E51 /* NCShareExtension.swift in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
