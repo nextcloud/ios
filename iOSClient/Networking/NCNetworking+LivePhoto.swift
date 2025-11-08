@@ -17,7 +17,6 @@ extension NCNetworking {
         }
 
         for result in results {
-
             // VIDEO PART
             //
             let resultLivePhotoVideo = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: result.serverUrlFileNameVideo, livePhotoFile: result.fileIdImage, account: account) { task in
@@ -67,6 +66,10 @@ extension NCNetworking {
             await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
 
             setLivePhoto = true
+
+            if isAppInBackground {
+                return setLivePhoto
+            }
         }
 
         return setLivePhoto

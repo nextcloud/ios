@@ -85,6 +85,9 @@ actor NCMetadataTranfersSuccess {
             let accounts = Set(metadatasLivePhoto.map { $0.account })
             for account in accounts {
                 await NCNetworking.shared.setLivePhoto(account: account)
+                if isAppInBackground {
+                    return
+                }
             }
         }
 #endif
