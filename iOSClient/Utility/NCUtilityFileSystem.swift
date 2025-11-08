@@ -2,8 +2,10 @@
 // SPDX-FileCopyrightText: 2020 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+import Foundation
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
 import PhotosUI
+#endif
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
@@ -121,6 +123,50 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase) + "/" + etag + ext
     }
 
+    func getHomeServer(session: NCSession.Session) -> String {
+        return getHomeServer(urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getHomeServer(urlBase: String, userId: String) -> String {
+        return urlBase + "/remote.php/dav/files/" + userId
+    }
+
+    func getPath(path: String, user: String, fileName: String? = nil) -> String {
+        var path = path.replacingOccurrences(of: "/remote.php/dav/files/" + user, with: "")
+        if let fileName = fileName {
+            path += fileName
+        }
+        return path
+    }
+
+    func createServerUrl(serverUrl: String, fileName: String) -> String {
+        if fileName.isEmpty {
+            return serverUrl
+        } else if serverUrl.last == "/" {
+            return serverUrl + fileName
+        } else {
+            return serverUrl + "/" + fileName
+        }
+    }
+
+    func getFileNamePath(_ fileName: String, serverUrl: String, session: NCSession.Session) -> String {
+        let home = getHomeServer(session: session)
+        var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
+        if fileNamePath.first == "/" {
+            fileNamePath.removeFirst()
+        }
+        return fileNamePath
+    }
+
+    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
+        let home = getHomeServer(urlBase: urlBase, userId: userId)
+        var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
+        if fileNamePath.first == "/" {
+            fileNamePath.removeFirst()
+        }
+        return fileNamePath
+    }
+
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
         let fileNamePath = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
         let fileNameViewPath = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -177,6 +223,141 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             return true
         }
         return false
+    }
+
+    // MARK: -
+
+    @discardableResult
+    func moveFile(atPath: String, toPath: String) -> Bool {
+        if atPath == toPath {
+            return true
+        }
+
+        do {
+            if FileManager.default.fileExists(atPath: toPath) {
+                try FileManager.default.removeItem(atPath: toPath)
+            }
+            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+        } catch {
+            print(error)
+            return false
+        }
+        return true
+    }
+
+    @discardableResult
+    func copyFile(atPath: String, toPath: String) -> Bool {
+        if atPath == toPath {
+            return true
+        }
+
+        do {
+            if FileManager.default.fileExists(atPath: toPath) {
+                try FileManager.default.removeItem(atPath: toPath)
+            }
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            return true
+        } catch {
+            print(error)
+            return false
+        }
+    }
+
+    func linkItem(atPath: String, toPath: String) {
+        try? FileManager.default.removeItem(atPath: toPath)
+        try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
+    }
+
+    // MARK: -
+
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+    /// Asynchronously returns the size (in bytes) of the file at the given path.
+    /// - Parameter path: Full file system path as a String.
+    /// - Returns: Size in bytes, or `0` if the file doesn't exist or can't be accessed.
+    func fileSizeAsync(atPath path: String) async -> Int64 {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                    if let size = attributes[.size] as? NSNumber {
+                        continuation.resume(returning: size.int64Value)
+                    } else {
+                        continuation.resume(returning: 0)
+                    }
+                } catch {
+                    continuation.resume(returning: 0)
+                }
+            }
+        }
+    }
+
+    /// Moves a file from one path to another, overwriting the destination if it exists.
+    /// - Parameters:
+    ///   - atPath: The source file path.
+    ///   - toPath: The destination file path.
+    func moveFileAsync(atPath: String, toPath: String) async {
+        if atPath == toPath {
+            return
+        }
+
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    if FileManager.default.fileExists(atPath: toPath) {
+                        try FileManager.default.removeItem(atPath: toPath)
+                    }
+                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                } catch {
+                    print("Error moving \(atPath) -> \(toPath): \(error)")
+                }
+                continuation.resume()
+            }
+        }
+    }
+
+    func removeFile(atPath path: String) {
+        fileIO.async {
+            do {
+                try FileManager.default.removeItem(atPath: path)
+            } catch {
+                print(error)
+            }
+        }
+    }
+
+    func getFileCreationDate(filePath: String) -> NSDate? {
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: filePath)
+            return attributes[FileAttributeKey.creationDate] as? NSDate
+        } catch {
+            print(error)
+        }
+        return nil
+    }
+
+    func getFileSize(filePath: String) -> Int64 {
+        guard FileManager.default.fileExists(atPath: filePath)
+        else {
+            return 0
+        }
+
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: filePath)
+            return attributes[FileAttributeKey.size] as? Int64 ?? 0
+        } catch {
+            print(error)
+            return 0
+        }
+    }
+
+    func getFileModificationDate(filePath: String) -> NSDate? {
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: filePath)
+            return attributes[FileAttributeKey.modificationDate] as? NSDate
+        } catch {
+            print(error)
+        }
+        return nil
     }
 
     func createDirectoryStandard() {
@@ -240,172 +421,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         } catch { print("Error: \(error)") }
     }
 
-    // MARK: -
-
-    func getFileSize(filePath: String) -> Int64 {
-        guard FileManager.default.fileExists(atPath: filePath)
-        else {
-            return 0
-        }
-
-        do {
-            let attributes = try fileManager.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.size] as? Int64 ?? 0
-        } catch {
-            print(error)
-            return 0
-        }
-    }
-
-    func getFileModificationDate(filePath: String) -> NSDate? {
-        do {
-            let attributes = try fileManager.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.modificationDate] as? NSDate
-        } catch {
-            print(error)
-        }
-        return nil
-    }
-
-    func getFileCreationDate(filePath: String) -> NSDate? {
-        do {
-            let attributes = try fileManager.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.creationDate] as? NSDate
-        } catch {
-            print(error)
-        }
-        return nil
-    }
-
-    func writeFile(fileURL: URL, text: String) -> Bool {
-        do {
-            try FileManager.default.removeItem(at: fileURL)
-        } catch {
-            print(error)
-        }
-
-        do {
-            try text.write(to: fileURL, atomically: true, encoding: .utf8)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
-    }
-
-    func removeFile(atPath path: String) {
-        fileIO.async {
-            do {
-                try FileManager.default.removeItem(atPath: path)
-            } catch {
-                print(error)
-            }
-        }
-    }
-
-    /// Moves a file from one path to another, overwriting the destination if it exists.
-    /// - Parameters:
-    ///   - atPath: The source file path.
-    ///   - toPath: The destination file path.
-    func moveFileAsync(atPath: String, toPath: String) async {
-        if atPath == toPath {
-            return
-        }
-
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .utility).async {
-                do {
-                    if FileManager.default.fileExists(atPath: toPath) {
-                        try FileManager.default.removeItem(atPath: toPath)
-                    }
-                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                } catch {
-                    print("Error moving \(atPath) -> \(toPath): \(error)")
-                }
-                continuation.resume()
-            }
-        }
-    }
-
-    @discardableResult
-    func moveFile(atPath: String, toPath: String) -> Bool {
-        if atPath == toPath {
-            return true
-        }
-
-        do {
-            if FileManager.default.fileExists(atPath: toPath) {
-                try FileManager.default.removeItem(atPath: toPath)
-            }
-            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-        } catch {
-            print(error)
-            return false
-        }
-        return true
-    }
-
-    @discardableResult
-    func copyFile(atPath: String, toPath: String) -> Bool {
-        if atPath == toPath {
-            return true
-        }
-
-        do {
-            if FileManager.default.fileExists(atPath: toPath) {
-                try FileManager.default.removeItem(atPath: toPath)
-            }
-            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
-    }
-
-    func linkItem(atPath: String, toPath: String) {
-        try? FileManager.default.removeItem(atPath: toPath)
-        try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
-    }
-
-    /// Asynchronously returns the size (in bytes) of the file at the given path.
-    /// - Parameter path: Full file system path as a String.
-    /// - Returns: Size in bytes, or `0` if the file doesn't exist or can't be accessed.
-    func fileSizeAsync(atPath path: String) async -> Int64 {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .utility).async {
-                do {
-                    let attributes = try FileManager.default.attributesOfItem(atPath: path)
-                    if let size = attributes[.size] as? NSNumber {
-                        continuation.resume(returning: size.int64Value)
-                    } else {
-                        continuation.resume(returning: 0)
-                    }
-                } catch {
-                    continuation.resume(returning: 0)
-                }
-            }
-        }
-    }
-
-    // MARK: -
-
-    func getHomeServer(session: NCSession.Session) -> String {
-        return getHomeServer(urlBase: session.urlBase, userId: session.userId)
-    }
-
-    func getHomeServer(urlBase: String, userId: String) -> String {
-        return urlBase + "/remote.php/dav/files/" + userId
-    }
-
-    func getPath(path: String, user: String, fileName: String? = nil) -> String {
-        var path = path.replacingOccurrences(of: "/remote.php/dav/files/" + user, with: "")
-        if let fileName = fileName {
-            path += fileName
-        }
-        return path
-    }
-
     func serverDirectoryUp(serverUrl: String, home: String) -> String? {
         var returnString: String?
         if home == serverUrl {
@@ -422,34 +437,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             }
         }
         return returnString
-    }
-
-    func createServerUrl(serverUrl: String, fileName: String) -> String {
-        if fileName.isEmpty {
-            return serverUrl
-        } else if serverUrl.last == "/" {
-            return serverUrl + fileName
-        } else {
-            return serverUrl + "/" + fileName
-        }
-    }
-
-    func getFileNamePath(_ fileName: String, serverUrl: String, session: NCSession.Session) -> String {
-        let home = getHomeServer(session: session)
-        var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
-        if fileNamePath.first == "/" {
-            fileNamePath.removeFirst()
-        }
-        return fileNamePath
-    }
-
-    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
-        let home = getHomeServer(urlBase: urlBase, userId: userId)
-        var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
-        if fileNamePath.first == "/" {
-            fileNamePath.removeFirst()
-        }
-        return fileNamePath
     }
 
     func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, notUseMask: Bool = false) -> String {
@@ -602,7 +589,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func isDirectoryE2EE(serverUrl: String, urlBase: String, userId: String, account: String) -> Bool {
         guard serverUrl != getHomeServer(urlBase: urlBase, userId: userId) else {
             return false

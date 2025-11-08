@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2018 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import UIKit
 import NextcloudKit
 import PDFKit

@@ -3,6 +3,7 @@
 // SPDX-FileCopyrightText: 2024 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import NextcloudKit
 
 extension FileNameValidator {
