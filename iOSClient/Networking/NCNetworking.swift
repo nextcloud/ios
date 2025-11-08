@@ -280,23 +280,6 @@ class NCNetworking: @unchecked Sendable {
 
     init() { }
 
-    // MARK: - Communication Delegate
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
-    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
-        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            lastReachability = true
-        } else {
-            if lastReachability {
-                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
-                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
-            }
-            lastReachability = false
-        }
-        networkReachability = typeReachability
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
-    }
-#endif
-
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -441,11 +424,9 @@ class NCNetworking: @unchecked Sendable {
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
-#endif
 
     // MARK: - Helper
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         var localFile: tableMetadata?
         var livePhoto: tableMetadata?

@@ -284,7 +284,9 @@ extension NCNetworking {
         }
         if let livePhoto = results.livePhoto {
             await NCManageDatabase.shared.setLivePhotoVideo(metadatas: [livePhoto])
+#if !EXTENSION
             await NCNetworking.shared.setLivePhoto(account: metadata.account)
+#endif
         }
 
         await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -315,7 +317,7 @@ extension NCNetworking {
                                                                   sessionError: error.errorDescription,
                                                                   status: self.global.metadataStatusUploadError,
                                                                   errorCode: error.errorCode)
-            #if !EXTENSION
+#if !EXTENSION
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
             if !isAppInBackground {
                 if capabilities.termsOfService {
@@ -324,7 +326,7 @@ extension NCNetworking {
                     await uploadForbidden(metadata: metadata, error: error)
                 }
             }
-            #endif
+#endif
         } else {
             if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                     sessionTaskIdentifier: 0,

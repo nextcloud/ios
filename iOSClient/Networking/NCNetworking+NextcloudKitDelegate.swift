@@ -9,6 +9,22 @@ import Alamofire
 
 extension NCNetworking: NextcloudKitDelegate {
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
+        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
+            lastReachability = true
+        } else {
+            if lastReachability {
+                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
+                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            }
+            lastReachability = false
+        }
+        networkReachability = typeReachability
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
+    }
+#endif
+
     // MARK: - Download NextcloudKitDelegate
 
     func downloadComplete(fileName: String,
