@@ -13,7 +13,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var anchor: UInt64 = 0
 
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 10
+    var recordsPerPage: Int = 0
     // X-NC-PAGINATE
 
     var paginateToken: String?
@@ -253,14 +253,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             for file in files {
-                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file, isDirectoryE2EE: false)
+                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                 await NCManageDatabase.shared.addMetadataAsync(metadata)
                 if metadata.directory {
                     await NCManageDatabase.shared.createDirectory(metadata: metadata, withEtag: false)
                 }
-                // Not include root filename
+                // Not include root filename or E2EE
                 //
-                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName || metadata.e2eEncrypted {
                     continue
                 }
                 autoreleasepool {
