@@ -153,35 +153,34 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: session.urlBase, userId: session.userId)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
 
-        func getItemsFromDatabase() async -> [NSFileProviderItem] {
+        func getItemsFromDatabase() async -> (items: [NSFileProviderItem], countItems: Int) {
             var items: [NSFileProviderItem] = []
             let directoryServerUrl = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
             let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(session: session, directory: directoryServerUrl)
             guard let parentItemIdentifier,
                   let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicate) else {
-                return []
+                return ([], 0)
             }
             for metadata in metadatas {
                 // Not include root filename
                 //
-                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName || metadata.e2eEncrypted {
                     continue
                 }
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 items.append(item)
             }
 
-            return items
+            return (items, metadatas.count)
         }
 
-        /*
         if pageNumber == 0 {
             // Read root directory
             //
             let resultsDirectory = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "0", account: session.account)
             guard resultsDirectory.error == .success else {
-                let items = await getItemsFromDatabase()
-                return (items, false)
+                let (items, countItems) = await getItemsFromDatabase()
+                return (items, countItems, false)
             }
 
             // Check etag
@@ -189,11 +188,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             if let file = resultsDirectory.files?.first,
                let directory = await NCManageDatabase.shared.getTableDirectoryAsync(ocId: file.ocId),
                file.etag == directory.etag {
-                let items = await getItemsFromDatabase()
-                return (items, false)
+                let (items, countItems) = await getItemsFromDatabase()
+                return (items, countItems, false)
             }
         }
-        */
 
         var isPaginated: Bool = false
         var offset = pageNumber * recordsPerPage
@@ -271,8 +269,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             return (items, resultsRead.files?.count ?? 0, isPaginated)
         } else {
-            let items = await getItemsFromDatabase()
-            return (items, items.count, false)
+            let (items, countItems) = await getItemsFromDatabase()
+            return (items, countItems, false)
         }
     }
 }
