@@ -26,7 +26,7 @@ extension FileProviderExtension {
 
                 if resultsReadFile.error == .success, let file = resultsReadFile.files?.first {
                     let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-                    await NCManageDatabaseFPE.shared.createDirectory(metadata: metadata)
+                    await NCManageDatabase.shared.createDirectory(metadata: metadata)
 
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
@@ -75,11 +75,11 @@ extension FileProviderExtension {
 
                 if isDirectory {
                     let dirForDelete = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
-                    await NCManageDatabaseFPE.shared.deleteDirectoryAndSubDirectoryAsync(serverUrl: dirForDelete, account: account)
+                    await NCManageDatabase.shared.deleteDirectoryAndSubDirectoryAsync(serverUrl: dirForDelete, account: account)
                 }
 
-                await NCManageDatabaseFPE.shared.deleteMetadataAsync(id: ocId)
-                await NCManageDatabaseFPE.shared.deleteLocalFileAsync(id: ocId)
+                await NCManageDatabase.shared.deleteMetadataAsync(id: ocId)
+                await NCManageDatabase.shared.deleteLocalFileAsync(id: ocId)
 
                 completionHandler(nil)
                 return
@@ -120,12 +120,12 @@ extension FileProviderExtension {
 
             if resultsMove.error == .success {
                 if metadataFrom.directory {
-                    await NCManageDatabaseFPE.shared.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrlFrom, account: account)
-                    await NCManageDatabaseFPE.shared.renameDirectoryAsync(ocId: ocIdFrom, serverUrl: serverUrlTo)
+                    await NCManageDatabase.shared.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrlFrom, account: account)
+                    await NCManageDatabase.shared.renameDirectoryAsync(ocId: ocIdFrom, serverUrl: serverUrlTo)
                 }
-                await NCManageDatabaseFPE.shared.moveMetadataAsync(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
+                await NCManageDatabase.shared.moveMetadataAsync(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
 
-                guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(ocIdFrom) else {
+                guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocIdFrom) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -158,10 +158,10 @@ extension FileProviderExtension {
             let resultsMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account)
 
             if resultsMove.error == .success {
-                await NCManageDatabaseFPE.shared.renameMetadata(fileNameNew: itemName, ocId: ocId)
-                await NCManageDatabaseFPE.shared.setMetadataServerUrlFileNameStatusNormalAsync(ocId: ocId)
+                await NCManageDatabase.shared.renameMetadata(fileNameNew: itemName, ocId: ocId)
+                await NCManageDatabase.shared.setMetadataServerUrlFileNameStatusNormalAsync(ocId: ocId)
 
-                guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(ocId),
+                guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId),
                       let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
@@ -209,14 +209,14 @@ extension FileProviderExtension {
                 let resultsFavorite = await  NextcloudKit.shared.setFavoriteAsync(fileName: fileNamePath, favorite: favorite, account: metadata.account)
 
                 if resultsFavorite.error == .success {
-                    guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(ocId) else {
+                    guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
                     }
 
                     // Change DB
                     metadata.favorite = favorite
-                    await NCManageDatabaseFPE.shared.addMetadataAsync(metadata)
+                    await NCManageDatabase.shared.addMetadataAsync(metadata)
 
                     let item = await FileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
 
@@ -224,7 +224,7 @@ extension FileProviderExtension {
                     return
 
                 } else {
-                    guard let metadata = await NCManageDatabaseFPE.shared.getMetadataFromOcIdAsync(ocId) else {
+                    guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
                     }
@@ -250,7 +250,7 @@ extension FileProviderExtension {
             let ocId = metadataForTag.ocId
             let account = metadataForTag.account
 
-            await NCManageDatabaseFPE.shared.addTagAsunc(ocId, tagIOS: tagData, account: account)
+            await NCManageDatabase.shared.addTagAsunc(ocId, tagIOS: tagData, account: account)
 
             let item = await FileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
 

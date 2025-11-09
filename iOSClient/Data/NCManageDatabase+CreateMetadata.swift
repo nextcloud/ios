@@ -11,7 +11,6 @@ import Photos
 final class NCManageDatabaseCreateMetadata {
     func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false, isDirectoryE2EE: Bool? = nil) async -> tableMetadata {
         let metadata = self.createMetadata(file)
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
         let e2eEncryptedDirectory: Bool
         if let value = isDirectoryE2EE {
             e2eEncryptedDirectory = value
@@ -23,6 +22,7 @@ final class NCManageDatabaseCreateMetadata {
                 account: file.account)
         }
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
         if e2eEncryptedDirectory || file.e2eEncrypted {
             if let tableE2eEncryption = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {

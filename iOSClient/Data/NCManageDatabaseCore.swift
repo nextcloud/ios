@@ -25,13 +25,6 @@ final class NCManageDatabaseCore {
         // MANUAL MIGRATIONS (custom logic required)
         //
 
-        if oldSchemaVersion < 365 {
-            migration.deleteData(forType: tableMetadata.className())
-            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
-                newObject?["etag"] = ""
-            }
-        }
-
         if oldSchemaVersion < 390 {
             migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
                 if let schema = oldObject?.objectSchema,
@@ -66,10 +59,10 @@ final class NCManageDatabaseCore {
 
         // AUTOMATIC MIGRATIONS (Realm handles these internally)
         if oldSchemaVersion < databaseSchemaVersion {
-            // Realm automatically handles:
-            // -> Added properties with default values or optionals
-            // -> Removed properties
-            // -> Schema reordering
+            migration.deleteData(forType: tableMetadata.className())
+            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                newObject?["etag"] = ""
+            }
         }
     }
 

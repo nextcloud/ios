@@ -3,10 +3,20 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
-import NextcloudKit
 import RealmSwift
+import NextcloudKit
 
-extension NCManageDatabaseFPE {
+class tableTag: Object {
+    @objc dynamic var account = ""
+    @objc dynamic var ocId = ""
+    @objc dynamic var tagIOS: Data?
+
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+
+extension NCManageDatabase {
     func addTagAsunc(_ ocId: String, tagIOS: Data?, account: String) async {
         await core.performRealmWriteAsync { realm in
             let addObject = tableTag()
@@ -43,7 +53,6 @@ extension NCManageDatabaseFPE {
 
     func getTag(predicate: NSPredicate) -> tableTag? {
         var tag: tableTag?
-
         core.performRealmRead { realm in
             tag = realm.objects(tableTag.self)
                 .filter(predicate)

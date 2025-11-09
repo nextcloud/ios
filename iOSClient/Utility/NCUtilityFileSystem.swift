@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
 import PhotosUI
-#endif
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
@@ -270,7 +268,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     // MARK: -
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
     /// Asynchronously returns the size (in bytes) of the file at the given path.
     /// - Parameter path: Full file system path as a String.
     /// - Returns: Size in bytes, or `0` if the file doesn't exist or can't be accessed.
@@ -786,5 +783,4 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             return path
         }
     }
-#endif
 }

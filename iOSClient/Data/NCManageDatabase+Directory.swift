@@ -7,6 +7,25 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
+class tableDirectory: Object {
+    @objc dynamic var account = ""
+    @objc dynamic var colorFolder: String?
+    @objc dynamic var etag = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileId = ""
+    @objc dynamic var lastOpeningDate = NSDate()
+    @objc dynamic var lastSyncDate: NSDate?
+    @objc dynamic var ocId = ""
+    @objc dynamic var offline: Bool = false
+    @objc dynamic var permissions = ""
+    @objc dynamic var richWorkspace: String?
+    @objc dynamic var serverUrl = ""
+
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+
 extension NCManageDatabase {
 
     // MARK: - Realm write
@@ -27,7 +46,7 @@ extension NCManageDatabase {
         let detached = metadata.detachedCopy()
 
         await core.performRealmWriteAsync { realm in
-            var directoryServerUrl = self.utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            var directoryServerUrl = NCUtilityFileSystem().createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 directoryServerUrl = metadata.serverUrl
             }
