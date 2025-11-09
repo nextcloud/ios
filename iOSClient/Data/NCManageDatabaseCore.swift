@@ -57,19 +57,12 @@ final class NCManageDatabaseCore {
             }
         }
 
-        if oldSchemaVersion < 406 {
+        // AUTOMATIC MIGRATIONS (Realm handles these internally)
+        if oldSchemaVersion < databaseSchemaVersion {
             migration.deleteData(forType: tableMetadata.className())
             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                 newObject?["etag"] = ""
             }
-        }
-
-        // AUTOMATIC MIGRATIONS (Realm handles these internally)
-        if oldSchemaVersion < databaseSchemaVersion {
-            // Realm automatically handles:
-            // -> Added properties with default values or optionals
-            // -> Removed properties
-            // -> Schema reordering
         }
     }
 
