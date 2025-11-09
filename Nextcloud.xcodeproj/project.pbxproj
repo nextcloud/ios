@@ -889,8 +889,6 @@
 		F7F4F10B27ECDBDB008676F9 /* Inconsolata-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10327ECDBDB008676F9 /* Inconsolata-Light.ttf */; };
 		F7F4F10C27ECDBDB008676F9 /* Inconsolata-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10427ECDBDB008676F9 /* Inconsolata-Regular.ttf */; };
 		F7F563042E15762B00631A11 /* MigrationMultiDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F562FF2E15761500631A11 /* MigrationMultiDomains.swift */; };
-		F7F5EAB62EBF23E300D33D39 /* old.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F5EAB52EBF23E100D33D39 /* old.swift */; };
-		F7F5EAB72EBF23E300D33D39 /* old.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F5EAB52EBF23E100D33D39 /* old.swift */; };
 		F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F7F623B42A5EF4D30022D3D4 /* Gzip */; };
 		F7F623B72A5EFA0C0022D3D4 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F7F623B62A5EFA0C0022D3D4 /* Gzip */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
@@ -1776,7 +1774,6 @@
 		F7F4F10327ECDBDB008676F9 /* Inconsolata-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Light.ttf"; sourceTree = "<group>"; };
 		F7F4F10427ECDBDB008676F9 /* Inconsolata-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Regular.ttf"; sourceTree = "<group>"; };
 		F7F562FF2E15761500631A11 /* MigrationMultiDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationMultiDomains.swift; sourceTree = "<group>"; };
-		F7F5EAB52EBF23E100D33D39 /* old.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = old.swift; sourceTree = "<group>"; };
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewer.swift; sourceTree = "<group>"; };
@@ -2632,7 +2629,6 @@
 				F76340EB2EBDE7420056F538 /* NCManageDatabase.swift */,
 				F771E3F220E239A600AFB62D /* FileProviderData.swift */,
 				F76673EC22C901F5007ED366 /* FileProviderDomain.swift */,
-				F7F5EAB52EBF23E100D33D39 /* old.swift */,
 				F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */,
 				F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */,
 				F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */,
@@ -4131,7 +4127,6 @@
 				F763413E2EBE5DC00056F538 /* FileProviderItem.swift in Sources */,
 				F7490E8729882CA8009DCE94 /* ThreadSafeDictionary.swift in Sources */,
 				F7E742FA2EC0A5BC00E2362A /* NCManageDatabase+Metadata.swift in Sources */,
-				F7F5EAB72EBF23E300D33D39 /* old.swift in Sources */,
 				F7E742FC2EC0A5FD00E2362A /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F3E173C52C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F76341392EBE5CF80056F538 /* FileProviderData.swift in Sources */,
@@ -4357,7 +4352,6 @@
 				F76340EE2EBDE74C0056F538 /* NCManageDatabase.swift in Sources */,
 				F763410A2EBDFCB10056F538 /* NCManageDatabase+CreateMetadata.swift in Sources */,
 				F7E742F72EC0A4CD00E2362A /* NCManageDatabase+LocalFile.swift in Sources */,
-				F7F5EAB62EBF23E300D33D39 /* old.swift in Sources */,
 				F7E742F52EC0A3DD00E2362A /* NCManageDatabase+Directory.swift in Sources */,
 				F7E742F92EC0A5BC00E2362A /* NCManageDatabase+Metadata.swift in Sources */,
 				F763412E2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,

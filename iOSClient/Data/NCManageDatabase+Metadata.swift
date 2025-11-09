@@ -914,7 +914,6 @@ extension NCManageDatabase {
 
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
     /// Handles the home directory case rootFileName) and detaches the Realm object before returning.
-#if !EXTENSION
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
@@ -936,7 +935,6 @@ extension NCManageDatabase {
                 .map { $0.detachedCopy() }
         }
     }
-#endif
 
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
         guard metadata.isLivePhoto else {
