@@ -6,6 +6,7 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
+/*
 extension NCManageDatabase {
     func deleteMetadataAsync(predicate: NSPredicate) async {
         await core.performRealmWriteAsync { realm in
@@ -213,13 +214,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsMetadatasAsync(predicate: NSPredicate) async -> Results<tableMetadata>? {
-        await core.performRealmReadAsync { realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
-            return results.freeze()
-        }
-    }
+    
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         return core.performRealmRead { realm in
@@ -243,22 +238,5 @@ extension NCManageDatabase {
         }
     }
 
-    func getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: String) async -> [String: NSNumber] {
-        let result = await core.performRealmReadAsync { realm in
-            var listIdentifierRank: [String: NSNumber] = [:]
-            var counter = Int64(10)
-
-            let results = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND directory == true AND favorite == true", account)
-                .sorted(byKeyPath: "fileNameView", ascending: true)
-
-            results.forEach { item in
-                counter += 1
-                listIdentifierRank[item.ocId] = NSNumber(value: counter)
-            }
-
-            return listIdentifierRank
-        }
-        return result ?? [:]
-    }
-}
+    
+}*/
