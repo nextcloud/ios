@@ -244,6 +244,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     parentItemIdentifier = NSFileProviderItemIdentifier(file.ocId)
                 }
             }
+
             // Must have parentItemIdentifier
             //
             guard let parentItemIdentifier else {
