@@ -25,13 +25,6 @@ final class NCManageDatabaseCore {
         // MANUAL MIGRATIONS (custom logic required)
         //
 
-        if oldSchemaVersion < 365 {
-            migration.deleteData(forType: tableMetadata.className())
-            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
-                newObject?["etag"] = ""
-            }
-        }
-
         if oldSchemaVersion < 390 {
             migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
                 if let schema = oldObject?.objectSchema,
@@ -61,6 +54,13 @@ final class NCManageDatabaseCore {
                 } else {
                     newObject?["autoUploadSinceDate"] = nil
                 }
+            }
+        }
+
+        if oldSchemaVersion < 406 {
+            migration.deleteData(forType: tableMetadata.className())
+            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                newObject?["etag"] = ""
             }
         }
 
