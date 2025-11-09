@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 import FileProvider
 import NextcloudKit
 import Alamofire
+import RealmSwift
 
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
@@ -38,6 +39,14 @@ final class FileProviderExtension: NSFileProviderExtension {
         // Skip authentication checks for the working set container
         if containerItemIdentifier != .workingSet {
             let versionApp = fileProviderUtility().getVersionMaintenance()
+
+            // Verify / Open REALM
+            guard let url = NCManageDatabaseFPE.shared.databaseURL,
+                  let version = try? schemaVersionAtURL(url),
+                  version == databaseSchemaVersion else {
+                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorVersionMismatch)])
+            }
+            NCManageDatabaseFPE.shared.openRealm()
 
             // Verify version
             if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {

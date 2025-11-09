@@ -10,34 +10,33 @@ final class NCManageDatabaseFPE {
     static let shared = NCManageDatabaseFPE()
 
     internal let core: NCManageDatabaseCore
+    internal let databaseURL: URL?
 
-    init() {
+    private init() {
         self.core = NCManageDatabaseCore()
-        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
-            return
+
+        if let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) {
+            self.databaseURL = dirGroup
+                .appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
+                .appendingPathComponent(databaseName)
+        } else {
+            self.databaseURL = nil
         }
-        let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-        let objectTypes = [
-            NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
-            tableDirectory.self, tableTag.self, tableAccount.self
-        ]
+    }
 
+    func openRealm() {
         do {
-            // Migration configuration
-            let migrationCfg = Realm.Configuration(fileURL: databaseFileUrl,
-                                                   schemaVersion: databaseSchemaVersion,
-                                                   migrationBlock: { migration, oldSchemaVersion in
-                self.core.migrationSchema(migration, oldSchemaVersion)
-            })
-            try autoreleasepool {
-                _ = try Realm(configuration: migrationCfg)
-            }
+            let configuration = Realm.Configuration(
+                fileURL: databaseURL,
+                schemaVersion: databaseSchemaVersion,
+                objectTypes: [
+                    NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+                    tableDirectory.self, tableTag.self, tableAccount.self
+                ]
+            )
+            Realm.Configuration.defaultConfiguration = configuration
 
-            // Runtime and default configuration
-            let runtimeCfg = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
-            Realm.Configuration.defaultConfiguration = runtimeCfg
-
-            let realm = try Realm(configuration: runtimeCfg)
+            let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
