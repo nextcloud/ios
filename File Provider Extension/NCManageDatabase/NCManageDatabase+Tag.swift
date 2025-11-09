@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
-extension NCManageDatabaseFPE {
+extension NCManageDatabase {
     func addTagAsunc(_ ocId: String, tagIOS: Data?, account: String) async {
         await core.performRealmWriteAsync { realm in
             let addObject = tableTag()

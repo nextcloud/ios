@@ -6,8 +6,8 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
-final class NCManageDatabaseFPE {
-    static let shared = NCManageDatabaseFPE()
+final class NCManageDatabase {
+    static let shared = NCManageDatabase()
 
     internal let core: NCManageDatabaseCore
     internal let databaseURL: URL?

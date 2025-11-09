@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
-extension NCManageDatabaseFPE {
+extension NCManageDatabase {
     func getAllTableAccount() -> [tableAccount] {
         core.performRealmRead { realm in
             let sorted = [SortDescriptor(keyPath: "active", ascending: false),

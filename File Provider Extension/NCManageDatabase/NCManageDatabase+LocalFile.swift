@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
-extension NCManageDatabaseFPE {
+extension NCManageDatabase {
     func addLocalFilesAsync(metadatas: [tableMetadata], offline: Bool? = nil) async {
         guard !metadatas.isEmpty else {
             return

@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
-extension NCManageDatabaseFPE {
+extension NCManageDatabase {
     func deleteMetadataAsync(predicate: NSPredicate) async {
         await core.performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)

@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 import RealmSwift
 
-extension NCManageDatabaseFPE {
+extension NCManageDatabase {
     func createDirectory(metadata: tableMetadata, withEtag: Bool = true) async {
         let detached = metadata.detachedCopy()
 
