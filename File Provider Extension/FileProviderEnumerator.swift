@@ -13,7 +13,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var anchor: UInt64 = 0
 
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 0
+    var recordsPerPage: Int = 100
     // X-NC-PAGINATE
 
     var paginateToken: String?
@@ -199,7 +199,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             offset += 1
         }
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
-        let options = NKRequestOptions(paginate: true,
+        let options = NKRequestOptions(paginate: false,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
                                        paginateCount: recordsPerPage,
