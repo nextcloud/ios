@@ -28,6 +28,8 @@ extension FileProviderExtension {
                     let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                     await NCManageDatabase.shared.createDirectory(metadata: metadata)
 
+                    NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
                     completionHandler(item, nil)
