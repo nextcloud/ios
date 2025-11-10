@@ -53,7 +53,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     var shareLinksCount = 0
 
     var canReshare: Bool {
-        return ((metadata.sharePermissionsCollaborationServices & NCSharePermissions.permissionReshareShare) != 0)
+        return ((metadata.sharePermissionsCollaborationServices & NKShare.Permission.share.rawValue) != 0)
     }
 
     var session: NCSession.Session {
@@ -120,7 +120,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         guard
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
             let navigationController = self.navigationController else { return }
-        self.checkEnforcedPassword(shareType: NCShareCommon.shareTypeLink) { password in
+        self.checkEnforcedPassword(shareType: NKShare.ShareType.publicLink.rawValue) { password in
             advancePermission.networking = self.networking
             advancePermission.share = TransientShare.shareLink(metadata: self.metadata, password: password)
             advancePermission.metadata = self.metadata
@@ -215,7 +215,7 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
         guard capabilities.fileSharingPubPasswdEnforced,
-              shareType == NCShareCommon.shareTypeLink || shareType == NCShareCommon.shareTypeEmail
+              shareType == NKShare.ShareType.publicLink.rawValue || shareType == NKShare.ShareType.email.rawValue
         else { return completion(nil) }
 
         self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
@@ -284,7 +284,7 @@ extension NCShare: NCShareNetworkingDelegate {
             if let shares = existingShares.share, shares.contains(where: {$0.shareWith == sharee.shareWith}) { continue } // do not show already existing sharees
             if metadata.ownerDisplayName == sharee.shareWith { continue } // do not show owner of the share 
             var label = sharee.label
-            if sharee.shareType == NCShareCommon.shareTypeTeam {
+            if sharee.shareType == NKShare.ShareType.team.rawValue {
                 label += " (\(sharee.circleInfo), \(sharee.circleOwner))"
             }
 
@@ -383,14 +383,14 @@ extension NCShare: UITableViewDataSource {
         guard let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK, EMAIL
-        if tableShare.shareType == NCShareCommon.shareTypeLink || tableShare.shareType == NCShareCommon.shareTypeEmail {
+        if tableShare.shareType == NKShare.ShareType.publicLink.rawValue || tableShare.shareType == NKShare.ShareType.email.rawValue {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI(titleAppendString: String(shareLinksCount))
-                if tableShare.shareType == NCShareCommon.shareTypeLink { shareLinksCount += 1 }
+                if tableShare.shareType == NKShare.ShareType.publicLink.rawValue { shareLinksCount += 1 }
                 return cell
             }
         } else {

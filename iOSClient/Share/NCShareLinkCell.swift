@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import UIKit
+import NextcloudKit
 
 class NCShareLinkCell: UITableViewCell {
     @IBOutlet private weak var imageItem: UIImageView!
@@ -103,7 +104,7 @@ class NCShareLinkCell: UITableViewCell {
                 labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
             }
 
-            if tableShare.shareType == NCShareCommon.shareTypeEmail {
+            if tableShare.shareType == NKShare.ShareType.email.rawValue {
                 labelTitle.text = tableShare.shareWithDisplayname
                 imageItem.image = NCUtility().loadImage(named: "envelope.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare.account)])
             }
