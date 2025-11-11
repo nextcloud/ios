@@ -380,7 +380,8 @@ extension NCShare: UITableViewDataSource {
             return cell
         }
 
-        guard let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
+        let orderedShares = shares.share?.sorted(by: { $0.date?.compare($1.date as Date? ?? Date()) == .orderedAscending })
+        guard let tableShare = orderedShares?[indexPath.row] else { return UITableViewCell() }
 
         // LINK, EMAIL
         if tableShare.shareType == NKShare.ShareType.publicLink.rawValue || tableShare.shareType == NKShare.ShareType.email.rawValue {
