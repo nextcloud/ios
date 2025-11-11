@@ -43,6 +43,14 @@ actor NCMetadataTranfersSuccess {
         return tranfersSuccess.filter({ $0.ocIdTransfer == ocIdTransfer }).first
     }
 
+    func getServerUrlFileNames() async -> [String] {
+        return tranfersSuccess.map { $0.serverUrlFileName }
+    }
+
+    func exists(serverUrlFileName: String) async -> Bool {
+        return tranfersSuccess.filter({ $0.serverUrlFileName == serverUrlFileName }).first != nil
+    }
+
     func flush() async {
         let isInBackground = NCNetworking.shared.isInBackground()
         let snapshot: [tableMetadata] = tranfersSuccess

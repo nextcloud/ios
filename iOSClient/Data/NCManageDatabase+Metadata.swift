@@ -364,6 +364,32 @@ extension NCManageDatabase {
             return false
         }
     }
+
+    func getMetadataProcess() async -> [tableMetadata] {
+        let existingFileNames = await NCNetworking.shared.metadataTranfersSuccess.getServerUrlFileNames()
+        let excludedSet = Set(existingFileNames)  // O(1) membership check
+
+        return await core.performRealmReadAsync { realm in
+            let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
+            let sortDescriptors = [
+                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+            ]
+            let limit = NCBrandOptions.shared.numMaximumProcess * 4
+
+            let results = realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .sorted(by: sortDescriptors)
+
+            // Filter out all metadata whose serverUrlFileName is in excludedSet
+            let filtered = results.filter { metadata in
+                return !excludedSet.contains(metadata.serverUrlFileName)
+            }
+
+            let sliced = filtered.prefix(limit)
+            return sliced.map { $0.detachedCopy() }
+        } ?? []
+    }
 #endif
 
     // MARK: - Realm Write
@@ -1211,25 +1237,6 @@ extension NCManageDatabase {
                 .first
             return object?.detachedCopy()
         }
-    }
-
-    func getMetadataProcess() async -> [tableMetadata] {
-        await core.performRealmReadAsync { realm in
-            let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
-            let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-            ]
-            let limit = NCBrandOptions.shared.numMaximumProcess * 3
-
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .sorted(by: sortDescriptors)
-
-            let sliced = results.prefix(limit)
-            return sliced.map { $0.detachedCopy() }
-
-        } ?? []
     }
 
     func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {
