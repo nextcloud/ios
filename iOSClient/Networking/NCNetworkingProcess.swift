@@ -319,7 +319,8 @@ actor NCNetworkingProcess {
 
                 // IS TRANSFER SUCCESS
                 //
-                if await NCNetworking.shared.metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrl) {
+                if await NCNetworking.shared.metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) {
+                    // File exists
                     continue
                 }
 
