@@ -39,21 +39,12 @@ actor NCMetadataTranfersSuccess {
         tranfersSuccess
     }
 
-    func getMetadata(ocIdTransfer: String) async -> tableMetadata? {
-        return tranfersSuccess.filter({ $0.ocIdTransfer == ocIdTransfer }).first
-    }
-
-    func getServerUrlFileNames() async -> [String] {
-        return tranfersSuccess.map { $0.serverUrlFileName }
-    }
-
     func exists(serverUrlFileName: String) async -> Bool {
         return tranfersSuccess.filter({ $0.serverUrlFileName == serverUrlFileName }).first != nil
     }
 
     func flush() async {
-        let isInBackground = NCNetworking.shared.isInBackground()
-        let snapshot: [tableMetadata] = tranfersSuccess
+        let metadatas: [tableMetadata] = tranfersSuccess
         tranfersSuccess.removeAll(keepingCapacity: true)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
@@ -62,7 +53,7 @@ actor NCMetadataTranfersSuccess {
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
-        for metadata in snapshot {
+        for metadata in metadatas {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
             if let localFile = results.localFile {
                 metadatasLocalFiles.append(localFile)
@@ -75,8 +66,7 @@ actor NCMetadataTranfersSuccess {
             }
         }
 
-        let ocIds = snapshot.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadatasAsync(ocId: ocIds, metadatas: snapshot)
+        await NCManageDatabase.shared.addMetadatasAsync(metadatas)
 
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
@@ -87,9 +77,9 @@ actor NCMetadataTranfersSuccess {
         // Create Live Photo metadatas
         await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
 
-        // Set livePhoto on Server
-#if !EXTENSION
-        if !isInBackground {
+        if !NCNetworking.shared.isInBackground() {
+
+            // Set livePhoto on Server
             let accounts = Set(metadatasLivePhoto.map { $0.account })
             for account in accounts {
                 await NCNetworking.shared.setLivePhoto(account: account)
@@ -97,13 +87,10 @@ actor NCMetadataTranfersSuccess {
                     return
                 }
             }
-        }
-#endif
 
-        // TransferDispatcher — notify outside of shared-state mutation
-        if !isInBackground {
+            // TransferDispatcher — notify outside of shared-state mutation
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for metadata in snapshot {
+                for metadata in metadatas {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
                                             serverUrl: metadata.serverUrl,
@@ -115,6 +102,6 @@ actor NCMetadataTranfersSuccess {
             }
         }
 
-        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(snapshot.count))", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)
     }
 }

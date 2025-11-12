@@ -286,9 +286,8 @@ extension NCNetworking {
     func verifyZombie() async {
         // UPLOADING-FOREGROUND
         //
-        if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "session == %@ AND status == %d",
-                                                                                                  sessionUpload,
-                                                                                                  self.global.metadataStatusUploading)) {
+        if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(
+            predicate: NSPredicate(format: "session == %@ AND status == %d", sessionUpload, self.global.metadataStatusUploading)) {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
@@ -297,7 +296,7 @@ extension NCNetworking {
                 }
 
                 // Verify in Metadata Transfer Success
-                guard await metadataTranfersSuccess.getMetadata(ocIdTransfer: metadata.ocIdTransfer) == nil else {
+                guard await !metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
                     continue
                 }
 
