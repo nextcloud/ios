@@ -59,7 +59,7 @@ class NCContextMenu: NSObject {
                     await self.networking.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 account: self.metadata.account,
-                                                serverUrl:self.metadata.serverUrl,
+                                                serverUrl: self.metadata.serverUrl,
                                                 selector: self.global.selectorOpenIn,
                                                 ocId: self.metadata.ocId,
                                                 destination: nil,
