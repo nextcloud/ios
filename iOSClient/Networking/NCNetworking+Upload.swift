@@ -39,14 +39,17 @@ extension NCNetworking {
                                                                                             name: "upload")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
-                if let metadata,
-                   let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                        sessionTaskIdentifier: task.taskIdentifier,
-                                                                                        status: self.global.metadataStatusUploading) {
+                if let metadata {
+                    await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                         sessionTaskIdentifier: task.taskIdentifier,
+                                                                         status: self.global.metadataStatusUploading)
 
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusUploading,
-                                                metadata: metadata,
+                                                account: metadata.account,
+                                                serverUrl: metadata.serverUrl,
+                                                selector: metadata.sessionSelector,
+                                                ocId: metadata.ocId,
                                                 destination: nil,
                                                 error: .success)
                     }
@@ -128,7 +131,10 @@ extension NCNetworking {
                 await NCManageDatabase.shared.addChunksAsync(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,
-                                            metadata: metadata.detachedCopy(),
+                                            account: metadata.account,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
                                             destination: nil,
                                             error: .success)
                 }
@@ -233,15 +239,17 @@ extension NCNetworking {
             if let task, error == .success {
                 nkLog(debug: "Uploading file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
-                if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                        sessionTaskIdentifier: task.taskIdentifier,
-                                                                                        status: self.global.metadataStatusUploading) {
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploading,
-                                                metadata: metadata,
-                                                destination: nil,
-                                                error: .success)
-                    }
+                await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                      sessionTaskIdentifier: task.taskIdentifier,
+                                                                      status: self.global.metadataStatusUploading)
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusUploading,
+                                            account: metadata.account,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
+                                            destination: nil,
+                                            error: .success)
                 }
             } else {
                 await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
@@ -275,7 +283,7 @@ extension NCNetworking {
 
         let results = await helperMetadataSuccess(metadata: metadata)
 
-        await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
         if let localFile = results.localFile {
             await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
         }
@@ -291,7 +299,10 @@ extension NCNetworking {
 
         await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                    metadata: metadata.detachedCopy(),
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
                                     destination: nil,
                                     error: .success)
         }
@@ -328,18 +339,20 @@ extension NCNetworking {
             }
 #endif
         } else {
-            if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                    sessionTaskIdentifier: 0,
-                                                                                    sessionError: error.errorDescription,
-                                                                                    status: self.global.metadataStatusUploadError,
-                                                                                    errorCode: error.errorCode) {
+           await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                 sessionTaskIdentifier: 0,
+                                                                 sessionError: error.errorDescription,
+                                                                 status: self.global.metadataStatusUploadError,
+                                                                 errorCode: error.errorCode)
 
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                            metadata: metadata,
-                                            destination: nil,
-                                            error: error)
-                }
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: nil,
+                                        error: error)
             }
 
             // Client Diagnostic

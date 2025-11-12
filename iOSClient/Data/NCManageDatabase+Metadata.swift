@@ -364,6 +364,32 @@ extension NCManageDatabase {
             return false
         }
     }
+
+    func getMetadataProcess() async -> [tableMetadata] {
+        let existingFileNames = await NCNetworking.shared.metadataTranfersSuccess.getServerUrlFileNames()
+        let excludedSet = Set(existingFileNames)  // O(1) membership check
+
+        return await core.performRealmReadAsync { realm in
+            let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
+            let sortDescriptors = [
+                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+            ]
+            let limit = NCBrandOptions.shared.numMaximumProcess * 4
+
+            let results = realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .sorted(by: sortDescriptors)
+
+            // Filter out all metadata whose serverUrlFileName is in excludedSet
+            let filtered = results.filter { metadata in
+                return !excludedSet.contains(metadata.serverUrlFileName)
+            }
+
+            let sliced = filtered.prefix(limit)
+            return sliced.map { $0.detachedCopy() }
+        } ?? []
+    }
 #endif
 
     // MARK: - Realm Write
@@ -458,31 +484,32 @@ extension NCManageDatabase {
         }
     }
 
-    func replaceMetadataAsync(id: String, metadata: tableMetadata) async {
+    func replaceMetadataAsync(ocId: String, metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
         await core.performRealmWriteAsync { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@ OR ocIdTransfer == %@", id, id)
-            realm.delete(result)
-            realm.add(detached, update: .all)
+            if let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) {
+                realm.delete(object)
+            }
+            realm.add(detached, update: .modified)
         }
     }
 
-    func replaceMetadataAsync(ocIdTransfersToDelete: [String], metadatas: [tableMetadata]) async {
-        guard !ocIdTransfersToDelete.isEmpty else {
+    func replaceMetadatasAsync(ocId: [String], metadatas: [tableMetadata]) async {
+        guard !ocId.isEmpty else {
             return
         }
-        var detached: [tableMetadata] = []
+        var detacheds: [tableMetadata] = []
         for metadata in metadatas {
-            detached.append(metadata.detachedCopy())
+            metadata.ocIdTransfer = metadata.ocId
+            detacheds.append(metadata.detachedCopy())
         }
 
         await core.performRealmWriteAsync { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter("ocIdTransfer IN %@", ocIdTransfersToDelete)
-            realm.delete(result)
-            realm.add(detached, update: .all)
+            let results = realm.objects(tableMetadata.self)
+                .filter("ocId IN %@", ocId)
+            realm.delete(results)
+            realm.add(detacheds, update: .all)
         }
     }
 
@@ -1211,25 +1238,6 @@ extension NCManageDatabase {
                 .first
             return object?.detachedCopy()
         }
-    }
-
-    func getMetadataProcess() async -> [tableMetadata] {
-        await core.performRealmReadAsync { realm in
-            let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
-            let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-            ]
-            let limit = NCBrandOptions.shared.numMaximumProcess * 3
-
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .sorted(by: sortDescriptors)
-
-            let sliced = results.prefix(limit)
-            return sliced.map { $0.detachedCopy() }
-
-        } ?? []
     }
 
     func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {

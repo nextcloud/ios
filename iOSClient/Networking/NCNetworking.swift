@@ -20,7 +20,13 @@ import Alamofire
 protocol NCTransferDelegate: AnyObject {
     var sceneIdentifier: String { get }
 
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError)
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError)
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?)
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
@@ -30,7 +36,13 @@ protocol NCTransferDelegate: AnyObject {
 }
 
 extension NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {}
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {}
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {}
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,

@@ -455,9 +455,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
 
         /// Get counter
-        if fileName.count > 8 {
-            let index = fileName.index(fileName.startIndex, offsetBy: 4)
-            numberFileName = String(fileName[index..<fileName.index(index, offsetBy: 4)])
+        if let range = fileName.range(of: "\\d+", options: .regularExpression) {
+            let numericPart = String(fileName[range])
+            numberFileName = numericPart
         } else {
             numberFileName = keychain.incrementalNumber
         }

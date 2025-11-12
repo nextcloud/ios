@@ -525,19 +525,26 @@ extension NCViewerPDF: EasyTipViewDelegate {
 }
 
 extension NCViewerPDF: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        guard self.metadata?.serverUrl == metadata.serverUrl,
-              self.metadata?.fileNameView == metadata.fileNameView
-        else {
-            return
-        }
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task {@MainActor in
+            guard self.metadata?.serverUrl == serverUrl,
+                  let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId),
+                  self.metadata?.fileNameView == metadata.fileNameView
+            else {
+                return
+            }
 
-        DispatchQueue.main.async {
             switch status {
             // DELETE
             case NCGlobal.shared.networkingStatusDelete:
                 if error == .success,
-                   metadata.ocId == self.metadata?.ocId {
+                   ocId == self.metadata?.ocId {
                     self.navigationController?.popViewController(animated: true)
                 }
             // UPLOAD
@@ -552,7 +559,7 @@ extension NCViewerPDF: NCTransferDelegate {
                 }
             // FAVORITE
             case NCGlobal.shared.networkingStatusFavorite:
-                if self.metadata?.ocId == metadata.ocId {
+                if self.metadata?.ocId == ocId {
                     self.metadata = metadata
                 }
             default:

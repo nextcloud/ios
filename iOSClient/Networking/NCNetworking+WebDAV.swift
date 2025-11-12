@@ -88,7 +88,7 @@ extension NCNetworking {
         return(account, metadata, results.error)
     }
 
-    func fileExists(serverUrlFileName: String, account: String) async -> NKError? {
+    func fileExists(serverUrlFileName: String, account: String) async -> NKError {
         let requestBody = NKDataFileXML(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).getRequestBodyFileExists().data(using: .utf8)
 
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
@@ -108,55 +108,68 @@ extension NCNetworking {
 
     // MARK: - Create Filename
 
+    /// Creates a unique file name on both local metadata and remote server side.
+    /// It will try to append " 1", " 2", ... to the base name until the name is free.
+    /// A safety `maxAttempts` is used to avoid infinite loops in case of persistent conflicts.
     func createFileName(fileNameBase: String, account: String, serverUrl: String) async -> String {
-        var exitLoop = false
+        let maxAttempts = 100  // safety guard
+        var attempt = 0
         var resultFileName = fileNameBase
 
-        func newFileName() {
-            var name = NSString(string: resultFileName).deletingPathExtension
-            let ext = NSString(string: resultFileName).pathExtension
-            let characters = Array(name)
-            if characters.count < 2 {
-                if ext.isEmpty {
-                    resultFileName = name + " 1"
-                } else {
-                    resultFileName = name + " 1" + "." + ext
+        // Helper to generate next candidate name
+        func makeNextFileName(from current: String) -> String {
+            let ns = current as NSString
+            let name = ns.deletingPathExtension
+            let ext  = ns.pathExtension
+
+            // Look for pattern: "<name> <number>"
+            if let lastSpaceRange = name.range(of: " ", options: .backwards) {
+                let prefix = String(name[..<lastSpaceRange.lowerBound])
+                let suffix = String(name[lastSpaceRange.upperBound...])
+
+                if let num = Int(suffix) {
+                    let newNum = num + 1
+                    if ext.isEmpty {
+                        return "\(prefix) \(newNum)"
+                    } else {
+                        return "\(prefix) \(newNum).\(ext)"
+                    }
                 }
+            }
+
+            // No trailing number → start with " 1"
+            if ext.isEmpty {
+                return "\(name) 1"
             } else {
-                let space = characters[characters.count - 2]
-                let numChar = characters[characters.count - 1]
-                var num = Int(String(numChar))
-                if space == " " && num != nil {
-                    name = String(name.dropLast())
-                    num = num! + 1
-                    if ext.isEmpty {
-                        resultFileName = name + "\(num!)"
-                    } else {
-                        resultFileName = name + "\(num!)" + "." + ext
-                    }
-                } else {
-                    if ext.isEmpty {
-                        resultFileName = name + " 1"
-                    } else {
-                        resultFileName = name + " 1" + "." + ext
-                    }
-                }
+                return "\(name) 1.\(ext)"
             }
         }
 
-        while !exitLoop {
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
-                newFileName()
+        while attempt < maxAttempts {
+            attempt += 1
+
+            // Check local metadata (avoid duplicates already queued/stored)
+            if NCManageDatabase.shared.getMetadata( predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+                resultFileName = makeNextFileName(from: resultFileName)
                 continue
             }
+            // Check remote (DAV) if file/folder already exists on server
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: resultFileName)
-            let error = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
-            if error == .success {
-                newFileName()
+            let existsResult = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
+
+            if existsResult == .success {
+                // Remote already has it → try next name
+                resultFileName = makeNextFileName(from: resultFileName)
+                continue
+            } else if existsResult.errorCode == 404 {
+                // 404 → free name
+                return resultFileName
             } else {
-                exitLoop = true
+                // Any other HTTP/DAV error (423, 401, 500, etc.) → better to stop here
+                return resultFileName
             }
         }
+
         return resultFileName
     }
 
@@ -214,13 +227,19 @@ extension NCNetworking {
         return resultCreateFolder.error
     }
 
-    func createFolderForAutoUpload(serverUrlFileName: String,
-                                   account: String) async -> NKError {
+    func createFolderForAutoUpload(serverUrlFileName: String, account: String) async -> NKError {
         // Fast path: directory already exists → cleanup + success
-        let error = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
-        if error == .success {
+        let existsResult = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
+        if existsResult == .success {
+            // 207 Multi-Status → Directory already exists → cleanup related metadata
             await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName))
             return (.success)
+        } else if existsResult.errorCode == 404 {
+            // 404 Not Found → directory does not exist
+            // Proceed
+        } else {
+            // Any other error (423 locked, 401 auth, 403 forbidden, 5xx, etc.)
+            return(existsResult)
         }
 
         // Try to create the directory
@@ -263,7 +282,10 @@ extension NCNetworking {
         if let sceneIdentifier = metadata.sceneIdentifier {
             await transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                        metadata: metadata,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
                                         destination: nil,
                                         error: error)
             } others: { delegate in
@@ -272,7 +294,10 @@ extension NCNetworking {
         } else {
             await transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                        metadata: metadata,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
                                         destination: nil,
                                         error: error)
             }
@@ -381,7 +406,10 @@ extension NCNetworking {
 
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                                metadata: metadata,
+                                                account: metadata.account,
+                                                serverUrl: metadata.serverUrl,
+                                                selector: metadata.sessionSelector,
+                                                ocId: metadata.ocId,
                                                 destination: nil,
                                                 error: error)
                     }
@@ -469,7 +497,10 @@ extension NCNetworking {
 
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                    metadata: metadata,
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
                                     destination: nil,
                                     error: results.error)
         }
@@ -529,7 +560,10 @@ extension NCNetworking {
 
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
-                                    metadata: metadata,
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
                                     destination: nil,
                                     error: results.error)
         }
@@ -586,7 +620,13 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: results.error)
+            delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
+                                    destination: destination,
+                                    error: results.error)
         }
 
         return results.error
@@ -641,7 +681,13 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: results.error)
+            delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
+                                    destination: destination,
+                                    error: results.error)
         }
 
         return results.error
@@ -691,7 +737,10 @@ extension NCNetworking {
 
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusFavorite,
-                                    metadata: metadata,
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
                                     destination: nil,
                                     error: results.error)
         }

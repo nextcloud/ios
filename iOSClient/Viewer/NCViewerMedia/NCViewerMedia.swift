@@ -625,16 +625,17 @@ extension NCViewerMedia: EasyTipViewDelegate {
 }
 
 extension NCViewerMedia: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        switch status {
-        // DOWNLOAD
-        case self.global.networkingStatusDownloaded:
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        if status == self.global.networkingStatusDownloaded {
             DispatchQueue.main.async {
                 self.closeDetail()
             }
-        default:
-            break
         }
     }
-
 }

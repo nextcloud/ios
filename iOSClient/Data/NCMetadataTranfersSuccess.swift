@@ -43,6 +43,14 @@ actor NCMetadataTranfersSuccess {
         return tranfersSuccess.filter({ $0.ocIdTransfer == ocIdTransfer }).first
     }
 
+    func getServerUrlFileNames() async -> [String] {
+        return tranfersSuccess.map { $0.serverUrlFileName }
+    }
+
+    func exists(serverUrlFileName: String) async -> Bool {
+        return tranfersSuccess.filter({ $0.serverUrlFileName == serverUrlFileName }).first != nil
+    }
+
     func flush() async {
         let isInBackground = NCNetworking.shared.isInBackground()
         let snapshot: [tableMetadata] = tranfersSuccess
@@ -67,8 +75,8 @@ actor NCMetadataTranfersSuccess {
             }
         }
 
-        let ocIdTransfers = snapshot.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: snapshot)
+        let ocIds = snapshot.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadatasAsync(ocId: ocIds, metadatas: snapshot)
 
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
@@ -97,7 +105,10 @@ actor NCMetadataTranfersSuccess {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 for metadata in snapshot {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
-                                            metadata: metadata,
+                                            account: metadata.account,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
                                             destination: nil,
                                             error: .success)
                 }
