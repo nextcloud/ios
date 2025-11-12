@@ -491,7 +491,7 @@ extension NCManageDatabase {
             if let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) {
                 realm.delete(object)
             }
-            realm.add(detached)
+            realm.add(detached, update: .modified)
         }
     }
 
@@ -509,7 +509,7 @@ extension NCManageDatabase {
             let results = realm.objects(tableMetadata.self)
                 .filter("ocId IN %@", ocId)
             realm.delete(results)
-            realm.add(detacheds)
+            realm.add(detacheds, update: .all)
         }
     }
 
