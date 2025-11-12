@@ -24,7 +24,7 @@ public actor NCDebouncer {
             return
         }
 
-        eventCount &+= 1
+        eventCount += 1
         scheduleIfNeeded()
 
         if eventCount >= maxEventCount {
