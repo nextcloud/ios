@@ -389,16 +389,18 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
 }
 
 extension NCViewerRichDocument: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        DispatchQueue.main.async {
-            switch status {
-            // FAVORITE
-            case NCGlobal.shared.networkingStatusFavorite:
-                if self.metadata.ocId == metadata.ocId {
-                    self.metadata = metadata
-                }
-            default:
-                break
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task {@MainActor in
+            if status == NCGlobal.shared.networkingStatusFavorite,
+               self.metadata.ocId == ocId,
+               let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
+                self.metadata = metadata
             }
         }
     }

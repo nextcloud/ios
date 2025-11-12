@@ -287,10 +287,11 @@ extension NCCollectionViewCommon {
                         Task {
                             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                    let metadata = metadata.detachedCopy()
-                                    metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                            metadata: metadata,
+                                                            account: metadata.account,
+                                                            serverUrl: metadata.serverUrl,
+                                                            selector: NCGlobal.shared.selectorSaveAsScan,
+                                                            ocId: metadata.ocId,
                                                             destination: nil,
                                                             error: .success)
                                 }
@@ -357,10 +358,11 @@ extension NCCollectionViewCommon {
                         Task {
                             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                    let metadata = metadata.detachedCopy()
-                                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                            metadata: metadata,
+                                                            account: metadata.account,
+                                                            serverUrl: metadata.serverUrl,
+                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                            ocId: metadata.ocId,
                                                             destination: nil,
                                                             error: .success)
                                 }

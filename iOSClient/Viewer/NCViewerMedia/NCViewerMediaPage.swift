@@ -582,13 +582,19 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 }
 
 extension NCViewerMediaPage: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        DispatchQueue.main.async {
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task {@MainActor in
             switch status {
             // DELETE
             case NCGlobal.shared.networkingStatusDelete:
                 if error == .success,
-                   metadata.ocId == self.currentViewController.metadata.ocId {
+                   ocId == self.currentViewController.metadata.ocId {
                     if let ncplayer = self.currentViewController.ncplayer, ncplayer.isPlaying() {
                         ncplayer.playerPause()
                     }
@@ -596,7 +602,8 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 }
             // DOWNLOAD
             case self.global.networkingStatusDownloaded:
-                guard metadata.ocId == self.currentViewController.metadata.ocId else {
+                guard ocId == self.currentViewController.metadata.ocId,
+                      let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                     return
                 }
                 self.progressView.progress = 0
@@ -621,10 +628,10 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 // UPLOAD
             case self.global.networkingStatusUploaded:
                 guard error == .success else { return }
-                if self.currentViewController.metadata.ocId == metadata.ocId {
+                if self.currentViewController.metadata.ocId == ocId {
                     self.currentViewController.loadImage()
                 } else {
-                    self.modifiedOcId.append(metadata.ocId)
+                    self.modifiedOcId.append(ocId)
                 }
             default:
                 break

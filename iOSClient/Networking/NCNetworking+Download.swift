@@ -43,17 +43,19 @@ extension NCNetworking {
                                                                                             name: "download")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
-                if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(
+                await NCManageDatabase.shared.setMetadataSessionAsync(
                     ocId: metadata.ocId,
                     sessionTaskIdentifier: task.taskIdentifier,
-                    status: self.global.metadataStatusDownloading) {
+                    status: self.global.metadataStatusDownloading)
 
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloading,
-                                                metadata: metadata,
-                                                destination: nil,
-                                                error: .success)
-                    }
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDownloading,
+                                            account: metadata.account,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
+                                            destination: nil,
+                                            error: .success)
                 }
             }
             taskHandler(task)
@@ -111,15 +113,18 @@ extension NCNetworking {
         if let task, error == .success {
             nkLog(debug: " Downloading file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
-            if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                    sessionTaskIdentifier: task.taskIdentifier,
-                                                                                    status: self.global.metadataStatusDownloading) {
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloading,
-                                            metadata: metadata,
-                                            destination: nil,
-                                            error: .success)
-                }
+            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                  sessionTaskIdentifier: task.taskIdentifier,
+                                                                  status: self.global.metadataStatusDownloading)
+
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusDownloading,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: nil,
+                                        error: .success)
             }
         } else {
             _ = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -152,18 +157,21 @@ extension NCNetworking {
 #endif
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
 
-        if let downloadedMetadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                          session: "",
-                                                                                          sessionTaskIdentifier: 0,
-                                                                                          sessionError: "",
-                                                                                          status: self.global.metadataStatusNormal,
-                                                                                          etag: etag) {
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                        metadata: downloadedMetadata,
-                                        destination: nil,
-                                        error: .success)
-            }
+        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                              session: "",
+                                                              sessionTaskIdentifier: 0,
+                                                              sessionError: "",
+                                                              status: self.global.metadataStatusNormal,
+                                                              etag: etag)
+
+        await self.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferChange(status: self.global.networkingStatusDownloaded,
+                                    account: metadata.account,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
+                                    destination: nil,
+                                    error: .success)
         }
     }
 
@@ -180,33 +188,38 @@ extension NCNetworking {
             await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
             await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
         } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-            if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                    session: "",
-                                                                                    sessionTaskIdentifier: 0,
-                                                                                    sessionError: "",
-                                                                                    selector: "",
-                                                                                    status: self.global.metadataStatusNormal) {
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
-                                                metadata: metadata,
-                                                destination: nil,
-                                                error: .success)
-                    }
-            }
-        } else {
-            if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                    session: "",
-                                                                                    sessionTaskIdentifier: 0,
-                                                                                    sessionError: "",
-                                                                                    selector: "",
-                                                                                    status: self.global.metadataStatusNormal) {
+            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                  session: "",
+                                                                  sessionTaskIdentifier: 0,
+                                                                  sessionError: "",
+                                                                  selector: "",
+                                                                  status: self.global.metadataStatusNormal)
 
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                            metadata: metadata,
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                            account: metadata.account,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
                                             destination: nil,
-                                            error: error)
+                                            error: .success)
                 }
+        } else {
+           await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                 session: "",
+                                                                 sessionTaskIdentifier: 0,
+                                                                 sessionError: "",
+                                                                 selector: "",
+                                                                 status: self.global.metadataStatusNormal)
+
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: nil,
+                                        error: error)
             }
         }
     }
