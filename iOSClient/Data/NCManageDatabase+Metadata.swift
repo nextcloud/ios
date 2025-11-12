@@ -366,9 +366,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataProcess() async -> [tableMetadata] {
-        let existingFileNames = await NCNetworking.shared.metadataTranfersSuccess.getServerUrlFileNames()
-        let excludedSet = Set(existingFileNames)  // O(1) membership check
-
         return await core.performRealmReadAsync { realm in
             let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
             let sortDescriptors = [
@@ -381,12 +378,7 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .sorted(by: sortDescriptors)
 
-            // Filter out all metadata whose serverUrlFileName is in excludedSet
-            let filtered = results.filter { metadata in
-                return !excludedSet.contains(metadata.serverUrlFileName)
-            }
-
-            let sliced = filtered.prefix(limit)
+            let sliced = results.prefix(limit)
             return sliced.map { $0.detachedCopy() }
         } ?? []
     }
@@ -481,6 +473,14 @@ extension NCManageDatabase {
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR fileId == %@", id, id)
             realm.delete(result)
+        }
+    }
+
+    func deleteMetadataAsync(ocId: String) async {
+        await core.performRealmWriteAsync { realm in
+            if let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) {
+                realm.delete(object)
+            }
         }
     }
 

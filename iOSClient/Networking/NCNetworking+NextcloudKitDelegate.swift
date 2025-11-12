@@ -145,7 +145,7 @@ extension NCNetworking {
                                             date: date)
                     } else {
 #if !EXTENSION
-                        await NCManageDatabase.shared.clearMetadatasSessionAsync(ocId: metadata.ocId)
+                        await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)
                         await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
                                                                                  ocId: ocId,
                                                                                  date: date,
