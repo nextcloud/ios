@@ -275,7 +275,7 @@ extension NCNetworking {
 
         let results = await helperMetadataSuccess(metadata: metadata)
 
-        await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
         if let localFile = results.localFile {
             await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
         }

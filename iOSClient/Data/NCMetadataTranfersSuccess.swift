@@ -75,8 +75,8 @@ actor NCMetadataTranfersSuccess {
             }
         }
 
-        let ocIdTransfers = snapshot.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: snapshot)
+        let ocIds = snapshot.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadatasAsync(ocId: ocIds, metadatas: snapshot)
 
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)

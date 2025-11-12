@@ -484,31 +484,32 @@ extension NCManageDatabase {
         }
     }
 
-    func replaceMetadataAsync(id: String, metadata: tableMetadata) async {
+    func replaceMetadataAsync(ocId: String, metadata: tableMetadata) async {
         let detached = metadata.detachedCopy()
 
         await core.performRealmWriteAsync { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@ OR ocIdTransfer == %@", id, id)
-            realm.delete(result)
-            realm.add(detached, update: .all)
+            if let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) {
+                realm.delete(object)
+            }
+            realm.add(detached)
         }
     }
 
-    func replaceMetadataAsync(ocIdTransfersToDelete: [String], metadatas: [tableMetadata]) async {
-        guard !ocIdTransfersToDelete.isEmpty else {
+    func replaceMetadatasAsync(ocId: [String], metadatas: [tableMetadata]) async {
+        guard !ocId.isEmpty else {
             return
         }
-        var detached: [tableMetadata] = []
+        var detacheds: [tableMetadata] = []
         for metadata in metadatas {
-            detached.append(metadata.detachedCopy())
+            metadata.ocIdTransfer = metadata.ocId
+            detacheds.append(metadata.detachedCopy())
         }
 
         await core.performRealmWriteAsync { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter("ocIdTransfer IN %@", ocIdTransfersToDelete)
-            realm.delete(result)
-            realm.add(detached, update: .all)
+            let results = realm.objects(tableMetadata.self)
+                .filter("ocId IN %@", ocId)
+            realm.delete(results)
+            realm.add(detacheds)
         }
     }
 

@@ -172,4 +172,15 @@ extension NCManageDatabase {
             }
         }
     }
+
+    func clearMetadatasSessionAsync(ocId: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else { return }
+
+            object.session = ""
+            object.sessionError = ""
+            object.sessionTaskIdentifier = 0
+            object.status = NCGlobal.shared.metadataStatusNormal
+        }
+    }
 }
