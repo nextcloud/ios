@@ -212,12 +212,6 @@ class NCViewerMediaPage: UIViewController {
         let metadata = currentViewController.metadata
         let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
 
-        if metadata.isAudioOrVideo {
-            self.navigationController?.setNavigationBarAppearance(textColor: .white)
-        } else {
-            self.navigationController?.setNavigationBarAppearance()
-        }
-
         if mode == .normal {
             if fullscreen {
                 navigationController?.setNavigationBarHidden(true, animated: true)
