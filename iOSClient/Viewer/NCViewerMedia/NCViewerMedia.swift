@@ -134,6 +134,12 @@ class NCViewerMedia: UIViewController {
         viewerMediaPage?.clearCommandCenter()
 
         if metadata.isAudioOrVideo {
+            self.navigationController?.setNavigationBarAppearance(textColor: .white, backgroundColor: .white)
+        } else {
+            self.navigationController?.setNavigationBarAppearance()
+        }
+
+        if metadata.isAudioOrVideo {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
                     NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium)
