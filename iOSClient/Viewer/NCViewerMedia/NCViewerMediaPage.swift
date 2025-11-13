@@ -44,7 +44,6 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    var textColor: UIColor = NCBrandColor.shared.textColor
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
@@ -84,12 +83,6 @@ class NCViewerMediaPage: UIViewController {
         return self.pageViewController.viewControllers![0] as! NCViewerMedia
     }
     // swiftlint:enable force_cast
-
-    private var hideStatusBar: Bool = false {
-        didSet {
-            setNeedsStatusBarAppearanceUpdate()
-        }
-    }
 
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
@@ -166,7 +159,12 @@ class NCViewerMediaPage: UIViewController {
         super.viewWillAppear(animated)
 
         changeScreenMode(mode: viewerMediaScreenMode)
-        tabBarController?.tabBar.isHidden = true
+
+        if #available(iOS 18.0, *) {
+            self.tabBarController?.setTabBarHidden(true, animated: true)
+        } else {
+            self.tabBarController?.tabBar.isHidden = true
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -198,20 +196,16 @@ class NCViewerMediaPage: UIViewController {
         clearCommandCenter()
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if viewerMediaScreenMode == .normal {
-            return .default
-        } else {
-            return .lightContent
-        }
-    }
-
     override var prefersHomeIndicatorAutoHidden: Bool {
         return viewerMediaScreenMode == .full
     }
 
     override var prefersStatusBarHidden: Bool {
-        return hideStatusBar
+        if viewerMediaScreenMode == .full {
+            return true
+        } else {
+            return false
+        }
     }
 
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
@@ -238,34 +232,25 @@ class NCViewerMediaPage: UIViewController {
         let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
 
         if mode == .normal {
-
             if fullscreen {
                 navigationController?.setNavigationBarHidden(true, animated: true)
-                hideStatusBar = true
                 progressView.isHidden = true
             } else {
                 navigationController?.setNavigationBarHidden(false, animated: true)
-                hideStatusBar = false
                 progressView.isHidden = false
             }
 
             if metadata.isAudioOrVideo {
-                navigationController?.setNavigationBarAppearance(textColor: .white, backgroundColor: .black)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
-                textColor = .white
                 moreNavigationItem.image = NCImageCache.shared.getImageButtonMore(colors: [.white])
             } else {
-                navigationController?.setNavigationBarAppearance()
                 view.backgroundColor = .systemBackground
-                textColor = NCBrandColor.shared.textColor
                 moreNavigationItem.image = NCImageCache.shared.getImageButtonMore()
             }
 
         } else if !currentViewController.detailView.isShown {
-
             navigationController?.setNavigationBarHidden(true, animated: true)
-            hideStatusBar = true
             progressView.isHidden = true
 
             if metadata.isVideo {
@@ -273,7 +258,6 @@ class NCViewerMediaPage: UIViewController {
             }
 
             view.backgroundColor = .black
-            textColor = .white
         }
 
         if fullscreen {
@@ -517,10 +501,11 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: currentViewController.metadata),
                utilityFileSystem.fileProviderStorageExists(metadataLive) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId,
-                                                                                                                fileName: metadataLive.fileName,
-                                                                                                                userId: metadataLive.userId,
-                                                                                                                urlBase: metadataLive.urlBase))
+                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(
+                    metadataLive.ocId,
+                    fileName: metadataLive.fileName,
+                    userId: metadataLive.userId,
+                    urlBase: metadataLive.urlBase))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()
@@ -529,7 +514,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 }
 
 extension UIPageViewController {
-
     @objc func enableSwipeGesture() {
         for view in self.view.subviews {
             if let subView = view as? UIScrollView {
