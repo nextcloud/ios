@@ -1,25 +1,6 @@
-//
-//  NCViewerMediaPage.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 24/10/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2020 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -44,7 +25,6 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    var textColor: UIColor = NCBrandColor.shared.textColor
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
@@ -166,7 +146,12 @@ class NCViewerMediaPage: UIViewController {
         super.viewWillAppear(animated)
 
         changeScreenMode(mode: viewerMediaScreenMode)
-        tabBarController?.tabBar.isHidden = true
+
+        if #available(iOS 18.0, *) {
+            self.tabBarController?.setTabBarHidden(true, animated: true)
+        } else {
+            self.tabBarController?.tabBar.isHidden = true
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -183,7 +168,12 @@ class NCViewerMediaPage: UIViewController {
         super.viewWillDisappear(animated)
 
         changeScreenMode(mode: .normal)
-        tabBarController?.tabBar.isHidden = false
+
+        if #available(iOS 18.0, *) {
+            self.tabBarController?.setTabBarHidden(false, animated: true)
+        } else {
+            self.tabBarController?.tabBar.isHidden = false
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -253,12 +243,10 @@ class NCViewerMediaPage: UIViewController {
                 navigationController?.setNavigationBarAppearance(textColor: .white, backgroundColor: .black)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
-                textColor = .white
                 moreNavigationItem.image = NCImageCache.shared.getImageButtonMore(colors: [.white])
             } else {
                 navigationController?.setNavigationBarAppearance()
                 view.backgroundColor = .systemBackground
-                textColor = NCBrandColor.shared.textColor
                 moreNavigationItem.image = NCImageCache.shared.getImageButtonMore()
             }
 
@@ -273,7 +261,6 @@ class NCViewerMediaPage: UIViewController {
             }
 
             view.backgroundColor = .black
-            textColor = .white
         }
 
         if fullscreen {
@@ -517,10 +504,11 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: currentViewController.metadata),
                utilityFileSystem.fileProviderStorageExists(metadataLive) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId,
-                                                                                                                fileName: metadataLive.fileName,
-                                                                                                                userId: metadataLive.userId,
-                                                                                                                urlBase: metadataLive.urlBase))
+                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(
+                    metadataLive.ocId,
+                    fileName: metadataLive.fileName,
+                    userId: metadataLive.userId,
+                    urlBase: metadataLive.urlBase))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()
@@ -529,7 +517,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 }
 
 extension UIPageViewController {
-
     @objc func enableSwipeGesture() {
         for view in self.view.subviews {
             if let subView = view as? UIScrollView {

@@ -31,9 +31,6 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberOfItemsInSection = dataSource.metadatas.count
         self.numberOfColumns = getColumnCount()
-
-        setElements()
-
         return numberOfItemsInSection
     }
 

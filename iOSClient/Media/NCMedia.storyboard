@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -68,7 +68,6 @@
                         <outlet property="activityIndicator" destination="9bK-ms-LxX" id="dpp-13-6UO"/>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
                         <outlet property="gradientView" destination="j5r-Rn-Fcf" id="rJD-yb-zV2"/>
-                        <outlet property="titleConstraint" destination="viX-PV-uTj" id="wGD-hQ-i90"/>
                         <outlet property="titleDate" destination="rSH-l2-T1a" id="sRl-Sr-fph"/>
                     </connections>
                 </viewController>

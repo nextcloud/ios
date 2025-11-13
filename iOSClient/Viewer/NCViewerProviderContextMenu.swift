@@ -1,25 +1,6 @@
-//
-//  NCViewerProviderContextMenu.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 12/01/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -95,9 +76,10 @@ class NCViewerProviderContextMenu: UIViewController {
                     }
                     if metadata.size <= maxDownload {
                         Task {
-                            if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                                  session: self.networking.sessionDownload,
-                                                                                                                  selector: "") {
+                            if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                                ocId: metadata.ocId,
+                                session: self.networking.sessionDownload,
+                                selector: "") {
                                 await self.networking.downloadFile(metadata: metadata)
                             }
                         }
@@ -109,9 +91,10 @@ class NCViewerProviderContextMenu: UIViewController {
                self.networking.isOnline,
                metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml" {
                 Task {
-                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                          session: self.networking.sessionDownload,
-                                                                                                          selector: "") {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                        ocId: metadata.ocId,
+                        session: self.networking.sessionDownload,
+                        selector: "") {
                         await self.networking.downloadFile(metadata: metadata)
                     }
                 }
@@ -121,9 +104,10 @@ class NCViewerProviderContextMenu: UIViewController {
                self.networking.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
                 Task {
-                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadataLivePhoto.ocId,
-                                                                                                          session: self.networking.sessionDownload,
-                                                                                                          selector: "") {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                        ocId: metadataLivePhoto.ocId,
+                        session: self.networking.sessionDownload,
+                        selector: "") {
                         await self.networking.downloadFile(metadata: metadata)
                     }
                 }

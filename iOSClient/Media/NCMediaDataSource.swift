@@ -33,6 +33,7 @@ extension NCMedia {
     @MainActor
     func collectionViewReloadData() {
         collectionView.reloadData()
+        setElements()
     }
 
     // MARK: - Search media
