@@ -536,7 +536,6 @@ extension NCViewerMedia {
         self.detailView.show(
             metadata: self.metadata,
             image: self.image,
-            textColor: self.viewerMediaPage?.textColor,
             exif: exif,
             ncplayer: self.ncplayer,
             delegate: self)

@@ -84,7 +84,6 @@ class NCViewerMediaDetailView: UIView {
 
     func show(metadata: tableMetadata,
               image: UIImage?,
-              textColor: UIColor?,
               exif: ExifData,
               ncplayer: NCPlayer?,
               delegate: NCViewerMediaDetailViewDelegate?) {
