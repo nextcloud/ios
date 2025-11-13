@@ -76,9 +76,10 @@ class NCViewerProviderContextMenu: UIViewController {
                     }
                     if metadata.size <= maxDownload {
                         Task {
-                            if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                                  session: self.networking.sessionDownload,
-                                                                                                                  selector: "") {
+                            if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                                ocId: metadata.ocId,
+                                session: self.networking.sessionDownload,
+                                selector: "") {
                                 await self.networking.downloadFile(metadata: metadata)
                             }
                         }
@@ -90,9 +91,10 @@ class NCViewerProviderContextMenu: UIViewController {
                self.networking.isOnline,
                metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml" {
                 Task {
-                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                          session: self.networking.sessionDownload,
-                                                                                                          selector: "") {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                        ocId: metadata.ocId,
+                        session: self.networking.sessionDownload,
+                        selector: "") {
                         await self.networking.downloadFile(metadata: metadata)
                     }
                 }
@@ -102,9 +104,10 @@ class NCViewerProviderContextMenu: UIViewController {
                self.networking.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
                 Task {
-                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadataLivePhoto.ocId,
-                                                                                                          session: self.networking.sessionDownload,
-                                                                                                          selector: "") {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                        ocId: metadataLivePhoto.ocId,
+                        session: self.networking.sessionDownload,
+                        selector: "") {
                         await self.networking.downloadFile(metadata: metadata)
                     }
                 }
