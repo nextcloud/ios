@@ -86,7 +86,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        tabBarController?.tabBar.isHidden = true
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(true, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = true
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -106,7 +110,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        tabBarController?.tabBar.isHidden = false
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(false, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = false
+        }
 
         Task {
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)

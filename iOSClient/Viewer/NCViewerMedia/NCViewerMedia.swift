@@ -113,7 +113,12 @@ class NCViewerMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        tabBarController?.tabBar.isHidden = true
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(true, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = true
+        }
+
         viewerMediaPage?.navigationItem.title = (metadata.fileNameView as NSString).deletingPathExtension
 
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {

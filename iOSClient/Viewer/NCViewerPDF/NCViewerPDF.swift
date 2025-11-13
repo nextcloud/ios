@@ -130,7 +130,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        tabBarController?.tabBar.isHidden = true
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(true, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = true
+        }
 
         // PDF THUMBNAIL
 
@@ -245,7 +249,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        tabBarController?.tabBar.isHidden = false
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(false, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = false
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {

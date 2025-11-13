@@ -55,7 +55,12 @@ class NCMediaSelectTabBar: ObservableObject {
         UIView.animate(withDuration: 0.2) {
             hostingController.view.transform = .init(translationX: 0, y: 0)
         }
-        controller.tabBar.isHidden = true
+
+        if #available(iOS 18.0, *) {
+            controller.setTabBarHidden(true, animated: true)
+        } else {
+            controller.tabBar.isHidden = true
+        }
     }
 
     func hide() {
@@ -64,7 +69,12 @@ class NCMediaSelectTabBar: ObservableObject {
             return
         }
 
-        controller.tabBar.isHidden = false
+        if #available(iOS 18.0, *) {
+            controller.setTabBarHidden(false, animated: true)
+        } else {
+            controller.tabBar.isHidden = false
+        }
+
         hostingController.view.isHidden = true
     }
 }

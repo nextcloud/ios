@@ -71,7 +71,11 @@ class NCTrashSelectTabBar: ObservableObject {
             return
         }
 
-        controller.tabBar.isHidden = true
+        if #available(iOS 18.0, *) {
+            controller.setTabBarHidden(true, animated: true)
+        } else {
+            controller.tabBar.isHidden = true
+        }
 
         if hostingController.view.isHidden {
             hostingController.view.isHidden = false
@@ -91,7 +95,12 @@ class NCTrashSelectTabBar: ObservableObject {
         }
 
         hostingController.view.isHidden = true
-        controller.tabBar.isHidden = false
+
+        if #available(iOS 18.0, *) {
+            controller.setTabBarHidden(false, animated: true)
+        } else {
+            controller.tabBar.isHidden = false
+        }
     }
 
     func update(selectOcId: [String]) {

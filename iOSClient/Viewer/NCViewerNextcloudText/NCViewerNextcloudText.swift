@@ -95,7 +95,11 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        tabBarController?.tabBar.isHidden = true
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(true, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = true
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -114,7 +118,11 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        tabBarController?.tabBar.isHidden = false
+        if #available(iOS 18.0, *) {
+            tabBarController?.setTabBarHidden(false, animated: true)
+        } else {
+            tabBarController?.tabBar.isHidden = false
+        }
 
         Task {
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
