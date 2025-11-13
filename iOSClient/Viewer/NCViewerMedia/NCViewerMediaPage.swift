@@ -65,6 +65,12 @@ class NCViewerMediaPage: UIViewController {
     }
     // swiftlint:enable force_cast
 
+    private var hideStatusBar: Bool = false {
+        didSet {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
@@ -162,7 +168,12 @@ class NCViewerMediaPage: UIViewController {
         super.viewWillDisappear(animated)
 
         changeScreenMode(mode: .normal)
-        tabBarController?.tabBar.isHidden = false
+
+        if #available(iOS 18.0, *) {
+            self.tabBarController?.setTabBarHidden(false, animated: true)
+        } else {
+            self.tabBarController?.tabBar.isHidden = false
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -177,16 +188,20 @@ class NCViewerMediaPage: UIViewController {
         clearCommandCenter()
     }
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        if viewerMediaScreenMode == .normal {
+            return .default
+        } else {
+            return .lightContent
+        }
+    }
+
     override var prefersHomeIndicatorAutoHidden: Bool {
         return viewerMediaScreenMode == .full
     }
 
     override var prefersStatusBarHidden: Bool {
-        if viewerMediaScreenMode == .full {
-            return true
-        } else {
-            return false
-        }
+        return hideStatusBar
     }
 
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
@@ -213,25 +228,32 @@ class NCViewerMediaPage: UIViewController {
         let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
 
         if mode == .normal {
+
             if fullscreen {
                 navigationController?.setNavigationBarHidden(true, animated: true)
+                hideStatusBar = true
                 progressView.isHidden = true
             } else {
                 navigationController?.setNavigationBarHidden(false, animated: true)
+                hideStatusBar = false
                 progressView.isHidden = false
             }
 
             if metadata.isAudioOrVideo {
+                navigationController?.setNavigationBarAppearance(textColor: .white, backgroundColor: .black)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 moreNavigationItem.image = NCImageCache.shared.getImageButtonMore(colors: [.white])
             } else {
+                navigationController?.setNavigationBarAppearance()
                 view.backgroundColor = .systemBackground
                 moreNavigationItem.image = NCImageCache.shared.getImageButtonMore()
             }
 
         } else if !currentViewController.detailView.isShown {
+
             navigationController?.setNavigationBarHidden(true, animated: true)
+            hideStatusBar = true
             progressView.isHidden = true
 
             if metadata.isVideo {
