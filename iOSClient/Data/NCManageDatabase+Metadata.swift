@@ -682,7 +682,13 @@ extension NCManageDatabase {
             let resultsToDelete = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName)
                 .filter { !ocIdsToSkip.contains($0.ocId) }
-            let metadatasCopy = Array(resultsToDelete).map { tableMetadata(value: $0) }
+
+            // Cache mediaSearch (and anything else needed) before deletion, keyed by ocId.
+            let metadatasByOcId: [String: tableMetadata] = Dictionary(
+                uniqueKeysWithValues: resultsToDelete.map { object in
+                    (object.ocId, tableMetadata(value: object))
+                }
+            )
 
             realm.delete(resultsToDelete)
 
@@ -690,9 +696,10 @@ extension NCManageDatabase {
                 guard !ocIdsToSkip.contains(metadata.ocId) else {
                     continue
                 }
-                if let match = metadatasCopy.first(where: { $0.ocId == metadata.ocId }) {
-                    metadata.mediaSearch = match.mediaSearch
+                if let previous = metadatasByOcId[metadata.ocId] {
+                    metadata.mediaSearch = previous.mediaSearch
                 }
+
                 realm.add(metadata.detachedCopy(), update: .all)
             }
         }
