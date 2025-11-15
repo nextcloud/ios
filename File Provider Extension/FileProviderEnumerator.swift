@@ -90,14 +90,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     pageNumber = intPage
                 }
 
-                let (items, countItems, ncPaginated) = await fetchItemsForPage(session: session,
-                                                                               serverUrl: serverUrl,
-                                                                               pageNumber: pageNumber)
+                let (items, ncPaginated) = await fetchItemsForPage(session: session,
+                                                                   serverUrl: serverUrl,
+                                                                   pageNumber: pageNumber)
                 observer.didEnumerate(items)
 
                 if !items.isEmpty,
-                   ncPaginated,
-                   countItems == self.recordsPerPage {
+                   ncPaginated {
                     pageNumber += 1
                     observer.finishEnumerating(upTo: NSFileProviderPage(Data("\(pageNumber)".utf8)))
                 } else {
@@ -149,7 +148,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data))
     }
 
-    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], countItems: Int, ncPaginate: Bool) {
+    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], ncPaginate: Bool) {
         let fileProviderUtility = fileProviderUtility()
         let createMetadata = NCManageDatabaseCreateMetadata()
         let predicateMetadatas = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
@@ -186,8 +185,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
 
         // Get capabilities
-        if pageNumber == 0,
-           FileProviderData.shared.capabilities == nil {
+        if pageNumber == 0, FileProviderData.shared.capabilities == nil {
             let results = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account)
             FileProviderData.shared.capabilities = results.capabilities
         }
@@ -199,7 +197,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
         }
 
-        var ncPaginate: Bool = false
         var offset = pageNumber * recordsPerPage
         if pageNumber > 0 {
             offset += 1
@@ -226,6 +223,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         // Header for paginate
         //
+        var ncPaginate: Bool = false
         if let headers = resultsRead.responseData?.response?.allHeaderFields as? [String: String] {
             let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
             ncPaginate = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
@@ -242,13 +240,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: true)
-            return (items, resultsRead.files?.count ?? 0, ncPaginate)
+            return (items, ncPaginate)
         } else {
             guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicateMetadatas) else {
-                return ([], 0, false)
+                return ([], false)
             }
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: false)
-            return (items, metadatas.count, false)
+            return (items, false)
         }
     }
 }
