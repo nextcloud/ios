@@ -76,7 +76,7 @@ final class NCManageDatabaseCreateMetadata {
         completion(metadata)
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+
     func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
@@ -85,12 +85,14 @@ final class NCManageDatabaseCreateMetadata {
         var metadatas: [tableMetadata] = []
 
         for file in files {
-            if let key = listServerUrl[file.serverUrl] {
-                isDirectoryE2EE = key
-            } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: file.account)
-                listServerUrl[file.serverUrl] = isDirectoryE2EE
-            }
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+                if let key = listServerUrl[file.serverUrl] {
+                    isDirectoryE2EE = key
+                } else {
+                    isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: file.account)
+                    listServerUrl[file.serverUrl] = isDirectoryE2EE
+                }
+#endif
 
             let metadata = await convertFileToMetadataAsync(file, mediaSearch: mediaSearch, isDirectoryE2EE: isDirectoryE2EE)
 
@@ -105,6 +107,7 @@ final class NCManageDatabaseCreateMetadata {
         return (metadataFolder.detachedCopy(), metadatas)
     }
 
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
     func convertFilesToMetadatas(_ files: [NKFile], capabilities: NKCapabilities.Capabilities?, serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]) -> Void) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
