@@ -76,7 +76,6 @@ final class NCManageDatabaseCreateMetadata {
         completion(metadata)
     }
 
-
     func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false

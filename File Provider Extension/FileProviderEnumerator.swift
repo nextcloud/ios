@@ -19,6 +19,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var paginateToken: String?
     var paginatedTotal: Int = 0
 
+    struct PageInfo {
+        let page: Int
+        let items: Int
+    }
+    var paginateItems: [PageInfo] = []
+
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         super.init()
@@ -197,11 +203,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
         }
 
-        var offset = pageNumber * recordsPerPage
-        if pageNumber > 0 {
-            offset += 1
-        }
+        // Request pagination
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
+        var offset = 0
+        if pageNumber > 0 {
+           offset = getOffset(for: pageNumber - 1)
+        }
         let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
@@ -233,6 +240,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         if resultsRead.error == .success, let files = resultsRead.files {
             let (metadataFolder, metadatas) = await createMetadata.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: pageNumber == 0 ? serverUrl : nil)
+            self.paginateItems.append(PageInfo(page: pageNumber, items: metadatas.count))
 
             if pageNumber == 0 {
                 await NCManageDatabase.shared.deleteMetadataAsync(predicate: predicateMetadatas)
@@ -248,5 +256,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: false)
             return (items, false)
         }
+    }
+
+    func getOffset(for page: Int) -> Int {
+        paginateItems
+            .filter { $0.page < page }
+            .map { $0.items }
+            .reduce(0, +)
     }
 }
