@@ -184,6 +184,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return items
         }
 
+        // Get capabilities
+        if pageNumber == 0,
+           FileProviderData.shared.capabilities == nil {
+            let results = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account)
+            FileProviderData.shared.capabilities = results.capabilities
+        }
+
         var isPaginated: Bool = false
         var offset = pageNumber * recordsPerPage
         if pageNumber > 0 {
