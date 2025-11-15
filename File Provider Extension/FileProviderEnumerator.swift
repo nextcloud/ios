@@ -90,13 +90,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     pageNumber = intPage
                 }
 
-                let (items, countItems, isPaginated) = await fetchItemsForPage(session: session,
+                let (items, countItems, ncPaginated) = await fetchItemsForPage(session: session,
                                                                                serverUrl: serverUrl,
                                                                                pageNumber: pageNumber)
                 observer.didEnumerate(items)
 
                 if !items.isEmpty,
-                   isPaginated,
+                   ncPaginated,
                    countItems == self.recordsPerPage {
                     pageNumber += 1
                     observer.finishEnumerating(upTo: NSFileProviderPage(Data("\(pageNumber)".utf8)))
@@ -149,10 +149,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data))
     }
 
-    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], countItems: Int, isPaginated: Bool) {
+    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], countItems: Int, ncPaginate: Bool) {
         let fileProviderUtility = fileProviderUtility()
         let createMetadata = NCManageDatabaseCreateMetadata()
         let predicateMetadatas = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+        var optionsPaginate = false
 
         func getItemsFrom(metadatas: [tableMetadata], createDirectory: Bool) async -> [NSFileProviderItem] {
             let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)
@@ -191,13 +192,20 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             FileProviderData.shared.capabilities = results.capabilities
         }
 
-        var isPaginated: Bool = false
+        // Paginate is availible from NC server 32.0.2
+        if let capabilities = FileProviderData.shared.capabilities {
+            if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
+                optionsPaginate = true
+            }
+        }
+
+        var ncPaginate: Bool = false
         var offset = pageNumber * recordsPerPage
         if pageNumber > 0 {
             offset += 1
         }
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
-        let options = NKRequestOptions(paginate: true,
+        let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
                                        paginateCount: recordsPerPage,
@@ -220,7 +228,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         //
         if let headers = resultsRead.responseData?.response?.allHeaderFields as? [String: String] {
             let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
-            isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
+            ncPaginate = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
             self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
             self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0") ?? 0
         }
@@ -234,7 +242,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: true)
-            return (items, resultsRead.files?.count ?? 0, isPaginated)
+            return (items, resultsRead.files?.count ?? 0, ncPaginate)
         } else {
             guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicateMetadatas) else {
                 return ([], 0, false)
