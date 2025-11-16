@@ -251,8 +251,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: true)
-            let totalItems = self.totalItems() + 1
-            if totalItems >= self.paginatedTotal {
+            if self.totalItems() >= self.paginatedTotal {
                 ncPaginate = false
             }
             return (items, ncPaginate)
@@ -270,10 +269,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 .filter { $0.page < page }
                 .map { $0.items }
                 .reduce(0, +)
+        // + 1 for the next
         return items == 0 ? 0 : items + 1
     }
 
     func totalItems() -> Int {
-        paginateItems.map { $0.items }.reduce(0, +)
+        let total = paginateItems.map { $0.items }.reduce(0, +)
+        // + 1 for the first "root directory"
+        return total == 0 ? 0 : total + 1
     }
 }
