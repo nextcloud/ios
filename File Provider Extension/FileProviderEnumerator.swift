@@ -207,7 +207,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         var offset = 0
         if pageNumber > 0 {
-           offset = getOffset(for: pageNumber - 1)
+           offset = getOffset(for: pageNumber)
         }
         let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
@@ -235,7 +235,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
             ncPaginate = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
             self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
-            self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0") ?? 0
+            if let totalString = normalizedHeaders["x-nc-paginate-total"],
+               let total = Int(totalString) {
+                self.paginatedTotal = total
+            }
         }
 
         if resultsRead.error == .success, let files = resultsRead.files {
@@ -248,6 +251,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: true)
+            let totalItems = self.totalItems() + 1
+            if totalItems >= self.paginatedTotal {
+                ncPaginate = false
+            }
             return (items, ncPaginate)
         } else {
             guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicateMetadatas) else {
@@ -259,9 +266,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func getOffset(for page: Int) -> Int {
-        paginateItems
-            .filter { $0.page < page }
-            .map { $0.items }
-            .reduce(0, +)
+        let items = paginateItems
+                .filter { $0.page < page }
+                .map { $0.items }
+                .reduce(0, +)
+        return items == 0 ? 0 : items + 1
+    }
+
+    func totalItems() -> Int {
+        paginateItems.map { $0.items }.reduce(0, +)
     }
 }
