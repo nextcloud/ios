@@ -324,11 +324,12 @@ extension NCShareExtension {
                 guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                     continue
                 }
-                let metadataForUpload = await NCManageDatabase.shared.createMetadataAsync(fileName: fileName,
-                                                                                          ocId: ocId,
-                                                                                          serverUrl: serverUrl,
-                                                                                          session: session,
-                                                                                          sceneIdentifier: nil)
+                let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                    fileName: fileName,
+                    ocId: ocId,
+                    serverUrl: serverUrl,
+                    session: session,
+                    sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUpload
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension

@@ -127,11 +127,12 @@ class NCDragDrop: NSObject {
 
             try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-            let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
-                                                                       ocId: ocId,
-                                                                       serverUrl: serverUrl,
-                                                                       session: session,
-                                                                       sceneIdentifier: controller?.sceneIdentifier)
+            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: ocId,
+                serverUrl: serverUrl,
+                session: session,
+                sceneIdentifier: controller?.sceneIdentifier)
 
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
             metadataForUpload.sessionSelector = global.selectorUploadFile
@@ -150,7 +151,13 @@ class NCDragDrop: NSObject {
         for metadata in metadatas {
             NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: destination,
+                                        error: .success)
             }
         }
     }
@@ -159,7 +166,13 @@ class NCDragDrop: NSObject {
         for metadata in metadatas {
             NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                        account: metadata.account,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: destination,
+                                        error: .success)
             }
         }
     }

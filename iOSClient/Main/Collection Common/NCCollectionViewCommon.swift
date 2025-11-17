@@ -344,9 +344,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        guard session.account == metadata.account else { return }
-
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
         if error != .success,
            error.errorCode != global.errorResourceNotFound {
             LucidBanner.shared.show(subtitle: error.errorDescription,
@@ -355,93 +359,84 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                         ErrorBannerView(state: state)
             }
         }
+        guard session.account == account else { return }
 
-        self.debouncer.call {
-            switch status {
-            // UPLOADED, UPLOADED LIVEPHOTO, DELETE
-            case self.global.networkingStatusUploaded,
-                self.global.networkingStatusDelete,
-                self.global.networkingStatusCopyMove:
-                if self.isSearchingMode {
-                    self.networkSearch()
-                } else if self.serverUrl == metadata.serverUrl || destination == self.serverUrl {
-                    Task {
-                        await self.reloadDataSource()
-                    }
-                }
-            // DOWNLOAD
-            case self.global.networkingStatusDownloaded:
-                Task {
-                    if metadata.serverUrl == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                }
-            case self.global.networkingStatusDownloadCancel:
-                Task {
-                    if metadata.serverUrl == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                }
-            // CREATE FOLDER
-            case self.global.networkingStatusCreateFolder:
-                if metadata.serverUrl == self.serverUrl, metadata.sessionSelector != self.global.selectorUploadAutoUpload {
-                    self.pushMetadata(metadata)
-                }
-            // RENAME
-            case self.global.networkingStatusRename:
-                self.debouncer.call {
+        Task {
+            await self.debouncer.call {
+                switch status {
+                // UPLOADED, UPLOADED LIVEPHOTO, DELETE
+                case self.global.networkingStatusUploaded,
+                    self.global.networkingStatusDelete,
+                    self.global.networkingStatusCopyMove:
                     if self.isSearchingMode {
                         self.networkSearch()
-                    } else if self.serverUrl == metadata.serverUrl {
-                        Task {
-                            await self.reloadDataSource()
-                        }
+                    } else if self.serverUrl == serverUrl || destination == self.serverUrl {
+                        await self.reloadDataSource()
                     }
-                }
-            // FAVORITE
-            case self.global.networkingStatusFavorite:
-                self.debouncer.call {
+                // DOWNLOAD
+                case self.global.networkingStatusDownloaded:
+                    if serverUrl == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
+                case self.global.networkingStatusDownloadCancel:
+                    if serverUrl == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
+                // CREATE FOLDER
+                case self.global.networkingStatusCreateFolder:
+                    if serverUrl == self.serverUrl,
+                       selector != self.global.selectorUploadAutoUpload,
+                       let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
+                        self.pushMetadata(metadata)
+                    }
+                // RENAME
+                case self.global.networkingStatusRename:
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self.serverUrl == serverUrl {
+                        await self.reloadDataSource()
+                    }
+                // FAVORITE
+                case self.global.networkingStatusFavorite:
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self is NCFavorite {
-                        Task {
-                            await self.reloadDataSource()
-                        }
-                    } else if self.serverUrl == metadata.serverUrl {
-                        Task {
-                            await self.reloadDataSource()
-                        }
+                        await self.reloadDataSource()
+                    } else if self.serverUrl == serverUrl {
+                        await self.reloadDataSource()
                     }
+                default:
+                    break
                 }
-            default:
-                break
             }
         }
     }
 
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
-        self.debouncer.call {
-            if requestData {
-                if self.isSearchingMode {
-                    self.networkSearch()
-                } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                    Task {
-                        await self.getServerData()
+        Task {
+            await self.debouncer.call {
+                if requestData {
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                        Task {
+                            await self.getServerData()
+                        }
                     }
-                }
-            } else {
-                if self.isSearchingMode {
-                    guard status != self.global.metadataStatusWaitDelete,
-                          status != self.global.metadataStatusWaitRename,
-                          status != self.global.metadataStatusWaitMove,
-                          status != self.global.metadataStatusWaitCopy,
-                          status != self.global.metadataStatusWaitFavorite else {
-                        return
-                    }
-                    self.networkSearch()
-                } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                    Task {
-                        await self.reloadDataSource()
+                } else {
+                    if self.isSearchingMode {
+                        guard status != self.global.metadataStatusWaitDelete,
+                              status != self.global.metadataStatusWaitRename,
+                              status != self.global.metadataStatusWaitMove,
+                              status != self.global.metadataStatusWaitCopy,
+                              status != self.global.metadataStatusWaitFavorite else {
+                            return
+                        }
+                        self.networkSearch()
+                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                        Task {
+                            await self.reloadDataSource()
+                        }
                     }
                 }
             }

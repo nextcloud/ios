@@ -96,7 +96,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
         if NCSharePermissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
             labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
-        } else if tableShare.permissions == NCSharePermissions.permissionReadShare { // Read only
+        } else if tableShare.permissions == NKShare.Permission.read.rawValue { // Read only
             labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
         } else { // Custom permissions
             labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
@@ -107,7 +107,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
         imageItem.contentMode = .scaleAspectFill
 
-        if tableShare.shareType == NCShareCommon.shareTypeTeam {
+        if tableShare.shareType == NKShare.ShareType.team.rawValue {
             imageItem.image = utility.loadImage(named: "custom.person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
@@ -123,11 +123,11 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
     private func getTypeString(_ tableShare: tableShareV2) -> String {
         switch tableShare.shareType {
-        case NCShareCommon.shareTypeFederated:
+        case NKShare.ShareType.federatedCloud.rawValue:
             return NSLocalizedString("_remote_", comment: "")
-        case NCShareCommon.shareTypeFederatedGroup:
+        case NKShare.ShareType.federatedGroup.rawValue:
             return NSLocalizedString("_remote_group_", comment: "")
-        case NCShareCommon.shareTypeRoom:
+        case NKShare.ShareType.talkConversation.rawValue:
             return NSLocalizedString("_conversation_", comment: "")
         default:
             return ""

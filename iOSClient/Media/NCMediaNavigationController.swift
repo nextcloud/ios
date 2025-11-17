@@ -116,12 +116,13 @@ class NCMediaNavigationController: NCMainNavigationController {
                 }
                 let fileName = url.lastPathComponent
                 Task {
-                    let metadata = await self.database.createMetadataAsync(fileName: fileName,
-                                                                           ocId: NSUUID().uuidString,
-                                                                           serverUrl: "",
-                                                                           url: stringUrl,
-                                                                           session: self.session,
-                                                                           sceneIdentifier: self.controller?.sceneIdentifier)
+                    let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                        fileName: fileName,
+                        ocId: NSUUID().uuidString,
+                        serverUrl: "",
+                        url: stringUrl,
+                        session: self.session,
+                        sceneIdentifier: self.controller?.sceneIdentifier)
                     await self.database.addMetadataAsync(metadata)
 
                     if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {

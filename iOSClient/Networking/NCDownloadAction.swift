@@ -31,19 +31,24 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: - Download
 
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        DispatchQueue.main.async {
-            switch status {
-            /// DOWNLOADED
-            case self.global.networkingStatusDownloaded:
-                self.downloadedFile(metadata: metadata, error: error)
-            default:
-                break
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task { @MainActor in
+            guard status == self.global.networkingStatusDownloaded,
+                  let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId)
+            else {
+                return
             }
+            self.downloadedFile(metadata: metadata, selector: selector ?? metadata.sessionSelector, error: error)
         }
     }
 
-    func downloadedFile(metadata: tableMetadata, error: NKError) {
+    private func downloadedFile(metadata: tableMetadata, selector: String, error: NKError) {
         guard error == .success else {
             return
         }
@@ -66,7 +71,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         }
         guard let controller else { return }
 
-        switch metadata.sessionSelector {
+        switch selector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
 
             let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -214,7 +219,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             return
         }
 
-        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
         await NCManageDatabase.shared.addMetadataAsync(metadata)
 
         let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,

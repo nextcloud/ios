@@ -57,10 +57,11 @@ class NCContextMenu: NSObject {
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                 Task {
                     await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                        let metadata = self.metadata.detachedCopy()
-                        metadata.sessionSelector = self.global.selectorOpenIn
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
+                                                account: self.metadata.account,
+                                                serverUrl: self.metadata.serverUrl,
+                                                selector: self.global.selectorOpenIn,
+                                                ocId: self.metadata.ocId,
                                                 destination: nil,
                                                 error: .success)
                     }
@@ -110,10 +111,11 @@ class NCContextMenu: NSObject {
             Task { @MainActor in
                 if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                     await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                        let metadata = self.metadata.detachedCopy()
-                        metadata.sessionSelector = self.global.selectorLoadFileQuickLook
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
+                                                account: self.metadata.account,
+                                                serverUrl: self.metadata.serverUrl,
+                                                selector: self.global.selectorLoadFileQuickLook,
+                                                ocId: self.metadata.ocId,
                                                 destination: nil,
                                                 error: .success)
                     }
@@ -177,7 +179,10 @@ class NCContextMenu: NSObject {
 
                 await self.networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                            metadata: self.metadata,
+                                            account: self.metadata.account,
+                                            serverUrl: self.metadata.serverUrl,
+                                            selector: self.metadata.sessionSelector,
+                                            ocId: self.metadata.ocId,
                                             destination: nil,
                                             error: error)
                 }

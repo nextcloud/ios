@@ -10,23 +10,29 @@ import NextcloudKit
 
 extension NCMedia: NCTransferDelegate {
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
-        self.debouncer.call {
-            Task {
+        Task {
+            await self.debouncer.call {
                 await self.loadDataSource()
             }
         }
     }
 
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
-        self.debouncer.call {
-            switch status {
-            case self.global.networkingStatusCopyMove:
-                Task {
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task {
+            await self.debouncer.call {
+                switch status {
+                case self.global.networkingStatusCopyMove:
                     await self.loadDataSource()
                     await self.searchMediaUI()
+                default:
+                    break
                 }
-            default:
-                break
             }
         }
     }

@@ -24,9 +24,9 @@ actor NCNetworkingProcess {
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
-    private var lastUsedInterval: TimeInterval = 3
-    private let maxInterval: TimeInterval = 3
-    private let minInterval: TimeInterval = 1.5
+    private var lastUsedInterval: TimeInterval = 3.5
+    private let maxInterval: TimeInterval = 3.5
+    private let minInterval: TimeInterval = 2.5
 
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
@@ -306,14 +306,6 @@ actor NCNetworkingProcess {
             if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
                 continue
             }
-            // File exists for Auto Upload? skip it
-            if metadata.sessionSelector == global.selectorUploadAutoUpload {
-                let error = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-                if error == .success {
-                    await database.deleteMetadataAsync(id: metadata.ocId)
-                    continue
-                }
-            }
             // extract image/video
             let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
             guard timer != nil else { return }
@@ -323,7 +315,33 @@ actor NCNetworkingProcess {
             }
             // upload file(s)
             for metadata in extractMetadatas {
-                guard timer != nil, !isAppInBackground else { return }
+                guard timer != nil,
+                      !isAppInBackground else {
+                    return
+                }
+
+                // IS TRANSFER SUCCESS
+                //
+                if await NCNetworking.shared.metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) {
+                    // File exists
+                    continue
+                }
+
+                // AUTO-UPLOAD: CHECK FILE EXISTS
+                if metadata.sessionSelector == global.selectorUploadAutoUpload {
+                    let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                    if existsResult == .success {
+                        // File exists → delete from local metadata and skip
+                        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                        continue
+                    } else if existsResult.errorCode == 404 {
+                        // 404 Not Found → file does not exist
+                        // Proceed
+                    } else {
+                        // Any other error (423 locked, 401 auth, 403 forbidden, 5xx, etc.)
+                        continue
+                    }
+                }
 
                 // UPLOAD E2EE
                 //

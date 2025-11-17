@@ -24,7 +24,6 @@ extension NCManageDatabase {
     ///   - etag: Optional ETag string.
     ///   - errorCode: Optional error code to persist.
     /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
-    @discardableResult
     func setMetadataSessionAsync(account: String? = nil,
                                  ocId: String? = nil,
                                  serverUrlFileName: String? = nil,
@@ -35,17 +34,17 @@ extension NCManageDatabase {
                                  selector: String? = nil,
                                  status: Int? = nil,
                                  etag: String? = nil,
-                                 errorCode: Int? = nil) async -> tableMetadata? {
+                                 errorCode: Int? = nil) async {
         var query: NSPredicate = NSPredicate()
         if let ocId {
             query = NSPredicate(format: "ocId == %@", ocId)
         } else if let account, let serverUrlFileName {
             query = NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName)
         } else {
-            return nil
+            return
         }
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter(query)
                 .first else {
@@ -98,13 +97,6 @@ extension NCManageDatabase {
                 metadata.errorCode = errorCode
             }
         }
-
-        return await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
-                .filter(query)
-                .first?
-                .detachedCopy()
-        }
     }
 
     /// Asynchronously sets a metadata record into "wait download" state.
@@ -119,7 +111,7 @@ extension NCManageDatabase {
                                                session: String,
                                                selector: String,
                                                sceneIdentifier: String? = nil) async -> tableMetadata? {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first else {
@@ -135,7 +127,7 @@ extension NCManageDatabase {
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
         }
 
-        return await performRealmReadAsync { realm in
+        return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first?
@@ -166,10 +158,21 @@ extension NCManageDatabase {
         }
 
         // Write to Realm asynchronously
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             detachedMetadatas.forEach { metadata in
                 realm.add(metadata, update: .all)
             }
+        }
+    }
+
+    func clearMetadatasSessionAsync(ocId: String) async {
+        await core.performRealmWriteAsync { realm in
+            guard let object = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else { return }
+
+            object.session = ""
+            object.sessionError = ""
+            object.sessionTaskIdentifier = 0
+            object.status = NCGlobal.shared.metadataStatusNormal
         }
     }
 }

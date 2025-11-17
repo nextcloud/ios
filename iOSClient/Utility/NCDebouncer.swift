@@ -2,52 +2,62 @@
 // SPDX-FileCopyrightText: 2025 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+import Foundation
 
-final class NCDebouncer {
-    private let delay: TimeInterval
+public actor NCDebouncer {
+    private let delay: Duration
     private let maxEventCount: Int
     private var eventCount = 0
-    private var timer: Timer?
-    private var latestBlock: (() -> Void)?
+    private var pendingTask: Task<Void, Never>?
+    private var latestBlock: (@MainActor @Sendable () async -> Void)?
 
-    init(delay: TimeInterval = 2, maxEventCount: Int = 10) {
+    public init(delay: Duration = .seconds(2), maxEventCount: Int = 10) {
         self.delay = delay
         self.maxEventCount = maxEventCount
     }
 
-    func call(_ block: @escaping () -> Void, immediate: Bool = false) {
-        if immediate {
-            latestBlock = block
-            return commit()
-        }
-
+    public func call(_ block: @MainActor @Sendable @escaping () async -> Void, immediate: Bool = false) {
         latestBlock = block
-        eventCount += 1
 
-        if timer == nil {
-            let timer = Timer(timeInterval: delay, repeats: false) { [weak self] _ in
-                self?.commit()
-            }
-            RunLoop.main.add(timer, forMode: .common)
-            self.timer = timer
+        if immediate {
+            commit()
+            return
         }
+
+        eventCount += 1
+        scheduleIfNeeded()
 
         if eventCount >= maxEventCount {
             commit()
         }
     }
 
-    private func commit() {
-        if !Thread.isMainThread {
-            DispatchQueue.main.async { [self] in self.commit() }
-            return
-        }
-
-        timer?.invalidate()
-        timer = nil
-        eventCount = 0
-        latestBlock?()
+    public func cancel() {
+        pendingTask?.cancel()
+        pendingTask = nil
         latestBlock = nil
+        eventCount = 0
+    }
+
+    private func scheduleIfNeeded() {
+        guard pendingTask == nil else { return }
+        pendingTask = Task { [weak self] in
+            guard let delay = self?.delay else { return }
+            try? await Task.sleep(for: delay)
+            await self?.commit()
+        }
+    }
+
+    private func commit() {
+        pendingTask?.cancel()
+        pendingTask = nil
+        eventCount = 0
+
+        if let block = latestBlock {
+            latestBlock = nil
+            Task { @MainActor in
+                await block()
+            }
+        }
     }
 }

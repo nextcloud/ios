@@ -26,11 +26,11 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
-                    let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                    let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                     await NCManageDatabase.shared.createDirectory(metadata: metadata)
                 } else {
                     if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
-                        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                         metadata.session = self.sessionDownloadBackground
                         metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
                         metadata.sessionTaskIdentifier = 0
@@ -66,9 +66,26 @@ extension NCNetworking {
             return true
         }
         let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileName, userId: userId, urlBase: urlBase)
-        let size = await self.utilityFileSystem.fileSizeAsync(atPath: fileNamePath)
+        let size = await fileSizeAsync(atPath: fileNamePath)
         let isDifferent = (localFile.etag != etag) || size == 0
 
         return isDifferent
+    }
+
+    internal func fileSizeAsync(atPath path: String) async -> Int64 {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                    if let size = attributes[.size] as? NSNumber {
+                        continuation.resume(returning: size.int64Value)
+                    } else {
+                        continuation.resume(returning: 0)
+                    }
+                } catch {
+                    continuation.resume(returning: 0)
+                }
+            }
+        }
     }
 }
