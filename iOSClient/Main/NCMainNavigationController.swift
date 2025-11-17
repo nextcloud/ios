@@ -468,7 +468,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem.menu = plusMenu
         } else {
             let plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
-            plusItem.tintColor = NCBrandColor.shared.customer
+            plusItem.tintColor = NCBrandColor.shared.getElement(account: session.account)
             plusItem.menu = plusMenu
             menuToolbar.setItems([plusItem], animated: false)
             menuToolbar.sizeToFit()
