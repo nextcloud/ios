@@ -167,8 +167,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName || metadata.e2eEncrypted {
                     continue
                 }
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                items.append(item)
+                autoreleasepool {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                    items.append(item)
+                }
             }
 
             return (items, metadatas.count)
