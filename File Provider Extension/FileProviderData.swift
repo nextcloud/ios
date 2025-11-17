@@ -11,6 +11,7 @@ class FileProviderData: NSObject {
 
     var domain: NSFileProviderDomain?
     var session: NCSession.Session?
+    private var isPaginated: Bool?
 
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
@@ -81,6 +82,19 @@ class FileProviderData: NSObject {
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         return matchAccount
+    }
+
+    // Get capabilities -> Paginate is availible from NC server 32.0.2
+    func isPaginatedAvailabile(serverUrl: String, session: NCSession.Session) async -> Bool {
+        if let isPaginated {
+            return isPaginated
+        } else if serverUrl == NCUtilityFileSystem().getHomeServer(session: session),
+                  let capabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account).capabilities,
+                  NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
+            isPaginated = true
+            return true
+        }
+        return false
     }
 
     // MARK: -

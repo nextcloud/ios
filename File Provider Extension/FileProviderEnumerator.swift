@@ -162,7 +162,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], ncPaginate: Bool) {
         let fileProviderUtility = fileProviderUtility()
         let createMetadata = NCManageDatabaseCreateMetadata()
-        var optionsPaginate = false
 
         func getItemsFrom(metadatas: [tableMetadata], createDirectory: Bool) async -> [NSFileProviderItem] {
             let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)
@@ -195,21 +194,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return items
         }
 
-        // Get capabilities -> Paginate is availible from NC server 32.0.2
-        if pageNumber == 0, !readCapabilities {
-            readCapabilities = true
-            if let capabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account).capabilities,
-               NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
-                optionsPaginate = true
-            }
-        }
-
         // Request pagination
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         var offset = 0
         if pageNumber > 0 {
            offset = getOffset(for: pageNumber)
         }
+        let optionsPaginate = await FileProviderData.shared.isPaginatedAvailabile(serverUrl: serverUrl, session: session)
         let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
