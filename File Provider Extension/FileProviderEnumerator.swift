@@ -11,9 +11,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     var serverUrl: String?
     var anchor: UInt64 = 0
+    var readCapabilities: Bool = false
 
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 500
+#if DEBUG
+    var recordsPerPage: Int = 50
+#else
+    var recordsPerPage: Int = 200
+#endif
     // X-NC-PAGINATE
 
     var paginateToken: String?
@@ -157,7 +162,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], ncPaginate: Bool) {
         let fileProviderUtility = fileProviderUtility()
         let createMetadata = NCManageDatabaseCreateMetadata()
-        let predicateMetadatas = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
         var optionsPaginate = false
 
         func getItemsFrom(metadatas: [tableMetadata], createDirectory: Bool) async -> [NSFileProviderItem] {
@@ -175,10 +179,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             // make items
             for metadata in metadatas {
-                // NO E2EE
-                if metadata.e2eEncrypted {
+                // NO E2EE OR NO VIDEO PART OF LIVE PHOTO
+                if metadata.e2eEncrypted || (metadata.classFile == NKTypeClassFile.video.rawValue && !metadata.livePhotoFile.isEmpty) {
                     continue
                 }
+
                 if createDirectory, metadata.directory {
                     await NCManageDatabase.shared.createDirectory(metadata: metadata)
                 }
@@ -190,15 +195,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return items
         }
 
-        // Get capabilities
-        if pageNumber == 0, FileProviderData.shared.capabilities == nil {
-            let results = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account)
-            FileProviderData.shared.capabilities = results.capabilities
-        }
-
-        // Paginate is availible from NC server 32.0.2
-        if let capabilities = FileProviderData.shared.capabilities {
-            if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
+        // Get capabilities -> Paginate is availible from NC server 32.0.2
+        if pageNumber == 0, !readCapabilities {
+            readCapabilities = true
+            if let capabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account).capabilities,
+               NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
                 optionsPaginate = true
             }
         }
@@ -246,7 +247,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             self.paginateItems.append(PageInfo(page: pageNumber, items: metadatas.count))
 
             if pageNumber == 0 {
-                await NCManageDatabase.shared.deleteMetadataAsync(predicate: predicateMetadatas)
+                await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal))
                 await NCManageDatabase.shared.createDirectory(metadata: metadataFolder)
             }
 
@@ -256,7 +257,22 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             return (items, ncPaginate)
         } else {
-            guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicateMetadatas) else {
+            let predicate = NSPredicate(
+                format: """
+                account == %@ AND
+                serverUrl == %@ AND
+                status == %d AND
+                (
+                    classFile != 'video' OR
+                    (classFile == 'video' AND livePhotoFile == '')
+                )
+                """,
+                session.account,
+                serverUrl,
+                NCGlobal.shared.metadataStatusNormal
+            )
+
+            guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicate) else {
                 return ([], false)
             }
             let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: false)

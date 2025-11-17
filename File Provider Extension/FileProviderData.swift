@@ -11,7 +11,6 @@ class FileProviderData: NSObject {
 
     var domain: NSFileProviderDomain?
     var session: NCSession.Session?
-    var capabilities: NKCapabilities.Capabilities?
 
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
