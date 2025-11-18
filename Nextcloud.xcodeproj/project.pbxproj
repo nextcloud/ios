@@ -723,6 +723,12 @@
 		F7BF9D872934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BFFD282C8846020029A201 /* NCHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BFFD272C8846020029A201 /* NCHud.swift */; };
 		F7BFFD2A2C8854200029A201 /* NCHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BFFD272C8846020029A201 /* NCHud.swift */; };
+		F7C0C08B2ECC70AD003A39B3 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F7C0C08A2ECC70AD003A39B3 /* LucidBanner */; };
+		F7C0C08D2ECC70FE003A39B3 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F7C0C08C2ECC70FE003A39B3 /* LucidBanner */; };
+		F7C0C0912ECC7163003A39B3 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C0C08E2ECC7163003A39B3 /* ErrorBannerView.swift */; };
+		F7C0C0922ECC7163003A39B3 /* ToastBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C0C08F2ECC7163003A39B3 /* ToastBannerView.swift */; };
+		F7C0C0932ECC7163003A39B3 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C0C08E2ECC7163003A39B3 /* ErrorBannerView.swift */; };
+		F7C0C0942ECC7163003A39B3 /* ToastBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C0C08F2ECC7163003A39B3 /* ToastBannerView.swift */; };
 		F7C1EEA525053A9C00866ACC /* NCCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */; };
 		F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
 		F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
@@ -872,7 +878,6 @@
 		F7EF2AEC2E43157B0081B2C9 /* NCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7EF2AE82E43157B0081B2C9 /* NCNotification.storyboard */; };
 		F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */; };
 		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
-		F7F0691D2EAB9DA300B3B13B /* NotificationPresenterUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */; };
 		F7F1FB9D2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9E2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FBA82E27D13700C79E20 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7F1FBA72E27D13700C79E20 /* Queuer */; };
@@ -1668,6 +1673,8 @@
 		F7BE7C7B290ADF16002ABB61 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Intent.strings"; sourceTree = "<group>"; };
 		F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+LayoutForView.swift"; sourceTree = "<group>"; };
 		F7BFFD272C8846020029A201 /* NCHud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCHud.swift; sourceTree = "<group>"; };
+		F7C0C08E2ECC7163003A39B3 /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
+		F7C0C08F2ECC7163003A39B3 /* ToastBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastBannerView.swift; sourceTree = "<group>"; };
 		F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEUpload.swift; sourceTree = "<group>"; };
 		F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EECreateFolder.swift; sourceTree = "<group>"; };
@@ -1763,7 +1770,6 @@
 		F7EF2AE92E43157B0081B2C9 /* NCNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNotification.swift; sourceTree = "<group>"; };
 		F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerProviderContextMenu.swift; sourceTree = "<group>"; };
 		F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserStatus.swift; sourceTree = "<group>"; };
-		F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenterUI.swift; sourceTree = "<group>"; };
 		F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Recommendations.swift"; sourceTree = "<group>"; };
 		F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-SemiBold.ttf"; sourceTree = "<group>"; };
 		F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Medium.ttf"; sourceTree = "<group>"; };
@@ -1875,6 +1881,7 @@
 				F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
+				F7C0C08D2ECC70FE003A39B3 /* LucidBanner in Frameworks */,
 				F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
@@ -1939,6 +1946,7 @@
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
+				F7C0C08B2ECC70AD003A39B3 /* LucidBanner in Frameworks */,
 				F3374AF42D78B01B002A38F9 /* DequeModule in Frameworks */,
 				F7160A822BE933390034DCB3 /* RealmSwift in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
@@ -2592,9 +2600,9 @@
 		F769CA1B2966EF4F00039397 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				F7C0C0902ECC7163003A39B3 /* Lucid Banner */,
 				F769CA182966EA3C00039397 /* ComponentView.swift */,
 				F768823D2C0DD304001CF441 /* LazyView.swift */,
-				F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */,
 				F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */,
 				F7BFFD272C8846020029A201 /* NCHud.swift */,
 				F75CA1462962F13700B01130 /* NCHUDView.swift */,
@@ -2915,6 +2923,15 @@
 				F7D4BF2B2CA2E8D800A5E746 /* TOPasscodeViewController */,
 			);
 			path = Utility;
+			sourceTree = "<group>";
+		};
+		F7C0C0902ECC7163003A39B3 /* Lucid Banner */ = {
+			isa = PBXGroup;
+			children = (
+				F7C0C08E2ECC7163003A39B3 /* ErrorBannerView.swift */,
+				F7C0C08F2ECC7163003A39B3 /* ToastBannerView.swift */,
+			);
+			path = "Lucid Banner";
 			sourceTree = "<group>";
 		};
 		F7C0F46D1C8880540059EC54 /* Share */ = {
@@ -3490,6 +3507,7 @@
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
 				F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */,
+				F7C0C08C2ECC70FE003A39B3 /* LucidBanner */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -3603,6 +3621,7 @@
 				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
 				F3374AF72D78B01B002A38F9 /* HeapModule */,
 				F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */,
+				F7C0C08A2ECC70AD003A39B3 /* LucidBanner */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3787,6 +3806,7 @@
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */,
+				F7C0C0892ECC70AD003A39B3 /* XCRemoteSwiftPackageReference "LucidBanner" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4221,6 +4241,8 @@
 				F72944F62A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
 				F73EF7BA2B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F711A4EB2AF9327D00095DD8 /* UIImage+animatedGIF.m in Sources */,
+				F7C0C0932ECC7163003A39B3 /* ErrorBannerView.swift in Sources */,
+				F7C0C0942ECC7163003A39B3 /* ToastBannerView.swift in Sources */,
 				F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				AF730AFA27843E4C00B7520E /* NCShareExtension+NCAccountRequestDelegate.swift in Sources */,
@@ -4452,6 +4474,8 @@
 				F76882262C0DD1E7001CF441 /* NCSettingsView.swift in Sources */,
 				F78ACD52219046DC0088454D /* NCSectionFirstHeader.swift in Sources */,
 				F743C89E2E5B25A1000173A9 /* UIScene+Extension.swift in Sources */,
+				F7C0C0912ECC7163003A39B3 /* ErrorBannerView.swift in Sources */,
+				F7C0C0922ECC7163003A39B3 /* ToastBannerView.swift in Sources */,
 				F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
 				F710D2022405826100A6033D /* NCViewerContextMenu.swift in Sources */,
 				F765E9CD295C585800A09ED8 /* NCUploadScanDocument.swift in Sources */,
@@ -4634,7 +4658,6 @@
 				F7CF06802E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
-				F7F0691D2EAB9DA300B3B13B /* NotificationPresenterUI.swift in Sources */,
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F7CADEFD2EA159210057849E /* NCMetadataTranfersSuccess.swift in Sources */,
@@ -6080,8 +6103,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				kind = exactVersion;
-				version = 7.2.2;
+				branch = "chunck-cancel";
+				kind = branch;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
@@ -6114,6 +6137,14 @@
 			requirement = {
 				kind = exactVersion;
 				version = 3.3.0;
+			};
+		};
+		F7C0C0892ECC70AD003A39B3 /* XCRemoteSwiftPackageReference "LucidBanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */ = {
@@ -6615,6 +6646,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
 			productName = Parchment;
+		};
+		F7C0C08A2ECC70AD003A39B3 /* LucidBanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7C0C0892ECC70AD003A39B3 /* XCRemoteSwiftPackageReference "LucidBanner" */;
+			productName = LucidBanner;
+		};
+		F7C0C08C2ECC70FE003A39B3 /* LucidBanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7C0C0892ECC70AD003A39B3 /* XCRemoteSwiftPackageReference "LucidBanner" */;
+			productName = LucidBanner;
 		};
 		F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */ = {
 			isa = XCSwiftPackageProductDependency;
