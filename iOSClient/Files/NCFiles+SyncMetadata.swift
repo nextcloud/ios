@@ -27,7 +27,10 @@ extension NCFiles {
 
         // Create a detached task and keep reference for manual cancellation
         syncMetadatasTask = Task.detached { [weak self] in
-            guard let self else { return }
+            guard let self,
+                  !isAppInBackground else {
+                return
+            }
             await self.networkSyncMetadata(metadatas: metadatas)
             // Once finished, clear the reference
             await MainActor.run {
