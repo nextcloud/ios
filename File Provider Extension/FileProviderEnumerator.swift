@@ -163,12 +163,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let fileProviderUtility = fileProviderUtility()
         let createMetadata = NCManageDatabaseCreateMetadata()
 
-        func getItemsFrom(metadatas: [tableMetadata], createDirectory: Bool) async -> [NSFileProviderItem] {
-            let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)
+        func getItemsFrom(metadatas: [tableMetadata], addOnDB: Bool) async -> [NSFileProviderItem] {
             var items: [NSFileProviderItem] = []
 
             // Get parentItemIdentifier
-            guard let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: predicate),
+            guard let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)),
                   let parentItemIdentifier = await fileProviderUtility.getParentItemIdentifierAsync(
                     session: session,
                     directory: directory
@@ -183,9 +182,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     continue
                 }
 
-                if createDirectory, metadata.directory {
-                    await NCManageDatabase.shared.createDirectory(metadata: metadata)
+                if addOnDB {
+                    if metadata.directory {
+                        await NCManageDatabase.shared.createDirectory(metadata: metadata)
+                    }
+                    await NCManageDatabase.shared.addMetadataAsync(metadata)
                 }
+
                 autoreleasepool {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                     items.append(item)
@@ -195,6 +198,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
 
         // Request pagination
+        //
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         var offset = 0
         if pageNumber > 0 {
@@ -242,7 +246,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 await NCManageDatabase.shared.createDirectory(metadata: metadataFolder)
             }
 
-            let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: true)
+            let items = await getItemsFrom(metadatas: Array(metadatas), addOnDB: true)
             if self.totalItems() >= self.paginatedTotal {
                 ncPaginate = false
             }
@@ -266,7 +270,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicate) else {
                 return ([], false)
             }
-            let items = await getItemsFrom(metadatas: Array(metadatas), createDirectory: false)
+            let items = await getItemsFrom(metadatas: Array(metadatas), addOnDB: false)
             return (items, false)
         }
     }
