@@ -11,13 +11,24 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     var serverUrl: String?
     var anchor: UInt64 = 0
+    var readCapabilities: Bool = false
 
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 100
+#if DEBUG
+    var recordsPerPage: Int = 50
+#else
+    var recordsPerPage: Int = 200
+#endif
     // X-NC-PAGINATE
 
     var paginateToken: String?
     var paginatedTotal: Int = 0
+
+    struct PageInfo {
+        let page: Int
+        let items: Int
+    }
+    var paginateItems: [PageInfo] = []
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -90,14 +101,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     pageNumber = intPage
                 }
 
-                let (items, countItems, isPaginated) = await fetchItemsForPage(session: session,
-                                                                               serverUrl: serverUrl,
-                                                                               pageNumber: pageNumber)
+                let (items, ncPaginated) = await fetchItemsForPage(session: session,
+                                                                   serverUrl: serverUrl,
+                                                                   pageNumber: pageNumber)
                 observer.didEnumerate(items)
 
                 if !items.isEmpty,
-                   isPaginated,
-                   countItems == self.recordsPerPage {
+                   ncPaginated {
                     pageNumber += 1
                     observer.finishEnumerating(upTo: NSFileProviderPage(Data("\(pageNumber)".utf8)))
                 } else {
@@ -149,131 +159,134 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data))
     }
 
-    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], countItems: Int, isPaginated: Bool) {
-        let homeServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: session.urlBase, userId: session.userId)
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+    func fetchItemsForPage(session: NCSession.Session, serverUrl: String, pageNumber: Int) async -> (items: [NSFileProviderItem], ncPaginate: Bool) {
+        let fileProviderUtility = fileProviderUtility()
+        let createMetadata = NCManageDatabaseCreateMetadata()
 
-        func getItemsFromDatabase() async -> (items: [NSFileProviderItem], countItems: Int) {
+        func getItemsFrom(metadatas: [tableMetadata], addOnDB: Bool) async -> [NSFileProviderItem] {
             var items: [NSFileProviderItem] = []
-            let directoryServerUrl = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
-            let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(session: session, directory: directoryServerUrl)
-            guard let parentItemIdentifier,
-                  let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicate) else {
-                return ([], 0)
+
+            // Get parentItemIdentifier
+            guard let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)),
+                  let parentItemIdentifier = await fileProviderUtility.getParentItemIdentifierAsync(
+                    session: session,
+                    directory: directory
+                  ) else {
+                return ([])
             }
+
+            // make items
             for metadata in metadatas {
-                // Not include root filename
-                //
-                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName || metadata.e2eEncrypted {
+                // NO E2EE OR NO VIDEO PART OF LIVE PHOTO
+                if metadata.e2eEncrypted || (metadata.classFile == NKTypeClassFile.video.rawValue && !metadata.livePhotoFile.isEmpty) {
                     continue
                 }
+
+                if addOnDB {
+                    if metadata.directory {
+                        await NCManageDatabase.shared.createDirectory(metadata: metadata)
+                    }
+                    await NCManageDatabase.shared.addMetadataAsync(metadata)
+                }
+
                 autoreleasepool {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                     items.append(item)
                 }
             }
-
-            return (items, metadatas.count)
+            return items
         }
 
-        if pageNumber == 0 {
-            // Read root directory
-            //
-            let resultsDirectory = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "0", account: session.account)
-            guard resultsDirectory.error == .success else {
-                let (items, countItems) = await getItemsFromDatabase()
-                return (items, countItems, false)
-            }
-
-            // Check etag
-            //
-            if let file = resultsDirectory.files?.first,
-               let directory = await NCManageDatabase.shared.getTableDirectoryAsync(ocId: file.ocId),
-               file.etag == directory.etag {
-                let (items, countItems) = await getItemsFromDatabase()
-                return (items, countItems, false)
-            }
-        }
-
-        var isPaginated: Bool = false
-        var offset = pageNumber * recordsPerPage
-        if pageNumber > 0 {
-            offset += 1
-        }
+        // Request pagination
+        //
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
-        let options = NKRequestOptions(paginate: false,
+        var offset = 0
+        if pageNumber > 0 {
+           offset = getOffset(for: pageNumber)
+        }
+        let optionsPaginate = await FileProviderData.shared.isPaginatedAvailabile(serverUrl: serverUrl, session: session)
+        let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
                                        paginateCount: recordsPerPage,
-                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue
+        )
 
         // Read folder metadata
         //
-        let resultsRead = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl,
-                                                                          depth: "1",
-                                                                          showHiddenFiles: showHiddenFiles,
-                                                                          account: session.account,
-                                                                          options: options)
+        let resultsRead = await NextcloudKit.shared.readFileOrFolderAsync(
+            serverUrlFileName: serverUrl,
+            depth: "1",
+            showHiddenFiles: showHiddenFiles,
+            account: session.account,
+            options: options
+        )
 
         print("PAGINATE OFFSET: \(offset) COUNT: \(resultsRead.files?.count ?? 0) PAGE NUMBER: \(pageNumber) TOTAL: \(self.paginatedTotal) SERVERURL: \(serverUrl)")
 
         // Header for paginate
         //
+        var ncPaginate: Bool = false
         if let headers = resultsRead.responseData?.response?.allHeaderFields as? [String: String] {
             let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
-            isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
+            ncPaginate = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
             self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
-            self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0") ?? 0
+            if let totalString = normalizedHeaders["x-nc-paginate-total"],
+               let total = Int(totalString) {
+                self.paginatedTotal = total
+            }
         }
 
         if resultsRead.error == .success, let files = resultsRead.files {
-            var items: [NSFileProviderItem] = []
-            var parentItemIdentifier: NSFileProviderItemIdentifier?
+            let (metadataFolder, metadatas) = await createMetadata.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: pageNumber == 0 ? serverUrl : nil)
+            self.paginateItems.append(PageInfo(page: pageNumber, items: metadatas.count))
+
             if pageNumber == 0 {
-                await NCManageDatabase.shared.deleteMetadataAsync(predicate: predicate)
+                await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", session.account, serverUrl, NCGlobal.shared.metadataStatusNormal))
+                await NCManageDatabase.shared.createDirectory(metadata: metadataFolder)
             }
 
-            // Parent Item Identifier
-            //
-            if serverUrl == homeServerUrl {
-                parentItemIdentifier = NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
-            } else {
-                let filtered = files.filter { file in
-                    let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: file.serverUrl, fileName: file.fileName)
-                    return serverUrlFileName == serverUrl
-                }
-                if let file = filtered.first {
-                    parentItemIdentifier = NSFileProviderItemIdentifier(file.ocId)
-                }
+            let items = await getItemsFrom(metadatas: Array(metadatas), addOnDB: true)
+            if self.totalItems() >= self.paginatedTotal {
+                ncPaginate = false
             }
-
-            // Must have parentItemIdentifier
-            //
-            guard let parentItemIdentifier else {
-                return ([], 0, false)
-            }
-
-            for file in files {
-                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-                await NCManageDatabase.shared.addMetadataAsync(metadata)
-                if metadata.directory {
-                    await NCManageDatabase.shared.createDirectory(metadata: metadata, withEtag: false)
-                }
-                // Not include root filename or E2EE
-                //
-                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName || metadata.e2eEncrypted {
-                    continue
-                }
-                autoreleasepool {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                    items.append(item)
-                }
-            }
-
-            return (items, resultsRead.files?.count ?? 0, isPaginated)
+            return (items, ncPaginate)
         } else {
-            let (items, countItems) = await getItemsFromDatabase()
-            return (items, countItems, false)
+            let predicate = NSPredicate(
+                format: """
+                account == %@ AND
+                serverUrl == %@ AND
+                status == %d AND
+                (
+                    classFile != 'video' OR
+                    (classFile == 'video' AND livePhotoFile == '')
+                )
+                """,
+                session.account,
+                serverUrl,
+                NCGlobal.shared.metadataStatusNormal
+            )
+
+            guard let metadatas = await NCManageDatabase.shared.getResultsMetadatasAsync(predicate: predicate) else {
+                return ([], false)
+            }
+            let items = await getItemsFrom(metadatas: Array(metadatas), addOnDB: false)
+            return (items, false)
         }
+    }
+
+    func getOffset(for page: Int) -> Int {
+        let items = paginateItems
+                .filter { $0.page < page }
+                .map { $0.items }
+                .reduce(0, +)
+        // + 1 for the next
+        return items == 0 ? 0 : items + 1
+    }
+
+    func totalItems() -> Int {
+        let total = paginateItems.map { $0.items }.reduce(0, +)
+        // + 1 for the first "root directory"
+        return total == 0 ? 0 : total + 1
     }
 }

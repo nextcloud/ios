@@ -59,7 +59,6 @@ final class NCManageDatabaseCore {
 
         // AUTOMATIC MIGRATIONS (Realm handles these internally)
         if oldSchemaVersion < databaseSchemaVersion {
-            migration.deleteData(forType: tableMetadata.className())
             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                 newObject?["etag"] = ""
             }
