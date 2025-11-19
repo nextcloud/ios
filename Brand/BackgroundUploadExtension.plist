@@ -8,6 +8,6 @@
 		<string>com.apple.photos.background-upload</string>
 	</dict>
 	<key>BackgroundUploadURLBase</key>
-	<string>https://cloud.nextcloud.com</string>
+	<string>https://placeholder.photos.invalid</string>
 </dict>
 </plist>
