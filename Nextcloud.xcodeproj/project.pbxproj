@@ -755,6 +755,11 @@
 		F7CBC1242BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */; };
 		F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */; };
 		F7CBC1262BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */; };
+		F7CCAB372ECDA35F00F8E68B /* BackgroundUploadExtension.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = F7CCAB302ECDA35F00F8E68B /* BackgroundUploadExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F7CCAB402ECDA7A700F8E68B /* BackgroundUploadExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CCAB3D2ECDA7A700F8E68B /* BackgroundUploadExtension.swift */; };
+		F7CCAB442ECDAAF100F8E68B /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F7CCAB432ECDAAF100F8E68B /* KeychainAccess */; };
+		F7CCAB462ECDAAFC00F8E68B /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7CCAB452ECDAAFC00F8E68B /* NextcloudKit */; };
+		F7CCAB482ECDAB0B00F8E68B /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7CCAB472ECDAB0B00F8E68B /* RealmSwift */; };
 		F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */; };
 		F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */; };
 		F7CF06802E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
@@ -974,6 +979,13 @@
 			remoteGlobalIDString = F7C9738F28F17131002C43E2;
 			remoteInfo = WidgetDashboardIntentHandler;
 		};
+		F7CCAB352ECDA35F00F8E68B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F7CCAB2F2ECDA35F00F8E68B;
+			remoteInfo = BackgroundUploadExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1092,6 +1104,27 @@
 				F7346E1C28B0EF5E006CE2D2 /* Widget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7CCAB382ECDA36000F8E68B /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				F7CCAB372ECDA35F00F8E68B /* BackgroundUploadExtension.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7CCAB4A2ECDAB0B00F8E68B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1685,6 +1718,8 @@
 		F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionFirstHeaderEmptyData.xib; sourceTree = "<group>"; };
 		F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSectionFirstHeaderEmptyData.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7CCAB302ECDA35F00F8E68B /* BackgroundUploadExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = BackgroundUploadExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7CCAB3D2ECDA7A700F8E68B /* BackgroundUploadExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUploadExtension.swift; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashGridCell.xib; sourceTree = "<group>"; };
@@ -1965,6 +2000,16 @@
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7CCAB2D2ECDA35F00F8E68B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7CCAB482ECDAB0B00F8E68B /* RealmSwift in Frameworks */,
+				F7CCAB462ECDAAFC00F8E68B /* NextcloudKit in Frameworks */,
+				F7CCAB442ECDAAF100F8E68B /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2992,6 +3037,14 @@
 			path = More;
 			sourceTree = "<group>";
 		};
+		F7CCAB3F2ECDA7A700F8E68B /* BackgroundUploadExtension */ = {
+			isa = PBXGroup;
+			children = (
+				F7CCAB3D2ECDA7A700F8E68B /* BackgroundUploadExtension.swift */,
+			);
+			path = BackgroundUploadExtension;
+			sourceTree = "<group>";
+		};
 		F7D4BF0A2CA2E8D800A5E746 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -3190,6 +3243,7 @@
 				F7346E1428B0EF5B006CE2D2 /* Widget */,
 				F7C9739328F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F7903A4A2948CAC300203DA5 /* ExternalResources */,
+				F7CCAB3F2ECDA7A700F8E68B /* BackgroundUploadExtension */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F30A962A2A27A9C800D7BCFE /* Tests */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
@@ -3201,6 +3255,7 @@
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
+				F7CCAB302ECDA35F00F8E68B /* BackgroundUploadExtension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3557,6 +3612,7 @@
 				F77B0F981D118A16002130FE /* Embed Foundation Extensions */,
 				AFBFD01327551A54002244BC /* ShellScript */,
 				F76DA934277B75710082465B /* Embed Frameworks */,
+				F7CCAB382ECDA36000F8E68B /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
@@ -3567,6 +3623,7 @@
 				F7346E1B28B0EF5E006CE2D2 /* PBXTargetDependency */,
 				F7C9739828F17131002C43E2 /* PBXTargetDependency */,
 				F70716EC2987F81500E72C1D /* PBXTargetDependency */,
+				F7CCAB362ECDA35F00F8E68B /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
 			packageProductDependencies = (
@@ -3634,6 +3691,29 @@
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		F7CCAB2F2ECDA35F00F8E68B /* BackgroundUploadExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F7CCAB3C2ECDA36000F8E68B /* Build configuration list for PBXNativeTarget "BackgroundUploadExtension" */;
+			buildPhases = (
+				F7CCAB2C2ECDA35F00F8E68B /* Sources */,
+				F7CCAB2D2ECDA35F00F8E68B /* Frameworks */,
+				F7CCAB2E2ECDA35F00F8E68B /* Resources */,
+				F7CCAB4A2ECDAB0B00F8E68B /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BackgroundUploadExtension;
+			packageProductDependencies = (
+				F7CCAB432ECDAAF100F8E68B /* KeychainAccess */,
+				F7CCAB452ECDAAFC00F8E68B /* NextcloudKit */,
+				F7CCAB472ECDAB0B00F8E68B /* RealmSwift */,
+			);
+			productName = BackgroundUploadExtension;
+			productReference = F7CCAB302ECDA35F00F8E68B /* BackgroundUploadExtension.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3641,7 +3721,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastSwiftUpdateCheck = 1430;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 1630;
 				ORGANIZATIONNAME = "Marino Faggiana";
 				TargetAttributes = {
@@ -3697,6 +3777,9 @@
 					};
 					F7C9738F28F17131002C43E2 = {
 						CreatedOnToolsVersion = 14.0;
+					};
+					F7CCAB2F2ECDA35F00F8E68B = {
+						CreatedOnToolsVersion = 26.1;
 					};
 				};
 			};
@@ -3793,6 +3876,7 @@
 			projectRoot = "";
 			targets = (
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
+				F7CCAB2F2ECDA35F00F8E68B /* BackgroundUploadExtension */,
 				F7346E0F28B0EF5B006CE2D2 /* Widget */,
 				F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F71459B41D12E3B700CAFEEC /* Share */,
@@ -3982,6 +4066,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7E4022B2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7CCAB2E2ECDA35F00F8E68B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4763,6 +4854,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F7CCAB2C2ECDA35F00F8E68B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7CCAB402ECDA7A700F8E68B /* BackgroundUploadExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -4810,6 +4909,11 @@
 			isa = PBXTargetDependency;
 			target = F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */;
 			targetProxy = F7C9739728F17131002C43E2 /* PBXContainerItemProxy */;
+		};
+		F7CCAB362ECDA35F00F8E68B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F7CCAB2F2ECDA35F00F8E68B /* BackgroundUploadExtension */;
+			targetProxy = F7CCAB352ECDA35F00F8E68B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -5681,6 +5785,108 @@
 			};
 			name = Release;
 		};
+		F7CCAB392ECDA36000F8E68B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/BackgroundUploadExtension.entitlements";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					EXTENSION,
+					EXTENSION_BACKGROUND_UPLOAD,
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/BackgroundUploadExtension.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.BackgroundUploadExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_BACKGROUND_UPLOAD";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F7CCAB3A2ECDA36000F8E68B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/BackgroundUploadExtension.entitlements";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					EXTENSION,
+					EXTENSION_BACKGROUND_UPLOAD,
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/BackgroundUploadExtension.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.BackgroundUploadExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_BACKGROUND_UPLOAD";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		F7F67BC91A24D27800EE80DA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -5900,6 +6106,15 @@
 			buildConfigurations = (
 				F7C9739B28F17132002C43E2 /* Debug */,
 				F7C9739C28F17132002C43E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F7CCAB3C2ECDA36000F8E68B /* Build configuration list for PBXNativeTarget "BackgroundUploadExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F7CCAB392ECDA36000F8E68B /* Debug */,
+				F7CCAB3A2ECDA36000F8E68B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6615,6 +6830,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
 			productName = Parchment;
+		};
+		F7CCAB432ECDAAF100F8E68B /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		F7CCAB452ECDAAFC00F8E68B /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F7CCAB472ECDAB0B00F8E68B /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */ = {
 			isa = XCSwiftPackageProductDependency;
