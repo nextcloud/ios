@@ -7,6 +7,7 @@ import SwiftUI
 import RealmSwift
 import NextcloudKit
 import EasyTipView
+import LucidBanner
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
@@ -352,7 +353,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         error: NKError) {
         if error != .success,
            error.errorCode != global.errorResourceNotFound {
-            NCContentPresenter().showError(error: error)
+            LucidBanner.shared.show(subtitle: error.errorDescription,
+                                    footnote: "(Code: \(error.errorCode))",
+                                    autoDismissAfter: NCGlobal.shared.dismissAfterSecond) { state in
+                                        ErrorBannerView(state: state)
+            }
         }
         guard session.account == account else { return }
 

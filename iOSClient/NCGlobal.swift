@@ -141,8 +141,8 @@ final class NCGlobal: Sendable {
 
     // ContentPresenter
     //
-    let dismissAfterSecond: TimeInterval        = 4
-    let dismissAfterSecondLong: TimeInterval    = 7
+    let dismissAfterSecond: TimeInterval        = 5
+    let dismissAfterSecondLong: TimeInterval    = 8
 
     // Error
     //
