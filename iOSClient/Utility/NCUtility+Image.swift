@@ -376,7 +376,9 @@ extension NCUtility {
         if let userMessage = userMessage {
             statusMessage += userMessage
         }
+
         statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
+        
         if statusMessage.isEmpty {
             statusMessage = messageUserDefined
         }

@@ -137,7 +137,8 @@
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
 "_size_"                    = "Size";
-"_set_user_status_"         = "Set user status";
+"_set_user_status_"         = "Online status";
+"_set_user_status_message_" = "Status message";
 "_open_settings_"           = "Open settings";
 "_settings_account_request_" = "Request account at startup";
 "_alias_"                   = "Alias";
@@ -191,6 +192,7 @@
 "_busy_"                    = "Busy";
 
 /* User status */
+"_select_user_status_"      = "Select online status";
 "_status_message_"          = "Status message";
 "_status_message_placehorder_"  = "What is your status?";
 "_online_status_"           = "Online status";
