@@ -178,6 +178,31 @@ struct NCAccountSettingsView: View {
                                 .font(.subheadline)
                             }
                         }
+
+                        Button(action: {
+                            showUserStatus = true
+                        }, label: {
+                            HStack {
+                                Image(systemName: "moon.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                Text(NSLocalizedString("_set_user_status_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                            }
+                            .font(.subheadline)
+                        })
+                        .sheet(isPresented: $showUserStatus) {
+                            if let account = model.tblAccount?.account {
+                                UserStatusView(showUserStatus: $showUserStatus, account: account)
+                            }
+                        }
+                        .onChange(of: showUserStatus) { }
                     }
                     //
                     // Certificate server

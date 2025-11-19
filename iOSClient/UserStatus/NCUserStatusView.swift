@@ -9,6 +9,7 @@ struct NCUserStatusView: View {
 
 //    @State private var selectedItem: String?
     @State private var model: NCUserStatusModel
+    @Environment(\.dismiss) private var dismiss
 
     init(account: String) {
         self.account = account
@@ -26,8 +27,14 @@ struct NCUserStatusView: View {
                             .resizable()
                             .foregroundStyle(Color(status.statusImageColor))
                             .frame(width: 20, height: 20)
-                            .padding(.trailing, 8)
-                        Text(NSLocalizedString(item.titleKey, comment: ""))
+//                            .padding(.trailing, 8)
+                        VStack(alignment: .leading) {
+                            Text(NSLocalizedString(item.titleKey, comment: ""))
+
+                            if !item.descriptionKey.isEmpty {
+                                Text(NSLocalizedString(item.descriptionKey, comment: "")).font(.subheadline).foregroundStyle(.secondary)
+                            }
+                        }
                         Spacer()
                         if model.selectedStatus == item.names.first {
                             Image(systemName: "checkmark")
@@ -40,12 +47,18 @@ struct NCUserStatusView: View {
                         model.selectedStatus = (model.selectedStatus == firstStatus) ? nil : firstStatus
                         model.setStatus(account: account)
                     }
+                    .onChange(of: model.canDismiss) { _, newValue in
+                        if newValue { dismiss() }
+                    }
                 }
             }
         .navigationTitle(NSLocalizedString("_select_user_status_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             model.getStatus(account: account)
+        }
+        .onDisappear {
+            model.setAccountUserStatus(account: account)
         }
     }
 }
