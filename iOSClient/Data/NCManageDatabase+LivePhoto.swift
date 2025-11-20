@@ -30,7 +30,7 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func setLivePhotoVideo(account: String, serverUrlFileName: String, fileId: String, isVideo: Bool, isImage: Bool) async {
+    func setLivePhotoVideo(account: String, serverUrlFileName: String, fileId: String, classFile: String) async {
         await core.performRealmWriteAsync { realm in
             let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
             let primaryKey = account + serverUrlFileNameNoExt
@@ -46,10 +46,10 @@ extension NCManageDatabase {
             }
 
             // Update only the relevant fields based on metadata content type
-            if isVideo {
+            if classFile == NKTypeClassFile.video.rawValue {
                 livePhoto.serverUrlFileNameVideo = serverUrlFileName
                 livePhoto.fileIdVideo = fileId
-            } else if isImage {
+            } else if classFile == NKTypeClassFile.image.rawValue {
                 livePhoto.serverUrlFileNameImage = serverUrlFileName
                 livePhoto.fileIdImage = fileId
             }

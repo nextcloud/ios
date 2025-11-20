@@ -294,8 +294,7 @@ extension NCNetworking {
             await NCManageDatabase.shared.setLivePhotoVideo(account: livePhoto.account,
                                                             serverUrlFileName: livePhoto.serverUrlFileName,
                                                             fileId: livePhoto.fileId,
-                                                            isVideo: livePhoto.isVideo,
-                                                            isImage: livePhoto.isImage)
+                                                            classFile: livePhoto.classFile)
 #if !EXTENSION
             await NCNetworking.shared.setLivePhoto(account: metadata.account)
 #endif

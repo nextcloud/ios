@@ -37,8 +37,7 @@ actor NCMetadataTranfersSuccess {
             await NCManageDatabase.shared.setLivePhotoVideo(account: metadata.account,
                                                             serverUrlFileName: metadata.serverUrlFileName,
                                                             fileId: metadata.fileId,
-                                                            isVideo: metadata.isVideo,
-                                                            isImage: metadata.isImage)
+                                                            classFile: metadata.classFile)
         }
     }
 
