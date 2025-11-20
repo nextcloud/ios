@@ -9,7 +9,7 @@ actor NCMetadataTranfersSuccess {
     private var tranfersSuccess: [tableMetadata] = []
     private let utility = NCUtility()
 
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) {
+    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -28,6 +28,16 @@ actor NCMetadataTranfersSuccess {
             tranfersSuccess[index] = metadata
         } else {
             tranfersSuccess.append(metadata)
+        }
+
+        // Create Live Photo metadata
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        if capabilities.isLivePhotoServerAvailable,
+           metadata.isLivePhoto {
+            await NCManageDatabase.shared.setLivePhotoVideo(account: metadata.account,
+                                                            serverUrlFileName: metadata.serverUrlFileName,
+                                                            fileId: metadata.fileId,
+                                                            classFile: metadata.classFile)
         }
     }
 
@@ -74,11 +84,7 @@ actor NCMetadataTranfersSuccess {
         // Auto Upload
         await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
 
-        // Create Live Photo metadatas
-        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-
         if !NCNetworking.shared.isInBackground() {
-
             // Set livePhoto on Server
             let accounts = Set(metadatasLivePhoto.map { $0.account })
             for account in accounts {

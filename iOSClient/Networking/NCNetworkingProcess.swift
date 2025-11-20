@@ -210,6 +210,9 @@ actor NCNetworkingProcess {
                 // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
 
+                // Set Live Photo
+                await NCNetworking.shared.setLivePhoto(account: currentAccount)
+
                 if lastUsedInterval != maxInterval {
                     await startTimer(interval: maxInterval)
                 }

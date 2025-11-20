@@ -312,6 +312,14 @@ extension tableMetadata {
         !livePhotoFile.isEmpty
     }
 
+    var isLivePhotoVideo: Bool {
+        !livePhotoFile.isEmpty && classFile == NKTypeClassFile.video.rawValue
+    }
+
+    var isLivePhotoImage: Bool {
+        !livePhotoFile.isEmpty && classFile == NKTypeClassFile.image.rawValue
+    }
+
     var isNotFlaggedAsLivePhotoByServer: Bool {
         !isFlaggedAsLivePhotoByServer
     }

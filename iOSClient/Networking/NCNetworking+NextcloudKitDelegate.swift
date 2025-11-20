@@ -91,7 +91,6 @@ extension NCNetworking {
                           serverUrl: String,
                           session: URLSession,
                           task: URLSessionTask) {
-
         Task {
             guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
                 return
@@ -140,9 +139,9 @@ extension NCNetworking {
                 if let ocId {
                     if isInBackground() {
                         await self.uploadSuccess(withMetadata: metadata,
-                                            ocId: ocId,
-                                            etag: etag,
-                                            date: date)
+                                                 ocId: ocId,
+                                                 etag: etag,
+                                                 date: date)
                     } else {
 #if !EXTENSION
                         await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)

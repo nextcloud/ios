@@ -464,7 +464,7 @@ extension NCNetworking {
     }
 
     func deleteFileOrFolder(metadata: tableMetadata) async -> NKError {
-        let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
+        var results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                             path: metadata.serverUrlFileName,
@@ -473,7 +473,7 @@ extension NCNetworking {
             }
         }
 
-        if results.error == .success || results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+        if results.error == .success || results.error.errorCode == NCGlobal.shared.errorResourceNotFound || (results.error.errorCode == NCGlobal.shared.errorForbidden && metadata.isLivePhotoVideo) {
             do {
                 try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             } catch { }
@@ -490,6 +490,8 @@ extension NCNetworking {
                 await NCManageDatabase.shared.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                   account: metadata.account)
             }
+
+            results.error = .success
         } else {
             await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                   status: global.metadataStatusNormal)
