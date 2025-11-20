@@ -375,7 +375,7 @@ class NCUserStatus: UIViewController {
         dropDown.dataSource.append(NSLocalizedString("_30_minutes_", comment: ""))
         dropDown.dataSource.append(NSLocalizedString("_1_hour_", comment: ""))
         dropDown.dataSource.append(NSLocalizedString("_4_hours_", comment: ""))
-        dropDown.dataSource.append(NSLocalizedString("day", comment: ""))
+        dropDown.dataSource.append(NSLocalizedString("_day_", comment: ""))
         dropDown.dataSource.append(NSLocalizedString("_this_week_", comment: ""))
 
         dropDown.anchorView = clearStatusMessageAfterText
@@ -521,7 +521,7 @@ class NCUserStatus: UIViewController {
         case NSLocalizedString("_4_hours_", comment: ""):
             let date = now.addingTimeInterval(14400)
             return date.timeIntervalSince1970
-        case NSLocalizedString("day", comment: ""):
+        case NSLocalizedString("_day_", comment: ""):
             return tomorrow.timeIntervalSince1970
         case NSLocalizedString("_this_week_", comment: ""):
             return endweek.timeIntervalSince1970
@@ -540,7 +540,7 @@ class NCUserStatus: UIViewController {
             let minute = Calendar.current.dateComponents([.minute], from: from, to: to).minute ?? 0
 
             if day > 0 {
-                if day == 1 { return NSLocalizedString("day", comment: "") }
+                if day == 1 { return NSLocalizedString("_day_", comment: "") }
                 return "\(day) " + NSLocalizedString("_days_", comment: "")
             }
 

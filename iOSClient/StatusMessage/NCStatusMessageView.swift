@@ -4,6 +4,7 @@
 
 import SwiftUI
 import UIKit
+import NextcloudKit
 
 struct Status: Identifiable, Equatable {
     let id = UUID()
@@ -25,7 +26,6 @@ struct NCStatusMessageView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // Input field with emoji
                 HStack(spacing: 12) {
                     EmojiField(text: $model.emojiText)
 
@@ -35,7 +35,6 @@ struct NCStatusMessageView: View {
                 }
                 .frame(height: 20)
 
-                // Presets list
                 VStack(spacing: 18) {
                     ForEach(model.statusPresets) { preset in
                         StatusPresetRow(model: $model, preset: preset)
@@ -43,49 +42,40 @@ struct NCStatusMessageView: View {
                 }
                 .padding(.top, 8)
 
-                // Clear after section
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Clear status after")
                         .font(.headline)
-                    HStack(spacing: 12) {
-                        Text("🌴")
-                            .font(.title3)
-                        Picker("Clear after", selection: $model.clearAfter) {
-                            ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
-                                Text(option.rawValue).tag(option)
-                            }
+                    Picker("Clear after", selection: $model.clearAfter) {
+                        ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
+                            Text(NSLocalizedString(option.rawValue, comment: "")).tag(option)
                         }
-                        .pickerStyle(.menu)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Bottom actions
-                HStack {
+                HStack(spacing: 80) {
                     Button("Clear") {
                         model.clearStatus()
                     }
-                    .frame(maxWidth: .infinity)
                     .buttonStyle(.bordered)
+                    .controlSize(.large)
 //                    .foregroundStyle(.blue)
 
-                    Spacer()
-
-                    Button(action: {}) {
-                        Text("Set message")
-                            .fontWeight(.semibold)
-//                            .padding(.vertical, 14)
-                            .frame(maxWidth: .infinity)
-
+                    Button("Set message") {
+                        // Set message action
                     }
+                    .fontWeight(.semibold)
                     .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
 //                    .tint(Color(.systemGray3))
 //                    .foregroundStyle(Color(.systemBackground))
 //                    .clipShape(Capsule())
 //                    .frame(width: 220)
                 }
-                .frame(minWidth: 0, maxWidth: .infinity)
+//                .frame(minWidth: 0, maxWidth: .infinity)
                 .padding(.top, 8)
             }
             .padding(24)
@@ -98,27 +88,32 @@ struct NCStatusMessageView: View {
 //        .background(Color(.systemBackground))
         .navigationTitle(NSLocalizedString("_select_status_message_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            model.getPredefinedStatusTexts(account: account)
+        }
     }
 }
 
 private struct StatusPresetRow: View {
     @Binding var model: NCStatusMessageModel
-    let preset: NCStatusMessageModel.StatusPreset
+    let preset: NKUserStatus
 
     var body: some View {
+        let cleatAtText = model.getPredefinedClearStatusText(clearAt: preset.clearAt, clearAtTime: preset.clearAtTime, clearAtType: preset.clearAtType)
+
         Button(action: {
-            model.chooseStatusPreset(preset: preset)
+            model.chooseStatusPreset(preset: preset, clearAtText: cleatAtText)
         }) {
             HStack(spacing: 16) {
-                Text(preset.emoji)
-                    .font(.title2)
+                Text(preset.icon ?? "")
+                    .font(.title3)
                     .frame(width: 32)
-                Text(preset.title)
+                Text(preset.message ?? "")
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(.primary)
                 Text("—")
                     .foregroundStyle(.secondary)
-                Text(preset.clearAfter.rawValue)
+                Text(cleatAtText)
                     .foregroundStyle(.secondary)
                 Spacer()
             }
