@@ -2,10 +2,10 @@
 // SPDX-FileCopyrightText: 2025 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+import Foundation
 import NextcloudKit
 
-extension NCFiles {
+extension NCCollectionViewCommon {
     /// Starts a detached task that accelerates metadata synchronization for the provided items.
     ///
     /// If a previous sync is still running, this method exits without starting a new one.
