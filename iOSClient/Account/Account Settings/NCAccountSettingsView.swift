@@ -204,6 +204,24 @@ struct NCAccountSettingsView: View {
                         }
                         .onChange(of: showUserStatus) { }
                     }
+
+                    NavigationLink(destination: NCStatusMessageView(account: "account")) {
+                                                                 HStack {
+                                                                     Image(systemName: "message.fill")
+                                                                         .resizable()
+                                                                         .scaledToFit()
+                                                                         .font(Font.system(.body).weight(.light))
+                                                                         .frame(width: 20, height: 20)
+                                                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                                                     Text(NSLocalizedString("_set_user_status_message_", comment: ""))
+                                                                         .lineLimit(1)
+                                                                         .truncationMode(.middle)
+                                                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                                                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                                                                 }
+                                                                 .font(.subheadline)
+                                                             }
+                    
                     //
                     // Certificate server
                     if model.isAdminGroup() {

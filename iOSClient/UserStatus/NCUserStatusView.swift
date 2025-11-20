@@ -20,7 +20,7 @@ struct NCUserStatusView: View {
             List {
                 ForEach(model.userStatuses, id: \.self) { item in
                     HStack {
-                        let status = model.getStatusDetails(name: item.names.first!)
+                        let status = model.getStatusDetails(name: item.name)
 
                         Image(uiImage: status.statusImage ?? UIImage())
                             .renderingMode(.template)
@@ -36,15 +36,14 @@ struct NCUserStatusView: View {
                             }
                         }
                         Spacer()
-                        if model.selectedStatus == item.names.first {
+                        if model.selectedStatus == item.name {
                             Image(systemName: "checkmark")
                                 .foregroundColor(.blue)
                         }
                     }
                     .contentShape(Rectangle()) // make the whole row tappable
                     .onTapGesture {
-                        let firstStatus = item.names.first!
-                        model.selectedStatus = (model.selectedStatus == firstStatus) ? nil : firstStatus
+                        model.selectedStatus = (model.selectedStatus == item.name) ? nil : item.name
                         model.setStatus(account: account)
                     }
                     .onChange(of: model.canDismiss) { _, newValue in

@@ -83,7 +83,6 @@ struct EmojiField: UIViewRepresentable {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Allow change then enforce single grapheme cluster in textFieldDidChangeSelection
             return true
         }
     }

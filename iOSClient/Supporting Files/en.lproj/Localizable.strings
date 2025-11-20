@@ -192,7 +192,8 @@
 "_busy_"                    = "Busy";
 
 /* User status */
-"_select_user_status_"      = "Select online status";
+"_select_user_status_"      = "Set online status";
+"_select_status_message_"      = "Set status message";
 "_status_message_"          = "Status message";
 "_status_message_placehorder_"  = "What is your status?";
 "_online_status_"           = "Online status";
