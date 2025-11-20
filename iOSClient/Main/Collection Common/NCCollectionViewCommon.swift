@@ -52,7 +52,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var tipViewAccounts: EasyTipView?
     var syncMetadatasTask: Task<Void, Never>?
 
-
     // DECLARE
     var layoutKey = ""
     var titleCurrentFolder = ""
