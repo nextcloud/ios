@@ -43,6 +43,7 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        stopSyncMetadata()
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "NCShares")
             backgroundTask?.cancel()
@@ -135,6 +136,7 @@ class NCShares: NCCollectionViewCommon {
             Task {
                 await self.restoreDefaultTitle()
                 await self.reloadDataSource()
+                await self.startSyncMetadata(metadatas: self.dataSource.getMetadatas())
             }
         }
     }
