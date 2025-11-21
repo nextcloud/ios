@@ -1281,4 +1281,12 @@ extension NCManageDatabase {
                 .count
         } ?? 0
     }
+
+    func metadataExistsAsync(predicate: NSPredicate) async -> Bool {
+        await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first != nil
+        } ?? false
+    }
 }

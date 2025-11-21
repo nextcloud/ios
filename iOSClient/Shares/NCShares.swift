@@ -2,12 +2,11 @@
 // SPDX-FileCopyrightText: 2020 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-
 import UIKit
 import NextcloudKit
 
 class NCShares: NCCollectionViewCommon {
-    @MainActor private var ocIdShares: Set<String> = []
+    @MainActor private var fileIds: Set<String> = []
 
     private var backgroundTask: Task<Void, Never>?
 
@@ -53,7 +52,11 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
+        if fileIds.isEmpty {
+            let shares = await self.database.getTableSharesAsync(account: self.session.account)
+            fileIds = Set(shares.compactMap { String($0.fileSource) })
+        }
+        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "fileId IN %@", fileIds),
                                                          withLayout: layoutForView,
                                                          withAccount: session.account)
 
@@ -101,22 +104,26 @@ class NCShares: NCCollectionViewCommon {
             else {
                 return
             }
+            _ = await MainActor.run {
+                self.fileIds.removeAll()
+            }
             let sharess = await self.database.getTableSharesAsync(account: self.session.account)
 
             for share in sharess {
-                let predicate = await NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)
-                if let ocId = await self.database.getMetadataAsync(predicate: predicate)?.ocId {
+                let fileId = "\(share.fileSource)"
+                let predicate = await NSPredicate(format: "account == %@ AND fileId == %@", session.account, fileId)
+                if await self.database.metadataExistsAsync(predicate: predicate) {
                     _ = await MainActor.run {
-                        self.ocIdShares.insert(ocId)
+                        self.fileIds.insert(fileId)
                     }
                 } else {
                     let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: share.serverUrl, fileName: share.fileName)
                     let resultReadShare = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
                     if resultReadShare.error == .success, let metadata = resultReadShare.metadata {
-                        let ocId = metadata.ocId
+                        let fileId = metadata.fileId
                         self.database.addMetadata(metadata)
                         _ = await MainActor.run {
-                            self.ocIdShares.insert(ocId)
+                            self.fileIds.insert(fileId)
                         }
                     }
                 }
