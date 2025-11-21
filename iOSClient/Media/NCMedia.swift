@@ -52,7 +52,7 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
-    let debouncer = NCDebouncer()
+    let debouncer = NCDebouncer(maxEventCount: 10)
 
     @MainActor
     var session: NCSession.Session {
