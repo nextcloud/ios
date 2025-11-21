@@ -50,6 +50,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     var tipViewAccounts: EasyTipView?
+    var syncMetadatasTask: Task<Void, Never>?
 
     // DECLARE
     var layoutKey = ""
