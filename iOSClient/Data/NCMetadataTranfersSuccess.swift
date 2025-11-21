@@ -5,9 +5,25 @@
 import Foundation
 import NextcloudKit
 
+public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
+    func metadataTransferWillFlush()
+    func metadataTransferDidFlush()
+}
+
 actor NCMetadataTranfersSuccess {
     private var tranfersSuccess: [tableMetadata] = []
     private let utility = NCUtility()
+    private var delegates: [NCMetadataTransfersSuccessDelegate] = []
+
+    // Adds a new delegate
+    func addDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+        delegates.append(delegate)
+    }
+
+    // Removes a delegate
+    func removeDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+        delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
+    }
 
     func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
         metadata.ocId = ocId
@@ -57,11 +73,13 @@ actor NCMetadataTranfersSuccess {
         let metadatas: [tableMetadata] = tranfersSuccess
         tranfersSuccess.removeAll(keepingCapacity: true)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
-
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
+
+        for delegate in delegates {
+            delegate.metadataTransferWillFlush()
+        }
 
         for metadata in metadatas {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
@@ -106,6 +124,10 @@ actor NCMetadataTranfersSuccess {
                                             error: .success)
                 }
             }
+        }
+
+        for delegate in delegates {
+            delegate.metadataTransferDidFlush()
         }
 
         nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)

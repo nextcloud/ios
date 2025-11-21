@@ -136,8 +136,18 @@ struct EmptyTransfersView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: model.showFlushMessage) {
-            await NCNetworking.shared.verifyZombie()
+            if model.showFlushMessage {
+                // await NCNetworking.shared.verifyZombie()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
+                    flash = true
+                }
+            } else {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    flash = false
+                }
+            }
 
+            /*
             guard model.showFlushMessage else {
                 return
             }
@@ -168,6 +178,7 @@ struct EmptyTransfersView: View {
             }
 
             model.showFlushMessage = false
+            */
         }
     }
 }
