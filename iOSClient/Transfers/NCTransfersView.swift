@@ -137,7 +137,6 @@ struct EmptyTransfersView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: model.showFlushMessage) {
             if model.showFlushMessage {
-                // await NCNetworking.shared.verifyZombie()
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
                     flash = true
                 }

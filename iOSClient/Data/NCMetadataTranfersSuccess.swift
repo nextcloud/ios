@@ -6,8 +6,8 @@ import Foundation
 import NextcloudKit
 
 public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
-    func metadataTransferWillFlush()
-    func metadataTransferDidFlush()
+    func metadataTransferWillFlush(hasLivePhotos: Bool)
+    func metadataTransferDidFlush(hasLivePhotos: Bool)
 }
 
 actor NCMetadataTranfersSuccess {
@@ -71,6 +71,7 @@ actor NCMetadataTranfersSuccess {
 
     func flush() async {
         let metadatas: [tableMetadata] = tranfersSuccess
+        let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
         tranfersSuccess.removeAll(keepingCapacity: true)
 
         var metadatasLocalFiles: [tableMetadata] = []
@@ -78,7 +79,7 @@ actor NCMetadataTranfersSuccess {
         var autoUploads: [tableAutoUploadTransfer] = []
 
         for delegate in delegates {
-            delegate.metadataTransferWillFlush()
+            delegate.metadataTransferWillFlush(hasLivePhotos: hasLivePhotos)
         }
 
         for metadata in metadatas {
@@ -127,7 +128,7 @@ actor NCMetadataTranfersSuccess {
         }
 
         for delegate in delegates {
-            delegate.metadataTransferDidFlush()
+            delegate.metadataTransferDidFlush(hasLivePhotos: hasLivePhotos)
         }
 
         nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)

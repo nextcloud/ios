@@ -20,8 +20,6 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     private let networking = NCNetworking.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-
-    private var observerToken: NSObjectProtocol?
     internal let sceneIdentifier: String = UUID().uuidString
 
     init(session: NCSession.Session) {
@@ -36,16 +34,9 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
 
     deinit {
         print("deinit")
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     func detach() {
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-            observerToken = nil
-        }
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
             await NCNetworking.shared.metadataTranfersSuccess.removeDelegate(self)
@@ -164,15 +155,22 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
         return nil
     }
 
-    func metadataTransferWillFlush() {
-        DispatchQueue.main.async {
-            self.showFlushMessage = true
+    func metadataTransferWillFlush(hasLivePhotos: Bool) {
+        Task {
+            await NCNetworking.shared.verifyZombie()
+        }
+        if hasLivePhotos {
+            DispatchQueue.main.async {
+                self.showFlushMessage = true
+            }
         }
     }
 
-    func metadataTransferDidFlush() {
-        DispatchQueue.main.async {
-            self.showFlushMessage = false
+    func metadataTransferDidFlush(hasLivePhotos: Bool) {
+        if hasLivePhotos {
+            DispatchQueue.main.async {
+                self.showFlushMessage = false
+            }
         }
     }
 }
