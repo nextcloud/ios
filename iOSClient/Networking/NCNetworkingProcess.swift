@@ -193,7 +193,7 @@ actor NCNetworkingProcess {
 
             // ZOMBIE
             //
-            if countWaitUpload == 0, countTransferSuccess == 0, countProgress > 0 {
+            if countWaitUpload == 0, countProgress > 0 {
                 await NCNetworking.shared.verifyZombie()
             }
 
