@@ -156,9 +156,6 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     }
 
     func metadataTransferWillFlush(hasLivePhotos: Bool) {
-        Task {
-            await NCNetworking.shared.verifyZombie()
-        }
         if hasLivePhotos {
             DispatchQueue.main.async {
                 self.showFlushMessage = true

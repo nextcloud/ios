@@ -185,9 +185,16 @@ actor NCNetworkingProcess {
             // TRANSFERS SUCCESS
             //
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
+            let countProgress = metadatas.filter { global.metadatasStatusInProgress.contains($0.status) }.count
             let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
             if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
                 await NCNetworking.shared.metadataTranfersSuccess.flush()
+            }
+
+            // ZOMBIE
+            //
+            if countWaitUpload == 0, countTransferSuccess == 0, countProgress > 0 {
+                await NCNetworking.shared.verifyZombie()
             }
 
             if !metadatas.isEmpty {

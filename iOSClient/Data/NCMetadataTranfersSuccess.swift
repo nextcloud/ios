@@ -118,6 +118,7 @@ actor NCMetadataTranfersSuccess {
                 for metadata in metadatas {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,

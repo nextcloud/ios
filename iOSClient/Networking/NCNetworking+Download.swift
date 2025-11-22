@@ -51,6 +51,7 @@ extension NCNetworking {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloading,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,
@@ -120,6 +121,7 @@ extension NCNetworking {
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusDownloading,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,
@@ -167,6 +169,7 @@ extension NCNetworking {
         await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,
@@ -198,6 +201,7 @@ extension NCNetworking {
             await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,
@@ -215,6 +219,7 @@ extension NCNetworking {
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,

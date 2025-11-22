@@ -346,6 +346,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferChange(status: String,
                         account: String,
+                        filename: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,

@@ -90,6 +90,7 @@ extension NCNetworking {
                 await networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,

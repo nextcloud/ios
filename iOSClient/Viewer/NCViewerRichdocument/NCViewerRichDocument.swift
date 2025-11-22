@@ -380,6 +380,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
 extension NCViewerRichDocument: NCTransferDelegate {
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,
