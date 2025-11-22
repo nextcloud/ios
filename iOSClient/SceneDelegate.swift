@@ -495,9 +495,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             await NCService().startRequestServicesServer(account: account, controller: controller)
-
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            await NCNetworking.shared.verifyZombie()
         }
 
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)

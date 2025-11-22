@@ -33,6 +33,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,

@@ -22,6 +22,7 @@ protocol NCTransferDelegate: AnyObject {
 
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,
@@ -38,6 +39,7 @@ protocol NCTransferDelegate: AnyObject {
 extension NCTransferDelegate {
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,

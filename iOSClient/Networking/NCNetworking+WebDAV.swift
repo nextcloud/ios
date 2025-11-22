@@ -283,6 +283,7 @@ extension NCNetworking {
             await transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,
@@ -295,6 +296,7 @@ extension NCNetworking {
             await transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,
@@ -407,6 +409,7 @@ extension NCNetworking {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
                                                 account: metadata.account,
+                                                fileName: metadata.fileName,
                                                 serverUrl: metadata.serverUrl,
                                                 selector: metadata.sessionSelector,
                                                 ocId: metadata.ocId,
@@ -500,6 +503,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,
@@ -563,6 +567,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,
@@ -624,6 +629,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCopyMove,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,
@@ -685,6 +691,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCopyMove,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,
@@ -740,6 +747,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusFavorite,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,

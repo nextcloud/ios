@@ -5,9 +5,25 @@
 import Foundation
 import NextcloudKit
 
+public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
+    func metadataTransferWillFlush(hasLivePhotos: Bool)
+    func metadataTransferDidFlush(hasLivePhotos: Bool)
+}
+
 actor NCMetadataTranfersSuccess {
     private var tranfersSuccess: [tableMetadata] = []
     private let utility = NCUtility()
+    private var delegates: [NCMetadataTransfersSuccessDelegate] = []
+
+    // Adds a new delegate
+    func addDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+        delegates.append(delegate)
+    }
+
+    // Removes a delegate
+    func removeDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+        delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
+    }
 
     func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
         metadata.ocId = ocId
@@ -55,13 +71,16 @@ actor NCMetadataTranfersSuccess {
 
     func flush() async {
         let metadatas: [tableMetadata] = tranfersSuccess
+        let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
         tranfersSuccess.removeAll(keepingCapacity: true)
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
 
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
+
+        for delegate in delegates {
+            delegate.metadataTransferWillFlush(hasLivePhotos: hasLivePhotos)
+        }
 
         for metadata in metadatas {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
@@ -99,6 +118,7 @@ actor NCMetadataTranfersSuccess {
                 for metadata in metadatas {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,
@@ -106,6 +126,10 @@ actor NCMetadataTranfersSuccess {
                                             error: .success)
                 }
             }
+        }
+
+        for delegate in delegates {
+            delegate.metadataTransferDidFlush(hasLivePhotos: hasLivePhotos)
         }
 
         nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)

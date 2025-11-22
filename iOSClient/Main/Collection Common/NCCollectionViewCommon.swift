@@ -150,7 +150,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
-    internal let debouncer = NCDebouncer()
+    internal let debouncer = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
 
     // MARK: - View Life Cycle
 
@@ -346,6 +346,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,
@@ -382,7 +383,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 case self.global.networkingStatusCreateFolder:
                     if serverUrl == self.serverUrl,
                        selector != self.global.selectorUploadAutoUpload,
-                       let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
+                       let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
                         self.pushMetadata(metadata)
                     }
                 // RENAME

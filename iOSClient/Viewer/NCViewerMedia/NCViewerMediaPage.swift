@@ -571,6 +571,7 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,
@@ -612,7 +613,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 } else if metadata.isImage {
                     self.currentViewController.loadImage()
                 }
-                // UPLOAD
+            // UPLOAD
             case self.global.networkingStatusUploaded:
                 guard error == .success else { return }
                 if self.currentViewController.metadata.ocId == ocId {
