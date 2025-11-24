@@ -583,7 +583,6 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
             if isFullWidth {
                 constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor))
                 constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor))
-                constraints.append(host.view.widthAnchor.constraint(equalTo: guide.widthAnchor))
             } else {
                 constraints.append(host.view.centerXAnchor.constraint(equalTo: useSafeArea ? guide.centerXAnchor : root.centerXAnchor))
                 constraints.append(host.view.leadingAnchor.constraint(greaterThanOrEqualTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor, constant: horizontalMargin))
@@ -593,7 +592,6 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
             if isFullWidth {
                 constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor))
                 constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor))
-                constraints.append(host.view.widthAnchor.constraint(equalTo: guide.widthAnchor))
             } else {
                 constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor, constant: horizontalMargin))
                 constraints.append(host.view.trailingAnchor.constraint(lessThanOrEqualTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor, constant: -horizontalMargin))
@@ -602,7 +600,6 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
             if isFullWidth {
                 constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor))
                 constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor))
-                constraints.append(host.view.widthAnchor.constraint(equalTo: guide.widthAnchor))
             } else {
                 constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor, constant: -horizontalMargin))
                 constraints.append(host.view.leadingAnchor.constraint(greaterThanOrEqualTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor, constant: horizontalMargin))

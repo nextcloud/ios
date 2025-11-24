@@ -64,6 +64,7 @@ struct ToastBannerView: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -123,7 +124,6 @@ public extension View {
             startPoint: .top,
             endPoint: .bottom
         )
-        .ignoresSafeArea()
 
         ToastBannerView(
             state: LucidBannerState(
