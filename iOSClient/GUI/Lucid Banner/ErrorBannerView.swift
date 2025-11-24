@@ -45,10 +45,10 @@ struct ErrorBannerView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
             .frame(minHeight: 44, alignment: .leading)
         }
     }
