@@ -496,11 +496,6 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
     }
 
     /// Attach the banner window to the current foreground scene and present it with animation.
-    /// The banner is always constrained inside the safe area, both vertically and horizontally.
-    /// - Note:
-    ///   - If `fixedWidth == 0` or (`fixedWidth == nil` and `maxWidth == 0`),
-    ///     the banner expands to the full safe-area width.
-    ///   - Otherwise it uses alignment + margins inside the safe area.
     private func attachWindowAndPresent() {
         // Resolve the target UIWindowScene
         guard let scene: UIWindowScene = (self.scene as? UIWindowScene) ??
@@ -571,7 +566,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
 
         switch vPosition {
         case .top:
-            constraints.append(host.view.topAnchor.constraint(equalTo: useSafeArea ? guide.topAnchor : root.topAnchor,constant: verticalMargin))
+            constraints.append(host.view.topAnchor.constraint(equalTo: useSafeArea ? guide.topAnchor : root.topAnchor, constant: verticalMargin))
         case .center:
             constraints.append(host.view.centerYAnchor.constraint(equalTo: useSafeArea ? guide.centerYAnchor : root.centerYAnchor))
         case .bottom:
