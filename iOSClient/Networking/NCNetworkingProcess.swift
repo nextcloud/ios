@@ -164,7 +164,7 @@ actor NCNetworkingProcess {
                 return
             }
 
-            // UPDATE INWAITINGCOUNT & BADGE
+            // UPDATE INWAIT & BADGE
             //
             let count = await inWaitingCount()
             inWaitingCount = count
