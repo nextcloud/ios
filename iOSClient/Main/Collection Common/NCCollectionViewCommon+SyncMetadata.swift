@@ -2,10 +2,10 @@
 // SPDX-FileCopyrightText: 2025 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+import Foundation
 import NextcloudKit
 
-extension NCFiles {
+extension NCCollectionViewCommon {
     /// Starts a detached task that accelerates metadata synchronization for the provided items.
     ///
     /// If a previous sync is still running, this method exits without starting a new one.
@@ -96,18 +96,21 @@ extension NCFiles {
         guard let account = metadatas.first?.account else {
             return
         }
-        let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
-            Task {
-                await self.networking.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
 
-        // Validate outcome and skip E2EE items
-        guard resultsReadFile.error == .success,
-              let metadata = resultsReadFile.metadata,
-              !metadata.e2eEncrypted else {
-            nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error \(resultsReadFile.error.errorDescription) or e2ee directory \(resultsReadFile.metadata?.e2eEncrypted ?? false). Skipping this one.")
-            return
+        if !serverUrl.isEmpty {
+            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
+                Task {
+                    await self.networking.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            // Validate outcome and skip E2EE items
+            guard resultsReadFile.error == .success,
+                  let metadata = resultsReadFile.metadata,
+                  !metadata.e2eEncrypted else {
+                nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error \(resultsReadFile.error.errorDescription) or e2ee directory \(resultsReadFile.metadata?.e2eEncrypted ?? false). Skipping this one.")
+                return
+            }
         }
 
         // Iterate directories and fetch only when ETag changed

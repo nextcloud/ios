@@ -312,6 +312,14 @@ extension tableMetadata {
         !livePhotoFile.isEmpty
     }
 
+    var isLivePhotoVideo: Bool {
+        !livePhotoFile.isEmpty && classFile == NKTypeClassFile.video.rawValue
+    }
+
+    var isLivePhotoImage: Bool {
+        !livePhotoFile.isEmpty && classFile == NKTypeClassFile.image.rawValue
+    }
+
     var isNotFlaggedAsLivePhotoByServer: Bool {
         !isFlaggedAsLivePhotoByServer
     }
@@ -1272,5 +1280,13 @@ extension NCManageDatabase {
                 .filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting)
                 .count
         } ?? 0
+    }
+
+    func metadataExistsAsync(predicate: NSPredicate) async -> Bool {
+        await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first != nil
+        } ?? false
     }
 }

@@ -30,37 +30,28 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func setLivePhotoVideo(metadatas: [tableMetadata]) async {
-        guard !metadatas.isEmpty else {
-            return
-        }
-
+    func setLivePhotoVideo(account: String, serverUrlFileName: String, fileId: String, classFile: String) async {
         await core.performRealmWriteAsync { realm in
-            for metadata in metadatas {
-                let serverUrlFileNameNoExt = (metadata.serverUrlFileName as NSString).deletingPathExtension
-                let primaryKey = metadata.account + serverUrlFileNameNoExt
-                if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                    if metadata.isVideo {
-                        // Update existing (only the provided fields)
-                        result.serverUrlFileNameVideo = metadata.serverUrlFileName
-                        result.fileIdVideo = metadata.fileId
-                    } else if metadata.isImage {
-                        result.serverUrlFileNameImage = metadata.serverUrlFileName
-                        result.fileIdImage = metadata.fileId
-                    }
-                } else {
-                    // Insert new — ensure the initializer sets the same PK used above
-                    let addObject = tableLivePhoto(account: metadata.account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                    if metadata.isVideo {
-                        addObject.serverUrlFileNameVideo = metadata.serverUrlFileName
-                        addObject.fileIdVideo = metadata.fileId
-                        realm.add(addObject, update: .modified)
-                    } else if metadata.isImage {
-                        addObject.serverUrlFileNameImage = metadata.serverUrlFileName
-                        addObject.fileIdImage = metadata.fileId
-                        realm.add(addObject, update: .modified)
-                    }
-                }
+            let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
+            let primaryKey = account + serverUrlFileNameNoExt
+
+            let livePhoto: tableLivePhoto
+            if let existing = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
+                livePhoto = existing
+            } else {
+                // Create and add a new entry with the proper primary key
+                let newObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
+                realm.add(newObject, update: .modified)
+                livePhoto = newObject
+            }
+
+            // Update only the relevant fields based on metadata content type
+            if classFile == NKTypeClassFile.video.rawValue {
+                livePhoto.serverUrlFileNameVideo = serverUrlFileName
+                livePhoto.fileIdVideo = fileId
+            } else if classFile == NKTypeClassFile.image.rawValue {
+                livePhoto.serverUrlFileNameImage = serverUrlFileName
+                livePhoto.fileIdImage = fileId
             }
         }
     }
@@ -112,4 +103,18 @@ extension NCManageDatabase {
         }
     }
     // swiftlint:enable empty_string
+
+    /// Returns true if at least one valid Live Photo record exists for the given account.
+    func hasLivePhotos() async -> Bool {
+        await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableLivePhoto.self)
+                .where {
+                    $0.serverUrlFileNameImage != "" &&
+                    $0.serverUrlFileNameVideo != "" &&
+                    $0.fileIdImage != "" &&
+                    $0.fileIdVideo != ""
+                }
+            return !results.isEmpty
+        } ?? false
+    }
 }
