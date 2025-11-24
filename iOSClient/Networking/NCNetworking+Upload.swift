@@ -47,6 +47,7 @@ extension NCNetworking {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusUploading,
                                                 account: metadata.account,
+                                                fileName: metadata.fileName,
                                                 serverUrl: metadata.serverUrl,
                                                 selector: metadata.sessionSelector,
                                                 ocId: metadata.ocId,
@@ -94,10 +95,14 @@ extension NCNetworking {
     func uploadChunkFile(metadata: tableMetadata,
                          performPostProcessing: Bool = true,
                          customHeaders: [String: String]? = nil,
-                         chunkProgressHandler: @escaping (_ total: Int, _ counter: Int) -> Void = { _, _ in },
-                         uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
-                         uploadProgressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
+                         numChunks: @escaping (_ num: Int) -> Void = { _ in },
+                         counterChunk: @escaping (_ counter: Int) -> Void = { _ in },
+                         startFilesChunk: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
+                         requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
+                         taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                         progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          assembling: @escaping () -> Void = { }) async -> (account: String,
+                                                                           remainingChunks: [(fileName: String, size: Int64)]?,
                                                                            file: NKFile?,
                                                                            error: NKError) {
         let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -108,101 +113,104 @@ extension NCNetworking {
             chunkSize = self.global.chunkSizeMBEthernetOrWiFi
         }
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        var backupError = NKError()
-        var backupFile: NKFile?
 
-        do {
-            let (_, file) = try await NextcloudKit.shared.uploadChunkAsync(
-                directory: directory,
-                fileName: metadata.fileName,
-                date: metadata.date as Date,
-                creationDate: metadata.creationDate as Date,
-                serverUrl: metadata.serverUrl,
-                chunkFolder: chunkFolder,
-                filesChunk: filesChunk,
-                chunkSize: chunkSize,
-                account: metadata.account,
-                options: options) { total, counter in
-                    chunkProgressHandler(total, counter)
-                } uploadStart: { filesChunk in
-                    Task {
-                        await NCManageDatabase.shared.addChunksAsync(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
-                        await self.transferDispatcher.notifyAllDelegates { delegate in
-                            delegate.transferChange(status: self.global.networkingStatusUploading,
-                                                    account: metadata.account,
-                                                    serverUrl: metadata.serverUrl,
-                                                    selector: metadata.sessionSelector,
-                                                    ocId: metadata.ocId,
-                                                    destination: nil,
-                                                    error: .success)
-                        }
-                    }
-                    uploadStart(filesChunk)
-                } uploadTaskHandler: { task in
-                    Task {
-                        let url = task.originalRequest?.url?.absoluteString ?? ""
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                    path: url,
-                                                                                                    name: "upload")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                              sessionTaskIdentifier: task.taskIdentifier,
-                                                                              status: self.global.metadataStatusUploading)
-                    }
-                } uploadProgressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-                    Task {
-                        guard await self.progressQuantizer.shouldEmit(serverUrlFileName: metadata.serverUrlFileName, fraction: fractionCompleted) else {
-                            return
-                        }
-                        await self.transferDispatcher.notifyAllDelegates { delegate in
-                            delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
-                                                               totalBytes: totalBytes,
-                                                               totalBytesExpected: totalBytesExpected,
-                                                               fileName: metadata.fileName,
-                                                               serverUrl: metadata.serverUrl)
-                        }
-                    }
-                    uploadProgressHandler(totalBytesExpected, totalBytes, fractionCompleted)
-                } uploaded: { fileChunk in
-                    Task {
-                        await NCManageDatabase.shared.deleteChunkAsync(account: metadata.account,
-                                                                       ocId: metadata.ocId,
-                                                                       fileChunk: fileChunk,
-                                                                       directory: directory)
-                    }
-                } assembling: {
-                    assembling()
-                }
-
-            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
-                                                            ocId: metadata.ocId,
-                                                            directory: directory)
-
-            if performPostProcessing, let file {
-                await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
-            }
-
-            backupFile = file
-        } catch is CancellationError {
-            backupError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
-            await uploadCancelFile(metadata: metadata, directoryChunks: directory)
-        } catch let error as NKError {
-            backupError = error
-            if error.errorCode == -5 {
-                await uploadCancelFile(metadata: metadata, directoryChunks: directory)
-            } else {
-                if performPostProcessing {
-                    await uploadError(withMetadata: metadata, error: error)
+        let results = await NextcloudKit.shared.uploadChunkAsync(directory: directory,
+                                                                 fileName: metadata.fileName,
+                                                                 date: metadata.date as Date,
+                                                                 creationDate: metadata.creationDate as Date,
+                                                                 serverUrl: metadata.serverUrl,
+                                                                 chunkFolder: chunkFolder,
+                                                                 filesChunk: filesChunk,
+                                                                 chunkSize: chunkSize,
+                                                                 account: metadata.account,
+                                                                 options: options) { num in
+            numChunks(num)
+        } counterChunk: { counter in
+            counterChunk(counter)
+        } start: { filesChunk in
+            Task {
+                await NCManageDatabase.shared.addChunksAsync(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusUploading,
+                                            account: metadata.account,
+                                            fileName: metadata.fileName,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
+                                            destination: nil,
+                                            error: .success)
                 }
             }
-        } catch let error {
-            backupError = NKError(error: error)
-            if performPostProcessing {
-                await uploadError(withMetadata: metadata, error: backupError)
+            startFilesChunk(filesChunk)
+        } requestHandler: { request in
+            requestHandler(request)
+        } taskHandler: { task in
+            Task {
+                let url = task.originalRequest?.url?.absoluteString ?? ""
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: url,
+                                                                                            name: "upload")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
+                let ocId = metadata.ocId
+                await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
+                                                                      sessionTaskIdentifier: task.taskIdentifier,
+                                                                      status: self.global.metadataStatusUploading)
+            }
+            taskHandler(task)
+        } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+            Task {
+                guard await self.progressQuantizer.shouldEmit(serverUrlFileName: metadata.serverUrlFileName, fraction: fractionCompleted) else {
+                    return
+                }
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
+                                                       totalBytes: totalBytes,
+                                                       totalBytesExpected: totalBytesExpected,
+                                                       fileName: metadata.fileName,
+                                                       serverUrl: metadata.serverUrl)
+                }
+            }
+            progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
+        } assembling: {
+            assembling()
+        } uploaded: { fileChunk in
+            Task {
+                await NCManageDatabase.shared.deleteChunkAsync(account: metadata.account,
+                                                               ocId: metadata.ocId,
+                                                               fileChunk: fileChunk,
+                                                               directory: directory)
             }
         }
 
-        return(metadata.account, backupFile, backupError)
+        if results.error == .success {
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directory)
+        } else if results.error.errorCode == -1 ||
+                    results.error.errorCode == -2 ||
+                    results.error.errorCode == -3 ||
+                    results.error.errorCode == -4 ||
+                    results.error.errorCode == -5 {
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directory)
+            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+
+            NCContentPresenter().showError(error: results.error)
+            return results
+        }
+
+        if performPostProcessing {
+            if results.error == .success, let file = results.file {
+                await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
+            } else {
+                await uploadError(withMetadata: metadata, error: results.error)
+            }
+        }
+
+        return results
     }
 
     // MARK: - Upload file in background
@@ -239,6 +247,7 @@ extension NCNetworking {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,
@@ -285,7 +294,10 @@ extension NCNetworking {
             await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
         }
         if let livePhoto = results.livePhoto {
-            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: [livePhoto])
+            await NCManageDatabase.shared.setLivePhotoVideo(account: livePhoto.account,
+                                                            serverUrlFileName: livePhoto.serverUrlFileName,
+                                                            fileId: livePhoto.fileId,
+                                                            classFile: livePhoto.classFile)
 #if !EXTENSION
             await NCNetworking.shared.setLivePhoto(account: metadata.account)
 #endif
@@ -294,6 +306,7 @@ extension NCNetworking {
         await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploaded,
                                     account: metadata.account,
+                                    fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
                                     selector: metadata.sessionSelector,
                                     ocId: metadata.ocId,
@@ -342,6 +355,7 @@ extension NCNetworking {
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusUploaded,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,
@@ -364,12 +378,7 @@ extension NCNetworking {
 
     // MARK: -
 
-    func uploadCancelFile(metadata: tableMetadata, directoryChunks: String? = nil) async {
-        if let directoryChunks {
-            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
-                                                            ocId: metadata.ocId,
-                                                            directory: directoryChunks)
-        }
+    func uploadCancelFile(metadata: tableMetadata) async {
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
     }
@@ -468,4 +477,44 @@ extension NCNetworking {
         return controller
     }
 #endif
+
+    // MARK: - Helper
+
+    func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?,
+                                                                  livePhoto: tableMetadata?,
+                                                                  autoUpload: tableAutoUploadTransfer?) {
+        var localFile: tableMetadata?
+        var livePhoto: tableMetadata?
+        var autoUpload: tableAutoUploadTransfer?
+
+        // File System Local file
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
+            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
+            localFile = tableMetadata(value: metadata)
+        } else {
+            utilityFileSystem.removeFile(atPath: fileNamePath)
+        }
+
+        // Live Photo
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        if capabilities.isLivePhotoServerAvailable,
+           metadata.isLivePhoto {
+            livePhoto = tableMetadata(value: metadata)
+        }
+
+        // Auto Upload
+        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
+           let serverUrlBase = metadata.autoUploadServerUrlBase {
+            autoUpload = tableAutoUploadTransfer(account: metadata.account,
+                                                 serverUrlBase: serverUrlBase,
+                                                 fileName: metadata.fileNameView,
+                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                 date: metadata.creationDate as Date)
+        }
+
+        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
+    }
 }

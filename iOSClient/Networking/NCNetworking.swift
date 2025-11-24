@@ -22,6 +22,7 @@ protocol NCTransferDelegate: AnyObject {
 
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,
@@ -38,6 +39,7 @@ protocol NCTransferDelegate: AnyObject {
 extension NCTransferDelegate {
     func transferChange(status: String,
                         account: String,
+                        fileName: String,
                         serverUrl: String,
                         selector: String?,
                         ocId: String,
@@ -435,45 +437,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
-    }
-#endif
-    // MARK: - Helper
-
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
-    func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
-        var localFile: tableMetadata?
-        var livePhoto: tableMetadata?
-        var autoUpload: tableAutoUploadTransfer?
-
-        // File System Local file
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
-
-        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
-            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
-            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
-            localFile = tableMetadata(value: metadata)
-        } else {
-            utilityFileSystem.removeFile(atPath: fileNamePath)
-        }
-
-        // Live Photo
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-        if capabilities.isLivePhotoServerAvailable,
-           metadata.isLivePhoto {
-            livePhoto = tableMetadata(value: metadata)
-        }
-
-        // Auto Upload
-        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
-           let serverUrlBase = metadata.autoUploadServerUrlBase {
-            autoUpload = tableAutoUploadTransfer(account: metadata.account,
-                                                 serverUrlBase: serverUrlBase,
-                                                 fileName: metadata.fileNameView,
-                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                 date: metadata.creationDate as Date)
-        }
-
-        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
 #endif
 

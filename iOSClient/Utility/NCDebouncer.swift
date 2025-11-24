@@ -11,7 +11,7 @@ public actor NCDebouncer {
     private var pendingTask: Task<Void, Never>?
     private var latestBlock: (@MainActor @Sendable () async -> Void)?
 
-    public init(delay: Duration = .seconds(2), maxEventCount: Int = 10) {
+    public init(delay: Duration = .seconds(2), maxEventCount: Int) {
         self.delay = delay
         self.maxEventCount = maxEventCount
     }
