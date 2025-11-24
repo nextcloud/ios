@@ -89,7 +89,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
 
     // Pending payload used for queueing
     private struct PendingShow {
-        let scene: UIScene?
+        let scene: UIWindowScene?
         let title: String?
         let subtitle: String?
         let footnote: String?
@@ -116,7 +116,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
     private var contentView: ((LucidBannerState) -> AnyView)?
 
     // Window/UI
-    private var scene: UIScene?
+    private var scene: UIWindowScene?
     private var blocksTouches = false
     private var window: LucidBannerWindow?
     private weak var scrimView: UIControl?
@@ -175,7 +175,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
 
     /// Presents a new banner. If one is already visible, behavior follows `policy`.
     @discardableResult
-    public func show<Content: View>(scene: UIScene? = nil,
+    public func show<Content: View>(scene: UIWindowScene? = nil,
                                     title: String? = nil,
                                     subtitle: String? = nil,
                                     footnote: String? = nil,
@@ -497,12 +497,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
 
     /// Attach the banner window to the current foreground scene and present it with animation.
     private func attachWindowAndPresent() {
-        // Resolve the target UIWindowScene
-        guard let scene: UIWindowScene = (self.scene as? UIWindowScene) ??
-            UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .first(where: { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive })
-        else {
+        guard let scene = self.scene else {
             return
         }
 

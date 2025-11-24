@@ -379,8 +379,11 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene ?? UIApplication.shared.firstWindow?.windowScene
+        guard let scene else { return }
 
         let token = LucidBanner.shared.show(
+            scene: scene,
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
             subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
             footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
