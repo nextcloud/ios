@@ -386,8 +386,8 @@ actor NCNetworkingProcess {
             footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
             systemImage: "gearshape.arrow.triangle.2.circlepath",
             imageAnimation: .rotate,
+            maxWidth: 0,
             vPosition: .bottom,
-            hAlignment: .left,
             verticalMargin: 55,
             onTapWithContext: { _, _, _ in
                 currentUploadTask?.cancel()

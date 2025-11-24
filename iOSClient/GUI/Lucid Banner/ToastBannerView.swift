@@ -53,7 +53,6 @@ struct ToastBannerView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .topLeading)
 
                 if showProgress && !measuring {
                     ProgressView(value: min(state.progress ?? 0, 1))
@@ -65,7 +64,6 @@ struct ToastBannerView: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
-            .frame(minHeight: 44, alignment: .leading)
         }
     }
 
