@@ -571,114 +571,41 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
 
         switch vPosition {
         case .top:
-            constraints.append(
-                host.view.topAnchor.constraint(
-                    equalTo: useSafeArea ? guide.topAnchor : root.topAnchor,
-                    constant: verticalMargin
-                )
-            )
+            constraints.append(host.view.topAnchor.constraint(equalTo: useSafeArea ? guide.topAnchor : root.topAnchor,constant: verticalMargin))
         case .center:
-            constraints.append(
-                host.view.centerYAnchor.constraint(
-                    equalTo: useSafeArea ? guide.centerYAnchor : root.centerYAnchor
-                )
-            )
+            constraints.append(host.view.centerYAnchor.constraint(equalTo: useSafeArea ? guide.centerYAnchor : root.centerYAnchor))
         case .bottom:
-            constraints.append(
-                host.view.bottomAnchor.constraint(
-                    equalTo: useSafeArea ? guide.bottomAnchor : root.bottomAnchor,
-                    constant: -verticalMargin
-                )
-            )
-    }
+            constraints.append(host.view.bottomAnchor.constraint(equalTo: useSafeArea ? guide.bottomAnchor : root.bottomAnchor, constant: -verticalMargin))
+        }
 
         switch hAlignment {
         case .center:
             if isFullWidth {
-                // Full width: pin to horizontal edges
-                constraints.append(
-                    host.view.leadingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor
-                    )
-                )
-                constraints.append(
-                    host.view.trailingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor
-                    )
-                )
+                constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor))
+                constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor))
+                constraints.append(host.view.widthAnchor.constraint(equalTo: guide.widthAnchor))
             } else {
-                // Centered with horizontal margins
-                constraints.append(
-                    host.view.centerXAnchor.constraint(
-                        equalTo: useSafeArea ? guide.centerXAnchor : root.centerXAnchor
-                    )
-                )
-                constraints.append(
-                    host.view.leadingAnchor.constraint(
-                        greaterThanOrEqualTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor,
-                        constant: horizontalMargin
-                    )
-                )
-                constraints.append(
-                    host.view.trailingAnchor.constraint(
-                        lessThanOrEqualTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor,
-                        constant: -horizontalMargin
-                    )
-                )
+                constraints.append(host.view.centerXAnchor.constraint(equalTo: useSafeArea ? guide.centerXAnchor : root.centerXAnchor))
+                constraints.append(host.view.leadingAnchor.constraint(greaterThanOrEqualTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor, constant: horizontalMargin))
+                constraints.append(host.view.trailingAnchor.constraint(lessThanOrEqualTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor, constant: -horizontalMargin))
             }
         case .left:
             if isFullWidth {
-                // Full width
-                constraints.append(
-                    host.view.leadingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor
-                    )
-                )
-                constraints.append(
-                    host.view.trailingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor
-                    )
-                )
+                constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor))
+                constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor))
+                constraints.append(host.view.widthAnchor.constraint(equalTo: guide.widthAnchor))
             } else {
-                constraints.append(
-                    host.view.leadingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor,
-                        constant: horizontalMargin
-                    )
-                )
-                constraints.append(
-                    host.view.trailingAnchor.constraint(
-                        lessThanOrEqualTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor,
-                        constant: -horizontalMargin
-                    )
-                )
+                constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor, constant: horizontalMargin))
+                constraints.append(host.view.trailingAnchor.constraint(lessThanOrEqualTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor, constant: -horizontalMargin))
             }
         case .right:
             if isFullWidth {
-                // Full width
-                constraints.append(
-                    host.view.leadingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor
-                    )
-                )
-                constraints.append(
-                    host.view.trailingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor
-                    )
-                )
+                constraints.append(host.view.leadingAnchor.constraint(equalTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor))
+                constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor))
+                constraints.append(host.view.widthAnchor.constraint(equalTo: guide.widthAnchor))
             } else {
-                constraints.append(
-                    host.view.trailingAnchor.constraint(
-                        equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor,
-                        constant: -horizontalMargin
-                    )
-                )
-                constraints.append(
-                    host.view.leadingAnchor.constraint(
-                        greaterThanOrEqualTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor,
-                        constant: horizontalMargin
-                    )
-                )
+                constraints.append(host.view.trailingAnchor.constraint(equalTo: useSafeArea ? guide.trailingAnchor : root.trailingAnchor, constant: -horizontalMargin))
+                constraints.append(host.view.leadingAnchor.constraint(greaterThanOrEqualTo: useSafeArea ? guide.leadingAnchor : root.leadingAnchor, constant: horizontalMargin))
             }
         }
 
@@ -691,9 +618,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
         if let fixedWidth {
             if fixedWidth > 0 {
                 // Fixed width mode: explicit constant width (inside safe area)
-                constraints.append(
-                    host.view.widthAnchor.constraint(equalToConstant: fixedWidth)
-                )
+                constraints.append(host.view.widthAnchor.constraint(equalToConstant: fixedWidth))
             } else {
                 // fixedWidth == 0 → full safe-area width
                 // Width is resolved purely by leading/trailing constraints above.
@@ -704,16 +629,8 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
                 // Width is resolved by leading/trailing; no extra width constraints.
             } else {
                 // Flexible width: minWidth ≤ width ≤ maxWidth, inside safe area
-                constraints.append(
-                    host.view.widthAnchor.constraint(
-                        greaterThanOrEqualToConstant: minWidth
-                    )
-                )
-                constraints.append(
-                    host.view.widthAnchor.constraint(
-                        lessThanOrEqualToConstant: maxWidth
-                    )
-                )
+                constraints.append(host.view.widthAnchor.constraint(greaterThanOrEqualToConstant: minWidth))
+                constraints.append(host.view.widthAnchor.constraint(lessThanOrEqualToConstant: maxWidth))
             }
         }
 
@@ -821,8 +738,7 @@ public final class LucidBanner: NSObject, UIGestureRecognizerDelegate {
 
     // MARK: - Gestures
 
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                                  shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
 
