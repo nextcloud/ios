@@ -336,10 +336,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 Task { @MainActor in
                     let richWorkspaceCommon = NCRichWorkspaceCommon()
                     if let viewController = controller.currentViewController() {
-                        if await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
-                                                                                      session.account,
-                                                                                      serverUrl,
-                                                                                      NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
+                        if await NCManageDatabase.shared.getMetadataAsync(
+                            predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
+                                                   session.account,
+                                                   serverUrl,
+                                                   NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
                             richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
                         } else {
                             richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
@@ -468,7 +469,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem.menu = plusMenu
         } else {
             let plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
-            plusItem.tintColor = NCBrandColor.shared.customer
+            plusItem.tintColor = NCBrandColor.shared.getElement(account: session.account)
             plusItem.menu = plusMenu
             menuToolbar.setItems([plusItem], animated: false)
             menuToolbar.sizeToFit()

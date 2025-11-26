@@ -9,31 +9,6 @@ import NextcloudKit
 import Alamofire
 import RealmSwift
 
-/* -----------------------------------------------------------------------------------------------------------------------------------------------
-                                                            STRUCT item
-   -----------------------------------------------------------------------------------------------------------------------------------------------
- 
- 
-    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> _ROOT_
-    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> _ROOT_
-
-                                    ↓
- 
-    itemIdentifier = metadata.ocId (ex. 00ABC1)                                     --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
-    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
- 
-                                    ↓
-
-    itemIdentifier = metadata.ocId (ex. 00CCC)                                      --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
-    parentItemIdentifier = parent itemIdentifier (00ABC1)                           --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
- 
-                                    ↓
- 
-    itemIdentifier = metadata.ocId (ex. 000DD)                                      --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
-    parentItemIdentifier = parent itemIdentifier (00CCC)                            --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
- 
-   -------------------------------------------------------------------------------------------------------------------------------------------- */
-
 final class FileProviderExtension: NSFileProviderExtension {
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
         // Skip authentication checks for the working set container

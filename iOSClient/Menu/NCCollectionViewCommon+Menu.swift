@@ -289,6 +289,7 @@ extension NCCollectionViewCommon {
                                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                             account: metadata.account,
+                                                            fileName: metadata.fileName,
                                                             serverUrl: metadata.serverUrl,
                                                             selector: NCGlobal.shared.selectorSaveAsScan,
                                                             ocId: metadata.ocId,
@@ -360,6 +361,7 @@ extension NCCollectionViewCommon {
                                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                             account: metadata.account,
+                                                            fileName: metadata.fileName,
                                                             serverUrl: metadata.serverUrl,
                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                             ocId: metadata.ocId,

@@ -153,6 +153,7 @@ class NCDragDrop: NSObject {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCopyMove,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,
@@ -168,6 +169,7 @@ class NCDragDrop: NSObject {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCopyMove,
                                         account: metadata.account,
+                                        fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
                                         selector: metadata.sessionSelector,
                                         ocId: metadata.ocId,

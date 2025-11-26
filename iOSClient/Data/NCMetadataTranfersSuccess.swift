@@ -5,11 +5,27 @@
 import Foundation
 import NextcloudKit
 
+public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
+    func metadataTransferWillFlush(hasLivePhotos: Bool)
+    func metadataTransferDidFlush(hasLivePhotos: Bool)
+}
+
 actor NCMetadataTranfersSuccess {
     private var tranfersSuccess: [tableMetadata] = []
     private let utility = NCUtility()
+    private var delegates: [NCMetadataTransfersSuccessDelegate] = []
 
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) {
+    // Adds a new delegate
+    func addDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+        delegates.append(delegate)
+    }
+
+    // Removes a delegate
+    func removeDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+        delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
+    }
+
+    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -29,6 +45,16 @@ actor NCMetadataTranfersSuccess {
         } else {
             tranfersSuccess.append(metadata)
         }
+
+        // Create Live Photo metadata
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        if capabilities.isLivePhotoServerAvailable,
+           metadata.isLivePhoto {
+            await NCManageDatabase.shared.setLivePhotoVideo(account: metadata.account,
+                                                            serverUrlFileName: metadata.serverUrlFileName,
+                                                            fileId: metadata.fileId,
+                                                            classFile: metadata.classFile)
+        }
     }
 
     func count() -> Int {
@@ -45,13 +71,16 @@ actor NCMetadataTranfersSuccess {
 
     func flush() async {
         let metadatas: [tableMetadata] = tranfersSuccess
+        let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
         tranfersSuccess.removeAll(keepingCapacity: true)
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
 
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
+
+        for delegate in delegates {
+            delegate.metadataTransferWillFlush(hasLivePhotos: hasLivePhotos)
+        }
 
         for metadata in metadatas {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
@@ -74,11 +103,7 @@ actor NCMetadataTranfersSuccess {
         // Auto Upload
         await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
 
-        // Create Live Photo metadatas
-        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-
         if !NCNetworking.shared.isInBackground() {
-
             // Set livePhoto on Server
             let accounts = Set(metadatasLivePhoto.map { $0.account })
             for account in accounts {
@@ -93,6 +118,7 @@ actor NCMetadataTranfersSuccess {
                 for metadata in metadatas {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
+                                            fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
                                             selector: metadata.sessionSelector,
                                             ocId: metadata.ocId,
@@ -100,6 +126,10 @@ actor NCMetadataTranfersSuccess {
                                             error: .success)
                 }
             }
+        }
+
+        for delegate in delegates {
+            delegate.metadataTransferDidFlush(hasLivePhotos: hasLivePhotos)
         }
 
         nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)

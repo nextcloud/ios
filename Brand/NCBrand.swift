@@ -127,6 +127,22 @@ final class NCBrandOptions: @unchecked Sendable {
     @objc func getUserAgent() -> String {
         return userAgent
     }
+
+    func isServerVersion(_ capabilities: NKCapabilities.Capabilities,
+                         greaterOrEqualTo major: Int,
+                         _ minor: Int,
+                         _ micro: Int) -> Bool {
+
+        let server = (
+            capabilities.serverVersionMajor,
+            capabilities.serverVersionMinor,
+            capabilities.serverVersionMicro
+        )
+
+        let required = (major, minor, micro)
+
+        return server >= required
+    }
 }
 
 final class NCBrandColor: @unchecked Sendable {

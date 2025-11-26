@@ -5,7 +5,7 @@
 import Foundation
 import NextcloudKit
 
-final class TransfersViewModel: ObservableObject {
+final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDelegate {
     @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
@@ -20,37 +20,26 @@ final class TransfersViewModel: ObservableObject {
     private let networking = NCNetworking.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-
-    private var observerToken: NSObjectProtocol?
     internal let sceneIdentifier: String = UUID().uuidString
 
     init(session: NCSession.Session) {
         self.session = session
 
-        observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { [weak self] _ in
-            self?.showFlushMessage = true
-        }
-
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
+            await NCNetworking.shared.metadataTranfersSuccess.addDelegate(self)
             await pollTransfers()
         }
     }
 
     deinit {
         print("deinit")
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     func detach() {
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-            observerToken = nil
-        }
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
+            await NCNetworking.shared.metadataTranfersSuccess.removeDelegate(self)
         }
     }
 
@@ -164,6 +153,22 @@ final class TransfersViewModel: ObservableObject {
             return NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         return nil
+    }
+
+    func metadataTransferWillFlush(hasLivePhotos: Bool) {
+        if hasLivePhotos {
+            DispatchQueue.main.async {
+                self.showFlushMessage = true
+            }
+        }
+    }
+
+    func metadataTransferDidFlush(hasLivePhotos: Bool) {
+        if hasLivePhotos {
+            DispatchQueue.main.async {
+                self.showFlushMessage = false
+            }
+        }
     }
 }
 
