@@ -22,7 +22,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil) async -> NKError {
         var finalError: NKError = .success
         var session = session
         let ocId = metadata.ocIdTransfer
@@ -38,6 +38,7 @@ class NCNetworkingE2EEUpload: NSObject {
         // BANNER ENCRYPTION
         //
         bannerToken = LucidBanner.shared.show(
+            scene: scene,
             title: NSLocalizedString("_wait_file_encryption_", comment: ""),
             subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
             systemImage: "lock.circle.fill",

@@ -72,6 +72,11 @@ actor NCNetworkingProcess {
     }
 
     @MainActor
+    private func getScene(sceneIdentifier: String?) async -> UIWindowScene? {
+        SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene ?? UIApplication.shared.firstWindow?.windowScene
+    }
+
+    @MainActor
     private func getController(account: String, sceneIdentifier: String?) async -> NCMainTabBarController? {
         /// find controller
         var controller: NCMainTabBarController?
@@ -357,7 +362,7 @@ actor NCNetworkingProcess {
                 //
                 if metadata.isDirectoryE2EE {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller, scene: getScene(sceneIdentifier: metadata.sceneIdentifier))
 
                 // UPLOAD CHUNK
                 //
@@ -379,8 +384,7 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
-        let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene ?? UIApplication.shared.firstWindow?.windowScene
-        guard let scene else { return }
+        let scene = await getScene(sceneIdentifier: metadata.sceneIdentifier)
 
         let token = LucidBanner.shared.show(
             scene: scene,
@@ -503,5 +507,4 @@ actor NCNetworkingProcess {
 
         return .success
     }
-
 }

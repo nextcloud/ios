@@ -410,7 +410,7 @@ extension NCShareExtension {
         hud.ringProgress(view: self.view, text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
         if metadata.isDirectoryE2EE {
-            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, scene: self.view.window?.windowScene)
         } else if metadata.chunk > 0 {
             var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
 

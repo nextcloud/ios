@@ -205,8 +205,6 @@
 		F70557BE2ED44F1800135623 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BA2ED44F1800135623 /* ErrorBannerView.swift */; };
 		F70557BF2ED44F1800135623 /* ToastBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BB2ED44F1800135623 /* ToastBannerView.swift */; };
 		F70557C02ED44F1800135623 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BA2ED44F1800135623 /* ErrorBannerView.swift */; };
-		F70557C52ED4599900135623 /* LucidBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557C32ED4599900135623 /* LucidBanner.swift */; };
-		F70557C62ED4726E00135623 /* LucidBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557C32ED4599900135623 /* LucidBanner.swift */; };
 		F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70716E52987F81500E72C1D /* DocumentActionViewController.swift */; };
 		F70716ED2987F81500E72C1D /* File Provider Extension UI.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */; };
@@ -1286,7 +1284,6 @@
 		F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflictCell.swift; sourceTree = "<group>"; };
 		F70557BA2ED44F1800135623 /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
 		F70557BB2ED44F1800135623 /* ToastBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastBannerView.swift; sourceTree = "<group>"; };
-		F70557C32ED4599900135623 /* LucidBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidBanner.swift; sourceTree = "<group>"; };
 		F70716E32987F81500E72C1D /* File Provider Extension UI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension UI.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F70716E52987F81500E72C1D /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
 		F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMediaPage.swift; sourceTree = "<group>"; };
@@ -3226,7 +3223,6 @@
 			children = (
 				AA517BB42D66149900F8D37C /* .tx */,
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
-				F70557C32ED4599900135623 /* LucidBanner.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */,
 				F77DD6A72C5CC093009448FB /* NCSession.swift */,
@@ -4228,7 +4224,6 @@
 				AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */,
 				AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */,
 				F74D50362C9856D300BBBF4C /* NCCollectionViewDataSource.swift in Sources */,
-				F70557C62ED4726E00135623 /* LucidBanner.swift in Sources */,
 				F7A573692E190387009C9257 /* NCShareExtensionData.swift in Sources */,
 				F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
@@ -4728,7 +4723,6 @@
 				F76340FA2EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
 				F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F711A4DC2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
-				F70557C52ED4599900135623 /* LucidBanner.swift in Sources */,
 				AF4BF61E27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
