@@ -20,7 +20,7 @@ import NextcloudKit
 
     var predefinedStatuses: [NKUserStatus] = []
 
-    var emojiText: String = "😀"
+    var emojiText: String = ""
     var statusText: String = ""
     var clearAfterString = "_dont_clear_"
 
@@ -34,14 +34,13 @@ import NextcloudKit
         Task {
             let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: "getUserStatus")
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "getUserStatus")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
 
             if result.error == .success {
-                emojiText = result.icon ?? ""
+                emojiText = result.icon ?? "😀"
                 statusText = result.message ?? ""
                 clearAfterString = getPredefinedClearStatusString(clearAt: result.clearAt, clearAtTime: "", clearAtType: "")
             }
