@@ -6,7 +6,8 @@ import UIKit
 import NextcloudKit
 import Photos
 import RealmSwift
-import JDStatusBarNotification
+import Alamofire
+import LucidBanner
 
 actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
@@ -172,8 +173,8 @@ actor NCNetworkingProcess {
                     UNUserNotificationCenter.current().setBadgeCount(count)
 
                     if let controller = getRootController(),
-                        let files = controller.tabBar.items?.first {
-                        files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
+                       let files = controller.tabBar.items?.first {
+                            files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
                     }
                 }
             }
@@ -266,7 +267,9 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0, timer != nil else { return }
+        guard availableProcess > 0, timer != nil else {
+            return
+        }
 
         // DOWNLOAD
         //
@@ -284,7 +287,9 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0, timer != nil else { return }
+        guard availableProcess > 0, timer != nil else {
+            return
+        }
 
         // UPLOAD IN ERROR (check > 5 minute ago)
         //
@@ -354,7 +359,7 @@ actor NCNetworkingProcess {
                 //
                 if metadata.isDirectoryE2EE {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller, scene: SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene)
 
                 // UPLOAD CHUNK
                 //
@@ -373,72 +378,65 @@ actor NCNetworkingProcess {
 
     // MARK: - Upload in chunk mode
 
+    @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        var numChunks = 0
-        var countUpload: Int = 0
+        var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
 
-        NotificationPresenter.shared.updateDefaultStyle { style in
-            style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
-            style.backgroundStyle.pillStyle.height = 55
+        let token = LucidBanner.shared.show(
+            scene: scene,
+            title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+            subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+            footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
+            systemImage: "gearshape.arrow.triangle.2.circlepath",
+            imageAnimation: .rotate,
+            maxWidth: 0,
+            vPosition: .bottom,
+            verticalMargin: 55,
+            onTapWithContext: { _, _, _ in
+                currentUploadTask?.cancel()
+            }) { state in
+                ToastBannerView(state: state)
+            }
 
-            style.textStyle.textColor = .white
+        let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+                Task {@MainActor in
+                    let progress = Double(counter) / Double(total)
+                    LucidBanner.shared.update(progress: progress, for: token)
+                }
+            } uploadStart: { _ in
+                Task {@MainActor in
+                    LucidBanner.shared.update(
+                        title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                        systemImage: "arrowshape.up.circle",
+                        imageAnimation: .breathe,
+                        progress: 0,
+                        for: token)
+                }
+            } uploadProgressHandler: { _, _, progress in
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: progress, for: token)
+                }
+            } assembling: {
+                Task {@MainActor in
+                    LucidBanner.shared.update(
+                        title: NSLocalizedString("_finalizing_wait_", comment: ""),
+                        footnote: "",
+                        systemImage: "tray.and.arrow.down",
+                        imageAnimation: .pulsebyLayer,
+                        progress: 0,
+                        for: token)
+                }
+            }
 
-            style.subtitleStyle.textColor = .white
-            style.animationType = .move
-
-            style.progressBarStyle.barColor = .white
-            style.progressBarStyle.barHeight = 2
-            style.progressBarStyle.horizontalInsets = 30
-            style.progressBarStyle.offsetY = -4
-
-            return style
+            return results
         }
 
-        Task { @MainActor in
-            NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                                 subtitle: NSLocalizedString("_large_upload_tip_", comment: ""))
+        currentUploadTask = task
+        _ = await task.value
 
-            let view = makeHostingNotificationPresenterView(NotificationPresenterGearSymbol(),
-                                                            size: .init(width: 28, height: 28))
-            NotificationPresenter.shared.displayLeftView(view)
-        }
-        await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-            numChunks = num
-        } counterChunk: { counter in
-            Task { @MainActor in
-                let progress = Double(counter) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
-            }
-        } startFilesChunk: { _ in
-            Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-
-                let view = makeHostingNotificationPresenterView(NotificationPresenterArrowShapeSymbol(),
-                                                                size: .init(width: 28, height: 28))
-                NotificationPresenter.shared.displayLeftView(view)
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
-            }
-        } requestHandler: { _ in
-            Task { @MainActor in
-                let progress = Double(countUpload) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
-                countUpload += 1
-            }
-        } assembling: {
-            Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_wait_", comment: ""))
-
-                let view = makeHostingNotificationPresenterView(NotificationPresenterTryArrowSymbol(),
-                                                                size: .init(width: 28, height: 28))
-                NotificationPresenter.shared.displayLeftView(view)
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
-            }
-        }
-
-        Task { @MainActor in
-            NotificationPresenter.shared.dismiss()
-        }
-
+        LucidBanner.shared.dismiss(for: token)
     }
 
     // MARK: - Helper
@@ -506,5 +504,4 @@ actor NCNetworkingProcess {
 
         return .success
     }
-
 }

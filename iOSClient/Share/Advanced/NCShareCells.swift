@@ -279,4 +279,3 @@ struct NCShareConfig {
         } else { return nil }
     }
 }
-

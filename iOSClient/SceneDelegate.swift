@@ -586,6 +586,21 @@ final class SceneManager: @unchecked Sendable {
         return getWindow(scene: scene)
     }
 
+    func getWindow(sceneIdentifier: String?) -> UIWindow? {
+        var mainTabBarController: NCMainTabBarController?
+
+        if let sceneIdentifier {
+            for controller in sceneController.keys {
+                if sceneIdentifier == controller.sceneIdentifier {
+                    mainTabBarController = controller
+                }
+            }
+        }
+        guard let mainTabBarController,
+              let scene = sceneController[mainTabBarController] else { return UIApplication.shared.firstWindow }
+        return getWindow(scene: scene)
+    }
+
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
         for controller in sceneController.keys {
