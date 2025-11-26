@@ -167,13 +167,15 @@ actor NCNetworkingProcess {
             // UPDATE INWAIT & BADGE
             //
             let count = await inWaitingCount()
-            inWaitingCount = count
-            Task { @MainActor in
-                UNUserNotificationCenter.current().setBadgeCount(count)
+            if count != inWaitingCount {
+                inWaitingCount = count
+                Task { @MainActor in
+                    UNUserNotificationCenter.current().setBadgeCount(count)
 
-                if let controller = getRootController(),
-                    let files = controller.tabBar.items?.first {
-                    files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
+                    if let controller = getRootController(),
+                       let files = controller.tabBar.items?.first {
+                            files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
+                    }
                 }
             }
 
