@@ -51,7 +51,7 @@ struct NCStatusMessageView: View {
                         }
                     } label: {
                         Text(model.clearAfterString)
-                            .foregroundStyle(.blue) 
+                            .foregroundStyle(.blue)
                         Image(systemName: "chevron.up.chevron.down")
                             .imageScale(.small)
                     }
