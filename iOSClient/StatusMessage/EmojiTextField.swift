@@ -28,17 +28,20 @@ final class EmojiTextField: UITextField {
     }
 
     private func commonInit() {
-        borderStyle = .none
-        textAlignment = .center
-        font = .systemFont(ofSize: 28)
-        setContentHuggingPriority(.required, for: .horizontal)
-        setContentCompressionResistancePriority(.required, for: .horizontal)
+//        borderStyle = .none
+//        textAlignment = .center
+//        font = .systemFont(ofSize: 28)
+//        setContentHuggingPriority(.required, for: .horizontal)
+//        setContentCompressionResistancePriority(.required, for: .horizontal)
         NotificationCenter.default.addObserver(self, selector: #selector(inputModeDidChange), name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
         addTarget(self, action: #selector(textChanged), for: .editingChanged)
     }
 
-    @objc private func inputModeDidChange(_ notification: Notification) {
-        guard isFirstResponder else { return }
+    @objc func inputModeDidChange(_ notification: Notification) {
+        guard isFirstResponder else {
+            return
+        }
+
         DispatchQueue.main.async { [weak self] in
             self?.reloadInputViews()
         }
@@ -78,12 +81,21 @@ struct EmojiField: UIViewRepresentable {
         var parent: EmojiField
         init(_ parent: EmojiField) { self.parent = parent }
 
-        func textFieldDidChangeSelection(_ textField: UITextField) {
-            parent.text = textField.text ?? ""
+        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+            if textField is EmojiTextField {
+                if string.isEmpty {
+                    textField.text = "😀"
+                    return false
+                }
+                textField.text = string
+                textField.endEditing(true)
+            }
+            return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            return true
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return false
         }
     }
 }

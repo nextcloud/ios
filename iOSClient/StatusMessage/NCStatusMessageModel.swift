@@ -6,13 +6,6 @@ import SwiftUI
 import NextcloudKit
 
 @Observable class NCStatusMessageModel {
-    //    struct StatusPreset: Identifiable, Equatable {
-    //        let id = UUID()
-    //        let emoji: String
-    //        let title: String
-    //        let clearAfter: ClearAfter
-    //    }
-
     enum ClearAfter: String, CaseIterable, Identifiable {
         case dontClear = "_dont_clear_"
         case thirtyMinutes = "_30_minutes_"
@@ -24,15 +17,6 @@ import NextcloudKit
 
         var id: String { rawValue }
     }
-
-    //    @ObservationIgnored let statusPresets: [StatusPreset] = [
-    //        .init(emoji: "📅", title: "In a meeting", clearAfter: .oneHour),
-    //        .init(emoji: "🚌", title: "Commuting", clearAfter: .thirtyMinutes),
-    //        .init(emoji: "⏳", title: "Be right back", clearAfter: .thirtyMinutes),
-    //        .init(emoji: "🏡", title: "Working remotely", clearAfter: .thisWeek),
-    //        .init(emoji: "🤒", title: "Out sick", clearAfter: .today),
-    //        .init(emoji: "🌴", title: "Vacationing", clearAfter: .dontClear)
-    //    ]
 
     var predefinedStatuses: [NKUserStatus] = []
 
@@ -46,10 +30,35 @@ import NextcloudKit
         clearAfter = stringToClearAfter(clearAtText)
     }
 
-    func clearStatus() {
-        emojiText = "😀"
-        statusText = ""
-        clearAfter = .dontClear
+    func getStatus(account: String) {
+        Task {
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                name: "getUserStatus")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            if result.error == .success {
+                emojiText = result.icon ?? ""
+                statusText = result.message ?? ""
+                clearAfter = stringToClearAfter(getPredefinedClearStatusString(clearAt: result.clearAt, clearAtTime: "", clearAtType: ""))
+            }
+        }
+    }
+
+    func clearStatus(account: String) {
+        Task {
+            await NextcloudKit.shared.clearMessageAsync(account: account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "clearMessage")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            NCContentPresenter().showCustomMessage(message: "adasd", type: .error)
+        }
     }
 
     func getPredefinedStatusTexts(account: String) {
@@ -77,29 +86,29 @@ import NextcloudKit
     }
 
     func setAccountUserStatus(account: String) {
-        NextcloudKit.shared.getUserStatus(account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "getUserStatus")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
-            if error == .success {
+        Task {
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
-                    await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: clearAt,
-                                                                            userStatusIcon: icon,
-                                                                            userStatusMessage: message,
-                                                                            userStatusMessageId: messageId,
-                                                                            userStatusMessageIsPredefined: messageIsPredefined,
-                                                                            userStatusStatus: status,
-                                                                            userStatusStatusIsUserDefined: statusIsUserDefined,
-                                                                            account: account)
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                name: "getUserStatus")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
+            }
+
+            if result.error == .success {
+                await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: result.clearAt,
+                                                                        userStatusIcon: result.icon,
+                                                                        userStatusMessage: result.message,
+                                                                        userStatusMessageId: result.messageId,
+                                                                        userStatusMessageIsPredefined: result.messageIsPredefined,
+                                                                        userStatusStatus: result.status,
+                                                                        userStatusStatusIsUserDefined: result.statusIsUserDefined,
+                                                                        account: result.account)
             }
         }
     }
 
-    func getPredefinedClearStatusText(clearAt: Date?, clearAtTime: String?, clearAtType: String?) -> String {
+    func getPredefinedClearStatusString(clearAt: Date?, clearAtTime: String?, clearAtType: String?) -> String {
         // Date
         if let clearAt {
             let from = Date()

@@ -52,7 +52,8 @@ struct NCStatusMessageView: View {
 
                 HStack {
                     Button("_clear_") {
-                        model.clearStatus()
+                        model.clearStatus(account: account)
+                        dismiss()
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
@@ -79,6 +80,7 @@ struct NCStatusMessageView: View {
         .navigationTitle(NSLocalizedString("_select_status_message_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            model.getStatus(account: account)
             model.getPredefinedStatusTexts(account: account)
         }
         .onDisappear {
@@ -92,7 +94,7 @@ private struct StatusPresetRow: View {
     let preset: NKUserStatus
 
     var body: some View {
-        let cleatAtText = model.getPredefinedClearStatusText(clearAt: preset.clearAt, clearAtTime: preset.clearAtTime, clearAtType: preset.clearAtType)
+        let cleatAtText = model.getPredefinedClearStatusString(clearAt: preset.clearAt, clearAtTime: preset.clearAtTime, clearAtType: preset.clearAtType)
 
         Button(action: {
             model.chooseStatusPreset(preset: preset, clearAtText: cleatAtText)
