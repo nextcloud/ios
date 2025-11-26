@@ -22,12 +22,12 @@ import NextcloudKit
 
     var emojiText: String = "😀"
     var statusText: String = ""
-    var clearAfter: ClearAfter = .dontClear
+    var clearAfterString = "_dont_clear_"
 
     func chooseStatusPreset(preset: NKUserStatus, clearAtText: String) {
         emojiText = preset.icon ?? ""
         statusText = preset.message ?? ""
-        clearAfter = stringToClearAfter(clearAtText)
+        clearAfterString = clearAtText
     }
 
     func getStatus(account: String) {
@@ -43,44 +43,54 @@ import NextcloudKit
             if result.error == .success {
                 emojiText = result.icon ?? ""
                 statusText = result.message ?? ""
-                clearAfter = stringToClearAfter(getPredefinedClearStatusString(clearAt: result.clearAt, clearAtTime: "", clearAtType: ""))
+                clearAfterString = getPredefinedClearStatusString(clearAt: result.clearAt, clearAtTime: "", clearAtType: "")
             }
         }
     }
 
     func clearStatus(account: String) {
         Task {
-            await NextcloudKit.shared.clearMessageAsync(account: account) { task in
+            let result = await NextcloudKit.shared.clearMessageAsync(account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "clearMessage")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
 
-            NCContentPresenter().showCustomMessage(message: "adasd", type: .error)
+            if result.error != .success {
+                NCContentPresenter().showError(error: result.error)
+            }
         }
     }
 
     func getPredefinedStatusTexts(account: String) {
         Task {
-            let statuses = await NextcloudKit.shared.getUserStatusPredefinedStatusesAsync(account: account) { task in
+            let result = await NextcloudKit.shared.getUserStatusPredefinedStatusesAsync(account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "getUserStatusPredefinedStatuses")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
 
-            predefinedStatuses = isXcodeRunningForPreviews ? createStatusesForPreview() : statuses.userStatuses ?? []
+            if result.error == .success {
+                predefinedStatuses = isXcodeRunningForPreviews ? createStatusesForPreview() : result.userStatuses ?? []
+            } else {
+                NCContentPresenter().showError(error: result.error)
+            }
         }
     }
 
     func submitStatus(account: String) {
         Task {
-            await NextcloudKit.shared.setCustomMessageUserDefinedAsync(statusIcon: emojiText, message: statusText, clearAt: getClearAt(clearAfter.rawValue), account: account) { task in
+            let result = await NextcloudKit.shared.setCustomMessageUserDefinedAsync(statusIcon: emojiText, message: statusText, clearAt: getClearAt(clearAfterString), account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "setCustomMessageUserDefined")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
+            }
+
+            if result.error != .success {
+                NCContentPresenter().showError(error: result.error)
             }
         }
     }
@@ -104,6 +114,8 @@ import NextcloudKit
                                                                         userStatusStatus: result.status,
                                                                         userStatusStatusIsUserDefined: result.statusIsUserDefined,
                                                                         account: result.account)
+            } else {
+                NCContentPresenter().showError(error: result.error)
             }
         }
     }
@@ -157,25 +169,6 @@ import NextcloudKit
         return NSLocalizedString("_dont_clear_", comment: "")
     }
 
-    private func stringToClearAfter(_ clearAtString: String) -> ClearAfter {
-        switch clearAtString {
-        case NSLocalizedString("_15_minutes_", comment: ""):
-            return .fifteenMinutes
-        case NSLocalizedString("_30_minutes_", comment: ""):
-            return .thirtyMinutes
-        case NSLocalizedString("_an_hour_", comment: ""):
-            return .oneHour
-        case NSLocalizedString("_4_hours_", comment: ""):
-            return .fourHours
-        case NSLocalizedString("_day_", comment: ""):
-            return .today
-        case NSLocalizedString("_this_week_", comment: ""):
-            return .thisWeek
-        default:
-            return .dontClear
-        }
-    }
-
     private func getClearAt(_ clearAtString: String) -> Double {
         let now = Date()
         let calendar = Calendar.current
@@ -186,23 +179,23 @@ import NextcloudKit
         guard let endweek = gregorian.date(byAdding: .day, value: 6, to: startweek) else { return 0 }
 
         switch clearAtString {
-        case "_dont_clear_":
+        case NSLocalizedString("_dont_clear_", comment: ""):
             return 0
-        case "_15_minutes_":
+        case NSLocalizedString("_15_minutes_", comment: ""):
             let date = now.addingTimeInterval(900)
             return date.timeIntervalSince1970
-        case "_30_minutes_":
+        case NSLocalizedString("_30_minutes_", comment: ""):
             let date = now.addingTimeInterval(1800)
             return date.timeIntervalSince1970
-        case "_1_hour_", "_an_hour_":
+        case NSLocalizedString("_1_hour_", comment: ""), NSLocalizedString("_an_hour_", comment: ""):
             let date = now.addingTimeInterval(3600)
             return date.timeIntervalSince1970
-        case "_4_hours_":
+        case NSLocalizedString("_4_hours_", comment: ""):
             let date = now.addingTimeInterval(14400)
             return date.timeIntervalSince1970
-        case "_day_":
+        case NSLocalizedString("_day_", comment: ""):
             return tomorrow.timeIntervalSince1970
-        case "_this_week_":
+        case NSLocalizedString("_this_week_", comment: ""):
             return endweek.timeIntervalSince1970
         default:
             return 0

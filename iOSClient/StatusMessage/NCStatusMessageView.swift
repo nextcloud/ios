@@ -39,14 +39,22 @@ struct NCStatusMessageView: View {
                 }
                 .padding(.top, 8)
                 
-                HStack(spacing: 0) {
+                HStack {
                     Text("_clear_status_message_after_")
-                    Picker("", selection: $model.clearAfter) {
+                    Menu {
                         ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
-                            Text(NSLocalizedString(option.rawValue, comment: "")).tag(option)
+                            Button {
+                                model.clearAfterString = option.rawValue
+                            } label: {
+                                Text(NSLocalizedString(option.rawValue, comment: ""))
+                            }
                         }
+                    } label: {
+                        Text(model.clearAfterString)
+                            .foregroundStyle(.blue) 
+                        Image(systemName: "chevron.up.chevron.down")
+                            .imageScale(.small)
                     }
-                    .pickerStyle(.menu)
                     Spacer()
                 }
 
