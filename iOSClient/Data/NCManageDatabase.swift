@@ -444,7 +444,7 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: -
     // MARK: SWIFTUI PREVIEW
 
-    func previewCreateDB() async {
+    func createDBForPreview() async {
         // Account
         let account = "marinofaggiana https://cloudtest.nextcloud.com"
         let account2 = "mariorossi https://cloudtest.nextcloud.com"

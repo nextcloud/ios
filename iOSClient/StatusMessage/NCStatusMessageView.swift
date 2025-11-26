@@ -16,11 +16,8 @@ struct Status: Identifiable, Equatable {
 struct NCStatusMessageView: View {
     let account: String
 
-    // MARK: - State
     @State private var model = NCStatusMessageModel()
-//    @State private var statusText: String = ""
-//    @State private var selectedStatus: Status?
-//    @State private var emojiText: String = "😀"
+    @Environment(\.dismiss) private var dismiss
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
@@ -36,47 +33,42 @@ struct NCStatusMessageView: View {
                 .frame(height: 20)
 
                 VStack(spacing: 18) {
-                    ForEach(model.statusPresets) { preset in
+                    ForEach(model.predefinedStatuses) { preset in
                         StatusPresetRow(model: $model, preset: preset)
                     }
                 }
                 .padding(.top, 8)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Clear status after")
-                        .font(.headline)
-                    Picker("Clear after", selection: $model.clearAfter) {
+                
+                HStack(spacing: 0) {
+                    Text("_clear_status_message_after_")
+                    Picker("", selection: $model.clearAfter) {
                         ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
                             Text(NSLocalizedString(option.rawValue, comment: "")).tag(option)
                         }
                     }
                     .pickerStyle(.menu)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
 
-                // Bottom actions
-                HStack(spacing: 80) {
-                    Button("Clear") {
+                HStack {
+                    Button("_clear_") {
                         model.clearStatus()
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
-//                    .foregroundStyle(.blue)
 
-                    Button("Set message") {
-                        // Set message action
+                    Spacer()
+
+                    Button("_set_status_message_") {
+                        model.submitStatus(account: account)
+                        dismiss()
                     }
                     .fontWeight(.semibold)
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
-//                    .tint(Color(.systemGray3))
-//                    .foregroundStyle(Color(.systemBackground))
-//                    .clipShape(Capsule())
-//                    .frame(width: 220)
+                    .disabled(model.emojiText.isEmpty && model.statusText.isEmpty)
                 }
-//                .frame(minWidth: 0, maxWidth: .infinity)
-                .padding(.top, 8)
+                .padding(8)
             }
             .padding(24)
         }
@@ -84,12 +76,13 @@ struct NCStatusMessageView: View {
         .onTapGesture {
             isTextFieldFocused = false
         }
-//        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-//        .background(Color(.systemBackground))
         .navigationTitle(NSLocalizedString("_select_status_message_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             model.getPredefinedStatusTexts(account: account)
+        }
+        .onDisappear {
+            model.setAccountUserStatus(account: account)
         }
     }
 }
@@ -109,7 +102,7 @@ private struct StatusPresetRow: View {
                     .font(.title3)
                     .frame(width: 32)
                 Text(preset.message ?? "")
-                    .font(.title3.weight(.semibold))
+                    .font(.headline)
                     .foregroundStyle(.primary)
                 Text("—")
                     .foregroundStyle(.secondary)

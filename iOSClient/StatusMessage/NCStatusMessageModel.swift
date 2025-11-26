@@ -16,6 +16,7 @@ import NextcloudKit
     enum ClearAfter: String, CaseIterable, Identifiable {
         case dontClear = "_dont_clear_"
         case thirtyMinutes = "_30_minutes_"
+        case fifteenMinutes = "_15_minutes_"
         case oneHour = "_an_hour_"
         case fourHours = "_4_hours_"
         case today = "_day_"
@@ -33,7 +34,7 @@ import NextcloudKit
     //        .init(emoji: "🌴", title: "Vacationing", clearAfter: .dontClear)
     //    ]
 
-    var statusPresets: [NKUserStatus] = []
+    var predefinedStatuses: [NKUserStatus] = []
 
     var emojiText: String = "😀"
     var statusText: String = ""
@@ -59,24 +60,43 @@ import NextcloudKit
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
-            statusPresets = statuses.userStatuses ?? []
+
+            predefinedStatuses = isXcodeRunningForPreviews ? createStatusesForPreview() : statuses.userStatuses ?? []
         }
     }
 
-    func submitStatus() {
-        //        NextcloudKit.shared.setCustomMessagePredefinedAsync(messageId: emojiText, clearAt: <#T##Double#>, account: <#T##String#>)
-        //        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: account) { task in
-        //            Task {
-        //                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-        //                                                                                            name: "setCustomMessageUserDefined")
-        //                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-        //            }
-        //        } completion: { _, _, error in
-        //            if error != .success {
-        //                NCContentPresenter().showError(error: error)
-        //            }
-        //
-        //            self.dismiss(animated: true)
+    func submitStatus(account: String) {
+        Task {
+            await NextcloudKit.shared.setCustomMessageUserDefinedAsync(statusIcon: emojiText, message: statusText, clearAt: getClearAt(clearAfter.rawValue), account: account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "setCustomMessageUserDefined")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+        }
+    }
+
+    func setAccountUserStatus(account: String) {
+        NextcloudKit.shared.getUserStatus(account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "getUserStatus")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
+            if error == .success {
+                Task {
+                    await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: clearAt,
+                                                                            userStatusIcon: icon,
+                                                                            userStatusMessage: message,
+                                                                            userStatusMessageId: messageId,
+                                                                            userStatusMessageIsPredefined: messageIsPredefined,
+                                                                            userStatusStatus: status,
+                                                                            userStatusStatusIsUserDefined: statusIsUserDefined,
+                                                                            account: account)
+                }
+            }
+        }
     }
 
     func getPredefinedClearStatusText(clearAt: Date?, clearAtTime: String?, clearAtType: String?) -> String {
@@ -112,6 +132,8 @@ import NextcloudKit
                 return NSLocalizedString("_an_hour_", comment: "")
             case "1800":
                 return NSLocalizedString("_30_minutes_", comment: "")
+            case "900":
+                return NSLocalizedString("_15_minutes_", comment: "")
             default:
                 return NSLocalizedString("_dont_clear_", comment: "")
             }
@@ -126,8 +148,10 @@ import NextcloudKit
         return NSLocalizedString("_dont_clear_", comment: "")
     }
 
-    func stringToClearAfter(_ clearAtString: String) -> ClearAfter {
+    private func stringToClearAfter(_ clearAtString: String) -> ClearAfter {
         switch clearAtString {
+        case NSLocalizedString("_15_minutes_", comment: ""):
+            return .fifteenMinutes
         case NSLocalizedString("_30_minutes_", comment: ""):
             return .thirtyMinutes
         case NSLocalizedString("_an_hour_", comment: ""):
@@ -143,7 +167,7 @@ import NextcloudKit
         }
     }
 
-    func getClearAt(_ clearAtString: String) -> Double {
+    private func getClearAt(_ clearAtString: String) -> Double {
         let now = Date()
         let calendar = Calendar.current
         let gregorian = Calendar(identifier: .gregorian)
@@ -153,24 +177,53 @@ import NextcloudKit
         guard let endweek = gregorian.date(byAdding: .day, value: 6, to: startweek) else { return 0 }
 
         switch clearAtString {
-        case NSLocalizedString("_dont_clear_", comment: ""):
+        case "_dont_clear_":
             return 0
-        case NSLocalizedString("_30_minutes_", comment: ""):
+        case "_15_minutes_":
+            let date = now.addingTimeInterval(900)
+            return date.timeIntervalSince1970
+        case "_30_minutes_":
             let date = now.addingTimeInterval(1800)
             return date.timeIntervalSince1970
-        case NSLocalizedString("_1_hour_", comment: ""), NSLocalizedString("_an_hour_", comment: ""):
+        case "_1_hour_", "_an_hour_":
             let date = now.addingTimeInterval(3600)
             return date.timeIntervalSince1970
-        case NSLocalizedString("_4_hours_", comment: ""):
+        case "_4_hours_":
             let date = now.addingTimeInterval(14400)
             return date.timeIntervalSince1970
-        case NSLocalizedString("_day_", comment: ""):
+        case "_day_":
             return tomorrow.timeIntervalSince1970
-        case NSLocalizedString("_this_week_", comment: ""):
+        case "_this_week_":
             return endweek.timeIntervalSince1970
         default:
             return 0
         }
+    }
+
+    private func createStatusesForPreview() -> [NKUserStatus] {
+        let meeting = NKUserStatus()
+        meeting.clearAt = nil
+        meeting.clearAtTime = "3600"
+        meeting.clearAtType = "period"
+        meeting.icon = "📅"
+        meeting.id = "meeting"
+        meeting.message = "In a meeting"
+        meeting.predefined = true
+        meeting.status = "busy"
+        meeting.userId = "preview_user"
+
+        let commuting = NKUserStatus()
+        commuting.clearAt = nil
+        commuting.clearAtTime = "1800"
+        commuting.clearAtType = "period"
+        commuting.icon = "🚌"
+        commuting.id = "commuting"
+        commuting.message = "Commuting"
+        commuting.predefined = true
+        commuting.status = "away"
+        commuting.userId = "preview_user"
+
+        return [meeting, commuting]
     }
 }
 

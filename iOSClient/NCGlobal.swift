@@ -404,3 +404,10 @@ final class NCGlobal: Sendable {
     let udMigrationMultiDomains             = "migrationMultiDomains"
     let udLastVersion                       = "lastVersion"
 }
+
+/**
+ Indicates whether Xcode is running SwiftUI previews.
+ */
+var isXcodeRunningForPreviews: Bool {
+    return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+}

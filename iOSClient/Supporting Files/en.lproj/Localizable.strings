@@ -197,13 +197,13 @@
 "_status_message_"          = "Status message";
 "_status_message_placehorder_"  = "What is your status?";
 "_online_status_"           = "Online status";
-"_clear_status_message_"    = "Clear status message";
 "_set_status_message_"      = "Set status message";
-"_clear_status_message_after_"  = "Clear status message after";
+"_clear_status_message_after_"  = "Clear status after";
 
 /* User status */
 "_select_option_"           = "Select option";
 "_dont_clear_"              = "Don't clear";
+"_15_minutes_"              = "15 minutes";
 "_30_minutes_"              = "30 minutes";
 "_an_hour_"                 = "an hour";
 "_1_hour_"                  = "1 hour";

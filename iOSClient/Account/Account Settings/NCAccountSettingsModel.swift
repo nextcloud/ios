@@ -39,9 +39,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     init(controller: NCMainTabBarController?, delegate: NCAccountSettingsModelDelegate?) {
         self.controller = controller
         self.delegate = delegate
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+        if isXcodeRunningForPreviews {
             Task {
-                await self.database.previewCreateDB()
+                await self.database.createDBForPreview()
             }
         }
         onViewAppear()
