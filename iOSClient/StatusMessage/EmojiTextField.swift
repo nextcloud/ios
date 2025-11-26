@@ -28,11 +28,6 @@ final class EmojiTextField: UITextField {
     }
 
     private func commonInit() {
-//        borderStyle = .none
-//        textAlignment = .center
-//        font = .systemFont(ofSize: 28)
-//        setContentHuggingPriority(.required, for: .horizontal)
-//        setContentCompressionResistancePriority(.required, for: .horizontal)
         NotificationCenter.default.addObserver(self, selector: #selector(inputModeDidChange), name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
         addTarget(self, action: #selector(textChanged), for: .editingChanged)
     }
@@ -56,7 +51,6 @@ final class EmojiTextField: UITextField {
     }
 }
 
-// SwiftUI wrapper
 struct EmojiField: UIViewRepresentable {
     @Binding var text: String
 

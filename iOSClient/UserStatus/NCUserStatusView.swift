@@ -7,7 +7,6 @@ import SwiftUI
 struct NCUserStatusView: View {
     let account: String
 
-//    @State private var selectedItem: String?
     @State private var model: NCUserStatusModel
     @Environment(\.dismiss) private var dismiss
 
@@ -27,7 +26,6 @@ struct NCUserStatusView: View {
                             .resizable()
                             .foregroundStyle(Color(status.statusImageColor))
                             .frame(width: 20, height: 20)
-//                            .padding(.trailing, 8)
                         VStack(alignment: .leading) {
                             Text(NSLocalizedString(item.titleKey, comment: ""))
 
