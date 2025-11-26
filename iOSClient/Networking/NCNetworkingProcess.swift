@@ -432,20 +432,9 @@ actor NCNetworkingProcess {
         }
 
         currentUploadTask = task
-        let results = await task.value
+        _ = await task.value
 
         LucidBanner.shared.dismiss(for: token)
-
-        if results.error != .success {
-            LucidBanner.shared.show(
-                scene: scene,
-                subtitle: results.error.errorDescription,
-                footnote: "(Code: \(results.error.errorCode))",
-                autoDismissAfter: NCGlobal.shared.dismissAfterSecond
-            ) { state in
-                ErrorBannerView(state: state)
-            }
-        }
     }
 
     // MARK: - Helper

@@ -48,8 +48,7 @@ struct ErrorBannerView: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-            .frame(minHeight: 44, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -83,7 +82,6 @@ struct ErrorBannerView: View {
             startPoint: .top,
             endPoint: .bottom
         )
-        .ignoresSafeArea()
 
         ErrorBannerView(
             state: LucidBannerState(

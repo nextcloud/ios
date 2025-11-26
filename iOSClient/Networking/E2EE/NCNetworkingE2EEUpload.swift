@@ -168,10 +168,13 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller)
         if resultsSendFile.error != .success {
-            LucidBanner.shared.show(subtitle: resultsSendFile.error.errorDescription,
-                                    footnote: "(Code: \(resultsSendFile.error.errorCode))",
-                                    autoDismissAfter: NCGlobal.shared.dismissAfterSecond) { state in
-                                        ErrorBannerView(state: state)
+            LucidBanner.shared.show(
+                scene: scene,
+                subtitle: resultsSendFile.error.errorDescription,
+                footnote: "(Code: \(resultsSendFile.error.errorCode))",
+                autoDismissAfter: NCGlobal.shared.dismissAfterSecond
+            ) { state in
+                    ErrorBannerView(state: state)
             }
         }
 
