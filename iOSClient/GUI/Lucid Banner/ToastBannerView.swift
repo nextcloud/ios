@@ -140,6 +140,7 @@ func showToastBanner(
         vPosition: .bottom,
         hAlignment: .center,
         verticalMargin: 55,
+        swipeToDismiss: false,
         onTap: { token, stage in
             onTap?(token, stage)
         }
