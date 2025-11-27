@@ -22,7 +22,7 @@
 
 "_cancel_"                  = "Cancel";
 "_edit_"                    = "Edit";
-"_tap_to_cancel_"           = "Tap to cancel the transfer";
+"_tap_to_cancel_"           = "Tap to cancel";
 "_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
 "_download_file_"           = "Download file";
@@ -660,6 +660,7 @@
 "_dismiss_"                 = "Dismiss";
 "_opt_in_pro_"              = "Optimization in progress …";
 "_update_in_progress_"      = "Update in progress …";
+"_delete_in_progress_"      = "Delete in progress …";
 "_in_waiting_"              = "In waiting";
 "_in_progress_"             = "In progress";
 "_in_error_"                = "In error";
@@ -668,6 +669,7 @@
 "_retry_soon_"              = "retrying soon …";
 "_large_upload_tip_"        = "Large files require the app to remain open until the transfer is complete";
 "_e2ee_upload_tip_"         = "End-to-end files require the app to remain open until the transfer is complete";
+"_finalizing_wait_"         = "Waiting for finalization …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

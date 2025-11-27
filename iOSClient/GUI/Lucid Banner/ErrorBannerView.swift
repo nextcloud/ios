@@ -52,6 +52,8 @@ struct ErrorBannerView: View {
         }
     }
 
+    // MARK: - Container
+
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         if #available(iOS 26, *) {
@@ -70,6 +72,20 @@ struct ErrorBannerView: View {
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
+    }
+}
+
+// MARK: - Helper
+
+@MainActor
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int) {
+    LucidBanner.shared.show(
+        scene: scene,
+        subtitle: errorDescription,
+        footnote: "(Code: \(errorCode))",
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
+    ) { state in
+        ErrorBannerView(state: state)
     }
 }
 

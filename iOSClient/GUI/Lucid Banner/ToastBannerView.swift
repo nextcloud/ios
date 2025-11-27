@@ -68,6 +68,8 @@ struct ToastBannerView: View {
         }
     }
 
+    // MARK: - Container
+
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         if #available(iOS 26, *) {
@@ -112,6 +114,37 @@ public extension View {
         } else {
             self
         }
+    }
+}
+
+// MARK: - Helper
+
+@MainActor
+func showToastBanner(
+    scene: UIWindowScene?,
+    title: String? = nil,
+    subtitle: String? = nil,
+    footnote: String? = nil,
+    systemImage: String?,
+    imageAnimation: LucidBanner.LucidBannerAnimationStyle = .none,
+    onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
+
+    return LucidBanner.shared.show(
+        scene: scene,
+        title: title,
+        subtitle: subtitle,
+        footnote: footnote,
+        systemImage: systemImage,
+        imageAnimation: imageAnimation,
+        maxWidth: 0,
+        vPosition: .bottom,
+        hAlignment: .center,
+        verticalMargin: 55,
+        onTap: { token, stage in
+            onTap?(token, stage)
+        }
+    ) { state in
+        ToastBannerView(state: state)
     }
 }
 

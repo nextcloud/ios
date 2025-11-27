@@ -37,20 +37,13 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // BANNER ENCRYPTION
         //
-        bannerToken = LucidBanner.shared.show(
-            scene: scene,
-            title: NSLocalizedString("_wait_file_encryption_", comment: ""),
-            subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
-            systemImage: "lock.circle.fill",
-            vPosition: .bottom,
-            hAlignment: .left,
-            verticalMargin: 55,
-            onTapWithContext: { _, _, _ in
-                self.currentUploadTask?.cancel()
-                self.request?.cancel()
-            }) { state in
-                ToastBannerView(state: state)
-            }
+        bannerToken = showToastBanner(scene: scene,
+                                      title: NSLocalizedString("_wait_file_encryption_", comment: ""),
+                                      subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
+                                      systemImage: "lock.circle.fill") { _, _ in
+            self.currentUploadTask?.cancel()
+            self.request?.cancel()
+        }
 
         defer {
             if finalError != .success {
@@ -168,14 +161,9 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller)
         if resultsSendFile.error != .success {
-            LucidBanner.shared.show(
-                scene: scene,
-                subtitle: resultsSendFile.error.errorDescription,
-                footnote: "(Code: \(resultsSendFile.error.errorCode))",
-                autoDismissAfter: NCGlobal.shared.dismissAfterSecond
-            ) { state in
-                    ErrorBannerView(state: state)
-            }
+            showErrorBanner(scene: scene,
+                            errorDescription: resultsSendFile.error.errorDescription,
+                            errorCode: resultsSendFile.error.errorCode)
         }
 
         // UNLOCK
