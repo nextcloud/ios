@@ -178,7 +178,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             return (fileNameViewSize == metadata.size)
 #else
             if metadata.isDirectoryE2EE == true {
-                if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0 {
+                if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) {
                     return true
                 } else {
                     return false
