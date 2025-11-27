@@ -392,10 +392,12 @@ extension NCNetworking {
             Task { @MainActor in
                 var num: Float = 0
                 let total = Float(metadatasE2EE.count)
+                var cancelOnTap = false
 
                 let token = showHudBanner(scene: SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene,
-                                          title: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                          subtitle: nil)
+                                          title: NSLocalizedString("_delete_in_progress_", comment: "")) { _, _, _ in
+                    cancelOnTap = true
+                }
 
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
@@ -414,6 +416,10 @@ extension NCNetworking {
                                                 ocId: metadata.ocId,
                                                 destination: nil,
                                                 error: error)
+                    }
+
+                    if cancelOnTap {
+                        break
                     }
                 }
 

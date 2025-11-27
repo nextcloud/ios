@@ -87,8 +87,13 @@ struct HudBannerView: View {
 // MARK: - Helper
 
 @MainActor
-func showHudBanner(scene: UIWindowScene?, title: String?, subtitle: String?) -> Int {
-    return LucidBanner.shared.show(
+func showHudBanner(
+    scene: UIWindowScene?,
+    title: String? = nil,
+    subtitle: String? = nil,
+    onTap: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil) -> Int {
+
+    LucidBanner.shared.show(
         scene: scene,
         title: title,
         subtitle: subtitle,
@@ -96,13 +101,13 @@ func showHudBanner(scene: UIWindowScene?, title: String?, subtitle: String?) -> 
         vPosition: .center,
         swipeToDismiss: false,
         blocksTouches: true,
-        onTapWithContext: { _, _, _ in
-
-        }) { state in
-            HudBannerView(state: state)
+        onTapWithContext: { token, revision, stage in
+            onTap?(token, revision, stage)
         }
+    ) { state in
+        HudBannerView(state: state)
+    }
 }
-
 // MARK: - Preview
 
 #Preview("HudBannerView") {
