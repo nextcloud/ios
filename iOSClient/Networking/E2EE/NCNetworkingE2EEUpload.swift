@@ -45,7 +45,7 @@ class NCNetworkingE2EEUpload: NSObject {
             vPosition: .bottom,
             hAlignment: .left,
             verticalMargin: 55,
-            onTapWithContext: { _, _, _ in
+            onTap: { _, _ in
                 self.currentUploadTask?.cancel()
                 self.request?.cancel()
             }) { state in

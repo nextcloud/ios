@@ -395,7 +395,7 @@ extension NCNetworking {
                 var cancelOnTap = false
 
                 let token = showHudBanner(scene: SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene,
-                                          title: NSLocalizedString("_delete_in_progress_", comment: "")) { _, _, _ in
+                                          title: NSLocalizedString("_delete_in_progress_", comment: "")) { _, _ in
                     cancelOnTap = true
                 }
 

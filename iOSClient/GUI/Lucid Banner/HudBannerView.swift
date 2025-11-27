@@ -91,7 +91,7 @@ func showHudBanner(
     scene: UIWindowScene?,
     title: String? = nil,
     subtitle: String? = nil,
-    onTap: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil) -> Int {
+    onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
 
     LucidBanner.shared.show(
         scene: scene,
@@ -101,8 +101,8 @@ func showHudBanner(
         vPosition: .center,
         swipeToDismiss: false,
         blocksTouches: true,
-        onTapWithContext: { token, revision, stage in
-            onTap?(token, revision, stage)
+        onTap: { token, stage in
+            onTap?(token, stage)
         }
     ) { state in
         HudBannerView(state: state)

@@ -392,7 +392,7 @@ actor NCNetworkingProcess {
             maxWidth: 0,
             vPosition: .bottom,
             verticalMargin: 55,
-            onTapWithContext: { _, _, _ in
+            onTap: { _, _ in
                 currentUploadTask?.cancel()
             }) { state in
                 ToastBannerView(state: state)
