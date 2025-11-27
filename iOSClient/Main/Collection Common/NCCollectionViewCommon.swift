@@ -7,6 +7,7 @@ import SwiftUI
 import RealmSwift
 import NextcloudKit
 import EasyTipView
+import LucidBanner
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
@@ -352,13 +353,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         ocId: String,
                         destination: String?,
                         error: NKError) {
-        if error != .success,
-           error.errorCode != global.errorResourceNotFound {
-            NCContentPresenter().showError(error: error)
-        }
-        guard session.account == account else { return }
-
         Task {
+            if error != .success,
+               error.errorCode != global.errorResourceNotFound {
+                _ = await MainActor.run {
+                    LucidBanner.shared.show(
+                        scene: UIApplication.shared.firstWindow?.windowScene,
+                        subtitle: error.errorDescription,
+                        footnote: "(Code: \(error.errorCode))",
+                        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
+                    ) { state in
+                        ErrorBannerView(state: state)
+                    }
+                }
+            }
+            guard session.account == account else {
+                return
+            }
+
             await self.debouncer.call {
                 switch status {
                 // UPLOADED, UPLOADED LIVEPHOTO, DELETE
