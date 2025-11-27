@@ -6,6 +6,7 @@ import UIKit
 import NextcloudKit
 import Queuer
 import Photos
+import LucidBanner
 
 extension NCNetworking {
     // MARK: - Read file & folder
@@ -389,22 +390,20 @@ extension NCNetworking {
             }
 
             Task { @MainActor in
-                let ncHud = NCHud()
                 var num: Float = 0
                 let total = Float(metadatasE2EE.count)
 
-                self.tapHudStopDelete = false
-
-                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                    await MainActor.run {
-                        ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
-                    }
-                }
+                let token = showHudBanner(scene: SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene,
+                                          title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                                          subtitle: nil)
 
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    num += 1
-                    ncHud.progress(num: num, total: total)
+
+                    Task {@MainActor in
+                        num += 1
+                        LucidBanner.shared.update(progress: Double(num) / Double(total), for: token)
+                    }
 
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
@@ -416,13 +415,9 @@ extension NCNetworking {
                                                 destination: nil,
                                                 error: error)
                     }
-
-                    if tapHudStopDelete {
-                        break
-                    }
                 }
 
-                ncHud.dismiss()
+                LucidBanner.shared.dismiss(for: token)
             }
 
 #endif
