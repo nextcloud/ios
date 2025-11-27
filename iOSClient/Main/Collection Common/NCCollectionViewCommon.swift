@@ -356,16 +356,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                _ = await MainActor.run {
-                    LucidBanner.shared.show(
-                        scene: UIApplication.shared.firstWindow?.windowScene,
-                        subtitle: error.errorDescription,
-                        footnote: "(Code: \(error.errorCode))",
-                        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
-                    ) { state in
-                        ErrorBannerView(state: state)
-                    }
-                }
+                showErrorBanner(scene: UIApplication.shared.firstWindow?.windowScene,
+                                errorDescription: error.errorDescription,
+                                errorCode: error.errorCode)
             }
             guard session.account == account else {
                 return

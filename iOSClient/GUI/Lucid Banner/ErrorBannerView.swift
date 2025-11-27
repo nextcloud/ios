@@ -75,6 +75,20 @@ struct ErrorBannerView: View {
     }
 }
 
+// MARK: - Helper
+
+@MainActor
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int) {
+    LucidBanner.shared.show(
+        scene: scene,
+        subtitle: errorDescription,
+        footnote: "(Code: \(errorCode))",
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
+    ) { state in
+        ErrorBannerView(state: state)
+    }
+}
+
 // MARK: - Preview
 
 #Preview {

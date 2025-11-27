@@ -108,6 +108,7 @@ func showHudBanner(
         HudBannerView(state: state)
     }
 }
+
 // MARK: - Preview
 
 #Preview("HudBannerView") {
