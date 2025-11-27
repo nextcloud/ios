@@ -79,9 +79,11 @@ struct EmojiField: UIViewRepresentable {
             if textField is EmojiTextField {
                 if string.isEmpty {
                     textField.text = "😀"
+                    parent.text = "😀"
                     return false
                 }
                 textField.text = string
+                parent.text = string
                 textField.endEditing(true)
             }
             return true
