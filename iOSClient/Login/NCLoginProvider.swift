@@ -176,7 +176,7 @@ class NCLoginProvider: UIViewController {
 
         if controller == nil {
             nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
-            controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         }
 
         await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller)
@@ -257,7 +257,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
 
                 if self.controller == nil {
-                    self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                    self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
                 }
 
                 Task { @MainActor in

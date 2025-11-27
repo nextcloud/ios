@@ -57,7 +57,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         var controller: NCMainTabBarController?
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         if windowScenes.count == 1 {
-            controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         } else if let sceneIdentifier = metadata.sceneIdentifier,
                   let tabBarController = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
             controller = tabBarController

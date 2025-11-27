@@ -580,8 +580,8 @@ final class SceneManager: @unchecked Sendable {
         return (scene as? UIWindowScene)?.keyWindow
     }
 
-    func getWindow(controller: NCMainTabBarController?) -> UIWindow? {
-        guard let controller,
+    func getWindow(controller: UITabBarController?) -> UIWindow? {
+        guard let controller = controller as? NCMainTabBarController,
               let scene = sceneController[controller] else { return nil }
         return getWindow(scene: scene)
     }
@@ -597,7 +597,7 @@ final class SceneManager: @unchecked Sendable {
             }
         }
         guard let mainTabBarController,
-              let scene = sceneController[mainTabBarController] else { return UIApplication.shared.firstWindow }
+              let scene = sceneController[mainTabBarController] else { return UIApplication.shared.mainAppWindow }
         return getWindow(scene: scene)
     }
 

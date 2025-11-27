@@ -401,7 +401,7 @@ class NCFiles: NCCollectionViewCommon {
                 navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController
             }
 
-            UIApplication.shared.firstWindow?.rootViewController = navigationController
+            UIApplication.shared.mainAppWindow?.rootViewController = navigationController
         } else if let account = tblAccount?.account, account != currentAccount {
             Task {
                 await NCAccount().changeAccount(account, userProfile: nil, controller: controller)

@@ -356,7 +356,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                showErrorBanner(scene: UIApplication.shared.firstWindow?.windowScene,
+                showErrorBanner(scene: UIApplication.shared.mainAppWindow?.windowScene,
                                 errorDescription: error.errorDescription,
                                 errorCode: error.errorCode)
             }

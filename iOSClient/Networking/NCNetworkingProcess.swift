@@ -68,7 +68,7 @@ actor NCNetworkingProcess {
 
     @MainActor
     private func getRootController() -> NCMainTabBarController? {
-        UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
     }
 
     @MainActor

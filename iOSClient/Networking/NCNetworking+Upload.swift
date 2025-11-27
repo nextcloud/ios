@@ -482,7 +482,7 @@ extension NCNetworking {
     }
 
     private func getViewController(metadata: tableMetadata) -> UIViewController? {
-        var controller = UIApplication.shared.firstWindow?.rootViewController
+        var controller = UIApplication.shared.mainAppWindow?.rootViewController
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         for windowScene in windowScenes {
             if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
