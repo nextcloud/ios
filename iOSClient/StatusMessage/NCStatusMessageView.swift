@@ -43,7 +43,7 @@ struct NCStatusMessageView: View {
                             }
                         }
                     } label: {
-                        Text(model.clearAfterString)
+                        Text(NSLocalizedString(model.clearAfterString, comment: ""))
                             .foregroundStyle(.blue)
                         Image(systemName: "chevron.up.chevron.down")
                             .imageScale(.small)
