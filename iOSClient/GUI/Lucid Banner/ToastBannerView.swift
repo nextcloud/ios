@@ -68,6 +68,8 @@ struct ToastBannerView: View {
         }
     }
 
+    // MARK: - Container
+
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         if #available(iOS 26, *) {
