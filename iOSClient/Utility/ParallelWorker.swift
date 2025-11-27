@@ -12,30 +12,14 @@ class ParallelWorker {
     let completionGroup = DispatchGroup()
     let queue = DispatchQueue(label: "ParallelWorker")
     let semaphore: DispatchSemaphore
-    let titleKey: String
-    var hud = NCHud()
-    var totalTasks: Int?
     var completedTasks = 0
     var isCancelled = false
 
     /// Creates a ParallelWorker
     /// - Parameters:
     ///   - n: Amount of tasks to be executed in parallel
-    ///   - titleKey: Localized String key, used for the status. Default: *Please Wait...*
-    ///   - totalTasks: Number of total tasks, if known
-    ///   - hudView: The parent view or current view which should present the progress indicator. If `nil`, no progress indicator will be shown.
-    init(n: Int, titleKey: String?, totalTasks: Int?, controller: NCMainTabBarController?) {
+    init(n: Int) {
         semaphore = DispatchSemaphore(value: n)
-        self.totalTasks = totalTasks
-        self.titleKey = titleKey ?? "_wait_"
-
-        hud.ringProgress(view: controller?.view,
-                         text: NSLocalizedString(self.titleKey, comment: ""),
-                         tapToCancelDetailText: true) {
-            self.isCancelled = true
-            NCNetworking.shared.cancelUploadTasks()
-            NCNetworking.shared.cancelDownloadTasks()
-        }
     }
 
     /// Execute
@@ -47,7 +31,6 @@ class ParallelWorker {
             guard !self.isCancelled else { return self.completionGroup.leave() }
             task {
                 self.completedTasks += 1
-                self.hud.setText("\(NSLocalizedString(self.titleKey, comment: ""))")
                 self.semaphore.signal()
                 self.completionGroup.leave()
             }
@@ -59,7 +42,6 @@ class ParallelWorker {
     func completeWork(completion: (() -> Void)? = nil) {
         completionGroup.notify(queue: .main) {
             guard !self.isCancelled else { return }
-            self.hud.dismiss()
             completion?()
         }
     }

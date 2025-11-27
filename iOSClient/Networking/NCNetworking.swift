@@ -260,7 +260,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
-    var tapHudStopDelete = false
     var controller: UIViewController?
 
     var isOffline: Bool {

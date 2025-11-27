@@ -180,7 +180,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     @MainActor
     func viewerFile(account: String, fileId: String, viewController: UIViewController) async {
         var downloadRequest: DownloadRequest?
-        let hud = NCHud(viewController.tabBarController?.view)
 
         if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId) {
             do {
@@ -200,12 +199,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        hud.ringProgress(tapToCancelDetailText: true) {
-            if let request = downloadRequest {
-                request.cancel()
-            }
-        }
-
         let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
@@ -214,7 +207,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
-        hud.dismiss()
         guard resultsFile.error == .success, let file = resultsFile.file else {
             NCContentPresenter().showError(error: resultsFile.error)
             return
@@ -235,7 +227,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             return
         }
 
-        hud.show()
         let download = await NextcloudKit.shared.downloadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
             downloadRequest = request
         } taskHandler: { task in
@@ -250,11 +241,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                       sessionTaskIdentifier: task.taskIdentifier,
                                                                       status: self.global.metadataStatusDownloading)
             }
-        } progressHandler: { progress in
-            hud.progress(progress.fractionCompleted)
+        } progressHandler: { _ in
+
         }
 
-        hud.dismiss()
         await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                               session: "",
                                                               sessionTaskIdentifier: 0,
@@ -355,7 +345,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
+        let processor = ParallelWorker(n: 5)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 Task {
@@ -367,9 +357,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     }
 
                     await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
-                    } progressHandler: { progress in
-                        processor.hud.progress(progress.fractionCompleted)
-                    }
+                    } progressHandler: { _ in }
 
                     if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                         urls.append(url)
@@ -472,7 +460,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) async {
         var fractionCompleted: Float = 0
-        let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
+        let processor = ParallelWorker(n: 5)
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) else {
             return
         }
@@ -488,7 +476,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 }
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
-                    processor.hud.progress(progress.fractionCompleted)
                     fractionCompleted = Float(progress.fractionCompleted)
                 }
             } completionHandler: { account, ocId, etag, _, _, _, error in
