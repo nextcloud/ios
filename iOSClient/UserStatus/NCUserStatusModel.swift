@@ -37,51 +37,58 @@ import NextcloudKit
 
     func getStatus(account: String) {
         Task {
-            let status = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                name: "getUserStatus")
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account, name: "getUserStatus")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
 
-            selectedStatus = status.status
+            if result.error == .success {
+                selectedStatus = result.status
+            } else {
+                NCContentPresenter().showError(error: result.error)
+            }
         }
     }
 
     func setStatus(account: String) {
         Task {
-            await NextcloudKit.shared.setUserStatusAsync(status: selectedStatus ?? "", account: account) { task in
+            let result = await NextcloudKit.shared.setUserStatusAsync(status: selectedStatus ?? "", account: account) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                name: "setUserStatus")
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account, name: "setUserStatus")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     self.canDismiss = true
                 }
+            }
+
+            if result.error != .success {
+                NCContentPresenter().showError(error: result.error)
             }
         }
     }
 
     func setAccountUserStatus(account: String) {
-        NextcloudKit.shared.getUserStatus(account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                            name: "getUserStatus")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
-            if error == .success {
+        Task {
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
-                    await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: clearAt,
-                                                                            userStatusIcon: icon,
-                                                                            userStatusMessage: message,
-                                                                            userStatusMessageId: messageId,
-                                                                            userStatusMessageIsPredefined: messageIsPredefined,
-                                                                            userStatusStatus: status,
-                                                                            userStatusStatusIsUserDefined: statusIsUserDefined,
-                                                                            account: account)
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account, name: "getUserStatus")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
+
+            if result.error != .success {
+                NCContentPresenter().showError(error: result.error)
+            }
+
+            await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: result.clearAt,
+                                                                    userStatusIcon: result.icon,
+                                                                    userStatusMessage: result.message,
+                                                                    userStatusMessageId: result.messageId,
+                                                                    userStatusMessageIsPredefined: result.messageIsPredefined,
+                                                                    userStatusStatus: result.status,
+                                                                    userStatusStatusIsUserDefined: result.statusIsUserDefined,
+                                                                    account: result.account)
         }
     }
 }

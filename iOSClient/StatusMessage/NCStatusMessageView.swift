@@ -6,13 +6,6 @@ import SwiftUI
 import UIKit
 import NextcloudKit
 
-struct Status: Identifiable, Equatable {
-    let id = UUID()
-    let emoji: String
-    let title: String
-    let detail: String
-}
-
 struct NCStatusMessageView: View {
     let account: String
 
@@ -26,7 +19,7 @@ struct NCStatusMessageView: View {
                 HStack(spacing: 12) {
                     EmojiField(text: $model.emojiText)
 
-                    TextField("What is your status?", text: $model.statusText)
+                    TextField("_status_message_placehorder_", text: $model.statusText)
                         .focused($isTextFieldFocused)
                         .textFieldStyle(.roundedBorder)
                 }
