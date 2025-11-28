@@ -12,8 +12,6 @@ struct ToastBannerView: View {
         let showTitle = !(state.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        let showProgress = (state.progress ?? 0) > 0
-        let measuring = (state.flags["measuring"] as? Bool) ?? false
 
         containerView {
             VStack(spacing: 15) {
@@ -54,13 +52,11 @@ struct ToastBannerView: View {
                     }
                 }
 
-                if showProgress && !measuring {
-                    ProgressView(value: min(state.progress ?? 0, 1))
-                        .progressViewStyle(.linear)
-                        .tint(Color(uiColor: NCBrandColor.shared.customer))
-                        .scaleEffect(x: 1, y: 0.8, anchor: .center)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                }
+                ProgressView(value: state.progress ?? 0)
+                    .tint(.accentColor)
+                    .opacity(state.progress == nil ? 0 : 1)
+                    .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
+
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
