@@ -97,7 +97,6 @@ func showHudBanner(
         scene: scene,
         title: title,
         subtitle: subtitle,
-        maxWidth: 300,
         vPosition: .center,
         swipeToDismiss: false,
         blocksTouches: true,

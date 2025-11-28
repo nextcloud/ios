@@ -5,7 +5,7 @@
 import SwiftUI
 import LucidBanner
 
-struct ToastBannerView: View {
+struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
@@ -116,7 +116,7 @@ public extension View {
 // MARK: - Helper
 
 @MainActor
-func showToastBanner(
+func showUploadBanner(
     scene: UIWindowScene?,
     title: String? = nil,
     subtitle: String? = nil,
@@ -132,7 +132,6 @@ func showToastBanner(
         footnote: footnote,
         systemImage: systemImage,
         imageAnimation: imageAnimation,
-        maxWidth: 0,
         vPosition: .bottom,
         hAlignment: .center,
         verticalMargin: 55,
@@ -141,7 +140,7 @@ func showToastBanner(
             onTap?(token, stage)
         }
     ) { state in
-        ToastBannerView(state: state)
+        UploadBannerView(state: state)
     }
 }
 
@@ -155,7 +154,7 @@ func showToastBanner(
             endPoint: .bottom
         )
 
-        ToastBannerView(
+        UploadBannerView(
             state: LucidBannerState(
                 title: "Downloading …",
                 subtitle: "Keep application active until the transfers are completed …",
