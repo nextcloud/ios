@@ -28,7 +28,6 @@ struct UploadBannerView: View {
                             Text(title)
                                 .font(.subheadline.weight(.bold))
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(2)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
                                 .foregroundStyle(.primary)
@@ -37,7 +36,6 @@ struct UploadBannerView: View {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(4)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.primary)
                         }
@@ -45,7 +43,6 @@ struct UploadBannerView: View {
                             Text(footnote)
                                 .font(.caption)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(2)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.primary)
                         }

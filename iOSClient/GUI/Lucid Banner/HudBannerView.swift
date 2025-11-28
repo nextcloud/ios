@@ -23,7 +23,6 @@ struct HudBannerView: View {
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.center)
-                        .lineLimit(2)
                 }
 
                 // SUBTITLE
@@ -32,7 +31,6 @@ struct HudBannerView: View {
                         .font(.subheadline)
                         .foregroundStyle(.primary.opacity(0.95))
                         .multilineTextAlignment(.center)
-                        .lineLimit(3)
                 }
 
                 // PROGRESS CIRCLE
