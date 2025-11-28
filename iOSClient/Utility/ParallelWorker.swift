@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import LucidBanner
 
 /// Object to execute multiple tasks in parallel like uploading or downloading.
 /// - Can display a progress indicator with status message
@@ -12,14 +13,21 @@ class ParallelWorker {
     let completionGroup = DispatchGroup()
     let queue = DispatchQueue(label: "ParallelWorker")
     let semaphore: DispatchSemaphore
+    let titleKey: String
+    var totalTasks: Int?
     var completedTasks = 0
     var isCancelled = false
 
     /// Creates a ParallelWorker
     /// - Parameters:
     ///   - n: Amount of tasks to be executed in parallel
-    init(n: Int) {
+    ///   - titleKey: Localized String key, used for the status. Default: *Please Wait...*
+    ///   - totalTasks: Number of total tasks, if known
+    ///   - hudView: The parent view or current view which should present the progress indicator. If `nil`, no progress indicator will be shown.
+    init(n: Int, titleKey: String?, totalTasks: Int?, controller: NCMainTabBarController?) {
         semaphore = DispatchSemaphore(value: n)
+        self.totalTasks = totalTasks
+        self.titleKey = titleKey ?? "_wait_"
     }
 
     /// Execute

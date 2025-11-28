@@ -8,6 +8,7 @@ import Queuer
 import SVGKit
 import Photos
 import Alamofire
+import LucidBanner
 
 class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate, NCTransferDelegate {
     static let shared = NCDownloadAction()
@@ -183,10 +184,12 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId) {
             do {
-                let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                                              fileName: metadata.fileNameView,
-                                                                                                                              userId: metadata.userId,
-                                                                                                                              urlBase: metadata.urlBase))
+                let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(
+                    metadata.ocId,
+                    fileName: metadata.fileNameView,
+                    userId: metadata.userId,
+                    urlBase: metadata.urlBase)
+                )
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
                     if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
@@ -201,9 +204,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account) { task in
             Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: fileId,
-                                                                                            name: "getFileFromFileId")
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: account,
+                    path: fileId,
+                    name: "getFileFromFileId"
+                )
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -215,10 +220,12 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
         await NCManageDatabase.shared.addMetadataAsync(metadata)
 
-        let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                       fileName: metadata.fileNameView,
-                                                                                       userId: metadata.userId,
-                                                                                       urlBase: metadata.urlBase)
+        let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(
+            metadata.ocId,
+            fileName: metadata.fileNameView,
+            userId: metadata.userId,
+            urlBase: metadata.urlBase
+        )
 
         if metadata.isAudioOrVideo {
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
@@ -227,7 +234,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             return
         }
 
-        let download = await NextcloudKit.shared.downloadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
+        let download = await NextcloudKit.shared.downloadAsync(
+            serverUrlFileName: metadata.serverUrlFileName,
+            fileNameLocalPath: fileNameLocalPath,
+            account: account) { request in
             downloadRequest = request
         } taskHandler: { task in
             Task {
@@ -345,7 +355,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        let processor = ParallelWorker(n: 5)
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 Task {
@@ -459,67 +469,80 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: - Copy & Paste
 
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) async {
-        var fractionCompleted: Float = 0
-        let processor = ParallelWorker(n: 5)
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) else {
             return
         }
+        let token = await showHudBanner(
+            scene: SceneManager.shared.getWindow(controller: controller)?.windowScene,
+            title: NSLocalizedString("_delete_in_progress_", comment: ""))
 
-        func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
-            NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
-            } taskHandler: { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                path: serverUrlFileName,
-                                                                                                name: "upload")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+        for (index, items) in UIPasteboard.general.items.enumerated() {
+            for item in items {
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+                let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
+                guard let data = UIPasteboard.general.data(forPasteboardType: item.key,
+                                                           inItemSet: IndexSet([index]))?.first
+                else {
+                    continue
                 }
-            } progressHandler: { progress in
-                if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
-                    fractionCompleted = Float(progress.fractionCompleted)
+                let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
+                let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+                let ocIdUpload = UUID().uuidString
+                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(
+                    ocIdUpload,
+                    fileName: fileName,
+                    userId: tblAccount.userId,
+                    urlBase: tblAccount.urlBase
+                )
+                do {
+                    try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+                } catch {
+                    continue
                 }
-            } completionHandler: { account, ocId, etag, _, _, _, error in
-                if error == .success && etag != nil && ocId != nil {
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!,
-                                                                                        fileName: fileName,
-                                                                                        userId: tblAccount.userId,
-                                                                                        urlBase: tblAccount.urlBase)
+
+                let resultsUpload = await NextcloudKit.shared.uploadAsync(
+                    serverUrlFileName: serverUrlFileName,
+                    fileNameLocalPath: fileNameLocalPath,
+                    account: account) { request in
+
+                    } taskHandler: { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                                account: account,
+                                path: serverUrlFileName,
+                                name: "upload")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    } progressHandler: { progress in
+                        Task {@MainActor in
+                            LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
+                        }
+                    }
+                if resultsUpload.error == .success,
+                   let etag = resultsUpload.etag,
+                   let ocId = resultsUpload.ocId {
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(
+                        ocId,
+                        fileName: fileName,
+                        userId: tblAccount.userId,
+                        urlBase: tblAccount.urlBase)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                    NCManageDatabase.shared.addLocalFile(
+                        account: account,
+                        etag: etag,
+                        ocId: ocId,
+                        fileName: fileName)
                     Task {
                         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                             delegate.transferReloadData(serverUrl: serverUrl, requestData: true, status: nil)
                         }
                     }
                 } else {
-                    NCContentPresenter().showError(error: error)
-                }
-                fractionCompleted = 0
-                completion()
-            }
-        }
-
-        for (index, items) in UIPasteboard.general.items.enumerated() {
-            for item in items {
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-                let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
-                guard let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first else {
-                    continue
-                }
-                let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
-                let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
-                let ocIdUpload = UUID().uuidString
-                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload,
-                                                                                          fileName: fileName,
-                                                                                          userId: tblAccount.userId,
-                                                                                          urlBase: tblAccount.urlBase)
-                do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
-                processor.execute { completion in
-                    uploadPastePasteboard(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
+                    // ERROR
                 }
             }
         }
-        processor.completeWork()
+        await LucidBanner.shared.dismiss(for: token)
     }
 
     // MARK: -

@@ -335,8 +335,11 @@ extension NCNetworking {
         await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.directory {
-            let token = showHudBanner(scene: SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-                                      title: NSLocalizedString("_delete_in_progress_", comment: ""))
+            let token = showHudBanner(
+                scene: SceneManager.shared.getWindow(
+                sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
+                title: NSLocalizedString("_delete_in_progress_", comment: "")
+            )
 
             if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
