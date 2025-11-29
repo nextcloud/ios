@@ -56,12 +56,14 @@ enum ContextMenuActions {
              title: NSLocalizedString("_share_", comment: ""),
              image: UIImage(systemName: "square.and.arrow.up")
          ) { _ in
-             NCDownloadAction.shared.openActivityViewController(
-                 selectedMetadata: selectedMetadatas,
-                 controller: controller,
-                 sender: sender
-             )
-             completion?()
+             Task {
+                 await NCDownloadAction.shared.openActivityViewController(
+                    selectedMetadata: selectedMetadatas,
+                    controller: controller,
+                    sender: sender
+                 )
+                 completion?()
+             }
          }
      }
 

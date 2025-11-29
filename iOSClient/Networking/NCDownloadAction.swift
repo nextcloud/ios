@@ -46,26 +46,26 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             else {
                 return
             }
-            self.downloadedFile(metadata: metadata, selector: selector ?? metadata.sessionSelector, error: error)
+            await self.downloadedFile(metadata: metadata, selector: selector ?? metadata.sessionSelector, error: error)
         }
     }
 
-    private func downloadedFile(metadata: tableMetadata, selector: String, error: NKError) {
+    private func downloadedFile(metadata: tableMetadata, selector: String, error: NKError) async {
         guard error == .success else {
             return
         }
         /// Select UIWindowScene active in serverUrl
         var controller: NCMainTabBarController?
-        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let windowScenes = await UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         if windowScenes.count == 1 {
-            controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
+            controller = await UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         } else if let sceneIdentifier = metadata.sceneIdentifier,
                   let tabBarController = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
             controller = tabBarController
         } else {
             for windowScene in windowScenes {
-                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                   rootViewController.currentServerUrl() == metadata.serverUrl {
+                if let rootViewController = await windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                   await rootViewController.currentServerUrl() == metadata.serverUrl {
                     controller = rootViewController
                     break
                 }
@@ -81,7 +81,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
             let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
+            let viewerQuickLook = await NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
             if let image = UIImage(contentsOfFile: fileNamePath) {
                 if let data = image.jpegData(compressionQuality: 1) {
                     do {
@@ -105,9 +105,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
 
             if metadata.contentType.contains("opendocument") && !self.utility.isTypeFileRichDocument(metadata) {
-                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                await self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else if metadata.classFile == NKTypeClassFile.compress.rawValue || metadata.classFile == NKTypeClassFile.unknow.rawValue {
-                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                await self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else {
                 if let viewController = controller.currentViewController() {
                     let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -125,7 +125,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 return
             }
 
-            self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+            await self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
 
         case NCGlobal.shared.selectorSaveAlbum:
 
@@ -337,11 +337,15 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: - Open Activity [Share] ...
 
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) {
+    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
         guard let controller else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var urls: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
+        let scene = await SceneManager.shared.getWindow(controller: controller)?.windowScene
+        let token = await showHudBanner(
+            scene: scene,
+            title: NSLocalizedString("_download_in_progress_", comment: ""))
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -472,7 +476,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) else {
             return
         }
-        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        let scene = await SceneManager.shared.getWindow(controller: controller)?.windowScene
         let token = await showHudBanner(
             scene: scene,
             title: NSLocalizedString("_delete_in_progress_", comment: ""))

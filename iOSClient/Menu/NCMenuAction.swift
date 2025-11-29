@@ -171,8 +171,10 @@ extension NCMenuAction {
             order: order,
             sender: sender,
             action: { _ in
-                NCDownloadAction.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller, sender: sender)
-                completion?()
+                Task {
+                    await NCDownloadAction.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller, sender: sender)
+                    completion?()
+                }
             }
         )
     }

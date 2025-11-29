@@ -58,9 +58,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func share() {
-        let metadatas = getSelectedMetadatas()
-        NCDownloadAction.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.controller, sender: nil)
-        setEditMode(false)
+        Task {
+            let metadatas = getSelectedMetadatas()
+            await NCDownloadAction.shared.openActivityViewController(
+                selectedMetadata: metadatas,
+                controller: self.controller,
+                sender: nil)
+            setEditMode(false)
+        }
     }
 
     func saveAsAvailableOffline(isAnyOffline: Bool) {
