@@ -472,8 +472,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) else {
             return
         }
+        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
         let token = await showHudBanner(
-            scene: SceneManager.shared.getWindow(controller: controller)?.windowScene,
+            scene: scene,
             title: NSLocalizedString("_delete_in_progress_", comment: ""))
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
@@ -503,8 +504,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 let resultsUpload = await NextcloudKit.shared.uploadAsync(
                     serverUrlFileName: serverUrlFileName,
                     fileNameLocalPath: fileNameLocalPath,
-                    account: account) { request in
-
+                    account: account) { _ in
                     } taskHandler: { task in
                         Task {
                             let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
@@ -515,7 +515,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         }
                     } progressHandler: { progress in
                         Task {@MainActor in
-                            LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
+                            LucidBanner.shared.update(
+                                title: "",
+                                progress: progress.fractionCompleted,
+                                for: token)
                         }
                     }
                 if resultsUpload.error == .success,
@@ -538,7 +541,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         }
                     }
                 } else {
-                    // ERROR
+                    await showErrorBanner(scene: scene,
+                                          errorDescription: resultsUpload.error.errorDescription,
+                                          errorCode: resultsUpload.error.errorCode)
                 }
             }
         }
