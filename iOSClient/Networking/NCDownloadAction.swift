@@ -180,8 +180,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     @MainActor
     func viewerFile(account: String, fileId: String, viewController: UIViewController) async {
-        var downloadRequest: DownloadRequest?
-
         if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(
@@ -237,8 +235,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let download = await NextcloudKit.shared.downloadAsync(
             serverUrlFileName: metadata.serverUrlFileName,
             fileNameLocalPath: fileNameLocalPath,
-            account: account) { request in
-            downloadRequest = request
+            account: account) { _ in
         } taskHandler: { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
@@ -337,21 +334,26 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: - Open Activity [Share] ...
 
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
+    @MainActor
+    func openActivityViewController(selectedMetadata: [tableMetadata],
+                                    controller: NCMainTabBarController?,
+                                    sender: Any?) async {
         guard let controller else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var urls: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
-        let scene = await SceneManager.shared.getWindow(controller: controller)?.windowScene
-        let token = await showHudBanner(
+        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        let token = showHudBanner(
             scene: scene,
             title: NSLocalizedString("_download_in_progress_", comment: ""))
 
         for metadata in metadatas {
-            let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                 fileName: metadata.fileNameView,
-                                                                                                 userId: metadata.userId,
-                                                                                                 urlBase: metadata.urlBase))
+            let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(
+                metadata.ocId,
+                fileName: metadata.fileNameView,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase)
+            )
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 urls.append(fileURL)
             } else {
@@ -359,49 +361,58 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
-            processor.execute { completion in
-                Task {
-                    guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                             session: NCNetworking.shared.sessionDownload,
-                                                                                                             selector: "",
-                                                                                                             sceneIdentifier: controller.sceneIdentifier) else {
-                        return completion()
-                    }
+            guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                ocId: metadata.ocId,
+                session: NCNetworking.shared.sessionDownload,
+                selector: "",
+                sceneIdentifier: controller.sceneIdentifier)
+            else {
+                return
+            }
 
-                    await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
-                    } progressHandler: { _ in }
-
-                    if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                        urls.append(url)
+            let results = await NCNetworking.shared.downloadFile(
+                metadata: metadata) { _ in
+                } progressHandler: { progress in
+                    Task {@MainActor in
+                        LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
                     }
-                    completion()
+                }
+            if results.nkError == .success {
+                urls.append(url)
+            } else {
+                Task {@MainActor in
+                    showErrorBanner(scene: scene,
+                                    errorDescription: results.nkError.errorDescription,
+                                    errorCode: results.nkError.errorCode)
                 }
             }
         }
 
-        processor.completeWork {
-            guard !urls.isEmpty else { return }
-            let activityViewController = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+        LucidBanner.shared.dismiss(for: token)
 
-            // iPad
-            if let popover = activityViewController.popoverPresentationController {
-                if let view = sender as? UIView {
-                    popover.sourceView = view
-                    popover.sourceRect = view.bounds
-                } else {
-                    popover.sourceView = controller.view
-                    popover.sourceRect = CGRect(x: controller.view.bounds.midX,
-                                                y: controller.view.bounds.midY,
-                                                width: 0,
-                                                height: 0)
-                    popover.permittedArrowDirections = []
-                }
-            }
-
-            controller.present(activityViewController, animated: true)
+        guard !urls.isEmpty else {
+            return
         }
+
+        let activityViewController = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+
+        // iPad
+        if let popover = activityViewController.popoverPresentationController {
+            if let view = sender as? UIView {
+                popover.sourceView = view
+                popover.sourceRect = view.bounds
+            } else {
+                popover.sourceView = controller.view
+                popover.sourceRect = CGRect(x: controller.view.bounds.midX,
+                                            y: controller.view.bounds.midY,
+                                            width: 0,
+                                            height: 0)
+                popover.permittedArrowDirections = []
+            }
+        }
+
+        controller.present(activityViewController, animated: true)
     }
 
     // MARK: - Save as scan
@@ -472,12 +483,13 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: - Copy & Paste
 
+    @MainActor
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) async {
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) else {
             return
         }
-        let scene = await SceneManager.shared.getWindow(controller: controller)?.windowScene
-        let token = await showHudBanner(
+        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        let token = showHudBanner(
             scene: scene,
             title: NSLocalizedString("_delete_in_progress_", comment: ""))
 
@@ -545,13 +557,13 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         }
                     }
                 } else {
-                    await showErrorBanner(scene: scene,
-                                          errorDescription: resultsUpload.error.errorDescription,
-                                          errorCode: resultsUpload.error.errorCode)
+                    showErrorBanner(scene: scene,
+                                    errorDescription: resultsUpload.error.errorDescription,
+                                    errorCode: resultsUpload.error.errorCode)
                 }
             }
         }
-        await LucidBanner.shared.dismiss(for: token)
+        LucidBanner.shared.dismiss(for: token)
     }
 
     // MARK: -
