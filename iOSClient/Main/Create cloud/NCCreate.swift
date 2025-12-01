@@ -7,7 +7,7 @@ import UIKit
 import NextcloudKit
 import LucidBanner
 
-class NCCreate: NSObject, UIDocumentInteractionControllerDelegate {
+class NCCreate: NSObject {
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
