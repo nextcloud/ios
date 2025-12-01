@@ -1,32 +1,15 @@
-//
-//  NCCreateDocument.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 22/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
 import NextcloudKit
+import LucidBanner
 
-class NCCreateDocument: NSObject {
+class NCCreate: NSObject, UIDocumentInteractionControllerDelegate {
     let utility = NCUtility()
+    let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
 
@@ -180,5 +163,149 @@ class NCCreateDocument: NSObject {
         }
 
         return (templates, selectedTemplate, ext)
+    }
+
+    func createShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
+        var page = page
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+
+        NCActivityIndicator.shared.start(backgroundView: viewController.view)
+        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, file, error in
+            Task { @MainActor in
+                NCActivityIndicator.shared.stop()
+
+                if let metadata = metadata, let file = file, error == .success {
+                    // Remove all known download limits from shares related to the given file.
+                    // This avoids obsolete download limit objects to stay around.
+                    // Afterwards create new download limits, should any such be returned for the known shares.
+                    let shares = await NCManageDatabase.shared.getTableSharesAsync(account: metadata.account,
+                                                                                   serverUrl: metadata.serverUrl,
+                                                                                   fileName: metadata.fileName)
+                    for share in shares {
+                        await NCManageDatabase.shared.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
+
+                        if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                            await NCManageDatabase.shared.createDownloadLimitAsync(account: metadata.account,
+                                                                                   count: receivedDownloadLimit.count,
+                                                                                   limit: receivedDownloadLimit.limit,
+                                                                                   token: receivedDownloadLimit.token)
+                        }
+                    }
+
+                    var pages: [NCBrandOptions.NCInfoPagingTab] = []
+                    let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
+                    let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
+
+                    for value in NCBrandOptions.NCInfoPagingTab.allCases {
+                        pages.append(value)
+                    }
+                    if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
+                        pages.remove(at: idx)
+                    }
+                    if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
+                        pages.remove(at: idx)
+                    }
+
+                    (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
+
+                    shareViewController?.pages = pages
+                    shareViewController?.metadata = metadata
+
+                    if pages.contains(page) {
+                        shareViewController?.page = page
+                    } else if let page = pages.first {
+                        shareViewController?.page = page
+                    } else {
+                        return
+                    }
+
+                    shareNavigationController?.modalPresentationStyle = .formSheet
+                    if let shareNavigationController = shareNavigationController {
+                        viewController.present(shareNavigationController, animated: true, completion: nil)
+                    }
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func createActivityViewController(selectedMetadata: [tableMetadata],
+                                      controller: NCMainTabBarController?,
+                                      sender: Any?) async {
+        guard let controller else { return }
+        let metadatas = selectedMetadata.filter({ !$0.directory })
+        var urls: [URL] = []
+        var downloadMetadata: [(tableMetadata, URL)] = []
+        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        let token = showHudBanner(
+            scene: scene,
+            title: NSLocalizedString("_download_in_progress_", comment: ""))
+
+        for metadata in metadatas {
+            let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(
+                metadata.ocId,
+                fileName: metadata.fileNameView,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase)
+            )
+            if utilityFileSystem.fileProviderStorageExists(metadata) {
+                urls.append(fileURL)
+            } else {
+                downloadMetadata.append((metadata, fileURL))
+            }
+        }
+
+        for (metadata, url) in downloadMetadata {
+            guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                ocId: metadata.ocId,
+                session: NCNetworking.shared.sessionDownload,
+                selector: "",
+                sceneIdentifier: controller.sceneIdentifier)
+            else {
+                return
+            }
+
+            let results = await NCNetworking.shared.downloadFile(
+                metadata: metadata) { _ in
+                } progressHandler: { progress in
+                    Task {@MainActor in
+                        LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
+                    }
+                }
+            if results.nkError == .success {
+                urls.append(url)
+            } else {
+                Task {@MainActor in
+                    showErrorBanner(scene: scene,
+                                    errorDescription: results.nkError.errorDescription,
+                                    errorCode: results.nkError.errorCode)
+                }
+            }
+        }
+
+        LucidBanner.shared.dismiss(for: token)
+
+        guard !urls.isEmpty else {
+            return
+        }
+
+        let activityViewController = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+
+        // iPad
+        if let popover = activityViewController.popoverPresentationController {
+            if let view = sender as? UIView {
+                popover.sourceView = view
+                popover.sourceRect = view.bounds
+            } else {
+                popover.sourceView = controller.view
+                popover.sourceRect = CGRect(x: controller.view.bounds.midX,
+                                            y: controller.view.bounds.midY,
+                                            width: 0,
+                                            height: 0)
+                popover.permittedArrowDirections = []
+            }
+        }
+
+        controller.present(activityViewController, animated: true)
     }
 }

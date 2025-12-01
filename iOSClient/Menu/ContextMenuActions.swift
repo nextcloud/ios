@@ -57,7 +57,7 @@ enum ContextMenuActions {
              image: UIImage(systemName: "square.and.arrow.up")
          ) { _ in
              Task {
-                 await NCDownloadAction.shared.openActivityViewController(
+                 await NCCreate().createActivityViewController(
                     selectedMetadata: selectedMetadatas,
                     controller: controller,
                     sender: sender
@@ -86,7 +86,7 @@ enum ContextMenuActions {
                  alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default) { _ in
                      Task {
                          for metadata in selectedMetadatas {
-                             await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                             await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                          }
                          completion?()
                      }
@@ -96,7 +96,7 @@ enum ContextMenuActions {
              } else {
                  Task {
                      for metadata in selectedMetadatas {
-                         await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                         await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                      }
                      completion?()
                  }
@@ -132,7 +132,7 @@ enum ContextMenuActions {
                      await UIAlertController.warningAsync(message: message, presenter: viewController)
                  } else {
                      let controller = viewController.tabBarController as? NCMainTabBarController
-                     NCDownloadAction.shared.openSelectView(items: selectedMetadatas, controller: controller)
+                     NCSelectOpen.shared.openView(items: selectedMetadatas, controller: controller)
                  }
                  completion?()
              }

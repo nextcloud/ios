@@ -616,7 +616,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) {
         guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
 
-        NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
+        NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
     func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
@@ -706,8 +706,86 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu(_ sender: Any?) {
-        Task {
-            await NCDownloadAction.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
+        Task {@MainActor in
+            guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) else {
+                return
+            }
+            let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+            let token = showHudBanner(
+                scene: scene,
+                title: NSLocalizedString("_delete_in_progress_", comment: ""))
+
+            for (index, items) in UIPasteboard.general.items.enumerated() {
+                for item in items {
+                    let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+                    let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
+                    guard let data = UIPasteboard.general.data(forPasteboardType: item.key,
+                                                               inItemSet: IndexSet([index]))?.first
+                    else {
+                        continue
+                    }
+                    let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+                    let ocIdUpload = UUID().uuidString
+                    let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(
+                        ocIdUpload,
+                        fileName: fileName,
+                        userId: tblAccount.userId,
+                        urlBase: tblAccount.urlBase
+                    )
+                    do {
+                        try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+                    } catch {
+                        continue
+                    }
+
+                    let resultsUpload = await NextcloudKit.shared.uploadAsync(
+                        serverUrlFileName: serverUrlFileName,
+                        fileNameLocalPath: fileNameLocalPath,
+                        account: session.account) { _ in
+                        } taskHandler: { task in
+                            Task {
+                                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                                    account: self.session.account,
+                                    path: serverUrlFileName,
+                                    name: "upload")
+                                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                            }
+                        } progressHandler: { progress in
+                            Task {@MainActor in
+                                LucidBanner.shared.update(
+                                    title: "",
+                                    progress: progress.fractionCompleted,
+                                    for: token)
+                            }
+                        }
+                    if resultsUpload.error == .success,
+                       let etag = resultsUpload.etag,
+                       let ocId = resultsUpload.ocId {
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(
+                            ocId,
+                            fileName: fileName,
+                            userId: tblAccount.userId,
+                            urlBase: tblAccount.urlBase)
+                        self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                        NCManageDatabase.shared.addLocalFile(
+                            account: session.account,
+                            etag: etag,
+                            ocId: ocId,
+                            fileName: fileName)
+                        Task {
+                            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                delegate.transferReloadData(serverUrl: serverUrl, requestData: true, status: nil)
+                            }
+                        }
+                    } else {
+                        showErrorBanner(scene: scene,
+                                        errorDescription: resultsUpload.error.errorDescription,
+                                        errorCode: resultsUpload.error.errorCode)
+                    }
+                }
+            }
+            LucidBanner.shared.dismiss(for: token)
         }
     }
 

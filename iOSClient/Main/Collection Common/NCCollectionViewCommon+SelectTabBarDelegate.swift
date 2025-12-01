@@ -53,14 +53,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func move() {
         let metadatas = getSelectedMetadatas()
 
-        NCDownloadAction.shared.openSelectView(items: metadatas, controller: self.controller)
+        NCSelectOpen.shared.openView(items: metadatas, controller: self.controller)
         setEditMode(false)
     }
 
     func share() {
         Task {
             let metadatas = getSelectedMetadatas()
-            await NCDownloadAction.shared.openActivityViewController(
+            await NCCreate().createActivityViewController(
                 selectedMetadata: metadatas,
                 controller: self.controller,
                 sender: nil)
@@ -78,7 +78,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
                 Task {
                     for metadata in metadatas {
-                        await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                        await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                     }
                 }
                 self.setEditMode(false)
@@ -88,7 +88,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         } else {
             Task {
                 for metadata in metadatas {
-                    await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                    await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                 }
             }
             setEditMode(false)

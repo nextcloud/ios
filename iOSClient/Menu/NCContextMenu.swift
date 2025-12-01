@@ -38,7 +38,7 @@ class NCContextMenu: NSObject {
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
                               image: utility.loadImage(named: "info.circle")) { _ in
-            NCDownloadAction.shared.openShare(viewController: self.viewController, metadata: self.metadata, page: .activity)
+            NCCreate().createShare(viewController: self.viewController, metadata: self.metadata, page: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?
@@ -98,7 +98,7 @@ class NCContextMenu: NSObject {
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
                                     image: utility.loadImage(named: "questionmark.folder")) { _ in
-            NCDownloadAction.shared.openFileViewInFolder(serverUrl: self.metadata.serverUrl, fileNameBlink: self.metadata.fileName, fileNameOpen: nil, sceneIdentifier: self.sceneIdentifier)
+            NCNetworking.shared.openFileViewInFolder(serverUrl: self.metadata.serverUrl, fileNameBlink: self.metadata.fileName, fileNameOpen: nil, sceneIdentifier: self.sceneIdentifier)
         }
 
         let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: utility.loadImage(named: "livephoto")) { _ in

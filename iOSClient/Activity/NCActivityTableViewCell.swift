@@ -97,7 +97,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 return
             }
             Task {
-                await NCDownloadAction.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
+                await NCNetworking.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
             }
         }
     }
