@@ -37,12 +37,17 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // BANNER ENCRYPTION
         //
-        bannerToken = showToastBanner(scene: scene,
-                                      title: NSLocalizedString("_wait_file_encryption_", comment: ""),
-                                      subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
-                                      systemImage: "lock.circle.fill") { _, _ in
-            self.currentUploadTask?.cancel()
-            self.request?.cancel()
+        bannerToken = showUploadBanner(scene: scene,
+                                       title: NSLocalizedString("_wait_file_encryption_", comment: ""),
+                                       subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
+                                       systemImage: "lock.circle.fill") { _, _ in
+            if let currentUploadTask = self.currentUploadTask {
+                currentUploadTask.cancel()
+            }
+            if let request = self.request {
+                request.cancel()
+            }
+            LucidBanner.shared.dismiss(for: self.bannerToken)
         }
 
         defer {

@@ -23,7 +23,6 @@ struct ErrorBannerView: View {
                         Text("_error_")
                             .font(.subheadline.weight(.bold))
                             .multilineTextAlignment(.leading)
-                            .lineLimit(1)
                             .truncationMode(.tail)
                             .foregroundStyle(.white)
 
@@ -31,7 +30,6 @@ struct ErrorBannerView: View {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(4)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.white)
                         }
@@ -39,7 +37,6 @@ struct ErrorBannerView: View {
                             Text(footnote)
                                 .font(.caption)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(1)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.white)
                         }

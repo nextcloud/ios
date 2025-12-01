@@ -188,7 +188,9 @@ class NCViewer: NSObject {
         } else {
             // Document Interaction Controller
             if let controller = delegate?.tabBarController as? NCMainTabBarController {
-                NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                Task {
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                }
             }
         }
     }

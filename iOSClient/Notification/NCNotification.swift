@@ -100,7 +100,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                file["type"] as? String == "file" {
                 if let id = file["id"] {
                     Task {
-                        await NCDownloadAction.shared.viewerFile(account: session.account, fileId: ("\(id)"), viewController: self)
+                        await NCNetworking.shared.viewerFile(account: session.account, fileId: ("\(id)"), viewController: self)
                     }
                 }
             }

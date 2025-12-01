@@ -312,15 +312,9 @@ extension NCNetworking {
     // MARK: - Delete
 
     #if !EXTENSION
-    func tapHudDelete() {
-        tapHudStopDelete = true
-    }
-
     @MainActor
     func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
-        let ncHud = NCHud()
         var num: Float = 0
-
         func numIncrement() -> Float {
             num += 1
             return num
@@ -338,26 +332,24 @@ extension NCNetworking {
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
         }
 
-        self.tapHudStopDelete = false
-
         await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.directory {
-            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                await MainActor.run {
-                    ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
-                }
-            }
+            let token = showHudBanner(
+                scene: SceneManager.shared.getWindow(
+                sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
+                title: NSLocalizedString("_delete_in_progress_", comment: "")
+            )
+
             if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
                     let num = numIncrement()
-                    ncHud.progress(num: num, total: total)
-                    if tapHudStopDelete { break }
+                    LucidBanner.shared.update(progress: Double(num) / Double(total), for: token)
+                }
             }
-        }
-            ncHud.dismiss()
+            LucidBanner.shared.dismiss(for: token)
         } else {
             await deleteLocalFile(metadata: metadata)
 
