@@ -144,7 +144,7 @@ class NCShareNetworking: NSObject {
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
 
                 if shareable.hasChanges(comparedTo: share) {
-                    self.updateShare(shareable, downloadLimit: downloadLimit)
+                    self.updateShare(shareable, downloadLimit: downloadLimit, changeDownloadLimit: true)
                     // Download limit update should happen implicitly on share update.
                 } else {
                     if case let .limited(limit, _) = downloadLimit,
@@ -195,7 +195,7 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func updateShare(_ shareable: Shareable, downloadLimit: DownloadLimitViewModel) {
+    func updateShare(_ shareable: Shareable, downloadLimit: DownloadLimitViewModel, changeDownloadLimit: Bool = false) {
         NCActivityIndicator.shared.start(backgroundView: view)
         NextcloudKit.shared.updateShare(idShare: shareable.idShare, password: shareable.password, expireDate: shareable.formattedDateString, permissions: shareable.permissions, note: shareable.note, label: shareable.label, hideDownload: shareable.hideDownload, attributes: shareable.attributes, account: metadata.account) { task in
             Task {
@@ -216,7 +216,8 @@ class NCShareNetworking: NSObject {
 
                 if capabilities.fileSharingDownloadLimit,
                    shareable.shareType == NKShare.ShareType.publicLink.rawValue,
-                   shareable.itemType == NCShareCommon.itemTypeFile {
+                   shareable.itemType == NCShareCommon.itemTypeFile,
+                   changeDownloadLimit {
                     if case let .limited(limit, _) = downloadLimit {
                         self.setShareDownloadLimit(limit, token: share.token)
                     } else {
