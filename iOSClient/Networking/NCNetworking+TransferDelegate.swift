@@ -4,7 +4,6 @@
 
 import UIKit
 import NextcloudKit
-import LucidBanner
 import Photos
 
 extension NCNetworking: NCTransferDelegate {
@@ -23,6 +22,7 @@ extension NCNetworking: NCTransferDelegate {
                         destination: String?,
                         error: NKError) {
         Task { @MainActor in
+            // DOWNLOADED
             guard error == .success,
                   status == self.global.networkingStatusDownloaded,
                   let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId)
