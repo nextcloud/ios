@@ -461,7 +461,7 @@ class NCContextMenu: NSObject {
                                    let url = URL(string: metadata.urlBase + iconUrl) {
                                     do {
                                         let (data, _) = try await URLSession.shared.data(from: url)
-                                        iconImage = SVGKImage(data: data)?.uiImage ?? UIImage()
+                                        iconImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate) ?? UIImage()
                                     } catch {
                                         iconImage = utility.loadImage(
                                             named: "testtube.2",
@@ -479,24 +479,30 @@ class NCContextMenu: NSObject {
                                 let action = await UIAction(
                                     title: item.name,
                                     image: iconImage
-                                ) { _ in
+                                ) { [self] _ in
                                     Task {
                                         let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
                                                                                                   fileId: metadata.fileId,
-                                                                                                  filePath: metadata.path,
+                                                                                                  filePath: utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
                                                                                                   url: item.url,
                                                                                                   method: item.method,
                                                                                                   params: item.params)
 
-                                        await MainActor.run {
-                                            let viewer = DeclarativeUIViewer(
-                                                rows: [.init(element: "URL", title: "Test", urlString: "/test")],
-                                                baseURL: "test.com"
-                                            )
-                                            let hosting = UIHostingController(rootView: viewer)
-                        hosting.modalPresentationStyle = .pageSheet
-                        self.viewController.present(hosting, animated: true)
-                    }
+                                        if response.error == .success {
+                                            if response.error.errorCode == 200 {
+                                                NCContentPresenter().showCustomMessage(message: "Works", type: .success)
+                                            } else {
+                                                await MainActor.run {
+                                                    let viewer = DeclarativeUIViewer(
+                                                        rows: [.init(element: "URL", title: "Test", urlString: "/test")],
+                                                        baseURL: "test.com"
+                                                    )
+                                                    let hosting = UIHostingController(rootView: viewer)
+                                                    hosting.modalPresentationStyle = .pageSheet
+                                                    self.viewController.present(hosting, animated: true)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
 
