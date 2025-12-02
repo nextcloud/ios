@@ -76,7 +76,7 @@ final class NCBrandOptions: @unchecked Sendable {
     let httpMaximumConnectionsPerHostInUpload: Int = 8
 
     // Max request/download/upload process
-    let numMaximumProcess: Int = 50
+    let numMaximumProcess: Int = 20
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10
@@ -127,6 +127,22 @@ final class NCBrandOptions: @unchecked Sendable {
     @objc func getUserAgent() -> String {
         return userAgent
     }
+
+    func isServerVersion(_ capabilities: NKCapabilities.Capabilities,
+                         greaterOrEqualTo major: Int,
+                         _ minor: Int,
+                         _ micro: Int) -> Bool {
+
+        let server = (
+            capabilities.serverVersionMajor,
+            capabilities.serverVersionMinor,
+            capabilities.serverVersionMicro
+        )
+
+        let required = (major, minor, micro)
+
+        return server >= required
+    }
 }
 
 final class NCBrandColor: @unchecked Sendable {
@@ -142,7 +158,7 @@ final class NCBrandColor: @unchecked Sendable {
     private var themingColorText = ThreadSafeDictionary<String, UIColor>()
 
     var userColors: [CGColor] = []
-    let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
+    let yellowFavorite: UIColor = UIColor(red: 0.6118, green: 0.4549, blue: 0.1451, alpha: 1.0)
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]

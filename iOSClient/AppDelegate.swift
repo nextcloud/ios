@@ -29,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
     let global = NCGlobal.shared
 
+    var bgTask: UIBackgroundTaskIdentifier = .invalid
     var pushSubscriptionTask: Task<Void, Never>?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -59,8 +60,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCBrandColor.shared.createUserColors()
 
+        // Setup Networking
+        //
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
                                   delegate: NCNetworking.shared)
+        NCNetworking.shared.setupTransferDelegate()
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
@@ -196,12 +200,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 task.setTaskCompleted(success: true)
             }
 
-            guard let tblAccount = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
-                nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
-                return
-            }
-
-            await backgroundSync(tblAccount: tblAccount, task: task)
+            await backgroundSync(task: task)
         }
     }
 
@@ -212,6 +211,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             task.setTaskCompleted(success: false)
             return
         }
+        var expired = false
+        task.expirationHandler = {
+            expired = true
+        }
 
         // Schedule next processing task
         scheduleAppProcessing()
@@ -221,16 +224,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                task.setTaskCompleted(success: true)
            }
 
-           guard let tblAccount = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
-               nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
-               return
-           }
+           // If possible, cleaning every week
+           if NCPreferences().cleaningWeek() {
+               // BGTask expiration flag
+               nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Start cleaning week")
+               let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
+               for tblAccount in tblAccounts {
+                   await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+                   guard !expired else { return }
+               }
+               await NCUtilityFileSystem().cleanUpAsync()
 
-           await backgroundSync(tblAccount: tblAccount, task: task)
+               NCPreferences().setDoneCleaningWeek()
+               nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Stop cleaning week")
+           } else {
+               await backgroundSync(task: task)
+           }
        }
     }
 
-    func backgroundSync(tblAccount: tableAccount, task: BGTask? = nil) async {
+    func backgroundSync(task: BGTask? = nil) async {
+        defer {
+            // Update badge safely at the end of the background sync
+            Task { @MainActor in
+                do {
+                    let count = await NCManageDatabase.shared.getMetadatasInWaitingCountAsync()
+                    try await UNUserNotificationCenter.current().setBadgeCount(count)
+                } catch { }
+            }
+        }
+
         // BGTask expiration flag
         var expired = false
         task?.expirationHandler = {
@@ -238,84 +261,83 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Discover new items for Auto Upload
-        let numAutoUpload = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload found \(numAutoUpload) new items for \(tblAccount.account)")
-        guard !expired else {
-            return
-        }
+        let numAutoUpload = await NCAutoUpload.shared.initAutoUpload()
+        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload found \(numAutoUpload) new items")
+        guard !expired else { return }
 
-        // Fetch pending metadatas (bounded set)
-        guard let allMetadatas = await NCManageDatabase.shared.getMetadatasAsync(
-            predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal),
-            withSort: [RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)],
-            withLimit: NCBrandOptions.shared.numMaximumProcess),
-              !allMetadatas.isEmpty,
-              !expired else {
+        // Fetch METADATAS
+        let metadatas = await NCManageDatabase.shared.getMetadataProcess()
+        guard !metadatas.isEmpty, !expired else {
             return
         }
 
         // Create all pending Auto Upload folders (fail-fast)
-        let pendingCreateFolders = allMetadatas.lazy.filter {
+        let pendingCreateFolders = metadatas.lazy.filter {
             $0.status == self.global.metadataStatusWaitCreateFolder &&
             $0.sessionSelector == self.global.selectorUploadAutoUpload
         }
 
-        for meta in pendingCreateFolders {
-            guard !expired else {
-                return
-            }
+        for metadata in pendingCreateFolders {
+            guard !expired else { return }
+
             let err = await NCNetworking.shared.createFolderForAutoUpload(
-                serverUrlFileName: meta.serverUrlFileName,
-                account: meta.account
+                serverUrlFileName: metadata.serverUrlFileName,
+                account: metadata.account
             )
             // Fail-fast: abort the whole sync on first failure
             if err != .success {
-                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Create folder '\(meta.serverUrlFileName)' failed: \(err.errorCode) – aborting sync")
+                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Create folder '\(metadata.serverUrlFileName)' failed: \(err.errorCode) – aborting sync")
                 return
             }
         }
 
         // Capacity computation
-        let downloading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let uploading   = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
-        let used        = downloading + uploading
-        let maximum     = NCBrandOptions.shared.numMaximumProcess
-        let available   = Swift.max(0, maximum - used)
+        let downloading = metadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
+        let uploading = metadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
+        let availableProcess = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
 
-        // Only inject more work if overall utilization <= 20%
-        let utilization = Double(used) / Double(maximum)
-        guard !expired,
-              available > 0,
-              utilization <= 0.20 else {
-            return
-        }
-
-        // Start Auto Uploads (cap by available slots)
-        let seedsToUpload = Array(
-            allMetadatas.lazy.filter {
+        // Start Auto Uploads
+        let metadatasToUpload = Array(
+            metadatas.lazy.filter {
                 $0.status == self.global.metadataStatusWaitUpload &&
                 $0.sessionSelector == self.global.selectorUploadAutoUpload &&
                 $0.chunk == 0
             }
-            .prefix(available)
+            .prefix(availableProcess)
         )
 
         let cameraRoll = NCCameraRoll()
-        for seed in seedsToUpload {
-            guard !expired else {
-                return
+
+        for metadata in metadatasToUpload {
+            guard !expired else { return }
+
+            // File exists? skip it
+            let existsResult = await NCNetworking.shared.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if existsResult == .success {
+                // File exists → delete from local metadata and skip
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                continue
+            } else if existsResult.errorCode == 404 {
+                // 404 Not Found → directory does not exist
+                // Proceed
+            } else {
+                // Any other error (423 locked, 401 auth, 403 forbidden, 5xx, etc.)
+                continue
             }
+
             // Expand seed into concrete metadatas (e.g., Live Photo pair)
-            let extracted = await cameraRoll.extractCameraRoll(from: seed)
+            let extracted = await cameraRoll.extractCameraRoll(from: metadata)
+            guard !expired else { return }
 
             for metadata in extracted {
                 // Sequential await keeps ordering and simplifies backpressure
                 let err = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
                 if err == .success {
-                    nkLog(tag: self.global.logTagBgSync, message: "Queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
+                    nkLog(tag: self.global.logTagBgSync, message: "In queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
                 } else {
                     nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) -> \(metadata.serverUrl) [\(err.errorDescription)]")
                 }
+                guard !expired else { return }
             }
         }
     }
@@ -325,9 +347,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
 
-        if NCManageDatabase.shared.openRealmBackground() {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
+        NCManageDatabase.shared.openRealmBackground()
 
         backgroundSessionCompletionHandler = completionHandler
     }
@@ -388,7 +408,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
                         try? await Task.sleep(nanoseconds: 500_000_000)
-                        delegate.transferRequestData(serverUrl: nil)
+                        delegate.transferReloadData(serverUrl: nil, requestData: true, status: nil)
                     }
                 }
             } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
@@ -404,7 +424,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
             openNotification(controller: controller)
         } else if let tblAccount = NCManageDatabase.shared.getAllTableAccount().first(where: { $0.account == account }),
-                  let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController {
+                  let controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController {
             Task { @MainActor in
                 await NCAccount().changeAccount(tblAccount.account, userProfile: nil, controller: controller)
                 openNotification(controller: controller)
@@ -413,7 +433,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let message = NSLocalizedString("_the_account_", comment: "") + " " + account + " " + NSLocalizedString("_does_not_exist_", comment: "")
             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-            UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true, completion: { })
+            UIApplication.shared.mainAppWindow?.rootViewController?.present(alertController, animated: true, completion: { })
         }
     }
 
@@ -446,11 +466,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                let viewController = navigationController.topViewController as? NCViewCertificateDetails {
                 viewController.delegate = self
                 viewController.host = host
-                UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
+                UIApplication.shared.mainAppWindow?.rootViewController?.present(navigationController, animated: true)
             }
         }))
 
-        UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+        UIApplication.shared.mainAppWindow?.rootViewController?.present(alertController, animated: true)
     }
 
     // MARK: - Reset Application

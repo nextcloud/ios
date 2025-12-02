@@ -7,6 +7,7 @@ import NextcloudKit
 import CFNetwork
 import Alamofire
 import Foundation
+import LucidBanner
 
 class NCNetworkingE2EEUpload: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
@@ -15,13 +16,15 @@ class NCNetworkingE2EEUpload: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     var numChunks: Int = 0
+    var bannerToken: Int = 0
+    var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
+    var request: UploadRequest?
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil) async -> NKError {
         var finalError: NKError = .success
         var session = session
-        let hud = NCHud(controller?.view)
         let ocId = metadata.ocIdTransfer
 
         if session == nil {
@@ -32,9 +35,20 @@ class NCNetworkingE2EEUpload: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
-        // HUD ENCRYPTION
+        // BANNER ENCRYPTION
         //
-        hud.indeterminateProgress(text: NSLocalizedString("_wait_file_encryption_", comment: ""))
+        bannerToken = showUploadBanner(scene: scene,
+                                       title: NSLocalizedString("_wait_file_encryption_", comment: ""),
+                                       subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
+                                       systemImage: "lock.circle.fill") { _, _ in
+            if let currentUploadTask = self.currentUploadTask {
+                currentUploadTask.cancel()
+            }
+            if let request = self.request {
+                request.cancel()
+            }
+            LucidBanner.shared.dismiss(for: self.bannerToken)
+        }
 
         defer {
             if finalError != .success {
@@ -42,7 +56,7 @@ class NCNetworkingE2EEUpload: NSObject {
                     await self.database.deleteMetadataAsync(id: ocId)
                 }
             }
-            hud.dismiss()
+            LucidBanner.shared.dismiss(for: bannerToken)
         }
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -142,25 +156,19 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
         guard sendE2eeError == .success else {
-            hud.dismiss()
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             finalError = sendE2eeError
             return finalError
         }
 
-        // HUD CHUNK
-        //
-        hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                        tapToCancelDetailText: true) {
-            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
-        }
-
         // UPLOAD
         //
-        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, hud: hud, controller: controller)
+        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller)
         if resultsSendFile.error != .success {
-            NCContentPresenter().showError(error: resultsSendFile.error)
+            showErrorBanner(scene: scene,
+                            errorDescription: resultsSendFile.error.errorDescription,
+                            errorCode: resultsSendFile.error.errorCode)
         }
 
         // UNLOCK
@@ -188,12 +196,17 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
-            await self.database.addLocalFileAsync(metadata: metadata)
+            await self.database.addLocalFilesAsync(metadatas: [metadata])
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: global.networkingStatusUploaded,
-                                        metadata: metadata,
+                                        account: metadata.account,
+                                        fileName: metadata.fileName,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: nil,
                                         error: .success)
             }
         }
@@ -202,45 +215,84 @@ class NCNetworkingE2EEUpload: NSObject {
         return finalError
     }
 
-    // BRIDGE for chunk
-    //
-    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
-
+    @MainActor
+    private func sendFile(metadata: tableMetadata, e2eToken: String, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
         if metadata.chunk > 0 {
-            var counterUpload: Int = 0
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false) { num in
-                self.numChunks = num
-            } counterChunk: { counter in
-                hud.progress(num: Float(counter), total: Float(self.numChunks))
-            } startFilesChunk: { _ in
-                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-            } requestHandler: { _ in
-                hud.progress(num: Float(counterUpload), total: Float(self.numChunks))
-                counterUpload += 1
-            } assembling: {
-                hud.setText(NSLocalizedString("_wait_", comment: ""))
+            LucidBanner.shared.update(
+                title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
+                systemImage: "gearshape.arrow.triangle.2.circlepath",
+                imageAnimation: .rotate,
+                progress: 0,
+                for: self.bannerToken)
+
+            let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
+                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+                    Task {@MainActor in
+                        let progress = Double(counter) / Double(total)
+                        LucidBanner.shared.update(progress: progress, for: self.bannerToken)
+                    }
+                } uploadStart: { _ in
+                    Task {@MainActor in
+                        LucidBanner.shared.update(
+                            title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                            systemImage: "arrowshape.up.circle",
+                            imageAnimation: .breathe,
+                            progress: 0,
+                            for: self.bannerToken)
+                    }
+                } uploadProgressHandler: { _, _, progress in
+                    Task {@MainActor in
+                        LucidBanner.shared.update(progress: progress, for: self.bannerToken)
+                    }
+                } assembling: {
+                    Task {@MainActor in
+                        LucidBanner.shared.update(
+                            title: NSLocalizedString("_finalizing_wait_", comment: ""),
+                            footnote: "",
+                            systemImage: "tray.and.arrow.down",
+                            imageAnimation: .pulsebyLayer,
+                            progress: 0,
+                            for: self.bannerToken)
+                    }
+                }
+
+                return results
             }
+            currentUploadTask = task
+            let results = await task.value
+
+            LucidBanner.shared.dismiss(for: bannerToken)
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
-
         } else {
+            LucidBanner.shared.update(
+                title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
+                systemImage: "arrowshape.up.circle",
+                imageAnimation: .breathe,
+                progress: 0,
+                for: self.bannerToken)
+
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
 
-            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+            let results = await NCNetworking.shared.uploadFile(account: metadata.account,
+                                                               fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: metadata.serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
-                                                               account: metadata.account,
-                                                               metadata: metadata,
-                                                               withUploadComplete: false,
-                                                               customHeaders: ["e2e-token": e2eToken]) { _ in
-                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                                                               customHeaders: ["e2e-token": e2eToken]) { request in
+                self.request = request
             } progressHandler: { _, _, fractionCompleted in
-                hud.progress(fractionCompleted)
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: fractionCompleted, for: self.bannerToken)
+                }
             }
+
+            LucidBanner.shared.dismiss(for: bannerToken)
 
             return (results.ocId, results.etag, results.date, results.error)
         }

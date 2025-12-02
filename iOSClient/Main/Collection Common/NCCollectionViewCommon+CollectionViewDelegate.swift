@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import NextcloudKit
 import Alamofire
+import LucidBanner
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
@@ -25,8 +26,18 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         func downloadFile() async {
-            let hud = NCHud(self.tabBarController?.view)
             var downloadRequest: DownloadRequest?
+            let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
+            var token: Int = 0
+            await MainActor.run {
+                token = showHudBanner(scene: scene,
+                                      title: NSLocalizedString("_downloading_", comment: "")) { _, _ in
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
+            }
+
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                        session: self.networking.sessionDownload,
                                                                                        selector: global.selectorLoadFileView,
@@ -34,21 +45,25 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
 
-            hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                if let request = downloadRequest {
-                    request.cancel()
-                }
-            }
-
             let results = await self.networking.downloadFile(metadata: metadata) { request in
                 downloadRequest = request
             } progressHandler: { progress in
-                hud.progress(progress.fractionCompleted)
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                }
             }
+            await MainActor.run {
+                LucidBanner.shared.dismiss(for: token)
+            }
+
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                hud.dismiss()
+                print("ok")
             } else {
-                hud.error(text: results.nkError.errorDescription)
+                await MainActor.run {
+                    showErrorBanner(scene: scene,
+                                    errorDescription: results.nkError.errorDescription,
+                                    errorCode: results.nkError.errorCode)
+                }
             }
         }
 

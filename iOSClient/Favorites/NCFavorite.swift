@@ -40,6 +40,7 @@ class NCFavorite: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        stopSyncMetadata()
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "NCFavorite")
         }
@@ -71,6 +72,7 @@ class NCFavorite: NCCollectionViewCommon {
     override func getServerData(forced: Bool = false) async {
         defer {
             restoreDefaultTitle()
+            startSyncMetadata(metadatas: self.dataSource.getMetadatas())
         }
 
         // If is already in-flight, do nothing
@@ -92,7 +94,7 @@ class NCFavorite: NCCollectionViewCommon {
         }
 
         if resultsListingFavorites.error == .success, let files = resultsListingFavorites.files {
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
+            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
             await self.database.updateMetadatasFavoriteAsync(account: session.account, metadatas: metadatas)
             await self.reloadDataSource()
         }

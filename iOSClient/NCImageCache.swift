@@ -19,6 +19,8 @@ final class NCImageCache: @unchecked Sendable {
     private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
+    private var observerToken: NSObjectProtocol?
+
     public var countLimit: Int = 2000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
@@ -28,7 +30,7 @@ final class NCImageCache: @unchecked Sendable {
     public var controller: UITabBarController?
 
     init() {
-        NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
+        observerToken = NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAll()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
@@ -86,7 +88,9 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: LRUCacheMemoryWarningNotification, object: nil)
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func allowExtensions(ext: String) -> Bool {
@@ -136,15 +140,16 @@ final class NCImageCache: @unchecked Sendable {
                            showOnlyVideos: Bool) -> NSPredicate {
         var predicate = NSPredicate()
         let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
-        let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
-        let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
+        let showBothPredicate = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
+        let showOnlyPredicateImage = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == 'image' AND NOT (status IN %@)"
+        let showOnlyPredicateVideo = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == 'video' AND livePhotoFile == '' AND NOT (status IN %@)"
 
         if showOnlyImages {
-            predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.image.rawValue, global.metadataStatusHideInView)
+            predicate = NSPredicate(format: showOnlyPredicateImage, session.account, startServerUrl, global.metadataStatusHideInView)
         } else if showOnlyVideos {
-            predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.video.rawValue, global.metadataStatusHideInView)
+            predicate = NSPredicate(format: showOnlyPredicateVideo, session.account, startServerUrl, global.metadataStatusHideInView)
         } else {
-            predicate = NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl, global.metadataStatusHideInView)
+            predicate = NSPredicate(format: showBothPredicate, session.account, startServerUrl, global.metadataStatusHideInView)
         }
 
         return predicate

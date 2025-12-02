@@ -33,6 +33,7 @@ extension NCMedia {
     @MainActor
     func collectionViewReloadData() {
         collectionView.reloadData()
+        setElements()
     }
 
     // MARK: - Search media
@@ -175,7 +176,7 @@ extension NCMedia {
             guard let self else {
                 return
             }
-            let (_, remoteMetadatas) = await self.database.convertFilesToMetadatasAsync(files, mediaSearch: true)
+            let (_, remoteMetadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files, mediaSearch: true)
             let mediaPredicate = await self.imageCache.getMediaPredicate(session: session,
                                                                          mediaPath: tblAccount.mediaPath,
                                                                          showOnlyImages: self.showOnlyImages,

@@ -65,11 +65,11 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     var permissionBitFlag: Int {
         return switch self {
-        case .read: NCSharePermissions.permissionReadShare
-        case .reshare: NCSharePermissions.permissionReshareShare
-        case .edit: NCSharePermissions.permissionEditShare
-        case .create: NCSharePermissions.permissionCreateShare
-        case .delete: NCSharePermissions.permissionDeleteShare
+        case .read: NKShare.Permission.read.rawValue
+        case .reshare: NKShare.Permission.share.rawValue
+        case .edit: NKShare.Permission.update.rawValue
+        case .create: NKShare.Permission.create.rawValue
+        case .delete: NKShare.Permission.delete.rawValue
         }
     }
 
@@ -123,10 +123,10 @@ enum NCLinkEmailPermission: CaseIterable, NCPermission {
 
     var permissionBitFlag: Int {
         return switch self {
-        case .read: NCSharePermissions.permissionReadShare
-        case .edit: NCSharePermissions.permissionEditShare
-        case .create: NCSharePermissions.permissionCreateShare
-        case .delete: NCSharePermissions.permissionDeleteShare
+        case .read: NKShare.Permission.read.rawValue
+        case .edit: NKShare.Permission.update.rawValue
+        case .create: NKShare.Permission.create.rawValue
+        case .delete: NKShare.Permission.delete.rawValue
         }
     }
 
@@ -223,10 +223,10 @@ struct NCShareConfig {
         self.shareable = share
         self.sharePermission = parentMetadata.sharePermissionsCollaborationServices
         self.isDirectory = parentMetadata.directory
-        let type: NCPermission.Type = (share.shareType == NCShareCommon.shareTypeLink || share.shareType == NCShareCommon.shareTypeEmail) ? NCLinkEmailPermission.self : NCUserPermission.self
+        let type: NCPermission.Type = (share.shareType == NKShare.ShareType.publicLink.rawValue || share.shareType == NKShare.ShareType.email.rawValue) ? NCLinkEmailPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
-        if share.shareType == NCShareCommon.shareTypeLink {
+        if share.shareType == NKShare.ShareType.publicLink.rawValue {
             let capabilities = NCNetworking.shared.capabilities[parentMetadata.account] ?? NKCapabilities.Capabilities()
             let hasDownloadLimitCapability = capabilities.fileSharingDownloadLimit
 

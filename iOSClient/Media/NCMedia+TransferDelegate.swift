@@ -9,25 +9,32 @@ import NextcloudKit
 // MARK: - Drag
 
 extension NCMedia: NCTransferDelegate {
-    func transferReloadData(serverUrl: String?, status: Int?) {
-        self.debouncer.call {
-            Task {
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
+        Task {
+            await self.debouncer.call {
                 await self.loadDataSource()
             }
         }
     }
 
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
+    func transferChange(status: String,
+                        account: String,
+                        fileName: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
         Task {
-            await self.loadDataSource()
-            await self.searchMediaUI()
-        }
-    }
-
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
-        Task {
-            await self.loadDataSource()
-            await self.searchMediaUI()
+            await self.debouncer.call {
+                switch status {
+                case self.global.networkingStatusCopyMove:
+                    await self.loadDataSource()
+                    await self.searchMediaUI()
+                default:
+                    break
+                }
+            }
         }
     }
 }

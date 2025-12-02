@@ -135,7 +135,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                 return
             }
 
-            let metadata = await self.database.convertFileToMetadataAsync(file)
+            let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
             await self.database.createDirectory(metadata: metadata)
 
             await self.reloadDataSource()

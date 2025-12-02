@@ -9,7 +9,6 @@ struct NCAccountSettingsView: View {
     @ObservedObject var model: NCAccountSettingsModel
 
     @State private var isExpanded: Bool = false
-    @State private var showUserStatus = false
     @State private var showServerCertificate = false
     @State private var showPushCertificate = false
     @State private var showDeleteAccountAlert: Bool = false
@@ -141,31 +140,45 @@ struct NCAccountSettingsView: View {
                     //
                     // User Status
                     if capabilities.userStatusEnabled {
-                        Button(action: {
-                            showUserStatus = true
-                        }, label: {
-                            HStack {
-                                Image(systemName: "moon.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: 20, height: 20)
-                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                                Text(NSLocalizedString("_set_user_status_", comment: ""))
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                            }
-                            .font(.subheadline)
-                        })
-                        .sheet(isPresented: $showUserStatus) {
-                            if let account = model.tblAccount?.account {
-                                UserStatusView(showUserStatus: $showUserStatus, account: account)
+                        if let account = model.tblAccount?.account {
+                            NavigationLink(destination: NCUserStatusView(account: account)) {
+                                HStack {
+                                    Image(systemName: "moon.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .font(Font.system(.body).weight(.light))
+                                        .frame(width: 20, height: 20)
+                                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                    Text(NSLocalizedString("_set_user_status_", comment: ""))
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                        .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                                }
+                                .font(.subheadline)
                             }
                         }
-                        .onChange(of: showUserStatus) { }
+
+                        if let account = model.tblAccount?.account {
+                            NavigationLink(destination: NCStatusMessageView(account: account)) {
+                                HStack {
+                                    Image(systemName: "message.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .font(Font.system(.body).weight(.light))
+                                        .frame(width: 20, height: 20)
+                                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                    Text(NSLocalizedString("_set_user_status_message_", comment: ""))
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                        .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                                }
+                                .font(.subheadline)
+                            }
+                        }
                     }
+
                     //
                     // Certificate server
                     if model.isAdminGroup() {

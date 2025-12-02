@@ -324,11 +324,12 @@ extension NCShareExtension {
                 guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                     continue
                 }
-                let metadataForUpload = await NCManageDatabase.shared.createMetadataAsync(fileName: fileName,
-                                                                                          ocId: ocId,
-                                                                                          serverUrl: serverUrl,
-                                                                                          session: session,
-                                                                                          sceneIdentifier: nil)
+                let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                    fileName: fileName,
+                    ocId: ocId,
+                    serverUrl: serverUrl,
+                    session: session,
+                    sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUpload
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
@@ -409,24 +410,35 @@ extension NCShareExtension {
         hud.ringProgress(view: self.view, text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
         if metadata.isDirectoryE2EE {
-            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, scene: self.view.window?.windowScene)
         } else if metadata.chunk > 0 {
-            var numChunks = 0
-            var counterUpload: Int = 0
-            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+            var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
 
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                numChunks = num
-            } counterChunk: { counter in
-                self.hud.progress(num: Float(counter), total: Float(numChunks))
-            } startFilesChunk: { _ in
-                self.hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-            } requestHandler: { _ in
-                self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
-                counterUpload += 1
-            } assembling: {
-                self.hud.setText(NSLocalizedString("_wait_", comment: ""))
+            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
+                currentUploadTask?.cancel()
             }
+
+            let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
+                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+                    self.hud.progress(num: Float(counter), total: Float(total))
+                } uploadStart: { _ in
+                    self.hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                        currentUploadTask?.cancel()
+                    }
+                } uploadProgressHandler: { _, _, progress in
+                    self.hud.progress(progress)
+                } assembling: {
+                    self.hud.setText(NSLocalizedString("_wait_", comment: ""))
+                }
+
+                return results
+            }
+
+            currentUploadTask = task
+            let results = await task.value
+
+            hud.dismiss()
+
             error = results.error
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -434,12 +446,11 @@ extension NCShareExtension {
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
 
-            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+            let results = await NCNetworking.shared.uploadFile(account: metadata.account,
+                                                               fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: metadata.serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
-                                                               dateModificationFile: metadata.date as Date,
-                                                               account: metadata.account,
-                                                               metadata: metadata) { _ in
+                                                               dateModificationFile: metadata.date as Date) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 self.hud.progress(fractionCompleted)
             }

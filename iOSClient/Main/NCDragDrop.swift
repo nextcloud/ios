@@ -127,11 +127,12 @@ class NCDragDrop: NSObject {
 
             try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-            let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
-                                                                       ocId: ocId,
-                                                                       serverUrl: serverUrl,
-                                                                       session: session,
-                                                                       sceneIdentifier: controller?.sceneIdentifier)
+            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: ocId,
+                serverUrl: serverUrl,
+                session: session,
+                sceneIdentifier: controller?.sceneIdentifier)
 
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
             metadataForUpload.sessionSelector = global.selectorUploadFile
@@ -148,18 +149,32 @@ class NCDragDrop: NSObject {
 
     func copyFile(metadatas: [tableMetadata], destination: String) async {
         for metadata in metadatas {
-            NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: false)
+            NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopy(metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                        account: metadata.account,
+                                        fileName: metadata.fileName,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: destination,
+                                        error: .success)
             }
         }
     }
 
     func moveFile(metadatas: [tableMetadata], destination: String) async {
         for metadata in metadatas {
-            NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: false)
+            NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferMove(metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                        account: metadata.account,
+                                        fileName: metadata.fileName,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: destination,
+                                        error: .success)
             }
         }
     }
@@ -197,8 +212,7 @@ class NCDragDrop: NSObject {
 
             // DOWNLOAD
             if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let results = await NCNetworking.shared.downloadFile(metadata: metadata,
-                                                                     withDownloadComplete: true) { request in
+                let results = await NCNetworking.shared.downloadFile(metadata: metadata) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
@@ -219,12 +233,11 @@ class NCDragDrop: NSObject {
             let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
 
-            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+            let results = await NCNetworking.shared.uploadFile(account: session.account,
+                                                               fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
-                                                               dateModificationFile: metadata.date as Date,
-                                                               account: session.account,
-                                                               withUploadComplete: false) { request in
+                                                               dateModificationFile: metadata.date as Date) { request in
                 uploadRequest = request
             } progressHandler: { _, _, fractionCompleted in
                 let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()

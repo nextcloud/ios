@@ -28,7 +28,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -142,7 +141,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.masksToBounds = true
         imageStatus.image = nil
         imageFavorite.image = nil
-        imageFavoriteBackground.isHidden = true
         imageLocal.image = nil
         labelTitle.text = ""
         labelInfo.text = ""
@@ -265,12 +263,14 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             tag1.isHidden = true
             labelInfo.isHidden = false
             labelSubinfo.isHidden = false
+            labelInfoSeparator.isHidden = false
         } else {
             tag0.isHidden = false
             tag1.isHidden = true
             labelInfo.isHidden = true
             labelSubinfo.isHidden = true
-
+            labelInfoSeparator.isHidden = true
+            
             if let tag = tags.first {
                 tag0.text = tag
                 if tags.count > 1 {
@@ -282,18 +282,41 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
-
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
+        [imageStatus, imageLocal].forEach { imageView in
+            imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
         }
 
-        if imageLocal.image != nil {
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
+        if imageFavorite.image != nil {
+            let outlineView = UIImageView()
+            outlineView.translatesAutoresizingMaskIntoConstraints = false
+            outlineView.image = UIImage(systemName: "star")
+            outlineView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
+            outlineView.tintColor = .systemBackground
+
+            imageFavorite.addSubview(outlineView)
+            NSLayoutConstraint.activate([
+                outlineView.leadingAnchor.constraint(equalTo: imageFavorite.leadingAnchor, constant: -1),
+                outlineView.trailingAnchor.constraint(equalTo: imageFavorite.trailingAnchor, constant: 1),
+                outlineView.topAnchor.constraint(equalTo: imageFavorite.topAnchor, constant: -1),
+                outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
+            ])
+            imageFavorite.sendSubviewToBack(outlineView)
         } else {
-            imageLocal.backgroundColor = .clear
+            imageFavorite.subviews.forEach { view in
+                view.removeFromSuperview()
+            }
+        }
+
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Keep the shadow path in sync with current bounds
+        imageStatus.layer.shadowPath = UIBezierPath(ovalIn: imageStatus.bounds).cgPath
+
+        // Ensure the circular background remains correct after Auto Layout
+        if imageStatus.layer.cornerRadius != imageStatus.bounds.width / 2 {
+            imageStatus.layer.cornerRadius = imageStatus.bounds.width / 2
         }
     }
 }

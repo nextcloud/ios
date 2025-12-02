@@ -11,7 +11,6 @@ class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var titleConstraint: NSLayoutConstraint!
     @IBOutlet weak var gradientView: UIView!
 
     let layout = NCMediaLayout()
@@ -53,7 +52,7 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
-    let debouncer = NCDebouncer(delay: 1)
+    let debouncer = NCDebouncer(maxEventCount: 10)
 
     @MainActor
     var session: NCSession.Session {
@@ -118,16 +117,6 @@ class NCMedia: UIViewController {
         gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
         gradientView.layer.insertSublayer(gradientLayer, at: 0)
 
-        // Title + Activity indicator
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            titleConstraint.constant = 0
-        } else {
-            if #available(iOS 26.0, *) {
-                titleConstraint.constant = -44
-            } else {
-                titleConstraint.constant = -34
-            }
-        }
         titleDate.text = ""
         titleDate?.textColor = .white
         activityIndicator.color = .white

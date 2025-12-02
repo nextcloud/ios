@@ -31,9 +31,9 @@ enum NCViewerContextMenu {
                    title: NSLocalizedString("_details_", comment: ""),
                    image: UIImage(systemName: "info")
                ) { _ in
-                   NCDownloadAction.shared.openShare(viewController: controller,
-                                                     metadata: metadata,
-                                                     page: .activity)
+                   NCCreate().createShare(viewController: controller,
+                                          metadata: metadata,
+                                          page: .activity)
                }
                menuElements.append(action)
            }
@@ -46,10 +46,10 @@ enum NCViewerContextMenu {
                    title: NSLocalizedString("_view_in_folder_", comment: ""),
                    image: UIImage(systemName: "questionmark.folder")
                ) { _ in
-                   NCDownloadAction.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
-                                                                fileNameBlink: metadata.fileName,
-                                                                fileNameOpen: nil,
-                                                                sceneIdentifier: controller.sceneIdentifier)
+                   NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
+                                                            fileNameBlink: metadata.fileName,
+                                                            fileNameOpen: nil,
+                                                            sceneIdentifier: controller.sceneIdentifier)
                }
                menuElements.append(action)
            }
@@ -64,7 +64,7 @@ enum NCViewerContextMenu {
                    : NSLocalizedString("_add_favorites_", comment: ""),
                    image: NCUtility().loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
                ) { _ in
-                   NCNetworking.shared.favoriteMetadata(metadata) { error in
+                   NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                        if error != .success {
                            NCContentPresenter().showError(error: error)
                        }

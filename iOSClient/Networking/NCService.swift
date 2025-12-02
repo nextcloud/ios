@@ -1,25 +1,6 @@
-//
-//  NCService.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 14/03/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 @preconcurrency import NextcloudKit
@@ -235,8 +216,6 @@ class NCService: NSObject {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
-        await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
-
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
@@ -245,7 +224,7 @@ class NCService: NSObject {
             }
         }
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
+            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
             await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: metadatas)
         }
 
@@ -257,11 +236,11 @@ class NCService: NSObject {
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
         for directory in directories {
-            await NCNetworking.shared.synchronization(account: account,
-                                                      serverUrl: directory.serverUrl,
-                                                      userId: tblAccount.userId,
-                                                      urlBase: tblAccount.urlBase,
-                                                      metadatasInDownload: metadatasInDownload)
+            await NCNetworking.shared.synchronizationDownload(account: account,
+                                                              serverUrl: directory.serverUrl,
+                                                              userId: tblAccount.userId,
+                                                              urlBase: tblAccount.urlBase,
+                                                              metadatasInDownload: metadatasInDownload)
         }
 
         // Synchronize Files

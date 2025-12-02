@@ -182,7 +182,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         if useAutoUploadFolder {
             let assets = self.assets.compactMap { $0.phAsset }
-            self.database.createMetadatasFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session) { metadatasFolder in
+            NCManageDatabaseCreateMetadata().createMetadatasFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session) { metadatasFolder in
                 self.database.addMetadatas(metadatasFolder)
                 self.showHUD = false
                 createProcessUploads()
@@ -233,11 +233,12 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                     continue
                 }
 
-                let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
-                                                                           ocId: NSUUID().uuidString,
-                                                                           serverUrl: serverUrl,
-                                                                           session: session,
-                                                                           sceneIdentifier: controller?.sceneIdentifier)
+                let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                    fileName: fileName,
+                    ocId: NSUUID().uuidString,
+                    serverUrl: serverUrl,
+                    session: session,
+                    sceneIdentifier: controller?.sceneIdentifier)
 
                 if livePhoto {
                     metadataForUpload.livePhotoFile = (metadataForUpload.fileName as NSString).deletingPathExtension + ".mov"

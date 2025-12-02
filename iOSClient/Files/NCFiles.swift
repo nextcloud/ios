@@ -15,8 +15,6 @@ class NCFiles: NCCollectionViewCommon {
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
 
-    internal var syncMetadatasTask: Task<Void, Never>?
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -101,9 +99,6 @@ class NCFiles: NCCollectionViewCommon {
         super.viewWillAppear(animated)
 
         Task {
-            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
-            mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
-
             await self.reloadDataSource()
         }
     }
@@ -118,8 +113,12 @@ class NCFiles: NCCollectionViewCommon {
             self.fileNameOpen = nil
         }
 
-        if !isSearchingMode {
-            Task {
+        Task {
+            // Plus Menu reload
+            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
+            await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
+            // Server data
+            if !isSearchingMode {
                 await getServerData()
             }
         }
@@ -402,7 +401,7 @@ class NCFiles: NCCollectionViewCommon {
                 navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController
             }
 
-            UIApplication.shared.firstWindow?.rootViewController = navigationController
+            UIApplication.shared.mainAppWindow?.rootViewController = navigationController
         } else if let account = tblAccount?.account, account != currentAccount {
             Task {
                 await NCAccount().changeAccount(account, userProfile: nil, controller: controller)

@@ -7,6 +7,7 @@ import SwiftUI
 import RealmSwift
 import NextcloudKit
 import EasyTipView
+import LucidBanner
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
@@ -50,6 +51,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     var tipViewAccounts: EasyTipView?
+    var syncMetadatasTask: Task<Void, Never>?
 
     // DECLARE
     var layoutKey = ""
@@ -149,7 +151,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
-    internal let debouncer = NCDebouncer(delay: 1)
+    internal let debouncer = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
 
     // MARK: - View Life Cycle
 
@@ -343,177 +345,102 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        switch status {
-        // DELETE
-        case self.global.networkingStatusDelete:
-            let errorForThisServer = metadatasError.first { entry in
-                let (key, value) = entry
-                return key.serverUrl == self.serverUrl && value != .success
-            }?.value
-
-            let needLoadDataSource = metadatasError.contains { entry in
-                let (key, value) = entry
-                return key.serverUrl == self.serverUrl && value == .success
+    func transferChange(status: String,
+                        account: String,
+                        fileName: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task {
+            if error != .success,
+               error.errorCode != global.errorResourceNotFound {
+                showErrorBanner(scene: UIApplication.shared.mainAppWindow?.windowScene,
+                                errorDescription: error.errorDescription,
+                                errorCode: error.errorCode)
+            }
+            guard session.account == account else {
+                return
             }
 
-            if let error = errorForThisServer {
-                NCContentPresenter().showError(error: error)
-            }
-
-            if self.isSearchingMode {
-                self.networkSearch()
-            } else if needLoadDataSource {
-                Task {
-                    await self.reloadDataSource()
-                }
-            } else {
-                Task.detached {
-                    if await self.isRecommendationActived() {
-                        await self.networking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
-                    }
-                }
-            }
-        default:
-            break
-        }
-    }
-
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        guard session.account == metadata.account else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        DispatchQueue.main.async {
-            switch status {
-            // UPLOADED, UPLOADED LIVEPHOTO
-            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
-                self.debouncer.call {
+            await self.debouncer.call {
+                switch status {
+                // UPLOADED, UPLOADED LIVEPHOTO, DELETE
+                case self.global.networkingStatusUploaded,
+                    self.global.networkingStatusDelete,
+                    self.global.networkingStatusCopyMove:
                     if self.isSearchingMode {
                         self.networkSearch()
-                    } else if self.serverUrl == metadata.serverUrl {
-                        Task {
-                            await self.reloadDataSource()
-                        }
-                    }
-                }
-            // DOWNLOAD
-            case self.global.networkingStatusDownloading:
-                Task {
-                    if metadata.serverUrl == self.serverUrl {
+                    } else if self.serverUrl == serverUrl || destination == self.serverUrl {
                         await self.reloadDataSource()
                     }
-                }
-            case self.global.networkingStatusDownloaded:
-                Task {
-                    if metadata.serverUrl == self.serverUrl {
+                // DOWNLOAD
+                case self.global.networkingStatusDownloaded:
+                    if serverUrl == self.serverUrl || self.serverUrl.isEmpty {
                         await self.reloadDataSource()
                     }
-                }
-            case self.global.networkingStatusDownloadCancel:
-                Task {
-                    if metadata.serverUrl == self.serverUrl {
+                case self.global.networkingStatusDownloadCancel:
+                    if serverUrl == self.serverUrl {
                         await self.reloadDataSource()
                     }
-                }
-            // CREATE FOLDER
-            case self.global.networkingStatusCreateFolder:
-                if metadata.serverUrl == self.serverUrl, metadata.sessionSelector != self.global.selectorUploadAutoUpload {
-                    self.pushMetadata(metadata)
-                }
-            // RENAME
-            case self.global.networkingStatusRename:
-                self.debouncer.call {
+                // CREATE FOLDER
+                case self.global.networkingStatusCreateFolder:
+                    if serverUrl == self.serverUrl,
+                       selector != self.global.selectorUploadAutoUpload,
+                       let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
+                        self.pushMetadata(metadata)
+                    }
+                // RENAME
+                case self.global.networkingStatusRename:
                     if self.isSearchingMode {
                         self.networkSearch()
-                    } else if self.serverUrl == metadata.serverUrl {
-                        Task {
-                            await self.reloadDataSource()
-                        }
+                    } else if self.serverUrl == serverUrl {
+                        await self.reloadDataSource()
                     }
-                }
-            // FAVORITE
-            case self.global.networkingStatusFavorite:
-                self.debouncer.call {
+                // FAVORITE
+                case self.global.networkingStatusFavorite:
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self is NCFavorite {
+                        await self.reloadDataSource()
+                    } else if self.serverUrl == serverUrl {
+                        await self.reloadDataSource()
+                    }
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
+        Task {
+            await self.debouncer.call {
+                if requestData {
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
                         Task {
-                            await self.reloadDataSource()
+                            await self.getServerData()
                         }
-                    } else if self.serverUrl == metadata.serverUrl {
+                    }
+                } else {
+                    if self.isSearchingMode {
+                        guard status != self.global.metadataStatusWaitDelete,
+                              status != self.global.metadataStatusWaitRename,
+                              status != self.global.metadataStatusWaitMove,
+                              status != self.global.metadataStatusWaitCopy,
+                              status != self.global.metadataStatusWaitFavorite else {
+                            return
+                        }
+                        self.networkSearch()
+                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
                         Task {
                             await self.reloadDataSource()
                         }
                     }
                 }
-            default:
-                break
-            }
-        }
-    }
-
-    func transferReloadData(serverUrl: String?, status: Int?) {
-        self.debouncer.call {
-            if self.isSearchingMode {
-                guard status != self.global.metadataStatusWaitDelete,
-                      status != self.global.metadataStatusWaitRename,
-                      status != self.global.metadataStatusWaitMove,
-                      status != self.global.metadataStatusWaitCopy,
-                      status != self.global.metadataStatusWaitFavorite else {
-                    return
-                }
-                self.networkSearch()
-            } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                Task {
-                    await self.reloadDataSource()
-                }
-            }
-        }
-    }
-
-    func transferRequestData(serverUrl: String?) {
-        self.debouncer.call {
-            if self.isSearchingMode {
-                self.networkSearch()
-            } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                Task {
-                    await self.getServerData()
-                }
-            }
-        }
-    }
-
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        if isSearchingMode {
-            return networkSearch()
-        }
-
-        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
-            Task {
-                await self.reloadDataSource()
-            }
-        }
-    }
-
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        if isSearchingMode {
-            return networkSearch()
-        }
-
-        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
-            Task {
-                await self.reloadDataSource()
             }
         }
     }
@@ -689,7 +616,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) {
         guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
 
-        NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
+        NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
     func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
@@ -779,8 +706,75 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu(_ sender: Any?) {
-        Task {
-            await NCDownloadAction.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
+        Task {@MainActor in
+            guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) else {
+                return
+            }
+            let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+            let token = showHudBanner(
+                scene: scene,
+                title: NSLocalizedString("_upload_in_progress_", comment: ""))
+
+            for (index, items) in UIPasteboard.general.items.enumerated() {
+                for item in items {
+                    let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+                    let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
+                    guard let data = UIPasteboard.general.data(forPasteboardType: item.key,
+                                                               inItemSet: IndexSet([index]))?.first
+                    else {
+                        continue
+                    }
+                    let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+                    let ocIdUpload = UUID().uuidString
+                    let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(
+                        ocIdUpload,
+                        fileName: fileName,
+                        userId: tblAccount.userId,
+                        urlBase: tblAccount.urlBase
+                    )
+                    do {
+                        try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
+                    } catch {
+                        continue
+                    }
+
+                    let resultsUpload = await NCNetworking.shared.uploadFile(account: session.account,
+                                                                             fileNameLocalPath: fileNameLocalPath,
+                                                                             serverUrlFileName: serverUrlFileName) { _ in
+                    } progressHandler: { _, _, fractionCompleted in
+                        Task {@MainActor in
+                            LucidBanner.shared.update(progress: fractionCompleted, for: token)
+                        }
+                    }
+
+                    if resultsUpload.error == .success,
+                       let etag = resultsUpload.etag,
+                       let ocId = resultsUpload.ocId {
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(
+                            ocId,
+                            fileName: fileName,
+                            userId: tblAccount.userId,
+                            urlBase: tblAccount.urlBase)
+                        self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                        NCManageDatabase.shared.addLocalFile(
+                            account: session.account,
+                            etag: etag,
+                            ocId: ocId,
+                            fileName: fileName)
+                        Task {
+                            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                delegate.transferReloadData(serverUrl: serverUrl, requestData: true, status: nil)
+                            }
+                        }
+                    } else {
+                        showErrorBanner(scene: scene,
+                                        errorDescription: resultsUpload.error.errorDescription,
+                                        errorCode: resultsUpload.error.errorCode)
+                    }
+                }
+            }
+            LucidBanner.shared.dismiss(for: token)
         }
     }
 

@@ -46,7 +46,6 @@ extension UINavigationController {
             appearance.shadowColor = .clear
             appearance.shadowImage = UIImage()
         }
-
         appearance.titleTextAttributes = [.foregroundColor: textColor]
 
         navigationBar.standardAppearance = appearance
