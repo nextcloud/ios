@@ -713,7 +713,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
             let token = showHudBanner(
                 scene: scene,
-                title: NSLocalizedString("_delete_in_progress_", comment: ""))
+                title: NSLocalizedString("_upload_in_progress_", comment: ""))
 
             for (index, items) in UIPasteboard.general.items.enumerated() {
                 for item in items {
@@ -739,26 +739,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         continue
                     }
 
-                    let resultsUpload = await NextcloudKit.shared.uploadAsync(
-                        serverUrlFileName: serverUrlFileName,
-                        fileNameLocalPath: fileNameLocalPath,
-                        account: session.account) { _ in
-                        } taskHandler: { task in
-                            Task {
-                                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                                    account: self.session.account,
-                                    path: serverUrlFileName,
-                                    name: "upload")
-                                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                            }
-                        } progressHandler: { progress in
-                            Task {@MainActor in
-                                LucidBanner.shared.update(
-                                    title: "",
-                                    progress: progress.fractionCompleted,
-                                    for: token)
-                            }
+                    let resultsUpload = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+                                                                             serverUrlFileName: serverUrlFileName,
+                                                                             account: session.account,
+                                                                             performPostProcessing: false) { _ in
+                    } progressHandler: { _, _, fractionCompleted in
+                        Task {@MainActor in
+                            LucidBanner.shared.update(progress: fractionCompleted, for: token)
                         }
+                    }
+
                     if resultsUpload.error == .success,
                        let etag = resultsUpload.etag,
                        let ocId = resultsUpload.ocId {

@@ -13,8 +13,8 @@ extension NCNetworking {
     @discardableResult
     func uploadFile(fileNameLocalPath: String,
                     serverUrlFileName: String,
-                    creationDate: Date,
-                    dateModificationFile: Date,
+                    creationDate: Date? = nil,
+                    dateModificationFile: Date? = nil,
                     account: String,
                     metadata: tableMetadata? = nil,
                     performPostProcessing: Bool = true,
