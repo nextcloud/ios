@@ -414,7 +414,7 @@ extension NCCollectionViewCommon {
             actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170, sender: sender))
         }
 
-        if let apps = capabilities.declarativeUI?.apps {
+        if let apps = capabilities.clientIntegration?.apps {
             for (appName, context) in apps {
                 for item in context.contextMenu {
                     if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {

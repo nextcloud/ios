@@ -315,24 +315,25 @@ class NCContextMenu: NSObject {
             let action = UIAction(
                 title: NSLocalizedString("_save_as_scan_", comment: ""),
                 image: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor])
-            ) { [self] _ in
+            ) { _ in
                 Task {
                     if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                            let metadataCopy = metadata.detachedCopy()
-                            metadataCopy.sessionSelector = NCGlobal.shared.selectorSaveAsScan
-                            delegate.transferChange(
-                                status: NCGlobal.shared.networkingStatusDownloaded,
-                                metadata: metadataCopy,
-                                error: .success
-                            )
+                            delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                    account: metadata.account,
+                                                    fileName: metadata.fileName,
+                                                    serverUrl: metadata.serverUrl,
+                                                    selector: NCGlobal.shared.selectorSaveAsScan,
+                                                    ocId: metadata.ocId,
+                                                    destination: nil,
+                                                    error: .success)
                         }
                     } else {
                         if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(
                             ocId: metadata.ocId,
                             session: NCNetworking.shared.sessionDownload,
                             selector: NCGlobal.shared.selectorSaveAsScan,
-                            sceneIdentifier: sceneIdentifier
+                            sceneIdentifier: self.sceneIdentifier
                         ) {
                             await NCNetworking.shared.downloadFile(metadata: metadata)
                         }
@@ -370,7 +371,8 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
+
+                    NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                 }
             }
 
@@ -390,24 +392,25 @@ class NCContextMenu: NSObject {
             let action = UIAction(
                 title: NSLocalizedString("_modify_", comment: ""),
                 image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
-            ) { [self] _ in
+            ) { _ in
                 Task {
                     if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                            let metadataCopy = metadata.detachedCopy()
-                            metadataCopy.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
-                            delegate.transferChange(
-                                status: NCGlobal.shared.networkingStatusDownloaded,
-                                metadata: metadataCopy,
-                                error: .success
-                            )
+                            delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                    account: metadata.account,
+                                                    fileName: metadata.fileName,
+                                                    serverUrl: metadata.serverUrl,
+                                                    selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                    ocId: metadata.ocId,
+                                                    destination: nil,
+                                                    error: .success)
                         }
                     } else {
                         if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(
                             ocId: metadata.ocId,
                             session: NCNetworking.shared.sessionDownload,
                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                            sceneIdentifier: sceneIdentifier
+                            sceneIdentifier: self.sceneIdentifier
                         ) {
                             await NCNetworking.shared.downloadFile(metadata: metadata)
                         }
@@ -446,7 +449,7 @@ class NCContextMenu: NSObject {
             menuElements.append(action)
         }
 
-        if let apps = capabilities.declarativeUI?.apps {
+        if let apps = capabilities.clientIntegration?.apps {
             for (appName, context) in apps {
                 for item in context.contextMenu {
                     if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {
