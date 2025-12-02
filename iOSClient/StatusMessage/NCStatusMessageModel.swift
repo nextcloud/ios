@@ -227,5 +227,3 @@ import NextcloudKit
         return [meeting, commuting]
     }
 }
-
-

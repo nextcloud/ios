@@ -228,84 +228,137 @@ class NCCreate: NSObject {
         }
     }
 
+    /// Creates and presents a UIActivityViewController for the given metadata list.
+    /// - Parameters:
+    ///   - selectedMetadata: List of tableMetadata items selected by the user.
+    ///   - controller: Main tab bar controller used to present the activity view.
+    ///   - sender: The UI element that triggered the action (for iPad popover anchoring).
     @MainActor
-    func createActivityViewController(selectedMetadata: [tableMetadata],
-                                      controller: NCMainTabBarController?,
-                                      sender: Any?) async {
+    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
         guard let controller else { return }
-        let metadatas = selectedMetadata.filter({ !$0.directory })
-        var urls: [URL] = []
+
+        let metadatas = selectedMetadata.filter { !$0.directory }
+        var exportURLs: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
+
         let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
         let token = showHudBanner(
             scene: scene,
-            title: NSLocalizedString("_download_in_progress_", comment: ""))
+            title: NSLocalizedString("_download_in_progress_", comment: "")
+        )
 
         for metadata in metadatas {
-            let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(
+            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
                 metadata.ocId,
                 fileName: metadata.fileNameView,
                 userId: metadata.userId,
-                urlBase: metadata.urlBase)
+                urlBase: metadata.urlBase
             )
+            let fileURL = URL(fileURLWithPath: localPath)
+
             if utilityFileSystem.fileProviderStorageExists(metadata) {
-                urls.append(fileURL)
+                downloadMetadata.append((metadata, fileURL))
             } else {
                 downloadMetadata.append((metadata, fileURL))
             }
         }
 
-        for (metadata, url) in downloadMetadata {
+        // Download missing files
+        for (originalMetadata, localFileURL) in downloadMetadata {
             guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
-                ocId: metadata.ocId,
+                ocId: originalMetadata.ocId,
                 session: NCNetworking.shared.sessionDownload,
                 selector: "",
-                sceneIdentifier: controller.sceneIdentifier)
-            else {
+                sceneIdentifier: controller.sceneIdentifier
+            ) else {
+                LucidBanner.shared.dismiss(for: token)
                 return
             }
 
             let results = await NCNetworking.shared.downloadFile(
-                metadata: metadata) { _ in
-                } progressHandler: { progress in
-                    Task {@MainActor in
-                        LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
-                    }
+                metadata: metadata
+            ) { _ in
+                // downloadStartHandler not used here
+            } progressHandler: { progress in
+                Task { @MainActor in
+                    LucidBanner.shared.update(
+                        progress: progress.fractionCompleted,
+                        for: token
+                    )
                 }
+            }
+
             if results.nkError == .success {
-                urls.append(url)
+                if let exportedURL = exportFileForSharing(from: localFileURL) {
+                    exportURLs.append(exportedURL)
+                }
             } else {
-                Task {@MainActor in
-                    showErrorBanner(scene: scene,
-                                    errorDescription: results.nkError.errorDescription,
-                                    errorCode: results.nkError.errorCode)
+                Task { @MainActor in
+                    showErrorBanner(
+                        scene: scene,
+                        errorDescription: results.nkError.errorDescription,
+                        errorCode: results.nkError.errorCode
+                    )
                 }
             }
         }
 
         LucidBanner.shared.dismiss(for: token)
 
-        guard !urls.isEmpty else {
-            return
-        }
+        guard !exportURLs.isEmpty else { return }
 
-        let activityViewController = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: exportURLs, applicationActivities: nil)
 
-        // iPad
+        // iPad popover configuration
         if let popover = activityViewController.popoverPresentationController {
             if let view = sender as? UIView {
                 popover.sourceView = view
                 popover.sourceRect = view.bounds
             } else {
                 popover.sourceView = controller.view
-                popover.sourceRect = CGRect(x: controller.view.bounds.midX,
-                                            y: controller.view.bounds.midY,
-                                            width: 0,
-                                            height: 0)
+                popover.sourceRect = CGRect(
+                    x: controller.view.bounds.midX,
+                    y: controller.view.bounds.midY,
+                    width: 0,
+                    height: 0
+                )
                 popover.permittedArrowDirections = []
             }
         }
 
         controller.present(activityViewController, animated: true)
+    }
+
+    // MARK: - Private helper
+
+    /// Copies a file from internal/provider storage to a shareable temporary location.
+    /// This makes the URL safe to pass to UIActivityViewController, "Copy", etc.
+    private func exportFileForSharing(from sourceURL: URL) -> URL? {
+        let fileManager = FileManager.default
+        let exportBaseURL = fileManager.temporaryDirectory.appendingPathComponent("ShareExports", isDirectory: true)
+
+        do {
+            if !fileManager.fileExists(atPath: exportBaseURL.path) {
+                try fileManager.createDirectory(
+                    at: exportBaseURL,
+                    withIntermediateDirectories: true,
+                    attributes: nil
+                )
+            }
+
+            // Destination file path (we can just reuse lastPathComponent)
+            let destinationURL = exportBaseURL.appendingPathComponent(sourceURL.lastPathComponent, isDirectory: false)
+
+            // Remove previous copy if it exists
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                try fileManager.removeItem(at: destinationURL)
+            }
+
+            try fileManager.copyItem(at: sourceURL, to: destinationURL)
+
+            return destinationURL
+        } catch {
+            return nil
+        }
     }
 }

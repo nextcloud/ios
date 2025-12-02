@@ -378,7 +378,7 @@ extension NCUtility {
         }
 
         statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
-        
+
         if statusMessage.isEmpty {
             statusMessage = messageUserDefined
         }

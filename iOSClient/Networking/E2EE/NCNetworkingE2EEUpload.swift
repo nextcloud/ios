@@ -279,13 +279,11 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
 
-            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+            let results = await NCNetworking.shared.uploadFile(account: metadata.account,
+                                                               fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: metadata.serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
-                                                               account: metadata.account,
-                                                               metadata: metadata,
-                                                               performPostProcessing: false,
                                                                customHeaders: ["e2e-token": e2eToken]) { request in
                 self.request = request
             } progressHandler: { _, _, fractionCompleted in
