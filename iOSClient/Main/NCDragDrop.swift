@@ -6,6 +6,7 @@ import UIKit
 import UniformTypeIdentifiers
 import NextcloudKit
 import Alamofire
+import LucidBanner
 
 class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -181,25 +182,29 @@ class NCDragDrop: NSObject {
 
     @MainActor
     func transfers(collectionViewCommon: NCCollectionViewCommon, destination: String, session: NCSession.Session) async {
+        defer {
+            LucidBanner.shared.dismiss()
+        }
+
         guard let metadatas = DragDropHover.shared.sourceMetadatas else {
             return
         }
-        let hud = NCHud(collectionViewCommon.controller?.view)
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
 
-        func setDetailText(status: String, percent: Int) {
-            let text = "\(NSLocalizedString("_tap_to_cancel_", comment: "")) \(status) (\(percent)%)"
-            hud.setDetailText(text)
-        }
-
-        hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-                        tapToCancelDetailText: true) {
-            if let downloadRequest {
-                downloadRequest.cancel()
-            } else if let uploadRequest {
-                uploadRequest.cancel()
-            }
+        let token = showUploadBanner(
+            scene: scene,
+            title: NSLocalizedString("_transfer_in_progress_", comment: ""),
+            subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+            footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
+            systemImage: "gearshape.arrow.triangle.2.circlepath",
+            imageAnimation: .rotate) { _, _ in
+                if let downloadRequest {
+                    downloadRequest.cancel()
+                } else if let uploadRequest {
+                    uploadRequest.cancel()
+                }
         }
 
         for (index, metadata) in metadatas.enumerated() {
@@ -214,12 +219,9 @@ class NCDragDrop: NSObject {
             if !utilityFileSystem.fileProviderStorageExists(metadata) {
                 let results = await NCNetworking.shared.downloadFile(metadata: metadata) { request in
                     downloadRequest = request
-                } progressHandler: { progress in
-                    let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
-                    setDetailText(status: status, percent: Int(progress.fractionCompleted * 100))
                 }
                 guard results.nkError == .success else {
-                    hud.error(text: results.nkError.errorDescription)
+                    showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     break
                 }
             }
@@ -239,20 +241,16 @@ class NCDragDrop: NSObject {
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date) { request in
                 uploadRequest = request
-            } progressHandler: { _, _, fractionCompleted in
-                let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()
-                setDetailText(status: status, percent: Int(fractionCompleted * 100))
             }
             guard results.error == .success else {
-                hud.error(text: results.error.errorDescription)
+                showErrorBanner(scene: scene, errorDescription: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
 
-            hud.progress(Double(index + 1) / Double(metadatas.count))
+            LucidBanner.shared.update(progress: Double(index + 1) / Double(metadatas.count), for: token)
         }
 
         await collectionViewCommon.getServerData(forced: true)
-        hud.success()
     }
 }
 

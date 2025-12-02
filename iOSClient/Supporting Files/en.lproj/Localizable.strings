@@ -663,6 +663,7 @@
 "_delete_in_progress_"      = "Delete in progress …";
 "_download_in_progress_"    = "Download in progress …";
 "_upload_in_progress_"      = "Upload in progress …";
+"_transfer_in_progress_"    = "Transfer in progress …"; 
 "_in_waiting_"              = "In waiting";
 "_in_progress_"             = "In progress";
 "_in_error_"                = "In error";
