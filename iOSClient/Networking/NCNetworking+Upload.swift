@@ -11,13 +11,11 @@ extension NCNetworking {
     // MARK: - Upload file in foreground
 
     @discardableResult
-    func uploadFile(fileNameLocalPath: String,
+    func uploadFile(account: String,
+                    fileNameLocalPath: String,
                     serverUrlFileName: String,
                     creationDate: Date? = nil,
                     dateModificationFile: Date? = nil,
-                    account: String,
-                    metadata: tableMetadata? = nil,
-                    performPostProcessing: Bool = true,
                     customHeaders: [String: String]? = nil,
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
@@ -38,52 +36,10 @@ extension NCNetworking {
                                                                                             path: serverUrlFileName,
                                                                                             name: "upload")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-
-                if let metadata {
-                    await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                         sessionTaskIdentifier: task.taskIdentifier,
-                                                                         status: self.global.metadataStatusUploading)
-
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploading,
-                                                account: metadata.account,
-                                                fileName: metadata.fileName,
-                                                serverUrl: metadata.serverUrl,
-                                                selector: metadata.sessionSelector,
-                                                ocId: metadata.ocId,
-                                                destination: nil,
-                                                error: .success)
-                    }
-                }
             }
             taskHandler(task)
         } progressHandler: { progress in
-            Task {
-                guard let metadata,
-                      await self.progressQuantizer.shouldEmit(serverUrlFileName: serverUrlFileName, fraction: progress.fractionCompleted) else {
-                    return
-                }
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                       totalBytes: progress.totalUnitCount,
-                                                       totalBytesExpected: progress.completedUnitCount,
-                                                       fileName: metadata.fileName,
-                                                       serverUrl: metadata.serverUrl)
-                }
-            }
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
-        }
-
-        Task {
-            await progressQuantizer.clear(serverUrlFileName: serverUrlFileName)
-        }
-
-        if performPostProcessing, let metadata {
-            if results.error == .success, let ocId = results.ocId {
-                await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: results.etag, date: results.date)
-            } else {
-                await uploadError(withMetadata: metadata, error: results.error)
-            }
         }
 
         return results

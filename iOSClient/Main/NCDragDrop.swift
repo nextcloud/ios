@@ -233,12 +233,11 @@ class NCDragDrop: NSObject {
             let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
 
-            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+            let results = await NCNetworking.shared.uploadFile(account: session.account,
+                                                               fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
-                                                               dateModificationFile: metadata.date as Date,
-                                                               account: session.account,
-                                                               performPostProcessing: false) { request in
+                                                               dateModificationFile: metadata.date as Date) { request in
                 uploadRequest = request
             } progressHandler: { _, _, fractionCompleted in
                 let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()

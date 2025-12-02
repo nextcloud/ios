@@ -739,10 +739,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         continue
                     }
 
-                    let resultsUpload = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
-                                                                             serverUrlFileName: serverUrlFileName,
-                                                                             account: session.account,
-                                                                             performPostProcessing: false) { _ in
+                    let resultsUpload = await NCNetworking.shared.uploadFile(account: session.account,
+                                                                             fileNameLocalPath: fileNameLocalPath,
+                                                                             serverUrlFileName: serverUrlFileName) { _ in
                     } progressHandler: { _, _, fractionCompleted in
                         Task {@MainActor in
                             LucidBanner.shared.update(progress: fractionCompleted, for: token)
