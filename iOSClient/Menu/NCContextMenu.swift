@@ -448,11 +448,24 @@ class NCContextMenu: NSObject {
             menuElements.append(action)
         }
 
+        //
+        // CLIENT INTEGRATION
+        //
         if let apps = capabilities.clientIntegration?.apps {
             for (appName, context) in apps {
                 for item in context.contextMenu {
-//                    if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {
+                    guard let mimetypeFilters = item.mimetypeFilters else { continue }
+                    let filters = mimetypeFilters.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+                    let matchesMimeType = filters.contains(where: { filter in
+                        if filter.hasSuffix("/") {
+                            // Handle wildcard MIME types like "audio/", "video/", "image/"
+                            return metadata.contentType.hasPrefix(filter)
+                        } else {
+                            return metadata.contentType == filter
+                        }
+                    })
 
+                    if matchesMimeType {
                         let deferredElement = UIDeferredMenuElement { completion in
                             Task {
                                 var iconImage: UIImage
@@ -474,7 +487,6 @@ class NCContextMenu: NSObject {
                                     )
                                 }
 
-                                // Create the action once the icon is ready
                                 let action = await UIAction(
                                     title: item.name,
                                     image: iconImage
@@ -515,7 +527,7 @@ class NCContextMenu: NSObject {
 
                         menuElements.append(deferredElement)
                     }
-//                }
+                }
             }
         }
 
