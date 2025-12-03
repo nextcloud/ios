@@ -298,7 +298,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, let metadata {
-            let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, session: session)
+            let path = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
 
             NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
                 Task {
@@ -319,7 +319,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
-        let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, session: session)
+        let path = utilityFileSystem.getRelativeFilePath(metadata!.fileName, serverUrl: serverUrl!, session: session)
 
         NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
             Task {

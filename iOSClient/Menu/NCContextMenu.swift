@@ -483,14 +483,14 @@ class NCContextMenu: NSObject {
                                     Task {
                                         let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
                                                                                                   fileId: metadata.fileId,
-                                                                                                  filePath: utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
+                                                                                                  filePath: utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
                                                                                                   url: item.url,
                                                                                                   method: item.method,
                                                                                                   params: item.params)
 
                                         if response.error == .success {
-                                            if response.error.errorCode == 200 {
-                                                NCContentPresenter().showCustomMessage(message: "Works", type: .success)
+                                            if let tooltip = response.uiResponse?.data?.tooltip {
+                                                NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
                                             } else {
                                                 await MainActor.run {
                                                     let viewer = DeclarativeUIViewer(
