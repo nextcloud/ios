@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import Alamofire
 import NextcloudKit
+import LucidBanner
 
 class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -30,7 +31,7 @@ class NCContextMenu: NSObject {
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)
-        let hud = NCHud(viewController.view)
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
 
@@ -76,21 +77,26 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                        if let request = downloadRequest {
-                            request.cancel()
-                        }
+                    let token = showHudBanner(
+                        scene: scene,
+                        title: NSLocalizedString("_download_in_progress_", comment: "")) { _, _ in
+                            if let request = downloadRequest {
+                                request.cancel()
+                            }
                     }
 
                     let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
+                        Task {@MainActor in
+                            LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
+                        }
                     }
+                    LucidBanner.shared.dismiss(for: token)
+
                     if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
                     } else {
-                        hud.error(text: results.nkError.errorDescription)
+                        showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     }
                 }
             }
@@ -129,21 +135,27 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: "")) {
-                        if let request = downloadRequest {
-                            request.cancel()
-                        }
+                    let token = showHudBanner(
+                        scene: scene,
+                        title: NSLocalizedString("_download_in_progress_", comment: "")) { _, _ in
+                            if let request = downloadRequest {
+                                request.cancel()
+                            }
                     }
 
                     let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
+                        Task {@MainActor in
+                            LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
+                        }
                     }
+                    LucidBanner.shared.dismiss(for: token)
+
                     if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
+                        //
                     } else {
-                        hud.error(text: results.nkError.errorDescription)
+                        showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     }
                 }
             }

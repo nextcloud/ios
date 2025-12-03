@@ -2201,7 +2201,7 @@
 			isa = PBXGroup;
 			children = (
 				F7603298252F0E550015A421 /* Collection Common */,
-				F7DFB7E9219C5A0500680748 /* Create cloud */,
+				F7DFB7E9219C5A0500680748 /* Create */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */,
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
@@ -3116,7 +3116,7 @@
 			path = TOPasscodeViewController;
 			sourceTree = "<group>";
 		};
-		F7DFB7E9219C5A0500680748 /* Create cloud */ = {
+		F7DFB7E9219C5A0500680748 /* Create */ = {
 			isa = PBXGroup;
 			children = (
 				F7FA7FFD2C0F4F3B0072FC60 /* Upload Assets */,
@@ -3126,7 +3126,7 @@
 				F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */,
 				F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */,
 			);
-			path = "Create cloud";
+			path = Create;
 			sourceTree = "<group>";
 		};
 		F7E9C41320F4CA870040CF18 /* Transfers */ = {
