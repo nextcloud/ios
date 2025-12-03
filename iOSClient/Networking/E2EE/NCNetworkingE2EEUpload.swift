@@ -165,11 +165,6 @@ class NCNetworkingE2EEUpload: NSObject {
         // UPLOAD
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller)
-        if resultsSendFile.error != .success {
-            showErrorBanner(scene: scene,
-                            errorDescription: resultsSendFile.error.errorDescription,
-                            errorCode: resultsSendFile.error.errorCode)
-        }
 
         // UNLOCK
         //
@@ -262,7 +257,16 @@ class NCNetworkingE2EEUpload: NSObject {
             currentUploadTask = task
             let results = await task.value
 
-            LucidBanner.shared.dismiss()
+            if results.error == .success {
+                LucidBanner.shared.dismiss()
+            } else {
+                LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
+                                          subtitle: results.error.errorDescription,
+                                          footnote: "(Code: \(results.error.errorCode))",
+                                          stage: "error",
+                                          autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+                                          for: self.bannerToken)
+            }
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
         } else {
@@ -292,7 +296,16 @@ class NCNetworkingE2EEUpload: NSObject {
                 }
             }
 
-            LucidBanner.shared.dismiss()
+            if results.error == .success {
+                LucidBanner.shared.dismiss()
+            } else {
+                LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
+                                          subtitle: results.error.errorDescription,
+                                          footnote: "(Code: \(results.error.errorCode))",
+                                          stage: "error",
+                                          autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+                                          for: self.bannerToken)
+            }
 
             return (results.ocId, results.etag, results.date, results.error)
         }

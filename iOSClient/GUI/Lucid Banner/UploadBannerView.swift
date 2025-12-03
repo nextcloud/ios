@@ -13,14 +13,20 @@ struct UploadBannerView: View {
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
 
-        containerView {
+        containerView(state: state) {
             VStack(spacing: 15) {
                 HStack(alignment: .top, spacing: 10) {
-                    if let systemImage = state.systemImage {
-                        Image(systemName: systemImage)
-                            .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 30, weight: .regular))
-                            .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                    if state.stage == "error" {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.white)
+                    } else {
+                        if let systemImage = state.systemImage {
+                            Image(systemName: systemImage)
+                                .applyBannerAnimation(state.imageAnimation)
+                                .font(.system(size: 30, weight: .regular))
+                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                        }
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
@@ -64,16 +70,26 @@ struct UploadBannerView: View {
     // MARK: - Container
 
     @ViewBuilder
-    func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
         if #available(iOS 26, *) {
-            content()
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+            if state.stage == "error" {
+                content()
+                    .background(
+                        RoundedRectangle(cornerRadius: 22)
+                            .fill(Color.red.opacity(1))
+                    )
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+            } else {
+                content()
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+            }
         } else {
+            let colorBg = state.stage == "error" ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
             content()
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(.white.opacity(0.9), lineWidth: 0.6)
+                        .stroke(colorBg, lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }

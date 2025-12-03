@@ -299,7 +299,6 @@ class NCCreate: NSObject {
                     LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
                                               subtitle: results.nkError.errorDescription,
                                               footnote: "(Code: \(results.nkError.errorCode))",
-                                              systemImage: "xmark.circle.fill",
                                               stage: "error",
                                               for: token)
                     try? await Task.sleep(nanoseconds: UInt64(NCGlobal.shared.dismissAfterSecond * 1e9))
