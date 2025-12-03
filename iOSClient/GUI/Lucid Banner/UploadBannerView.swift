@@ -120,6 +120,7 @@ func showUploadBanner(
     footnote: String? = nil,
     systemImage: String?,
     imageAnimation: LucidBanner.LucidBannerAnimationStyle = .none,
+    stage: String? = nil,
     onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
 
     return LucidBanner.shared.show(
@@ -133,6 +134,7 @@ func showUploadBanner(
         hAlignment: .center,
         verticalMargin: 55,
         swipeToDismiss: false,
+        stage: stage,
         onTap: { token, stage in
             onTap?(token, stage)
         }
