@@ -463,7 +463,7 @@ class NCContextMenu: NSObject {
                                         let (data, _) = try await URLSession.shared.data(from: url)
                                         iconImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate) ?? UIImage()
                                     } catch {
-                                        iconImage = utility.loadImage(
+                                        iconImage = self.utility.loadImage(
                                             named: "testtube.2",
                                             colors: [NCBrandColor.shared.presentationIconColor]
                                         )
@@ -479,17 +479,17 @@ class NCContextMenu: NSObject {
                                 let action = await UIAction(
                                     title: item.name,
                                     image: iconImage
-                                ) { [self] _ in
+                                ) { _ in
                                     Task {
                                         let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
                                                                                                   fileId: metadata.fileId,
-                                                                                                  filePath: utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
+                                                                                                  filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
                                                                                                   url: item.url,
                                                                                                   method: item.method,
                                                                                                   params: item.params)
 
                                         if response.error == .success {
-                                            if let tooltip = response.uiResponse?.data?.tooltip {
+                                            if let tooltip = response.uiResponse?.ocs.data.tooltip {
                                                 NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
                                             } else {
                                                 await MainActor.run {
