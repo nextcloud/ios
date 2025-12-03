@@ -19,12 +19,14 @@ class NCContextMenu: NSObject {
     let sceneIdentifier: String
     let viewController: UIViewController
     let image: UIImage?
+    let sender: Any?
 
-    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, image: UIImage?) {
+    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, image: UIImage?, sender: Any?) {
         self.metadata = metadata
         self.viewController = viewController
         self.sceneIdentifier = sceneIdentifier
         self.image = image
+        self.sender = sender
     }
 
     func viewMenu() -> UIMenu {
@@ -55,50 +57,11 @@ class NCContextMenu: NSObject {
 
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
-            if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                Task {
-                    await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                account: self.metadata.account,
-                                                fileName: self.metadata.fileName,
-                                                serverUrl: self.metadata.serverUrl,
-                                                selector: self.global.selectorOpenIn,
-                                                ocId: self.metadata.ocId,
-                                                destination: nil,
-                                                error: .success)
-                    }
-                }
-            } else {
-                Task { @MainActor in
-                    guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: self.metadata.ocId,
-                                                                                                   session: self.networking.sessionDownload,
-                                                                                                   selector: self.global.selectorOpenIn,
-                                                                                                   sceneIdentifier: self.sceneIdentifier) else {
-                        return
-                    }
-
-                    let token = showHudBanner(
-                        scene: scene,
-                        title: NSLocalizedString("_download_in_progress_", comment: "")) { _, _ in
-                            if let request = downloadRequest {
-                                request.cancel()
-                            }
-                    }
-
-                    let results = await self.networking.downloadFile(metadata: metadata) { request in
-                        downloadRequest = request
-                    } progressHandler: { progress in
-                        Task {@MainActor in
-                            LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
-                        }
-                    }
-                    LucidBanner.shared.dismiss()
-
-                    if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                    } else {
-                        showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
-                    }
-                }
+            Task {@MainActor in
+                let controller = self.viewController.tabBarController as? NCMainTabBarController
+                await NCCreate().createActivityViewController(selectedMetadata: [self.metadata],
+                                                              controller: controller,
+                                                              sender: self.sender)
             }
         }
 
