@@ -220,7 +220,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             guard session.account == account,
                   status == self.global.networkingStatusCreateFolder,
                   self.serverUrl == serverUrl,
-                  let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId)
+                  let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName))
             else {
                 return
             }

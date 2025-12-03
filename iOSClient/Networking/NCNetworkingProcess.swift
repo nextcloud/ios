@@ -392,7 +392,7 @@ actor NCNetworkingProcess {
             if let currentUploadTask {
                 currentUploadTask.cancel()
             } else {
-                LucidBanner.shared.dismiss(for: token)
+                LucidBanner.shared.dismiss()
             }
         }
 
@@ -433,7 +433,7 @@ actor NCNetworkingProcess {
         currentUploadTask = task
         _ = await task.value
 
-        LucidBanner.shared.dismiss(for: token)
+        LucidBanner.shared.dismiss()
     }
 
     // MARK: - Helper

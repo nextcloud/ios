@@ -47,7 +47,7 @@ class NCNetworkingE2EEUpload: NSObject {
             if let request = self.request {
                 request.cancel()
             }
-            LucidBanner.shared.dismiss(for: self.bannerToken)
+            LucidBanner.shared.dismiss()
         }
 
         defer {
@@ -56,7 +56,7 @@ class NCNetworkingE2EEUpload: NSObject {
                     await self.database.deleteMetadataAsync(id: ocId)
                 }
             }
-            LucidBanner.shared.dismiss(for: bannerToken)
+            LucidBanner.shared.dismiss()
         }
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -262,7 +262,7 @@ class NCNetworkingE2EEUpload: NSObject {
             currentUploadTask = task
             let results = await task.value
 
-            LucidBanner.shared.dismiss(for: bannerToken)
+            LucidBanner.shared.dismiss()
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
         } else {
@@ -292,7 +292,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 }
             }
 
-            LucidBanner.shared.dismiss(for: bannerToken)
+            LucidBanner.shared.dismiss()
 
             return (results.ocId, results.etag, results.date, results.error)
         }

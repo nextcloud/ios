@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import Alamofire
 import NextcloudKit
+import LucidBanner
 
 class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -18,19 +19,21 @@ class NCContextMenu: NSObject {
     let sceneIdentifier: String
     let viewController: UIViewController
     let image: UIImage?
+    let sender: Any?
 
-    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, image: UIImage?) {
+    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, image: UIImage?, sender: Any?) {
         self.metadata = metadata
         self.viewController = viewController
         self.sceneIdentifier = sceneIdentifier
         self.image = image
+        self.sender = sender
     }
 
     func viewMenu() -> UIMenu {
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)
-        let hud = NCHud(viewController.view)
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
 
@@ -54,45 +57,11 @@ class NCContextMenu: NSObject {
 
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
-            if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                Task {
-                    await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                account: self.metadata.account,
-                                                fileName: self.metadata.fileName,
-                                                serverUrl: self.metadata.serverUrl,
-                                                selector: self.global.selectorOpenIn,
-                                                ocId: self.metadata.ocId,
-                                                destination: nil,
-                                                error: .success)
-                    }
-                }
-            } else {
-                Task { @MainActor in
-                    guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: self.metadata.ocId,
-                                                                                                   session: self.networking.sessionDownload,
-                                                                                                   selector: self.global.selectorOpenIn,
-                                                                                                   sceneIdentifier: self.sceneIdentifier) else {
-                        return
-                    }
-
-                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                        if let request = downloadRequest {
-                            request.cancel()
-                        }
-                    }
-
-                    let results = await self.networking.downloadFile(metadata: metadata) { request in
-                        downloadRequest = request
-                    } progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
-                    }
-                    if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
-                    } else {
-                        hud.error(text: results.nkError.errorDescription)
-                    }
-                }
+            Task {@MainActor in
+                let controller = self.viewController.tabBarController as? NCMainTabBarController
+                await NCCreate().createActivityViewController(selectedMetadata: [self.metadata],
+                                                              controller: controller,
+                                                              sender: self.sender)
             }
         }
 
@@ -129,21 +98,27 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: "")) {
-                        if let request = downloadRequest {
-                            request.cancel()
-                        }
+                    let token = showHudBanner(
+                        scene: scene,
+                        title: NSLocalizedString("_download_in_progress_", comment: "")) { _, _ in
+                            if let request = downloadRequest {
+                                request.cancel()
+                            }
                     }
 
                     let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
+                        Task {@MainActor in
+                            LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
+                        }
                     }
+                    LucidBanner.shared.dismiss()
+
                     if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
+                        //
                     } else {
-                        hud.error(text: results.nkError.errorDescription)
+                        showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     }
                 }
             }

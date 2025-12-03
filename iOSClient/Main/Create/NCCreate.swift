@@ -235,17 +235,14 @@ class NCCreate: NSObject {
     ///   - sender: The UI element that triggered the action (for iPad popover anchoring).
     @MainActor
     func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
-        guard let controller else { return }
+        guard let controller else {
+            return
+        }
 
         let metadatas = selectedMetadata.filter { !$0.directory }
         var exportURLs: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
-
         let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
-        let token = showHudBanner(
-            scene: scene,
-            title: NSLocalizedString("_download_in_progress_", comment: "")
-        )
 
         for metadata in metadatas {
             let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
@@ -254,56 +251,63 @@ class NCCreate: NSObject {
                 userId: metadata.userId,
                 urlBase: metadata.urlBase
             )
-            let fileURL = URL(fileURLWithPath: localPath)
 
-            if utilityFileSystem.fileProviderStorageExists(metadata) {
-                downloadMetadata.append((metadata, fileURL))
+            if utilityFileSystem.fileProviderStorageExists(metadata),
+               let url = exportFileForSharing(from: URL(fileURLWithPath: localPath)) {
+                    exportURLs.append(url)
             } else {
-                downloadMetadata.append((metadata, fileURL))
+                downloadMetadata.append((metadata, URL(fileURLWithPath: localPath)))
             }
         }
 
-        // Download missing files
-        for (originalMetadata, localFileURL) in downloadMetadata {
-            guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
-                ocId: originalMetadata.ocId,
-                session: NCNetworking.shared.sessionDownload,
-                selector: "",
-                sceneIdentifier: controller.sceneIdentifier
-            ) else {
-                LucidBanner.shared.dismiss(for: token)
-                return
+        if !downloadMetadata.isEmpty {
+            let token = showHudBanner(
+                scene: scene,
+                title: NSLocalizedString("_download_in_progress_", comment: "")
+            )
+
+            // Download missing files
+            for (originalMetadata, localFileURL) in downloadMetadata {
+                guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
+                    ocId: originalMetadata.ocId,
+                    session: NCNetworking.shared.sessionDownload,
+                    selector: "",
+                    sceneIdentifier: controller.sceneIdentifier
+                ) else {
+                    LucidBanner.shared.dismiss()
+                    return
+                }
+
+                let results = await NCNetworking.shared.downloadFile(
+                    metadata: metadata
+                ) { _ in
+                    // downloadStartHandler not used here
+                } progressHandler: { progress in
+                    Task { @MainActor in
+                        LucidBanner.shared.update(
+                            progress: progress.fractionCompleted,
+                            for: token
+                        )
+                    }
+                }
+
+                if results.nkError == .success {
+                    if let url = exportFileForSharing(from: localFileURL) {
+                        exportURLs.append(url)
+                    }
+                } else {
+                    Task { @MainActor in
+                        showErrorBanner(
+                            scene: scene,
+                            errorDescription: results.nkError.errorDescription,
+                            errorCode: results.nkError.errorCode
+                        )
+                    }
+                }
             }
 
-            let results = await NCNetworking.shared.downloadFile(
-                metadata: metadata
-            ) { _ in
-                // downloadStartHandler not used here
-            } progressHandler: { progress in
-                Task { @MainActor in
-                    LucidBanner.shared.update(
-                        progress: progress.fractionCompleted,
-                        for: token
-                    )
-                }
-            }
-
-            if results.nkError == .success {
-                if let exportedURL = exportFileForSharing(from: localFileURL) {
-                    exportURLs.append(exportedURL)
-                }
-            } else {
-                Task { @MainActor in
-                    showErrorBanner(
-                        scene: scene,
-                        errorDescription: results.nkError.errorDescription,
-                        errorCode: results.nkError.errorCode
-                    )
-                }
-            }
+            LucidBanner.shared.dismiss()
         }
-
-        LucidBanner.shared.dismiss(for: token)
 
         guard !exportURLs.isEmpty else { return }
 
