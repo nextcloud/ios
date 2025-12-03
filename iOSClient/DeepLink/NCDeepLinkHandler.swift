@@ -116,7 +116,7 @@ class NCDeepLinkHandler {
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             let serverUrl = controller.currentServerUrl()
             let session = NCSession.shared.getSession(controller: controller)
-            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: session)
+            let fileFolderPath = NCUtilityFileSystem().getRelativeFilePath("", serverUrl: serverUrl, session: session)
             let fileFolderName = (serverUrl as NSString).lastPathComponent
             let capabilities = NCNetworking.shared.capabilities[controller.account] ?? NKCapabilities.Capabilities()
 

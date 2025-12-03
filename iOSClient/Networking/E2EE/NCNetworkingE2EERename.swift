@@ -42,7 +42,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DB RENAME
         //
-        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, session: session)
+        let newFileNamePath = utilityFileSystem.getRelativeFilePath(fileNameNew, serverUrl: metadata.serverUrl, session: session)
         await self.database.renameFileE2eEncryptionAsync(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: newFileNamePath)
 
         // UPLOAD METADATA
