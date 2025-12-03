@@ -371,7 +371,6 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-
                     NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                 }
             }
@@ -452,9 +451,9 @@ class NCContextMenu: NSObject {
         if let apps = capabilities.clientIntegration?.apps {
             for (appName, context) in apps {
                 for item in context.contextMenu {
-                    if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {
+//                    if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {
 
-                        let deferredElement = UIDeferredMenuElement { [self] completion in
+                        let deferredElement = UIDeferredMenuElement { completion in
                             Task {
                                 var iconImage: UIImage
                                 if let iconUrl = item.icon,
@@ -469,7 +468,7 @@ class NCContextMenu: NSObject {
                                         )
                                     }
                                 } else {
-                                    iconImage = utility.loadImage(
+                                    iconImage = self.utility.loadImage(
                                         named: "testtube.2",
                                         colors: [NCBrandColor.shared.presentationIconColor]
                                     )
@@ -488,7 +487,9 @@ class NCContextMenu: NSObject {
                                                                                                   method: item.method,
                                                                                                   params: item.params)
 
-                                        if response.error == .success {
+                                        if response.error != .success {
+                                            NCContentPresenter().showError(error: response.error)
+                                        } else {
                                             if let tooltip = response.uiResponse?.ocs.data.tooltip {
                                                 NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
                                             } else {
@@ -514,7 +515,7 @@ class NCContextMenu: NSObject {
 
                         menuElements.append(deferredElement)
                     }
-                }
+//                }
             }
         }
 
