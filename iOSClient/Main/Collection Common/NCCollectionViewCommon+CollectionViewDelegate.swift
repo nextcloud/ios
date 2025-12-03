@@ -53,7 +53,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             await MainActor.run {
-                LucidBanner.shared.dismiss(for: token)
+                LucidBanner.shared.dismiss()
             }
 
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {

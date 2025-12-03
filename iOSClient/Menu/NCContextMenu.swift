@@ -92,7 +92,7 @@ class NCContextMenu: NSObject {
                             LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
                         }
                     }
-                    LucidBanner.shared.dismiss(for: token)
+                    LucidBanner.shared.dismiss()
 
                     if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                     } else {
@@ -150,7 +150,7 @@ class NCContextMenu: NSObject {
                             LucidBanner.shared.update(progress: progress.fractionCompleted, for: token)
                         }
                     }
-                    LucidBanner.shared.dismiss(for: token)
+                    LucidBanner.shared.dismiss()
 
                     if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                         //

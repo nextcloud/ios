@@ -349,7 +349,7 @@ extension NCNetworking {
                     LucidBanner.shared.update(progress: Double(num) / Double(total), for: token)
                 }
             }
-            LucidBanner.shared.dismiss(for: token)
+            LucidBanner.shared.dismiss()
         } else {
             await deleteLocalFile(metadata: metadata)
 
@@ -415,7 +415,7 @@ extension NCNetworking {
                     }
                 }
 
-                LucidBanner.shared.dismiss(for: token)
+                LucidBanner.shared.dismiss()
             }
 
 #endif

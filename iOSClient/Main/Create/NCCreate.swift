@@ -271,7 +271,7 @@ class NCCreate: NSObject {
                 selector: "",
                 sceneIdentifier: controller.sceneIdentifier
             ) else {
-                LucidBanner.shared.dismiss(for: token)
+                LucidBanner.shared.dismiss()
                 return
             }
 
@@ -303,7 +303,7 @@ class NCCreate: NSObject {
             }
         }
 
-        LucidBanner.shared.dismiss(for: token)
+        LucidBanner.shared.dismiss()
 
         guard !exportURLs.isEmpty else { return }
 

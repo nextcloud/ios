@@ -774,7 +774,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
             }
-            LucidBanner.shared.dismiss(for: token)
+            LucidBanner.shared.dismiss()
         }
     }
 
