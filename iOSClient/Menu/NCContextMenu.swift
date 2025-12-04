@@ -118,7 +118,7 @@ class NCContextMenu: NSObject {
                     if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                         //
                     } else {
-                        showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                        await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     }
                 }
             }

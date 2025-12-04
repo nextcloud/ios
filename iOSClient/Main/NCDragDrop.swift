@@ -221,7 +221,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                    await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     break
                 }
             }
@@ -243,7 +243,7 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                showErrorBanner(scene: scene, errorDescription: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(scene: scene, errorDescription: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
 
