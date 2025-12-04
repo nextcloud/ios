@@ -47,7 +47,7 @@ class NCLoginProvider: UIViewController {
 
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 
