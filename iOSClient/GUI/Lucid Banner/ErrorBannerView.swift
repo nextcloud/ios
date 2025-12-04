@@ -85,9 +85,10 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode:
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         onTap: { _, _ in
             LucidBanner.shared.dismiss()
-        }) { state in
-            ErrorBannerView(state: state)
         }
+    ) { state in
+        ErrorBannerView(state: state)
+    }
 }
 
 // MARK: - Preview
