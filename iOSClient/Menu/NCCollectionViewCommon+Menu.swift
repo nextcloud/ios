@@ -257,8 +257,7 @@ extension NCCollectionViewCommon {
         // SAVE LIVE PHOTO
         //
         if NCNetworking.shared.isOnline,
-           let metadataMOV = database.getMetadataLivePhoto(metadata: metadata),
-           let hudView = self.tabBarController?.view {
+           let metadataMOV = database.getMetadataLivePhoto(metadata: metadata) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
@@ -266,7 +265,7 @@ extension NCCollectionViewCommon {
                     order: 100,
                     sender: sender,
                     action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.tabBarController))
                     }
                 )
             )
