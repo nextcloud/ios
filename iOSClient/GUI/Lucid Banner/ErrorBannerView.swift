@@ -75,17 +75,19 @@ struct ErrorBannerView: View {
 // MARK: - Helper
 
 @MainActor
-func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 0.5) async {
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1_000_000_000))
 
     LucidBanner.shared.show(
         scene: scene,
         subtitle: errorDescription,
         footnote: "(Code: \(errorCode))",
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
-    ) { state in
-        ErrorBannerView(state: state)
-    }
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        onTap: { _, _ in
+            LucidBanner.shared.dismiss()
+        }) { state in
+            ErrorBannerView(state: state)
+        }
 }
 
 // MARK: - Preview
