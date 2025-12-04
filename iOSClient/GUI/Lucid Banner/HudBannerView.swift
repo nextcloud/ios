@@ -28,7 +28,6 @@ struct HudBannerView: View {
             }
         }()
 
-        // Stroke color based on status
         let strokeColor: Color = {
             if isSuccess { return .green }
             if isError { return .red }
@@ -183,8 +182,6 @@ func showHudBanner(
 }
 
 @MainActor
-/// Marks an existing HUD banner as successfully completed.
-/// The ring is filled and a checkmark is shown in the center.
 func completeHudBannerSuccess(
     token: Int
 ) {
@@ -196,8 +193,6 @@ func completeHudBannerSuccess(
 }
 
 @MainActor
-/// Marks an existing HUD banner as failed.
-/// The ring is filled and an X symbol is shown in the center.
 func completeHudBannerError(
     subtitle: String? = nil,
     token: Int
@@ -234,9 +229,8 @@ private struct HudBannerPreviewWrapper: View {
                     state.progress = Double(i) / 100
                 }
 
-                // Simulate a final outcome in the preview
                 try? await Task.sleep(nanoseconds: 400_000_000)
-                state.stage = "error"    // change to "error" to preview the X state
+                state.stage = "error"
             }
     }
 }
