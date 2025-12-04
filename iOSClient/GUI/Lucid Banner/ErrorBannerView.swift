@@ -76,7 +76,7 @@ struct ErrorBannerView: View {
 
 @MainActor
 func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
-    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1_000_000_000))
+    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
 
     LucidBanner.shared.show(
         scene: scene,

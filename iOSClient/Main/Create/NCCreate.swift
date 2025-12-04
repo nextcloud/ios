@@ -295,14 +295,7 @@ class NCCreate: NSObject {
                     if let url = exportFileForSharing(from: localFileURL) {
                         exportURLs.append(url)
                     }
-                } else {
-                    LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
-                                              subtitle: results.nkError.errorDescription,
-                                              footnote: "(Code: \(results.nkError.errorCode))",
-                                              stage: "error",
-                                              for: token)
-                    try? await Task.sleep(nanoseconds: UInt64(NCGlobal.shared.dismissAfterSecond * 1e9))
-                }
+                } 
             }
 
             LucidBanner.shared.dismiss()

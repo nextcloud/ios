@@ -9,6 +9,7 @@ import EasyTipView
 import SwiftUI
 import MobileVLCKit
 import Alamofire
+import LucidBanner
 
 public protocol NCViewerMediaViewDelegate: AnyObject {
     func didOpenDetail()
@@ -153,9 +154,10 @@ class NCViewerMedia: UIViewController {
                                                                                                                selector: "") else {
                                     return
                                 }
+                                let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
                                 var downloadRequest: DownloadRequest?
-                                let hud = NCHud(self.tabBarController?.view)
-                                hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                                let token = showHudBanner(scene: scene,
+                                                          title: NSLocalizedString("_download_in_progress_", comment: "")) { _, _ in
                                     if let request = downloadRequest {
                                         request.cancel()
                                     }
@@ -164,16 +166,17 @@ class NCViewerMedia: UIViewController {
                                 let results = await self.networking.downloadFile(metadata: metadata) { request in
                                     downloadRequest = request
                                 } progressHandler: { progress in
-                                    hud.progress(progress.fractionCompleted)
+                                    Task {@MainActor in
+                                        LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                                    }
                                 }
+                                LucidBanner.shared.dismiss()
+
                                 if results.nkError == .success {
-                                    hud.success()
                                     if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                                         let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileName: self.metadata.fileNameView, userId: self.metadata.userId, urlBase: self.metadata.urlBase))
                                         ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                     }
-                                } else {
-                                    hud.error(text: error.errorDescription)
                                 }
                             }
                         }
