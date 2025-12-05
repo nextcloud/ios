@@ -199,7 +199,9 @@ class NCDragDrop: NSObject {
             subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
             footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
             systemImage: "arrow.left.arrow.right.circle",
-            imageAnimation: .pulsebyLayer) { _, _ in
+            imageAnimation: .pulsebyLayer,
+            vPosition: .bottom,
+            verticalMargin: 55) { _, _ in
                 if let downloadRequest {
                     downloadRequest.cancel()
                 } else if let uploadRequest {
