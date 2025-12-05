@@ -380,10 +380,20 @@ extension NCShareExtension {
         }
 
         if error == .success {
-           // completeHudBannerSuccess(token: self.token)
+            LucidBanner.shared.update(title: "",
+                                      subtitle: "",
+                                      progress: 0,
+                                      stage: "success",
+                                      for: self.token)
         } else {
-           // completeHudBannerError(subtitle: error?.errorDescription, token: self.token)
+            LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
+                                      subtitle: error?.errorDescription,
+                                      progress: 0,
+                                      stage: "error",
+                                      for: self.token)
         }
+
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
 
         LucidBanner.shared.dismiss {
             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)

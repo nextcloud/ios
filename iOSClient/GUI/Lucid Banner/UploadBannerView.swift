@@ -13,14 +13,29 @@ struct UploadBannerView: View {
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
 
-        containerView {
+        let stage = state.stage?.lowercased()
+        let isSuccess = (stage == "success")
+        let isError = (stage == "error")
+
+        containerView(state: state) {
             VStack(spacing: 15) {
                 HStack(alignment: .top, spacing: 10) {
-                    if let systemImage = state.systemImage {
-                        Image(systemName: systemImage)
+                    if isError {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.white)
+                    } else if isSuccess {
+                        Image(systemName: "checkmark")
                             .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 30, weight: .regular))
-                            .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                            .font(.system(size: 80, weight: .bold))
+                            .foregroundStyle(.green)
+                    } else {
+                        if let systemImage = state.systemImage {
+                            Image(systemName: systemImage)
+                                .applyBannerAnimation(state.imageAnimation)
+                                .font(.system(size: 30, weight: .regular))
+                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                        }
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
@@ -64,16 +79,29 @@ struct UploadBannerView: View {
     // MARK: - Container
 
     @ViewBuilder
-    func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
+        let stage = state.stage?.lowercased()
+        let isError = (stage == "error")
+
         if #available(iOS 26, *) {
-            content()
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+            if isError {
+                content()
+                    .background(
+                        RoundedRectangle(cornerRadius: 22)
+                            .fill(Color.red.opacity(1))
+                    )
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+            } else {
+                content()
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+            }
         } else {
+            let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
             content()
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(.white.opacity(0.9), lineWidth: 0.6)
+                        .stroke(colorBg, lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
@@ -83,28 +111,45 @@ struct UploadBannerView: View {
 public extension View {
     @ViewBuilder
     func applyBannerAnimation(_ style: LucidBanner.LucidBannerAnimationStyle) -> some View {
-        if #available(iOS 18, *) {
-            switch style {
-            case .rotate:
-                self.symbolEffect(.rotate, options: .repeat(.continuous))
-            case .pulse:
-                self.symbolEffect(.pulse, options: .repeat(.continuous))
-            case .pulsebyLayer:
-                self.symbolEffect(.pulse.byLayer, options: .repeat(.continuous))
-            case .breathe:
-                self.symbolEffect(.breathe, options: .repeat(.continuous))
-            case .bounce:
-                self.symbolEffect(.bounce, options: .repeat(.continuous))
-            case .wiggle:
-                self.symbolEffect(.wiggle, options: .repeat(.continuous))
-            case .scale:
-                self.symbolEffect(.scale, options: .repeat(.continuous))
-            case .scaleUpbyLayer:
-                self.symbolEffect(.scale.up.byLayer, options: .repeat(.continuous))
-            case .none:
+        switch style {
+
+        // ---- iOS 18+ effects ----
+        case .rotate, .pulse, .pulsebyLayer, .breathe, .bounce, .wiggle, .scale, .scaleUpbyLayer:
+            if #available(iOS 18, *) {
+                switch style {
+                case .rotate:
+                    self.symbolEffect(.rotate, options: .repeat(.continuous))
+                case .pulse:
+                    self.symbolEffect(.pulse, options: .repeat(.continuous))
+                case .pulsebyLayer:
+                    self.symbolEffect(.pulse.byLayer, options: .repeat(.continuous))
+                case .breathe:
+                    self.symbolEffect(.breathe, options: .repeat(.continuous))
+                case .bounce:
+                    self.symbolEffect(.bounce, options: .repeat(.continuous))
+                case .wiggle:
+                    self.symbolEffect(.wiggle, options: .repeat(.continuous))
+                case .scale:
+                    self.symbolEffect(.scale, options: .repeat(.continuous))
+                case .scaleUpbyLayer:
+                    self.symbolEffect(.scale.up.byLayer, options: .repeat(.continuous))
+                default:
+                    self
+                }
+            } else {
                 self
             }
-        } else {
+
+        // ---- iOS 26+ effect: drawOn ----
+        case .drawOn:
+            if #available(iOS 26, *) {
+                self.symbolEffect(.drawOn)
+            } else {
+                self
+            }
+
+        // ---- no animation ----
+        case .none:
             self
         }
     }
@@ -123,9 +168,10 @@ func showUploadBanner(
     vPosition: LucidBanner.VerticalPosition = .center,
     hAlignment: LucidBanner.HorizontalAlignment = .center,
     verticalMargin: CGFloat = 0,
+    stage: String? = nil,
     onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
 
-    LucidBanner.shared.show(
+    return LucidBanner.shared.show(
         scene: scene,
         title: title,
         subtitle: subtitle,
@@ -136,6 +182,7 @@ func showUploadBanner(
         hAlignment: hAlignment,
         verticalMargin: verticalMargin,
         swipeToDismiss: false,
+        stage: stage,
         onTap: { token, stage in
             onTap?(token, stage)
         }
