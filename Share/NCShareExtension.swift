@@ -381,17 +381,15 @@ extension NCShareExtension {
 
         if error == .success {
             LucidBanner.shared.update(stage: .success, for: self.token)
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
         } else {
             LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
                                       subtitle: error?.errorDescription,
                                       progress: nil,
                                       stage: .error,
                                       for: self.token)
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
         }
 
-        LucidBanner.shared.dismiss {
+        LucidBanner.shared.dismiss(after: 2) {
             self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
         }
     }
