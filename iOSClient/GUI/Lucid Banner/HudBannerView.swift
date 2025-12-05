@@ -186,7 +186,7 @@ func completeHudBannerSuccess(
     token: Int
 ) {
     LucidBanner.shared.update(
-        stage: "success",
+        stage: .success,
         autoDismissAfter: 2,
         for: token
     )
@@ -199,7 +199,7 @@ func completeHudBannerError(
 ) {
     LucidBanner.shared.update(
         subtitle: subtitle,
-        stage: "error",
+        stage: .error,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         for: token
     )

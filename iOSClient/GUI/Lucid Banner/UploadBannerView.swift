@@ -14,74 +14,82 @@ struct UploadBannerView: View {
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
 
-        let stage = state.stage?.lowercased()
-        let isSuccess = (stage == "success")
-        let isError = (stage == "error")
+        let isSuccess = (state.typedStage == .success)
+        let isError = (state.typedStage == .error)
 
         containerView(state: state) {
-            VStack(spacing: 15) {
-                HStack(alignment: .top, spacing: 10) {
-                    if isError {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30, weight: .bold))
-                            .foregroundStyle(.white)
-                    } else if isSuccess {
-                        if #available(iOS 26, *) {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 60, weight: .regular))
-                                .foregroundStyle(.green)
-                                .symbolEffect(.drawOn, isActive: trigger)
-                                .task {
-                                    try? await Task.sleep(for: .seconds(0.1))
-                                    trigger = false
-                                }
-                        } else {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 80, weight: .regular))
-                                .foregroundStyle(.green)
+             if isSuccess {
+                 HStack(alignment: .top, spacing: 10) {
+                     if #available(iOS 26, *) {
+                         Image(systemName: "checkmark")
+                             .font(.system(size: 60, weight: .regular))
+                             .foregroundStyle(.green)
+                             .symbolEffect(.drawOn, isActive: trigger)
+                             .task {
+                                 try? await Task.sleep(for: .seconds(0.1))
+                                 trigger = false
+                             }
+                     } else {
+                         Image(systemName: "checkmark")
+                             .font(.system(size: 80, weight: .regular))
+                             .foregroundStyle(.green)
+                     }
+                 }
+                 .padding(.horizontal, 20)
+                 .padding(.vertical, 20)
+            } else {
+                VStack(spacing: 15) {
+                    HStack(alignment: .top, spacing: 10) {
+                        if isError {
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 30, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                        } else if let systemImage = state.systemImage {
+                            Image(systemName: systemImage)
+                                .applyBannerAnimation(state.imageAnimation)
+                                .font(.system(size: 30, weight: .regular))
+                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                         }
-                    } else if let systemImage = state.systemImage {
-                        Image(systemName: systemImage)
-                            .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 30, weight: .regular))
-                            .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+
+                        VStack(alignment: .leading, spacing: 7) {
+                            if showTitle, let title = state.title {
+                                Text(title)
+                                    .font(.subheadline.weight(.bold))
+                                    .multilineTextAlignment(.leading)
+                                    .truncationMode(.tail)
+                                    .minimumScaleFactor(0.9)
+                                    .foregroundStyle(.primary)
+                            }
+                            if showSubtitle, let subtitle = state.subtitle {
+                                Text(subtitle)
+                                    .font(.subheadline)
+                                    .multilineTextAlignment(.leading)
+                                    .truncationMode(.tail)
+                                    .foregroundStyle(.primary)
+                            }
+                            if showFootnote, let footnote = state.footnote {
+                                Text(footnote)
+                                    .font(.caption)
+                                    .multilineTextAlignment(.leading)
+                                    .truncationMode(.tail)
+                                    .foregroundStyle(.primary)
+                            }
+                        }
                     }
 
-                    VStack(alignment: .leading, spacing: 7) {
-                        if showTitle, let title = state.title {
-                            Text(title)
-                                .font(.subheadline.weight(.bold))
-                                .multilineTextAlignment(.leading)
-                                .truncationMode(.tail)
-                                .minimumScaleFactor(0.9)
-                                .foregroundStyle(.primary)
-                        }
-                        if showSubtitle, let subtitle = state.subtitle {
-                            Text(subtitle)
-                                .font(.subheadline)
-                                .multilineTextAlignment(.leading)
-                                .truncationMode(.tail)
-                                .foregroundStyle(.primary)
-                        }
-                        if showFootnote, let footnote = state.footnote {
-                            Text(footnote)
-                                .font(.caption)
-                                .multilineTextAlignment(.leading)
-                                .truncationMode(.tail)
-                                .foregroundStyle(.primary)
-                        }
+                    if let progress = state.progress {
+                        ProgressView(value: progress)
+                            .tint(.accentColor)
+                            .transition(.opacity.combined(with: .scale))
+                            .animation(.easeInOut(duration: 0.2), value: progress)
                     }
                 }
-
-                ProgressView(value: state.progress ?? 0)
-                    .tint(.accentColor)
-                    .opacity(state.progress == nil ? 0 : 1)
-                    .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
-
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -89,8 +97,7 @@ struct UploadBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
-        let stage = state.stage?.lowercased()
-        let isError = (stage == "error")
+        let isError = (state.typedStage == .error)
 
         if #available(iOS 26, *) {
             if isError {
@@ -177,7 +184,7 @@ func showUploadBanner(
     vPosition: LucidBanner.VerticalPosition = .center,
     hAlignment: LucidBanner.HorizontalAlignment = .center,
     verticalMargin: CGFloat = 0,
-    stage: String? = nil,
+    stage: LucidBanner.Stage? = nil,
     onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
 
     return LucidBanner.shared.show(
