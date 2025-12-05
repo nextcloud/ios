@@ -7,6 +7,7 @@ import LucidBanner
 
 struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @State var trigger = true
 
     var body: some View {
         let showTitle = !(state.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -25,17 +26,25 @@ struct UploadBannerView: View {
                             .font(.system(size: 30, weight: .bold))
                             .foregroundStyle(.white)
                     } else if isSuccess {
-                        Image(systemName: "checkmark")
-                            .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 80, weight: .bold))
-                            .foregroundStyle(.green)
-                    } else {
-                        if let systemImage = state.systemImage {
-                            Image(systemName: systemImage)
-                                .applyBannerAnimation(state.imageAnimation)
-                                .font(.system(size: 30, weight: .regular))
-                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                        if #available(iOS 26, *) {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 60, weight: .regular))
+                                .foregroundStyle(.green)
+                                .symbolEffect(.drawOn, isActive: trigger)
+                                .task {
+                                    try? await Task.sleep(for: .seconds(0.1))
+                                    trigger = false
+                                }
+                        } else {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 80, weight: .regular))
+                                .foregroundStyle(.green)
                         }
+                    } else if let systemImage = state.systemImage {
+                        Image(systemName: systemImage)
+                            .applyBannerAnimation(state.imageAnimation)
+                            .font(.system(size: 30, weight: .regular))
+                            .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
@@ -143,7 +152,7 @@ public extension View {
         // ---- iOS 26+ effect: drawOn ----
         case .drawOn:
             if #available(iOS 26, *) {
-                self.symbolEffect(.drawOn)
+                self
             } else {
                 self
             }
@@ -208,7 +217,8 @@ func showUploadBanner(
                 footnote: "Touch for cancel",
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
-                progress: 0.42)
+                progress: nil,
+                stage: "success")
         )
         .padding()
     }

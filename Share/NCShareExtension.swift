@@ -382,13 +382,13 @@ extension NCShareExtension {
         if error == .success {
             LucidBanner.shared.update(title: "",
                                       subtitle: "",
-                                      progress: 0,
+                                      progress: nil,
                                       stage: "success",
                                       for: self.token)
         } else {
             LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
                                       subtitle: error?.errorDescription,
-                                      progress: 0,
+                                      progress: nil,
                                       stage: "error",
                                       for: self.token)
         }
