@@ -37,16 +37,37 @@ struct UploadBannerView: View {
                  }
                  .padding(.horizontal, 20)
                  .padding(.vertical, 20)
+            } else if isError {
+                VStack(spacing: 15) {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.white)
+
+                        VStack(alignment: .leading, spacing: 7) {
+                            Text("_error_")
+                                .font(.subheadline.weight(.bold))
+                                .multilineTextAlignment(.leading)
+                                .truncationMode(.tail)
+                                .minimumScaleFactor(0.9)
+                                .foregroundStyle(.primary)
+                            if showSubtitle, let subtitle = state.subtitle {
+                                Text(subtitle)
+                                    .font(.subheadline)
+                                    .multilineTextAlignment(.leading)
+                                    .truncationMode(.tail)
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 VStack(spacing: 15) {
                     HStack(alignment: .top, spacing: 10) {
-                        if isError {
-                            HStack(alignment: .top, spacing: 10) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 30, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                        } else if let systemImage = state.systemImage {
+                        if let systemImage = state.systemImage {
                             Image(systemName: systemImage)
                                 .applyBannerAnimation(state.imageAnimation)
                                 .font(.system(size: 30, weight: .regular))
@@ -179,7 +200,7 @@ func showUploadBanner(
     title: String? = nil,
     subtitle: String? = nil,
     footnote: String? = nil,
-    systemImage: String?,
+    systemImage: String? = nil,
     imageAnimation: LucidBanner.LucidBannerAnimationStyle = .none,
     vPosition: LucidBanner.VerticalPosition = .center,
     hAlignment: LucidBanner.HorizontalAlignment = .center,

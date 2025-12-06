@@ -364,14 +364,16 @@ extension NCShareExtension {
     @MainActor
     func uploadAndExit() async {
         var error: NKError?
-
-        token = showUploadBanner(scene: self.view.window?.windowScene,
-                                 title: NSLocalizedString("_upload_file_", comment: ""),
-                                 systemImage: "arrowshape.up.circle",
-                                 imageAnimation: .breathe)
+        token = showUploadBanner(scene: self.view.window?.windowScene)
 
         for metadata in self.uploadMetadata {
-            LucidBanner.shared.update(subtitle: "\(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)", for: self.token)
+            // BANNER
+            LucidBanner.shared.update(
+                title: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)",
+                systemImage: "arrowshape.up.circle",
+                imageAnimation: .breathe
+            )
+
             error = await self.upload(metadata: metadata)
             if error != .success {
                 break
@@ -381,11 +383,7 @@ extension NCShareExtension {
         if error == .success {
             LucidBanner.shared.update(stage: .success, for: self.token)
         } else {
-            LucidBanner.shared.update(title: NSLocalizedString("_error_", comment: ""),
-                                      subtitle: error?.errorDescription,
-                                      progress: nil,
-                                      stage: .error,
-                                      for: self.token)
+            LucidBanner.shared.update(subtitle: error?.errorDescription, stage: .error, for: self.token)
         }
 
         LucidBanner.shared.dismiss(after: 2) {
@@ -420,17 +418,10 @@ extension NCShareExtension {
 
         self.counterUploaded += 1
 
-        // BANNER
-        LucidBanner.shared.update(
-            title: NSLocalizedString("_upload_file_", comment: ""),
-            systemImage: "arrowshape.up.circle",
-            imageAnimation: .breathe)
-
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, scene: self.view.window?.windowScene)
         } else if metadata.chunk > 0 {
             LucidBanner.shared.update(
-                title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 for: self.token)
@@ -442,7 +433,6 @@ extension NCShareExtension {
                 } uploadStart: { _ in
                     Task {@MainActor in
                         LucidBanner.shared.update(
-                            title: NSLocalizedString("_upload_file_", comment: ""),
                             systemImage: "arrowshape.up.circle",
                             imageAnimation: .breathe,
                             for: self.token)
@@ -454,7 +444,6 @@ extension NCShareExtension {
                 } assembling: {
                     Task {@MainActor in
                         LucidBanner.shared.update(
-                            title: NSLocalizedString("_finalizing_wait_", comment: ""),
                             systemImage: "tray.and.arrow.down",
                             imageAnimation: .pulsebyLayer,
                             for: self.token)
