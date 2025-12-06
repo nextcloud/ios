@@ -367,9 +367,8 @@ extension NCShareExtension {
 
         token = showUploadBanner(scene: self.view.window?.windowScene,
                                  title: NSLocalizedString("_upload_file_", comment: ""),
-                                 systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                 imageAnimation: .rotate) { _, _ in
-        }
+                                 systemImage: "arrowshape.up.circle",
+                                 imageAnimation: .breathe)
 
         for metadata in self.uploadMetadata {
             LucidBanner.shared.update(subtitle: "\(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)", for: self.token)
@@ -421,10 +420,20 @@ extension NCShareExtension {
 
         self.counterUploaded += 1
 
+        // BANNER
+        LucidBanner.shared.update(
+            title: NSLocalizedString("_upload_file_", comment: ""),
+            systemImage: "arrowshape.up.circle",
+            imageAnimation: .breathe)
+
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, scene: self.view.window?.windowScene)
         } else if metadata.chunk > 0 {
-            LucidBanner.shared.update(title: NSLocalizedString("_wait_file_preparation_", comment: ""), for: self.token)
+            LucidBanner.shared.update(
+                title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                systemImage: "gearshape.arrow.triangle.2.circlepath",
+                imageAnimation: .rotate,
+                for: self.token)
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
@@ -432,7 +441,11 @@ extension NCShareExtension {
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
-                        LucidBanner.shared.update(title: NSLocalizedString("_keep_active_for_upload_", comment: ""), for: self.token)
+                        LucidBanner.shared.update(
+                            title: NSLocalizedString("_upload_file_", comment: ""),
+                            systemImage: "arrowshape.up.circle",
+                            imageAnimation: .breathe,
+                            for: self.token)
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
@@ -440,7 +453,11 @@ extension NCShareExtension {
                     }
                 } assembling: {
                     Task {@MainActor in
-                        LucidBanner.shared.update(title: NSLocalizedString("_wait_", comment: ""), for: self.token)
+                        LucidBanner.shared.update(
+                            title: NSLocalizedString("_finalizing_wait_", comment: ""),
+                            systemImage: "tray.and.arrow.down",
+                            imageAnimation: .pulsebyLayer,
+                            for: self.token)
                     }
                 }
 
