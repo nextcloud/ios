@@ -19,7 +19,7 @@ struct UploadBannerView: View {
 
         containerView(state: state) {
              if isSuccess {
-                 HStack(alignment: .top, spacing: 10) {
+                 HStack(alignment: .center, spacing: 10) {
                      if #available(iOS 26, *) {
                          Image(systemName: "checkmark")
                              .font(.system(size: 60, weight: .regular))
@@ -39,7 +39,7 @@ struct UploadBannerView: View {
                  .padding(.vertical, 20)
             } else if isError {
                 VStack(spacing: 15) {
-                    HStack(alignment: .top, spacing: 10) {
+                    HStack(alignment: .center, spacing: 10) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 30, weight: .bold))
                             .foregroundStyle(.white)
@@ -66,7 +66,7 @@ struct UploadBannerView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 VStack(spacing: 15) {
-                    HStack(alignment: .top, spacing: 10) {
+                    HStack(alignment: .center, spacing: 10) {
                         if let systemImage = state.systemImage {
                             Image(systemName: systemImage)
                                 .applyBannerAnimation(state.imageAnimation)
@@ -245,7 +245,7 @@ func showUploadBanner(
                 footnote: "Touch for cancel",
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
-                progress: nil,
+                progress: 0.4,
                 stage: "success")
         )
         .padding()

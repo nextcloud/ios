@@ -371,7 +371,8 @@ extension NCShareExtension {
             LucidBanner.shared.update(
                 title: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)",
                 systemImage: "arrowshape.up.circle",
-                imageAnimation: .breathe
+                imageAnimation: .breathe,
+                progress: 0
             )
 
             error = await self.upload(metadata: metadata)
