@@ -445,8 +445,8 @@ extension NCShareExtension {
                 } assembling: {
                     Task {@MainActor in
                         LucidBanner.shared.update(
-                            systemImage: "tray.and.arrow.down",
-                            imageAnimation: .pulsebyLayer,
+                            systemImage: "gearshape.arrow.triangle.2.circlepath",
+                            imageAnimation: .rotate,
                             for: self.token)
                     }
                 }

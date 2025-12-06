@@ -100,12 +100,10 @@ struct UploadBannerView: View {
                         }
                     }
 
-                    if let progress = state.progress {
-                        ProgressView(value: progress)
-                            .tint(.accentColor)
-                            .transition(.opacity.combined(with: .scale))
-                            .animation(.easeInOut(duration: 0.2), value: progress)
-                    }
+                    ProgressView(value: state.progress ?? 0)
+                        .tint(.accentColor)
+                        .opacity(state.progress == nil ? 0 : 1)
+                        .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 12)
