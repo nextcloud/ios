@@ -22,6 +22,7 @@ struct UploadBannerView: View {
 
         let isSuccess = (state.typedStage == .success)
         let isError = (state.typedStage == .error)
+        let isButton = (state.typedStage == .init(rawValue: "button"))
 
         containerView(state: state) {
              if isSuccess {
@@ -112,16 +113,18 @@ struct UploadBannerView: View {
                         .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
                         .padding()
 
-                    Button("_cancel_") {
-                        onButtonTap?()
+                    if isButton {
+                        Button("_cancel_") {
+                            onButtonTap?()
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .stroke(.primary.opacity(0.2), lineWidth: 1)
+                        )
                     }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(
-                        Capsule()
-                            .stroke(.primary.opacity(0.4), lineWidth: 1)
-                    )
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 12)
@@ -244,7 +247,7 @@ func showUploadBanner(scene: UIWindowScene?,
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 progress: 0.4,
-                stage: "")
+                stage: "button")
         )
         .padding()
     }

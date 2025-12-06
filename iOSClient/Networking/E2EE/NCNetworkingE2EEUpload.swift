@@ -145,6 +145,7 @@ class NCNetworkingE2EEUpload: NSObject {
             bannerToken = showUploadBanner(scene: scene,
                                            vPosition: .bottom,
                                            verticalMargin: 55,
+                                           stage: .init(rawValue: "button"),
                                            onButtonTap: {
                 if let currentUploadTask = self.currentUploadTask {
                     currentUploadTask.cancel()

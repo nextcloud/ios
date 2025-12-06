@@ -387,6 +387,7 @@ actor NCNetworkingProcess {
         token = showUploadBanner(scene: scene,
                                  vPosition: .bottom,
                                  verticalMargin: 55,
+                                 stage: .init(rawValue: "button"),
                                  onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
