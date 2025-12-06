@@ -295,15 +295,7 @@ class NCCreate: NSObject {
                     if let url = exportFileForSharing(from: localFileURL) {
                         exportURLs.append(url)
                     }
-                } else {
-                    Task { @MainActor in
-                        showErrorBanner(
-                            scene: scene,
-                            errorDescription: results.nkError.errorDescription,
-                            errorCode: results.nkError.errorCode
-                        )
-                    }
-                }
+                } 
             }
 
             LucidBanner.shared.dismiss()

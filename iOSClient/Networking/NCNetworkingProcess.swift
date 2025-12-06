@@ -388,7 +388,9 @@ actor NCNetworkingProcess {
                                  subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
                                  footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
                                  systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                 imageAnimation: .rotate) { _, _ in
+                                 imageAnimation: .rotate,
+                                 vPosition: .bottom,
+                                 verticalMargin: 55) { _, _ in
             if let currentUploadTask {
                 currentUploadTask.cancel()
             } else {

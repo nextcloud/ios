@@ -59,11 +59,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await MainActor.run {
-                    showErrorBanner(scene: scene,
-                                    errorDescription: results.nkError.errorDescription,
-                                    errorCode: results.nkError.errorCode)
-                }
+                await showErrorBanner(scene: scene,
+                                      errorDescription: results.nkError.errorDescription,
+                                      errorCode: results.nkError.errorCode)
             }
         }
 

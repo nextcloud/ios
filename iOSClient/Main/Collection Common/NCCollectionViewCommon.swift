@@ -356,9 +356,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                showErrorBanner(scene: UIApplication.shared.mainAppWindow?.windowScene,
-                                errorDescription: error.errorDescription,
-                                errorCode: error.errorCode)
+                await showErrorBanner(scene: UIApplication.shared.mainAppWindow?.windowScene,
+                                      errorDescription: error.errorDescription,
+                                      errorCode: error.errorCode)
             }
             guard session.account == account else {
                 return
@@ -768,9 +768,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             }
                         }
                     } else {
-                        showErrorBanner(scene: scene,
-                                        errorDescription: resultsUpload.error.errorDescription,
-                                        errorCode: resultsUpload.error.errorCode)
+                        Task {@MainActor in
+                            await showErrorBanner(scene: scene,
+                                                  errorDescription: resultsUpload.error.errorDescription,
+                                                  errorCode: resultsUpload.error.errorCode)
+                        }
                     }
                 }
             }
