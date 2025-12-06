@@ -22,7 +22,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil, externalBannerToken: Int? = nil) async -> NKError {
         var finalError: NKError = .success
         var session = session
         let ocId = metadata.ocIdTransfer
@@ -33,23 +33,6 @@ class NCNetworkingE2EEUpload: NSObject {
         guard let session,
               !session.account.isEmpty else {
             return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
-        }
-
-        // BANNER ENCRYPTION
-        //
-        bannerToken = showUploadBanner(scene: scene,
-                                       title: NSLocalizedString("_wait_file_encryption_", comment: ""),
-                                       subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
-                                       systemImage: "lock.circle.fill",
-                                       vPosition: .bottom,
-                                       verticalMargin: 55) { _, _ in
-            if let currentUploadTask = self.currentUploadTask {
-                currentUploadTask.cancel()
-            }
-            if let request = self.request {
-                request.cancel()
-            }
-            LucidBanner.shared.dismiss()
         }
 
         defer {
@@ -153,6 +136,30 @@ class NCNetworkingE2EEUpload: NSObject {
             finalError = NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             return finalError
         }
+
+        // BANNER
+        //
+        if let externalBannerToken {
+            bannerToken = externalBannerToken
+        } else {
+            bannerToken = showUploadBanner(scene: scene,
+                                           vPosition: .bottom,
+                                           verticalMargin: 55,
+                                           onButtonTap: {
+                if let currentUploadTask = self.currentUploadTask {
+                    currentUploadTask.cancel()
+                }
+                if let request = self.request {
+                    request.cancel()
+                }
+                LucidBanner.shared.dismiss()
+            })
+        }
+
+        LucidBanner.shared.update(title: NSLocalizedString("_wait_file_encryption_", comment: ""),
+                                  subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
+                                  systemImage: "lock.circle.fill",
+                                  for: bannerToken)
 
         // SEND NEW METADATA
         //

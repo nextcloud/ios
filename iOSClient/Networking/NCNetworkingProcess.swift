@@ -382,21 +382,23 @@ actor NCNetworkingProcess {
     func uploadChunk(metadata: tableMetadata) async {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
         var token: Int = 0
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
 
-        token = showUploadBanner(scene: SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-                                 title: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                 subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
-                                 footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
-                                 systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                 imageAnimation: .rotate,
+        token = showUploadBanner(scene: scene,
                                  vPosition: .bottom,
-                                 verticalMargin: 55) { _, _ in
+                                 verticalMargin: 55,
+                                 onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
             } else {
                 LucidBanner.shared.dismiss()
             }
-        }
+        })
+
+        LucidBanner.shared.update(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                                  subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+                                  systemImage: "gearshape.arrow.triangle.2.circlepath",
+                                  imageAnimation: .rotate)
 
         let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in

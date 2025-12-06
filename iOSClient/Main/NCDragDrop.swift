@@ -193,21 +193,21 @@ class NCDragDrop: NSObject {
         var downloadRequest: DownloadRequest?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
 
-        let token = showUploadBanner(
-            scene: scene,
-            title: NSLocalizedString("_transfer_in_progress_", comment: ""),
-            subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-            footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
-            systemImage: "arrow.left.arrow.right.circle",
-            imageAnimation: .pulsebyLayer,
-            vPosition: .bottom,
-            verticalMargin: 55) { _, _ in
-                if let downloadRequest {
-                    downloadRequest.cancel()
-                } else if let uploadRequest {
-                    uploadRequest.cancel()
-                }
-        }
+        let token = showUploadBanner(scene: scene,
+                                     vPosition: .bottom,
+                                     verticalMargin: 55,
+                                     onButtonTap: {
+            if let downloadRequest {
+                downloadRequest.cancel()
+            } else if let uploadRequest {
+                uploadRequest.cancel()
+            }
+        })
+
+        LucidBanner.shared.update(title: NSLocalizedString("_transfer_in_progress_", comment: ""),
+                                  subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+                                  systemImage: "arrow.left.arrow.right.circle",
+                                  imageAnimation: .pulsebyLayer)
 
         for (index, metadata) in metadatas.enumerated() {
             if metadata.directory {

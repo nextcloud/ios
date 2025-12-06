@@ -8,6 +8,12 @@ import LucidBanner
 struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State var trigger = true
+    let onButtonTap: (() -> Void)?
+
+    init(state: LucidBannerState, onButtonTap: (() -> Void)? = nil) {
+        self.state = state
+        self.onButtonTap = onButtonTap
+    }
 
     var body: some View {
         let showTitle = !(state.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -104,6 +110,18 @@ struct UploadBannerView: View {
                         .tint(.accentColor)
                         .opacity(state.progress == nil ? 0 : 1)
                         .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
+                        .padding()
+
+                    Button("_cancel_") {
+                        onButtonTap?()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(
+                        Capsule()
+                            .stroke(.primary.opacity(0.4), lineWidth: 1)
+                    )
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 12)
@@ -190,39 +208,21 @@ public extension View {
     }
 }
 
-// MARK: - Helper
-
 @MainActor
-func showUploadBanner(
-    scene: UIWindowScene?,
-    title: String? = nil,
-    subtitle: String? = nil,
-    footnote: String? = nil,
-    systemImage: String? = nil,
-    imageAnimation: LucidBanner.LucidBannerAnimationStyle = .none,
-    vPosition: LucidBanner.VerticalPosition = .center,
-    hAlignment: LucidBanner.HorizontalAlignment = .center,
-    verticalMargin: CGFloat = 0,
-    stage: LucidBanner.Stage? = nil,
-    onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
-
-    return LucidBanner.shared.show(
+func showUploadBanner(scene: UIWindowScene?,
+                      vPosition: LucidBanner.VerticalPosition = .center,
+                      hAlignment: LucidBanner.HorizontalAlignment = .center,
+                      verticalMargin: CGFloat = 0,
+                      stage: LucidBanner.Stage? = nil,
+                      onButtonTap: (() -> Void)? = nil) -> Int {
+    LucidBanner.shared.show(
         scene: scene,
-        title: title,
-        subtitle: subtitle,
-        footnote: footnote,
-        systemImage: systemImage,
-        imageAnimation: imageAnimation,
         vPosition: vPosition,
         hAlignment: hAlignment,
         verticalMargin: verticalMargin,
-        swipeToDismiss: false,
-        stage: stage,
-        onTap: { token, stage in
-            onTap?(token, stage)
-        }
+        stage: stage
     ) { state in
-        UploadBannerView(state: state)
+        UploadBannerView(state: state, onButtonTap: onButtonTap)
     }
 }
 
@@ -244,7 +244,7 @@ func showUploadBanner(
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 progress: 0.4,
-                stage: "success")
+                stage: "")
         )
         .padding()
     }
