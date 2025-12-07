@@ -171,7 +171,6 @@ func showHudBanner(
         title: title,
         subtitle: subtitle,
         vPosition: .center,
-        swipeToDismiss: false,
         blocksTouches: true,
         onTap: { token, stage in
             onTap?(token, stage)

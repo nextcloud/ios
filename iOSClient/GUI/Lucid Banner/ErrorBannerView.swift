@@ -83,6 +83,7 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode:
         subtitle: errorDescription,
         footnote: "(Code: \(errorCode))",
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
         onTap: { _, _ in
             LucidBanner.shared.dismiss()
         }
