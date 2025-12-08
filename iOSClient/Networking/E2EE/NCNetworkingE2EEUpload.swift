@@ -16,12 +16,17 @@ class NCNetworkingE2EEUpload: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     var numChunks: Int = 0
-    var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
-    var request: UploadRequest?
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, tokenBanner: Int) async -> NKError {
+    func upload(metadata: tableMetadata,
+                session: NCSession.Session? = nil,
+                controller: UIViewController? = nil,
+                stageBanner: LucidBanner.Stage?,
+                tokenBanner: Int,
+                requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
+                currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
+    async -> NKError {
         var finalError: NKError = .success
         var session = session
         let ocId = metadata.ocIdTransfer
@@ -157,7 +162,15 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // UPLOAD
         //
-        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller, tokenBanner: tokenBanner)
+        let resultsSendFile = await sendFile(metadata: metadata,
+                                             e2eToken: e2eToken,
+                                             controller: controller,
+                                             stageBanner: stageBanner,
+                                             tokenBanner: tokenBanner) { request in
+                requestHandle(request)
+            } currentUploadTask: { task in
+                currentUploadTask(task)
+        }
 
         // UNLOCK
         //
@@ -204,14 +217,21 @@ class NCNetworkingE2EEUpload: NSObject {
     }
 
     @MainActor
-    private func sendFile(metadata: tableMetadata, e2eToken: String, controller: UIViewController?, tokenBanner: Int) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
+    private func sendFile(metadata: tableMetadata,
+                          e2eToken: String,
+                          controller: UIViewController?,
+                          stageBanner: LucidBanner.Stage?,
+                          tokenBanner: Int,
+                          requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
+                          currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
+    async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
         if metadata.chunk > 0 {
             LucidBanner.shared.update(
                 title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 progress: 0,
-                stage: .init(rawValue: "button"),
+                stage: stageBanner,
                 for: tokenBanner)
 
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
@@ -246,7 +266,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
                 return results
             }
-            currentUploadTask = task
+            currentUploadTask(task)
             let results = await task.value
 
             LucidBanner.shared.dismiss()
@@ -258,7 +278,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0,
-                stage: .init(rawValue: "button"),
+                stage: stageBanner,
                 for: tokenBanner)
 
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -272,7 +292,7 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
                                                                customHeaders: ["e2e-token": e2eToken]) { request in
-                self.request = request
+                requestHandle(request)
             } progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
                     LucidBanner.shared.update(progress: fractionCompleted, for: tokenBanner)

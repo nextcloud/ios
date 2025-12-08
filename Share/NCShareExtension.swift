@@ -420,7 +420,7 @@ extension NCShareExtension {
         self.counterUploaded += 1
 
         if metadata.isDirectoryE2EE {
-            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, tokenBanner: self.token)
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, stageBanner: nil, tokenBanner: self.token)
         } else if metadata.chunk > 0 {
             LucidBanner.shared.update(
                 systemImage: "gearshape.arrow.triangle.2.circlepath",

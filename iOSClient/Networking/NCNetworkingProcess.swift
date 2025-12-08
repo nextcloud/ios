@@ -358,16 +358,33 @@ actor NCNetworkingProcess {
                 // UPLOAD E2EE
                 //
                 if metadata.isDirectoryE2EE {
+                    var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
+                    var request: UploadRequest?
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
                     let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+
                     let token = await showUploadBanner(scene: scene,
                                                        vPosition: .bottom,
                                                        verticalMargin: 55,
                                                        blocksTouches: true,
-                                                       draggable: true)
+                                                       onButtonTap: {
+                        if let currentUploadTask {
+                            currentUploadTask.cancel()
+                        }
+                        if let request {
+                            request.cancel()
+                        }
+                    })
+
                     await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           controller: controller,
-                                                          tokenBanner: token)
+                                                          stageBanner: .init(rawValue: "button"),
+                                                          tokenBanner: token) { uploadRequest in
+                        request = uploadRequest
+                    } currentUploadTask: { task in
+                        currentUploadTask = task
+                    }
+
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {
