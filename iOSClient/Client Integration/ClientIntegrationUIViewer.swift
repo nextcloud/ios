@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-struct DeclarativeUIViewer: View {
+struct ClientIntegrationUIViewer: View {
     @Environment(\.openURL) private var openURL
 
     struct Row: Identifiable {
@@ -79,5 +79,5 @@ struct DeclarativeUIViewer: View {
 }
 
 #Preview {
-    DeclarativeUIViewer(rows: [.init(element: "URL", title: "Test", urlString: "/test")], baseURL: "test.com")
+    ClientIntegrationUIViewer(rows: [.init(element: "URL", title: "Test", urlString: "/test")], baseURL: "test.com")
 }
