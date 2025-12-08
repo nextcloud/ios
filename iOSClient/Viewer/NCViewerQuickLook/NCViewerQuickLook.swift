@@ -107,12 +107,10 @@ private var hasChangesQuickLook: Bool = false
         })
     }
 
-    @objc private func dismissView(_ sender: Any?) {
-        guard isEditingEnabled, hasChangesQuickLook, let metadata = metadata else {
-            dismiss(animated: true)
-            return
-        }
-        let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
+    private func showSaveAlert() {
+        guard let metadata = metadata else { return }
+
+        let alertController = UIAlertController(title: NSLocalizedString("_save_modified_changes_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
 
         if metadata.isLivePhoto {
@@ -141,9 +139,17 @@ private var hasChangesQuickLook: Bool = false
         })
 
         if metadata.isImage {
-            present(alertController, animated: true)
+            parentVC?.present(alertController, animated: true)
         } else {
             parentVC?.present(alertController, animated: true)
+        }
+    }
+
+    @objc private func dismissView(_ sender: Any?) {
+        dismiss(animated: true) {
+            if hasChangesQuickLook {
+                self.showSaveAlert()
+            }
         }
     }
 
@@ -242,9 +248,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
-        // easier to handle that way than to use `.updateContents`
-        // needs to be moved otherwise it will only be called once!
-        guard utilityFileSystem.moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
+        guard utilityFileSystem.copyFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChangesQuickLook = true
     }
 }
