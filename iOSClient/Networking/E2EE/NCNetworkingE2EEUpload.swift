@@ -16,13 +16,12 @@ class NCNetworkingE2EEUpload: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     var numChunks: Int = 0
-    var bannerToken: Int = 0
     var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
     var request: UploadRequest?
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil, externalBannerToken: Int? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, tokenBanner: Int) async -> NKError {
         var finalError: NKError = .success
         var session = session
         let ocId = metadata.ocIdTransfer
@@ -43,6 +42,15 @@ class NCNetworkingE2EEUpload: NSObject {
             }
             LucidBanner.shared.dismiss()
         }
+
+        LucidBanner.shared.update(
+            title: NSLocalizedString("_wait_file_encryption_", comment: ""),
+            subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
+            systemImage: "lock.circle.fill",
+            for: tokenBanner
+        )
+
+        LucidBanner.shared.requestRelayout(animated: true)
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
@@ -137,32 +145,6 @@ class NCNetworkingE2EEUpload: NSObject {
             return finalError
         }
 
-        // BANNER
-        //
-        if let externalBannerToken {
-            bannerToken = externalBannerToken
-        } else {
-            bannerToken = showUploadBanner(scene: scene,
-                                           vPosition: .bottom,
-                                           verticalMargin: 55,
-                                           draggable: true,
-                                           stage: .init(rawValue: "button"),
-                                           onButtonTap: {
-                if let currentUploadTask = self.currentUploadTask {
-                    currentUploadTask.cancel()
-                }
-                if let request = self.request {
-                    request.cancel()
-                }
-                LucidBanner.shared.dismiss()
-            })
-        }
-
-        LucidBanner.shared.update(title: NSLocalizedString("_wait_file_encryption_", comment: ""),
-                                  subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
-                                  systemImage: "lock.circle.fill",
-                                  for: bannerToken)
-
         // SEND NEW METADATA
         //
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
@@ -175,7 +157,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // UPLOAD
         //
-        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller)
+        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller, tokenBanner: tokenBanner)
 
         // UNLOCK
         //
@@ -222,21 +204,21 @@ class NCNetworkingE2EEUpload: NSObject {
     }
 
     @MainActor
-    private func sendFile(metadata: tableMetadata, e2eToken: String, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, controller: UIViewController?, tokenBanner: Int) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
         if metadata.chunk > 0 {
             LucidBanner.shared.update(
                 title: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 progress: 0,
-                for: self.bannerToken)
+                stage: .init(rawValue: "button"),
+                for: tokenBanner)
 
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
                         let progress = Double(counter) / Double(total)
-                        LucidBanner.shared.update(progress: progress, for: self.bannerToken)
+                        LucidBanner.shared.update(progress: progress, for: tokenBanner)
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
@@ -245,11 +227,11 @@ class NCNetworkingE2EEUpload: NSObject {
                             systemImage: "arrowshape.up.circle",
                             imageAnimation: .breathe,
                             progress: 0,
-                            for: self.bannerToken)
+                            for: tokenBanner)
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(progress: progress, for: self.bannerToken)
+                        LucidBanner.shared.update(progress: progress, for: tokenBanner)
                     }
                 } assembling: {
                     Task {@MainActor in
@@ -259,7 +241,7 @@ class NCNetworkingE2EEUpload: NSObject {
                             systemImage: "tray.and.arrow.down",
                             imageAnimation: .pulsebyLayer,
                             progress: 0,
-                            for: self.bannerToken)
+                            for: tokenBanner)
                     }
                 }
 
@@ -274,11 +256,11 @@ class NCNetworkingE2EEUpload: NSObject {
         } else {
             LucidBanner.shared.update(
                 title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
-                footnote: "( " + NSLocalizedString("_tap_to_cancel_", comment: "") + " )",
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0,
-                for: self.bannerToken)
+                stage: .init(rawValue: "button"),
+                for: tokenBanner)
 
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
@@ -294,7 +276,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 self.request = request
             } progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: fractionCompleted, for: self.bannerToken)
+                    LucidBanner.shared.update(progress: fractionCompleted, for: tokenBanner)
                 }
             }
 

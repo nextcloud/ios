@@ -216,16 +216,20 @@ func showUploadBanner(scene: UIWindowScene?,
                       vPosition: LucidBanner.VerticalPosition = .center,
                       hAlignment: LucidBanner.HorizontalAlignment = .center,
                       verticalMargin: CGFloat = 0,
+                      blocksTouches: Bool = false,
                       draggable: Bool = false,
                       stage: LucidBanner.Stage? = nil,
+                      policy: LucidBanner.ShowPolicy = .drop,
                       onButtonTap: (() -> Void)? = nil) -> Int {
     LucidBanner.shared.show(
         scene: scene,
         vPosition: vPosition,
         hAlignment: hAlignment,
         verticalMargin: verticalMargin,
+        blocksTouches: blocksTouches,
         draggable: draggable,
-        stage: stage
+        stage: stage,
+        policy: policy
     ) { state in
         UploadBannerView(state: state, onButtonTap: onButtonTap)
     }

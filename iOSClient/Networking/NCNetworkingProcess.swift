@@ -359,8 +359,15 @@ actor NCNetworkingProcess {
                 //
                 if metadata.isDirectoryE2EE {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller, scene: SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene)
-
+                    let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+                    let token = await showUploadBanner(scene: scene,
+                                                       vPosition: .bottom,
+                                                       verticalMargin: 55,
+                                                       blocksTouches: true,
+                                                       draggable: true)
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata,
+                                                          controller: controller,
+                                                          tokenBanner: token)
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {
