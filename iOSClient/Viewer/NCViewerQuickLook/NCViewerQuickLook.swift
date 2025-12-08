@@ -138,11 +138,7 @@ private var hasChangesQuickLook: Bool = false
             self.dismiss(animated: true)
         })
 
-        if metadata.isImage {
-            parentVC?.present(alertController, animated: true)
-        } else {
-            parentVC?.present(alertController, animated: true)
-        }
+        parentVC?.present(alertController, animated: true)
     }
 
     @objc private func dismissView(_ sender: Any?) {
