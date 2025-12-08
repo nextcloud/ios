@@ -526,7 +526,7 @@
 "_certificate_view_"        = "Certificate Server";
 "_certificate_pn_view_"     = "Certificate Push Notification";
 "_save_as_scan_"            = "Save as scan";
-"_save_modified_changes_"   = "Save modified changed?";
+"_save_changes_"            = "Save changes?";
 "_modify_"                  = "Modify";
 "_overwrite_original_"      = "Overwrite original";
 "_save_as_copy_"            = "Save as copy";

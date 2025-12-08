@@ -110,7 +110,7 @@ private var hasChangesQuickLook: Bool = false
     private func showSaveAlert() {
         guard let metadata = metadata else { return }
 
-        let alertController = UIAlertController(title: NSLocalizedString("_save_modified_changes_", comment: ""), message: nil, preferredStyle: .alert)
+        let alertController = UIAlertController(title: NSLocalizedString("_save_changes_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
 
         if metadata.isLivePhoto {
