@@ -12,12 +12,12 @@ public protocol NCViewerQuickLookDelegate: AnyObject {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool)
 }
 
-// optional func
+/// Optional implementation
 public extension NCViewerQuickLookDelegate {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {}
 }
 
-// if the document has any changes
+/// Flag indicating If the document has any changes
 private var hasChangesQuickLook: Bool = false
 
 @objc class NCViewerQuickLook: QLPreviewController {
@@ -27,7 +27,7 @@ private var hasChangesQuickLook: Bool = false
     private var isEditingEnabled: Bool
     private var metadata: tableMetadata?
     private var timer: Timer?
-    // used to display the save alert
+    /// Used to display the save alert
     private var parentVC: UIViewController?
     private let utilityFileSystem = NCUtilityFileSystem()
     private let database = NCManageDatabase.shared
@@ -199,7 +199,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
-        return isEditingEnabled ? .createCopy : .disabled
+        return isEditingEnabled ? .createCopy : .disabled // File is in private storage, so .updateContents is not possible and will still act as .createCopy.
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
@@ -218,10 +218,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         }
 
         Task { @MainActor in
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
-                                                                                 fileName: metadata.fileNameView,
-                                                                                 userId: metadata.userId,
-                                                                                 urlBase: metadata.urlBase)
+            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
             let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
