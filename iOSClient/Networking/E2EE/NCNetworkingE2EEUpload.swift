@@ -237,9 +237,8 @@ class NCNetworkingE2EEUpload: NSObject {
                     Task {@MainActor in
                         LucidBanner.shared.update(
                             title: NSLocalizedString("_finalizing_wait_", comment: ""),
-                            footnote: "",
-                            systemImage: "tray.and.arrow.down",
-                            imageAnimation: .pulsebyLayer,
+                            systemImage: "gearshape.arrow.triangle.2.circlepath",
+                            imageAnimation: .rotate,
                             progress: 0,
                             for: tokenBanner)
                     }
