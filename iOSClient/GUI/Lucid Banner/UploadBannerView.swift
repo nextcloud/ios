@@ -111,19 +111,21 @@ struct UploadBannerView: View {
                         .tint(.accentColor)
                         .opacity(state.progress == nil ? 0 : 1)
                         .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
-                        .padding()
 
                     if isButton {
-                        Button("_cancel_") {
-                            onButtonTap?()
+                        VStack {
+                            Button("_cancel_") {
+                                onButtonTap?()
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(
+                                Capsule()
+                                    .stroke(.primary.opacity(0.2), lineWidth: 1)
+                            )
                         }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(
-                            Capsule()
-                                .stroke(.primary.opacity(0.2), lineWidth: 1)
-                        )
+                        .padding(20)
                     }
                 }
                 .padding(.horizontal, 12)
@@ -249,7 +251,6 @@ func showUploadBanner(scene: UIWindowScene?,
             state: LucidBannerState(
                 title: "Downloading …",
                 subtitle: "Keep application active until the transfers are completed …",
-                footnote: "Touch for cancel",
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 progress: 0.4,
