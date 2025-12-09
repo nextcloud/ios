@@ -327,8 +327,8 @@
 "_date_"                        = "Date";
 "_size_"                        = "Size";
 "_delete_selected_files_"       = "Delete files";
-"_remove_favorites_"            = "Remove from favorites";
-"_add_favorites_"               = "Add to favorites";
+"_remove_favorites_"            = "Unfavorite";
+"_add_favorites_"               = "Favorite";
 "_share_"                       = "Share";
 "_remove_local_file_"           = "Remove locally";
 "_folders_"                     = "folders";

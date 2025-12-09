@@ -54,14 +54,14 @@ class NCContextMenu: NSObject {
         // MENU ITEMS
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
-                              image: utility.loadImage(named: "info.circle")) { _ in
+                              image: utility.loadImage(named: "info.circle.fill")) { _ in
             NCCreate().createShare(viewController: self.viewController, metadata: self.metadata, page: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
-                                image: utility.loadImage(named: self.metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
+                                image: utility.loadImage(named: self.metadata.favorite ? "star.slash.fill" : "star.fill", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
             self.networking.setStatusWaitFavorite(self.metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
@@ -70,7 +70,7 @@ class NCContextMenu: NSObject {
         }
 
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
-                             image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
+                             image: utility.loadImage(named: "square.and.arrow.up.fill") ) { _ in
             Task {@MainActor in
                 let controller = self.viewController.tabBarController as? NCMainTabBarController
                 await NCCreate().createActivityViewController(selectedMetadata: [self.metadata],
@@ -528,15 +528,15 @@ class NCContextMenu: NSObject {
                 return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu + menuElements)])
             } else {
                 if metadata.lock {
-                    menu.append(favorite)
-                    menu.append(share)
+//                    menu.append(favorite)
+//                    menu.append(share)
 
                     if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
                         menu.append(livePhotoSave)
                     }
                 } else {
-                    menu.append(favorite)
-                    menu.append(share)
+//                    menu.append(favorite)
+//                    menu.append(share)
 
                     if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
                         menu.append(livePhotoSave)
@@ -558,7 +558,9 @@ class NCContextMenu: NSObject {
                     }
                 }
 
-                return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu + menuElements)])
+                let finalMenu = UIMenu(title: "", children: [detail, share, favorite, UIMenu(title: "", options: .displayInline, children: menu + menuElements)])
+                finalMenu.preferredElementSize = .medium
+                return finalMenu
             }
         } else {
             return UIMenu()
