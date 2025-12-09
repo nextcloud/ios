@@ -16,7 +16,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var labelFilename: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-    @IBOutlet weak var buttonMenu: UIButton!
 
     var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
@@ -34,14 +33,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     }
 
     func initCell() {
-        let imageButton = UIImage(systemName: "ellipsis.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.black, .white]))
-
-        buttonMenu.setImage(imageButton, for: .normal)
-        buttonMenu.layer.shadowColor = UIColor.black.cgColor
-        buttonMenu.layer.shadowOpacity = 0.2
-        buttonMenu.layer.shadowOffset = CGSize(width: 2, height: 2)
-        buttonMenu.layer.shadowRadius = 4
-
         image.image = nil
         labelFilename.text = ""
         labelInfo.text = ""
@@ -57,9 +48,5 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
             image.layer.borderWidth = 0
             image.layer.borderColor = UIColor.clear.cgColor
         }
-    }
-
-    @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
-        self.delegate?.touchUpInsideButtonMenu(with: self.metadata, image: image.image, sender: sender)
     }
 }
