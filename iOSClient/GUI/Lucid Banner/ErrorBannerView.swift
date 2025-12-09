@@ -75,8 +75,18 @@ struct ErrorBannerView: View {
 // MARK: - Helper
 
 @MainActor
+func showErrorBanner(controller: UITabBarController?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showErrorBanner(scene: scene, errorDescription: errorDescription, errorCode: errorCode, sleepBefore: sleepBefore)
+}
+
+@MainActor
 func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
 
     LucidBanner.shared.show(
         scene: scene,

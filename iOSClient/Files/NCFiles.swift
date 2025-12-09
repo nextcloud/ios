@@ -321,11 +321,17 @@ class NCFiles: NCCollectionViewCommon {
                 NCContentPresenter().showInfo(description: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
-                    NCContentPresenter().showError(error: error)
+                    await showErrorBanner(controller: self.controller,
+                                          errorDescription: error.errorDescription,
+                                          errorCode: error.errorCode)
                 }
             } else {
                 // show error
-                NCContentPresenter().showError(error: results.error)
+                Task {@MainActor in
+                    await showErrorBanner(controller: self.controller,
+                                          errorDescription: error.errorDescription,
+                                          errorCode: error.errorCode)
+                }
             }
 
             return(metadatas, error, reloadRequired)
@@ -343,14 +349,22 @@ class NCFiles: NCCollectionViewCommon {
 
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
-                    NCContentPresenter().showError(error: error)
+                    Task {@MainActor in
+                        await showErrorBanner(controller: self.controller,
+                                              errorDescription: error.errorDescription,
+                                              errorCode: error.errorCode)
+                    }
                 }
                 NCActivityIndicator.shared.stop()
             }
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            NCContentPresenter().showError(error: error)
+            Task {@MainActor in
+                await showErrorBanner(controller: self.controller,
+                                      errorDescription: error.errorDescription,
+                                      errorCode: error.errorCode)
+            }
         }
 
         return (metadatas, error, reloadRequired)

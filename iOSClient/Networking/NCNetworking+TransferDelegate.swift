@@ -48,6 +48,7 @@ extension NCNetworking: NCTransferDelegate {
                 }
             }
             guard let controller else { return }
+            let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
 
             switch selector {
             case NCGlobal.shared.selectorLoadFileQuickLook:
@@ -113,8 +114,13 @@ extension NCNetworking: NCTransferDelegate {
 
                 NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                     guard hasPermission else {
-                        let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
-                        return NCContentPresenter().messageNotification("_access_photo_not_enabled_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                        Task {@MainActor in
+                            let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
+                            await showErrorBanner(scene: scene,
+                                                  errorDescription: error.errorDescription,
+                                                  errorCode: error.errorCode)
+                        }
+                        return
                     }
 
                     let errorSave = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
@@ -127,7 +133,11 @@ extension NCNetworking: NCTransferDelegate {
                                 assetRequest.addResource(with: .photo, data: data, options: nil)
                             }) { success, _ in
                                 if !success {
-                                    NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                                    Task {@MainActor in
+                                        await showErrorBanner(scene: scene,
+                                                              errorDescription: errorSave.errorDescription,
+                                                              errorCode: errorSave.errorCode)
+                                    }
                                 }
                             }
                         } else if metadata.isVideo {
@@ -135,15 +145,27 @@ extension NCNetworking: NCTransferDelegate {
                                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: fileNamePath))
                             }) { success, _ in
                                 if !success {
-                                    NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                                    Task {@MainActor in
+                                        await showErrorBanner(scene: scene,
+                                                              errorDescription: errorSave.errorDescription,
+                                                              errorCode: errorSave.errorCode)
+                                    }
                                 }
                             }
                         } else {
-                            NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                            Task {@MainActor in
+                                await showErrorBanner(scene: scene,
+                                                      errorDescription: errorSave.errorDescription,
+                                                      errorCode: errorSave.errorCode)
+                            }
                             return
                         }
                     } catch {
-                        NCContentPresenter().messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                        Task {@MainActor in
+                            await showErrorBanner(scene: scene,
+                                                  errorDescription: errorSave.errorDescription,
+                                                  errorCode: errorSave.errorCode)
+                        }
                     }
                 }
 
@@ -211,7 +233,11 @@ extension NCNetworking: NCTransferDelegate {
             }
         }
         guard resultsFile.error == .success, let file = resultsFile.file else {
-            NCContentPresenter().showError(error: resultsFile.error)
+            Task {@MainActor in
+                await showErrorBanner(controller: viewController.tabBarController,
+                                      errorDescription: resultsFile.error.errorDescription,
+                                      errorCode: resultsFile.error.errorCode)
+            }
             return
         }
 
