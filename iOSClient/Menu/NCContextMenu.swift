@@ -427,20 +427,25 @@ class NCContextMenu: NSObject {
         // CLIENT INTEGRATION
         //
         if let apps = capabilities.clientIntegration?.apps {
-            for (appName, context) in apps {
+            for (_, context) in apps {
                 for item in context.contextMenu {
-                    guard let mimetypeFilters = item.mimetypeFilters else { continue }
-                    let filters = mimetypeFilters.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-                    let matchesMimeType = filters.contains(where: { filter in
-                        if filter.hasSuffix("/") {
-                            // Handle wildcard MIME types like "audio/", "video/", "image/"
-                            return metadata.contentType.hasPrefix(filter)
-                        } else {
-                            return metadata.contentType == filter
-                        }
-                    })
+                    var shouldShowMenu = false
 
-                    if matchesMimeType {
+                    if let mimetypeFilters = item.mimetypeFilters {
+                        let filters = mimetypeFilters.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+                        shouldShowMenu = filters.contains(where: { filter in // If app has specific mimetypes, we should only show the menu if the file/folder matches one of them.
+                            if filter.hasSuffix("/") {
+                                // Handle wildcard MIME types like "audio/", "video/", "image/"
+                                return metadata.contentType.hasPrefix(filter)
+                            } else {
+                                return metadata.contentType == filter
+                            }
+                        })
+                    } else {
+                        shouldShowMenu = true // if app has no mimetypes, then menu should be shown for every file/folder
+                    }
+
+                    if shouldShowMenu {
                         let deferredElement = UIDeferredMenuElement { completion in
                             Task {
                                 var iconImage: UIImage
