@@ -125,7 +125,7 @@ struct UploadBannerView: View {
                                     .stroke(.primary.opacity(0.2), lineWidth: 1)
                             )
                         }
-                        .padding(20)
+                        .padding(15)
                     }
                 }
                 .padding(.horizontal, 12)

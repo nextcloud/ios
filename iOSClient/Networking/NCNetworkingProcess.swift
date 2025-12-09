@@ -385,7 +385,8 @@ actor NCNetworkingProcess {
                         currentUploadTask = task
                     }
 
-                    await LucidBanner.shared.dismiss()
+                    // wait dismiss banner before open another (loop)
+                    await LucidBanner.shared.dismissAsync()
 
                 // UPLOAD CHUNK
                 //
