@@ -53,17 +53,15 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             await MainActor.run {
-                LucidBanner.shared.dismiss(for: token)
+                LucidBanner.shared.dismiss()
             }
 
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await MainActor.run {
-                    showErrorBanner(scene: scene,
-                                    errorDescription: results.nkError.errorDescription,
-                                    errorCode: results.nkError.errorCode)
-                }
+                await showErrorBanner(scene: scene,
+                                      errorDescription: results.nkError.errorDescription,
+                                      errorCode: results.nkError.errorCode)
             }
         }
 
@@ -153,9 +151,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
         let identifier = indexPath as NSCopying
         var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+        let cell = collectionView.cellForItem(at: indexPath)
 
         if image == nil {
-            let cell = collectionView.cellForItem(at: indexPath)
             if cell is NCListCell {
                 image = (cell as? NCListCell)?.imageItem.image
             } else if cell is NCGridCell {
@@ -168,7 +166,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return nil
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
+            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image, sender: cell)
             return contextMenu.viewMenu()
         })
     }

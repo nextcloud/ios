@@ -22,7 +22,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil, scene: UIWindowScene? = nil, externalBannerToken: Int? = nil) async -> NKError {
         var finalError: NKError = .success
         var session = session
         let ocId = metadata.ocIdTransfer
@@ -35,28 +35,13 @@ class NCNetworkingE2EEUpload: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
-        // BANNER ENCRYPTION
-        //
-        bannerToken = showUploadBanner(scene: scene,
-                                       title: NSLocalizedString("_wait_file_encryption_", comment: ""),
-                                       subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
-                                       systemImage: "lock.circle.fill") { _, _ in
-            if let currentUploadTask = self.currentUploadTask {
-                currentUploadTask.cancel()
-            }
-            if let request = self.request {
-                request.cancel()
-            }
-            LucidBanner.shared.dismiss(for: self.bannerToken)
-        }
-
         defer {
             if finalError != .success {
                 Task {
                     await self.database.deleteMetadataAsync(id: ocId)
                 }
             }
-            LucidBanner.shared.dismiss(for: bannerToken)
+            LucidBanner.shared.dismiss()
         }
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -152,6 +137,32 @@ class NCNetworkingE2EEUpload: NSObject {
             return finalError
         }
 
+        // BANNER
+        //
+        if let externalBannerToken {
+            bannerToken = externalBannerToken
+        } else {
+            bannerToken = showUploadBanner(scene: scene,
+                                           vPosition: .bottom,
+                                           verticalMargin: 55,
+                                           draggable: true,
+                                           stage: .init(rawValue: "button"),
+                                           onButtonTap: {
+                if let currentUploadTask = self.currentUploadTask {
+                    currentUploadTask.cancel()
+                }
+                if let request = self.request {
+                    request.cancel()
+                }
+                LucidBanner.shared.dismiss()
+            })
+        }
+
+        LucidBanner.shared.update(title: NSLocalizedString("_wait_file_encryption_", comment: ""),
+                                  subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
+                                  systemImage: "lock.circle.fill",
+                                  for: bannerToken)
+
         // SEND NEW METADATA
         //
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
@@ -165,11 +176,6 @@ class NCNetworkingE2EEUpload: NSObject {
         // UPLOAD
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, controller: controller)
-        if resultsSendFile.error != .success {
-            showErrorBanner(scene: scene,
-                            errorDescription: resultsSendFile.error.errorDescription,
-                            errorCode: resultsSendFile.error.errorCode)
-        }
 
         // UNLOCK
         //
@@ -262,7 +268,7 @@ class NCNetworkingE2EEUpload: NSObject {
             currentUploadTask = task
             let results = await task.value
 
-            LucidBanner.shared.dismiss(for: bannerToken)
+            LucidBanner.shared.dismiss()
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
         } else {
@@ -292,7 +298,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 }
             }
 
-            LucidBanner.shared.dismiss(for: bannerToken)
+            LucidBanner.shared.dismiss()
 
             return (results.ocId, results.etag, results.date, results.error)
         }
