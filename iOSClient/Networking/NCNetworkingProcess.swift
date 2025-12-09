@@ -452,10 +452,9 @@ actor NCNetworkingProcess {
                 Task {@MainActor in
                     LucidBanner.shared.update(
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
-                        footnote: "",
-                        systemImage: "tray.and.arrow.down",
-                        imageAnimation: .pulsebyLayer,
-                        progress: 0,
+                        systemImage: "gearshape.arrow.triangle.2.circlepath",
+                        imageAnimation: .rotate,
+                        stage: .init(rawValue: "none"),
                         for: token)
                 }
             }
