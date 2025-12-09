@@ -385,6 +385,8 @@ actor NCNetworkingProcess {
                         currentUploadTask = task
                     }
 
+                    await LucidBanner.shared.dismiss()
+
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {

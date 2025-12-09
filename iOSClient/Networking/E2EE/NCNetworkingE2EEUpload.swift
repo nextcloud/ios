@@ -45,7 +45,6 @@ class NCNetworkingE2EEUpload: NSObject {
                     await self.database.deleteMetadataAsync(id: ocId)
                 }
             }
-            LucidBanner.shared.dismiss()
         }
 
         LucidBanner.shared.update(
@@ -269,8 +268,6 @@ class NCNetworkingE2EEUpload: NSObject {
             currentUploadTask(task)
             let results = await task.value
 
-            LucidBanner.shared.dismiss()
-
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
         } else {
             LucidBanner.shared.update(
@@ -298,8 +295,6 @@ class NCNetworkingE2EEUpload: NSObject {
                     LucidBanner.shared.update(progress: fractionCompleted, for: tokenBanner)
                 }
             }
-
-            LucidBanner.shared.dismiss()
 
             return (results.ocId, results.etag, results.date, results.error)
         }

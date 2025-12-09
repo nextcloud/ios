@@ -364,7 +364,7 @@ extension NCShareExtension {
     @MainActor
     func uploadAndExit() async {
         var error: NKError?
-        token = showUploadBanner(scene: self.view.window?.windowScene)
+        token = showUploadBanner(scene: self.view.window?.windowScene, blocksTouches: true)
 
         for metadata in self.uploadMetadata {
             // BANNER
