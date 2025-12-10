@@ -542,7 +542,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             collectionViewCommon.tabBarSelect?.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
-                collectionViewCommon.setEditMode(false)
+                Task {
+                    await collectionViewCommon.setEditMode(false)
+                }
             }
 
             collectionViewCommon.navigationItem.rightBarButtonItems = [select]
@@ -634,9 +636,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle")) { _ in
-            if !collectionViewCommon.dataSource.isEmpty() {
-                collectionViewCommon.setEditMode(true)
-                collectionViewCommon.collectionView.reloadData()
+            Task {
+                if !collectionViewCommon.dataSource.isEmpty() {
+                    await collectionViewCommon.setEditMode(true)
+                    collectionViewCommon.collectionView.reloadData()
+                }
             }
         }
 
