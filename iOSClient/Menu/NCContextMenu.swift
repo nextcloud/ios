@@ -477,12 +477,14 @@ class NCContextMenu: NSObject {
                                             if let tooltip = response.uiResponse?.ocs.data.tooltip {
                                                 NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
                                             } else {
+                                                let baseURL = metadata.urlBase
+
                                                 await MainActor.run {
                                                     guard let ui = response.uiResponse?.ocs.data.root, let firstRow = ui.rows.first, let child = firstRow.children.first else { return }
 
                                                     let viewer = ClientIntegrationUIViewer(
                                                         rows: [.init(element: child.element, title: child.text, urlString: child.url)],
-                                                        baseURL: metadata.urlBase
+                                                        baseURL: baseURL
                                                     )
                                                     let hosting = UIHostingController(rootView: viewer)
                                                     hosting.modalPresentationStyle = .pageSheet
