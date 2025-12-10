@@ -23,7 +23,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 session: NCSession.Session? = nil,
                 controller: UIViewController? = nil,
                 stageBanner: LucidBanner.Stage?,
-                tokenBanner: Int,
+                tokenBanner: Int?,
                 requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
                 currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
     async -> NKError {
@@ -220,7 +220,7 @@ class NCNetworkingE2EEUpload: NSObject {
                           e2eToken: String,
                           controller: UIViewController?,
                           stageBanner: LucidBanner.Stage?,
-                          tokenBanner: Int,
+                          tokenBanner: Int?,
                           requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
                           currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
     async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {

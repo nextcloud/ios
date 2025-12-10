@@ -409,7 +409,7 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
-        var token: Int = 0
+        var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
         let tabBarTopLeft = scene?.tabBarTopLeft
         let minimizePoint = CGPoint(
@@ -417,14 +417,14 @@ actor NCNetworkingProcess {
             y: (tabBarTopLeft?.y ?? 0) - 20
         )
 
-        token = showUploadBanner(scene: scene,
-                                 vPosition: .bottom,
-                                 verticalMargin: 55,
-                                 draggable: true,
-                                 stage: .init(rawValue: "button"),
-                                 allowMinimizeOnTap: true,
-                                 minimizePoint: minimizePoint,
-                                 onButtonTap: {
+        tokenBanner = showUploadBanner(scene: scene,
+                                       vPosition: .bottom,
+                                       verticalMargin: 55,
+                                       draggable: true,
+                                       stage: .init(rawValue: "button"),
+                                       allowMinimizeOnTap: true,
+                                       minimizePoint: minimizePoint,
+                                       onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
             } else {
@@ -441,7 +441,7 @@ actor NCNetworkingProcess {
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                 Task {@MainActor in
                     let progress = Double(counter) / Double(total)
-                    LucidBanner.shared.update(progress: progress, for: token)
+                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
                 }
             } uploadStart: { _ in
                 Task {@MainActor in
@@ -450,11 +450,11 @@ actor NCNetworkingProcess {
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe,
                         progress: 0,
-                        for: token)
+                        for: tokenBanner)
                 }
             } uploadProgressHandler: { _, _, progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: progress, for: token)
+                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
                 }
             } assembling: {
                 Task {@MainActor in
@@ -463,7 +463,7 @@ actor NCNetworkingProcess {
                         systemImage: "gearshape.arrow.triangle.2.circlepath",
                         imageAnimation: .rotate,
                         stage: .init(rawValue: "none"),
-                        for: token)
+                        for: tokenBanner)
                 }
             }
 

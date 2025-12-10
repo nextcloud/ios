@@ -47,7 +47,7 @@ class NCShareExtension: UIViewController {
     let utility = NCUtility()
     let global = NCGlobal.shared
     var maintenanceMode: Bool = false
-    var token: Int = 0
+    var token: Int?
 
     // MARK: - View Life Cycle
 

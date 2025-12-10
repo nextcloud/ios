@@ -160,7 +160,7 @@ struct HudBannerView: View {
 // MARK: - Helper
 
 @MainActor
-func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
+func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int?, _ stage: String?) -> Void)? = nil) -> Int? {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
@@ -182,7 +182,7 @@ func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String
 
 @MainActor
 func completeHudBannerSuccess(
-    token: Int
+    token: Int?
 ) {
     LucidBanner.shared.update(
         stage: .success,
@@ -194,7 +194,7 @@ func completeHudBannerSuccess(
 @MainActor
 func completeHudBannerError(
     subtitle: String? = nil,
-    token: Int
+    token: Int?
 ) {
     LucidBanner.shared.update(
         subtitle: subtitle,

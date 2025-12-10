@@ -256,7 +256,7 @@ func showUploadBanner(scene: UIWindowScene?,
                       policy: LucidBanner.ShowPolicy = .drop,
                       allowMinimizeOnTap: Bool = false,
                       minimizePoint: CGPoint? = nil,
-                      onButtonTap: (() -> Void)? = nil) -> Int {
+                      onButtonTap: (() -> Void)? = nil) -> Int? {
     let token = LucidBanner.shared.show(
         scene: scene,
         vPosition: vPosition,
@@ -285,7 +285,7 @@ final class UploadBannerCoordinator {
     private var originalCenter: CGPoint?
     private var minimizePoint: CGPoint?
 
-    func register(token: Int) {
+    func register(token: Int?) {
         currentToken = token
     }
 

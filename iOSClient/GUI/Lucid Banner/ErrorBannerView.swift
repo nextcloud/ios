@@ -92,6 +92,7 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode:
         scene: scene,
         subtitle: errorDescription,
         footnote: "(Code: \(errorCode))",
+        vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
         onTap: { _, _ in
