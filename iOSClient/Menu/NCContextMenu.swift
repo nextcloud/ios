@@ -418,94 +418,7 @@ class NCContextMenu: NSObject {
         //
         // CLIENT INTEGRATION
         //
-        if let apps = capabilities.clientIntegration?.apps {
-            for (_, context) in apps {
-                for item in context.contextMenu {
-                    var shouldShowMenu = false
-
-                    if let mimetypeFilters = item.mimetypeFilters {
-                        let filters = mimetypeFilters.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-                        shouldShowMenu = filters.contains(where: { filter in // If app has specific mimetypes, we should only show the menu if the file/folder matches one of them.
-                            if filter.hasSuffix("/") {
-                                // Handle wildcard MIME types like "audio/", "video/", "image/"
-                                return metadata.contentType.hasPrefix(filter)
-                            } else {
-                                return metadata.contentType == filter
-                            }
-                        })
-                    } else {
-                        shouldShowMenu = true // if app has no mimetypes, then menu should be shown for every file/folder
-                    }
-
-                    if shouldShowMenu {
-                        let deferredElement = UIDeferredMenuElement { completion in
-                            Task {
-                                var iconImage: UIImage
-                                if let iconUrl = item.icon,
-                                   let url = URL(string: metadata.urlBase + iconUrl) {
-                                    do {
-                                        let (data, _) = try await URLSession.shared.data(from: url)
-                                        iconImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate) ?? UIImage()
-                                    } catch {
-                                        iconImage = self.utility.loadImage(
-                                            named: "testtube.2",
-                                            colors: [NCBrandColor.shared.presentationIconColor]
-                                        )
-                                    }
-                                } else {
-                                    iconImage = self.utility.loadImage(
-                                        named: "testtube.2",
-                                        colors: [NCBrandColor.shared.presentationIconColor]
-                                    )
-                                }
-
-                                let action = await UIAction(
-                                    title: item.name,
-                                    image: iconImage
-                                ) { _ in
-                                    Task {
-                                        let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
-                                                                                                  fileId: metadata.fileId,
-                                                                                                  filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
-                                                                                                  url: item.url,
-                                                                                                  method: item.method,
-                                                                                                  params: item.params)
-
-                                        if response.error != .success {
-                                            NCContentPresenter().showError(error: response.error)
-                                        } else {
-                                            if let tooltip = response.uiResponse?.ocs.data.tooltip {
-                                                NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
-                                            } else {
-                                                let baseURL = metadata.urlBase
-
-                                                await MainActor.run {
-                                                    guard let ui = response.uiResponse?.ocs.data.root, let firstRow = ui.rows.first, let child = firstRow.children.first else { return }
-
-                                                    let viewer = ClientIntegrationUIViewer(
-                                                        rows: [.init(element: child.element, title: child.text, urlString: child.url)],
-                                                        baseURL: baseURL
-                                                    )
-                                                    let hosting = UIHostingController(rootView: viewer)
-                                                    hosting.modalPresentationStyle = .pageSheet
-                                                    self.viewController.present(hosting, animated: true)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                await MainActor.run {
-                                    completion([action])
-                                }
-                            }
-                        }
-
-                        clientIntegrationMenu.append(deferredElement)
-                    }
-                }
-            }
-        }
+        buildClientIntegrationMenuItems(capabilities: capabilities, metadata: metadata, clientIntegrationMenu: &clientIntegrationMenu)
 
         // ------ MENU -----
 
@@ -548,6 +461,99 @@ class NCContextMenu: NSObject {
             return finalMenu
         } else {
             return UIMenu()
+        }
+    }
+
+    // MARK: - Helper Methods
+
+    private func buildClientIntegrationMenuItems(capabilities: NKCapabilities.Capabilities, metadata: tableMetadata, clientIntegrationMenu: inout [UIMenuElement]) {
+        guard let apps = capabilities.clientIntegration?.apps else { return }
+
+        for (_, context) in apps {
+            for item in context.contextMenu {
+                var shouldShowMenu = false
+
+                if let mimetypeFilters = item.mimetypeFilters {
+                    let filters = mimetypeFilters.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+                    shouldShowMenu = filters.contains(where: { filter in // If app has specific mimetypes, we should only show the menu if the file/folder matches one of them.
+                        if filter.hasSuffix("/") {
+                            // Handle wildcard MIME types like "audio/", "video/", "image/"
+                            return metadata.contentType.hasPrefix(filter)
+                        } else {
+                            return metadata.contentType == filter
+                        }
+                    })
+                } else {
+                    shouldShowMenu = true // if app has no mimetypes, then menu should be shown for every file/folder
+                }
+
+                if shouldShowMenu {
+                    let deferredElement = UIDeferredMenuElement { completion in
+                        Task {
+                            var iconImage: UIImage
+                            if let iconUrl = item.icon,
+                               let url = URL(string: metadata.urlBase + iconUrl) {
+                                do {
+                                    let (data, _) = try await URLSession.shared.data(from: url)
+                                    iconImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate) ?? UIImage()
+                                } catch {
+                                    iconImage = self.utility.loadImage(
+                                        named: "testtube.2",
+                                        colors: [NCBrandColor.shared.presentationIconColor]
+                                    )
+                                }
+                            } else {
+                                iconImage = self.utility.loadImage(
+                                    named: "testtube.2",
+                                    colors: [NCBrandColor.shared.presentationIconColor]
+                                )
+                            }
+
+                            let action = await UIAction(
+                                title: item.name,
+                                image: iconImage
+                            ) { _ in
+                                Task {
+                                    let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
+                                                                                              fileId: metadata.fileId,
+                                                                                              filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
+                                                                                              url: item.url,
+                                                                                              method: item.method,
+                                                                                              params: item.params)
+
+                                    if response.error != .success {
+                                        NCContentPresenter().showError(error: response.error)
+                                    } else {
+                                        if let tooltip = response.uiResponse?.ocs.data.tooltip {
+                                            NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
+                                        } else {
+                                            let baseURL = metadata.urlBase
+
+                                            await MainActor.run {
+                                                guard let ui = response.uiResponse?.ocs.data.root, let firstRow = ui.rows.first, let child = firstRow.children.first else { return }
+
+                                                let viewer = ClientIntegrationUIViewer(
+                                                    rows: [.init(element: child.element, title: child.text, urlString: child.url)],
+                                                    baseURL: baseURL
+                                                )
+                                                let hosting = UIHostingController(rootView: viewer)
+                                                hosting.modalPresentationStyle = .pageSheet
+                                                self.viewController.present(hosting, animated: true)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            await MainActor.run {
+                                completion([action])
+                            }
+                        }
+                    }
+
+                    clientIntegrationMenu.append(deferredElement)
+                }
+            }
         }
     }
 }
