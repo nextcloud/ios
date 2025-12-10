@@ -9,9 +9,13 @@ struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State var trigger = true
     let onButtonTap: (() -> Void)?
+    let allowMinimizeOnTap: Bool
 
-    init(state: LucidBannerState, onButtonTap: (() -> Void)? = nil) {
+    init(state: LucidBannerState,
+         allowMinimizeOnTap: Bool = false,
+         onButtonTap: (() -> Void)? = nil) {
         self.state = state
+        self.allowMinimizeOnTap = allowMinimizeOnTap
         self.onButtonTap = onButtonTap
     }
 
@@ -25,7 +29,14 @@ struct UploadBannerView: View {
         let isButton = (state.typedStage == .init(rawValue: "button"))
 
         containerView(state: state) {
-             if isSuccess {
+            if state.isMinimized {
+                Image(systemName: state.systemImage ?? "arrow.up.circle")
+                    .font(.title3)
+                if let p = state.progress {
+                    Text("\(Int(p * 100))%")
+                        .font(.footnote.monospacedDigit())
+                }
+            } else if isSuccess {
                  HStack(alignment: .center, spacing: 10) {
                      if #available(iOS 26, *) {
                          Image(systemName: "checkmark")
@@ -140,25 +151,37 @@ struct UploadBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
         let isError = (state.typedStage == .error)
+        let cornerRadius: CGFloat = 22
+
+        let contentBase = content()
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard allowMinimizeOnTap else { return }
+                UploadBannerCoordinator.shared.handleTap(state)
+            }
+            .onDisappear {
+                UploadBannerCoordinator.shared.clear()
+            }
 
         if #available(iOS 26, *) {
             if isError {
-                content()
+                contentBase
                     .background(
-                        RoundedRectangle(cornerRadius: 22)
+                        RoundedRectangle(cornerRadius: cornerRadius)
                             .fill(Color.red.opacity(1))
                     )
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
             } else {
-                content()
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                contentBase
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
             }
         } else {
             let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
-            content()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
+
+            contentBase
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(colorBg, lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
@@ -222,8 +245,10 @@ func showUploadBanner(scene: UIWindowScene?,
                       draggable: Bool = false,
                       stage: LucidBanner.Stage? = nil,
                       policy: LucidBanner.ShowPolicy = .drop,
+                      allowMinimizeOnTap: Bool = false,
+                      minimizePoint: CGPoint? = nil,
                       onButtonTap: (() -> Void)? = nil) -> Int {
-    LucidBanner.shared.show(
+    let token = LucidBanner.shared.show(
         scene: scene,
         vPosition: vPosition,
         hAlignment: hAlignment,
@@ -233,7 +258,93 @@ func showUploadBanner(scene: UIWindowScene?,
         stage: stage,
         policy: policy
     ) { state in
-        UploadBannerView(state: state, onButtonTap: onButtonTap)
+        UploadBannerView(state: state,
+                         allowMinimizeOnTap: allowMinimizeOnTap,
+                         onButtonTap: onButtonTap)
+    }
+
+    UploadBannerCoordinator.shared.setMinimizePoint(minimizePoint)
+    UploadBannerCoordinator.shared.register(token: token)
+    return token
+}
+
+@MainActor
+final class UploadBannerCoordinator {
+    static let shared = UploadBannerCoordinator()
+
+    private var currentToken: Int?
+    private var originalCenter: CGPoint?
+    private var minimizePoint: CGPoint?
+
+    func register(token: Int) {
+        currentToken = token
+    }
+
+    func clear() {
+        currentToken = nil
+        originalCenter = nil
+        minimizePoint = nil
+    }
+
+    func setMinimizePoint(_ point: CGPoint?) {
+        minimizePoint = point
+    }
+
+    func handleTap(_ state: LucidBannerState) {
+        guard let token = currentToken else {
+            return
+        }
+
+        guard LucidBanner.shared.isAlive(token) else {
+            clear()
+            return
+        }
+
+        if state.isMinimized {
+            maximize(state: state, token: token)
+        } else {
+            minimize(state: state, token: token)
+        }
+    }
+
+    private func minimize(state: LucidBannerState, token: Int) {
+        if let frame = LucidBanner.shared.currentFrameInWindow(for: token) {
+            originalCenter = CGPoint(x: frame.midX, y: frame.midY)
+        }
+        state.isMinimized = true
+
+        LucidBanner.shared.setDraggingEnabled(false, for: token)
+        LucidBanner.shared.requestRelayout(animated: true)
+
+        if let target = minimizePoint {
+            LucidBanner.shared.move(
+                toX: target.x,
+                y: target.y,
+                for: token,
+                animated: true
+            )
+        }
+    }
+
+    private func maximize(state: LucidBannerState, token: Int) {
+        state.isMinimized = false
+
+        LucidBanner.shared.setDraggingEnabled(true, for: token)
+        LucidBanner.shared.requestRelayout(animated: true)
+
+        // Restore
+        if let center = originalCenter {
+            LucidBanner.shared.move(
+                toX: center.x,
+                y: center.y,
+                for: token,
+                animated: true
+            )
+        } else {
+            LucidBanner.shared.resetPosition(for: token, animated: true)
+        }
+
+        originalCenter = nil
     }
 }
 

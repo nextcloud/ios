@@ -309,7 +309,7 @@ class NCCreate: NSObject {
                     if let url = exportFileForSharing(from: localFileURL) {
                         exportURLs.append(url)
                     }
-                } 
+                }
             }
 
             LucidBanner.shared.dismiss()

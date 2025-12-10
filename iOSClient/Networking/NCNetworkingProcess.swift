@@ -416,6 +416,7 @@ actor NCNetworkingProcess {
                                  verticalMargin: 55,
                                  draggable: true,
                                  stage: .init(rawValue: "button"),
+                                 allowMinimizeOnTap: true,
                                  onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
