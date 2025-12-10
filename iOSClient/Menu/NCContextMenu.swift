@@ -40,10 +40,6 @@ class NCContextMenu: NSObject {
             return UIMenu()
         }
 
-        var deleteMenu: [UIMenuElement] = []
-        var mainActionsMenu: [UIMenuElement] = []
-        var clientIntegrationMenu: [UIMenuElement] = []
-
         let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
 
@@ -52,20 +48,18 @@ class NCContextMenu: NSObject {
         let favorite = makeFavoriteAction(metadata: metadata)
         let share = makeShareAction()
 
-        buildMainActionsMenu(
+        let mainActionsMenu = buildMainActionsMenu(
             metadata: metadata,
             capabilities: capabilities,
-            isOffline: isOffline,
-            mainActionsMenu: &mainActionsMenu
+            isOffline: isOffline
         )
 
-        buildClientIntegrationMenuItems(
+        let clientIntegrationMenu = buildClientIntegrationMenuItems(
             capabilities: capabilities,
-            metadata: metadata,
-            clientIntegrationMenu: &clientIntegrationMenu
+            metadata: metadata
         )
 
-        buildDeleteMenu(metadata: metadata, deleteMenu: &deleteMenu)
+        let deleteMenu = buildDeleteMenu(metadata: metadata)
 
         // Assemble final menu
         if self.networking.isOnline {
@@ -134,9 +128,9 @@ class NCContextMenu: NSObject {
     private func buildMainActionsMenu(
         metadata: tableMetadata,
         capabilities: NKCapabilities.Capabilities,
-        isOffline: Bool,
-        mainActionsMenu: inout [UIMenuElement]
-    ) {
+        isOffline: Bool
+    ) -> [UIMenuElement] {
+        var mainActionsMenu: [UIMenuElement] = []
         // Lock/Unlock
         if NCNetworking.shared.isOnline,
            !metadata.directory,
@@ -195,6 +189,8 @@ class NCContextMenu: NSObject {
            metadata.directory {
             mainActionsMenu.append(makeColorFolderAction(metadata: metadata))
         }
+
+        return mainActionsMenu
     }
 
     // MARK: E2EE Actions
@@ -407,7 +403,8 @@ class NCContextMenu: NSObject {
 
     // MARK: Delete Menu
 
-    private func buildDeleteMenu(metadata: tableMetadata, deleteMenu: inout [UIMenuElement]) {
+    private func buildDeleteMenu(metadata: tableMetadata) -> [UIMenuElement] {
+        var deleteMenu: [UIMenuElement] = []
         let deleteConfirmLocal = makeDeleteLocalAction(metadata: metadata)
         let deleteConfirmFile = makeDeleteFileAction(metadata: metadata)
 
@@ -427,6 +424,8 @@ class NCContextMenu: NSObject {
                 deleteMenu.append(deleteSubMenu)
             }
         }
+
+        return deleteMenu
     }
 
     private func makeDeleteFileAction(metadata: tableMetadata) -> UIAction {
@@ -484,8 +483,9 @@ class NCContextMenu: NSObject {
 
     // MARK: Client Integration
 
-    private func buildClientIntegrationMenuItems(capabilities: NKCapabilities.Capabilities, metadata: tableMetadata, clientIntegrationMenu: inout [UIMenuElement]) {
-        guard let apps = capabilities.clientIntegration?.apps else { return }
+    private func buildClientIntegrationMenuItems(capabilities: NKCapabilities.Capabilities, metadata: tableMetadata) -> [UIMenuElement] {
+        var clientIntegrationMenu: [UIMenuElement] = []
+        guard let apps = capabilities.clientIntegration?.apps else { return [] }
 
         for (_, context) in apps {
             for item in context.contextMenu {
@@ -573,5 +573,7 @@ class NCContextMenu: NSObject {
                 }
             }
         }
+
+        return clientIntegrationMenu
     }
 }
