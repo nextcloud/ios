@@ -411,10 +411,10 @@ actor NCNetworkingProcess {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
         var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
-        let tabBarTopLeft = scene?.tabBarTopLeft
+        let tabBarTopLeft = scene?.tabBarTopLeft ?? CGPoint(x: 0, y: 50)
         let minimizePoint = CGPoint(
-            x: (tabBarTopLeft?.x ?? 0) + 50,
-            y: (tabBarTopLeft?.y ?? 0) - 20
+            x: tabBarTopLeft.x + 50,
+            y: tabBarTopLeft.y - 20
         )
 
         tokenBanner = showUploadBanner(scene: scene,
@@ -434,6 +434,7 @@ actor NCNetworkingProcess {
 
         LucidBanner.shared.update(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                                   subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+                                  footnote: "( " + NSLocalizedString("_tap_to_min_max_", comment: "") + " )",
                                   systemImage: "gearshape.arrow.triangle.2.circlepath",
                                   imageAnimation: .rotate)
 

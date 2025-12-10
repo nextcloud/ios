@@ -23,6 +23,7 @@
 "_cancel_"                  = "Cancel";
 "_edit_"                    = "Edit";
 "_tap_to_cancel_"           = "Tap to cancel";
+"_tap_to_min_max_"          = "Tap to minimize / maximize";
 "_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
 "_download_file_"           = "Download file";

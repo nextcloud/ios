@@ -171,6 +171,9 @@ struct UploadBannerView: View {
             .onDisappear {
                 UploadBannerCoordinator.shared.clear()
             }
+            // Hard cap for very large screens (iPad etc.)
+            .frame(maxWidth: 500)
+            .frame(maxWidth: .infinity, alignment: .center)
 
         if #available(iOS 26, *) {
             if isError {
