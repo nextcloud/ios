@@ -9,9 +9,13 @@ struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State var trigger = true
     let onButtonTap: (() -> Void)?
+    let allowMinimizeOnTap: Bool
 
-    init(state: LucidBannerState, onButtonTap: (() -> Void)? = nil) {
+    init(state: LucidBannerState,
+         allowMinimizeOnTap: Bool = false,
+         onButtonTap: (() -> Void)? = nil) {
         self.state = state
+        self.allowMinimizeOnTap = allowMinimizeOnTap
         self.onButtonTap = onButtonTap
     }
 
@@ -25,7 +29,23 @@ struct UploadBannerView: View {
         let isButton = (state.typedStage == .init(rawValue: "button"))
 
         containerView(state: state) {
-             if isSuccess {
+            if state.isMinimized {
+                HStack(spacing: 5) {
+                    Image(systemName: state.systemImage ?? "arrow.up.circle")
+                        .font(.body.weight(.medium))
+                        .frame(width: 20, height: 20)
+
+                    if let p = state.progress {
+                        Text("\(Int(p * 100))%")
+                            .font(.caption2.monospacedDigit())
+                            .frame(height: 20)
+                    }
+
+                }
+                .padding(.horizontal, 3)
+                .padding(.vertical, 3)
+                .clipShape(Capsule())
+            } else if isSuccess {
                  HStack(alignment: .center, spacing: 10) {
                      if #available(iOS 26, *) {
                          Image(systemName: "checkmark")
@@ -111,19 +131,21 @@ struct UploadBannerView: View {
                         .tint(.accentColor)
                         .opacity(state.progress == nil ? 0 : 1)
                         .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
-                        .padding()
 
                     if isButton {
-                        Button("_cancel_") {
-                            onButtonTap?()
+                        VStack {
+                            Button("_cancel_") {
+                                onButtonTap?()
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(
+                                Capsule()
+                                    .stroke(.primary.opacity(0.2), lineWidth: 1)
+                            )
                         }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(
-                            Capsule()
-                                .stroke(.primary.opacity(0.2), lineWidth: 1)
-                        )
+                        .padding(15)
                     }
                 }
                 .padding(.horizontal, 12)
@@ -138,25 +160,40 @@ struct UploadBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
         let isError = (state.typedStage == .error)
+        let cornerRadius: CGFloat = 22
+
+        let contentBase = content()
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard allowMinimizeOnTap else { return }
+                UploadBannerCoordinator.shared.handleTap(state)
+            }
+            .onDisappear {
+                UploadBannerCoordinator.shared.clear()
+            }
+            // Hard cap for very large screens (iPad etc.)
+            .frame(maxWidth: 500)
+            .frame(maxWidth: .infinity, alignment: .center)
 
         if #available(iOS 26, *) {
             if isError {
-                content()
+                contentBase
                     .background(
-                        RoundedRectangle(cornerRadius: 22)
+                        RoundedRectangle(cornerRadius: cornerRadius)
                             .fill(Color.red.opacity(1))
                     )
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
             } else {
-                content()
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                contentBase
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
             }
         } else {
             let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
-            content()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
+
+            contentBase
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(colorBg, lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
@@ -216,25 +253,150 @@ func showUploadBanner(scene: UIWindowScene?,
                       vPosition: LucidBanner.VerticalPosition = .center,
                       hAlignment: LucidBanner.HorizontalAlignment = .center,
                       verticalMargin: CGFloat = 0,
+                      blocksTouches: Bool = false,
                       draggable: Bool = false,
                       stage: LucidBanner.Stage? = nil,
-                      onButtonTap: (() -> Void)? = nil) -> Int {
-    LucidBanner.shared.show(
+                      policy: LucidBanner.ShowPolicy = .drop,
+                      allowMinimizeOnTap: Bool = false,
+                      minimizePoint: CGPoint? = nil,
+                      onButtonTap: (() -> Void)? = nil) -> Int? {
+    let token = LucidBanner.shared.show(
         scene: scene,
         vPosition: vPosition,
         hAlignment: hAlignment,
         verticalMargin: verticalMargin,
+        blocksTouches: blocksTouches,
         draggable: draggable,
-        stage: stage
+        stage: stage,
+        policy: policy
     ) { state in
-        UploadBannerView(state: state, onButtonTap: onButtonTap)
+        UploadBannerView(state: state,
+                         allowMinimizeOnTap: allowMinimizeOnTap,
+                         onButtonTap: onButtonTap)
+    }
+
+    UploadBannerCoordinator.shared.setMinimizePoint(minimizePoint)
+    UploadBannerCoordinator.shared.register(token: token)
+    return token
+}
+
+@MainActor
+final class UploadBannerCoordinator {
+    static let shared = UploadBannerCoordinator()
+
+    private var currentToken: Int?
+    private var originalCenter: CGPoint?
+    private var minimizePoint: CGPoint?
+
+    func register(token: Int?) {
+        currentToken = token
+    }
+
+    func clear() {
+        currentToken = nil
+        originalCenter = nil
+        minimizePoint = nil
+    }
+
+    func setMinimizePoint(_ point: CGPoint?) {
+        minimizePoint = point
+    }
+
+    @MainActor
+    func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
+        guard let token = currentToken else { return }
+        guard LucidBanner.shared.isAlive(token) else {
+            clear()
+            return
+        }
+        guard let state = LucidBanner.shared.currentState(for: token),
+              state.isMinimized else {
+            return
+        }
+
+        // Move the minimized banner
+        LucidBanner.shared.move(
+            toX: point.x,
+            y: point.y,
+            for: token,
+            animated: animated
+        )
+    }
+
+    func handleTap(_ state: LucidBannerState) {
+        guard let token = currentToken else {
+            return
+        }
+
+        guard LucidBanner.shared.isAlive(token) else {
+            clear()
+            return
+        }
+
+        if state.isMinimized {
+            maximize(state: state, token: token)
+        } else {
+            minimize(state: state, token: token)
+        }
+    }
+
+    private func minimize(state: LucidBannerState, token: Int) {
+        if let frame = LucidBanner.shared.currentFrameInWindow(for: token) {
+            originalCenter = CGPoint(x: frame.midX, y: frame.midY)
+        }
+        state.isMinimized = true
+
+        LucidBanner.shared.setDraggingEnabled(false, for: token)
+        LucidBanner.shared.requestRelayout(animated: true)
+
+        if let target = minimizePoint {
+            LucidBanner.shared.move(
+                toX: target.x,
+                y: target.y,
+                for: token,
+                animated: true
+            )
+        }
+    }
+
+    private func maximize(state: LucidBannerState, token: Int) {
+        state.isMinimized = false
+
+        LucidBanner.shared.setDraggingEnabled(true, for: token)
+        LucidBanner.shared.requestRelayout(animated: true)
+
+        // Restore
+        if let center = originalCenter {
+            LucidBanner.shared.move(
+                toX: center.x,
+                y: center.y,
+                for: token,
+                animated: true
+            )
+        } else {
+            LucidBanner.shared.resetPosition(for: token, animated: true)
+        }
+
+        originalCenter = nil
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    ZStack {
+    // Create a mutable preview state
+    let state = LucidBannerState(
+        title: "Uploading…",
+        subtitle: "Minimized style preview",
+        systemImage: "arrow.up.circle",
+        imageAnimation: .none,
+        progress: 0.71,
+        stage: "button"
+    )
+
+    state.isMinimized = true
+
+    return ZStack {
         LinearGradient(
             colors: [.white, .gray.opacity(0.1)],
             startPoint: .top,
@@ -242,14 +404,8 @@ func showUploadBanner(scene: UIWindowScene?,
         )
 
         UploadBannerView(
-            state: LucidBannerState(
-                title: "Downloading …",
-                subtitle: "Keep application active until the transfers are completed …",
-                footnote: "Touch for cancel",
-                systemImage: "gearshape.arrow.triangle.2.circlepath",
-                imageAnimation: .rotate,
-                progress: 0.4,
-                stage: "button")
+            state: state,
+            allowMinimizeOnTap: true
         )
         .padding()
     }

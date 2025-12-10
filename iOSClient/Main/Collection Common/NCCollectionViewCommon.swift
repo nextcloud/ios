@@ -356,7 +356,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(scene: UIApplication.shared.mainAppWindow?.windowScene,
+                await showErrorBanner(controller: self.controller,
                                       errorDescription: error.errorDescription,
                                       errorCode: error.errorCode)
             }
@@ -889,7 +889,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
-                NCContentPresenter().showError(error: error)
+                Task {@MainActor in
+                    await showErrorBanner(
+                        controller: self.controller,
+                        errorDescription: error.errorDescription,
+                        errorCode: error.errorCode
+                    )
+                }
             }
 
             metadataForSection.unifiedSearchInProgress = false

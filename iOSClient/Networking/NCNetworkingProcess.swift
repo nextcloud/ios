@@ -358,8 +358,36 @@ actor NCNetworkingProcess {
                 // UPLOAD E2EE
                 //
                 if metadata.isDirectoryE2EE {
+                    var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
+                    var request: UploadRequest?
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller, scene: SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene)
+                    let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+
+                    let token = await showUploadBanner(scene: scene,
+                                                       vPosition: .bottom,
+                                                       verticalMargin: 55,
+                                                       blocksTouches: true,
+                                                       minimizePoint: CGPoint(x: 0, y: 0),
+                                                       onButtonTap: {
+                        if let currentUploadTask {
+                            currentUploadTask.cancel()
+                        }
+                        if let request {
+                            request.cancel()
+                        }
+                    })
+
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata,
+                                                          controller: controller,
+                                                          stageBanner: .init(rawValue: "button"),
+                                                          tokenBanner: token) { uploadRequest in
+                        request = uploadRequest
+                    } currentUploadTask: { task in
+                        currentUploadTask = task
+                    }
+
+                    // wait dismiss banner before open another (loop)
+                    await LucidBanner.shared.dismissAsync()
 
                 // UPLOAD CHUNK
                 //
@@ -381,15 +409,22 @@ actor NCNetworkingProcess {
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
-        var token: Int = 0
+        var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+        let tabBarTopLeft = scene?.tabBarTopLeft ?? CGPoint(x: 0, y: 50)
+        let minimizePoint = CGPoint(
+            x: tabBarTopLeft.x + 50,
+            y: tabBarTopLeft.y - 20
+        )
 
-        token = showUploadBanner(scene: scene,
-                                 vPosition: .bottom,
-                                 verticalMargin: 55,
-                                 draggable: true,
-                                 stage: .init(rawValue: "button"),
-                                 onButtonTap: {
+        tokenBanner = showUploadBanner(scene: scene,
+                                       vPosition: .bottom,
+                                       verticalMargin: 55,
+                                       draggable: true,
+                                       stage: .init(rawValue: "button"),
+                                       allowMinimizeOnTap: true,
+                                       minimizePoint: minimizePoint,
+                                       onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
             } else {
@@ -399,6 +434,7 @@ actor NCNetworkingProcess {
 
         LucidBanner.shared.update(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                                   subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+                                  footnote: "( " + NSLocalizedString("_tap_to_min_max_", comment: "") + " )",
                                   systemImage: "gearshape.arrow.triangle.2.circlepath",
                                   imageAnimation: .rotate)
 
@@ -406,7 +442,7 @@ actor NCNetworkingProcess {
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                 Task {@MainActor in
                     let progress = Double(counter) / Double(total)
-                    LucidBanner.shared.update(progress: progress, for: token)
+                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
                 }
             } uploadStart: { _ in
                 Task {@MainActor in
@@ -415,21 +451,20 @@ actor NCNetworkingProcess {
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe,
                         progress: 0,
-                        for: token)
+                        for: tokenBanner)
                 }
             } uploadProgressHandler: { _, _, progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: progress, for: token)
+                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
                 }
             } assembling: {
                 Task {@MainActor in
                     LucidBanner.shared.update(
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
-                        footnote: "",
-                        systemImage: "tray.and.arrow.down",
-                        imageAnimation: .pulsebyLayer,
-                        progress: 0,
-                        for: token)
+                        systemImage: "gearshape.arrow.triangle.2.circlepath",
+                        imageAnimation: .rotate,
+                        stage: .init(rawValue: "none"),
+                        for: tokenBanner)
                 }
             }
 

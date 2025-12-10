@@ -39,7 +39,14 @@ class NCCreate: NSObject {
                 }
             }
             guard results.error == .success, let url = results.url else {
-                return NCContentPresenter().showError(error: results.error)
+                Task {@MainActor in
+                    await showErrorBanner(
+                        controller: controller,
+                        errorDescription: results.error.errorDescription,
+                        errorCode: results.error.errorCode
+                    )
+                }
+                return
             }
             let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
                 fileName: fileName,
@@ -63,7 +70,14 @@ class NCCreate: NSObject {
                 }
             }
             guard results.error == .success, let url = results.url else {
-                return NCContentPresenter().showError(error: results.error)
+                Task {@MainActor in
+                    await showErrorBanner(
+                        controller: controller,
+                        errorDescription: results.error.errorDescription,
+                        errorCode: results.error.errorCode
+                    )
+                }
+                return
             }
 
             let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
@@ -295,7 +309,7 @@ class NCCreate: NSObject {
                     if let url = exportFileForSharing(from: localFileURL) {
                         exportURLs.append(url)
                     }
-                } 
+                }
             }
 
             LucidBanner.shared.dismiss()
