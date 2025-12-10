@@ -30,12 +30,21 @@ struct UploadBannerView: View {
 
         containerView(state: state) {
             if state.isMinimized {
-                Image(systemName: state.systemImage ?? "arrow.up.circle")
-                    .font(.title3)
-                if let p = state.progress {
-                    Text("\(Int(p * 100))%")
-                        .font(.footnote.monospacedDigit())
+                HStack(spacing: 5) {
+                    Image(systemName: state.systemImage ?? "arrow.up.circle")
+                        .font(.body.weight(.medium))
+                        .frame(width: 20, height: 20)
+
+                    if let p = state.progress {
+                        Text("\(Int(p * 100))%")
+                            .font(.caption2.monospacedDigit())
+                            .frame(height: 20)
+                    }
+
                 }
+                .padding(.horizontal, 3)
+                .padding(.vertical, 3)
+                .clipShape(Capsule())
             } else if isSuccess {
                  HStack(alignment: .center, spacing: 10) {
                      if #available(iOS 26, *) {
@@ -290,6 +299,27 @@ final class UploadBannerCoordinator {
         minimizePoint = point
     }
 
+    @MainActor
+    func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
+        guard let token = currentToken else { return }
+        guard LucidBanner.shared.isAlive(token) else {
+            clear()
+            return
+        }
+        guard let state = LucidBanner.shared.currentState(for: token),
+              state.isMinimized else {
+            return
+        }
+
+        // Move the minimized banner
+        LucidBanner.shared.move(
+            toX: point.x,
+            y: point.y,
+            for: token,
+            animated: animated
+        )
+    }
+
     func handleTap(_ state: LucidBannerState) {
         guard let token = currentToken else {
             return
@@ -351,7 +381,19 @@ final class UploadBannerCoordinator {
 // MARK: - Preview
 
 #Preview {
-    ZStack {
+    // Create a mutable preview state
+    let state = LucidBannerState(
+        title: "Uploading…",
+        subtitle: "Minimized style preview",
+        systemImage: "arrow.up.circle",
+        imageAnimation: .none,
+        progress: 0.71,
+        stage: "button"
+    )
+
+    state.isMinimized = true
+
+    return ZStack {
         LinearGradient(
             colors: [.white, .gray.opacity(0.1)],
             startPoint: .top,
@@ -359,13 +401,8 @@ final class UploadBannerCoordinator {
         )
 
         UploadBannerView(
-            state: LucidBannerState(
-                title: "Downloading …",
-                subtitle: "Keep application active until the transfers are completed …",
-                systemImage: "gearshape.arrow.triangle.2.circlepath",
-                imageAnimation: .rotate,
-                progress: 0.4,
-                stage: "button")
+            state: state,
+            allowMinimizeOnTap: true
         )
         .padding()
     }

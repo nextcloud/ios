@@ -367,6 +367,7 @@ actor NCNetworkingProcess {
                                                        vPosition: .bottom,
                                                        verticalMargin: 55,
                                                        blocksTouches: true,
+                                                       minimizePoint: CGPoint(x: 0, y: 0),
                                                        onButtonTap: {
                         if let currentUploadTask {
                             currentUploadTask.cancel()
@@ -410,6 +411,11 @@ actor NCNetworkingProcess {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
         var token: Int = 0
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+        let tabBarTopLeft = scene?.tabBarTopLeft
+        let minimizePoint = CGPoint(
+            x: (tabBarTopLeft?.x ?? 0) + 50,
+            y: (tabBarTopLeft?.y ?? 0) - 20
+        )
 
         token = showUploadBanner(scene: scene,
                                  vPosition: .bottom,
@@ -417,6 +423,7 @@ actor NCNetworkingProcess {
                                  draggable: true,
                                  stage: .init(rawValue: "button"),
                                  allowMinimizeOnTap: true,
+                                 minimizePoint: minimizePoint,
                                  onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
