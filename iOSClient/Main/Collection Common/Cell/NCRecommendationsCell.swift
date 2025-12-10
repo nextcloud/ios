@@ -17,7 +17,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var labelFilename: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
 
-    var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
     var id: String = ""
@@ -33,6 +32,8 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     }
 
     func initCell() {
+
+
         image.image = nil
         labelFilename.text = ""
         labelInfo.text = ""

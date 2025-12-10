@@ -35,21 +35,23 @@ class NCContextMenu: NSObject {
     func viewMenu() -> UIMenu {
         let database = NCManageDatabase.shared
 
-           guard let metadata = database.getMetadataFromOcId(metadata.ocId),
-                 let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
-               return UIMenu()
-           }
+        guard let metadata = database.getMetadataFromOcId(metadata.ocId),
+              let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
+            return UIMenu()
+        }
 
-           var menuElements: [UIMenuElement] = []
-           let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-           let isOffline = localFile?.offline == true
+        var shortMenu: [UIMenuElement] = []
+//        var menu: [UIMenuElement] = []
+        var deleteMenu: [UIMenuElement] = []
+        var mainActionsMenu: [UIMenuElement] = []
+        var clientIntegrationMenu: [UIMenuElement] = []
+
+        let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        let isOffline = localFile?.offline == true
 
         var downloadRequest: DownloadRequest?
-        var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)
         let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
-
-        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
 
         // MENU ITEMS
 
@@ -60,7 +62,7 @@ class NCContextMenu: NSObject {
 
         let favorite = UIAction(title: metadata.favorite ?
                                 NSLocalizedString("_remove_favorites_", comment: "") :
-                                NSLocalizedString("_add_favorites_", comment: ""),
+                                    NSLocalizedString("_add_favorites_", comment: ""),
                                 image: utility.loadImage(named: self.metadata.favorite ? "star.slash.fill" : "star.fill", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
             self.networking.setStatusWaitFavorite(self.metadata) { error in
                 if error != .success {
@@ -118,7 +120,7 @@ class NCContextMenu: NSObject {
                             if let request = downloadRequest {
                                 request.cancel()
                             }
-                    }
+                        }
 
                     let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
@@ -138,29 +140,19 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
+        let deleteConfirmFile = UIAction(title: NSLocalizedString(metadata.directory ? "_delete_folder_" : "_delete_file_", comment: ""),
                                          image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
 
-            var alertStyle = UIAlertController.Style.actionSheet
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                alertStyle = .alert
+            if let viewController = self.viewController as? NCCollectionViewCommon {
+                Task {
+                    await self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
+                    await viewController.reloadDataSource()
+                }
+            } else if let viewController = self.viewController as? NCMedia {
+                Task {
+                    await viewController.deleteImage(with: self.metadata.ocId)
+                }
             }
-            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                if let viewController = self.viewController as? NCCollectionViewCommon {
-                    Task {
-                        await self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
-                        await viewController.reloadDataSource()
-                    }
-                }
-                if let viewController = self.viewController as? NCMedia {
-                    Task {
-                        await viewController.deleteImage(with: self.metadata.ocId)
-                    }
-                }
-            })
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
-            self.viewController.present(alertController, animated: true, completion: nil)
         }
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
@@ -181,7 +173,7 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""),
+        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_", comment: ""),
                                    image: utility.loadImage(named: "trash"),
                                    options: .destructive,
                                    children: [deleteConfirmLocal, deleteConfirmFile])
@@ -193,7 +185,7 @@ class NCContextMenu: NSObject {
            !metadata.directory,
            metadata.canUnlock(as: metadata.userId),
            !capabilities.filesLockVersion.isEmpty {
-            menuElements.append(ContextMenuActions.lockUnlock(shouldLock: !metadata.lock, metadatas: [metadata]))
+            mainActionsMenu.append(ContextMenuActions.lockUnlock(shouldLock: !metadata.lock, metadatas: [metadata]))
         }
 
         //
@@ -222,7 +214,7 @@ class NCContextMenu: NSObject {
                 }
             }
 
-            menuElements.append(action)
+            mainActionsMenu.append(action)
         }
 
         //
@@ -268,7 +260,7 @@ class NCContextMenu: NSObject {
                 }
             }
 
-            menuElements.append(action)
+            mainActionsMenu.append(action)
         }
 
         //
@@ -277,7 +269,7 @@ class NCContextMenu: NSObject {
         if NCNetworking.shared.isOnline,
            metadata.canSetAsAvailableOffline {
 
-            menuElements.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
+            mainActionsMenu.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
 
         }
 
@@ -316,7 +308,7 @@ class NCContextMenu: NSObject {
                 }
             }
 
-            menuElements.append(action)
+            mainActionsMenu.append(action)
         }
 
         //
@@ -350,11 +342,11 @@ class NCContextMenu: NSObject {
                 }
             }
 
-            menuElements.append(action)
+            mainActionsMenu.append(action)
         }
 
         if metadata.isCopyableMovable {
-            menuElements.append(ContextMenuActions.moveOrCopy(selectedMetadatas: [metadata], account: metadata.account, viewController: viewController))
+            mainActionsMenu.append(ContextMenuActions.moveOrCopy(selectedMetadatas: [metadata], account: metadata.account, viewController: viewController))
         }
 
         //
@@ -392,7 +384,7 @@ class NCContextMenu: NSObject {
                 }
             }
 
-            menuElements.append(action)
+            mainActionsMenu.append(action)
         }
 
         //
@@ -420,7 +412,7 @@ class NCContextMenu: NSObject {
                 }
             }
 
-            menuElements.append(action)
+            mainActionsMenu.append(action)
         }
 
         //
@@ -507,7 +499,7 @@ class NCContextMenu: NSObject {
                             }
                         }
 
-                        menuElements.append(deferredElement)
+                        clientIntegrationMenu.append(deferredElement)
                     }
                 }
             }
@@ -515,53 +507,43 @@ class NCContextMenu: NSObject {
 
         // ------ MENU -----
 
-        var menu: [UIMenuElement] = []
-
         if self.networking.isOnline {
+            let hasLivePhoto = self.database.getMetadataLivePhoto(metadata: metadata) != nil
+            let isMediaViewController = viewController is NCMedia
+
             if metadata.directory {
-                if metadata.isDirectoryE2EE || metadata.e2eEncrypted {
-                    menu.append(favorite)
-                } else {
-                    menu.append(favorite)
-                    menu.append(deleteConfirmFile)
+                if !metadata.isDirectoryE2EE && !metadata.e2eEncrypted {
+                    deleteMenu.append(deleteSubMenu)
                 }
-                return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu + menuElements)])
             } else {
-                if metadata.lock {
-//                    menu.append(favorite)
-//                    menu.append(share)
-
-                    if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
-                        menu.append(livePhotoSave)
-                    }
-                } else {
-//                    menu.append(favorite)
-//                    menu.append(share)
-
-                    if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
-                        menu.append(livePhotoSave)
-                    }
-
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-
-                    // MODIFY WITH QUICK LOOK
-                    if metadata.isModifiableWithQuickLook {
-                        menu.append(modify)
-                    }
-
-                    if viewController is NCMedia {
-                        menu.append(deleteConfirmFile)
-                    } else {
-                        menu.append(deleteSubMenu)
-                    }
+                if hasLivePhoto {
+                    mainActionsMenu.append(livePhotoSave)
                 }
 
-                let finalMenu = UIMenu(title: "", children: [detail, share, favorite, UIMenu(title: "", options: .displayInline, children: menu + menuElements)])
-                finalMenu.preferredElementSize = .medium
-                return finalMenu
+                if !metadata.lock {
+                    if isMediaViewController {
+                        mainActionsMenu.append(viewInFolder)
+                    }
+
+                    if metadata.isModifiableWithQuickLook {
+                        mainActionsMenu.append(modify)
+                    }
+
+                    deleteMenu.append(deleteSubMenu)
+                }
             }
+
+            let baseChildren = [
+                UIMenu(title: "", options: .displayAsPalette, children: shortMenu),
+                UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
+                UIMenu(title: "", options: .displayInline, children: clientIntegrationMenu),
+                UIMenu(title: "", options: .displayInline, children: deleteMenu)
+            ]
+
+            let finalMenu = UIMenu(title: "", children: (metadata.lock ? [detail] : [detail, share, favorite]) + baseChildren)
+            finalMenu.preferredElementSize = .medium
+
+            return finalMenu
         } else {
             return UIMenu()
         }
