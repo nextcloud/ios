@@ -161,42 +161,70 @@ struct UploadBannerView: View {
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
         let isError = (state.typedStage == .error)
         let cornerRadius: CGFloat = 22
+        let isMinimized = state.isMinimized
 
-        let contentBase = content()
+        // Base content con gesture e clear
+        let base = content()
             .contentShape(Rectangle())
             .onTapGesture {
                 guard allowMinimizeOnTap else { return }
                 UploadBannerCoordinator.shared.handleTap(state)
             }
-            .onDisappear {
-                UploadBannerCoordinator.shared.clear()
-            }
-            // Hard cap for very large screens (iPad etc.)
-            .frame(maxWidth: 500)
-            .frame(maxWidth: .infinity, alignment: .center)
 
-        if #available(iOS 26, *) {
-            if isError {
-                contentBase
-                    .background(
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .fill(Color.red.opacity(1))
-                    )
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+        if isMinimized {
+            if #available(iOS 26, *) {
+                if isError {
+                    base
+                        .background(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(Color.red.opacity(1))
+                        )
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                } else {
+                    base
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                }
             } else {
-                contentBase
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
+
+                base
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .stroke(colorBg, lineWidth: 0.6)
+                    )
+                    .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
             }
         } else {
-            let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
+            let contentBase = base
+                .frame(maxWidth: 500)
 
-            contentBase
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .stroke(colorBg, lineWidth: 0.6)
-                )
-                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+            if #available(iOS 26, *) {
+                if isError {
+                    contentBase
+                        .background(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(Color.red.opacity(1))
+                        )
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                } else {
+                    contentBase
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            } else {
+                let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
+
+                contentBase
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .stroke(colorBg, lineWidth: 0.6)
+                    )
+                    .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
         }
     }
 }
@@ -258,7 +286,8 @@ func showUploadBanner(scene: UIWindowScene?,
                       stage: LucidBanner.Stage? = nil,
                       policy: LucidBanner.ShowPolicy = .drop,
                       allowMinimizeOnTap: Bool = false,
-                      minimizePoint: CGPoint? = nil,
+                      inset: CGSize? = nil,
+                      corner: UploadBannerCoordinator.UploadBannerMinimizeAnchor.Corner? = nil,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
     let token = LucidBanner.shared.show(
         scene: scene,
@@ -275,7 +304,9 @@ func showUploadBanner(scene: UIWindowScene?,
                          onButtonTap: onButtonTap)
     }
 
-    UploadBannerCoordinator.shared.setMinimizePoint(minimizePoint)
+    if let inset, let corner {
+        UploadBannerCoordinator.shared.setMinimizeCorner(corner, inset: inset)
+    }
     UploadBannerCoordinator.shared.register(token: token)
     return token
 }
@@ -284,9 +315,37 @@ func showUploadBanner(scene: UIWindowScene?,
 final class UploadBannerCoordinator {
     static let shared = UploadBannerCoordinator()
 
+    public enum UploadBannerMinimizeAnchor {
+        case absolute(CGPoint)
+        case corner(Corner, inset: CGSize)
+
+        enum Corner {
+            case topLeading
+            case topTrailing
+            case bottomLeading
+            case bottomTrailing
+        }
+    }
+
     private var currentToken: Int?
     private var originalCenter: CGPoint?
-    private var minimizePoint: CGPoint?
+    private var minimizeAnchor: UploadBannerMinimizeAnchor?
+    private var orientationObserver: NSObjectProtocol?
+
+    init() {
+        orientationObserver = NotificationCenter.default.addObserver(
+            forName: UIDevice.orientationDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(50))
+                self.refreshMinimizedPosition(animated: true)
+            }
+        }
+    }
 
     func register(token: Int?) {
         currentToken = token
@@ -295,14 +354,22 @@ final class UploadBannerCoordinator {
     func clear() {
         currentToken = nil
         originalCenter = nil
-        minimizePoint = nil
+        minimizeAnchor = nil
     }
 
     func setMinimizePoint(_ point: CGPoint?) {
-        minimizePoint = point
+        if let point {
+            minimizeAnchor = .absolute(point)
+        } else {
+            minimizeAnchor = nil
+        }
     }
 
-    @MainActor
+    func setMinimizeCorner(_ corner: UploadBannerMinimizeAnchor.Corner,
+                           inset: CGSize = CGSize(width: 20, height: 40)) {
+        minimizeAnchor = .corner(corner, inset: inset)
+    }
+
     func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
         guard let token = currentToken else { return }
         guard LucidBanner.shared.isAlive(token) else {
@@ -314,10 +381,31 @@ final class UploadBannerCoordinator {
             return
         }
 
-        // Move the minimized banner
         LucidBanner.shared.move(
             toX: point.x,
             y: point.y,
+            for: token,
+            animated: animated
+        )
+    }
+
+    func refreshMinimizedPosition(animated: Bool = true) {
+        guard let token = currentToken else { return }
+        guard LucidBanner.shared.isAlive(token) else {
+            clear()
+            return
+        }
+        guard let state = LucidBanner.shared.currentState(for: token),
+              state.isMinimized else {
+            return
+        }
+        guard let target = resolvedMinimizePoint(for: token) else {
+            return
+        }
+
+        LucidBanner.shared.move(
+            toX: target.x,
+            y: target.y,
             for: token,
             animated: animated
         )
@@ -349,7 +437,7 @@ final class UploadBannerCoordinator {
         LucidBanner.shared.setDraggingEnabled(false, for: token)
         LucidBanner.shared.requestRelayout(animated: true)
 
-        if let target = minimizePoint {
+        if let target = resolvedMinimizePoint(for: token) {
             LucidBanner.shared.move(
                 toX: target.x,
                 y: target.y,
@@ -365,7 +453,6 @@ final class UploadBannerCoordinator {
         LucidBanner.shared.setDraggingEnabled(true, for: token)
         LucidBanner.shared.requestRelayout(animated: true)
 
-        // Restore
         if let center = originalCenter {
             LucidBanner.shared.move(
                 toX: center.x,
@@ -378,6 +465,37 @@ final class UploadBannerCoordinator {
         }
 
         originalCenter = nil
+    }
+
+    private func resolvedMinimizePoint(for token: Int) -> CGPoint? {
+        guard let anchor = minimizeAnchor else { return nil }
+        guard let hostView = LucidBanner.shared.currentHostView(for: token),
+              let window = hostView.window else {
+            return nil
+        }
+
+        let bounds = window.bounds
+
+        switch anchor {
+        case .absolute(let point):
+            return point
+
+        case .corner(let corner, let inset):
+            switch corner {
+            case .topLeading:
+                return CGPoint(x: bounds.minX + inset.width,
+                               y: bounds.minY + inset.height)
+            case .topTrailing:
+                return CGPoint(x: bounds.maxX - inset.width,
+                               y: bounds.minY + inset.height)
+            case .bottomLeading:
+                return CGPoint(x: bounds.minX + inset.width,
+                               y: bounds.maxY - inset.height)
+            case .bottomTrailing:
+                return CGPoint(x: bounds.maxX - inset.width,
+                               y: bounds.maxY - inset.height)
+            }
+        }
     }
 }
 
