@@ -217,7 +217,8 @@ private struct HudBannerPreviewWrapper: View {
         title: "Uploading files",
         subtitle: "Syncing your library…",
         footnote: nil,
-        imageAnimation: .none
+        imageAnimation: .none,
+        isDraggable: false
     )
 
     var body: some View {

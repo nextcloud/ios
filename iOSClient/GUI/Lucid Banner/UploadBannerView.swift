@@ -163,7 +163,6 @@ struct UploadBannerView: View {
         let cornerRadius: CGFloat = 22
         let isMinimized = state.isMinimized
 
-        // Base content con gesture e clear
         let base = content()
             .contentShape(Rectangle())
             .onTapGesture {
@@ -305,9 +304,9 @@ func showUploadBanner(scene: UIWindowScene?,
     }
 
     if let inset, let corner {
-        UploadBannerCoordinator.shared.setMinimizeCorner(corner, inset: inset)
+        UploadBannerCoordinator.shared.register(token: token, corner: corner, inset: inset)
     }
-    UploadBannerCoordinator.shared.register(token: token)
+
     return token
 }
 
@@ -337,7 +336,9 @@ final class UploadBannerCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self else { return }
+            guard let self else {
+                return
+            }
 
             Task { @MainActor in
                 // Small delay to let the window/layout settle after rotation.
@@ -353,8 +354,14 @@ final class UploadBannerCoordinator {
         }
     }
 
-    func register(token: Int?) {
+    func register(token: Int?,
+                  corner: UploadBannerMinimizeAnchor.Corner,
+                  inset: CGSize = CGSize(width: 20, height: 40)) {
+        guard let token else {
+            return
+        }
         currentToken = token
+        minimizeAnchor = .corner(corner, inset: inset)
     }
 
     func clear() {
@@ -368,11 +375,6 @@ final class UploadBannerCoordinator {
         } else {
             minimizeAnchor = nil
         }
-    }
-
-    func setMinimizeCorner(_ corner: UploadBannerMinimizeAnchor.Corner,
-                           inset: CGSize = CGSize(width: 20, height: 40)) {
-        minimizeAnchor = .corner(corner, inset: inset)
     }
 
     func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
@@ -440,7 +442,7 @@ final class UploadBannerCoordinator {
     private func minimize(state: LucidBannerState, token: Int) {
         state.isMinimized = true
 
-        // Disable dragging while in bubble mode.
+        // Disable dragging.
         LucidBanner.shared.setDraggingEnabled(false, for: token)
 
         if let target = resolvedMinimizePoint(for: token) {
@@ -456,8 +458,9 @@ final class UploadBannerCoordinator {
     private func maximize(state: LucidBannerState, token: Int) {
         state.isMinimized = false
 
-        // Re-enable dragging in full mode.
-        LucidBanner.shared.setDraggingEnabled(true, for: token)
+        if state.isDraggable {
+            LucidBanner.shared.setDraggingEnabled(true, for: token)
+        }
 
         LucidBanner.shared.resetPosition(for: token, animated: true)
     }
@@ -504,6 +507,7 @@ final class UploadBannerCoordinator {
         systemImage: "arrow.up.circle",
         imageAnimation: .none,
         progress: 0.71,
+        isDraggable: false,
         stage: "button"
     )
 

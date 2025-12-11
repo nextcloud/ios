@@ -118,7 +118,8 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode:
                 title: "Error",
                 subtitle: "Not avalilable",
                 footnote: "ErroCode. 12",
-                imageAnimation: .breathe)
+                imageAnimation: .breathe,
+                isDraggable: false)
         )
         .padding()
     }
