@@ -328,7 +328,6 @@ final class UploadBannerCoordinator {
     }
 
     private var currentToken: Int?
-    private var originalCenter: CGPoint?
     private var minimizeAnchor: UploadBannerMinimizeAnchor?
     private var orientationObserver: NSObjectProtocol?
 
@@ -341,9 +340,16 @@ final class UploadBannerCoordinator {
             guard let self else { return }
 
             Task { @MainActor in
+                // Small delay to let the window/layout settle after rotation.
                 try? await Task.sleep(for: .milliseconds(50))
-                self.refreshMinimizedPosition(animated: true)
+                self.refreshPosition(animated: true)
             }
+        }
+    }
+
+    deinit {
+        if let orientationObserver {
+            NotificationCenter.default.removeObserver(orientationObserver)
         }
     }
 
@@ -353,7 +359,6 @@ final class UploadBannerCoordinator {
 
     func clear() {
         currentToken = nil
-        originalCenter = nil
         minimizeAnchor = nil
     }
 
@@ -389,26 +394,30 @@ final class UploadBannerCoordinator {
         )
     }
 
-    func refreshMinimizedPosition(animated: Bool = true) {
-        guard let token = currentToken else { return }
-        guard LucidBanner.shared.isAlive(token) else {
+    func refreshPosition(animated: Bool = true) {
+        guard let token = currentToken,
+              LucidBanner.shared.isAlive(token) else {
             clear()
             return
         }
-        guard let state = LucidBanner.shared.currentState(for: token),
-              state.isMinimized else {
-            return
-        }
-        guard let target = resolvedMinimizePoint(for: token) else {
+        guard let state = LucidBanner.shared.currentState(for: token) else {
             return
         }
 
-        LucidBanner.shared.move(
-            toX: target.x,
-            y: target.y,
-            for: token,
-            animated: animated
-        )
+        if state.isMinimized {
+            guard let target = resolvedMinimizePoint(for: token) else {
+                return
+            }
+
+            LucidBanner.shared.move(
+                toX: target.x,
+                y: target.y,
+                for: token,
+                animated: animated
+            )
+        } else {
+            LucidBanner.shared.resetPosition(for: token, animated: true)
+        }
     }
 
     func handleTap(_ state: LucidBannerState) {
@@ -429,13 +438,10 @@ final class UploadBannerCoordinator {
     }
 
     private func minimize(state: LucidBannerState, token: Int) {
-        if let frame = LucidBanner.shared.currentFrameInWindow(for: token) {
-            originalCenter = CGPoint(x: frame.midX, y: frame.midY)
-        }
         state.isMinimized = true
 
+        // Disable dragging while in bubble mode.
         LucidBanner.shared.setDraggingEnabled(false, for: token)
-        LucidBanner.shared.requestRelayout(animated: true)
 
         if let target = resolvedMinimizePoint(for: token) {
             LucidBanner.shared.move(
@@ -450,21 +456,10 @@ final class UploadBannerCoordinator {
     private func maximize(state: LucidBannerState, token: Int) {
         state.isMinimized = false
 
+        // Re-enable dragging in full mode.
         LucidBanner.shared.setDraggingEnabled(true, for: token)
-        LucidBanner.shared.requestRelayout(animated: true)
 
-        if let center = originalCenter {
-            LucidBanner.shared.move(
-                toX: center.x,
-                y: center.y,
-                for: token,
-                animated: true
-            )
-        } else {
-            LucidBanner.shared.resetPosition(for: token, animated: true)
-        }
-
-        originalCenter = nil
+        LucidBanner.shared.resetPosition(for: token, animated: true)
     }
 
     private func resolvedMinimizePoint(for token: Int) -> CGPoint? {
