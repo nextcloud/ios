@@ -38,8 +38,6 @@ class NCMainTabBarController: UITabBarController {
         NCNetworking.shared.controller = self
         NCImageCache.shared.controller = self
 
-        NCDownloadAction.shared.setup(sceneIdentifier: sceneIdentifier)
-
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
         // File

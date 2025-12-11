@@ -359,7 +359,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
                     let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
+                    await NCCreate().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
                 }
             })
         }
@@ -374,7 +374,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
                                                         image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
                     Task { @MainActor in
-                        let createDocument = NCCreateDocument()
+                        let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -386,7 +386,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
                                                         image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
                     Task { @MainActor in
-                        let createDocument = NCCreateDocument()
+                        let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -398,7 +398,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
                                                         image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
                     Task { @MainActor in
-                        let createDocument = NCCreateDocument()
+                        let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -414,7 +414,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
                                                       image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor])) { _ in
                     Task { @MainActor in
-                        let createDocument = NCCreateDocument()
+                        let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "document", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -428,7 +428,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
                                                       image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
                     Task { @MainActor in
-                        let createDocument = NCCreateDocument()
+                        let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "spreadsheet", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -443,7 +443,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
                                                       image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
                     Task { @MainActor in
-                        let createDocument = NCCreateDocument()
+                        let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "presentation", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -542,7 +542,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             collectionViewCommon.tabBarSelect?.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
-                collectionViewCommon.setEditMode(false)
+                Task {
+                    await collectionViewCommon.setEditMode(false)
+                }
             }
 
             collectionViewCommon.navigationItem.rightBarButtonItems = [select]
@@ -634,9 +636,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle")) { _ in
-            if !collectionViewCommon.dataSource.isEmpty() {
-                collectionViewCommon.setEditMode(true)
-                collectionViewCommon.collectionView.reloadData()
+            Task {
+                if !collectionViewCommon.dataSource.isEmpty() {
+                    await collectionViewCommon.setEditMode(true)
+                    collectionViewCommon.collectionView.reloadData()
+                }
             }
         }
 

@@ -7,12 +7,32 @@ import LucidBanner
 
 struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @State private var displayedProgress: Double = 0
 
     private let circleSize: CGFloat = 90
     private let lineWidth: CGFloat = 8
 
     var body: some View {
-        let progress = min(max(state.progress ?? 0, 0), 1) // clamp 0...1
+        let rawProgress = state.progress ?? 0
+        let clampedProgress = min(max(rawProgress, 0), 1)
+
+        let stage = state.stage?.lowercased()
+        let isSuccess = (stage == "success")
+        let isError = (stage == "error")
+
+        let visualProgress: Double = {
+            if isSuccess || isError {
+                return 1.0
+            } else {
+                return displayedProgress
+            }
+        }()
+
+        let strokeColor: Color = {
+            if isSuccess { return .green }
+            if isError { return .red }
+            return .primary
+        }()
 
         containerView {
             VStack(spacing: 18) {
@@ -23,7 +43,6 @@ struct HudBannerView: View {
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.center)
-                        .lineLimit(2)
                 }
 
                 // SUBTITLE
@@ -32,11 +51,11 @@ struct HudBannerView: View {
                         .font(.subheadline)
                         .foregroundStyle(.primary.opacity(0.95))
                         .multilineTextAlignment(.center)
-                        .lineLimit(3)
                 }
 
-                // PROGRESS CIRCLE
+                // PROGRESS CIRCLE + CENTER CONTENT
                 ZStack {
+                    // Background ring
                     Circle()
                         .stroke(
                             .gray.opacity(0.1),
@@ -44,24 +63,78 @@ struct HudBannerView: View {
                         )
                         .frame(width: circleSize, height: circleSize)
 
+                    // Foreground ring
                     Circle()
-                        .trim(from: 0, to: progress)
+                        .trim(from: 0, to: visualProgress)
                         .stroke(
-                            .primary,
+                            strokeColor,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                         )
                         .rotationEffect(.degrees(-90))
                         .frame(width: circleSize, height: circleSize)
-                        .animation(.easeInOut(duration: 0.20), value: progress)
 
-                    Text("\(Int(progress * 100))%")
-                        .font(.headline.monospacedDigit())
-                        .foregroundStyle(.primary)
+                    // Center content:
+                    // - checkmark for success
+                    // - xmark for error
+                    // - percentage for normal progress
+                    Group {
+                        if isSuccess {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 34, weight: .bold))
+                                .foregroundStyle(strokeColor)
+                        } else if isError {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 34, weight: .bold))
+                                .foregroundStyle(strokeColor)
+                        } else {
+                            Text("\(Int(visualProgress * 100))%")
+                                .font(.headline.monospacedDigit())
+                                .foregroundStyle(.primary)
+                        }
+                    }
                 }
                 .padding(.top, 4)
             }
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
+        }
+        .onAppear {
+            displayedProgress = clampedProgress
+        }
+        .onChange(of: state.progress) { _, newValue in
+            guard let newValue else {
+                withTransaction(Transaction(animation: nil)) {
+                    displayedProgress = 0
+                }
+                return
+            }
+
+            let newClamped = min(max(newValue, 0), 1)
+
+            if newClamped < displayedProgress {
+                let wasComplete = displayedProgress >= 0.95
+                let isNewStart = newClamped <= 0.1
+
+                if wasComplete && isNewStart {
+                    withTransaction(Transaction(animation: nil)) {
+                        displayedProgress = newClamped
+                    }
+                } else {
+                    return
+                }
+            } else {
+                withAnimation(.easeInOut(duration: 0.20)) {
+                    displayedProgress = newClamped
+                }
+            }
+        }
+        .onChange(of: state.stage) { _, newStage in
+            let lower = newStage?.lowercased()
+            if lower == "success" || lower == "error" {
+                withAnimation(.easeInOut(duration: 0.20)) {
+                    displayedProgress = 1.0
+                }
+            }
         }
     }
 
@@ -87,19 +160,17 @@ struct HudBannerView: View {
 // MARK: - Helper
 
 @MainActor
-func showHudBanner(
-    scene: UIWindowScene?,
-    title: String? = nil,
-    subtitle: String? = nil,
-    onTap: ((_ token: Int, _ stage: String?) -> Void)? = nil) -> Int {
+func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int?, _ stage: String?) -> Void)? = nil) -> Int? {
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
 
-    LucidBanner.shared.show(
+    return LucidBanner.shared.show(
         scene: scene,
         title: title,
         subtitle: subtitle,
-        maxWidth: 300,
         vPosition: .center,
-        swipeToDismiss: false,
         blocksTouches: true,
         onTap: { token, stage in
             onTap?(token, stage)
@@ -107,6 +178,30 @@ func showHudBanner(
     ) { state in
         HudBannerView(state: state)
     }
+}
+
+@MainActor
+func completeHudBannerSuccess(
+    token: Int?
+) {
+    LucidBanner.shared.update(
+        stage: .success,
+        autoDismissAfter: 2,
+        for: token
+    )
+}
+
+@MainActor
+func completeHudBannerError(
+    subtitle: String? = nil,
+    token: Int?
+) {
+    LucidBanner.shared.update(
+        subtitle: subtitle,
+        stage: .error,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        for: token
+    )
 }
 
 // MARK: - Preview
@@ -132,6 +227,9 @@ private struct HudBannerPreviewWrapper: View {
                     try? await Task.sleep(nanoseconds: 45_000_000)
                     state.progress = Double(i) / 100
                 }
+
+                try? await Task.sleep(nanoseconds: 400_000_000)
+                state.stage = "error"
             }
     }
 }

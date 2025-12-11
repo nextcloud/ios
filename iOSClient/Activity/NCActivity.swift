@@ -83,7 +83,11 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter().showError(error: error)
+                    Task {@MainActor in
+                        await showErrorBanner(controller: self.tabBarController,
+                                              errorDescription: error.errorDescription,
+                                              errorCode: error.errorCode)
+                    }
                 }
             }
         }
@@ -436,7 +440,11 @@ extension NCActivity {
             if error == .success, let comments = comments {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter().showError(error: error)
+                Task {@MainActor in
+                    await showErrorBanner(controller: self.tabBarController,
+                                          errorDescription: error.errorDescription,
+                                          errorCode: error.errorCode)
+                }
             }
 
             if let disptachGroup = disptachGroup {
@@ -574,7 +582,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter().showError(error: error)
+                                Task {@MainActor in
+                                    await showErrorBanner(controller: self.tabBarController,
+                                                          errorDescription: error.errorDescription,
+                                                          errorCode: error.errorCode)
+                                }
                             }
                         }
                     }))
@@ -604,7 +616,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                         if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter().showError(error: error)
+                            Task {@MainActor in
+                                await showErrorBanner(controller: self.tabBarController,
+                                                      errorDescription: error.errorDescription,
+                                                      errorCode: error.errorCode)
+                            }
                         }
                     }
                 }

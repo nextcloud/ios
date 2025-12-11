@@ -83,7 +83,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Activation singleton
         _ = NCAppStateManager.shared
         _ = NCNetworking.shared
-        _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
 
         if let activeTblAccount, !alreadyMigratedMultiDomains {
@@ -362,7 +361,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        await NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
+                        await NCCreate().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
                     case self.global.actionVoiceMemo:
                         NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                             if hasPermission {
@@ -416,7 +415,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         serverUrl = tblAccount.urlBase + "/" + davFiles
                     }
 
-                    NCDownloadAction.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
+                    NCNetworking.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
                 }
             }
 
@@ -495,6 +494,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             await NCService().startRequestServicesServer(account: account, controller: controller)
+
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await NCNetworking.shared.verifyZombie()
         }
 
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
@@ -580,8 +582,8 @@ final class SceneManager: @unchecked Sendable {
         return (scene as? UIWindowScene)?.keyWindow
     }
 
-    func getWindow(controller: NCMainTabBarController?) -> UIWindow? {
-        guard let controller,
+    func getWindow(controller: UITabBarController?) -> UIWindow? {
+        guard let controller = controller as? NCMainTabBarController,
               let scene = sceneController[controller] else { return nil }
         return getWindow(scene: scene)
     }
@@ -597,7 +599,7 @@ final class SceneManager: @unchecked Sendable {
             }
         }
         guard let mainTabBarController,
-              let scene = sceneController[mainTabBarController] else { return UIApplication.shared.firstWindow }
+              let scene = sceneController[mainTabBarController] else { return UIApplication.shared.mainAppWindow }
         return getWindow(scene: scene)
     }
 

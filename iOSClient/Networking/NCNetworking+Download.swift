@@ -296,4 +296,36 @@ extension NCNetworking {
 
         return isDifferent
     }
+
+    // MARK: - Download for Offline
+
+    func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) async {
+        if isOffline {
+            if metadata.directory {
+                await NCManageDatabase.shared.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: false, metadata: metadata)
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, metadata.serverUrlFileName, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
+                if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate) {
+                    await NCManageDatabase.shared.clearMetadatasSessionAsync(metadatas: metadatas)
+                }
+            } else {
+                await NCManageDatabase.shared.setOffLocalFileAsync(ocId: metadata.ocId)
+            }
+        } else if metadata.directory {
+            await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+            await NCManageDatabase.shared.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
+            await NCNetworking.shared.synchronizationDownload(account: metadata.account, serverUrl: metadata.serverUrlFileName, userId: metadata.userId, urlBase: metadata.urlBase, metadatasInDownload: nil)
+        } else {
+            var metadatasSynchronizationOffline: [tableMetadata] = []
+            metadatasSynchronizationOffline.append(metadata)
+            if let metadata = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
+                metadatasSynchronizationOffline.append(metadata)
+            }
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata], offline: true)
+            for metadata in metadatasSynchronizationOffline {
+                await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                    session: NCNetworking.shared.sessionDownloadBackground,
+                                                                                    selector: NCGlobal.shared.selectorSynchronizationOffline)
+            }
+        }
+    }
 }

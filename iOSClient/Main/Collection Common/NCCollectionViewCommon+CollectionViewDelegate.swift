@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import NextcloudKit
 import Alamofire
+import LucidBanner
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
@@ -25,8 +26,18 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         func downloadFile() async {
-            let hud = NCHud(self.tabBarController?.view)
             var downloadRequest: DownloadRequest?
+            let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
+            var tokenBanner: Int?
+            await MainActor.run {
+                tokenBanner = showHudBanner(scene: scene,
+                                            title: NSLocalizedString("_downloading_", comment: "")) { _, _ in
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
+            }
+
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                        session: self.networking.sessionDownload,
                                                                                        selector: global.selectorLoadFileView,
@@ -34,21 +45,23 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
 
-            hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                if let request = downloadRequest {
-                    request.cancel()
-                }
-            }
-
             let results = await self.networking.downloadFile(metadata: metadata) { request in
                 downloadRequest = request
             } progressHandler: { progress in
-                hud.progress(progress.fractionCompleted)
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: tokenBanner)
+                }
             }
+            await MainActor.run {
+                LucidBanner.shared.dismiss()
+            }
+
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                hud.dismiss()
+                print("ok")
             } else {
-                hud.error(text: results.nkError.errorDescription)
+                await showErrorBanner(scene: scene,
+                                      errorDescription: results.nkError.errorDescription,
+                                      errorCode: results.nkError.errorCode)
             }
         }
 
@@ -138,9 +151,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
         let identifier = indexPath as NSCopying
         var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+        let cell = collectionView.cellForItem(at: indexPath)
 
         if image == nil {
-            let cell = collectionView.cellForItem(at: indexPath)
             if cell is NCListCell {
                 image = (cell as? NCListCell)?.imageItem.image
             } else if cell is NCGridCell {
@@ -153,7 +166,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
+            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image, sender: cell)
             return contextMenu.viewMenu()
         })
     }

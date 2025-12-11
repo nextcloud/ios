@@ -412,7 +412,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private func createAccount(urlBase: String, user: String, password: String) {
         if self.controller == nil {
-            self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         }
 
         if let host = URL(string: urlBase)?.host {

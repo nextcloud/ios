@@ -26,8 +26,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                self.setEditMode(false)
                 Task {
+                    await self.setEditMode(false)
                     await self.networking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                     await self.reloadDataSource()
                 }
@@ -42,8 +42,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 for metadata in copyMetadatas where error == .success {
                     error = await self.networking.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
                 }
+                await self.setEditMode(false)
             }
-            self.setEditMode(false)
         })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
@@ -51,16 +51,24 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func move() {
-        let metadatas = getSelectedMetadatas()
+        Task {
+            let metadatas = getSelectedMetadatas()
+            await setEditMode(false)
 
-        NCDownloadAction.shared.openSelectView(items: metadatas, controller: self.controller)
-        setEditMode(false)
+            NCSelectOpen.shared.openView(items: metadatas, controller: self.controller)
+        }
+
     }
 
     func share() {
-        let metadatas = getSelectedMetadatas()
-        NCDownloadAction.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.controller, sender: nil)
-        setEditMode(false)
+        Task {
+            let metadatas = getSelectedMetadatas()
+            await setEditMode(false)
+            await NCCreate().createActivityViewController(
+                selectedMetadata: metadatas,
+                controller: self.controller,
+                sender: nil)
+        }
     }
 
     func saveAsAvailableOffline(isAnyOffline: Bool) {
@@ -73,29 +81,32 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
                 Task {
                     for metadata in metadatas {
-                        await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                        await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                     }
+                    await  self.setEditMode(false)
                 }
-                self.setEditMode(false)
+
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
             self.present(alert, animated: true)
         } else {
             Task {
                 for metadata in metadatas {
-                    await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                    await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                 }
+                await setEditMode(false)
             }
-            setEditMode(false)
         }
     }
 
     func lock(isAnyLocked: Bool) {
-        let metadatas = getSelectedMetadatas()
-        for metadata in metadatas where metadata.lock == isAnyLocked {
-            self.networking.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
+        Task {
+            let metadatas = getSelectedMetadatas()
+            for metadata in metadatas where metadata.lock == isAnyLocked {
+                self.networking.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
+            }
+            await setEditMode(false)
         }
-        setEditMode(false)
     }
 
     func getSelectedMetadatas() -> [tableMetadata] {
@@ -107,24 +118,23 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         return selectedMetadatas
     }
 
-    func setEditMode(_ editMode: Bool) {
-        Task {
-            isEditMode = editMode
-            fileSelect.removeAll()
+    @MainActor
+    func setEditMode(_ editMode: Bool) async {
+        isEditMode = editMode
+        fileSelect.removeAll()
 
-            navigationItem.hidesBackButton = editMode
-            navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
-            searchController(enabled: !editMode)
-            mainNavigationController?.hiddenPlusButton(editMode)
+        navigationItem.hidesBackButton = editMode
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        searchController(enabled: !editMode)
+        mainNavigationController?.hiddenPlusButton(editMode)
 
-            if editMode {
-                navigationItem.leftBarButtonItems = nil
-            } else {
-                await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-            }
-            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
-
-            self.collectionView.reloadData()
+        if editMode {
+            navigationItem.leftBarButtonItems = nil
+        } else {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
         }
+        await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+
+        self.collectionView.reloadData()
     }
 }

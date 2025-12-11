@@ -6,6 +6,7 @@ import UIKit
 import UniformTypeIdentifiers
 import NextcloudKit
 import Alamofire
+import LucidBanner
 
 class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -142,7 +143,14 @@ class NCDragDrop: NSObject {
 
             database.addMetadata(metadataForUpload)
         } catch {
-            NCContentPresenter().showError(error: NKError(error: error))
+            Task {@MainActor in
+                let error = NKError(error: error)
+                await showErrorBanner(
+                    controller: controller,
+                    errorDescription: error.errorDescription,
+                    errorCode: error.errorCode
+                )
+            }
             return
         }
     }
@@ -181,26 +189,32 @@ class NCDragDrop: NSObject {
 
     @MainActor
     func transfers(collectionViewCommon: NCCollectionViewCommon, destination: String, session: NCSession.Session) async {
+        defer {
+            LucidBanner.shared.dismiss()
+        }
+
         guard let metadatas = DragDropHover.shared.sourceMetadatas else {
             return
         }
-        let hud = NCHud(collectionViewCommon.controller?.view)
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
 
-        func setDetailText(status: String, percent: Int) {
-            let text = "\(NSLocalizedString("_tap_to_cancel_", comment: "")) \(status) (\(percent)%)"
-            hud.setDetailText(text)
-        }
-
-        hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-                        tapToCancelDetailText: true) {
+        let token = showUploadBanner(scene: scene,
+                                     vPosition: .bottom,
+                                     verticalMargin: 55,
+                                     onButtonTap: {
             if let downloadRequest {
                 downloadRequest.cancel()
             } else if let uploadRequest {
                 uploadRequest.cancel()
             }
-        }
+        })
+
+        LucidBanner.shared.update(title: NSLocalizedString("_transfer_in_progress_", comment: ""),
+                                  subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+                                  systemImage: "arrow.left.arrow.right.circle",
+                                  imageAnimation: .pulsebyLayer)
 
         for (index, metadata) in metadatas.enumerated() {
             if metadata.directory {
@@ -214,12 +228,9 @@ class NCDragDrop: NSObject {
             if !utilityFileSystem.fileProviderStorageExists(metadata) {
                 let results = await NCNetworking.shared.downloadFile(metadata: metadata) { request in
                     downloadRequest = request
-                } progressHandler: { progress in
-                    let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
-                    setDetailText(status: status, percent: Int(progress.fractionCompleted * 100))
                 }
                 guard results.nkError == .success else {
-                    hud.error(text: results.nkError.errorDescription)
+                    await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     break
                 }
             }
@@ -233,27 +244,22 @@ class NCDragDrop: NSObject {
             let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
 
-            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+            let results = await NCNetworking.shared.uploadFile(account: session.account,
+                                                               fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
-                                                               dateModificationFile: metadata.date as Date,
-                                                               account: session.account,
-                                                               performPostProcessing: false) { request in
+                                                               dateModificationFile: metadata.date as Date) { request in
                 uploadRequest = request
-            } progressHandler: { _, _, fractionCompleted in
-                let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()
-                setDetailText(status: status, percent: Int(fractionCompleted * 100))
             }
             guard results.error == .success else {
-                hud.error(text: results.error.errorDescription)
+                await showErrorBanner(scene: scene, errorDescription: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
 
-            hud.progress(Double(index + 1) / Double(metadatas.count))
+            LucidBanner.shared.update(progress: Double(index + 1) / Double(metadatas.count), for: token)
         }
 
         await collectionViewCommon.getServerData(forced: true)
-        hud.success()
     }
 }
 

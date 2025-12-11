@@ -5,22 +5,23 @@
 import UIKit
 import Queuer
 import NextcloudKit
+import LucidBanner
 
 class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
     var metadataMOV: tableMetadata
-    let hud: NCHud?
     let utilityFileSystem = NCUtilityFileSystem()
+    var scene: UIWindowScene?
+    var tokenBanner: Int?
 
-    init(metadata: tableMetadata, metadataMOV: tableMetadata, hudView: UIView) {
+    init(metadata: tableMetadata, metadataMOV: tableMetadata, controller: UITabBarController?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.metadataMOV = tableMetadata.init(value: metadataMOV)
-        self.hud = NCHud(hudView)
-        hud?.ringProgress(text: NSLocalizedString("_download_image_", comment: ""), detailText: self.metadata.fileName)
+        scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     }
 
     override func start() {
-        Task {
+        Task {@MainActor in
             guard !isCancelled,
                   let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                      session: NCNetworking.shared.sessionDownload,
@@ -30,28 +31,42 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                                                                                                          selector: "") else {
                 return self.finish()
             }
+            tokenBanner = showHudBanner(scene: scene, title: NSLocalizedString("_download_image_", comment: ""))
 
             let resultsMetadata = await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
             } progressHandler: { progess in
-                self.hud?.progress(progess.fractionCompleted)
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: progess.fractionCompleted, for: self.tokenBanner)
+                }
             }
+
             guard resultsMetadata.nkError == .success else {
-                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                Task {@MainActor in
+                    completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                }
                 return self.finish()
             }
 
             let resultsMetadataLive = await NCNetworking.shared.downloadFile(metadata: metadataLive) { _ in
             } progressHandler: { progess in
-                self.hud?.progress(progess.fractionCompleted)
+                Task {@MainActor in
+                    LucidBanner.shared.update(progress: progess.fractionCompleted, for: self.tokenBanner)
+                }
             }
+
             guard resultsMetadataLive.nkError == .success else {
-                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                Task {@MainActor in
+                    completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                }
                 return self.finish()
             }
+
+            // LucidBanner.shared.dismiss()
             self.saveLivePhotoToDisk(metadata: self.metadata, metadataMov: self.metadataMOV)
         }
     }
 
+    @MainActor
     func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
         let fileNameImage = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                                    fileName: metadata.fileNameView,
@@ -62,24 +77,30 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                                                                                                  userId: metadataMov.userId,
                                                                                                  urlBase: metadataMov.urlBase))
 
-        self.hud?.progress(0)
-        self.hud?.setText(NSLocalizedString("_livephoto_save_", comment: ""))
+        LucidBanner.shared.update(title: NSLocalizedString("_livephoto_save_", comment: ""),
+                                  for: self.tokenBanner)
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-            self.hud?.progress(progress)
+            Task {@MainActor in
+                LucidBanner.shared.update(progress: progress, for: self.tokenBanner)
+            }
         }, completion: { _, resources in
             if let resources {
                 NCLivePhoto.saveToLibrary(resources) { result in
-                    if !result {
-                        self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                    } else {
-                        self.hud?.success()
+                    Task {@MainActor in
+                        if !result {
+                            completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                        } else {
+                            completeHudBannerSuccess(token: self.tokenBanner)
+                        }
+                        return self.finish()
                     }
-                    return self.finish()
                 }
             } else {
-                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                return self.finish()
+                Task {@MainActor in
+                    completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                    return self.finish()
+                }
             }
         })
     }

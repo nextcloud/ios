@@ -23,7 +23,6 @@ struct ErrorBannerView: View {
                         Text("_error_")
                             .font(.subheadline.weight(.bold))
                             .multilineTextAlignment(.leading)
-                            .lineLimit(1)
                             .truncationMode(.tail)
                             .foregroundStyle(.white)
 
@@ -31,7 +30,6 @@ struct ErrorBannerView: View {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(4)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.white)
                         }
@@ -39,7 +37,6 @@ struct ErrorBannerView: View {
                             Text(footnote)
                                 .font(.caption)
                                 .multilineTextAlignment(.leading)
-                                .lineLimit(1)
                                 .truncationMode(.tail)
                                 .foregroundStyle(.white)
                         }
@@ -78,12 +75,29 @@ struct ErrorBannerView: View {
 // MARK: - Helper
 
 @MainActor
-func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int) {
+func showErrorBanner(controller: UITabBarController?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showErrorBanner(scene: scene, errorDescription: errorDescription, errorCode: errorCode, sleepBefore: sleepBefore)
+}
+
+@MainActor
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
+
     LucidBanner.shared.show(
         scene: scene,
         subtitle: errorDescription,
         footnote: "(Code: \(errorCode))",
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
+        vPosition: .top,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
+        onTap: { _, _ in
+            LucidBanner.shared.dismiss()
+        }
     ) { state in
         ErrorBannerView(state: state)
     }

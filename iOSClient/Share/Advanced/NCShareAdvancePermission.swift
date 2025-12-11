@@ -52,6 +52,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     /// This can only be created after the share has been actually created due to its requirement of the share token provided by the server.
     ///
     var downloadLimit: DownloadLimitViewModel = .unlimited
+    var downloadLimitChanged: Bool = false
 
     var shareConfig: NCShareConfig!
     var networking: NCShareNetworking?
@@ -260,7 +261,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
                 networking?.createShare(share, downloadLimit: self.downloadLimit)
             } else {
-                networking?.updateShare(share, downloadLimit: self.downloadLimit)
+                networking?.updateShare(share, downloadLimit: self.downloadLimit, changeDownloadLimit: downloadLimitChanged)
             }
         }
 
@@ -273,5 +274,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 extension NCShareAdvancePermission: NCShareDownloadLimitTableViewControllerDelegate {
     func didSetDownloadLimit(_ downloadLimit: DownloadLimitViewModel) {
         self.downloadLimit = downloadLimit
+        self.downloadLimitChanged = true
     }
 }

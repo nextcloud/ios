@@ -85,7 +85,11 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_trash_file_not_found_")
-                        NCContentPresenter().showError(error: error)
+                        Task {@MainActor in
+                            await showErrorBanner(controller: viewController.controller,
+                                                  errorDescription: error.errorDescription,
+                                                  errorCode: error.errorCode)
+                        }
                     }
                 }
             }
@@ -97,7 +101,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 return
             }
             Task {
-                await NCDownloadAction.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
+                await NCNetworking.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
             }
         }
     }

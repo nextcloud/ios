@@ -85,7 +85,7 @@ extension NCCollectionViewCommon {
                     order: 10,
                     sender: sender,
                     action: { _ in
-                        NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .activity)
+                        NCCreate().createShare(viewController: self, metadata: metadata, page: .activity)
                     }
                 )
             )
@@ -137,7 +137,7 @@ extension NCCollectionViewCommon {
                     order: 21,
                     sender: sender,
                     action: { _ in
-                        NCDownloadAction.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
+                        NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
@@ -257,8 +257,7 @@ extension NCCollectionViewCommon {
         // SAVE LIVE PHOTO
         //
         if NCNetworking.shared.isOnline,
-           let metadataMOV = database.getMetadataLivePhoto(metadata: metadata),
-           let hudView = self.tabBarController?.view {
+           let metadataMOV = database.getMetadataLivePhoto(metadata: metadata) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
@@ -266,7 +265,7 @@ extension NCCollectionViewCommon {
                     order: 100,
                     sender: sender,
                     action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
+                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.tabBarController))
                     }
                 )
             )

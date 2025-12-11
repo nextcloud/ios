@@ -102,7 +102,6 @@ extension NCManageDatabase {
             return results.map { tableLivePhoto(value: $0) } // detached copy
         }
     }
-    // swiftlint:enable empty_string
 
     /// Returns true if at least one valid Live Photo record exists for the given account.
     func hasLivePhotos() async -> Bool {
@@ -117,4 +116,5 @@ extension NCManageDatabase {
             return !results.isEmpty
         } ?? false
     }
+    // swiftlint:enable empty_string
 }
