@@ -362,12 +362,13 @@ actor NCNetworkingProcess {
                     var request: UploadRequest?
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
                     let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+                    let inset = CGSize(width: 0, height: 0)
 
                     let token = await showUploadBanner(scene: scene,
                                                        vPosition: .bottom,
                                                        verticalMargin: 55,
                                                        blocksTouches: true,
-                                                       inset: CGSize(width: 100, height: 100),
+                                                       inset: inset,
                                                        corner: .bottomLeading,
                                                        onButtonTap: {
                         if let currentUploadTask {
@@ -412,6 +413,7 @@ actor NCNetworkingProcess {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
         var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+        let inset = CGSize(width: 100, height: 10)
 
         tokenBanner = showUploadBanner(scene: scene,
                                        vPosition: .bottom,
@@ -419,8 +421,8 @@ actor NCNetworkingProcess {
                                        draggable: true,
                                        stage: .init(rawValue: "button"),
                                        allowMinimizeOnTap: true,
-                                       inset: CGSize(width: 40, height: 40),
-                                       corner: .bottomLeading,
+                                       inset: inset,
+                                       corner: .topLeading,
                                        onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()

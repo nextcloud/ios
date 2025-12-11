@@ -395,7 +395,7 @@ final class LucidBannerMinimizeCoordinator {
         }
 
         if state.isMinimized {
-            guard let target = resolvedMinimizePoint(for: token) else {
+            guard let target = resolvedMinimizePoint() else {
                 return
             }
 
@@ -430,7 +430,7 @@ final class LucidBannerMinimizeCoordinator {
         // Re-measure
         LucidBanner.shared.requestRelayout(animated: false)
         // Move in the point
-        if let target = resolvedMinimizePoint(for: token) {
+        if let target = resolvedMinimizePoint() {
             LucidBanner.shared.move(
                 toX: target.x,
                 y: target.y,
@@ -452,33 +452,49 @@ final class LucidBannerMinimizeCoordinator {
         LucidBanner.shared.resetPosition(for: token, animated: true)
     }
 
-    private func resolvedMinimizePoint(for token: Int?) -> CGPoint? {
-        guard let anchor = minimizeAnchor else { return nil }
+    private func resolvedMinimizePoint() -> CGPoint? {
+        guard let anchor = minimizeAnchor else {
+            return nil
+        }
         guard let hostView = LucidBanner.shared.currentHostView(for: token),
               let window = hostView.window else {
             return nil
         }
 
         let bounds = window.bounds
+        let safe = window.safeAreaInsets
 
         switch anchor {
         case .absolute(let point):
             return point
 
         case .corner(let corner, let inset):
+            let verticalBase = max(safe.top, safe.bottom)
+
             switch corner {
             case .topLeading:
-                return CGPoint(x: bounds.minX + inset.width,
-                               y: bounds.minY + inset.height)
+                return CGPoint(
+                    x: bounds.minX + safe.left + inset.width,
+                    y: bounds.minY + verticalBase + inset.height
+                )
+
             case .topTrailing:
-                return CGPoint(x: bounds.maxX - inset.width,
-                               y: bounds.minY + inset.height)
+                return CGPoint(
+                    x: bounds.maxX - safe.right - inset.width,
+                    y: bounds.minY + verticalBase + inset.height
+                )
+
             case .bottomLeading:
-                return CGPoint(x: bounds.minX + inset.width,
-                               y: bounds.maxY - inset.height)
+                return CGPoint(
+                    x: bounds.minX + safe.left + inset.width,
+                    y: bounds.maxY - verticalBase - inset.height
+                )
+
             case .bottomTrailing:
-                return CGPoint(x: bounds.maxX - inset.width,
-                               y: bounds.maxY - inset.height)
+                return CGPoint(
+                    x: bounds.maxX - safe.right - inset.width,
+                    y: bounds.maxY - verticalBase - inset.height
+                )
             }
         }
     }
