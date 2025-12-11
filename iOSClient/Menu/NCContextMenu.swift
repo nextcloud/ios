@@ -21,14 +21,12 @@ class NCContextMenu: NSObject {
     let metadata: tableMetadata
     let sceneIdentifier: String
     let viewController: UIViewController
-    let image: UIImage?
     let sender: Any?
 
-    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, image: UIImage?, sender: Any?) {
+    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, sender: Any?) {
         self.metadata = metadata
         self.viewController = viewController
         self.sceneIdentifier = sceneIdentifier
-        self.image = image
         self.sender = sender
     }
 
