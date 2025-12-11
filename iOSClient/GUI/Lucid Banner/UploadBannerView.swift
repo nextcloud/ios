@@ -167,7 +167,7 @@ struct UploadBannerView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 guard allowMinimizeOnTap else { return }
-                UploadBannerCoordinator.shared.handleTap(state)
+                LucidBannerMinimizeCoordinator.shared.handleTap(state)
             }
 
         if isMinimized {
@@ -286,7 +286,7 @@ func showUploadBanner(scene: UIWindowScene?,
                       policy: LucidBanner.ShowPolicy = .drop,
                       allowMinimizeOnTap: Bool = false,
                       inset: CGSize? = nil,
-                      corner: UploadBannerCoordinator.UploadBannerMinimizeAnchor.Corner? = nil,
+                      corner: LucidBanner.MinimizeAnchor.Corner? = nil,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
     let token = LucidBanner.shared.show(
         scene: scene,
@@ -304,30 +304,18 @@ func showUploadBanner(scene: UIWindowScene?,
     }
 
     if let inset, let corner {
-        UploadBannerCoordinator.shared.register(token: token, corner: corner, inset: inset)
+        LucidBannerMinimizeCoordinator.shared.register(token: token, corner: corner, inset: inset)
     }
 
     return token
 }
 
 @MainActor
-final class UploadBannerCoordinator {
-    static let shared = UploadBannerCoordinator()
-
-    public enum UploadBannerMinimizeAnchor {
-        case absolute(CGPoint)
-        case corner(Corner, inset: CGSize)
-
-        enum Corner {
-            case topLeading
-            case topTrailing
-            case bottomLeading
-            case bottomTrailing
-        }
-    }
+final class LucidBannerMinimizeCoordinator {
+    static let shared = LucidBannerMinimizeCoordinator()
 
     private var currentToken: Int?
-    private var minimizeAnchor: UploadBannerMinimizeAnchor?
+    private var minimizeAnchor: LucidBanner.MinimizeAnchor?
     private var orientationObserver: NSObjectProtocol?
 
     init() {
@@ -355,7 +343,7 @@ final class UploadBannerCoordinator {
     }
 
     func register(token: Int?,
-                  corner: UploadBannerMinimizeAnchor.Corner,
+                  corner: LucidBanner.MinimizeAnchor.Corner,
                   inset: CGSize = CGSize(width: 20, height: 40)) {
         guard let token else {
             return
@@ -458,7 +446,7 @@ final class UploadBannerCoordinator {
     private func maximize(state: LucidBannerState, token: Int) {
         state.isMinimized = false
 
-        if state.isDraggable {
+        if state.draggable {
             LucidBanner.shared.setDraggingEnabled(true, for: token)
         }
 
@@ -507,7 +495,6 @@ final class UploadBannerCoordinator {
         systemImage: "arrow.up.circle",
         imageAnimation: .none,
         progress: 0.71,
-        isDraggable: false,
         stage: "button"
     )
 
