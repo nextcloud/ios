@@ -427,8 +427,9 @@ final class LucidBannerMinimizeCoordinator {
         state.isMinimized = true
 
         LucidBanner.shared.setDraggingEnabled(false, for: token)
+        // Re-measure
         LucidBanner.shared.requestRelayout(animated: false)
-
+        // Move in the point
         if let target = resolvedMinimizePoint(for: token) {
             LucidBanner.shared.move(
                 toX: target.x,
@@ -445,7 +446,9 @@ final class LucidBannerMinimizeCoordinator {
         if state.draggable {
             LucidBanner.shared.setDraggingEnabled(true, for: token)
         }
-
+        // Re-measure
+        LucidBanner.shared.requestRelayout(animated: false)
+        // Then animate back to the standard position managed by LucidBanner.
         LucidBanner.shared.resetPosition(for: token, animated: true)
     }
 
