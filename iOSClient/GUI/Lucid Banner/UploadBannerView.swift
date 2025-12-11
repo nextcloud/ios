@@ -314,7 +314,7 @@ func showUploadBanner(scene: UIWindowScene?,
 final class LucidBannerMinimizeCoordinator {
     static let shared = LucidBannerMinimizeCoordinator()
 
-    private var currentToken: Int?
+    private var token: Int?
     private var minimizeAnchor: LucidBanner.MinimizeAnchor?
     private var orientationObserver: NSObjectProtocol?
 
@@ -344,16 +344,16 @@ final class LucidBannerMinimizeCoordinator {
 
     func register(token: Int?,
                   corner: LucidBanner.MinimizeAnchor.Corner,
-                  inset: CGSize = CGSize(width: 20, height: 40)) {
+                  inset: CGSize) {
         guard let token else {
             return
         }
-        currentToken = token
+        self.token = token
         minimizeAnchor = .corner(corner, inset: inset)
     }
 
     func clear() {
-        currentToken = nil
+        token = nil
         minimizeAnchor = nil
     }
 
@@ -366,8 +366,8 @@ final class LucidBannerMinimizeCoordinator {
     }
 
     func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
-        guard let token = currentToken else { return }
-        guard LucidBanner.shared.isAlive(token) else {
+        guard let token,
+              LucidBanner.shared.isAlive(token) else {
             clear()
             return
         }
@@ -385,7 +385,7 @@ final class LucidBannerMinimizeCoordinator {
     }
 
     func refreshPosition(animated: Bool = true) {
-        guard let token = currentToken,
+        guard let token,
               LucidBanner.shared.isAlive(token) else {
             clear()
             return
@@ -411,27 +411,23 @@ final class LucidBannerMinimizeCoordinator {
     }
 
     func handleTap(_ state: LucidBannerState) {
-        guard let token = currentToken else {
-            return
-        }
-
         guard LucidBanner.shared.isAlive(token) else {
             clear()
             return
         }
 
         if state.isMinimized {
-            maximize(state: state, token: token)
+            maximize(state: state)
         } else {
-            minimize(state: state, token: token)
+            minimize(state: state)
         }
     }
 
-    private func minimize(state: LucidBannerState, token: Int) {
+    private func minimize(state: LucidBannerState) {
         state.isMinimized = true
 
-        // Disable dragging.
         LucidBanner.shared.setDraggingEnabled(false, for: token)
+        LucidBanner.shared.requestRelayout(animated: false)
 
         if let target = resolvedMinimizePoint(for: token) {
             LucidBanner.shared.move(
@@ -443,7 +439,7 @@ final class LucidBannerMinimizeCoordinator {
         }
     }
 
-    private func maximize(state: LucidBannerState, token: Int) {
+    private func maximize(state: LucidBannerState) {
         state.isMinimized = false
 
         if state.draggable {
@@ -453,7 +449,7 @@ final class LucidBannerMinimizeCoordinator {
         LucidBanner.shared.resetPosition(for: token, animated: true)
     }
 
-    private func resolvedMinimizePoint(for token: Int) -> CGPoint? {
+    private func resolvedMinimizePoint(for token: Int?) -> CGPoint? {
         guard let anchor = minimizeAnchor else { return nil }
         guard let hostView = LucidBanner.shared.currentHostView(for: token),
               let window = hostView.window else {

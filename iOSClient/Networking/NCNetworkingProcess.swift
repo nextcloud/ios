@@ -367,7 +367,7 @@ actor NCNetworkingProcess {
                                                        vPosition: .bottom,
                                                        verticalMargin: 55,
                                                        blocksTouches: true,
-                                                       inset: CGSize(width: 10, height: 10),
+                                                       inset: CGSize(width: 100, height: 100),
                                                        corner: .bottomLeading,
                                                        onButtonTap: {
                         if let currentUploadTask {
@@ -419,7 +419,7 @@ actor NCNetworkingProcess {
                                        draggable: true,
                                        stage: .init(rawValue: "button"),
                                        allowMinimizeOnTap: true,
-                                       inset: CGSize(width: 10, height: 10),
+                                       inset: CGSize(width: 40, height: 40),
                                        corner: .bottomLeading,
                                        onButtonTap: {
             if let currentUploadTask {
