@@ -286,7 +286,7 @@ func showUploadBanner(scene: UIWindowScene?,
                       policy: LucidBanner.ShowPolicy = .drop,
                       allowMinimizeOnTap: Bool = false,
                       inset: CGSize? = nil,
-                      corner: LucidBanner.MinimizeAnchor.Corner? = nil,
+                      corner: LucidBannerMinimizeCoordinator.MinimizeAnchor.Corner? = nil,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
     let token = LucidBanner.shared.show(
         scene: scene,
@@ -314,8 +314,46 @@ func showUploadBanner(scene: UIWindowScene?,
 final class LucidBannerMinimizeCoordinator {
     static let shared = LucidBannerMinimizeCoordinator()
 
+    struct ResolveContext {
+        let token: Int
+        let window: UIWindow
+        let bounds: CGRect
+        let safeAreaInsets: UIEdgeInsets
+        let anchor: MinimizeAnchor
+        let state: LucidBannerState
+    }
+
+    /// Logical anchor used when a banner is minimized.
+    ///
+    /// This describes *where* the minimized bubble should be placed
+    /// inside the window coordinate space.
+    public enum MinimizeAnchor: Equatable {
+        /// Absolute point in window coordinates.
+        case absolute(CGPoint)
+        /// Attach to one of the window corners with a given inset.
+        case corner(Corner, inset: CGSize)
+        /// Supported corners for minimized placement.
+        public enum Corner {
+            case topLeading
+            case topCenter
+            case topTrailing
+
+            case centerLeading
+            case center
+            case centerTrailing
+
+            case bottomLeading
+            case bottomCenter
+            case bottomTrailing
+        }
+    }
+
+    /// Custom resolver used to compute the minimized target point.
+    /// Return nil to let the coordinator use the default logic.
+    var resolveMinimizePointHandler: (@MainActor (_ context: ResolveContext) -> CGPoint?)?
+
     private var token: Int?
-    private var minimizeAnchor: LucidBanner.MinimizeAnchor?
+    private var minimizeAnchor: MinimizeAnchor?
     private var orientationObserver: NSObjectProtocol?
 
     init() {
@@ -342,8 +380,10 @@ final class LucidBannerMinimizeCoordinator {
         }
     }
 
+
+
     func register(token: Int?,
-                  corner: LucidBanner.MinimizeAnchor.Corner,
+                  corner: MinimizeAnchor.Corner,
                   inset: CGSize) {
         guard let token else {
             return
@@ -453,12 +493,26 @@ final class LucidBannerMinimizeCoordinator {
     }
 
     private func resolvedMinimizePoint() -> CGPoint? {
-        guard let anchor = minimizeAnchor else {
+        guard let token,
+              let anchor = minimizeAnchor,
+              let hostView = LucidBanner.shared.currentHostView(for: token),
+              let window = hostView.window,
+              let state = LucidBanner.shared.currentState(for: token)
+        else {
             return nil
         }
-        guard let hostView = LucidBanner.shared.currentHostView(for: token),
-              let window = hostView.window else {
-            return nil
+
+        let context = ResolveContext(
+            token: token,
+            window: window,
+            bounds: window.bounds,
+            safeAreaInsets: window.safeAreaInsets,
+            anchor: anchor,
+            state: state
+        )
+
+        if let custom = resolveMinimizePointHandler?(context) {
+            return custom
         }
 
         let bounds = window.bounds
@@ -472,9 +526,17 @@ final class LucidBannerMinimizeCoordinator {
             let verticalBase = max(safe.top, safe.bottom)
 
             switch corner {
+
+            // --- TOP ROW ---
             case .topLeading:
                 return CGPoint(
                     x: bounds.minX + safe.left + inset.width,
+                    y: bounds.minY + verticalBase + inset.height
+                )
+
+            case .topCenter:
+                return CGPoint(
+                    x: bounds.midX,
                     y: bounds.minY + verticalBase + inset.height
                 )
 
@@ -484,9 +546,35 @@ final class LucidBannerMinimizeCoordinator {
                     y: bounds.minY + verticalBase + inset.height
                 )
 
+            // --- CENTER ROW ---
+            case .centerLeading:
+                return CGPoint(
+                    x: bounds.minX + safe.left + inset.width,
+                    y: bounds.midY
+                )
+
+            case .center:
+                return CGPoint(
+                    x: bounds.midX,
+                    y: bounds.midY
+                )
+
+            case .centerTrailing:
+                return CGPoint(
+                    x: bounds.maxX - safe.right - inset.width,
+                    y: bounds.midY
+                )
+
+            // --- BOTTOM ROW ---
             case .bottomLeading:
                 return CGPoint(
                     x: bounds.minX + safe.left + inset.width,
+                    y: bounds.maxY - verticalBase - inset.height
+                )
+
+            case .bottomCenter:
+                return CGPoint(
+                    x: bounds.midX,
                     y: bounds.maxY - verticalBase - inset.height
                 )
 

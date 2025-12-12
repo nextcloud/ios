@@ -31,6 +31,12 @@ class NCMainTabBarController: UITabBarController {
         return SceneManager.shared.getWindow(controller: self)
     }
 
+    var visibleBarHeight: CGFloat {
+        let safeBottom = tabBar.safeAreaInsets.bottom
+        let height = tabBar.frame.height - safeBottom
+        return height
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
