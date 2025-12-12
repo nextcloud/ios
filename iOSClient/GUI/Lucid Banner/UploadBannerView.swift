@@ -214,8 +214,9 @@ struct UploadBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
         let isError = (state.typedStage == .error)
-        let cornerRadius: CGFloat = 22
+        let isSuccess = (state.typedStage == .success)
         let isMinimized = state.isMinimized
+        let cornerRadius: CGFloat = 22
 
         let base = content()
             .contentShape(Rectangle())
@@ -224,7 +225,7 @@ struct UploadBannerView: View {
                 LucidBannerMinimizeCoordinator.shared.handleTap(state)
             }
 
-        if isMinimized {
+        if isMinimized || isSuccess {
             if #available(iOS 26, *) {
                 if isError {
                     base
@@ -339,10 +340,10 @@ public extension View {
         systemImage: "arrow.up.circle",
         imageAnimation: .none,
         progress: 0.71,
-        stage: "button"
+        stage: "success"
     )
 
-    state.isMinimized = true
+    // state.isMinimized = false
 
     return ZStack {
         LinearGradient(
@@ -353,7 +354,7 @@ public extension View {
 
         UploadBannerView(
             state: state,
-            allowMinimizeOnTap: true
+            allowMinimizeOnTap: false
         )
         .padding()
     }
