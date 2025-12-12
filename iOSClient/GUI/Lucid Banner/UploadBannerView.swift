@@ -285,8 +285,6 @@ func showUploadBanner(scene: UIWindowScene?,
                       stage: LucidBanner.Stage? = nil,
                       policy: LucidBanner.ShowPolicy = .drop,
                       allowMinimizeOnTap: Bool = false,
-                      inset: CGSize? = nil,
-                      corner: LucidBannerMinimizeCoordinator.MinimizeAnchor.Corner? = nil,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
     let token = LucidBanner.shared.show(
         scene: scene,
@@ -303,10 +301,22 @@ func showUploadBanner(scene: UIWindowScene?,
                          onButtonTap: onButtonTap)
     }
 
-    if let inset, let corner {
-        LucidBannerMinimizeCoordinator.shared.register(token: token, corner: corner, inset: inset)
-    }
+#if !EXTENSION
+    if allowMinimizeOnTap {
+        LucidBannerMinimizeCoordinator.shared.register(token: token) { context in
+            let controller = SceneManager.shared.getController(scene: scene)
+            let height = controller?.visibleBarHeight ?? 55
+            let bounds = context.bounds
+            let safeAreaInsets = context.safeAreaInsets
+            let over: CGFloat = 20
 
+            return CGPoint(
+                x: bounds.midX,
+                y: bounds.maxY - safeAreaInsets.bottom - height + over
+            )
+        }
+    }
+#endif
     return token
 }
 
@@ -314,47 +324,42 @@ func showUploadBanner(scene: UIWindowScene?,
 final class LucidBannerMinimizeCoordinator {
     static let shared = LucidBannerMinimizeCoordinator()
 
+    // MARK: - Types
+
+    /// Context passed to the mandatory minimize-point resolver.
     struct ResolveContext {
+        /// The active banner token.
         let token: Int
-        let window: UIWindow
-        let bounds: CGRect
-        let safeAreaInsets: UIEdgeInsets
-        let anchor: MinimizeAnchor
+
+        /// The shared banner state instance (SwiftUI observes this).
         let state: LucidBannerState
+
+        /// The banner host view (UIKit container for the SwiftUI content).
+        let hostView: UIView
+
+        /// The window hosting the banner.
+        let window: UIWindow
+
+        /// Convenience: window bounds.
+        let bounds: CGRect
+
+        /// Convenience: window safe-area insets.
+        let safeAreaInsets: UIEdgeInsets
     }
 
-    /// Logical anchor used when a banner is minimized.
+    /// Mandatory resolver used to compute the minimized target point.
     ///
-    /// This describes *where* the minimized bubble should be placed
-    /// inside the window coordinate space.
-    public enum MinimizeAnchor: Equatable {
-        /// Absolute point in window coordinates.
-        case absolute(CGPoint)
-        /// Attach to one of the window corners with a given inset.
-        case corner(Corner, inset: CGSize)
-        /// Supported corners for minimized placement.
-        public enum Corner {
-            case topLeading
-            case topCenter
-            case topTrailing
+    /// Return a CGPoint in window coordinates where the banner should move
+    /// when minimized.
+    typealias ResolveMinimizePointHandler = @MainActor (_ context: ResolveContext) -> CGPoint
 
-            case centerLeading
-            case center
-            case centerTrailing
+    // MARK: - Stored properties
 
-            case bottomLeading
-            case bottomCenter
-            case bottomTrailing
-        }
-    }
-
-    /// Custom resolver used to compute the minimized target point.
-    /// Return nil to let the coordinator use the default logic.
-    var resolveMinimizePointHandler: (@MainActor (_ context: ResolveContext) -> CGPoint?)?
-
-    private var token: Int?
-    private var minimizeAnchor: MinimizeAnchor?
+    private var currentToken: Int?
+    private var resolveHandler: ResolveMinimizePointHandler?
     private var orientationObserver: NSObjectProtocol?
+
+    // MARK: - Init
 
     init() {
         orientationObserver = NotificationCenter.default.addObserver(
@@ -362,13 +367,11 @@ final class LucidBannerMinimizeCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self else {
-                return
-            }
+            guard let self else { return }
 
             Task { @MainActor in
                 // Small delay to let the window/layout settle after rotation.
-                try? await Task.sleep(for: .milliseconds(50))
+                try? await Task.sleep(for: .milliseconds(250))
                 self.refreshPosition(animated: true)
             }
         }
@@ -380,62 +383,67 @@ final class LucidBannerMinimizeCoordinator {
         }
     }
 
+    // MARK: - Registration
 
-
-    func register(token: Int?,
-                  corner: MinimizeAnchor.Corner,
-                  inset: CGSize) {
+    /// Registers the active banner token and the mandatory resolver.
+    ///
+    /// - Parameters:
+    ///   - token: Banner token returned by `LucidBanner.shared.show(...)`.
+    ///   - resolveMinimizePoint: Mandatory handler that returns the minimized target point.
+    func register(token: Int?, resolveMinimizePoint: @escaping ResolveMinimizePointHandler) {
         guard let token else {
+            clear()
             return
         }
-        self.token = token
-        minimizeAnchor = .corner(corner, inset: inset)
+
+        currentToken = token
+        resolveHandler = resolveMinimizePoint
     }
 
+    /// Clears the coordinator state.
     func clear() {
-        token = nil
-        minimizeAnchor = nil
+        currentToken = nil
+        resolveHandler = nil
     }
 
-    func setMinimizePoint(_ point: CGPoint?) {
-        if let point {
-            minimizeAnchor = .absolute(point)
+    // MARK: - Public API
+
+    /// Handles a tap gesture coming from the SwiftUI banner content.
+    ///
+    /// The coordinator uses the registered token and resolver.
+    func handleTap(_ state: LucidBannerState) {
+        guard let token = currentToken else { return }
+
+        guard LucidBanner.shared.isAlive(token) else {
+            clear()
+            return
+        }
+
+        if state.isMinimized {
+            maximize(state)
         } else {
-            minimizeAnchor = nil
+            minimize(state)
         }
     }
 
-    func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
-        guard let token,
-              LucidBanner.shared.isAlive(token) else {
-            clear()
-            return
-        }
-        guard let state = LucidBanner.shared.currentState(for: token),
-              state.isMinimized else {
-            return
-        }
-
-        LucidBanner.shared.move(
-            toX: point.x,
-            y: point.y,
-            for: token,
-            animated: animated
-        )
-    }
-
+    /// Refreshes banner position after rotation/layout changes.
+    ///
+    /// If minimized, recomputes the target via the resolver and moves there.
+    /// If not minimized, resets to the standard LucidBanner position.
     func refreshPosition(animated: Bool = true) {
-        guard let token,
-              LucidBanner.shared.isAlive(token) else {
+        guard let token = currentToken else { return }
+
+        guard LucidBanner.shared.isAlive(token) else {
             clear()
             return
         }
+
         guard let state = LucidBanner.shared.currentState(for: token) else {
             return
         }
 
         if state.isMinimized {
-            guard let target = resolvedMinimizePoint() else {
+            guard let target = resolvedMinimizePoint(for: token, state: state) else {
                 return
             }
 
@@ -450,27 +458,42 @@ final class LucidBannerMinimizeCoordinator {
         }
     }
 
-    func handleTap(_ state: LucidBannerState) {
+    /// Moves the banner only if it is currently minimized.
+    func moveIfMinimized(to point: CGPoint, animated: Bool = true) {
+        guard let token = currentToken else { return }
+
         guard LucidBanner.shared.isAlive(token) else {
             clear()
             return
         }
 
-        if state.isMinimized {
-            maximize(state: state)
-        } else {
-            minimize(state: state)
+        guard let state = LucidBanner.shared.currentState(for: token),
+              state.isMinimized else {
+            return
         }
+
+        LucidBanner.shared.move(
+            toX: point.x,
+            y: point.y,
+            for: token,
+            animated: animated
+        )
     }
 
-    private func minimize(state: LucidBannerState) {
+    // MARK: - Private helpers
+
+    private func minimize(_ state: LucidBannerState) {
+        guard let token = currentToken else { return }
+
         state.isMinimized = true
 
+        // Disable dragging while minimized.
         LucidBanner.shared.setDraggingEnabled(false, for: token)
-        // Re-measure
+
+        // Re-measure for the compact (minimized) SwiftUI layout.
         LucidBanner.shared.requestRelayout(animated: false)
-        // Move in the point
-        if let target = resolvedMinimizePoint() {
+
+        if let target = resolvedMinimizePoint(for: token, state: state) {
             LucidBanner.shared.move(
                 toX: target.x,
                 y: target.y,
@@ -480,111 +503,40 @@ final class LucidBannerMinimizeCoordinator {
         }
     }
 
-    private func maximize(state: LucidBannerState) {
+    private func maximize(_ state: LucidBannerState) {
+        guard let token = currentToken else { return }
+
         state.isMinimized = false
 
         if state.draggable {
             LucidBanner.shared.setDraggingEnabled(true, for: token)
         }
-        // Re-measure
+
+        // Re-measure for the full SwiftUI layout.
         LucidBanner.shared.requestRelayout(animated: false)
-        // Then animate back to the standard position managed by LucidBanner.
+
+        // Let LucidBanner restore the canonical position.
         LucidBanner.shared.resetPosition(for: token, animated: true)
     }
 
-    private func resolvedMinimizePoint() -> CGPoint? {
-        guard let token,
-              let anchor = minimizeAnchor,
-              let hostView = LucidBanner.shared.currentHostView(for: token),
-              let window = hostView.window,
-              let state = LucidBanner.shared.currentState(for: token)
-        else {
+    private func resolvedMinimizePoint(for token: Int, state: LucidBannerState) -> CGPoint? {
+        guard let resolveHandler else { return nil }
+
+        guard let hostView = LucidBanner.shared.currentHostView(for: token),
+              let window = hostView.window else {
             return nil
         }
 
-        let context = ResolveContext(
+        let ctx = ResolveContext(
             token: token,
+            state: state,
+            hostView: hostView,
             window: window,
             bounds: window.bounds,
-            safeAreaInsets: window.safeAreaInsets,
-            anchor: anchor,
-            state: state
+            safeAreaInsets: window.safeAreaInsets
         )
 
-        if let custom = resolveMinimizePointHandler?(context) {
-            return custom
-        }
-
-        let bounds = window.bounds
-        let safe = window.safeAreaInsets
-
-        switch anchor {
-        case .absolute(let point):
-            return point
-
-        case .corner(let corner, let inset):
-            let verticalBase = max(safe.top, safe.bottom)
-
-            switch corner {
-
-            // --- TOP ROW ---
-            case .topLeading:
-                return CGPoint(
-                    x: bounds.minX + safe.left + inset.width,
-                    y: bounds.minY + verticalBase + inset.height
-                )
-
-            case .topCenter:
-                return CGPoint(
-                    x: bounds.midX,
-                    y: bounds.minY + verticalBase + inset.height
-                )
-
-            case .topTrailing:
-                return CGPoint(
-                    x: bounds.maxX - safe.right - inset.width,
-                    y: bounds.minY + verticalBase + inset.height
-                )
-
-            // --- CENTER ROW ---
-            case .centerLeading:
-                return CGPoint(
-                    x: bounds.minX + safe.left + inset.width,
-                    y: bounds.midY
-                )
-
-            case .center:
-                return CGPoint(
-                    x: bounds.midX,
-                    y: bounds.midY
-                )
-
-            case .centerTrailing:
-                return CGPoint(
-                    x: bounds.maxX - safe.right - inset.width,
-                    y: bounds.midY
-                )
-
-            // --- BOTTOM ROW ---
-            case .bottomLeading:
-                return CGPoint(
-                    x: bounds.minX + safe.left + inset.width,
-                    y: bounds.maxY - verticalBase - inset.height
-                )
-
-            case .bottomCenter:
-                return CGPoint(
-                    x: bounds.midX,
-                    y: bounds.maxY - verticalBase - inset.height
-                )
-
-            case .bottomTrailing:
-                return CGPoint(
-                    x: bounds.maxX - safe.right - inset.width,
-                    y: bounds.maxY - verticalBase - inset.height
-                )
-            }
-        }
+        return resolveHandler(ctx)
     }
 }
 
