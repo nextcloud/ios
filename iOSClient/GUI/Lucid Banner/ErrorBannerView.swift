@@ -53,21 +53,27 @@ struct ErrorBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let contentBase = content()
+            .contentShape(Rectangle())
+            .frame(maxWidth: 500)
+
         if #available(iOS 26, *) {
-            content()
+            contentBase
                 .background(
                     RoundedRectangle(cornerRadius: 22)
                         .fill(Color.red.opacity(1))
                 )
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                .frame(maxWidth: .infinity, alignment: .center)
         } else {
-            content()
+            contentBase
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .stroke(.white.opacity(0.9), lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }
