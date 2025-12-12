@@ -32,7 +32,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
-    @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
@@ -130,26 +129,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         return nil
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        gridCellDelegate?.tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
-    }
-
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         gridCellDelegate?.longPressGridItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
-    }
-
-    fileprivate func setA11yActions() {
-        self.accessibilityCustomActions = [
-            UIAccessibilityCustomAction(
-                name: NSLocalizedString("_more_", comment: ""),
-                target: self,
-                selector: #selector(touchUpInsideMore(_:)))
-        ]
-    }
-
-    func setButtonMore(image: UIImage) {
-        buttonMore.setImage(image, for: .normal)
-        setA11yActions()
     }
 
     func hideImageItem(_ status: Bool) {
@@ -180,18 +161,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelSubinfo.isHidden = status
     }
 
-    func hideButtonMore(_ status: Bool) {
-        buttonMore.isHidden = status
-    }
-
     func selected(_ status: Bool, isEditMode: Bool) {
-        if isEditMode {
-            buttonMore.isHidden = true
-            accessibilityCustomActions = nil
-        } else {
-            buttonMore.isHidden = false
-            setA11yActions()
-        }
         if status {
             imageSelect.isHidden = false
             imageSelect.image = NCImageCache.shared.getImageCheckedYes()
@@ -221,7 +191,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 }
 
 protocol NCGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any)
     func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 

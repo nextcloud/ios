@@ -9,7 +9,6 @@ import NextcloudKit
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -205,7 +204,6 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             cell.labelFilename.text = metadata.fileNameView
             cell.labelInfo.text = recommendedFiles.reason
 
-            cell.delegate = self
             cell.metadata = metadata
             cell.recommendedFiles = recommendedFiles
             cell.id = recommendedFiles.id
@@ -242,7 +240,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
             let cell = collectionView.cellForItem(at: indexPath)
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, image: image, sender: cell)
+            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: cell)
             return contextMenu.viewMenu()
         })
 #endif
@@ -254,11 +252,5 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
         let cellHeight = collectionView.bounds.height - 20
 
         return CGSize(width: cellHeight, height: cellHeight)
-    }
-}
-
-extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
-        self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image, sender: sender)
     }
 }

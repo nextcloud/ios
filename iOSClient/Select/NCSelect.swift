@@ -145,7 +145,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         super.viewWillAppear(animated)
 
         Task { @MainActor in
-            let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
+            let folderPath = utilityFileSystem.getRelativeFilePath("", serverUrl: serverUrl, session: session)
             let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
             if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account, capabilities: capabilities) {
@@ -389,7 +389,6 @@ extension NCSelect: UICollectionViewDataSource {
         cell.imageLocal.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
-        cell.imageMore.image = nil
 
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
