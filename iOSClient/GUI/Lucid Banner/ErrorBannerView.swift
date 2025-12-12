@@ -5,6 +5,37 @@
 import SwiftUI
 import LucidBanner
 
+@MainActor
+func showErrorBanner(controller: UITabBarController?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showErrorBanner(scene: scene, errorDescription: errorDescription, errorCode: errorCode, sleepBefore: sleepBefore)
+}
+
+@MainActor
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
+
+    LucidBanner.shared.show(
+        scene: scene,
+        subtitle: errorDescription,
+        footnote: "(Code: \(errorCode))",
+        vPosition: .top,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
+        onTap: { _, _ in
+            LucidBanner.shared.dismiss()
+        }
+    ) { state in
+        ErrorBannerView(state: state)
+    }
+}
+
+// MARK: - SwiftUI
+
 struct ErrorBannerView: View {
     @ObservedObject var state: LucidBannerState
 
@@ -53,53 +84,28 @@ struct ErrorBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let contentBase = content()
+            .contentShape(Rectangle())
+            .frame(maxWidth: 500)
+
         if #available(iOS 26, *) {
-            content()
+            contentBase
                 .background(
                     RoundedRectangle(cornerRadius: 22)
                         .fill(Color.red.opacity(1))
                 )
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                .frame(maxWidth: .infinity, alignment: .center)
         } else {
-            content()
+            contentBase
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .stroke(.white.opacity(0.9), lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
-    }
-}
-
-// MARK: - Helper
-
-@MainActor
-func showErrorBanner(controller: UITabBarController?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
-    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
-    await showErrorBanner(scene: scene, errorDescription: errorDescription, errorCode: errorCode, sleepBefore: sleepBefore)
-}
-
-@MainActor
-func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
-    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
-
-    LucidBanner.shared.show(
-        scene: scene,
-        subtitle: errorDescription,
-        footnote: "(Code: \(errorCode))",
-        vPosition: .top,
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true,
-        onTap: { _, _ in
-            LucidBanner.shared.dismiss()
-        }
-    ) { state in
-        ErrorBannerView(state: state)
     }
 }
 
