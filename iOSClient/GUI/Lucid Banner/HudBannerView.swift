@@ -5,6 +5,53 @@
 import SwiftUI
 import LucidBanner
 
+@MainActor
+func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int?, _ stage: String?) -> Void)? = nil) -> Int? {
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
+
+    return LucidBanner.shared.show(
+        scene: scene,
+        title: title,
+        subtitle: subtitle,
+        vPosition: .center,
+        blocksTouches: true,
+        onTap: { token, stage in
+            onTap?(token, stage)
+        }
+    ) { state in
+        HudBannerView(state: state)
+    }
+}
+
+@MainActor
+func completeHudBannerSuccess(
+    token: Int?
+) {
+    LucidBanner.shared.update(
+        stage: .success,
+        autoDismissAfter: 2,
+        for: token
+    )
+}
+
+@MainActor
+func completeHudBannerError(
+    subtitle: String? = nil,
+    token: Int?
+) {
+    LucidBanner.shared.update(
+        subtitle: subtitle,
+        stage: .error,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        for: token
+    )
+}
+
+// MARK: - SwiftUI
+
 struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State private var displayedProgress: Double = 0
@@ -155,53 +202,6 @@ struct HudBannerView: View {
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
     }
-}
-
-// MARK: - Helper
-
-@MainActor
-func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int?, _ stage: String?) -> Void)? = nil) -> Int? {
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
-
-    return LucidBanner.shared.show(
-        scene: scene,
-        title: title,
-        subtitle: subtitle,
-        vPosition: .center,
-        blocksTouches: true,
-        onTap: { token, stage in
-            onTap?(token, stage)
-        }
-    ) { state in
-        HudBannerView(state: state)
-    }
-}
-
-@MainActor
-func completeHudBannerSuccess(
-    token: Int?
-) {
-    LucidBanner.shared.update(
-        stage: .success,
-        autoDismissAfter: 2,
-        for: token
-    )
-}
-
-@MainActor
-func completeHudBannerError(
-    subtitle: String? = nil,
-    token: Int?
-) {
-    LucidBanner.shared.update(
-        subtitle: subtitle,
-        stage: .error,
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        for: token
-    )
 }
 
 // MARK: - Preview
