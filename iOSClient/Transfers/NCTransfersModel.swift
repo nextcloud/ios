@@ -46,7 +46,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     @MainActor
     func pollTransfers() async {
         while !Task.isCancelled {
-            if isXcodeRunningForPreviews {
+            if !isXcodeRunningForPreviews {
                 isLoading = true
 
                 // Items
