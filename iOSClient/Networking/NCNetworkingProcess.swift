@@ -364,10 +364,7 @@ actor NCNetworkingProcess {
                     let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
 
                     let token = await showUploadBanner(scene: scene,
-                                                       vPosition: .bottom,
-                                                       verticalMargin: 55,
                                                        blocksTouches: true,
-                                                       minimizePoint: CGPoint(x: 0, y: 0),
                                                        onButtonTap: {
                         if let currentUploadTask {
                             currentUploadTask.cancel()
@@ -379,7 +376,7 @@ actor NCNetworkingProcess {
 
                     await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           controller: controller,
-                                                          stageBanner: .init(rawValue: "button"),
+                                                          stageBanner: .button,
                                                           tokenBanner: token) { uploadRequest in
                         request = uploadRequest
                     } currentUploadTask: { task in
@@ -411,19 +408,13 @@ actor NCNetworkingProcess {
         var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
         var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
-        let tabBarTopLeft = scene?.tabBarTopLeft ?? CGPoint(x: 0, y: 50)
-        let minimizePoint = CGPoint(
-            x: tabBarTopLeft.x + 50,
-            y: tabBarTopLeft.y - 20
-        )
 
         tokenBanner = showUploadBanner(scene: scene,
                                        vPosition: .bottom,
                                        verticalMargin: 55,
                                        draggable: true,
-                                       stage: .init(rawValue: "button"),
+                                       stage: .button,
                                        allowMinimizeOnTap: true,
-                                       minimizePoint: minimizePoint,
                                        onButtonTap: {
             if let currentUploadTask {
                 currentUploadTask.cancel()
@@ -463,7 +454,8 @@ actor NCNetworkingProcess {
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
                         systemImage: "gearshape.arrow.triangle.2.circlepath",
                         imageAnimation: .rotate,
-                        stage: .init(rawValue: "none"),
+                        progress: 0,
+                        stage: .placeholder,
                         for: tokenBanner)
                 }
             }
