@@ -259,7 +259,7 @@ class NCNetworkingE2EEUpload: NSObject {
                             systemImage: "gearshape.arrow.triangle.2.circlepath",
                             imageAnimation: .rotate,
                             progress: 0,
-                            stage: .none,
+                            stage: .placeholder,
                             for: tokenBanner)
                     }
                 }

@@ -26,7 +26,7 @@ struct UploadBannerView: View {
 
         let isSuccess = (state.typedStage == .success)
         let isError = (state.typedStage == .error)
-        let isButton = (state.typedStage == .init(rawValue: "button"))
+        let isButton = (state.typedStage == .button)
 
         containerView(state: state) {
             if state.isMinimized {

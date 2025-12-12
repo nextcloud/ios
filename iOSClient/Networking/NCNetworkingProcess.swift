@@ -362,11 +362,8 @@ actor NCNetworkingProcess {
                     var request: UploadRequest?
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
                     let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
-                    let inset = CGSize(width: 0, height: 55)
 
                     let token = await showUploadBanner(scene: scene,
-                                                       vPosition: .bottom,
-                                                       verticalMargin: 55,
                                                        blocksTouches: true,
                                                        onButtonTap: {
                         if let currentUploadTask {
@@ -379,7 +376,7 @@ actor NCNetworkingProcess {
 
                     await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           controller: controller,
-                                                          stageBanner: .init(rawValue: "button"),
+                                                          stageBanner: .button,
                                                           tokenBanner: token) { uploadRequest in
                         request = uploadRequest
                     } currentUploadTask: { task in
@@ -416,7 +413,7 @@ actor NCNetworkingProcess {
                                        vPosition: .bottom,
                                        verticalMargin: 55,
                                        draggable: true,
-                                       stage: .init(rawValue: "button"),
+                                       stage: .button,
                                        allowMinimizeOnTap: true,
                                        onButtonTap: {
             if let currentUploadTask {
@@ -458,7 +455,7 @@ actor NCNetworkingProcess {
                         systemImage: "gearshape.arrow.triangle.2.circlepath",
                         imageAnimation: .rotate,
                         progress: 0,
-                        stage: .init(rawValue: "none"),
+                        stage: .placeholder,
                         for: tokenBanner)
                 }
             }
