@@ -304,15 +304,22 @@ func showUploadBanner(scene: UIWindowScene?,
 #if !EXTENSION
     if allowMinimizeOnTap {
         LucidBannerMinimizeCoordinator.shared.register(token: token) { context in
-            let controller = SceneManager.shared.getController(scene: scene)
-            let height = controller?.visibleBarHeight ?? 55
             let bounds = context.bounds
-            let safeAreaInsets = context.safeAreaInsets
+            let controller = SceneManager.shared.getController(scene: scene)
+            var height: CGFloat = 55
             let over: CGFloat = 20
+            if let scene,
+               let controller,
+               let window = scene.windows.first {
+                let isPadLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
+                if !isPadLayout {
+                    height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
+                }
+            }
 
             return CGPoint(
                 x: bounds.midX,
-                y: bounds.maxY - safeAreaInsets.bottom - height + over
+                y: bounds.maxY - height
             )
         }
     }
