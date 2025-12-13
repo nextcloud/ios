@@ -98,8 +98,8 @@ struct UploadBannerView: View {
                     }
 
                 }
-                .padding(.horizontal, 3)
-                .padding(.vertical, 3)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 10)
                 .clipShape(Capsule())
             } else if isSuccess {
                  HStack(alignment: .center, spacing: 10) {
@@ -199,7 +199,7 @@ struct UploadBannerView: View {
                             .padding(.vertical, 10)
                             .background(
                                 Capsule()
-                                    .stroke(.primary.opacity(0.2), lineWidth: 1)
+                                    .stroke(.gray, lineWidth: 1)
                             )
                         }
                         .padding(15)
@@ -219,7 +219,7 @@ struct UploadBannerView: View {
         let isError = (state.typedStage == .error)
         let isSuccess = (state.typedStage == .success)
         let isMinimized = state.isMinimized
-        let cornerRadius: CGFloat = 22
+        let cornerRadius: CGFloat = state.isMinimized ? 15 : 25
         let backgroundColor = Color(.systemBackground).opacity(0.65)
         let errorColor = Color.red.opacity(0.75)
 
@@ -356,7 +356,7 @@ public extension View {
         stage: "button"
     )
 
-    // state.isMinimized = false
+    state.isMinimized = false
 
     return ZStack {
         Text(

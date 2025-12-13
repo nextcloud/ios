@@ -162,7 +162,7 @@ struct HudBannerView: View {
                         .padding(.vertical, 10)
                         .background(
                             Capsule()
-                                .stroke(.primary.opacity(0.2), lineWidth: 1)
+                                .stroke(.gray, lineWidth: 1)
                         )
                     }
                     .padding(15)
