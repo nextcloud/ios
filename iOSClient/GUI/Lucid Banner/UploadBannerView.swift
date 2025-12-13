@@ -64,6 +64,7 @@ struct UploadBannerView: View {
     @State var trigger = true
     let onButtonTap: (() -> Void)?
     let allowMinimizeOnTap: Bool
+    let textColor = Color(.label)
 
     init(state: LucidBannerState,
          allowMinimizeOnTap: Bool = false,
@@ -93,6 +94,7 @@ struct UploadBannerView: View {
                         Text("\(Int(p * 100))%")
                             .font(.caption2.monospacedDigit())
                             .frame(height: 20)
+                            .foregroundStyle(textColor)
                     }
 
                 }
@@ -131,13 +133,13 @@ struct UploadBannerView: View {
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(textColor)
                             if showSubtitle, let subtitle = state.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                         }
                     }
@@ -162,21 +164,21 @@ struct UploadBannerView: View {
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .minimumScaleFactor(0.9)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                             if showSubtitle, let subtitle = state.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                             if showFootnote, let footnote = state.footnote {
                                 Text(footnote)
                                     .font(.caption)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                         }
                     }
@@ -192,6 +194,7 @@ struct UploadBannerView: View {
                                 onButtonTap?()
                             }
                             .buttonStyle(.plain)
+                            .foregroundStyle(textColor)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
                             .background(
@@ -217,8 +220,8 @@ struct UploadBannerView: View {
         let isSuccess = (state.typedStage == .success)
         let isMinimized = state.isMinimized
         let cornerRadius: CGFloat = 22
-        let opacityError: CGFloat = 0.75
-        let opacity = 0.65
+        let backgroundColor = Color(.systemBackground).opacity(0.65)
+        let errorColor = Color.red.opacity(0.75)
 
         let base = content()
             .contentShape(Rectangle())
@@ -233,14 +236,14 @@ struct UploadBannerView: View {
                     base
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.red.opacity(opacityError))
+                                .fill(errorColor)
                         )
                         .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 } else {
                     base
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.white.opacity(opacity))
+                                .fill(backgroundColor)
                         )
                         .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 }
@@ -264,7 +267,7 @@ struct UploadBannerView: View {
                     contentBase
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.red.opacity(opacityError))
+                                .fill(errorColor)
                         )
                         .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -272,7 +275,7 @@ struct UploadBannerView: View {
                     contentBase
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.white.opacity(opacity))
+                                .fill(backgroundColor)
                         )
                         .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                         .frame(maxWidth: .infinity, alignment: .center)
