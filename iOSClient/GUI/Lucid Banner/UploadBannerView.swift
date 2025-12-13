@@ -217,6 +217,8 @@ struct UploadBannerView: View {
         let isSuccess = (state.typedStage == .success)
         let isMinimized = state.isMinimized
         let cornerRadius: CGFloat = 22
+        let opacityError: CGFloat = 0.75
+        let opacity = 0.65
 
         let base = content()
             .contentShape(Rectangle())
@@ -231,12 +233,16 @@ struct UploadBannerView: View {
                     base
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.red.opacity(1))
+                                .fill(Color.red.opacity(opacityError))
                         )
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 } else {
                     base
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .background(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(Color.white.opacity(opacity))
+                        )
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 }
             } else {
                 let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
@@ -258,13 +264,17 @@ struct UploadBannerView: View {
                     contentBase
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.red.opacity(1))
+                                .fill(Color.red.opacity(opacityError))
                         )
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     contentBase
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .background(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(Color.white.opacity(opacity))
+                        )
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             } else {
@@ -340,17 +350,20 @@ public extension View {
         systemImage: "arrow.up.circle",
         imageAnimation: .none,
         progress: 0.71,
-        stage: "success"
+        stage: "button"
     )
 
     // state.isMinimized = false
 
     return ZStack {
-        LinearGradient(
-            colors: [.white, .gray.opacity(0.1)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
 
         UploadBannerView(
             state: state,

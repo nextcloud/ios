@@ -84,6 +84,8 @@ struct ErrorBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let cornerRadius: CGFloat = 22
+        let opacityError: CGFloat = 0.75
         let contentBase = content()
             .contentShape(Rectangle())
             .frame(maxWidth: 500)
@@ -91,16 +93,16 @@ struct ErrorBannerView: View {
         if #available(iOS 26, *) {
             contentBase
                 .background(
-                    RoundedRectangle(cornerRadius: 22)
-                        .fill(Color.red.opacity(1))
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color.red.opacity(opacityError))
                 )
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 22))
                 .frame(maxWidth: .infinity, alignment: .center)
         } else {
             contentBase
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(.white.opacity(0.9), lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
@@ -113,11 +115,14 @@ struct ErrorBannerView: View {
 
 #Preview {
     ZStack {
-        LinearGradient(
-            colors: [.white, .gray.opacity(0.1)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
 
         ErrorBannerView(
             state: LucidBannerState(

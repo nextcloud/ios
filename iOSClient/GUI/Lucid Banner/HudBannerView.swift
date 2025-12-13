@@ -189,14 +189,21 @@ struct HudBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let cornerRadius: CGFloat = 22
+        let opacity = 0.65
+
         if #available(iOS 26, *) {
             content()
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color.white.opacity(opacity))
+                )
+                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
         } else {
             content()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(.white.opacity(0.9), lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
@@ -208,6 +215,15 @@ struct HudBannerView: View {
 
 #Preview("HudBannerView") {
     ZStack {
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
+
         HudBannerPreviewWrapper()
     }
 }
