@@ -38,6 +38,7 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode:
 
 struct ErrorBannerView: View {
     @ObservedObject var state: LucidBannerState
+    let textColor = Color(.label)
 
     var body: some View {
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -55,21 +56,21 @@ struct ErrorBannerView: View {
                             .font(.subheadline.weight(.bold))
                             .multilineTextAlignment(.leading)
                             .truncationMode(.tail)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(textColor)
 
                         if showSubtitle, let subtitle = state.subtitle {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(textColor)
                         }
                         if showFootnote, let footnote = state.footnote {
                             Text(footnote)
                                 .font(.caption)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(textColor)
                         }
                     }
                 }
@@ -85,7 +86,8 @@ struct ErrorBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         let cornerRadius: CGFloat = 22
-        let opacityError: CGFloat = 0.75
+        let errorColor = Color.red.opacity(0.75)
+
         let contentBase = content()
             .contentShape(Rectangle())
             .frame(maxWidth: 500)
@@ -94,7 +96,7 @@ struct ErrorBannerView: View {
             contentBase
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.red.opacity(opacityError))
+                        .fill(errorColor)
                 )
                 .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 22))
                 .frame(maxWidth: .infinity, alignment: .center)

@@ -60,6 +60,7 @@ struct HudBannerView: View {
 
     let onButtonTap: (() -> Void)?
 
+    private let textColor = Color(.label)
     private let circleSize: CGFloat = 90
     private let lineWidth: CGFloat = 8
 
@@ -98,7 +99,7 @@ struct HudBannerView: View {
                 if let title = state.title, !title.isEmpty {
                     Text(title)
                         .font(.headline.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
 
@@ -106,7 +107,7 @@ struct HudBannerView: View {
                 if let subtitle = state.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundStyle(.primary.opacity(0.95))
+                        .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
 
@@ -131,9 +132,6 @@ struct HudBannerView: View {
                         .frame(width: circleSize, height: circleSize)
 
                     // Center content:
-                    // - checkmark for success
-                    // - xmark for error
-                    // - percentage for normal progress
                     Group {
                         if isSuccess {
                             Image(systemName: "checkmark")
@@ -146,7 +144,7 @@ struct HudBannerView: View {
                         } else {
                             Text("\(Int(visualProgress * 100))%")
                                 .font(.headline.monospacedDigit())
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(textColor)
                         }
                     }
                 }
@@ -165,7 +163,6 @@ struct HudBannerView: View {
                                 .stroke(.gray, lineWidth: 1)
                         )
                     }
-                    .padding(15)
                 }
             }
             .padding(.horizontal, 22)
@@ -217,12 +214,13 @@ struct HudBannerView: View {
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         let cornerRadius: CGFloat = 22
         let opacity = 0.65
+        let backgroundColor = Color(.systemBackground).opacity(0.65)
 
         if #available(iOS 26, *) {
             content()
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.white.opacity(opacity))
+                        .fill(backgroundColor)
                 )
                 .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
         } else {
