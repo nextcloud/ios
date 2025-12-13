@@ -385,9 +385,11 @@ extension NCNetworking {
                 var num: Float = 0
                 let total = Float(metadatasE2EE.count)
                 var cancelOnTap = false
+                let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
 
-                let token = showHudBanner(scene: SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene,
-                                          title: NSLocalizedString("_delete_in_progress_", comment: "")) { _, _ in
+                let token = showHudBanner(scene: scene,
+                                          title: NSLocalizedString("_delete_in_progress_", comment: ""),
+                                          stage: .button) {
                     cancelOnTap = true
                 }
 

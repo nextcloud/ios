@@ -98,12 +98,12 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    let token = showHudBanner(
-                        scene: scene,
-                        title: NSLocalizedString("_download_in_progress_", comment: "")) { _, _ in
-                            if let request = downloadRequest {
-                                request.cancel()
-                            }
+                    let token = showHudBanner(scene: scene,
+                                              title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                              stage: .button) {
+                        if let request = downloadRequest {
+                            request.cancel()
+                        }
                     }
 
                     let results = await self.networking.downloadFile(metadata: metadata) { request in

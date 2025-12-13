@@ -31,11 +31,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             var tokenBanner: Int?
             await MainActor.run {
                 tokenBanner = showHudBanner(scene: scene,
-                                            title: NSLocalizedString("_downloading_", comment: "")) { _, _ in
+                                            title: NSLocalizedString("_downloading_", comment: ""),
+                                            stage: .button,
+                                            onButtonTap: {
                     if let request = downloadRequest {
                         request.cancel()
                     }
-                }
+                })
             }
 
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,

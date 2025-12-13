@@ -6,7 +6,11 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int?, _ stage: String?) -> Void)? = nil) -> Int? {
+func showHudBanner(scene: UIWindowScene?,
+                   title: String? = nil,
+                   subtitle: String? = nil,
+                   stage: LucidBanner.Stage? = nil,
+                   onButtonTap: (() -> Void)? = nil) -> Int? {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
@@ -18,11 +22,9 @@ func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String
         subtitle: subtitle,
         vPosition: .center,
         blocksTouches: true,
-        onTap: { token, stage in
-            onTap?(token, stage)
-        }
+        stage: stage
     ) { state in
-        HudBannerView(state: state)
+        HudBannerView(state: state, onButtonTap: onButtonTap)
     }
 }
 
@@ -56,16 +58,24 @@ struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State private var displayedProgress: Double = 0
 
+    let onButtonTap: (() -> Void)?
+
     private let circleSize: CGFloat = 90
     private let lineWidth: CGFloat = 8
+
+    init(state: LucidBannerState,
+         onButtonTap: (() -> Void)? = nil) {
+        self.state = state
+        self.onButtonTap = onButtonTap
+    }
 
     var body: some View {
         let rawProgress = state.progress ?? 0
         let clampedProgress = min(max(rawProgress, 0), 1)
 
-        let stage = state.stage?.lowercased()
-        let isSuccess = (stage == "success")
-        let isError = (stage == "error")
+        let isSuccess = (state.typedStage == .success)
+        let isError = (state.typedStage == .error)
+        let isButton = (state.typedStage == .button)
 
         let visualProgress: Double = {
             if isSuccess || isError {
@@ -141,6 +151,22 @@ struct HudBannerView: View {
                     }
                 }
                 .padding(.top, 4)
+
+                if isButton {
+                    VStack {
+                        Button("_cancel_") {
+                            onButtonTap?()
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .stroke(.primary.opacity(0.2), lineWidth: 1)
+                        )
+                    }
+                    .padding(15)
+                }
             }
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
@@ -233,7 +259,8 @@ private struct HudBannerPreviewWrapper: View {
         title: "Uploading files",
         subtitle: "Syncing your library…",
         footnote: nil,
-        imageAnimation: .none
+        imageAnimation: .none,
+        stage: "button"
     )
 
     var body: some View {
