@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import NextcloudKit
 import LucidBanner
+import Alamofire
 
 class NCCreate: NSObject {
     let utility = NCUtility()
@@ -257,6 +258,7 @@ class NCCreate: NSObject {
         var exportURLs: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
         let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        var downloadRequest: DownloadRequest?
 
         for metadata in metadatas {
             let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
@@ -275,12 +277,14 @@ class NCCreate: NSObject {
         }
 
         if !downloadMetadata.isEmpty {
-            let token = showHudBanner(
-                scene: scene,
-                title: NSLocalizedString("_download_in_progress_", comment: "")
-            )
+            let token = showHudBanner(scene: scene,
+                                      title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                      stage: .button) {
+                if let downloadRequest {
+                    downloadRequest.cancel()
+                }
+            }
 
-            // Download missing files
             for (originalMetadata, localFileURL) in downloadMetadata {
                 guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
                     ocId: originalMetadata.ocId,
@@ -294,8 +298,8 @@ class NCCreate: NSObject {
 
                 let results = await NCNetworking.shared.downloadFile(
                     metadata: metadata
-                ) { _ in
-                    // downloadStartHandler not used here
+                ) { request in
+                    downloadRequest = request
                 } progressHandler: { progress in
                     Task { @MainActor in
                         LucidBanner.shared.update(

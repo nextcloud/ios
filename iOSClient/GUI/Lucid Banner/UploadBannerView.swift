@@ -37,12 +37,15 @@ func showUploadBanner(scene: UIWindowScene?,
             let bounds = context.bounds
             let controller = SceneManager.shared.getController(scene: scene)
             var height: CGFloat = 55
-            let over: CGFloat = 20
+            let over: CGFloat = 30
             if let scene,
                let controller,
                let window = scene.windows.first {
-                let isPadLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
-                if !isPadLayout {
+                let regularLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
+                let iPad = UIDevice.current.userInterfaceIdiom == .pad
+                if iPad, regularLayout {
+                    height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
+                } else {
                     height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
                 }
             }
