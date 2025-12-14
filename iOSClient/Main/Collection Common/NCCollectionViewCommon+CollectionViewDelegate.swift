@@ -31,7 +31,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             var tokenBanner: Int?
             await MainActor.run {
                 tokenBanner = showHudBanner(scene: scene,
-                                            title: NSLocalizedString("_downloading_", comment: ""),
+                                            title: NSLocalizedString("_download_in_progress_", comment: ""),
                                             stage: .button,
                                             onButtonTap: {
                     if let request = downloadRequest {

@@ -376,7 +376,6 @@ extension NCNetworking {
 
         if !metadatasE2EE.isEmpty {
 #if !EXTENSION
-
             if isOffline {
                 return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
             }
@@ -419,7 +418,6 @@ extension NCNetworking {
 
                 LucidBanner.shared.dismiss()
             }
-
 #endif
         } else {
             var ocIds = Set<String>()
