@@ -438,7 +438,8 @@ extension NCPlayerToolBar: NCSelectDelegate {
             } else {
                 var downloadRequest: DownloadRequest?
                 let token = showHudBanner(scene: scene,
-                                          title: NSLocalizedString("_downloading_", comment: "")) { _, _ in
+                                          title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                          stage: .button) {
                     if let request = downloadRequest {
                         request.cancel()
                     }

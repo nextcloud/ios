@@ -6,7 +6,11 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String? = nil, onTap: ((_ token: Int?, _ stage: String?) -> Void)? = nil) -> Int? {
+func showHudBanner(scene: UIWindowScene?,
+                   title: String? = nil,
+                   subtitle: String? = nil,
+                   stage: LucidBanner.Stage? = nil,
+                   onButtonTap: (() -> Void)? = nil) -> Int? {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
@@ -18,11 +22,9 @@ func showHudBanner(scene: UIWindowScene?, title: String? = nil, subtitle: String
         subtitle: subtitle,
         vPosition: .center,
         blocksTouches: true,
-        onTap: { token, stage in
-            onTap?(token, stage)
-        }
+        stage: stage
     ) { state in
-        HudBannerView(state: state)
+        HudBannerView(state: state, onButtonTap: onButtonTap)
     }
 }
 
@@ -56,16 +58,25 @@ struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State private var displayedProgress: Double = 0
 
+    let onButtonTap: (() -> Void)?
+
+    private let textColor = Color(.label)
     private let circleSize: CGFloat = 90
     private let lineWidth: CGFloat = 8
+
+    init(state: LucidBannerState,
+         onButtonTap: (() -> Void)? = nil) {
+        self.state = state
+        self.onButtonTap = onButtonTap
+    }
 
     var body: some View {
         let rawProgress = state.progress ?? 0
         let clampedProgress = min(max(rawProgress, 0), 1)
 
-        let stage = state.stage?.lowercased()
-        let isSuccess = (stage == "success")
-        let isError = (stage == "error")
+        let isSuccess = (state.typedStage == .success)
+        let isError = (state.typedStage == .error)
+        let isButton = (state.typedStage == .button)
 
         let visualProgress: Double = {
             if isSuccess || isError {
@@ -88,7 +99,7 @@ struct HudBannerView: View {
                 if let title = state.title, !title.isEmpty {
                     Text(title)
                         .font(.headline.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
 
@@ -96,7 +107,7 @@ struct HudBannerView: View {
                 if let subtitle = state.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundStyle(.primary.opacity(0.95))
+                        .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
 
@@ -121,9 +132,6 @@ struct HudBannerView: View {
                         .frame(width: circleSize, height: circleSize)
 
                     // Center content:
-                    // - checkmark for success
-                    // - xmark for error
-                    // - percentage for normal progress
                     Group {
                         if isSuccess {
                             Image(systemName: "checkmark")
@@ -136,11 +144,26 @@ struct HudBannerView: View {
                         } else {
                             Text("\(Int(visualProgress * 100))%")
                                 .font(.headline.monospacedDigit())
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(textColor)
                         }
                     }
                 }
                 .padding(.top, 4)
+
+                if isButton {
+                    VStack {
+                        Button("_cancel_") {
+                            onButtonTap?()
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .stroke(.gray, lineWidth: 1)
+                        )
+                    }
+                }
             }
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
@@ -189,14 +212,22 @@ struct HudBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let cornerRadius: CGFloat = 22
+        let opacity = 0.65
+        let backgroundColor = Color(.systemBackground).opacity(0.65)
+
         if #available(iOS 26, *) {
             content()
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                )
+                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
         } else {
             content()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(.white.opacity(0.9), lineWidth: 0.6)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
@@ -208,6 +239,15 @@ struct HudBannerView: View {
 
 #Preview("HudBannerView") {
     ZStack {
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
+
         HudBannerPreviewWrapper()
     }
 }
@@ -217,7 +257,8 @@ private struct HudBannerPreviewWrapper: View {
         title: "Uploading files",
         subtitle: "Syncing your library…",
         footnote: nil,
-        imageAnimation: .none
+        imageAnimation: .none,
+        stage: "button"
     )
 
     var body: some View {

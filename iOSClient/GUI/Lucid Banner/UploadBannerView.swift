@@ -37,12 +37,15 @@ func showUploadBanner(scene: UIWindowScene?,
             let bounds = context.bounds
             let controller = SceneManager.shared.getController(scene: scene)
             var height: CGFloat = 55
-            let over: CGFloat = 20
+            let over: CGFloat = 30
             if let scene,
                let controller,
                let window = scene.windows.first {
-                let isPadLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
-                if !isPadLayout {
+                let regularLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
+                let iPad = UIDevice.current.userInterfaceIdiom == .pad
+                if iPad, regularLayout {
+                    height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
+                } else {
                     height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
                 }
             }
@@ -64,6 +67,7 @@ struct UploadBannerView: View {
     @State var trigger = true
     let onButtonTap: (() -> Void)?
     let allowMinimizeOnTap: Bool
+    let textColor = Color(.label)
 
     init(state: LucidBannerState,
          allowMinimizeOnTap: Bool = false,
@@ -93,11 +97,12 @@ struct UploadBannerView: View {
                         Text("\(Int(p * 100))%")
                             .font(.caption2.monospacedDigit())
                             .frame(height: 20)
+                            .foregroundStyle(textColor)
                     }
 
                 }
-                .padding(.horizontal, 3)
-                .padding(.vertical, 3)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 10)
                 .clipShape(Capsule())
             } else if isSuccess {
                  HStack(alignment: .center, spacing: 10) {
@@ -131,13 +136,13 @@ struct UploadBannerView: View {
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(textColor)
                             if showSubtitle, let subtitle = state.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                         }
                     }
@@ -162,21 +167,21 @@ struct UploadBannerView: View {
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .minimumScaleFactor(0.9)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                             if showSubtitle, let subtitle = state.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                             if showFootnote, let footnote = state.footnote {
                                 Text(footnote)
                                     .font(.caption)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(textColor)
                             }
                         }
                     }
@@ -192,11 +197,12 @@ struct UploadBannerView: View {
                                 onButtonTap?()
                             }
                             .buttonStyle(.plain)
+                            .foregroundStyle(textColor)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
                             .background(
                                 Capsule()
-                                    .stroke(.primary.opacity(0.2), lineWidth: 1)
+                                    .stroke(.gray, lineWidth: 1)
                             )
                         }
                         .padding(15)
@@ -214,8 +220,11 @@ struct UploadBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
         let isError = (state.typedStage == .error)
-        let cornerRadius: CGFloat = 22
+        let isSuccess = (state.typedStage == .success)
         let isMinimized = state.isMinimized
+        let cornerRadius: CGFloat = state.isMinimized ? 15 : 25
+        let backgroundColor = Color(.systemBackground).opacity(0.65)
+        let errorColor = Color.red.opacity(0.75)
 
         let base = content()
             .contentShape(Rectangle())
@@ -224,18 +233,22 @@ struct UploadBannerView: View {
                 LucidBannerMinimizeCoordinator.shared.handleTap(state)
             }
 
-        if isMinimized {
+        if isMinimized || isSuccess {
             if #available(iOS 26, *) {
                 if isError {
                     base
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.red.opacity(1))
+                                .fill(errorColor)
                         )
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 } else {
                     base
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .background(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(backgroundColor)
+                        )
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 }
             } else {
                 let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
@@ -257,13 +270,17 @@ struct UploadBannerView: View {
                     contentBase
                         .background(
                             RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(Color.red.opacity(1))
+                                .fill(errorColor)
                         )
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     contentBase
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
+                        .background(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .fill(backgroundColor)
+                        )
+                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             } else {
@@ -342,18 +359,21 @@ public extension View {
         stage: "button"
     )
 
-    state.isMinimized = true
+    state.isMinimized = false
 
     return ZStack {
-        LinearGradient(
-            colors: [.white, .gray.opacity(0.1)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
 
         UploadBannerView(
             state: state,
-            allowMinimizeOnTap: true
+            allowMinimizeOnTap: false
         )
         .padding()
     }
