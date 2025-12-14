@@ -36,7 +36,7 @@ func showUploadBanner(scene: UIWindowScene?,
         LucidBannerMinimizeCoordinator.shared.register(token: token) { context in
             let bounds = context.bounds
             let controller = SceneManager.shared.getController(scene: scene)
-            var height: CGFloat = 55
+            var height: CGFloat = 0
             let over: CGFloat = 30
             if let scene,
                let controller,
@@ -44,7 +44,7 @@ func showUploadBanner(scene: UIWindowScene?,
                 let regularLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
                 let iPad = UIDevice.current.userInterfaceIdiom == .pad
                 if iPad, regularLayout {
-                    height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
+                    height = over
                 } else {
                     height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
                 }
