@@ -87,7 +87,6 @@ struct ErrorBannerView: View {
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         let cornerRadius: CGFloat = 22
         let errorColor = Color.red.opacity(0.75)
-
         let contentBase = content()
             .contentShape(Rectangle())
             .frame(maxWidth: 500)

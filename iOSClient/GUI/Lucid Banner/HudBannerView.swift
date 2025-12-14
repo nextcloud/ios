@@ -29,9 +29,7 @@ func showHudBanner(scene: UIWindowScene?,
 }
 
 @MainActor
-func completeHudBannerSuccess(
-    token: Int?
-) {
+func completeHudBannerSuccess(token: Int?) {
     LucidBanner.shared.update(
         stage: .success,
         autoDismissAfter: 2,
@@ -40,10 +38,7 @@ func completeHudBannerSuccess(
 }
 
 @MainActor
-func completeHudBannerError(
-    subtitle: String? = nil,
-    token: Int?
-) {
+func completeHudBannerError(subtitle: String? = nil, token: Int?) {
     LucidBanner.shared.update(
         subtitle: subtitle,
         stage: .error,
