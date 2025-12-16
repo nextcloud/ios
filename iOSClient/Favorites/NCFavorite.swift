@@ -71,7 +71,7 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func getServerData(forced: Bool = false) async {
         defer {
-            restoreDefaultTitle()
+            stopGUIGetServerData()
             startSyncMetadata(metadatas: self.dataSource.getMetadatas())
         }
 
@@ -80,7 +80,7 @@ class NCFavorite: NCCollectionViewCommon {
             return
         }
 
-        showLoadingTitle()
+        startGUIGetServerData()
 
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,

@@ -524,7 +524,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     @MainActor
-    func showLoadingTitle() {
+    func startGUIGetServerData() {
         // Don't show spinner on iPad root folder
         if UIDevice.current.userInterfaceIdiom == .pad,
            (self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session)) || self.serverUrl.isEmpty {
@@ -548,9 +548,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @MainActor
-    func restoreDefaultTitle() {
+    func stopGUIGetServerData() {
         self.navigationItem.titleView = nil
         self.navigationItem.title = self.titleCurrentFolder
+        self.dataSource.hasGetServerData = true
     }
 
     // MARK: - SEARCH
