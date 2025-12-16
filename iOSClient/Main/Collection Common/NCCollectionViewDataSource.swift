@@ -21,6 +21,8 @@ class NCCollectionViewDataSource: NSObject {
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
 
+    public var isInizialized: Bool = false
+
     override init() { super.init() }
 
     init(metadatas: [tableMetadata],
@@ -31,6 +33,7 @@ class NCCollectionViewDataSource: NSObject {
         super.init()
         removeAll()
 
+        self.isInizialized = true
         self.metadatas = metadatas
         self.layoutForView = layoutForView
         if let account {
