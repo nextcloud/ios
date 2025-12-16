@@ -47,7 +47,7 @@ class NCOffline: NCCollectionViewCommon {
         super.viewWillAppear(animated)
 
         Task {
-            await self.reloadDataSource()
+            await getServerData()
         }
     }
 
@@ -86,6 +86,10 @@ class NCOffline: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
+        defer {
+            stopGUIGetServerData()
+        }
+
         await self.reloadDataSource()
     }
 }
