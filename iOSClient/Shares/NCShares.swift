@@ -76,7 +76,7 @@ class NCShares: NCCollectionViewCommon {
             return
         }
 
-        showLoadingTitle()
+        startGUIGetServerData()
 
         let resultsReadShares = await NextcloudKit.shared.readSharesAsync(parameters: NKShareParameter(), account: session.account) { task in
             Task {
@@ -88,8 +88,8 @@ class NCShares: NCCollectionViewCommon {
         }
 
         guard resultsReadShares.error == .success else {
+            self.stopGUIGetServerData()
             await self.reloadDataSource()
-            self.restoreDefaultTitle()
             return
         }
 
@@ -134,7 +134,7 @@ class NCShares: NCCollectionViewCommon {
             }
 
             Task {
-                await self.restoreDefaultTitle()
+                await self.stopGUIGetServerData()
                 await self.reloadDataSource()
                 await self.startSyncMetadata(metadatas: self.dataSource.getMetadatas())
             }

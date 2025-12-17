@@ -181,7 +181,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func getServerData(forced: Bool = false) async {
         defer {
-            restoreDefaultTitle()
+            stopGUIGetServerData()
             startSyncMetadata(metadatas: self.dataSource.getMetadatas())
         }
 
@@ -266,7 +266,7 @@ class NCFiles: NCCollectionViewCommon {
             return (nil, NKError(), reloadRequired)
         }
 
-        showLoadingTitle()
+        startGUIGetServerData()
 
         let options = NKRequestOptions(timeout: 180)
         let (account, metadataFolder, metadatas, error) = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl,

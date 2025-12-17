@@ -89,7 +89,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func getServerData(forced: Bool = false) async {
         defer {
-            restoreDefaultTitle()
+            stopGUIGetServerData()
         }
 
         // If is already in-flight, do nothing
@@ -97,7 +97,7 @@ class NCGroupfolders: NCCollectionViewCommon {
             return
         }
 
-        showLoadingTitle()
+        startGUIGetServerData()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)

@@ -26,6 +26,7 @@ extension NCNetworking {
                                                                                             name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
+            taskHandler(task)
         }
 
         guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
