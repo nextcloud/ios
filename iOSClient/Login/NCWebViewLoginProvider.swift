@@ -18,7 +18,7 @@ protocol NCLoginProviderDelegate: AnyObject {
 ///
 /// View which presents the web view to login at a Nextcloud instance.
 ///
-class NCLoginProvider: UIViewController {
+class NCWebViewLoginProvider: UIViewController {
     var webView: WKWebView!
     var titleView: String = ""
     var initialURLString = ""
@@ -210,7 +210,7 @@ class NCLoginProvider: UIViewController {
 
 // MARK: - WKNavigationDelegate
 
-extension NCLoginProvider: WKNavigationDelegate {
+extension NCWebViewLoginProvider: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         nkLog(debug: "Web view did receive server redirect for provisional navigation.")
 
