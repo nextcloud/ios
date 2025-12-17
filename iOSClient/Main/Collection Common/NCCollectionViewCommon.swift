@@ -525,7 +525,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @MainActor
     func startGUIGetServerData() {
-        self.dataSource.hasGetServerData = false
+        self.dataSource.setGetServerData(false)
         self.collectionView.reloadData()
 
         // Don't show spinner on iPad root folder
@@ -552,7 +552,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @MainActor
     func stopGUIGetServerData() {
-        self.dataSource.hasGetServerData = true
+        self.dataSource.setGetServerData(true)
         self.navigationItem.titleView = nil
         self.navigationItem.title = self.titleCurrentFolder
     }
