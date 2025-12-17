@@ -26,11 +26,6 @@ class NCWebViewLoginProvider: UIViewController {
     weak var delegate: NCLoginProviderDelegate?
     var controller: NCMainTabBarController?
 
-    ///
-    /// A polling loop active in the background to check for the current status of the login flow.
-    ///
-    var pollingTask: Task<Void, any Error>?
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -85,14 +80,6 @@ class NCWebViewLoginProvider: UIViewController {
         nkLog(debug: "Login provider view did disappear.")
 
         NCActivityIndicator.shared.stop()
-
-        guard pollingTask != nil else {
-            return
-        }
-
-        nkLog(debug: "Cancelling existing polling task because view did disappear...")
-        pollingTask?.cancel()
-        pollingTask = nil
     }
 
     // MARK: - Navigation
@@ -122,90 +109,6 @@ class NCWebViewLoginProvider: UIViewController {
 
     // MARK: - Polling
 
-    ///
-    /// Start checking the status of the login flow in the background periodally.
-    ///
-    func startPolling(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        nkLog(start: "Starting polling at \(loginFlowV2Endpoint) with token \(loginFlowV2Token)")
-        pollingTask = createPollingTask(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint)
-        nkLog(debug: "Polling task created.")
-    }
-
-    ///
-    /// Fetch the server response and process it.
-    ///
-    private func poll(token: String, endpoint: String, options: NKRequestOptions) async -> (urlBase: String, loginName: String, appPassword: String)? {
-        await withCheckedContinuation { continuation in
-            NextcloudKit.shared.getLoginFlowV2Poll(token: token, endpoint: endpoint, options: options) {server, loginName, appPassword, _, error in
-
-                guard error == .success else {
-                    nkLog(error: "Login poll result for token \"\(token)\" is not successful!")
-                    continuation.resume(returning: nil)
-                    return
-                }
-
-                guard let urlBase = server else {
-                    nkLog(error: "Login poll response field for server for token \"\(token)\" is nil!")
-                    continuation.resume(returning: nil)
-                    return
-                }
-
-                guard let user = loginName else {
-                    nkLog(error: "Login poll response field for user name for token \"\(token)\" is nil!")
-                    continuation.resume(returning: nil)
-                    return
-                }
-
-                guard let appPassword = appPassword else {
-                    nkLog(error: "Login poll response field for app password for token \"\(token)\" is nil!")
-                    continuation.resume(returning: nil)
-                    return
-                }
-
-                nkLog(debug: "Returning login poll response for \"\(user)\" on \"\(urlBase)\" for token \"\(token)\".")
-                continuation.resume(returning: (urlBase, user, appPassword))
-            }
-        }
-    }
-
-    ///
-    /// Handle the values acquired by polling successfully.
-    ///
-    private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
-        nkLog(debug: "Handling login grant values for \(loginName) on \(urlBase)")
-
-        if controller == nil {
-            nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
-            controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
-        }
-
-        await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller)
-        nkLog(debug: "Account creation for \(loginName) on \(urlBase) completed based on login grant values.")
-    }
-
-    ///
-    /// Set up the `Task` which frequently checks the server.
-    ///
-    private func createPollingTask(token: String, endpoint: String) -> Task<Void, any Error> {
-        let options = NKRequestOptions(customUserAgent: userAgent)
-        var grantValues: (urlBase: String, loginName: String, appPassword: String)?
-
-        return Task { @MainActor in
-            repeat {
-                try Task.checkCancellation()
-
-                grantValues = await poll(token: token, endpoint: endpoint, options: options)
-                try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
-            } while grantValues == nil
-
-            guard let grantValues else {
-                return
-            }
-
-            await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword)
-            nkLog(debug: "Polling task completed.")
-        }
-    }
 }
 
 // MARK: - WKNavigationDelegate

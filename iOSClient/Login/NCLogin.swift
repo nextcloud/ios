@@ -28,6 +28,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var activeTextField = UITextField()
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
+    private let loginFlowPoller = NCLoginFlowPoller()
+    private weak var activeLoginProvider: UIViewController?
 
     /// Controller
     var controller: NCMainTabBarController?
@@ -197,6 +199,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if isMovingFromParent || isBeingDismissed {
+            loginFlowPoller.cancel()
+            activeLoginProvider = nil
+        }
+    }
+
     private func handleLoginWithAppConfig() {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
@@ -336,7 +347,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         webviewVC.initialURLString = login
                         webviewVC.uiColor = textColor
                         webviewVC.delegate = self
-                        webviewVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+                        startLoginFlowPolling(token: token, endpoint: endpoint, provider: webviewVC)
                         navigationController?.pushViewController(webviewVC, animated: true)
                     }
                 }
@@ -369,6 +380,28 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
         }
+    }
+
+    private func startLoginFlowPolling(token: String, endpoint: String, provider: UIViewController?) {
+        activeLoginProvider = provider
+
+        loginFlowPoller.start(token: token, endpoint: endpoint) { [weak self] grant in
+            await self?.handleLoginGrant(grant)
+        }
+    }
+
+    @MainActor
+    private func handleLoginGrant(_ grant: NCLoginGrant) async {
+        if let provider = activeLoginProvider {
+            if let navigationController = provider.navigationController {
+                navigationController.popToViewController(self, animated: true)
+            } else if provider.presentingViewController != nil {
+                provider.dismiss(animated: true)
+            }
+        }
+
+        activeLoginProvider = nil
+        createAccount(urlBase: grant.urlBase, user: grant.loginName, password: grant.appPassword)
     }
 
     // MARK: - QRCode
@@ -482,5 +515,7 @@ extension NCLogin: NCLoginProviderDelegate {
     func onBack() {
         loginButton.isEnabled = true
         loginButton.hideSpinnerAndShowButton()
+        loginFlowPoller.cancel()
+        activeLoginProvider = nil
     }
 }
