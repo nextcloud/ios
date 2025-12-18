@@ -106,9 +106,6 @@ class NCWebViewLoginProvider: UIViewController {
             navigationController?.popViewController(animated: true)
         }
     }
-
-    // MARK: - Polling
-
 }
 
 // MARK: - WKNavigationDelegate
@@ -139,33 +136,15 @@ extension NCWebViewLoginProvider: WKNavigationDelegate {
             return
         }
 
-        // Login via provider.
-        if currentWebViewURLString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) && currentWebViewURLString.contains("login") {
+        if currentWebViewURLString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol), let grant = NCProviderLoginHandler.handle(callbackURL: currentWebViewURL) {
             nkLog(debug: "Web view redirect to provider login URL detected.")
 
-            var server: String = ""
-            var user: String = ""
-            var password: String = ""
-            let keyValue = currentWebViewURL.path.components(separatedBy: "&")
-
-            for value in keyValue {
-                if value.contains("server:") { server = value }
-                if value.contains("user:") { user = value }
-                if value.contains("password:") { password = value }
+            if self.controller == nil {
+                self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
             }
 
-            if !server.isEmpty, !user.isEmpty, !password.isEmpty {
-                let server: String = server.replacingOccurrences(of: "/server:", with: "")
-                let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
-                let password: String = password.replacingOccurrences(of: "password:", with: "")
-
-                if self.controller == nil {
-                    self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
-                }
-
-                Task { @MainActor in
-                    await NCAccount().createAccount(viewController: self, urlBase: server, user: username, password: password, controller: controller)
-                }
+            Task { @MainActor in
+                await NCAccount().createAccount(viewController: self, urlBase: grant.urlBase, user: grant.user, password: grant.password, controller: controller)
             }
         }
     }
