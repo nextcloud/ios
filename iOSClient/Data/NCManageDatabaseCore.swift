@@ -45,7 +45,9 @@ final class NCManageDatabaseCore {
             }
         }
 
-        if oldSchemaVersion < 403 {
+        if oldSchemaVersion < 373 {
+            // Fix from version 6.2.5
+        } else if oldSchemaVersion < 403 {
             migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                 let onlyNew = oldObject?["autoUploadOnlyNew"] as? Bool ?? false
                 if onlyNew {
