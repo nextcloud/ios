@@ -111,6 +111,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
 
+            
             searchField.searchTextField.font = .systemFont(ofSize: 14)
             searchField.delegate = self
         }
@@ -201,13 +202,6 @@ class NCShare: UIViewController, NCSharePagingContent {
     // MARK: - IBAction
 
     @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
-        // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
-        func isValidEmail(_ email: String) -> Bool {
-
-            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-            let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-            return emailPred.evaluate(with: email)
-        }
         guard let searchString = textField.text, !searchString.isEmpty else { return }
         if searchString.contains("@"), !isValidEmail(searchString) { return }
         networking?.getSharees(searchString: searchString)
@@ -460,15 +454,16 @@ extension NCShare: UISearchBarDelegate {
     }
 
     @objc private func searchSharees(_ sender: Any?) {
-        // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
-        func isValidEmail(_ email: String) -> Bool {
-
-            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-            let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-            return emailPred.evaluate(with: email)
-        }
-        guard let searchString = searchField.text, !searchString.isEmpty else { return }
+        guard let searchString = searchField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !searchString.isEmpty else { return }
         if searchString.contains("@"), !isValidEmail(searchString) { return }
         networking?.getSharees(searchString: searchString)
+    }
+}
+
+extension NCShare {
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "^[\u{0021}-\u{007E}\\p{L}\\p{M}\\p{N}._%+\\-]+@([\\p{L}\\p{M}\\p{N}0-9\\-]+\\.)+[\\p{L}\\p{M}]{2,64}$" // Unicode regex allows for all unicode chars, ex. ß, ü, and more.
+        let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
     }
 }
