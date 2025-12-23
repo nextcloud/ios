@@ -557,7 +557,8 @@
 "_full_resolution_image_info_"            = "This may reveal more information about the photo.";
 "_download_audio_"          = "Download the audio locally";
 "_copied_path_"             = "Copied path";
-"_privacy_screen_"          = "Splash screen when app inactive";
+"_privacy_screen_"          = "Hide content when app is inactive";
+"_privacy_screen_footer_"   = "This will hide the content in the app and show a splash screen when the app is inactive.";
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
 "_show_more_results_"       = "Show more results";
@@ -602,8 +603,8 @@
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
 "_reset_wrong_passcode_"    = "Reset application";
-"_reset_wrong_passcode_option_" = "Reset application after failed attempts";
-"_reset_wrong_passcode_desc_" = "Use \"Reset application\" to remove all accounts and local data after %d failed code entry attempts.";
+"_reset_wrong_passcode_option_" = "Reset application after 10 failed attempts";
+"_reset_wrong_passcode_desc_" = "This setting will remove all accounts and local data after %d failed passcode entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";
 "_virus_detect_"            = "Virus detected. Upload cannot be completed!";
 "_select_photos_"           = "Select photos";
