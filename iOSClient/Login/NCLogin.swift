@@ -8,7 +8,7 @@ import UIKit
 import NextcloudKit
 import SwiftEntryKit
 import SwiftUI
-import SafariServices
+import AuthenticationServices
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var imageBrand: UIImageView!
@@ -29,7 +29,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
     private let loginFlowPoller = NCLoginFlowPoller()
-    private weak var activeLoginProvider: UIViewController?
+    private var authenticationSession: ASWebAuthenticationSession?
 
     /// Controller
     var controller: NCMainTabBarController?
@@ -204,7 +204,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if isMovingFromParent || isBeingDismissed {
             loginFlowPoller.cancel()
-            activeLoginProvider = nil
+            authenticationSession?.cancel()
+            authenticationSession = nil
         }
     }
 
@@ -341,14 +342,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let loginOptions = NKRequestOptions(customUserAgent: userAgent)
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url, options: loginOptions) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
-                    if error == .success, let token, let endpoint, let login {
+                    if error == .success, let token, let endpoint, let login, let loginURL = URL(string: login) {
                         nkLog(debug: "Successfully received login flow information.")
-                        let webviewVC = NCWebViewLoginProvider()
-                        webviewVC.initialURLString = login
-                        webviewVC.uiColor = textColor
-                        webviewVC.delegate = self
-                        startLoginFlowPolling(token: token, endpoint: endpoint, provider: webviewVC)
-                        navigationController?.pushViewController(webviewVC, animated: true)
+                        startASWebAuthenticationSession(loginURL: loginURL, token: token, endpoint: endpoint)
                     }
                 }
             case .failure(let error):
@@ -382,26 +378,69 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    private func startLoginFlowPolling(token: String, endpoint: String, provider: UIViewController?) {
-        activeLoginProvider = provider
-
+    private func startLoginFlowPolling(token: String, endpoint: String) {
         loginFlowPoller.start(token: token, endpoint: endpoint) { [weak self] grant in
+            // Finish login v2 flow
             await self?.handleLoginGrant(grant)
+        }
+    }
+
+    private func startASWebAuthenticationSession(loginURL: URL, token: String, endpoint: String) {
+        let callbackScheme = URL(string: NCBrandOptions.shared.webLoginAutenticationProtocol)?.scheme ?? loginURL.scheme
+
+        let session = ASWebAuthenticationSession(url: loginURL,
+                                                 callbackURLScheme: callbackScheme,
+                                                 completionHandler: handleAuthenticationSessionCompletion(callbackURL:error:))
+
+        session.presentationContextProvider = self
+        session.prefersEphemeralWebBrowserSession = true
+
+        authenticationSession = session
+
+        if session.start() {
+            startLoginFlowPolling(token: token, endpoint: endpoint)
+        } else {
+            authenticationSession = nil
+            loginFlowPoller.cancel()
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
+            NCContentPresenter().showError(error: error, priority: .max)
         }
     }
 
     @MainActor
     private func handleLoginGrant(_ grant: NCLoginGrant) async {
-        if let provider = activeLoginProvider {
-            if let navigationController = provider.navigationController {
-                navigationController.popToViewController(self, animated: true)
-            } else if provider.presentingViewController != nil {
-                provider.dismiss(animated: true)
-            }
+        authenticationSession?.cancel()
+        authenticationSession = nil
+        createAccount(urlBase: grant.urlBase, user: grant.loginName, password: grant.appPassword)
+    }
+
+    @MainActor
+    private func handleAuthenticationSessionCompletion(callbackURL: URL?, error: Error?) {
+        loginFlowPoller.cancel()
+        authenticationSession = nil
+        
+        if let error = error as? ASWebAuthenticationSessionError, error.code == .canceledLogin {
+            // Do nothing as user canceled login flow
+            return
         }
 
-        activeLoginProvider = nil
-        createAccount(urlBase: grant.urlBase, user: grant.loginName, password: grant.appPassword)
+        if let error = error {
+            nkLog(error: "ASWebAuthenticationSession failed with error: \(error.localizedDescription)")
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
+            NCContentPresenter().showError(error: error, priority: .max)
+            return
+        }
+
+        guard let callbackURL, let providerGrant = NCProviderLoginHandler.handle(callbackURL: callbackURL) else {
+            nkLog(error: "ASWebAuthenticationSession returned an invalid callback URL.")
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
+            NCContentPresenter().showError(error: error, priority: .max)
+            return
+        }
+
+        Task {
+            await handleLoginGrant(NCLoginGrant(urlBase: providerGrant.urlBase, loginName: providerGrant.user, appPassword: providerGrant.password))
+        }
     }
 
     // MARK: - QRCode
@@ -516,6 +555,15 @@ extension NCLogin: NCLoginProviderDelegate {
         loginButton.isEnabled = true
         loginButton.hideSpinnerAndShowButton()
         loginFlowPoller.cancel()
-        activeLoginProvider = nil
+        authenticationSession?.cancel()
+        authenticationSession = nil
+    }
+}
+
+// MARK: - ASWebAuthenticationPresentationContextProviding
+
+extension NCLogin: ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        view.window ?? UIWindow()
     }
 }
