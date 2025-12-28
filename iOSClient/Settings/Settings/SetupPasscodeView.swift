@@ -12,7 +12,7 @@ import PopupView
 struct SetupPasscodeView: UIViewControllerRepresentable {
     @Binding var isLockActive: Bool
     var changePasscode: Bool = false
-    let maxFailedAttempts = 2 // + 1 = 3... The lib failed attempt counter starts at 0. Why? Who knows.
+    let maxFailedAttempts = 2 // + 1 = 3... The lib's failed attempt counter starts at 0. Why? Who knows.
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
@@ -68,8 +68,10 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
                 context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
                     DispatchQueue.main.async {
                         if success {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+                                parent.isLockActive = false
                                 NCPreferences().passcode = nil
+
                                 passcodeViewController.dismiss(animated: true)
                             }
                         }
