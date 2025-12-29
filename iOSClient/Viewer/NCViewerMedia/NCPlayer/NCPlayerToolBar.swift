@@ -131,7 +131,7 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.value = position
 
-        labelCurrentTime.text = "--:--"
+        labelCurrentTime.text = "00:00"
         labelLeftTime.text = "--:--"
 
         if viewerMediaScreenMode == .normal {
@@ -144,19 +144,41 @@ class NCPlayerToolBar: UIView {
     }
 
     public func update() {
-        guard let ncplayer = self.ncplayer, let length = ncplayer.player.media?.length.intValue else { return }
-        let position = ncplayer.player.position
-        let positionInSecond = position * Float(length / 1000)
+        guard let ncplayer = self.ncplayer,
+                  let media = ncplayer.player.media else {
+                // If length is 0, we can't do math, so we leave it as --:--
+                return
+            }
 
-        // SLIDER & TIME
-        if playbackSliderEvent == .ended {
-            playbackSlider.value = position
-        }
-        labelCurrentTime.text = ncplayer.player.time.stringValue
-        labelLeftTime.text = ncplayer.player.remainingTime?.stringValue
+            let length = media.length.intValue
 
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
+            // Get current position (0.0 to 1.0)
+            let position = ncplayer.player.position
+
+            // Calculate seconds based on percentage * total length
+            // We do this manually because ncplayer.player.time might be 0 before playback starts
+            let currentSeconds = Double(position) * (Double(length) / 1000.0)
+
+            // Convert to VLCTime for easy string formatting
+            let currentTimeObj = VLCTime(int: Int32(currentSeconds * 1000))
+            let remainingTimeObj = VLCTime(int: Int32((Double(length) / 1000.0) - currentSeconds) * 1000)
+
+//            // SLIDER & TIME
+//            if playbackSliderEvent == .ended {
+//                playbackSlider.value = position
+//            }
+
+            // Update Labels
+            labelCurrentTime.text = currentTimeObj.stringValue
+
+            // Logic for remaining time (usually typically shown as negative)
+            let remaining = remainingTimeObj.stringValue
+                labelLeftTime.text = "-\(remaining)"
+
+
+            // Update Control Center
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentSeconds
     }
 
     public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {

@@ -7,7 +7,7 @@ import NextcloudKit
 import UIKit
 import MobileVLCKit
 
-class NCPlayer: NSObject {
+class NCPlayer: NSObject, VLCMediaDelegate {
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?
@@ -66,7 +66,13 @@ class NCPlayer: NSObject {
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
         print("Play URL: \(url)")
-        player.media = VLCMedia(url: url)
+         let media = VLCMedia(url: url)
+                 media.delegate = self // <--- IMPORTANT: Listen for parsing events
+
+                 // 3. Explicitly ask VLC to parse network headers immediately
+         media.parse(options: .fetchNetwork)
+
+         player.media = media
         player.delegate = self
 
         dialogProvider = VLCDialogProvider(library: VLCLibrary.shared(), customUI: true)
@@ -195,6 +201,21 @@ class NCPlayer: NSObject {
     func jumpBackward(_ seconds: Int32) {
         player.play()
         player.jumpBackward(seconds)
+    }
+}
+
+extension NCPlayer {
+     // Called when VLC finishes parsing media metadata (audio or video)
+     func mediaDidFinishParsing(_ media: VLCMedia) {
+          // This fires when VLC finally knows the length (duration)
+                  if media.length.intValue > 0 {
+                      print("VLC Metadata Loaded: \(media.length)")
+
+                      DispatchQueue.main.async {
+                          // Now that we have length, force the toolbar to update
+                          self.playerToolBar?.update()
+                      }
+                  }
     }
 }
 
