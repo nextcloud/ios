@@ -131,7 +131,7 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.value = position
 
-        labelCurrentTime.text = "00:00"
+        labelCurrentTime.text = "--:--"
         labelLeftTime.text = "--:--"
 
         if viewerMediaScreenMode == .normal {
@@ -145,40 +145,36 @@ class NCPlayerToolBar: UIView {
 
     public func update() {
         guard let ncplayer = self.ncplayer,
-                  let media = ncplayer.player.media else {
-                // If length is 0, we can't do math, so we leave it as --:--
-                return
-            }
+              let media = ncplayer.player.media else {
+            return
+        }
 
-            let length = media.length.intValue
+        let length: Int32
 
-            // Get current position (0.0 to 1.0)
-            let position = ncplayer.player.position
+        if let result = self.database.getVideo(metadata: metadata), let resultLength = result.length {
+            length = Int32(resultLength)
+        } else {
+            length = media.length.intValue
+        }
 
-            // Calculate seconds based on percentage * total length
-            // We do this manually because ncplayer.player.time might be 0 before playback starts
-            let currentSeconds = Double(position) * (Double(length) / 1000.0)
+        let position = ncplayer.player.position
 
-            // Convert to VLCTime for easy string formatting
-            let currentTimeObj = VLCTime(int: Int32(currentSeconds * 1000))
-            let remainingTimeObj = VLCTime(int: Int32((Double(length) / 1000.0) - currentSeconds) * 1000)
+        let currentSeconds = Double(position) * (Double(length) / 1000.0)
 
-//            // SLIDER & TIME
-//            if playbackSliderEvent == .ended {
-//                playbackSlider.value = position
-//            }
+        let currentTimeObj = VLCTime(int: Int32(currentSeconds * 1000))
+        let remainingTimeObj = VLCTime(int: Int32((Double(length) / 1000.0) - currentSeconds) * 1000)
 
-            // Update Labels
-            labelCurrentTime.text = currentTimeObj.stringValue
+        labelCurrentTime.text = currentTimeObj.stringValue == "--:--" ? "00:00" : currentTimeObj.stringValue
 
-            // Logic for remaining time (usually typically shown as negative)
-            let remaining = remainingTimeObj.stringValue
-                labelLeftTime.text = "-\(remaining)"
-
-
-            // Update Control Center
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentSeconds
+        let remaining = remainingTimeObj.stringValue
+        labelLeftTime.text = "-\(remaining)"
+        
+        if playbackSliderEvent == .ended {
+            playbackSlider.value = position
+        }
+        
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentSeconds
     }
 
     public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
@@ -429,7 +425,7 @@ extension NCPlayerToolBar {
                     guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                     if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
-                        let viewController = navigationController.topViewController as? NCSelect {
+                       let viewController = navigationController.topViewController as? NCSelect {
 
                         viewController.delegate = self
                         viewController.typeOfCommandView = .nothing
@@ -512,7 +508,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
 
     // swiftlint:disable inclusive_language
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
-    // swiftlint:enable inclusive_language
+        // swiftlint:enable inclusive_language
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if type == "subtitle" {
