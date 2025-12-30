@@ -7,7 +7,7 @@ import NextcloudKit
 import UIKit
 import MobileVLCKit
 
-class NCPlayer: NSObject {
+class NCPlayer: NSObject, VLCMediaDelegate {
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?
@@ -65,18 +65,21 @@ class NCPlayer: NSObject {
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
-        print("Play URL: \(url)")
-        player.media = VLCMedia(url: url)
+        print("Playing URL: \(url)")
+        let media = VLCMedia(url: url)
+
+        media.parse(options: url.isFileURL ? .fetchLocal : .fetchNetwork)
+
+        player.media = media
         player.delegate = self
 
         dialogProvider = VLCDialogProvider(library: VLCLibrary.shared(), customUI: true)
         dialogProvider?.customRenderer = self
 
-        // player?.media?.addOption("--network-caching=500")
         player.media?.addOption(":http-user-agent=\(userAgent)")
 
         if let result = self.database.getVideo(metadata: metadata),
-            let resultPosition = result.position {
+           let resultPosition = result.position {
             position = resultPosition
         }
 
@@ -213,11 +216,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
 
-            print("Played mode: STOPPED")
+            print("Player mode: STOPPED")
         case .opening:
-            print("Played mode: OPENING")
+            playerToolBar?.playbackSliderEvent = .began
+            print("Player mode: OPENING")
         case .buffering:
-            print("Played mode: BUFFERING")
+            print("Player mode: BUFFERING")
         case .ended:
             self.database.addVideo(metadata: self.metadata, position: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -226,9 +230,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 }
             }
             playerToolBar?.playButtonPlay()
-            print("Played mode: ENDED")
+            print("Player mode: ENDED")
         case .error:
-            print("Played mode: ERROR")
+            print("Player mode: ERROR")
         case .playing:
             guard let playerToolBar = playerToolBar else { return }
             if playerToolBar.playerButtonView.isHidden {
@@ -256,24 +260,25 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             }
             self.width = Int(size.width)
             self.height = Int(size.height)
+            playerToolBar.updatePlaybackPosition()
             playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             self.database.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerIsPlaying)
 
-            print("Played mode: PLAYING")
+            print("Player mode: PLAYING")
         case .paused:
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
 
             playerToolBar?.playButtonPlay()
-            print("Played mode: PAUSED")
+            print("Player mode: PAUSED")
         default: break
         }
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
         activityIndicator.stopAnimating()
-        playerToolBar?.update()
+        playerToolBar?.updatePlaybackPosition()
     }
 }
 

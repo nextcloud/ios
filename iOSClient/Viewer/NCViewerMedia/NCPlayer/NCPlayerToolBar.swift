@@ -143,20 +143,32 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = position
     }
 
-    public func update() {
-        guard let ncplayer = self.ncplayer, let length = ncplayer.player.media?.length.intValue else { return }
-        let position = ncplayer.player.position
-        let positionInSecond = position * Float(length / 1000)
+    public func updatePlaybackPosition() {
+        guard let ncplayer = self.ncplayer,
+              let media = ncplayer.player.media else {
+            return
+        }
 
-        // SLIDER & TIME
+        let length = media.length.intValue
+
+        let position = ncplayer.player.position
+
+        let currentSeconds = Double(position) * (Double(length) / 1000.0)
+
+        let currentTimeObj = VLCTime(int: Int32(currentSeconds * 1000))
+        let remainingTimeObj = VLCTime(int: Int32((Double(length) / 1000.0) - currentSeconds) * 1000)
+
+        labelCurrentTime.text = currentTimeObj.stringValue == "--:--" ? "00:00" : currentTimeObj.stringValue
+
+        let remaining = remainingTimeObj.stringValue
+        labelLeftTime.text = "-\(remaining)"
+
         if playbackSliderEvent == .ended {
             playbackSlider.value = position
         }
-        labelCurrentTime.text = ncplayer.player.time.stringValue
-        labelLeftTime.text = ncplayer.player.remainingTime?.stringValue
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentSeconds
     }
 
     public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
@@ -407,7 +419,7 @@ extension NCPlayerToolBar {
                     guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                     if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
-                        let viewController = navigationController.topViewController as? NCSelect {
+                       let viewController = navigationController.topViewController as? NCSelect {
 
                         viewController.delegate = self
                         viewController.typeOfCommandView = .nothing
@@ -490,7 +502,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
 
     // swiftlint:disable inclusive_language
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
-    // swiftlint:enable inclusive_language
+        // swiftlint:enable inclusive_language
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if type == "subtitle" {
