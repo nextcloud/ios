@@ -216,12 +216,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
 
-            print("Played mode: STOPPED")
+            print("Player mode: STOPPED")
         case .opening:
             playerToolBar?.playbackSliderEvent = .began
-            print("Played mode: OPENING")
+            print("Player mode: OPENING")
         case .buffering:
-            print("Played mode: BUFFERING")
+            print("Player mode: BUFFERING")
         case .ended:
             self.database.addVideo(metadata: self.metadata, position: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -230,9 +230,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 }
             }
             playerToolBar?.playButtonPlay()
-            print("Played mode: ENDED")
+            print("Player mode: ENDED")
         case .error:
-            print("Played mode: ERROR")
+            print("Player mode: ERROR")
         case .playing:
             guard let playerToolBar = playerToolBar else { return }
             if playerToolBar.playerButtonView.isHidden {
@@ -266,12 +266,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerIsPlaying)
 
-            print("Played mode: PLAYING")
+            print("Player mode: PLAYING")
         case .paused:
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
 
             playerToolBar?.playButtonPlay()
-            print("Played mode: PAUSED")
+            print("Player mode: PAUSED")
         default: break
         }
     }
