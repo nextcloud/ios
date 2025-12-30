@@ -68,7 +68,7 @@ class NCPlayer: NSObject, VLCMediaDelegate {
         print("Playing URL: \(url)")
         let media = VLCMedia(url: url)
 
-        media.parse(options: .fetchNetwork)
+        media.parse(options: url.isFileURL ? .fetchLocal : .fetchNetwork)
 
         player.media = media
         player.delegate = self
@@ -218,6 +218,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
             print("Played mode: STOPPED")
         case .opening:
+            playerToolBar?.playbackSliderEvent = .began
             print("Played mode: OPENING")
         case .buffering:
             print("Played mode: BUFFERING")
@@ -259,8 +260,8 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             }
             self.width = Int(size.width)
             self.height = Int(size.height)
-            playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             playerToolBar.updatePlaybackPosition()
+            playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             self.database.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerIsPlaying)
