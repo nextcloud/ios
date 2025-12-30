@@ -143,19 +143,13 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = position
     }
 
-    public func update() {
+    public func updatePlaybackPosition() {
         guard let ncplayer = self.ncplayer,
               let media = ncplayer.player.media else {
             return
         }
 
-        let length: Int32
-
-        if let result = self.database.getVideo(metadata: metadata), let resultLength = result.length {
-            length = Int32(resultLength)
-        } else {
-            length = media.length.intValue
-        }
+        let length = media.length.intValue
 
         let position = ncplayer.player.position
 
@@ -168,11 +162,11 @@ class NCPlayerToolBar: UIView {
 
         let remaining = remainingTimeObj.stringValue
         labelLeftTime.text = "-\(remaining)"
-        
+
         if playbackSliderEvent == .ended {
             playbackSlider.value = position
         }
-        
+
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentSeconds
     }
