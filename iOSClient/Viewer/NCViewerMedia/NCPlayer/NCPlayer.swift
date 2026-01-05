@@ -6,7 +6,6 @@ import Foundation
 import NextcloudKit
 import UIKit
 import MobileVLCKit
-import MediaPlayer
 
 class NCPlayer: NSObject, VLCMediaDelegate {
     internal var url: URL?
