@@ -6,6 +6,7 @@ import Foundation
 import NextcloudKit
 import UIKit
 import MobileVLCKit
+import MediaPlayer
 
 class NCPlayer: NSObject, VLCMediaDelegate {
     internal var url: URL?
@@ -212,13 +213,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
         switch player.state {
         case .stopped:
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
 
             print("Player mode: STOPPED")
         case .opening:
-            playerToolBar?.playbackSliderEvent = .began
             print("Player mode: OPENING")
         case .buffering:
             print("Player mode: BUFFERING")
@@ -229,7 +229,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                     self.restartAVPlayer(position: 0, pauseAfterPlay: !playRepeat)
                 }
             }
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
             print("Player mode: ENDED")
         case .error:
             print("Player mode: ERROR")
@@ -244,7 +244,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 pauseAfterPlay = false
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: self, title: metadata.fileNameView)
             } else {
-                playerToolBar.playButtonPause()
+                playerToolBar.showPauseButton()
                 // Set track audio/subtitle
                 let data = self.database.getVideo(metadata: metadata)
                 if let currentAudioTrackIndex = data?.currentAudioTrackIndex {
@@ -270,7 +270,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .paused:
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
 
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
             print("Player mode: PAUSED")
         default: break
         }

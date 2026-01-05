@@ -31,11 +31,13 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var repeatButton: UIButton!
 
     enum sliderEventType {
+        case none
         case began
         case ended
         case moved
     }
-    var playbackSliderEvent: sliderEventType = .ended
+
+    var playbackSliderEvent: sliderEventType = .none
     var isFullscreen: Bool = false
     var playRepeat: Bool = false
 
@@ -196,13 +198,13 @@ class NCPlayerToolBar: UIView {
         })
     }
 
-    func playButtonPause() {
+    func showPauseButton() {
         buttonImage = UIImage(systemName: "pause.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
         playButton.setImage(buttonImage, for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
     }
 
-    func playButtonPlay() {
+    func showPlayButton() {
         buttonImage = UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
         playButton.setImage(buttonImage, for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
