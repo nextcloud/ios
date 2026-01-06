@@ -389,6 +389,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.imageLocal.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
+        cell.imageMore.image = nil
 
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil

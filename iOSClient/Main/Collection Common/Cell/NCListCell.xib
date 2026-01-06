@@ -80,7 +80,7 @@
                         </subviews>
                     </stackView>
                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
-                        <rect key="frame" x="619" y="45" width="40" height="58"/>
+                        <rect key="frame" x="584" y="45" width="40" height="58"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="58" id="WOg-y5-5UA"/>
@@ -91,7 +91,7 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
-                        <rect key="frame" x="624" y="59" width="30" height="30"/>
+                        <rect key="frame" x="589" y="59" width="30" height="30"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="Cvy-nZ-zyD"/>
                             <constraint firstAttribute="width" constant="30" id="jfe-Fg-vA8"/>
@@ -107,6 +107,13 @@
                             <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Mtu-LP-kuR"/>
                         </connections>
                     </button>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
+                        <rect key="frame" x="636.66666666666663" y="61.666666666666657" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="25" id="05P-NL-pd8"/>
+                            <constraint firstAttribute="height" constant="25" id="Jet-eo-x1M"/>
+                        </constraints>
+                    </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="separator">
                         <rect key="frame" x="97" y="147" width="572" height="1"/>
                         <color key="backgroundColor" systemColor="separatorColor"/>
@@ -183,12 +190,14 @@
                 <constraint firstItem="H4E-G2-C1H" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="5" id="Gj2-CV-ryj"/>
                 <constraint firstItem="o4u-0K-Qpt" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="HFM-sM-wJr"/>
                 <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" id="JCm-UU-Pxu"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="OMy-Cu-HAx"/>
                 <constraint firstItem="H4E-G2-C1H" firstAttribute="trailing" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="5" id="OvG-vU-iYm"/>
                 <constraint firstAttribute="bottom" secondItem="h9v-hN-ILw" secondAttribute="bottom" constant="13" id="P8W-wF-DOs"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="PQ8-0b-fLa"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="10" id="RYl-cO-cCN"/>
                 <constraint firstItem="C4K-Nv-phA" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="-10" id="Sof-wy-toF"/>
                 <constraint firstAttribute="trailing" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="137" id="Tq4-bB-YMV"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="VSJ-7R-Srk"/>
                 <constraint firstAttribute="bottom" secondItem="qnc-hI-Z9r" secondAttribute="bottom" constant="9" id="XTs-Qg-kiX"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerX" secondItem="o4u-0K-Qpt" secondAttribute="centerX" id="fAq-0d-u57"/>
@@ -201,7 +210,7 @@
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="qKl-4Y-m5t"/>
                 <constraint firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="sJp-0x-bdC"/>
-                <constraint firstAttribute="trailing" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="10" id="tOD-Sd-Uhy"/>
+                <constraint firstAttribute="trailing" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="45" id="tOD-Sd-Uhy"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerY" secondItem="o4u-0K-Qpt" secondAttribute="centerY" id="xnq-6u-TXH"/>
                 <constraint firstItem="7Q9-Tv-9yo" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="leading" constant="-5" id="zex-bX-Zku"/>
             </constraints>
@@ -213,6 +222,7 @@
                 <outlet property="imageItem" destination="w2m-Vw-hpd" id="iY5-ed-crD"/>
                 <outlet property="imageItemLeftConstraint" destination="mBb-ff-7HD" id="fsR-5N-1NC"/>
                 <outlet property="imageLocal" destination="H4E-G2-C1H" id="waX-r5-viX"/>
+                <outlet property="imageMore" destination="dgL-g5-Nkc" id="r7x-Ib-4nz"/>
                 <outlet property="imageSelect" destination="AyA-hP-r6w" id="c1t-yz-HBg"/>
                 <outlet property="imageShared" destination="jc6-Vg-TaS" id="6CL-wO-WaN"/>
                 <outlet property="imageStatus" destination="7Q9-Tv-9yo" id="Qug-Q7-rRZ"/>

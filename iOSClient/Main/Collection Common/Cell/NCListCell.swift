@@ -35,6 +35,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
+    @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var tag0: UILabel!
@@ -97,6 +98,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return imageShared }
         set { imageShared = newValue }
     }
+    var fileMoreImage: UIImageView? {
+        get { return imageMore }
+        set { imageMore = newValue }
+    }
     var cellSeparatorView: UIView? {
         get { return separator }
         set { separator = newValue }
@@ -141,6 +146,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelInfo.text = ""
         labelSubinfo.text = ""
         imageShared.image = nil
+        imageMore.image = nil
         separatorHeightConstraint.constant = 0.5
         tag0.text = ""
         tag1.text = ""
@@ -161,6 +167,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         listCellDelegate?.tapShareListItem(with: ocId, ocIdTransfer: ocIdTransfer, sender: sender)
     }
 
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+//        listCellDelegate?.tapMoreListItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
+    }
+
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         listCellDelegate?.longPressListItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
     }
@@ -170,7 +180,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             UIAccessibilityCustomAction(
                 name: NSLocalizedString("_share_", comment: ""),
                 target: self,
-                selector: #selector(touchUpInsideShare(_:)))]
+                selector: #selector(touchUpInsideShare(_:))),
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_more_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore(_:)))
+        ]
     }
 
     func titleInfoTrailingFull() {
@@ -179,6 +194,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func titleInfoTrailingDefault() {
         titleTrailingConstraint.constant = 90
+    }
+
+    func setButtonMore(image: UIImage) {
+        imageMore.image = image
+        setA11yActions()
+    }
+
+    func hideButtonMore(_ status: Bool) {
+        imageMore.isHidden = status
+        buttonMore.isHidden = status
     }
 
     func hideButtonShare(_ status: Bool) {
@@ -191,6 +216,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
             imageShared.isHidden = true
+            imageMore.isHidden = true
             buttonShared.isHidden = true
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -198,6 +224,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
             imageShared.isHidden = false
+            imageMore.isHidden = false
             buttonShared.isHidden = false
             buttonMore.isHidden = false
             backgroundView = nil
