@@ -609,10 +609,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
+        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
+    }
+
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
+        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
+    }
+
     func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) {
         guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
 
         NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
+    }
+
+    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
+        guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
+//        toggleMenu(metadata: metadata, image: image, sender: sender)
     }
 
     func tapRichWorkspace(_ sender: Any) {
@@ -626,6 +639,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.present(navigationController, animated: true, completion: nil)
             }
         }
+    }
+
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
+//        toggleMenu(metadata: metadata, image: image, sender: sender)
     }
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
