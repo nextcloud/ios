@@ -356,7 +356,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(scene: UIApplication.shared.mainAppWindow?.windowScene,
+                await showErrorBanner(controller: self.controller,
                                       errorDescription: error.errorDescription,
                                       errorCode: error.errorCode)
             }
@@ -524,7 +524,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     @MainActor
-    func showLoadingTitle() {
+    func startGUIGetServerData() {
+        self.dataSource.setGetServerData(false)
+        self.collectionView.reloadData()
+
         // Don't show spinner on iPad root folder
         if UIDevice.current.userInterfaceIdiom == .pad,
            (self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session)) || self.serverUrl.isEmpty {
@@ -548,7 +551,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @MainActor
-    func restoreDefaultTitle() {
+    func stopGUIGetServerData() {
+        self.dataSource.setGetServerData(true)
         self.navigationItem.titleView = nil
         self.navigationItem.title = self.titleCurrentFolder
     }
@@ -872,7 +876,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
-                NCContentPresenter().showError(error: error)
+                Task {@MainActor in
+                    await showErrorBanner(
+                        controller: self.controller,
+                        errorDescription: error.errorDescription,
+                        errorCode: error.errorCode
+                    )
+                }
             }
 
             metadataForSection.unifiedSearchInProgress = false

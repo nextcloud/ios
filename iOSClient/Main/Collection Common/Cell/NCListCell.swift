@@ -243,7 +243,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             labelInfo.isHidden = true
             labelSubinfo.isHidden = true
             labelInfoSeparator.isHidden = true
-            
+
             if let tag = tags.first {
                 tag0.text = tag
                 if tags.count > 1 {

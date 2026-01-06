@@ -18,6 +18,13 @@ actor NCNetworkingProcess {
     private let networking = NCNetworking.shared
 
     private var currentTask: Task<Void, Never>?
+
+    @MainActor
+    private var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
+
+    @MainActor
+    private var currentUploadRequest: UploadRequest?
+
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
     private var inWaitingCount: Int = 0
@@ -54,6 +61,8 @@ actor NCNetworkingProcess {
 
             Task {
                 await self.stopTimer()
+                await self.cancelCurrentTaskOnBackground()
+                await self.cancelCurrentUpload()
             }
         }
 
@@ -146,6 +155,19 @@ actor NCNetworkingProcess {
         timer = nil
     }
 
+    private func cancelCurrentTaskOnBackground() {
+        currentTask?.cancel()
+        currentTask = nil
+    }
+
+    @MainActor
+    private func cancelCurrentUpload() async {
+        self.currentUploadTask?.cancel()
+        self.currentUploadRequest?.cancel()
+        self.currentUploadTask = nil
+        self.currentUploadRequest = nil
+    }
+
     private func handleTimerTick() async {
         if currentTask != nil {
             print("[NKLOG] current task is running")
@@ -155,6 +177,10 @@ actor NCNetworkingProcess {
         currentTask = Task {
             defer {
                 currentTask = nil
+            }
+
+            if Task.isCancelled {
+                return
             }
 
             guard networking.isOnline,
@@ -205,6 +231,10 @@ actor NCNetworkingProcess {
 
                 if enableControllingScreenAwake {
                     ScreenAwakeManager.shared.mode = resultsScreenAwake.isEmpty && !hasSyncTask ? .off : NCPreferences().screenAwakeMode
+                }
+
+                if Task.isCancelled {
+                    return
                 }
 
                 await runMetadataPipelineAsync(metadatas: metadatas)
@@ -359,7 +389,31 @@ actor NCNetworkingProcess {
                 //
                 if metadata.isDirectoryE2EE {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller, scene: SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene)
+                    let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+
+                    let token = await showUploadBanner(scene: scene,
+                                                       blocksTouches: true,
+                                                       onButtonTap: {
+                        Task {
+                            await self.cancelCurrentUpload()
+                        }
+                    })
+
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata,
+                                                          controller: controller,
+                                                          stageBanner: .button,
+                                                          tokenBanner: token) { uploadRequest in
+                        Task {@MainActor in
+                            self.currentUploadRequest = uploadRequest
+                        }
+                    } currentUploadTask: { task in
+                        Task {@MainActor in
+                            self.currentUploadTask = task
+                        }
+                    }
+
+                    // wait dismiss banner before open another (loop)
+                    await LucidBanner.shared.dismissAsync()
 
                 // UPLOAD CHUNK
                 //
@@ -380,25 +434,25 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        var currentUploadTask: Task<(account: String, file: NKFile?, error: NKError), Never>?
-        var token: Int = 0
+        var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
 
-        token = showUploadBanner(scene: scene,
-                                 vPosition: .bottom,
-                                 verticalMargin: 55,
-                                 draggable: true,
-                                 stage: .init(rawValue: "button"),
-                                 onButtonTap: {
-            if let currentUploadTask {
-                currentUploadTask.cancel()
-            } else {
+        tokenBanner = showUploadBanner(scene: scene,
+                                       vPosition: .bottom,
+                                       verticalMargin: 55,
+                                       draggable: true,
+                                       stage: .button,
+                                       allowMinimizeOnTap: true,
+                                       onButtonTap: {
+            Task {
+                await self.cancelCurrentUpload()
                 LucidBanner.shared.dismiss()
             }
         })
 
         LucidBanner.shared.update(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                                   subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+                                  footnote: "( " + NSLocalizedString("_tap_to_min_max_", comment: "") + " )",
                                   systemImage: "gearshape.arrow.triangle.2.circlepath",
                                   imageAnimation: .rotate)
 
@@ -406,7 +460,7 @@ actor NCNetworkingProcess {
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                 Task {@MainActor in
                     let progress = Double(counter) / Double(total)
-                    LucidBanner.shared.update(progress: progress, for: token)
+                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
                 }
             } uploadStart: { _ in
                 Task {@MainActor in
@@ -415,21 +469,21 @@ actor NCNetworkingProcess {
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe,
                         progress: 0,
-                        for: token)
+                        for: tokenBanner)
                 }
             } uploadProgressHandler: { _, _, progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: progress, for: token)
+                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
                 }
             } assembling: {
                 Task {@MainActor in
                     LucidBanner.shared.update(
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
-                        footnote: "",
-                        systemImage: "tray.and.arrow.down",
-                        imageAnimation: .pulsebyLayer,
+                        systemImage: "gearshape.arrow.triangle.2.circlepath",
+                        imageAnimation: .rotate,
                         progress: 0,
-                        for: token)
+                        stage: .placeholder,
+                        for: tokenBanner)
                 }
             }
 

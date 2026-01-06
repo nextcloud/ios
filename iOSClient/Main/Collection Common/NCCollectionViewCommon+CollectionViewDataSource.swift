@@ -523,7 +523,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         emptyTitle = NSLocalizedString("_search_no_record_found_", comment: "")
                     }
                     emptyDescription = NSLocalizedString("_search_instruction_", comment: "")
-                } else if self.searchDataSourceTask?.state == .running {
+                } else if self.searchDataSourceTask?.state == .running || !self.dataSource.getGetServerData() {
                     emptyImage = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
                     emptyTitle = NSLocalizedString("_request_in_progress_", comment: "")
                     emptyDescription = ""

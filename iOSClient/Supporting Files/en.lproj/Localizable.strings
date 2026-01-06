@@ -23,6 +23,7 @@
 "_cancel_"                  = "Cancel";
 "_edit_"                    = "Edit";
 "_tap_to_cancel_"           = "Tap to cancel";
+"_tap_to_min_max_"          = "Tap to minimize / maximize";
 "_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
 "_download_file_"           = "Download file";
@@ -526,10 +527,11 @@
 "_certificate_view_"        = "Certificate Server";
 "_certificate_pn_view_"     = "Certificate Push Notification";
 "_save_as_scan_"            = "Save as scan";
+"_save_changes_"            = "Save changes?";
 "_modify_"                  = "Modify";
 "_overwrite_original_"      = "Overwrite original";
 "_save_as_copy_"            = "Save as copy";
-"_discard_changes_"         = "Close and discard changes";
+"_discard_changes_"         = "Discard changes";
 "_message_disable_overwrite_livephoto_" = "This image is a Live Photo, overwrite will not be possible.";
 "_discard_changes_info_"    = "Your changes will be discarded.";
 "_delete_files_desc_"       = "Delete files to free up space";

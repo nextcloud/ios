@@ -28,14 +28,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         func downloadFile() async {
             var downloadRequest: DownloadRequest?
             let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
-            var token: Int = 0
+            var tokenBanner: Int?
             await MainActor.run {
-                token = showHudBanner(scene: scene,
-                                      title: NSLocalizedString("_downloading_", comment: "")) { _, _ in
+                tokenBanner = showHudBanner(scene: scene,
+                                            title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                            stage: .button,
+                                            onButtonTap: {
                     if let request = downloadRequest {
                         request.cancel()
                     }
-                }
+                })
             }
 
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
@@ -49,7 +51,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 downloadRequest = request
             } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                    LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: tokenBanner)
                 }
             }
             await MainActor.run {

@@ -20,6 +20,7 @@ class NCCollectionViewDataSource: NSObject {
     private var layoutForView: NCDBLayoutForView?
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
+    private var hasGetServerData: Bool = true
 
     override init() { super.init() }
 
@@ -44,6 +45,16 @@ class NCCollectionViewDataSource: NSObject {
         if let providers, !providers.isEmpty || (layoutForView?.groupBy != "none") {
             createSections()
         }
+    }
+
+    // MARK: -
+
+    func getGetServerData() -> Bool {
+        return hasGetServerData
+    }
+
+    func setGetServerData(_ state: Bool) {
+        hasGetServerData = state
     }
 
     // MARK: -

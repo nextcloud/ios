@@ -60,17 +60,29 @@ class NCPhotosPickerViewController: NSObject {
 
         pickerVC?.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_limited_dimension_")
-            NCContentPresenter().showError(error: error)
+            Task {@MainActor in
+                await showErrorBanner(controller: self.controller,
+                                      errorDescription: error.errorDescription,
+                                      errorCode: error.errorCode)
+            }
         }
 
         pickerVC?.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_denied_album_")
-            NCContentPresenter().showError(error: error)
+            Task {@MainActor in
+                await showErrorBanner(controller: self.controller,
+                                      errorDescription: error.errorDescription,
+                                      errorCode: error.errorCode)
+            }
         }
 
         pickerVC?.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_denied_camera_")
-            NCContentPresenter().showError(error: error)
+            Task {@MainActor in
+                await showErrorBanner(controller: self.controller,
+                                      errorDescription: error.errorDescription,
+                                      errorCode: error.errorCode)
+            }
         }
 
         pickerVC?.configure = configure

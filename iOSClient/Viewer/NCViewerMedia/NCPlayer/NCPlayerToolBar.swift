@@ -11,6 +11,7 @@ import MediaPlayer
 import MobileVLCKit
 import FloatingPanel
 import Alamofire
+import LucidBanner
 
 class NCPlayerToolBar: UIView {
     @IBOutlet weak var utilityView: UIView!
@@ -38,7 +39,6 @@ class NCPlayerToolBar: UIView {
     var isFullscreen: Bool = false
     var playRepeat: Bool = false
 
-    private let hud = NCHud()
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
@@ -431,12 +431,15 @@ extension NCPlayerToolBar: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+            let scene = SceneManager.shared.getWindow(controller: viewerMediaPage.tabBarController)?.windowScene
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                hud.ringProgress(view: viewerMediaPage.view, text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                let token = showHudBanner(scene: scene,
+                                          title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                          stage: .button) {
                     if let request = downloadRequest {
                         request.cancel()
                     }
@@ -457,10 +460,13 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                                     status: self.global.metadataStatusDownloading)
                     }
                 }, progressHandler: { progress in
-                    self.hud.progress(progress.fractionCompleted)
+                    Task {@MainActor in
+                        LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                    }
                 }) { _, etag, _, _, _, _, error in
-                    self.hud.dismiss()
                     Task {
+                        LucidBanner.shared.dismiss()
+
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     session: "",
@@ -468,12 +474,14 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                                     sessionError: "",
                                                                     status: self.global.metadataStatusNormal,
                                                                     etag: etag)
-                    }
-                    if error == .success {
-                        self.hud.success()
-                        self.addPlaybackSlave(type: type, metadata: metadata)
-                    } else if error.errorCode != 200 {
-                        self.hud.error(text: error.errorDescription)
+
+                        if error == .success {
+                            self.addPlaybackSlave(type: type, metadata: metadata)
+                        } else if error.errorCode != 200 {
+                            await showErrorBanner(scene: scene,
+                                                  errorDescription: error.errorDescription,
+                                                  errorCode: error.errorCode)
+                        }
                     }
                 }
             }

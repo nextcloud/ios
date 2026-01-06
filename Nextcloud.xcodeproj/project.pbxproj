@@ -102,10 +102,8 @@
 		F33918C42C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C72C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
-		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
 		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
 		F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0F2B4C52E6001C0C4B /* SVGKit */; };
-		F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B132B4C52EF001C0C4B /* JGProgressHUD */; };
 		F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B152B4C52F6001C0C4B /* FirebaseDatabase */; };
 		F33D303E2D8B129600531D64 /* AutoUploadUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33D303D2D8B129600531D64 /* AutoUploadUITests.swift */; };
 		F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F33EE6E02BF4BDA500CA1A51 /* NIOSSL */; };
@@ -209,7 +207,6 @@
 		F70557BD2ED44F1800135623 /* UploadBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BB2ED44F1800135623 /* UploadBannerView.swift */; };
 		F70557BE2ED44F1800135623 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BA2ED44F1800135623 /* ErrorBannerView.swift */; };
 		F70557BF2ED44F1800135623 /* UploadBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BB2ED44F1800135623 /* UploadBannerView.swift */; };
-		F70557C02ED44F1800135623 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BA2ED44F1800135623 /* ErrorBannerView.swift */; };
 		F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70716E52987F81500E72C1D /* DocumentActionViewController.swift */; };
 		F70716ED2987F81500E72C1D /* File Provider Extension UI.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */; };
@@ -252,7 +249,6 @@
 		F7148054262ED51000693E51 /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
 		F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F714A1472ED84AF90050A43B /* HudBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F714A1462ED84AF00050A43B /* HudBannerView.swift */; };
-		F714A1482ED84AF90050A43B /* HudBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F714A1462ED84AF00050A43B /* HudBannerView.swift */; };
 		F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A7C2BE931DE0034DCB3 /* RealmSwift */; };
 		F7160A822BE933390034DCB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
@@ -298,7 +294,6 @@
 		F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72AD70E28C24BA1006CB92D /* NextcloudKit */; };
 		F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72AD71028C24BBB006CB92D /* NextcloudKit */; };
 		F72AD71328C24BCC006CB92D /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72AD71228C24BCC006CB92D /* NextcloudKit */; };
-		F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F72CD01127A7E92400E59476 /* JGProgressHUD */; };
 		F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */; };
@@ -409,7 +404,6 @@
 		F751247C2C42919C00E63DB8 /* NCPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F751247A2C42919C00E63DB8 /* NCPhotoCell.swift */; };
 		F751247E2C42919C00E63DB8 /* NCPhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F751247B2C42919C00E63DB8 /* NCPhotoCell.xib */; };
 		F752BA052E58C05200616A26 /* Maintenance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F752BA042E58C05200616A26 /* Maintenance.swift */; };
-		F75379222AE2ADA100C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F75379212AE2ADA100C0250E /* JGProgressHUD */; };
 		F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F753BA92281FD8020015BFB6 /* EasyTipView */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */; };
@@ -420,7 +414,6 @@
 		F757CC8829E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
 		F757CC8C29E82D0500F31428 /* NCGroupfolders.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F757CC8A29E82D0500F31428 /* NCGroupfolders.storyboard */; };
 		F757CC8D29E82D0500F31428 /* NCGroupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8B29E82D0500F31428 /* NCGroupfolders.swift */; };
-		F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F758A01127A7F03E0069468B /* JGProgressHUD */; };
 		F758B45A212C564000515F55 /* NCScan.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F758B457212C564000515F55 /* NCScan.storyboard */; };
 		F758B45E212C569D00515F55 /* NCScanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45D212C569C00515F55 /* NCScanCell.swift */; };
 		F758B460212C56A400515F55 /* NCScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45F212C56A400515F55 /* NCScan.swift */; };
@@ -732,8 +725,6 @@
 		F7BF9D842934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BF9D852934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BF9D872934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
-		F7BFFD282C8846020029A201 /* NCHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BFFD272C8846020029A201 /* NCHud.swift */; };
-		F7BFFD2A2C8854200029A201 /* NCHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BFFD272C8846020029A201 /* NCHud.swift */; };
 		F7C1EEA525053A9C00866ACC /* NCCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */; };
 		F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
 		F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
@@ -1683,7 +1674,6 @@
 		F7BE7C79290ADF16002ABB61 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Intent.strings"; sourceTree = "<group>"; };
 		F7BE7C7B290ADF16002ABB61 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Intent.strings"; sourceTree = "<group>"; };
 		F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+LayoutForView.swift"; sourceTree = "<group>"; };
-		F7BFFD272C8846020029A201 /* NCHud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCHud.swift; sourceTree = "<group>"; };
 		F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEUpload.swift; sourceTree = "<group>"; };
 		F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EECreateFolder.swift; sourceTree = "<group>"; };
@@ -1844,7 +1834,6 @@
 				F37208C22BAB63F0006B5430 /* TagListView in Frameworks */,
 				F3391B162B4C52F6001C0C4B /* FirebaseDatabase in Frameworks */,
 				F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */,
-				F3391B142B4C52EF001C0C4B /* JGProgressHUD in Frameworks */,
 				F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */,
 				F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */,
 				F3391B102B4C52E6001C0C4B /* SVGKit in Frameworks */,
@@ -1867,7 +1856,6 @@
 			files = (
 				F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */,
 				F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */,
-				F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */,
 				F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1893,7 +1881,6 @@
 				F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
-				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
 				F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */,
 				F760DE092AE66ED00027D78A /* KeychainAccess in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
@@ -1916,7 +1903,6 @@
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
 				F7B8F6162EAB7503006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
-				F75379222AE2ADA100C0250E /* JGProgressHUD in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1951,7 +1937,6 @@
 				F3A0479E2BD268B500658E7B /* PopupView in Frameworks */,
 				F3374AF82D78B01B002A38F9 /* HeapModule in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
-				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
 				F70557B72ED44E2700135623 /* LucidBanner in Frameworks */,
@@ -2639,7 +2624,6 @@
 				F769CA182966EA3C00039397 /* ComponentView.swift */,
 				F768823D2C0DD304001CF441 /* LazyView.swift */,
 				F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */,
-				F7BFFD272C8846020029A201 /* NCHud.swift */,
 				F75CA1462962F13700B01130 /* NCHUDView.swift */,
 			);
 			path = GUI;
@@ -3431,7 +3415,6 @@
 			name = NextcloudUITests;
 			packageProductDependencies = (
 				F3391B0F2B4C52E6001C0C4B /* SVGKit */,
-				F3391B132B4C52EF001C0C4B /* JGProgressHUD */,
 				F3391B152B4C52F6001C0C4B /* FirebaseDatabase */,
 				F3F0419E2B9F7E7900D5155F /* RealmSwift */,
 				F37208A32BAB63EE006B5430 /* QRCodeReader */,
@@ -3475,7 +3458,6 @@
 			name = NextcloudIntegrationTests;
 			packageProductDependencies = (
 				F3391B072B4C52C5001C0C4B /* FirebaseDatabase */,
-				F3391B092B4C52CB001C0C4B /* JGProgressHUD */,
 				F3391B0B2B4C52D5001C0C4B /* SVGKit */,
 				F3F0419C2B9F7E6E00D5155F /* RealmSwift */,
 			);
@@ -3524,7 +3506,6 @@
 				F72D7EB6263B1207000B3DFC /* MarkdownKit */,
 				F73ADD2026554F8E0069EA0D /* SwiftEntryKit */,
 				F710FC7F277B7D2700AA9FBF /* RealmSwift */,
-				F72CD01127A7E92400E59476 /* JGProgressHUD */,
 				F72AD70E28C24BA1006CB92D /* NextcloudKit */,
 				F70821D729E59E6D001CA2D7 /* TagListView */,
 				F7F623B62A5EFA0C0022D3D4 /* Gzip */,
@@ -3560,7 +3541,6 @@
 				F783034328B5142B00B84583 /* NextcloudKit */,
 				F787AC0A298BCB540001BB00 /* SVGKitSwift */,
 				F7A560452AE15D3D00BE8FD6 /* Queuer */,
-				F75379212AE2ADA100C0250E /* JGProgressHUD */,
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
 				F7160A7C2BE931DE0034DCB3 /* RealmSwift */,
 				F33EE6E22BF4C00700CA1A51 /* NIOSSL */,
@@ -3626,7 +3606,6 @@
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA968277B77EA0082465B /* DropDown */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
-				F758A01127A7F03E0069468B /* JGProgressHUD */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
 				F72AD70C28C24B93006CB92D /* NextcloudKit */,
 				F734B06528E75C0100E180D5 /* TLPhotoPicker */,
@@ -3817,7 +3796,6 @@
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
-				F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
 				F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */,
 				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
@@ -4197,7 +4175,6 @@
 				F7C30DFB291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
 				F73EF7DA2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F70557BF2ED44F1800135623 /* UploadBannerView.swift in Sources */,
-				F70557C02ED44F1800135623 /* ErrorBannerView.swift in Sources */,
 				F7817CFB29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 				F72429362AFE39860040AEF3 /* NCLivePhoto.swift in Sources */,
 				AF4BF61F27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
@@ -4225,7 +4202,6 @@
 				F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */,
 				F7C9B9202B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F78E2D6829AF02DB0024D4F3 /* Database.swift in Sources */,
-				F714A1482ED84AF90050A43B /* HudBannerView.swift in Sources */,
 				AA8D31562D41052300FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
 				F711A4DF2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
@@ -4298,7 +4274,6 @@
 				F73EF7E22B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
 				F77DD6AB2C5CC093009448FB /* NCSession.swift in Sources */,
 				F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
-				F7BFFD2A2C8854200029A201 /* NCHud.swift in Sources */,
 				F749B654297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F73EF7C22B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
@@ -4437,7 +4412,6 @@
 				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,
 				F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */,
 				F768822C2C0DD1E7001CF441 /* NCPreferences.swift in Sources */,
-				F7BFFD282C8846020029A201 /* NCHud.swift in Sources */,
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
 				F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */,
 				F73EF7D72B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
@@ -5764,7 +5738,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5830,7 +5804,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6025,14 +5999,6 @@
 			requirement = {
 				kind = exactVersion;
 				version = 10.54.6;
-			};
-		};
-		F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JonasGessner/JGProgressHUD.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
 			};
 		};
 		F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */ = {
@@ -6244,11 +6210,6 @@
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
 		};
-		F3391B092B4C52CB001C0C4B /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
-		};
 		F3391B0B2B4C52D5001C0C4B /* SVGKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
@@ -6258,11 +6219,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
 			productName = SVGKit;
-		};
-		F3391B132B4C52EF001C0C4B /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
 		};
 		F3391B152B4C52F6001C0C4B /* FirebaseDatabase */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -6484,11 +6440,6 @@
 			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
-		F72CD01127A7E92400E59476 /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
-		};
 		F72D7EB6263B1207000B3DFC /* MarkdownKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
@@ -6529,20 +6480,10 @@
 			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
 			productName = LRUCache;
 		};
-		F75379212AE2ADA100C0250E /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
-		};
 		F753BA92281FD8020015BFB6 /* EasyTipView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */;
 			productName = EasyTipView;
-		};
-		F758A01127A7F03E0069468B /* JGProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
-			productName = JGProgressHUD;
 		};
 		F75EAED726D2552E00F4320E /* MarqueeLabel */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -184,7 +184,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileName = (metadata.fileName as NSString).deletingPathExtension
+                        var fileName = (metadata.fileName as NSString).deletingPathExtension
                         let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
                         if type == "slideshow" {
@@ -227,12 +227,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     var item = fileNameLocalPath
 
                                     if let headers {
-                                        if let disposition = headers["Content-Disposition"] as? String {
-                                            let components = disposition.components(separatedBy: "filename=")
-                                            if components.last?.replacingOccurrences(of: "\"", with: "") != nil {
-                                                item = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryUserData, fileName: fileName)
-                                                _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
-                                            }
+                                        if let disposition = headers["Content-Disposition"] as? String,
+                                           let filenameContentDisposition = self.filenameFromContentDisposition(disposition) {
+                                            fileName = filenameContentDisposition
+                                            item = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryUserData, fileName: fileName)
+                                            _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
                                         }
                                     }
 
@@ -360,6 +359,22 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
+    }
+
+    // MARK: - Hekper
+
+    func filenameFromContentDisposition(_ disposition: String) -> String? {
+        if let range = disposition.range(of: "filename=") {
+            var value = String(disposition[range.upperBound...]).trimmingCharacters(in: .whitespaces)
+            // Cut at next ';' if present
+            if let semi = value.firstIndex(of: ";") {
+                value = String(value[..<semi])
+            }
+            // Remove optional quotes
+            value = value.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+            return value.isEmpty ? nil : value
+        }
+        return nil
     }
 }
 
