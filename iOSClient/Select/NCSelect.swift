@@ -29,7 +29,7 @@ protocol NCSelectDelegate: AnyObject {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionFirstHeaderDelegate, NCTransferDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCSectionFirstHeaderDelegate, NCTransferDelegate {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
     @IBOutlet private var bottomContraint: NSLayoutConstraint?
@@ -262,18 +262,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         overwrite = sender.isOn
     }
 
-    func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) { }
-
-    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) { }
-
-    func longPressListItem(with odId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
-
     func tapRichWorkspace(_ sender: Any) { }
 
     func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) { }
 
     func tapRecommendations(with metadata: tableMetadata) { }
-
+    
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
@@ -376,7 +370,7 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionShared)
         isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionMounted)
 
-        cell.listCellDelegate = self
+//        cell.listCellDelegate = self
 
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
