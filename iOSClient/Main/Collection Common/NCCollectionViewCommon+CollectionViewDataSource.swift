@@ -553,8 +553,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.setContent(emptyImage: emptyImage,
                                   emptyTitle: emptyTitle,
-                                  emptyDescription: emptyDescription,
-                                  delegate: self)
+                                  emptyDescription: emptyDescription)
 
             } else if let header = header as? NCSectionHeader {
                 let text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)

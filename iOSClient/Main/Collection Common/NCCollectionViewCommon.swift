@@ -9,7 +9,7 @@ import NextcloudKit
 import EasyTipView
 import LucidBanner
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -341,110 +341,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return true
     }
 
-    // MARK: - Transfer Delegate
-
-    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
-
-    func transferChange(status: String,
-                        account: String,
-                        fileName: String,
-                        serverUrl: String,
-                        selector: String?,
-                        ocId: String,
-                        destination: String?,
-                        error: NKError) {
-        Task {
-            if error != .success,
-               error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(controller: self.controller,
-                                      errorDescription: error.errorDescription,
-                                      errorCode: error.errorCode)
-            }
-            guard session.account == account else {
-                return
-            }
-
-            await self.debouncer.call {
-                switch status {
-                // UPLOADED, UPLOADED LIVEPHOTO, DELETE
-                case self.global.networkingStatusUploaded,
-                    self.global.networkingStatusDelete,
-                    self.global.networkingStatusCopyMove:
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self.serverUrl == serverUrl || destination == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                // DOWNLOAD
-                case self.global.networkingStatusDownloaded:
-                    if serverUrl == self.serverUrl || self.serverUrl.isEmpty {
-                        await self.reloadDataSource()
-                    }
-                case self.global.networkingStatusDownloadCancel:
-                    if serverUrl == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                // CREATE FOLDER
-                case self.global.networkingStatusCreateFolder:
-                    if serverUrl == self.serverUrl,
-                       selector != self.global.selectorUploadAutoUpload,
-                       let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
-                        self.pushMetadata(metadata)
-                    }
-                // RENAME
-                case self.global.networkingStatusRename:
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self.serverUrl == serverUrl {
-                        await self.reloadDataSource()
-                    }
-                // FAVORITE
-                case self.global.networkingStatusFavorite:
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self is NCFavorite {
-                        await self.reloadDataSource()
-                    } else if self.serverUrl == serverUrl {
-                        await self.reloadDataSource()
-                    }
-                default:
-                    break
-                }
-            }
-        }
-    }
-
-    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
-        Task {
-            await self.debouncer.call {
-                if requestData {
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                        Task {
-                            await self.getServerData()
-                        }
-                    }
-                } else {
-                    if self.isSearchingMode {
-                        guard status != self.global.metadataStatusWaitDelete,
-                              status != self.global.metadataStatusWaitRename,
-                              status != self.global.metadataStatusWaitMove,
-                              status != self.global.metadataStatusWaitCopy,
-                              status != self.global.metadataStatusWaitFavorite else {
-                            return
-                        }
-                        self.networkSearch()
-                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                        Task {
-                            await self.reloadDataSource()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
@@ -520,8 +416,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return NCBrandOptions.shared.brand
     }
-
-    func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     @MainActor
     func startGUIGetServerData() {
@@ -802,8 +696,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } completion: { metadatasSearch, error in
                 Task {
                     guard let metadatasSearch,
-                            error == .success,
-                            self.isSearchingMode
+                          error == .success,
+                          self.isSearchingMode
                     else {
                         self.networkSearchInProgress = false
                         await self.reloadDataSource()
@@ -962,6 +856,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return CGSize(width: collectionView.frame.width, height: 0)
         }
     }
+
+    // MARK: - Delegates
+
+    func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) { }
 }
 
 extension NCCollectionViewCommon: NCListCellDelegate {
@@ -989,7 +887,7 @@ extension NCCollectionViewCommon: NCGridCellDelegate {
 
 extension NCCollectionViewCommon: NCPhotoCellDelegate {
     func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
-//        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
+        //        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
     }
 
     func longPressPhotoItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
@@ -1010,15 +908,121 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
     }
 
     func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
-//        toggleMenu(metadata: metadata, image: image, sender: sender)
-    }
-
-    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
-        unifiedSearchMore(metadataForSection: metadataForSection)
+        //        toggleMenu(metadata: metadata, image: image, sender: sender)
     }
 
     func tapRecommendations(with metadata: tableMetadata) {
         didSelectMetadata(metadata, withOcIds: false)
+    }
+}
+
+extension NCCollectionViewCommon: NCSectionFooterDelegate {
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
+        unifiedSearchMore(metadataForSection: metadataForSection)
+    }
+}
+
+extension NCCollectionViewCommon: NCTransferDelegate {
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+
+    func transferChange(status: String,
+                        account: String,
+                        fileName: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
+        Task {
+            if error != .success,
+               error.errorCode != global.errorResourceNotFound {
+                await showErrorBanner(controller: self.controller,
+                                      errorDescription: error.errorDescription,
+                                      errorCode: error.errorCode)
+            }
+            guard session.account == account else {
+                return
+            }
+
+            await self.debouncer.call {
+                switch status {
+                    // UPLOADED, UPLOADED LIVEPHOTO, DELETE
+                case self.global.networkingStatusUploaded,
+                    self.global.networkingStatusDelete,
+                    self.global.networkingStatusCopyMove:
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self.serverUrl == serverUrl || destination == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
+                    // DOWNLOAD
+                case self.global.networkingStatusDownloaded:
+                    if serverUrl == self.serverUrl || self.serverUrl.isEmpty {
+                        await self.reloadDataSource()
+                    }
+                case self.global.networkingStatusDownloadCancel:
+                    if serverUrl == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
+                    // CREATE FOLDER
+                case self.global.networkingStatusCreateFolder:
+                    if serverUrl == self.serverUrl,
+                       selector != self.global.selectorUploadAutoUpload,
+                       let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
+                        self.pushMetadata(metadata)
+                    }
+                    // RENAME
+                case self.global.networkingStatusRename:
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self.serverUrl == serverUrl {
+                        await self.reloadDataSource()
+                    }
+                    // FAVORITE
+                case self.global.networkingStatusFavorite:
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self is NCFavorite {
+                        await self.reloadDataSource()
+                    } else if self.serverUrl == serverUrl {
+                        await self.reloadDataSource()
+                    }
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
+        Task {
+            await self.debouncer.call {
+                if requestData {
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                        Task {
+                            await self.getServerData()
+                        }
+                    }
+                } else {
+                    if self.isSearchingMode {
+                        guard status != self.global.metadataStatusWaitDelete,
+                              status != self.global.metadataStatusWaitRename,
+                              status != self.global.metadataStatusWaitMove,
+                              status != self.global.metadataStatusWaitCopy,
+                              status != self.global.metadataStatusWaitFavorite else {
+                            return
+                        }
+                        self.networkSearch()
+                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                        Task {
+                            await self.reloadDataSource()
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
