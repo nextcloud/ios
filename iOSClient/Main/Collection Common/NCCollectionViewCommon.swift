@@ -9,7 +9,7 @@ import NextcloudKit
 import EasyTipView
 import LucidBanner
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -609,39 +609,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
-        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
-    }
-
-    func tapRichWorkspace(_ sender: Any) {
-        if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-            if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
-                viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
-                viewerRichWorkspace.serverUrl = serverUrl
-                viewerRichWorkspace.delegate = self
-
-                navigationController.modalPresentationStyle = .fullScreen
-                self.present(navigationController, animated: true, completion: nil)
-            }
-        }
-    }
-
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
-//        toggleMenu(metadata: metadata, image: image, sender: sender)
-    }
-
-    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
-        unifiedSearchMore(metadataForSection: metadataForSection)
-    }
-
-    func tapRecommendations(with metadata: tableMetadata) {
-        didSelectMetadata(metadata, withOcIds: false)
-    }
-
-    func longPressMoreListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
-
-    func longPressPhotoItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
-
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
     }
@@ -1019,3 +986,39 @@ extension NCCollectionViewCommon: NCGridCellDelegate {
 
     func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
+
+extension NCCollectionViewCommon: NCPhotoCellDelegate {
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
+//        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
+    }
+
+    func longPressPhotoItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
+}
+
+extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
+    func tapRichWorkspace(_ sender: Any) {
+        if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+            if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
+                viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
+                viewerRichWorkspace.serverUrl = serverUrl
+                viewerRichWorkspace.delegate = self
+
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true, completion: nil)
+            }
+        }
+    }
+
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
+//        toggleMenu(metadata: metadata, image: image, sender: sender)
+    }
+
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
+        unifiedSearchMore(metadataForSection: metadataForSection)
+    }
+
+    func tapRecommendations(with metadata: tableMetadata) {
+        didSelectMetadata(metadata, withOcIds: false)
+    }
+}
+
