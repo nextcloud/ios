@@ -45,7 +45,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
-    var ocId = ""
+    var ocId = "" { didSet { listCellDelegate?.tapMoreListItem(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var user = ""
 
@@ -152,51 +152,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         tag1.text = ""
         titleInfoTrailingDefault()
 
-//        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
-//        longPressedGesture.minimumPressDuration = 0.5
-//        longPressedGesture.delegate = self
-//        longPressedGesture.delaysTouchesBegan = true
-//        longPressedGesture.cancelsTouchesInView = false // Allow button taps to work
-//        self.addGestureRecognizer(longPressedGesture)
         contentView.bringSubviewToFront(buttonMore)
 
-        buttonMore.configuration = .plain()  // iOS 15+ only
-        listCellDelegate?.test(with: ocId, button: buttonMore, sender: self)
-//        buttonMore.menu = UIMenu(children: [
-//                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
-//                    print("Edit tapped")
-//                },
-//                UIAction(title: "Delete", image: UIImage(systemName: "trash")) { _ in
-//                    print("Delete tapped")
-//                },
-//                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
-//                    print("Edit tapped")
-//                },
-//                UIAction(title: "Delete", image: UIImage(systemName: "trash")) { _ in
-//                    print("Delete tapped")
-//                },
-//                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
-//                    print("Edit tapped")
-//                },
-//                UIAction(title: "Delete", image: UIImage(systemName: "trash")) { _ in
-//                    print("Delete tapped")
-//                },
-//                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
-//                    print("Edit tapped")
-//                },
-//                UIAction(title: "Delete", image: UIImage(systemName: "trash")) { _ in
-//                    print("Delete tapped")
-//                },
-//            ])
-
-//        guard let metadata = NCManageDatabase().getMetadataFromOcId(ocId) else { return }
-//        buttonMore.menu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, sender: cell)
+        buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
-
-        // Debug: verify button is set up correctly
-        print("Button frame: \(buttonShared.frame)")
-        print("Button isHidden: \(buttonShared.isHidden)")
-        print("Button isUserInteractionEnabled: \(buttonShared.isUserInteractionEnabled)")
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -204,11 +163,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-//        listCellDelegate?.tapShareListItem(with: ocId, ocIdTransfer: ocIdTransfer, sender: sender)
-    }
-
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-//        listCellDelegate?.tapMoreListItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
+        listCellDelegate?.tapShareListItem(with: ocId, ocIdTransfer: ocIdTransfer, sender: sender)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -230,10 +185,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 name: NSLocalizedString("_share_", comment: ""),
                 target: self,
                 selector: #selector(touchUpInsideShare(_:))),
-            UIAccessibilityCustomAction(
-                name: NSLocalizedString("_more_", comment: ""),
-                target: self,
-                selector: #selector(touchUpInsideMore(_:)))
         ]
     }
 
@@ -371,9 +322,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 }
 
 protocol NCListCellDelegate: AnyObject {
-    func test(with ocId: String, button: UIButton, sender: Any)
+    func tapMoreListItem(with ocId: String, button: UIButton, sender: Any)
     func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any)
-    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any)
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
@@ -488,3 +438,4 @@ class BidiFilenameLabel: UILabel {
         return result
     }
 }
+
