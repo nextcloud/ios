@@ -886,9 +886,8 @@ extension NCCollectionViewCommon: NCGridCellDelegate {
 }
 
 extension NCCollectionViewCommon: NCPhotoCellDelegate {
-    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
-//        tapMoreListItem(with: ocId, button: <#T##UIButton#>, sender: <#T##Any#>)
-        //        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
+    func tapMorePhotoItem(with ocId: String, button: UIButton, sender: Any) {
+        tapMoreListItem(with: ocId, button: button, sender: sender)
     }
 
     func longPressPhotoItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }

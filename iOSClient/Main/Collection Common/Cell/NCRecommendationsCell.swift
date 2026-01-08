@@ -21,7 +21,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
-    var id: String = "" { didSet { delegate?.touchUpInsideButtonMenu(with: metadata, button: buttonMenu, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var id: String = "" { didSet { delegate?.touchUpInsideButtonMenu(with: metadata, button: buttonMenu, sender: self) /* preconfigure UIMenu with each id set */ } }
 
     override func awakeFromNib() {
         super.awakeFromNib()
