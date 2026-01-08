@@ -9,7 +9,7 @@ import NextcloudKit
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?)
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -258,7 +258,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
-        self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image, sender: sender)
+    func touchUpInsideButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
+        self.delegate?.tapRecommendationsButtonMenu(with: metadata, button: button, sender: sender)
     }
 }

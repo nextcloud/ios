@@ -887,6 +887,7 @@ extension NCCollectionViewCommon: NCGridCellDelegate {
 
 extension NCCollectionViewCommon: NCPhotoCellDelegate {
     func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
+//        tapMoreListItem(with: ocId, button: <#T##UIButton#>, sender: <#T##Any#>)
         //        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, sender: sender)
     }
 
@@ -907,8 +908,8 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
         }
     }
 
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
-        //        toggleMenu(metadata: metadata, image: image, sender: sender)
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
+        tapMoreListItem(with: metadata.ocId, button: button, sender: sender)
     }
 
     func tapRecommendations(with metadata: tableMetadata) {

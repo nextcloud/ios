@@ -9,7 +9,7 @@
 import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?)
+    func touchUpInsideButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
 }
 
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
@@ -21,7 +21,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
-    var id: String = ""
+    var id: String = "" { didSet { delegate?.touchUpInsideButtonMenu(with: metadata, button: buttonMenu, sender: self) /* preconfigure UIMenu with each ocId */ } }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -45,6 +45,11 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         image.image = nil
         labelFilename.text = ""
         labelInfo.text = ""
+
+        contentView.bringSubviewToFront(buttonMenu)
+
+        buttonMenu.menu = nil
+        buttonMenu.showsMenuAsPrimaryAction = true
     }
 
     func setImageCorner(withBorder: Bool) {
@@ -57,9 +62,5 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
             image.layer.borderWidth = 0
             image.layer.borderColor = UIColor.clear.cgColor
         }
-    }
-
-    @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
-        self.delegate?.touchUpInsideButtonMenu(with: self.metadata, image: image.image, sender: sender)
     }
 }
