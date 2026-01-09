@@ -506,25 +506,28 @@ class NCContextMenu: NSObject {
                 if shouldShowMenu {
                     let deferredElement = UIDeferredMenuElement { completion in
                         Task {
+                            func resizedRasterImage(_ image: UIImage, to size: CGSize) -> UIImage {
+                                let format = UIGraphicsImageRendererFormat.default()
+                                format.scale = image.scale
+                                let renderer = UIGraphicsImageRenderer(size: size, format: format)
+                                return renderer.image { _ in
+                                    image.draw(in: CGRect(origin: .zero, size: size))
+                                }.withRenderingMode(image.renderingMode)
+                            }
+                            
                             var iconImage: UIImage
                             if let iconUrl = item.icon,
                                let url = URL(string: metadata.urlBase + iconUrl) {
-                                do {
-                                    let (data, _) = try await URLSession.shared.data(from: url)
-                                    iconImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate) ?? UIImage()
-                                } catch {
-                                    iconImage = self.utility.loadImage(
-                                        named: "testtube.2",
-                                        colors: [NCBrandColor.shared.presentationIconColor]
-                                    )
-                                }
+                                let (data, _) = try await URLSession.shared.data(from: url)
+                                let svgkImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate)
+                                iconImage = resizedRasterImage(svgkImage ?? UIImage(), to: .init(width: 23, height: 23))
                             } else {
                                 iconImage = self.utility.loadImage(
                                     named: "testtube.2",
                                     colors: [NCBrandColor.shared.presentationIconColor]
                                 )
                             }
-
+                            
                             let action = await UIAction(
                                 title: item.name,
                                 image: iconImage
