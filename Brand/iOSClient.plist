@@ -63,7 +63,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera access is required to scan documents and make photo and video.</string>
+	<string>Camera access is required to scan documents and take photos in this app.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is required to authenticate using face recognition.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -75,9 +75,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is required to create voice notes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
+	<string>This lets you upload and save photos using this app. Photos can then be browsed and viewed via the Media tab.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
+	<string>This lets you upload and save photos using this app. Photos can then be browsed and viewed via the Media tab.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>AccountIntent</string>

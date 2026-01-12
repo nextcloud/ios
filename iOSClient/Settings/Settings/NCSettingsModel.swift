@@ -15,7 +15,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     // State to control the lock on/off section
     @Published var isLockActive: Bool = false
     // State to control the enable TouchID toggle
-    @Published var enableTouchID: Bool = false
+    @Published var enableTouchFaceID: Bool = false
     // State to control
     @Published var lockScreen: Bool = false
     // State to control
@@ -48,7 +48,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         let capabilities = NCNetworking.shared.capabilities[self.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
         isLockActive = (keychain.passcode != nil)
-        enableTouchID = keychain.touchFaceID
+        enableTouchFaceID = keychain.touchFaceID
         lockScreen = !keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
@@ -62,7 +62,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to update Touch ID / Face ID setting
     func updateTouchIDSetting() {
-        keychain.touchFaceID = enableTouchID
+        keychain.touchFaceID = enableTouchFaceID
     }
 
     /// Function to update Lock Screen setting

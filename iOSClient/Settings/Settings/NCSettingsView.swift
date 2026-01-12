@@ -82,8 +82,8 @@ struct NCSettingsView: View {
                             }
                         })
                         // Enable Touch ID
-                        Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                            .onChange(of: model.enableTouchID) {
+                        Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchFaceID)
+                            .onChange(of: model.enableTouchFaceID) {
                                 model.updateTouchIDSetting()
                             }
 
@@ -108,13 +108,15 @@ struct NCSettingsView: View {
             }
 
             if !NCBrandOptions.shared.enforce_privacyScreenEnabled {
-                Section {
+                Section(content: {
                     // Splash screen when app inactive
                     Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
                         .onChange(of: model.privacyScreen) {
                             model.updatePrivacyScreenSetting()
                         }
-                }
+                }, footer: {
+                    Text(NSLocalizedString("_privacy_screen_footer_", comment: ""))
+                })
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
             }
 
@@ -288,3 +290,4 @@ struct E2EESection: View {
 #Preview {
     NCSettingsView(model: NCSettingsModel(controller: nil))
 }
+
