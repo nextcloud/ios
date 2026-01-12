@@ -277,7 +277,6 @@ final class NCGlobal: Sendable {
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
 
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
-    let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
     let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
     let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
