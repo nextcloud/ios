@@ -356,7 +356,7 @@ class NCViewerMediaPage: UIViewController {
     func clearCommandCenter() {
 
         UIApplication.shared.endReceivingRemoteControlEvents()
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
 
         MPRemoteCommandCenter.shared().playCommand.isEnabled = false
         MPRemoteCommandCenter.shared().pauseCommand.isEnabled = false
