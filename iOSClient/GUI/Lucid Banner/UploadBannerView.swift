@@ -90,8 +90,10 @@ struct UploadBannerView: View {
             if state.isMinimized {
                 HStack(spacing: 5) {
                     Image(systemName: state.systemImage ?? "arrow.up.circle")
+                        .applyBannerAnimation(state.imageAnimation)
                         .font(.body.weight(.medium))
                         .frame(width: 20, height: 20)
+                        .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
 
                     if let p = state.progress {
                         Text("\(Int(p * 100))%")
@@ -99,7 +101,6 @@ struct UploadBannerView: View {
                             .frame(height: 20)
                             .foregroundStyle(textColor)
                     }
-
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
