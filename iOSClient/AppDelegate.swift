@@ -14,7 +14,6 @@ import EasyTipView
 import SwiftUI
 import RealmSwift
 
-@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     var isUiTestingEnabled: Bool {

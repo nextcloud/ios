@@ -241,6 +241,12 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
         }
 
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUserInteractionMonitor), object: nil, queue: .main) { _ in
+            Task {
+                await self.debouncer.resume()
+            }
+        }
+
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }

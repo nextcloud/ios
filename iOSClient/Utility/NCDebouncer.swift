@@ -45,7 +45,9 @@ public actor NCDebouncer {
     }
 
     public func pause() {
-        guard !isPaused else { return }
+        guard !isPaused else {
+            return
+        }
 
         isPaused = true
         pendingTask?.cancel()
@@ -57,7 +59,9 @@ public actor NCDebouncer {
     }
 
     public func resume() {
-        guard isPaused else { return }
+        guard isPaused else {
+            return
+        }
 
         isPaused = false
 
@@ -77,7 +81,9 @@ public actor NCDebouncer {
     // MARK: - Internal
 
     private func scheduleIfNeeded() {
-        guard pendingTask == nil, !isPaused else { return }
+        guard pendingTask == nil, !isPaused else {
+            return
+        }
 
         pendingTask = Task { [weak self] in
             guard let self else { return }
@@ -87,13 +93,17 @@ public actor NCDebouncer {
     }
 
     private func commit() {
-        guard !isPaused else { return }
+        guard !isPaused else {
+            return
+        }
 
         pendingTask?.cancel()
         pendingTask = nil
         eventCount = 0
 
-        guard let block = latestBlock else { return }
+        guard let block = latestBlock else {
+            return
+        }
         latestBlock = nil
 
         Task { @MainActor in

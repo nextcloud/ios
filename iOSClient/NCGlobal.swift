@@ -284,6 +284,8 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
+    let notificationCenterUserInteractionMonitor                = "serInteractionMonitor"
+
     // Networking Status
     let networkingStatusCreateFolder                            = "statusCreateFolder"
     let networkingStatusDelete                                  = "statusDelete"
