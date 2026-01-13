@@ -608,7 +608,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                             fileName: fileName)
                         Task {
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                delegate.transferReloadData(serverUrl: serverUrl, requestData: true, status: nil)
+                                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: true, status: nil)
                             }
                         }
                     } else {
@@ -888,6 +888,14 @@ extension NCCollectionViewCommon: NCSectionFooterDelegate {
 extension NCCollectionViewCommon: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
+    func transferReloadData() {
+        Task {
+            await self.debouncer.call {
+                self.collectionView.reloadData()
+            }
+        }
+    }
+
     func transferChange(status: String,
                         account: String,
                         fileName: String,
@@ -957,7 +965,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         }
     }
 
-    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) {
         Task {
             await self.debouncer.call {
                 if requestData {

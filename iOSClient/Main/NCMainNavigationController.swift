@@ -741,7 +741,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task {
                 NCPreferences().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
+                    delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -753,7 +753,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task {
                 NCPreferences().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
+                    delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -776,7 +776,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task {
                 NCPreferences().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
+                    delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -788,7 +788,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCPreferences().showDescription = !showDescriptionKeychain
             Task {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
+                    delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }

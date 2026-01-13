@@ -202,7 +202,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Dismission
     }
 
-    // MARK: - NotificationCenter
+    // MARK: -
+
+    func transferReloadData() { }
+
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }
+
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String) { }
 
     func transferChange(status: String,
                         account: String,

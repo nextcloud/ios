@@ -28,29 +28,13 @@ protocol NCTransferDelegate: AnyObject {
                         ocId: String,
                         destination: String?,
                         error: NKError)
-    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?)
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?)
+    func transferReloadData()
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String)
-}
-
-extension NCTransferDelegate {
-    func transferChange(status: String,
-                        account: String,
-                        fileName: String,
-                        serverUrl: String,
-                        selector: String?,
-                        ocId: String,
-                        destination: String?,
-                        error: NKError) {}
-    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {}
-    func transferProgressDidUpdate(progress: Float,
-                                   totalBytes: Int64,
-                                   totalBytesExpected: Int64,
-                                   fileName: String,
-                                   serverUrl: String) {}
 }
 
 /// Actor-based delegate dispatcher using weak references.

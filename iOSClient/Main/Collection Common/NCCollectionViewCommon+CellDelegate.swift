@@ -7,7 +7,10 @@ extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate, NCPhot
     }
 
     func onMenuIntent(with ocId: String) {
-        print("TAP")
+        Task {
+            // await self.debouncer.pause()
+            print("TAP")
+        }
     }
 
     func tapShareListItem(with ocId: String, button: UIButton, sender: Any) {

@@ -292,7 +292,7 @@ extension NCNetworking {
                                         destination: nil,
                                         error: error)
             } others: { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
             }
         } else {
             await transferDispatcher.notifyAllDelegates { delegate in
@@ -355,7 +355,7 @@ extension NCNetworking {
             await deleteLocalFile(metadata: metadata)
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
             }
         }
 
@@ -454,7 +454,7 @@ extension NCNetworking {
                                                                           status: self.global.metadataStatusWaitDelete)
                 }
                 serverUrls.forEach { serverUrl in
-                    delegate.transferReloadData(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
+                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
                 }
             }
         }
@@ -533,7 +533,7 @@ extension NCNetworking {
             Task {
                 await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                     await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: self.global.metadataStatusWaitRename)
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
+                    delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
                 }
             }
         }
@@ -585,7 +585,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitMove)
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitMove)
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitMove)
             }
         }
     }
@@ -647,7 +647,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitCopy)
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitCopy)
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitCopy)
             }
         }
     }
@@ -707,7 +707,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 await NCManageDatabase.shared.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: self.global.metadataStatusWaitFavorite)
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitFavorite)
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitFavorite)
             }
         }
     }
@@ -775,7 +775,7 @@ extension NCNetworking {
 
                 Task {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+                        delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
                     }
                 }
             }

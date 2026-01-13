@@ -9,13 +9,21 @@ import NextcloudKit
 // MARK: - Drag
 
 extension NCMedia: NCTransferDelegate {
-    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
+    func transferReloadData() { }
+
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) {
         Task {
             await self.debouncer.call {
                 await self.loadDataSource()
             }
         }
     }
+
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String) { }
 
     func transferChange(status: String,
                         account: String,

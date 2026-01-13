@@ -385,7 +385,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
         Task {
             if parent == nil {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+                    delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
                 }
             }
         }
@@ -393,6 +393,16 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
 }
 
 extension NCViewerRichDocument: NCTransferDelegate {
+    func transferReloadData() { }
+
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }
+
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String) { }
+    
     func transferChange(status: String,
                         account: String,
                         fileName: String,
