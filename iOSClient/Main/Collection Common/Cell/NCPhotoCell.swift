@@ -35,11 +35,11 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    var ocId = "" { didSet { photoCellDelegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var ocId = "" { didSet { delegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var user = ""
 
-    weak var photoCellDelegate: NCPhotoCellDelegate?
+    weak var delegate: NCPhotoCellDelegate?
 
     var fileOcId: String? {
         get { return ocId }
@@ -103,7 +103,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            photoCellDelegate?.onMenuIntent(with: ocId)
+            delegate?.onMenuIntent(with: ocId)
         }
     }
 

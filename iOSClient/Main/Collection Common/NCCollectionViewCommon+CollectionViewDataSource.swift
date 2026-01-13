@@ -139,23 +139,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if isLayoutPhoto {
             if metadata.isImageOrVideo {
                 let photoCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell)!
-                photoCell.photoCellDelegate = self
+                photoCell.delegate = self
                 cell = photoCell
                 return self.photoCell(cell: photoCell, indexPath: indexPath, metadata: metadata, ext: ext)
             } else {
                 let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
-                gridCell.gridCellDelegate = self
+                gridCell.delegate = self
                 cell = gridCell
             }
         } else if isLayoutGrid {
             // LAYOUT GRID
             let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
-            gridCell.gridCellDelegate = self
+            gridCell.delegate = self
             cell = gridCell
         } else {
             // LAYOUT LIST
             let listCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
-            listCell.listCellDelegate = self
+            listCell.delegate = self
             cell = listCell
         }
 

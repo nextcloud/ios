@@ -41,12 +41,12 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
-    var ocId = "" { didSet { gridCellDelegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var ocId = "" { didSet { delegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var account = ""
     var user = ""
 
-    weak var gridCellDelegate: NCGridCellDelegate?
+    weak var delegate: NCGridCellDelegate?
 
     var fileOcId: String? {
         get { return ocId }
@@ -144,7 +144,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            gridCellDelegate?.onMenuIntent(with: ocId)
+            delegate?.onMenuIntent(with: ocId)
         }
     }
 

@@ -61,7 +61,7 @@
             </constraints>
             <size key="customSize" width="436" height="305"/>
             <connections>
-                <outlet property="buttonMenu" destination="O9D-jq-8Iz" id="FSF-c5-a5a"/>
+                <outlet property="buttonMore" destination="O9D-jq-8Iz" id="LSA-3R-d4x"/>
                 <outlet property="image" destination="5Ci-V1-hf5" id="9fB-pr-AEY"/>
                 <outlet property="labelFilename" destination="ixP-qo-bb5" id="pE6-wq-gyk"/>
                 <outlet property="labelInfo" destination="0pg-4i-UyV" id="m3d-P8-Yhf"/>

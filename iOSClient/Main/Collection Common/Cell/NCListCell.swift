@@ -51,11 +51,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
-    var ocId = "" { didSet { listCellDelegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var ocId = "" { didSet { delegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var user = ""
 
-    weak var listCellDelegate: NCListCellDelegate?
+    weak var delegate: NCListCellDelegate?
 
     var fileAvatarImageView: UIImageView? {
         return imageShared
@@ -174,14 +174,14 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        listCellDelegate?.tapShareListItem(with: ocId, button: buttonShared, sender: sender)
+        delegate?.tapShareListItem(with: ocId, button: buttonShared, sender: sender)
     }
 
     @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            listCellDelegate?.onMenuIntent(with: ocId)
+            delegate?.onMenuIntent(with: ocId)
         }
     }
 

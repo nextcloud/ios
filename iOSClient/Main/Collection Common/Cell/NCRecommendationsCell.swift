@@ -17,12 +17,12 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var labelFilename: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-    @IBOutlet weak var buttonMenu: UIButton!
+    @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
-    var id: String = "" { didSet { delegate?.contextMenu(with: metadata, button: buttonMenu, sender: self) /* preconfigure UIMenu with each id set */ } }
+    var id: String = "" { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each id set */ } }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -43,25 +43,25 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     func initCell() {
         let imageButton = UIImage(systemName: "ellipsis.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.black, .white]))
 
-        buttonMenu.setImage(imageButton, for: .normal)
-        buttonMenu.layer.shadowColor = UIColor.black.cgColor
-        buttonMenu.layer.shadowOpacity = 0.2
-        buttonMenu.layer.shadowOffset = CGSize(width: 2, height: 2)
-        buttonMenu.layer.shadowRadius = 4
+        buttonMore.setImage(imageButton, for: .normal)
+        buttonMore.layer.shadowColor = UIColor.black.cgColor
+        buttonMore.layer.shadowOpacity = 0.2
+        buttonMore.layer.shadowOffset = CGSize(width: 2, height: 2)
+        buttonMore.layer.shadowRadius = 4
 
         image.image = nil
         labelFilename.text = ""
         labelInfo.text = ""
 
-        buttonMenu.menu = nil
-        buttonMenu.showsMenuAsPrimaryAction = true
-        contentView.bringSubviewToFront(buttonMenu)
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
+        contentView.bringSubviewToFront(buttonMore)
     }
 
     @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
         let location = g.location(in: contentView)
 
-        if buttonMenu.frame.contains(location) {
+        if buttonMore.frame.contains(location) {
             delegate?.onMenuIntent(with: metadata.ocId)
         }
     }
