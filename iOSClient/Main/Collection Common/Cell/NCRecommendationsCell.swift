@@ -9,7 +9,7 @@
 import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
+    func contextMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
 }
 
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
@@ -21,7 +21,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
-    var id: String = "" { didSet { delegate?.touchUpInsideButtonMenu(with: metadata, button: buttonMenu, sender: self) /* preconfigure UIMenu with each id set */ } }
+    var id: String = "" { didSet { delegate?.contextMenu(with: metadata, button: buttonMenu, sender: self) /* preconfigure UIMenu with each id set */ } }
 
     override func awakeFromNib() {
         super.awakeFromNib()

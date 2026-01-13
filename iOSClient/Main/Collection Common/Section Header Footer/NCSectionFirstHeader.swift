@@ -258,7 +258,14 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
-        self.delegate?.tapRecommendationsButtonMenu(with: metadata, button: button, sender: sender)
+    func contextMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
+#if !EXTENSION
+        Task {
+            guard let viewController = self.viewController else {
+                return
+            }
+            button.menu = NCContextMenu(metadata: metadata, viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
+        }
+#endif
     }
 }

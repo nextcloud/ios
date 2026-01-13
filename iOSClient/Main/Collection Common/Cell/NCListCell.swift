@@ -23,6 +23,11 @@
 
 import UIKit
 
+protocol NCListCellDelegate: AnyObject {
+    func contextMenu(with ocId: String, button: UIButton, sender: Any)
+    func tapShareListItem(with ocId: String, button: UIButton, sender: Any)
+}
+
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -45,7 +50,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
-    var ocId = "" { didSet { listCellDelegate?.tapMoreListItem(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var ocId = "" { didSet { listCellDelegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var user = ""
 
@@ -122,6 +127,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        contentView.bringSubviewToFront(buttonMore)
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
+
         initCell()
     }
 
@@ -151,11 +161,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         tag0.text = ""
         tag1.text = ""
         titleInfoTrailingDefault()
-
-        contentView.bringSubviewToFront(buttonMore)
-
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -163,13 +168,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        listCellDelegate?.tapShareListItem(with: ocId, ocIdTransfer: ocIdTransfer, sender: sender)
+        listCellDelegate?.tapShareListItem(with: ocId, button: buttonShared, sender: sender)
     }
 
-    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        listCellDelegate?.longPressListItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
-    }
-    
     // Allow the button to receive taps even with the long press gesture
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         // Don't handle touches on buttons
@@ -319,12 +320,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageStatus.layer.cornerRadius = imageStatus.bounds.width / 2
         }
     }
-}
-
-protocol NCListCellDelegate: AnyObject {
-    func tapMoreListItem(with ocId: String, button: UIButton, sender: Any)
-    func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any)
-    func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
 // MARK: - List Layout

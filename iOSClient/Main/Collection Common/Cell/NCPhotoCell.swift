@@ -23,15 +23,18 @@
 
 import UIKit
 
-class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+protocol NCPhotoCellDelegate: AnyObject {
+    func contextMenu(with ocId: String, button: UIButton, sender: Any)
+}
 
+class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    var ocId = "" { didSet { photoCellDelegate?.tapMorePhotoItem(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var ocId = "" { didSet { photoCellDelegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var user = ""
 
@@ -80,12 +83,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
-        longPressedGesture.minimumPressDuration = 0.5
-        longPressedGesture.delegate = self
-        longPressedGesture.delaysTouchesBegan = true
-        self.addGestureRecognizer(longPressedGesture)
-
         contentView.bringSubviewToFront(buttonMore)
 
         buttonMore.menu = nil
@@ -96,26 +93,8 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         return nil
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        photoCellDelegate?.tapMorePhotoItem(with: ocId, button: buttonMore, sender: sender)
-    }
-
-    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        photoCellDelegate?.longPressPhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
-    }
-
-    fileprivate func setA11yActions() {
-        self.accessibilityCustomActions = [
-            UIAccessibilityCustomAction(
-                name: NSLocalizedString("_more_", comment: ""),
-                target: self,
-                selector: #selector(touchUpInsideMore(_:)))
-        ]
-    }
-
     func setButtonMore(image: UIImage) {
         buttonMore.setImage(image, for: .normal)
-        setA11yActions()
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -141,9 +120,4 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = label
         accessibilityValue = value
     }
-}
-
-protocol NCPhotoCellDelegate: AnyObject {
-    func tapMorePhotoItem(with ocId: String, button: UIButton, sender: Any)
-    func longPressPhotoItem(with objectId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }

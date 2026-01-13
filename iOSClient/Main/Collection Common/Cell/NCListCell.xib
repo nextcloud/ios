@@ -103,11 +103,8 @@
                             <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>
                             <constraint firstAttribute="height" constant="60" id="woC-64-Tyc"/>
                         </constraints>
-                        <connections>
-                            <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Mtu-LP-kuR"/>
-                        </connections>
                     </button>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
+                    <imageView contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
                         <rect key="frame" x="636.66666666666663" y="61.666666666666657" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="25" id="05P-NL-pd8"/>

@@ -857,40 +857,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
     }
 
-    // MARK: - Delegates
-
     func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) { }
-}
-
-extension NCCollectionViewCommon: NCListCellDelegate {
-    func tapMoreListItem(with ocId: String, button: UIButton, sender: Any) {
-        guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
-        button.menu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
-    }
-
-    func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) {
-        guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
-
-        NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
-    }
-
-    func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {}
-}
-
-extension NCCollectionViewCommon: NCGridCellDelegate {
-    func tapMoreGridItem(with ocId: String, button: UIButton, sender: Any) {
-        tapMoreListItem(with: ocId, button: button, sender: sender)
-    }
-
-    func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {}
-}
-
-extension NCCollectionViewCommon: NCPhotoCellDelegate {
-    func tapMorePhotoItem(with ocId: String, button: UIButton, sender: Any) {
-        tapMoreListItem(with: ocId, button: button, sender: sender)
-    }
-
-    func longPressPhotoItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 }
 
 extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
@@ -908,7 +875,6 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
     }
 
     func tapRecommendationsButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
-        tapMoreListItem(with: metadata.ocId, button: button, sender: sender)
     }
 
     func tapRecommendations(with metadata: tableMetadata) {

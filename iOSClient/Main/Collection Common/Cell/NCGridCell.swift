@@ -23,6 +23,10 @@
 
 import UIKit
 
+protocol NCGridCellDelegate: AnyObject {
+    func contextMenu(with ocId: String, button: UIButton, sender: Any)
+}
+
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -36,7 +40,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
-    var ocId = "" { didSet { gridCellDelegate?.tapMoreGridItem(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
+    var ocId = "" { didSet { gridCellDelegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
     var ocIdTransfer = ""
     var account = ""
     var user = ""
@@ -119,12 +123,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         iconsStackView.layer.cornerRadius = 8
         iconsStackView.clipsToBounds = true
 
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
-        longPressedGesture.minimumPressDuration = 0.5
-        longPressedGesture.delegate = self
-        longPressedGesture.delaysTouchesBegan = true
-        self.addGestureRecognizer(longPressedGesture)
-
         contentView.bringSubviewToFront(buttonMore)
 
         buttonMore.menu = nil
@@ -133,10 +131,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
-    }
-
-    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        gridCellDelegate?.longPressGridItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
     }
 
     func setButtonMore(image: UIImage) {
@@ -208,11 +202,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {}
-}
-
-protocol NCGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with ocId: String, button: UIButton, sender: Any)
-    func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
 // MARK: - Grid Layout
