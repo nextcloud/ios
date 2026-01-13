@@ -24,6 +24,7 @@
 import UIKit
 
 protocol NCPhotoCellDelegate: AnyObject {
+    func onMenuIntent(with ocId: String)
     func contextMenu(with ocId: String, button: UIButton, sender: Any)
 }
 
@@ -63,6 +64,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
+        tapObserver.cancelsTouchesInView = false
+        tapObserver.delegate = self
+        contentView.addGestureRecognizer(tapObserver)
+
         initCell()
     }
 
@@ -83,14 +90,21 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
-        contentView.bringSubviewToFront(buttonMore)
-
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
+        contentView.bringSubviewToFront(buttonMore)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
+    }
+
+    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
+        let location = g.location(in: contentView)
+
+        if buttonMore.frame.contains(location) {
+            photoCellDelegate?.onMenuIntent(with: ocId)
+        }
     }
 
     func setButtonMore(image: UIImage) {

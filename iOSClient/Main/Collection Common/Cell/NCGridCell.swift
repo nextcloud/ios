@@ -24,6 +24,7 @@
 import UIKit
 
 protocol NCGridCellDelegate: AnyObject {
+    func onMenuIntent(with ocId: String)
     func contextMenu(with ocId: String, button: UIButton, sender: Any)
 }
 
@@ -90,6 +91,12 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
+        tapObserver.cancelsTouchesInView = false
+        tapObserver.delegate = self
+        contentView.addGestureRecognizer(tapObserver)
+
         initCell()
     }
 
@@ -123,14 +130,22 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         iconsStackView.layer.cornerRadius = 8
         iconsStackView.clipsToBounds = true
 
-        contentView.bringSubviewToFront(buttonMore)
-
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
+
+        contentView.bringSubviewToFront(buttonMore)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
+    }
+
+    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
+        let location = g.location(in: contentView)
+
+        if buttonMore.frame.contains(location) {
+            gridCellDelegate?.onMenuIntent(with: ocId)
+        }
     }
 
     func setButtonMore(image: UIImage) {

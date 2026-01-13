@@ -24,6 +24,7 @@
 import UIKit
 
 protocol NCListCellDelegate: AnyObject {
+    func onMenuIntent(with ocId: String)
     func contextMenu(with ocId: String, button: UIButton, sender: Any)
     func tapShareListItem(with ocId: String, button: UIButton, sender: Any)
 }
@@ -128,9 +129,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        contentView.bringSubviewToFront(buttonMore)
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
+        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
+        tapObserver.cancelsTouchesInView = false
+        tapObserver.delegate = self
+        contentView.addGestureRecognizer(tapObserver)
 
         initCell()
     }
@@ -161,6 +163,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         tag0.text = ""
         tag1.text = ""
         titleInfoTrailingDefault()
+
+        contentView.bringSubviewToFront(buttonMore)
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -171,22 +177,18 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         listCellDelegate?.tapShareListItem(with: ocId, button: buttonShared, sender: sender)
     }
 
-    // Allow the button to receive taps even with the long press gesture
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        // Don't handle touches on buttons
-        if touch.view is UIButton {
-            return false
+    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
+        let location = g.location(in: contentView)
+
+        if buttonMore.frame.contains(location) {
+            listCellDelegate?.onMenuIntent(with: ocId)
         }
-        return true
     }
 
-    fileprivate func setA11yActions() {
-        self.accessibilityCustomActions = [
-            UIAccessibilityCustomAction(
-                name: NSLocalizedString("_share_", comment: ""),
-                target: self,
-                selector: #selector(touchUpInsideShare(_:))),
-        ]
+    // Allow the button to receive taps even with the long press gesture
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        let location = touch.location(in: contentView)
+        return buttonMore.frame.contains(location)
     }
 
     func titleInfoTrailingFull() {
@@ -199,7 +201,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func setButtonMore(image: UIImage) {
         imageMore.image = image
-        setA11yActions()
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -229,7 +230,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             buttonShared.isHidden = false
             buttonMore.isHidden = false
             backgroundView = nil
-            setA11yActions()
         }
         if status {
             var blurEffectView: UIView?

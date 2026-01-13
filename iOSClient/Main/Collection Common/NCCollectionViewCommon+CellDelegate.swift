@@ -6,6 +6,10 @@ extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate, NCPhot
         }
     }
 
+    func onMenuIntent(with ocId: String) {
+        print("TAP")
+    }
+
     func tapShareListItem(with ocId: String, button: UIButton, sender: Any) {
         Task {
             guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else { return }

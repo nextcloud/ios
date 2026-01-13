@@ -267,4 +267,9 @@ extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
         }
 #endif
     }
+
+    func onMenuIntent(with ocId: String) {
+#if !EXTENSION
+#endif
+    }
 }

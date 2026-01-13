@@ -9,6 +9,7 @@
 import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
+    func onMenuIntent(with ocId: String)
     func contextMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
 }
 
@@ -25,6 +26,12 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
+        tapObserver.cancelsTouchesInView = false
+        tapObserver.delegate = self
+        contentView.addGestureRecognizer(tapObserver)
+
         initCell()
     }
 
@@ -46,10 +53,17 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         labelFilename.text = ""
         labelInfo.text = ""
 
-        contentView.bringSubviewToFront(buttonMenu)
-
         buttonMenu.menu = nil
         buttonMenu.showsMenuAsPrimaryAction = true
+        contentView.bringSubviewToFront(buttonMenu)
+    }
+
+    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
+        let location = g.location(in: contentView)
+
+        if buttonMenu.frame.contains(location) {
+            delegate?.onMenuIntent(with: metadata.ocId)
+        }
     }
 
     func setImageCorner(withBorder: Bool) {
