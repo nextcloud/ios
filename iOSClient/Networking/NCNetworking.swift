@@ -29,7 +29,7 @@ protocol NCTransferDelegate: AnyObject {
                         destination: String?,
                         error: NKError)
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?)
-    func transferReloadData()
+    func transferReloadData(serverUrl: String?)
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
