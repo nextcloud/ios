@@ -233,9 +233,12 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             self.sectionFirstHeader?.setRichWorkspaceColor(style: view.traitCollection.userInterfaceStyle)
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] _ in
-            guard let self else { return }
-            self.collectionView.reloadData()
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { _ in
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                    await delegate.transferReloadData(serverUrl: self.serverUrl)
+                }
+            }
         }
 
         DispatchQueue.main.async {
@@ -420,7 +423,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     @MainActor
     func startGUIGetServerData() {
         self.dataSource.setGetServerData(false)
-        self.collectionView.reloadData()
 
         // Don't show spinner on iPad root folder
         if UIDevice.current.userInterfaceIdiom == .pad,
@@ -636,11 +638,15 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
         }
 
-        UIView.transition(with: self.collectionView,
-                          duration: 0.20,
-                          options: .transitionCrossDissolve,
-                          animations: { self.collectionView.reloadData() },
-                          completion: nil)
+        UIView.transition(
+            with: self.collectionView,
+            duration: 0.20,
+            options: .transitionCrossDissolve,
+            animations: {
+                self.collectionView.reloadData()
+            },
+            completion: nil
+        )
 
         await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
@@ -888,7 +894,10 @@ extension NCCollectionViewCommon: NCSectionFooterDelegate {
 extension NCCollectionViewCommon: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferReloadData() {
+    func transferReloadData(serverUrl: String?) {
+        guard serverUrl == self.serverUrl else {
+            return
+        }
         Task {
             await self.debouncer.call {
                 self.collectionView.reloadData()
@@ -996,4 +1005,3 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         }
     }
 }
-
