@@ -9,7 +9,6 @@ import NextcloudKit
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {

@@ -874,9 +874,6 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
         }
     }
 
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
-    }
-
     func tapRecommendations(with metadata: tableMetadata) {
         didSelectMetadata(metadata, withOcIds: false)
     }
