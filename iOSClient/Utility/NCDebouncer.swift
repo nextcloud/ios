@@ -52,6 +52,10 @@ public actor NCDebouncer {
         pendingTask = nil
     }
 
+    public func isPausedNow() -> Bool {
+        return isPaused
+    }
+
     public func resume() {
         guard isPaused else { return }
 
