@@ -152,7 +152,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     internal let debouncerReloadDataSource = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
-    internal let debouncerReloadData = NCDebouncer(delay: .seconds(0.5), maxEventCount: NCBrandOptions.shared.numMaximumProcess)
+    internal let debouncerReloadData = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
     internal let debouncerGetServerData = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
     internal let debouncerNetworkSearch = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
 
@@ -271,6 +271,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         isEditMode = false
 
         Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+
             await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
             await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
         }
@@ -295,10 +297,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        Task {
-            await NCNetworking.shared.transferDispatcher.addDelegate(self)
-        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -906,13 +904,10 @@ extension NCCollectionViewCommon: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
     func transferReloadData(serverUrl: String?) {
-        guard serverUrl == self.serverUrl || serverUrl == nil else {
-            return
-        }
         Task {
-            await self.debouncerReloadData.call {
+            await self.debouncerReloadData.call({
                 self.collectionView.reloadData()
-            }
+            }, immediate: true)
         }
     }
 
