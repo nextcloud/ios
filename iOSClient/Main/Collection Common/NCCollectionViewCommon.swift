@@ -237,9 +237,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { _ in
+            let serverUrl = self.serverUrl
             Task {
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                    await delegate.transferReloadData(serverUrl: self.serverUrl)
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: serverUrl)
                 }
             }
         }
@@ -648,7 +649,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
         }
 
-        await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferReloadData(serverUrl: self.serverUrl)
         }
 
@@ -735,7 +736,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         metadataForSection.unifiedSearchInProgress = true
         Task {
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferReloadData(serverUrl: nil)
             }
         }
@@ -761,7 +762,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             Task {
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: nil)
                 }
             }

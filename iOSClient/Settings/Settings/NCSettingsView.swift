@@ -290,4 +290,3 @@ struct E2EESection: View {
 #Preview {
     NCSettingsView(model: NCSettingsModel(controller: nil))
 }
-

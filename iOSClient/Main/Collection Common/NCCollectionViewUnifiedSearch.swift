@@ -27,7 +27,7 @@ class NCCollectionViewUnifiedSearch: ConcurrentOperation, @unchecked Sendable {
         self.finish()
 
         Task {
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferReloadData(serverUrl: nil)
             }
         }

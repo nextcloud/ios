@@ -516,7 +516,7 @@ class NCContextMenu: NSObject {
                             }
 
                             var iconImage: UIImage
-                            
+
                             if let iconUrl = item.icon,
                                let url = URL(string: metadata.urlBase + iconUrl) {
                                 let (data, _) = try await URLSession.shared.data(from: url)

@@ -58,7 +58,7 @@ actor NCTransferDelegateDispatcher {
     }
 
     /// Notifies only the delegate matching a specific scene identifier.
-    func notifyDelegate(forScene sceneIdentifier: String,_ block: @MainActor @escaping (NCTransferDelegate) -> Void) async {
+    func notifyDelegate(forScene sceneIdentifier: String, _ block: @MainActor @escaping (NCTransferDelegate) -> Void) async {
         let delegates = snapshotDelegates()
         await MainActor.run {
             for delegate in delegates where delegate.sceneIdentifier == sceneIdentifier {

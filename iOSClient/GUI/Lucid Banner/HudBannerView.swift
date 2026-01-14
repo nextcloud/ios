@@ -208,7 +208,6 @@ struct HudBannerView: View {
     @ViewBuilder
     func containerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         let cornerRadius: CGFloat = 22
-        let opacity = 0.65
         let backgroundColor = Color(.systemBackground).opacity(0.65)
 
         if #available(iOS 26, *) {

@@ -448,12 +448,14 @@ extension NCNetworking {
                 serverUrls.insert(metadata.serverUrl)
             }
 
+            let ocIdss = ocIds
+            let serverUrlss = serverUrls
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                for ocId in ocIds {
+                for ocId in ocIdss {
                     await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
                                                                           status: self.global.metadataStatusWaitDelete)
                 }
-                serverUrls.forEach { serverUrl in
+                serverUrlss.forEach { serverUrl in
                     delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
                 }
             }
@@ -531,9 +533,11 @@ extension NCNetworking {
 #endif
         } else {
             Task {
+                let ocId = metadata.ocId
+                let serverUrl = metadata.serverUrl
                 await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                    await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: self.global.metadataStatusWaitRename)
-                    delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
+                    await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: ocId, status: self.global.metadataStatusWaitRename)
+                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
                 }
             }
         }
@@ -583,9 +587,11 @@ extension NCNetworking {
         }
 
         Task {
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitMove)
-                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitMove)
+                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitMove)
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitMove)
             }
         }
     }
@@ -645,9 +651,11 @@ extension NCNetworking {
         }
 
         Task {
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitCopy)
-                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitCopy)
+                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitCopy)
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitCopy)
             }
         }
     }
@@ -705,9 +713,12 @@ extension NCNetworking {
         }
 
         Task {
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
+            let favorite = metadata.favorite
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                await NCManageDatabase.shared.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: self.global.metadataStatusWaitFavorite)
-                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: self.global.metadataStatusWaitFavorite)
+                await NCManageDatabase.shared.setMetadataFavoriteAsync(ocId: ocId, favorite: !favorite, saveOldFavorite: favorite.description, status: self.global.metadataStatusWaitFavorite)
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitFavorite)
             }
         }
     }
