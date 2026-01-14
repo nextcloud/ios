@@ -13,7 +13,7 @@ extension NCMedia: NCTransferDelegate {
 
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) {
         Task {
-            await self.debouncer.call {
+            await self.debouncerLoadDataSource.call {
                 await self.loadDataSource()
             }
         }
@@ -30,14 +30,9 @@ extension NCMedia: NCTransferDelegate {
                         destination: String?,
                         error: NKError) {
         Task {
-            await self.debouncer.call {
-                switch status {
-                case self.global.networkingStatusCopyMove:
-                    await self.loadDataSource()
-                    await self.searchMediaUI()
-                default:
-                    break
-                }
+            await self.debouncerSearch.call {
+                await self.loadDataSource()
+                await self.searchMediaUI()
             }
         }
     }
