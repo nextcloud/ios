@@ -123,7 +123,16 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewSection.isHidden = false
         }
 
+#if EXTENSION
         self.collectionViewRecommendations.reloadData()
+#else
+        Task {
+            let isPause = await (viewController as? NCCollectionViewCommon)?.debouncerReloadDataSource.isPausedNow() ?? false
+            if !isPause {
+                self.collectionViewRecommendations.reloadData()
+            }
+        }
+#endif
     }
 
     // MARK: - RichWorkspace
@@ -270,6 +279,10 @@ extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
 
     func onMenuIntent(with ocId: String) {
 #if !EXTENSION
+        Task {
+            let collectionViewCommon = (self.viewController as? NCCollectionViewCommon)
+            await collectionViewCommon?.debouncerReloadData.pause()
+        }
 #endif
     }
 }
