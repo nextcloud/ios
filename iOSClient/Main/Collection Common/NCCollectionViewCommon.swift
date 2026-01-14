@@ -151,7 +151,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
-    internal let debouncer = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
+    internal let debouncerReloadDataSource = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
+    internal let debouncerReloadData = NCDebouncer(delay: .seconds(0.5), maxEventCount: NCBrandOptions.shared.numMaximumProcess)
+    internal let debouncerGetServerData = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
+    internal let debouncerNetworkSearch = NCDebouncer(maxEventCount: NCBrandOptions.shared.numMaximumProcess)
 
     // MARK: - View Life Cycle
 
@@ -243,7 +246,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUserInteractionMonitor), object: nil, queue: .main) { _ in
             Task {
-                await self.debouncer.resume()
+                await self.debouncerReloadData.resume()
             }
         }
 
@@ -499,6 +502,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.networking.cancelUnifiedSearchFiles()
 
         self.isSearchingMode = false
+        self.networkSearchInProgress = false
         self.literalSearch = ""
         self.providers?.removeAll()
         self.dataSource.removeAll()
@@ -644,15 +648,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
         }
 
-        UIView.transition(
-            with: self.collectionView,
-            duration: 0.20,
-            options: .transitionCrossDissolve,
-            animations: {
-                self.collectionView.reloadData()
-            },
-            completion: nil
-        )
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            delegate.transferReloadData(serverUrl: self.serverUrl)
+        }
 
         await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
@@ -736,7 +734,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
-        self.collectionView?.reloadData()
+        Task {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                delegate.transferReloadData(serverUrl: nil)
+            }
+        }
 
         self.networking.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
             self.searchDataSourceTask = task
@@ -758,8 +760,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
-            DispatchQueue.main.async {
-                self.collectionView?.reloadData()
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                    delegate.transferReloadData(serverUrl: nil)
+                }
             }
         }
     }
@@ -901,11 +905,11 @@ extension NCCollectionViewCommon: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
     func transferReloadData(serverUrl: String?) {
-        guard serverUrl == self.serverUrl else {
+        guard serverUrl == self.serverUrl || serverUrl == nil else {
             return
         }
         Task {
-            await self.debouncer.call {
+            await self.debouncerReloadData.call {
                 self.collectionView.reloadData()
             }
         }
@@ -930,51 +934,22 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                 return
             }
 
-            await self.debouncer.call {
-                switch status {
-                    // UPLOADED, UPLOADED LIVEPHOTO, DELETE
-                case self.global.networkingStatusUploaded,
-                    self.global.networkingStatusDelete,
-                    self.global.networkingStatusCopyMove:
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self.serverUrl == serverUrl || destination == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                    // DOWNLOAD
-                case self.global.networkingStatusDownloaded:
-                    if serverUrl == self.serverUrl || self.serverUrl.isEmpty {
-                        await self.reloadDataSource()
-                    }
-                case self.global.networkingStatusDownloadCancel:
-                    if serverUrl == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                    // CREATE FOLDER
-                case self.global.networkingStatusCreateFolder:
-                    if serverUrl == self.serverUrl,
-                       selector != self.global.selectorUploadAutoUpload,
-                       let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
-                        self.pushMetadata(metadata)
-                    }
-                    // RENAME
-                case self.global.networkingStatusRename:
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self.serverUrl == serverUrl {
-                        await self.reloadDataSource()
-                    }
-                    // FAVORITE
-                case self.global.networkingStatusFavorite:
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self is NCFavorite {
-                        await self.reloadDataSource()
-                    } else if self.serverUrl == serverUrl {
-                        await self.reloadDataSource()
-                    }
-                default:
-                    break
+            if status == self.global.networkingStatusCreateFolder {
+                if serverUrl == self.serverUrl,
+                   selector != self.global.selectorUploadAutoUpload,
+                   let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
+                    self.pushMetadata(metadata)
+                }
+                return
+            }
+
+            if self.isSearchingMode {
+                await self.debouncerNetworkSearch.call {
+                    self.networkSearch()
+                }
+            } else if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
+                await self.debouncerReloadDataSource.call {
+                    await self.reloadDataSource()
                 }
             }
         }
@@ -982,30 +957,23 @@ extension NCCollectionViewCommon: NCTransferDelegate {
 
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) {
         Task {
-            await self.debouncer.call {
-                if requestData {
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                        Task {
-                            await self.getServerData()
-                        }
-                    }
-                } else {
-                    if self.isSearchingMode {
-                        guard status != self.global.metadataStatusWaitDelete,
-                              status != self.global.metadataStatusWaitRename,
-                              status != self.global.metadataStatusWaitMove,
-                              status != self.global.metadataStatusWaitCopy,
-                              status != self.global.metadataStatusWaitFavorite else {
-                            return
-                        }
-                        self.networkSearch()
-                    } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                        Task {
-                            await self.reloadDataSource()
-                        }
-                    }
+            if self.isSearchingMode {
+                await self.debouncerNetworkSearch.call {
+                    self.networkSearch()
+                }
+                return
+            }
+
+            if requestData && (self.serverUrl == serverUrl || serverUrl == nil) {
+                await self.debouncerGetServerData.call {
+                    await self.getServerData()
+                }
+                return
+            }
+
+            if self.serverUrl == serverUrl || serverUrl == nil {
+                await self.debouncerReloadDataSource.call {
+                    await self.reloadDataSource()
                 }
             }
         }

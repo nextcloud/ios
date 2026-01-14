@@ -8,7 +8,7 @@ extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate, NCPhot
 
     func onMenuIntent(with ocId: String) {
         Task {
-            await self.debouncer.pause()
+            await self.debouncerReloadData.pause()
         }
     }
 
