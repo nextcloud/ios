@@ -361,7 +361,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NCActivityIndicator.shared.stop()
     }
 
-    // MARK: - Hekper
+    // MARK: - Helper
 
     func filenameFromContentDisposition(_ disposition: String) -> String? {
         if let range = disposition.range(of: "filename=") {
@@ -385,7 +385,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
         Task {
             if parent == nil {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+                    delegate.transferReloadDataSource(serverUrl: self.metadata.serverUrl, requestData: false, status: nil)
                 }
             }
         }

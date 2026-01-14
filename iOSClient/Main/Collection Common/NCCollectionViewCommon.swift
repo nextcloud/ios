@@ -620,7 +620,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                             fileName: fileName)
                         Task {
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: true, status: nil)
+                                delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
                             }
                         }
                     } else {
