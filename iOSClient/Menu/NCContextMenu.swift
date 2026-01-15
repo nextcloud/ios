@@ -14,9 +14,6 @@ import LucidBanner
 class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let database = NCManageDatabase.shared
-    let global = NCGlobal.shared
-    let networking = NCNetworking.shared
 
     let metadata: tableMetadata
     let sceneIdentifier: String
@@ -53,7 +50,7 @@ class NCContextMenu: NSObject {
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
         // Assemble final menu
-        if self.networking.isOnline {
+        if NCNetworking.shared.isOnline {
             let baseChildren = [
                 UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
                 UIMenu(title: "", options: .displayInline, children: clientIntegrationMenu),
@@ -90,7 +87,7 @@ class NCContextMenu: NSObject {
                 colors: [NCBrandColor.shared.yellowFavorite]
             )
         ) { _ in
-            self.networking.setStatusWaitFavorite(metadata) { error in
+            NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
@@ -196,7 +193,7 @@ class NCContextMenu: NSObject {
            metadata.size == 0,
            !metadata.e2eEncrypted,
            NCPreferences().isEndToEndEnabled(account: metadata.account),
-           metadata.serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId) {
+           metadata.serverUrl == self.utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId) {
             mainActionsMenu.append(makeSetFolderE2EEAction(metadata: metadata))
         }
 
@@ -247,14 +244,14 @@ class NCContextMenu: NSObject {
                 }
 
                 if results.error == .success {
-                    await self.database.deleteE2eEncryptionAsync(
+                    await NCManageDatabase.shared.deleteE2eEncryptionAsync(
                         predicate: NSPredicate(
                             format: "account == %@ AND serverUrl == %@",
                             metadata.account,
                             metadata.serverUrlFileName
                         )
                     )
-                    await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
+                    await NCManageDatabase.shared.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
                     NCContentPresenter().messageNotification(
@@ -290,7 +287,7 @@ class NCContextMenu: NSObject {
                         )
                     }
                 } else {
-                    if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
                         ocId: metadata.ocId,
                         session: NCNetworking.shared.sessionDownload,
                         selector: NCGlobal.shared.selectorSaveAsScan,
@@ -357,7 +354,7 @@ class NCContextMenu: NSObject {
                         )
                     }
                 } else {
-                    if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
                         ocId: metadata.ocId,
                         session: NCNetworking.shared.sessionDownload,
                         selector: NCGlobal.shared.selectorLoadFileQuickLook,
@@ -429,7 +426,7 @@ class NCContextMenu: NSObject {
         ) { _ in
             if let viewController = self.viewController as? NCCollectionViewCommon {
                 Task {
-                    await self.networking.setStatusWaitDelete(
+                    await NCNetworking.shared.setStatusWaitDelete(
                         metadatas: [metadata],
                         sceneIdentifier: self.sceneIdentifier
                     )
@@ -450,12 +447,12 @@ class NCContextMenu: NSObject {
             attributes: .destructive
         ) { _ in
             Task {
-                let error = await self.networking.deleteCache(
+                let error = await NCNetworking.shared.deleteCache(
                     metadata,
                     sceneIdentifier: self.sceneIdentifier
                 )
 
-                await self.networking.transferDispatcher.notifyAllDelegates { delegate in
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(
                         status: NCGlobal.shared.networkingStatusDelete,
                         account: metadata.account,
