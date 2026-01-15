@@ -18,7 +18,11 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     var delegate: NCRecommendationsCellDelegate?
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
 
-    var metadata: tableMetadata? { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */ } }
+    var metadata: tableMetadata? {
+        didSet {
+            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+        }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()

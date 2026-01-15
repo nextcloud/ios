@@ -16,9 +16,13 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    var metadata: tableMetadata? { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */ } }
-
     weak var delegate: NCPhotoCellDelegate?
+
+    var metadata: tableMetadata? {
+        didSet {
+            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+        }
+    }
 
     var previewImageView: UIImageView? {
         get { return imageItem }

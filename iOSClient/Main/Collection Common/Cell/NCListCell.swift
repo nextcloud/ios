@@ -32,13 +32,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
+    weak var delegate: NCListCellDelegate?
+
     var metadata: tableMetadata? {
         didSet {
             delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
-
-    weak var delegate: NCListCellDelegate?
 
     var avatarImageView: UIImageView? {
         return imageShared

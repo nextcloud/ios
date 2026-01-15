@@ -22,9 +22,13 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
-    var metadata: tableMetadata? { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */ } }
-
     weak var delegate: NCGridCellDelegate?
+
+    var metadata: tableMetadata? {
+        didSet {
+            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+        }
+    }
 
     var previewImageView: UIImageView? {
         get { return imageItem }

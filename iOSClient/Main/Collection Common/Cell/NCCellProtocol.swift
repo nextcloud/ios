@@ -5,8 +5,9 @@
 import UIKit
 
 protocol NCCellProtocol {
-    var avatarImageView: UIImageView? { get }
     var metadata: tableMetadata? {get set }
+
+    var avatarImageView: UIImageView? { get }
     var previewImageView: UIImageView? { get set }
     var title: UILabel? { get set }
     var info: UILabel? { get set }
