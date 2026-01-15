@@ -34,6 +34,9 @@ actor NCTransferDelegateDispatcher {
 
     /// Adds a delegate safely.
     func addDelegate(_ delegate: NCTransferDelegate) {
+        if transferDelegates.contains(delegate) {
+            return
+        }
         transferDelegates.add(delegate)
     }
 
