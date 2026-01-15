@@ -321,16 +321,12 @@ class NCFiles: NCCollectionViewCommon {
                 NCContentPresenter().showInfo(description: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller,
-                                          errorDescription: error.errorDescription,
-                                          errorCode: error.errorCode)
+                    await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                 }
             } else {
                 // show error
                 Task {@MainActor in
-                    await showErrorBanner(controller: self.controller,
-                                          errorDescription: error.errorDescription,
-                                          errorCode: error.errorCode)
+                    await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                 }
             }
 
@@ -350,9 +346,7 @@ class NCFiles: NCCollectionViewCommon {
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
                     Task {@MainActor in
-                        await showErrorBanner(controller: self.controller,
-                                              errorDescription: error.errorDescription,
-                                              errorCode: error.errorCode)
+                        await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                     }
                 }
                 NCActivityIndicator.shared.stop()
@@ -361,9 +355,7 @@ class NCFiles: NCCollectionViewCommon {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             Task {@MainActor in
-                await showErrorBanner(controller: self.controller,
-                                      errorDescription: error.errorDescription,
-                                      errorCode: error.errorCode)
+                await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
             }
         }
 

@@ -624,9 +624,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                         }
                     } else {
                         Task {@MainActor in
-                            await showErrorBanner(scene: scene,
-                                                  errorDescription: resultsUpload.error.errorDescription,
-                                                  errorCode: resultsUpload.error.errorCode)
+                            await showErrorBanner(scene: scene, errorDescription: resultsUpload.error.errorDescription)
                         }
                     }
                 }
@@ -747,11 +745,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
                 Task {@MainActor in
-                    await showErrorBanner(
-                        controller: self.controller,
-                        errorDescription: error.errorDescription,
-                        errorCode: error.errorCode
-                    )
+                    await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                 }
             }
 
@@ -922,9 +916,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(controller: self.controller,
-                                      errorDescription: error.errorDescription,
-                                      errorCode: error.errorCode)
+                await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
             }
             guard session.account == account else {
                 return
