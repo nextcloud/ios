@@ -71,6 +71,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
+        buttonMore.isHidden = true
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
         contentView.bringSubviewToFront(buttonMore)
@@ -93,7 +94,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     }
 
     func hideButtonMore(_ status: Bool) {
-        buttonMore.isHidden = status
+       // buttonMore.isHidden = status NO MORE USED
     }
 
     func hideImageStatus(_ status: Bool) {

@@ -59,7 +59,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         cell.ocId = metadata.ocId
         cell.ocIdTransfer = metadata.ocIdTransfer
-        cell.hideButtonMore(true)
+        // cell.hideButtonMore(true) NO MORE USED
         cell.hideImageStatus(true)
 
         // Image
@@ -105,7 +105,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if width > 100 {
-            cell.hideButtonMore(false)
+            // cell.hideButtonMore(false) NO MORE USED
             cell.hideImageStatus(false)
         }
 
