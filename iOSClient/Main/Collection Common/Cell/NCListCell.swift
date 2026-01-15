@@ -129,7 +129,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         separatorHeightConstraint.constant = 0.5
         tag0.text = ""
         tag1.text = ""
-        titleInfoTrailingDefault()
+        titleTrailingConstraint.constant = 90
 
         contentView.bringSubviewToFront(buttonMore)
         buttonMore.menu = nil
@@ -160,10 +160,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func titleInfoTrailingFull() {
         titleTrailingConstraint.constant = 10
-    }
-
-    func titleInfoTrailingDefault() {
-        titleTrailingConstraint.constant = 90
     }
 
     func setButtonMore(image: UIImage) {

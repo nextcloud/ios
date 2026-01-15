@@ -17,7 +17,6 @@ protocol NCCellProtocol {
     var shareImageView: UIImageView? { get set }
     var separatorView: UIView? { get set }
 
-    func titleInfoTrailingDefault()
     func titleInfoTrailingFull()
     func writeInfoDateSize(date: NSDate, size: Int64)
     func setButtonMore(image: UIImage)
@@ -25,7 +24,6 @@ protocol NCCellProtocol {
     func hideImageFavorite(_ status: Bool)
     func hideImageStatus(_ status: Bool)
     func hideImageLocal(_ status: Bool)
-    func hideLabelTitle(_ status: Bool)
     func hideLabelInfo(_ status: Bool)
     func hideLabelSubinfo(_ status: Bool)
     func hideButtonShare(_ status: Bool)
@@ -82,7 +80,6 @@ extension NCCellProtocol {
         set {}
     }
 
-    func titleInfoTrailingDefault() {}
     func titleInfoTrailingFull() {}
     func writeInfoDateSize(date: NSDate, size: Int64) {}
     func setButtonMore(image: UIImage) {}
@@ -90,7 +87,6 @@ extension NCCellProtocol {
     func hideImageFavorite(_ status: Bool) {}
     func hideImageStatus(_ status: Bool) {}
     func hideImageLocal(_ status: Bool) {}
-    func hideLabelTitle(_ status: Bool) {}
     func hideLabelInfo(_ status: Bool) {}
     func hideLabelSubinfo(_ status: Bool) {}
     func hideButtonShare(_ status: Bool) {}

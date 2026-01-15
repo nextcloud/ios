@@ -134,10 +134,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageLocal.isHidden = status
     }
 
-    func hideLabelTitle(_ status: Bool) {
-        labelTitle.isHidden = status
-    }
-
     func hideLabelInfo(_ status: Bool) {
         labelInfo.isHidden = status
     }
