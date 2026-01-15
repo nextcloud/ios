@@ -177,8 +177,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionMounted)
         }
 
-        cell.metadata = metadata
-
         if isSearchingMode {
             if metadata.name == global.appName {
                 cell.info?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
@@ -226,7 +224,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
 
             // Local image: offline
-            if let tblDirectory, tblDirectory.offline {
+            metadata.isOffline = tblDirectory?.offline ?? false
+
+            if metadata.isOffline {
                 cell.localImageView?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             }
 
@@ -301,7 +301,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
 
-            if let tableLocalFile, tableLocalFile.offline {
+            // Local image: offline
+            metadata.isOffline = tableLocalFile?.offline ?? false
+
+            if metadata.isOffline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 cell.localImageView?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -467,6 +470,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         cell.setIconOutlines()
+
+        // Obligatory here, at the end !!
+        cell.metadata = metadata
 
         return cell
     }

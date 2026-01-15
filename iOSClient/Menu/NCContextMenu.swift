@@ -31,15 +31,9 @@ class NCContextMenu: NSObject {
     }
 
     func viewMenu() -> UIMenu {
-        let database = NCManageDatabase.shared
-
-        guard let metadata = database.getMetadataFromOcId(metadata.ocId),
-              let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
+        guard let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return UIMenu()
         }
-
-        let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let isOffline = localFile?.offline == true
 
         // Build top menu items
         let detail = makeDetailAction(metadata: metadata)
@@ -48,8 +42,7 @@ class NCContextMenu: NSObject {
 
         let mainActionsMenu = buildMainActionsMenu(
             metadata: metadata,
-            capabilities: capabilities,
-            isOffline: isOffline
+            capabilities: capabilities
         )
 
         let clientIntegrationMenu = buildClientIntegrationMenuItems(
@@ -125,8 +118,7 @@ class NCContextMenu: NSObject {
 
     private func buildMainActionsMenu(
         metadata: tableMetadata,
-        capabilities: NKCapabilities.Capabilities,
-        isOffline: Bool
+        capabilities: NKCapabilities.Capabilities
     ) -> [UIMenuElement] {
         var mainActionsMenu: [UIMenuElement] = []
         // Lock/Unlock
@@ -148,7 +140,7 @@ class NCContextMenu: NSObject {
             mainActionsMenu.append(
                 ContextMenuActions.setAvailableOffline(
                     selectedMetadatas: [metadata],
-                    isAnyOffline: isOffline,
+                    isAnyOffline: metadata.isOffline,
                     viewController: viewController
                 )
             )
