@@ -43,7 +43,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         get { return index }
         set { index = newValue }
     }
-    var fileAvatarImageView: UIImageView? {
+    var avatarImageView: UIImageView? {
         return imageItem
     }
     var fileUser: String? {

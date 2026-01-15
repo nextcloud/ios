@@ -5,9 +5,9 @@
 import UIKit
 
 protocol NCListCellDelegate: AnyObject {
-    func onMenuIntent(with ocId: String)
-    func contextMenu(with ocId: String, button: UIButton, sender: Any)
-    func tapShareListItem(with ocId: String, button: UIButton, sender: Any)
+    func onMenuIntent(with metadata: tableMetadata?)
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
+    func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
@@ -32,64 +32,50 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
-    var ocId = "" { didSet { delegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
-    var ocIdTransfer = ""
-    var user = ""
+    var metadata: tableMetadata? {
+        didSet {
+            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+        }
+    }
 
     weak var delegate: NCListCellDelegate?
 
-    var fileAvatarImageView: UIImageView? {
+    var avatarImageView: UIImageView? {
         return imageShared
     }
-    var fileOcId: String? {
-        get { return ocId }
-        set { ocId = newValue ?? "" }
-    }
-    var fileOcIdTransfer: String? {
-        get { return ocIdTransfer }
-        set { ocIdTransfer = newValue ?? "" }
-    }
-    var filePreviewImageView: UIImageView? {
+    var previewImageView: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
-    var fileTitleLabel: UILabel? {
+    var title: UILabel? {
         get { return labelTitle }
         set { labelTitle = newValue }
     }
-    var fileInfoLabel: UILabel? {
+    var info: UILabel? {
         get { return labelInfo }
         set { labelInfo = newValue }
     }
-    var fileSubinfoLabel: UILabel? {
+    var subInfo: UILabel? {
         get { return labelSubinfo }
         set { labelSubinfo = newValue }
     }
-    var fileStatusImage: UIImageView? {
+    var statusImageView: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
     }
-    var fileLocalImage: UIImageView? {
+    var localImageView: UIImageView? {
         get { return imageLocal }
         set { imageLocal = newValue }
     }
-    var fileFavoriteImage: UIImageView? {
+    var favoriteImageView: UIImageView? {
         get { return imageFavorite }
         set { imageFavorite = newValue }
     }
-    var fileSharedImage: UIImageView? {
+    var shareImageView: UIImageView? {
         get { return imageShared }
         set { imageShared = newValue }
     }
-    var fileMoreImage: UIImageView? {
-        get { return imageMore }
-        set { imageMore = newValue }
-    }
-    var cellSeparatorView: UIView? {
+    var separatorView: UIView? {
         get { return separator }
         set { separator = newValue }
     }
@@ -155,14 +141,14 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        delegate?.tapShareListItem(with: ocId, button: buttonShared, sender: sender)
+        delegate?.tapShareListItem(with: metadata, button: buttonShared, sender: sender)
     }
 
     @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: ocId)
+            delegate?.onMenuIntent(with: metadata)
         }
     }
 

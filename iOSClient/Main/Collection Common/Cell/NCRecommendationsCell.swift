@@ -5,8 +5,8 @@
 import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
-    func onMenuIntent(with ocId: String)
-    func contextMenu(with metadata: tableMetadata, button: UIButton, sender: Any)
+    func onMenuIntent(with metadata: tableMetadata?)
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
@@ -16,9 +16,9 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCRecommendationsCellDelegate?
-    var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
-    var id: String = "" { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each id set */ } }
+
+    var metadata: tableMetadata? { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */ } }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -58,7 +58,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: metadata.ocId)
+            delegate?.onMenuIntent(with: metadata)
         }
     }
 

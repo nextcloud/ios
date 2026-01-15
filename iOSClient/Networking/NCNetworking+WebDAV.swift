@@ -1102,7 +1102,6 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, image, _, etag, _, error in
-
             if error == .success, let image {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
                 #if !EXTENSION
@@ -1112,12 +1111,11 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                 DispatchQueue.main.async {
                     let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
                     for case let cell as NCCellProtocol in visibleCells {
-                        if self.user == cell.fileUser {
-
-                            if self.isPreviewImageView, let filePreviewImageView = cell.filePreviewImageView {
-                                UIView.transition(with: filePreviewImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { filePreviewImageView.image = image}, completion: nil)
-                            } else if let fileAvatarImageView = cell.fileAvatarImageView {
-                                UIView.transition(with: fileAvatarImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { fileAvatarImageView.image = image}, completion: nil)
+                        if self.user == cell.metadata?.ownerId {
+                            if self.isPreviewImageView, let previewImageView = cell.previewImageView {
+                                UIView.transition(with: previewImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImageView.image = image}, completion: nil)
+                            } else if let avatarImageView = cell.avatarImageView {
+                                UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { avatarImageView.image = image}, completion: nil)
                             }
                             break
                         }

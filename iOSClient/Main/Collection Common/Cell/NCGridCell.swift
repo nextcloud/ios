@@ -5,8 +5,8 @@
 import UIKit
 
 protocol NCGridCellDelegate: AnyObject {
-    func onMenuIntent(with ocId: String)
-    func contextMenu(with ocId: String, button: UIButton, sender: Any)
+    func onMenuIntent(with metadata: tableMetadata?)
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
@@ -22,50 +22,35 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
-    var ocId = "" { didSet { delegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
-    var ocIdTransfer = ""
-    var account = ""
-    var user = ""
+    var metadata: tableMetadata? { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */ } }
 
     weak var delegate: NCGridCellDelegate?
 
-    var fileOcId: String? {
-        get { return ocId }
-        set { ocId = newValue ?? "" }
-    }
-    var fileOcIdTransfer: String? {
-        get { return ocIdTransfer }
-        set { ocIdTransfer = newValue ?? "" }
-    }
-    var filePreviewImageView: UIImageView? {
+    var previewImageView: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
-    var fileTitleLabel: UILabel? {
+    var title: UILabel? {
         get { return labelTitle }
         set { labelTitle = newValue }
     }
-    var fileInfoLabel: UILabel? {
+    var info: UILabel? {
         get { return labelInfo }
         set { labelInfo = newValue }
     }
-    var fileSubinfoLabel: UILabel? {
+    var subInfo: UILabel? {
         get { return labelSubinfo }
         set { labelSubinfo = newValue }
     }
-    var fileStatusImage: UIImageView? {
+    var statusImageView: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
     }
-    var fileLocalImage: UIImageView? {
+    var localImageView: UIImageView? {
         get { return imageLocal }
         set { imageLocal = newValue }
     }
-    var fileFavoriteImage: UIImageView? {
+    var favoriteImageView: UIImageView? {
         get { return imageFavorite }
         set { imageFavorite = newValue }
     }
@@ -125,7 +110,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: ocId)
+            delegate?.onMenuIntent(with: metadata)
         }
     }
 

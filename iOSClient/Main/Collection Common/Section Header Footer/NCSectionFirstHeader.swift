@@ -186,7 +186,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
                                 Task { @MainActor in
                                     for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
-                                        if cell.id == recommendedFiles.id {
+                                        if cell.metadata?.fileId == recommendedFiles.id {
                                             cell.image.contentMode = .scaleAspectFill
                                             if metadata.classFile == NKTypeClassFile.document.rawValue {
                                                 cell.setImageCorner(withBorder: true)
@@ -216,7 +216,6 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             cell.delegate = self
             cell.metadata = metadata
             cell.recommendedFiles = recommendedFiles
-            cell.id = recommendedFiles.id
         }
 
         return cell
@@ -266,10 +265,10 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func contextMenu(with metadata: tableMetadata, button: UIButton, sender: Any) {
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
 #if !EXTENSION
         Task {
-            guard let viewController = self.viewController else {
+            guard let viewController = self.viewController, let metadata else {
                 return
             }
             button.menu = NCContextMenu(metadata: metadata, viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
@@ -277,7 +276,7 @@ extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
 #endif
     }
 
-    func onMenuIntent(with ocId: String) {
+    func onMenuIntent(with metadata: tableMetadata?) {
 #if !EXTENSION
         Task {
             let collectionViewCommon = (self.viewController as? NCCollectionViewCommon)

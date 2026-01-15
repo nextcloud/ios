@@ -5,8 +5,8 @@
 import UIKit
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func onMenuIntent(with ocId: String)
-    func contextMenu(with ocId: String, button: UIButton, sender: Any)
+    func onMenuIntent(with metadata: tableMetadata?)
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
 class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
@@ -16,29 +16,15 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    var ocId = "" { didSet { delegate?.contextMenu(with: ocId, button: buttonMore, sender: self) /* preconfigure UIMenu with each ocId */ } }
-    var ocIdTransfer = ""
-    var user = ""
+    var metadata: tableMetadata? { didSet { delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */ } }
 
     weak var delegate: NCPhotoCellDelegate?
 
-    var fileOcId: String? {
-        get { return ocId }
-        set { ocId = newValue ?? "" }
-    }
-    var fileOcIdTransfer: String? {
-        get { return ocIdTransfer }
-        set { ocIdTransfer = newValue ?? "" }
-    }
-    var filePreviewImageView: UIImageView? {
+    var previewImageView: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
-    var fileStatusImage: UIImageView? {
+    var statusImageView: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
     }
@@ -85,7 +71,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         let location = g.location(in: contentView)
 
         if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: ocId)
+            delegate?.onMenuIntent(with: metadata)
         }
     }
 

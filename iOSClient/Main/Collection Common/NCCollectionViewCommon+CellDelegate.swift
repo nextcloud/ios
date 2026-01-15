@@ -1,20 +1,20 @@
 extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate {
-    func contextMenu(with ocId: String, button: UIButton, sender: Any) {
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
-            guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else { return }
+            guard let metadata else { return }
             button.menu = NCContextMenu(metadata: metadata, viewController: self, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
         }
     }
 
-    func onMenuIntent(with ocId: String) {
+    func onMenuIntent(with metadata: tableMetadata?) {
         Task {
             await self.debouncerReloadData.pause()
         }
     }
 
-    func tapShareListItem(with ocId: String, button: UIButton, sender: Any) {
+    func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
-            guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else { return }
+            guard let metadata else { return }
             NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
         }
     }

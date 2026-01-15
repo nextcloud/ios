@@ -5,21 +5,17 @@
 import UIKit
 
 protocol NCCellProtocol {
-    var fileAvatarImageView: UIImageView? { get }
-    var fileAccount: String? { get set }
-    var fileOcId: String? { get set }
-    var fileOcIdTransfer: String? { get set }
-    var filePreviewImageView: UIImageView? { get set }
-    var fileUser: String? { get set }
-    var fileTitleLabel: UILabel? { get set }
-    var fileInfoLabel: UILabel? { get set }
-    var fileSubinfoLabel: UILabel? { get set }
-    var fileStatusImage: UIImageView? { get set }
-    var fileLocalImage: UIImageView? { get set }
-    var fileFavoriteImage: UIImageView? { get set }
-    var fileSharedImage: UIImageView? { get set }
-    var fileMoreImage: UIImageView? { get set }
-    var cellSeparatorView: UIView? { get set }
+    var avatarImageView: UIImageView? { get }
+    var metadata: tableMetadata? {get set }
+    var previewImageView: UIImageView? { get set }
+    var title: UILabel? { get set }
+    var info: UILabel? { get set }
+    var subInfo: UILabel? { get set }
+    var statusImageView: UIImageView? { get set }
+    var localImageView: UIImageView? { get set }
+    var favoriteImageView: UIImageView? { get set }
+    var shareImageView: UIImageView? { get set }
+    var separatorView: UIView? { get set }
 
     func titleInfoTrailingDefault()
     func titleInfoTrailingFull()
@@ -41,58 +37,47 @@ protocol NCCellProtocol {
 }
 
 extension NCCellProtocol {
-    var fileAvatarImageView: UIImageView? {
+    var avatarImageView: UIImageView? {
         return nil
     }
-    var fileAccount: String? {
+    var metadata: tableMetadata? {
         get { return nil }
         set {}
     }
-    var fileOcId: String? {
+    var previewImageView: UIImageView? {
         get { return nil }
         set {}
     }
-    var fileOcIdTransfer: String? {
+    var title: UILabel? {
         get { return nil }
         set {}
     }
-    var filePreviewImageView: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileTitleLabel: UILabel? {
-        get { return nil }
-        set {}
-    }
-    var fileInfoLabel: UILabel? {
+    var info: UILabel? {
         get { return nil }
         set { }
     }
-    var fileSubinfoLabel: UILabel? {
+    var subInfo: UILabel? {
         get { return nil }
         set { }
     }
-    var fileStatusImage: UIImageView? {
+    var statusImageView: UIImageView? {
         get { return nil }
         set {}
     }
-    var fileLocalImage: UIImageView? {
+    var localImageView: UIImageView? {
         get { return nil }
         set {}
     }
-    var fileFavoriteImage: UIImageView? {
+    var favoriteImageView: UIImageView? {
         get { return nil }
         set {}
     }
-    var fileSharedImage: UIImageView? {
+    var shareImageView: UIImageView? {
         get { return nil }
         set {}
     }
-    var fileMoreImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var cellSeparatorView: UIView? {
+
+    var separatorView: UIView? {
         get { return nil }
         set {}
     }
