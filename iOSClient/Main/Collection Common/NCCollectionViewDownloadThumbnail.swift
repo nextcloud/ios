@@ -42,13 +42,13 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                 let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
                 Task { @MainActor in
-                    for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {
-                        if let filePreviewImageView = cell.filePreviewImageView {
-                            filePreviewImageView.contentMode = .scaleAspectFill
+                    for case let cell as NCCellProtocol in collectionView.visibleCells where cell.metadata?.ocId == self.metadata.ocId {
+                        if let previewImageView = cell.previewImageView {
+                            previewImageView.contentMode = .scaleAspectFill
 
                             if self.metadata.hasPreviewBorder {
-                                filePreviewImageView.layer.borderWidth = 0.2
-                                filePreviewImageView.layer.borderColor = UIColor.systemGray3.cgColor
+                                previewImageView.layer.borderWidth = 0.2
+                                previewImageView.layer.borderColor = UIColor.systemGray3.cgColor
                             }
 
                             if let photoCell = (cell as? NCPhotoCell),
@@ -57,11 +57,15 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                                 cell.hideImageStatus(false)
                             }
 
-                            UIView.transition(with: filePreviewImageView,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { filePreviewImageView.image = image },
-                                              completion: nil)
+                            UIView.transition(
+                                with: previewImageView,
+                                duration: 0.75,
+                                options: .transitionCrossDissolve,
+                                animations: {
+                                    previewImageView.image = image
+                                },
+                                completion: nil
+                            )
                             break
                         }
                     }

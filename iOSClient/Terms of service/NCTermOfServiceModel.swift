@@ -55,7 +55,7 @@ class NCTermOfServiceModel: ObservableObject {
             if let error {
                 if error == .success {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferReloadData(serverUrl: nil, requestData: true, status: nil)
+                        delegate.transferReloadDataSource(serverUrl: nil, requestData: true, status: nil)
                     }
                 } else {
                     NCContentPresenter().showError(error: error)

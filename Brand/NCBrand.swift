@@ -25,7 +25,7 @@ final class NCBrandOptions: @unchecked Sendable {
 
     var brand: String = "Nextcloud"
     var brandUserAgent: String = ""
-    var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2025"
+    var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2026"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     var pushNotificationServerProxy: String = ""

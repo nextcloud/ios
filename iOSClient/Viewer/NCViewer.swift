@@ -124,7 +124,7 @@ class NCViewer: NSObject {
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                 }
                 if metadata.url.isEmpty {
-                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+                    let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in

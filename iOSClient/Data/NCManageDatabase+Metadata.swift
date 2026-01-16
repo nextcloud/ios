@@ -125,6 +125,13 @@ class tableMetadata: Object {
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
 
+    // =========================
+    // UI / transient properties
+    // =========================
+
+    /// Used only for UI state (not persisted, not observed by Realm)
+    var isOffline: Bool = false
+
     override static func primaryKey() -> String {
         return "ocId"
     }

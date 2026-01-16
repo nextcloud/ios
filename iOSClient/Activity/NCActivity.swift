@@ -84,9 +84,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.loadComments()
                 } else {
                     Task {@MainActor in
-                        await showErrorBanner(controller: self.tabBarController,
-                                              errorDescription: error.errorDescription,
-                                              errorCode: error.errorCode)
+                        await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                     }
                 }
             }
@@ -225,9 +223,9 @@ extension NCActivity: UITableViewDataSource {
         let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
         if results.image == nil {
-            cell.fileAvatarImageView?.image = utility.loadUserImage(for: comment.actorId, displayName: comment.actorDisplayName, urlBase: NCSession.shared.getSession(account: account).urlBase)
+            cell.avatarImageView?.image = utility.loadUserImage(for: comment.actorId, displayName: comment.actorDisplayName, urlBase: NCSession.shared.getSession(account: account).urlBase)
         } else {
-            cell.fileAvatarImageView?.image = results.image
+            cell.avatarImageView?.image = results.image
         }
 
         if let tblAvatar = results.tblAvatar,
@@ -313,9 +311,9 @@ extension NCActivity: UITableViewDataSource {
             let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
             if results.image == nil {
-                cell.fileAvatarImageView?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
+                cell.avatarImageView?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
             } else {
-                cell.fileAvatarImageView?.image = results.image
+                cell.avatarImageView?.image = results.image
             }
 
             if !(results.tblAvatar?.loaded ?? false),
@@ -441,9 +439,7 @@ extension NCActivity {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 Task {@MainActor in
-                    await showErrorBanner(controller: self.tabBarController,
-                                          errorDescription: error.errorDescription,
-                                          errorCode: error.errorCode)
+                    await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                 }
             }
 
@@ -583,9 +579,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                                 self.loadComments()
                             } else {
                                 Task {@MainActor in
-                                    await showErrorBanner(controller: self.tabBarController,
-                                                          errorDescription: error.errorDescription,
-                                                          errorCode: error.errorCode)
+                                    await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                                 }
                             }
                         }
@@ -617,9 +611,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             self.loadComments()
                         } else {
                             Task {@MainActor in
-                                await showErrorBanner(controller: self.tabBarController,
-                                                      errorDescription: error.errorDescription,
-                                                      errorCode: error.errorCode)
+                                await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                             }
                         }
                     }

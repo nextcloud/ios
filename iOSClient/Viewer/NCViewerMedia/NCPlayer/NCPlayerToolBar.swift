@@ -492,9 +492,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                         if error == .success {
                             self.addPlaybackSlave(type: type, metadata: metadata)
                         } else if error.errorCode != 200 {
-                            await showErrorBanner(scene: scene,
-                                                  errorDescription: error.errorDescription,
-                                                  errorCode: error.errorCode)
+                            await showErrorBanner(scene: scene, errorDescription: error.errorDescription)
                         }
                     }
                 }

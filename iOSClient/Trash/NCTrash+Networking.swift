@@ -38,8 +38,8 @@ extension NCTrash {
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
             Task {
                 await NCNetworking.shared.networkingTasks.track(identifier: "NCTrash", task: task)
+                await self.collectionView.reloadData()
             }
-            self.collectionView.reloadData()
         }
 
         if let items = resultsListingTrash.items {

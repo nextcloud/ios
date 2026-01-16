@@ -148,7 +148,22 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    func getFileNamePath(_ fileName: String, serverUrl: String, session: NCSession.Session) -> String {
+    /// Constructs the relative path of a file by removing the home server URL prefix.
+    ///
+    /// - Parameters:
+    ///   - fileName: The name of the file
+    ///   - serverUrl: The full server URL where the file is located.
+    ///   - session: The user NCSession.
+    /// - Returns: The relative path from the user's home directory (e.g., `"someFolder/Image.png"`).
+    ///
+    /// Example:
+    /// ```swift
+    /// // Input: fileName = "Image.png"
+    /// //        serverUrl = "https://instance.com/remote.php/dav/files/user1/someFolder"
+    /// // Output: "someFolder/Image.png"
+    /// let path = getRelativeFilePath("Image.png", serverUrl: serverUrl, session: session)
+    /// ```
+    func getRelativeFilePath(_ fileName: String, serverUrl: String, session: NCSession.Session) -> String {
         let home = getHomeServer(session: session)
         var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
         if fileNamePath.first == "/" {
@@ -157,7 +172,23 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return fileNamePath
     }
 
-    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
+    /// Constructs the relative path of a file by removing the home server URL prefix.
+    ///
+    /// - Parameters:
+    ///   - fileName: The name of the file
+    ///   - serverUrl: The full server URL where the file is located.
+    ///   - urlBase: The base URL of the server instance.
+    ///   - userId: The user identifier.
+    /// - Returns: The relative path from the user's home directory (e.g., `"someFolder/Image.png"`).
+    ///
+    /// Example:
+    /// ```swift
+    /// // Input: fileName = "Image.png"
+    /// //        serverUrl = "https://instance.com/remote.php/dav/files/user1/someFolder"
+    /// // Output: "someFolder/Image.png"
+    /// let path = getRelativeFilePath("Image.png", serverUrl: serverUrl, urlBase: urlBase, userId: userId)
+    /// ```
+    func getRelativeFilePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
         let home = getHomeServer(urlBase: urlBase, userId: userId)
         var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
         if fileNamePath.first == "/" {
