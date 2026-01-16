@@ -6,26 +6,6 @@ import UIKit
 import NextcloudKit
 import Alamofire
 
-protocol NCTransferDelegate: AnyObject {
-    var sceneIdentifier: String { get }
-
-    func transferChange(status: String,
-                        account: String,
-                        fileName: String,
-                        serverUrl: String,
-                        selector: String?,
-                        ocId: String,
-                        destination: String?,
-                        error: NKError)
-    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?)
-    func transferReloadData(serverUrl: String?)
-    func transferProgressDidUpdate(progress: Float,
-                                   totalBytes: Int64,
-                                   totalBytesExpected: Int64,
-                                   fileName: String,
-                                   serverUrl: String)
-}
-
 /// Actor-based dispatcher that manages weak NCTransferDelegate references
 /// and delivers notifications safely across concurrency domains.
 actor NCTransferDelegateDispatcher {

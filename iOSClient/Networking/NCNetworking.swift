@@ -12,9 +12,29 @@ import UIKit
 import NextcloudKit
 import Alamofire
 
-@objc protocol ClientCertificateDelegate {
+protocol ClientCertificateDelegate: AnyObject {
     func onIncorrectPassword()
     func didAskForClientCertificate()
+}
+
+protocol NCTransferDelegate: AnyObject {
+    var sceneIdentifier: String { get }
+
+    func transferChange(status: String,
+                        account: String,
+                        fileName: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError)
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?)
+    func transferReloadData(serverUrl: String?)
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String)
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
