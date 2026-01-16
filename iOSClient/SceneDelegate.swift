@@ -6,7 +6,6 @@ import Foundation
 import UIKit
 import NextcloudKit
 import WidgetKit
-import SwiftEntryKit
 import SwiftUI
 import CoreLocation
 

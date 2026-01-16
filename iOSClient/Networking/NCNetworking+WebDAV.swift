@@ -427,7 +427,11 @@ extension NCNetworking {
             for metadata in metadatasPlain {
                 let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
                 if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
-                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+                    Task {@MainActor in
+                        let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
+                        await showErrorBanner(scene: scene, errorDescription: "_no_permission_delete_file_")
+                    }
+                    return
                 }
 
                 if metadata.status == global.metadataStatusWaitCreateFolder {
