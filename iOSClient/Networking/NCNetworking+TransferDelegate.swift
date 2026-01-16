@@ -13,6 +13,12 @@ extension NCNetworking: NCTransferDelegate {
         }
     }
 
+    func transferReloadData(serverUrl: String?) { }
+
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }
+
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+
     func transferChange(status: String,
                         account: String,
                         fileName: String,
@@ -116,9 +122,7 @@ extension NCNetworking: NCTransferDelegate {
                     guard hasPermission else {
                         Task {@MainActor in
                             let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
-                            await showErrorBanner(scene: scene,
-                                                  errorDescription: error.errorDescription,
-                                                  errorCode: error.errorCode)
+                            await showErrorBanner(scene: scene, errorDescription: error.errorDescription)
                         }
                         return
                     }
@@ -134,9 +138,7 @@ extension NCNetworking: NCTransferDelegate {
                             }) { success, _ in
                                 if !success {
                                     Task {@MainActor in
-                                        await showErrorBanner(scene: scene,
-                                                              errorDescription: errorSave.errorDescription,
-                                                              errorCode: errorSave.errorCode)
+                                        await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                                     }
                                 }
                             }
@@ -146,25 +148,19 @@ extension NCNetworking: NCTransferDelegate {
                             }) { success, _ in
                                 if !success {
                                     Task {@MainActor in
-                                        await showErrorBanner(scene: scene,
-                                                              errorDescription: errorSave.errorDescription,
-                                                              errorCode: errorSave.errorCode)
+                                        await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                                     }
                                 }
                             }
                         } else {
                             Task {@MainActor in
-                                await showErrorBanner(scene: scene,
-                                                      errorDescription: errorSave.errorDescription,
-                                                      errorCode: errorSave.errorCode)
+                                await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                             }
                             return
                         }
                     } catch {
                         Task {@MainActor in
-                            await showErrorBanner(scene: scene,
-                                                  errorDescription: errorSave.errorDescription,
-                                                  errorCode: errorSave.errorCode)
+                            await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                         }
                     }
                 }
@@ -234,9 +230,7 @@ extension NCNetworking: NCTransferDelegate {
         }
         guard resultsFile.error == .success, let file = resultsFile.file else {
             Task {@MainActor in
-                await showErrorBanner(controller: viewController.tabBarController,
-                                      errorDescription: resultsFile.error.errorDescription,
-                                      errorCode: resultsFile.error.errorCode)
+                await showErrorBanner(controller: viewController.tabBarController, errorDescription: resultsFile.error.errorDescription)
             }
             return
         }

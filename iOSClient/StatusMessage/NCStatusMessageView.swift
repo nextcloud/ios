@@ -31,7 +31,7 @@ struct NCStatusMessageView: View {
                     }
                 }
                 .padding(.top, 8)
-                
+
                 HStack {
                     Text("_clear_status_message_after_")
                     Menu {

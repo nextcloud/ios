@@ -6,13 +6,13 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showErrorBanner(controller: UITabBarController?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+func showErrorBanner(controller: UITabBarController?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
-    await showErrorBanner(scene: scene, errorDescription: errorDescription, errorCode: errorCode, sleepBefore: sleepBefore)
+    await showErrorBanner(scene: scene, errorDescription: errorDescription, footnote: footnote, sleepBefore: sleepBefore)
 }
 
 @MainActor
-func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode: Int, sleepBefore: Double = 1) async {
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
     var scene = scene
     if scene == nil {
@@ -22,7 +22,7 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, errorCode:
     LucidBanner.shared.show(
         scene: scene,
         subtitle: errorDescription,
-        footnote: "(Code: \(errorCode))",
+        footnote: footnote,
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,

@@ -50,7 +50,10 @@ extension NCNetworking {
             }
 
             await NCManageDatabase.shared.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
-            await collectionView.reloadData()
+
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: serverUrl)
+            }
         }
     }
 }

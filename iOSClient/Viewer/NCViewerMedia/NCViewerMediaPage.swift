@@ -569,6 +569,10 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 }
 
 extension NCViewerMediaPage: NCTransferDelegate {
+    func transferReloadData(serverUrl: String?) { }
+
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }
+
     func transferChange(status: String,
                         account: String,
                         fileName: String,

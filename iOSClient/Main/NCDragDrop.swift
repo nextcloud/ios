@@ -145,11 +145,7 @@ class NCDragDrop: NSObject {
         } catch {
             Task {@MainActor in
                 let error = NKError(error: error)
-                await showErrorBanner(
-                    controller: controller,
-                    errorDescription: error.errorDescription,
-                    errorCode: error.errorCode
-                )
+                await showErrorBanner(controller: controller, errorDescription: error.errorDescription)
             }
             return
         }
@@ -230,7 +226,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                    await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription)
                     break
                 }
             }
@@ -252,7 +248,7 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(scene: scene, errorDescription: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(scene: scene, errorDescription: results.error.errorDescription)
                 break
             }
 

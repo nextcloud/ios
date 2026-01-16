@@ -1,27 +1,13 @@
-//
-//  NCGridCell.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 08/10/2018.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+
+protocol NCGridCellDelegate: AnyObject {
+    func onMenuIntent(with metadata: tableMetadata?)
+    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
+}
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
@@ -36,56 +22,51 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
-    var ocId = ""
-    var ocIdTransfer = ""
-    var account = ""
-    var user = ""
+    weak var delegate: NCGridCellDelegate?
 
-    weak var gridCellDelegate: NCGridCellDelegate?
+    var metadata: tableMetadata? {
+        didSet {
+            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+        }
+    }
 
-    var fileOcId: String? {
-        get { return ocId }
-        set { ocId = newValue ?? "" }
-    }
-    var fileOcIdTransfer: String? {
-        get { return ocIdTransfer }
-        set { ocIdTransfer = newValue ?? "" }
-    }
-    var filePreviewImageView: UIImageView? {
+    var previewImageView: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
-    var fileTitleLabel: UILabel? {
+    var title: UILabel? {
         get { return labelTitle }
         set { labelTitle = newValue }
     }
-    var fileInfoLabel: UILabel? {
+    var info: UILabel? {
         get { return labelInfo }
         set { labelInfo = newValue }
     }
-    var fileSubinfoLabel: UILabel? {
+    var subInfo: UILabel? {
         get { return labelSubinfo }
         set { labelSubinfo = newValue }
     }
-    var fileStatusImage: UIImageView? {
+    var statusImageView: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
     }
-    var fileLocalImage: UIImageView? {
+    var localImageView: UIImageView? {
         get { return imageLocal }
         set { imageLocal = newValue }
     }
-    var fileFavoriteImage: UIImageView? {
+    var favoriteImageView: UIImageView? {
         get { return imageFavorite }
         set { imageFavorite = newValue }
     }
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
+        tapObserver.cancelsTouchesInView = false
+        tapObserver.delegate = self
+        contentView.addGestureRecognizer(tapObserver)
+
         initCell()
     }
 
@@ -119,37 +100,26 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         iconsStackView.layer.cornerRadius = 8
         iconsStackView.clipsToBounds = true
 
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
-        longPressedGesture.minimumPressDuration = 0.5
-        longPressedGesture.delegate = self
-        longPressedGesture.delaysTouchesBegan = true
-        self.addGestureRecognizer(longPressedGesture)
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
+
+        contentView.bringSubviewToFront(buttonMore)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        gridCellDelegate?.tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
-    }
+    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
+        let location = g.location(in: contentView)
 
-    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        gridCellDelegate?.longPressGridItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
-    }
-
-    fileprivate func setA11yActions() {
-        self.accessibilityCustomActions = [
-            UIAccessibilityCustomAction(
-                name: NSLocalizedString("_more_", comment: ""),
-                target: self,
-                selector: #selector(touchUpInsideMore(_:)))
-        ]
+        if buttonMore.frame.contains(location) {
+            delegate?.onMenuIntent(with: metadata)
+        }
     }
 
     func setButtonMore(image: UIImage) {
         buttonMore.setImage(image, for: .normal)
-        setA11yActions()
     }
 
     func hideImageItem(_ status: Bool) {
@@ -166,10 +136,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func hideImageLocal(_ status: Bool) {
         imageLocal.isHidden = status
-    }
-
-    func hideLabelTitle(_ status: Bool) {
-        labelTitle.isHidden = status
     }
 
     func hideLabelInfo(_ status: Bool) {
@@ -190,7 +156,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             accessibilityCustomActions = nil
         } else {
             buttonMore.isHidden = false
-            setA11yActions()
         }
         if status {
             imageSelect.isHidden = false
@@ -218,11 +183,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {}
-}
-
-protocol NCGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any)
-    func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
 // MARK: - Grid Layout

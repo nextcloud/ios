@@ -61,9 +61,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await showErrorBanner(scene: scene,
-                                      errorDescription: results.nkError.errorDescription,
-                                      errorCode: results.nkError.errorCode)
+                await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription)
             }
         }
 
@@ -166,9 +164,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
+            return nil
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image, sender: cell)
+            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, sender: cell)
             return contextMenu.viewMenu()
         })
     }

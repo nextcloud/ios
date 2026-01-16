@@ -19,22 +19,17 @@ class NCCollectionViewUnifiedSearch: ConcurrentOperation, @unchecked Sendable {
         self.searchResult = searchResult
     }
 
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            CATransaction.begin()
-            CATransaction.setCompletionBlock(closure)
-            self.collectionViewCommon.collectionView.reloadData()
-            CATransaction.commit()
-        }
-    }
-
     override func start() {
         guard !isCancelled else { return self.finish() }
 
         self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
         self.collectionViewCommon.searchResults?.append(self.searchResult)
-        reloadDataThenPerform {
-            self.finish()
+        self.finish()
+
+        Task {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: nil)
+            }
         }
     }
 }
