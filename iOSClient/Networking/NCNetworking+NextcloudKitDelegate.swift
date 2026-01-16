@@ -9,14 +9,23 @@ import Alamofire
 
 extension NCNetworking {
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION
     func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
         if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
             lastReachability = true
         } else {
             if lastReachability {
-                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
-                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
+                Task {
+                    await showMessageBanner(scene: scene,
+                                            title: NSLocalizedString("_info_", comment: ""),
+                                            subtitle: NSLocalizedString("_network_not_available_", comment: ""),
+                                            textColor: NCBrandColor.shared.textColor,
+                                            image: "wifi.circle",
+                                            imageAnimation: .variableColor,
+                                            imageColor: .white,
+                                            backgroundColor: UIColor.systemBlue.withAlphaComponent(0.75))
+                }
             }
             lastReachability = false
         }

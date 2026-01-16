@@ -43,8 +43,7 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidLoad()
         delegate = self
 
-        NCNetworking.shared.controller = self
-        NCImageCache.shared.controller = self
+        NCNetworking.shared.setupScene(sceneIdentifier: sceneIdentifier, controller: self)
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
