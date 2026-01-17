@@ -40,7 +40,7 @@ class NCCreate: NSObject {
                 }
             }
             guard results.error == .success, let url = results.url else {
-                Task {@MainActor in
+                Task {
                     await showErrorBanner(controller: controller, errorDescription: results.error.errorDescription)
                 }
                 return
@@ -67,7 +67,7 @@ class NCCreate: NSObject {
                 }
             }
             guard results.error == .success, let url = results.url else {
-                Task {@MainActor in
+                Task {
                     await showErrorBanner(controller: controller, errorDescription: results.error.errorDescription)
                 }
                 return
