@@ -6,6 +6,7 @@
 import UniformTypeIdentifiers
 import UIKit
 import NextcloudKit
+import SwiftEntryKit
 import SwiftUI
 import SafariServices
 

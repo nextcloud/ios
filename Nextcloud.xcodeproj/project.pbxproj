@@ -525,6 +525,7 @@
 		F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */; };
 		F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */; };
 		F76DEE9928F808AF0041B1C9 /* LockscreenWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */; };
+		F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */ = {isa = PBXBuildFile; productRef = F770768D263A8C3400A1BA94 /* FloatingPanel */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
@@ -708,6 +709,7 @@
 		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
 		F7B8F6142EAB64AD006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */; };
 		F7B8F6162EAB7503006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */; };
+		F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */; };
 		F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1893,6 +1895,7 @@
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
 				F70557B92ED44E4700135623 /* LucidBanner in Frameworks */,
+				F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
 				F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */,
@@ -3533,6 +3536,7 @@
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
+				F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */,
 				F70557B82ED44E4700135623 /* LucidBanner */,
 			);
 			productName = "Share Ext";
@@ -4204,6 +4208,7 @@
 				F7CF06872E1127460063AD04 /* NCManageDatabase+CreateMetadata.swift in Sources */,
 				F7FDFF722E437E55000D7688 /* NCAccountRequest.swift in Sources */,
 				F7CAFE202F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */,
+				F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */,
 				F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
@@ -6645,6 +6650,11 @@
 			productName = JDStatusBarNotification;
 		};
 		F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
+			productName = JDStatusBarNotification;
+		};
+		F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
 			productName = JDStatusBarNotification;
