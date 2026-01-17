@@ -143,7 +143,7 @@ class NCDragDrop: NSObject {
 
             database.addMetadata(metadataForUpload)
         } catch {
-            Task {@MainActor in
+            Task {
                 let error = NKError(error: error)
                 await showErrorBanner(controller: controller, errorDescription: error.errorDescription)
             }

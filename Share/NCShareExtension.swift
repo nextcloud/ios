@@ -48,6 +48,7 @@ class NCShareExtension: UIViewController {
     let global = NCGlobal.shared
     var maintenanceMode: Bool = false
     var token: Int?
+    var sceneIdentifier: String = UUID().uuidString
 
     // MARK: - View Life Cycle
 
@@ -110,6 +111,8 @@ class NCShareExtension: UIViewController {
         if let account = NCShareExtensionData.shared.getTblAccoun()?.account {
             accountRequestChangeAccount(account: account, controller: nil)
         }
+
+        NCNetworking.shared.setupScene(sceneIdentifier: sceneIdentifier, controller: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -330,7 +333,7 @@ extension NCShareExtension {
                     ocId: ocId,
                     serverUrl: serverUrl,
                     session: session,
-                    sceneIdentifier: nil)
+                    sceneIdentifier: self.sceneIdentifier)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUpload
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension

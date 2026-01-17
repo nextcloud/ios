@@ -113,8 +113,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 } else {
-                    let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
-                    NCContentPresenter().showInfo(error: error)
+                    Task {
+                        await showErrorBanner(controller: controller, errorDescription: "_go_online_")
+
+                    }
                 }
             }
         }

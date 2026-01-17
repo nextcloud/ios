@@ -325,7 +325,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
             } else {
                 // show error
-                Task {@MainActor in
+                Task {
                     await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                 }
             }
@@ -345,7 +345,7 @@ class NCFiles: NCCollectionViewCommon {
 
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
-                    Task {@MainActor in
+                    Task {
                         await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                     }
                 }
@@ -354,7 +354,7 @@ class NCFiles: NCCollectionViewCommon {
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            Task {@MainActor in
+            Task {
                 await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
             }
         }
