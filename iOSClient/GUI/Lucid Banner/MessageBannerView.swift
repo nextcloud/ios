@@ -6,16 +6,16 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showMessageBanner(scene: UIWindowScene?,
-                       title: String?,
-                       subtitle: String? = nil,
-                       footnote: String? = nil,
-                       textColor: UIColor,
-                       image: String?,
-                       imageAnimation: LucidBanner.LucidBannerAnimationStyle,
-                       imageColor: UIColor,
-                       vPosition: LucidBanner.VerticalPosition = .top,
-                       backgroundColor: UIColor) async {
+func showBanner(scene: UIWindowScene?,
+                title: String?,
+                subtitle: String? = nil,
+                footnote: String? = nil,
+                textColor: UIColor,
+                image: String?,
+                imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                imageColor: UIColor,
+                vPosition: LucidBanner.VerticalPosition = .top,
+                backgroundColor: UIColor) async {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
@@ -23,9 +23,9 @@ func showMessageBanner(scene: UIWindowScene?,
 
     LucidBanner.shared.show(
         scene: scene,
-        title: title,
-        subtitle: subtitle,
-        footnote: footnote,
+        title: NSLocalizedString(title ?? "", comment: ""),
+        subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
+        footnote: NSLocalizedString(footnote ?? "", comment: ""),
         textColor: Color(uiColor: textColor),
         systemImage: image,
         imageAnimation: imageAnimation,
