@@ -209,13 +209,13 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             return (fileNameViewSize == metadata.size) && metadata.size > 0
 #else
             if metadata.isDirectoryE2EE == true {
-                if (fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0 {
+                if fileNameSize == metadata.size || fileNameViewSize == metadata.size {
                     return true
                 } else {
                     return false
                 }
             } else {
-                return (fileNameViewSize == metadata.size) && metadata.size > 0
+                return (fileNameViewSize == metadata.size)
             }
 #endif
         } catch { print("Error: \(error)") }
