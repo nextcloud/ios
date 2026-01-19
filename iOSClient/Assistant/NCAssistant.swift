@@ -18,7 +18,11 @@ struct NCAssistant: View {
     var body: some View {
         NavigationView {
             ZStack {
-                TaskList()
+                if model.isSelectedTypeChat {
+                    NCAssistantChat(controller: model.controller)
+                } else {
+                    TaskList()
+                }
 
                 if model.isLoading, !model.isRefreshing {
                     ProgressView()

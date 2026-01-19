@@ -166,6 +166,7 @@
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3C587AE2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */; };
 		F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */; };
+		F3DDFE0F2F15453900A784C8 /* NCAssistantChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -1274,6 +1275,8 @@
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetCollectionThumbnailLoader.swift; sourceTree = "<group>"; };
 		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
+		F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChat.swift; sourceTree = "<group>"; };
+		F3DDFE102F16732D00A784C8 /* NextcloudKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = NextcloudKit; path = ../NextcloudKit; sourceTree = SOURCE_ROOT; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
 		F3F442ED2DDE292600FD701F /* NCMetadataPermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMetadataPermissions.swift; sourceTree = "<group>"; };
@@ -2149,6 +2152,7 @@
 		F3A0478E2BD2668800658E7B /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
+				F3DDFE0D2F15452F00A784C8 /* Chat */,
 				F3A047962BD2668800658E7B /* NCAssistant.swift */,
 				F3A047902BD2668800658E7B /* Create Task */,
 				F3A047942BD2668800658E7B /* Task Detail */,
@@ -2191,6 +2195,14 @@
 				F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		F3DDFE0D2F15452F00A784C8 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */,
+			);
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		F3E173BE2C9B1057006D177A /* ScreenAwakeManager */ = {
@@ -3241,6 +3253,7 @@
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
+				F3DDFE102F16732D00A784C8 /* NextcloudKit */,
 			);
 			sourceTree = "<group>";
 		};
@@ -4715,6 +4728,7 @@
 				F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F76882232C0DD1E7001CF441 /* NCCapabilitiesModel.swift in Sources */,
 				F7E2B64F2DDCC5C30075B4D0 /* NCMedia+TransferDelegate.swift in Sources */,
+				F3DDFE0F2F15453900A784C8 /* NCAssistantChat.swift in Sources */,
 				F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */,
 				F799DF8B2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift in Sources */,

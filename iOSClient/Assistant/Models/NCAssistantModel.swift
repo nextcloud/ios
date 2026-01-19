@@ -16,7 +16,8 @@ class NCAssistantModel: ObservableObject {
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
     @Published var isRefreshing: Bool = false
-    @Published var controller: NCMainTabBarController?
+
+    let controller: NCMainTabBarController?
 
     private var tasks: [AssistantTask] = []
 
@@ -24,13 +25,16 @@ class NCAssistantModel: ObservableObject {
 
     private let useV2: Bool
 
+    private let chatTypeId = "core:text2text:chat"
+
+    var isSelectedTypeChat: Bool { selectedType?.id == chatTypeId }
+
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         session = NCSession.shared.getSession(controller: controller)
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         useV2 = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion30
-        // useV2 = false
         loadAllTypes()
     }
 
@@ -171,10 +175,10 @@ class NCAssistantModel: ObservableObject {
 
             guard let types else { return }
 
-            self.types = types
+            self.types = types.sorted { $0.id == chatTypeId && $1.id != chatTypeId }
 
             if self.selectedType == nil {
-                self.selectTaskType(types.first)
+                self.selectTaskType(self.types.first)
             }
 
             self.loadAllTasks(type: selectedType)
@@ -222,10 +226,11 @@ extension NCAssistantModel {
         }
 
         self.types = [
-            TaskTypeData(id: "1", name: "Free Prompt", description: "", inputShape: nil, outputShape: nil),
+            TaskTypeData(id: "1", name: "Chat", description: "", inputShape: nil, outputShape: nil),
             TaskTypeData(id: "2", name: "Summarize", description: "", inputShape: nil, outputShape: nil),
             TaskTypeData(id: "3", name: "Generate headline", description: "", inputShape: nil, outputShape: nil),
-            TaskTypeData(id: "4", name: "Reformulate", description: "", inputShape: nil, outputShape: nil)
+            TaskTypeData(id: "4", name: "Reformulate", description: "", inputShape: nil, outputShape: nil),
+            TaskTypeData(id: "5", name: "Free Prompt", description: "", inputShape: nil, outputShape: nil),
         ]
 
         self.tasks = tasks
