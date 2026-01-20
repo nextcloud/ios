@@ -45,13 +45,13 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantCreateNewTask()) {
-                        Image(systemName: "plus")
+                    NavigationLink(destination: NCAssistantChatSessions(controller: model.controller)) {
+                        Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
                     .disabled(model.selectedType == nil)
-                    .accessibilityIdentifier("CreateButton")
+                    .accessibilityIdentifier("SessionsButton")
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -164,6 +164,11 @@ struct TaskList: View {
         .sheet(isPresented: $presentEditTask) { [taskToEdit] in
             NavigationView {
                 NCAssistantCreateNewTask(text: taskToEdit?.input?.input ?? "", editMode: true)
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            ChatInputField { input in
+                model.scheduleTask(input: input)
             }
         }
     }
