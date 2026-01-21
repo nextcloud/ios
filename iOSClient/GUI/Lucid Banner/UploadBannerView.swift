@@ -220,12 +220,16 @@ struct UploadBannerView: View {
 
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
-        let isError = (state.typedStage == .error)
-        let isSuccess = (state.typedStage == .success)
+        let isError = state.typedStage == .error
+        let isSuccess = state.typedStage == .success
         let isMinimized = state.isMinimized
-        let cornerRadius: CGFloat = state.isMinimized ? 15 : 25
-        let backgroundColor = Color(.systemBackground).opacity(0.65)
-        let errorColor = Color.red.opacity(0.75)
+
+        let cornerRadius: CGFloat = isMinimized ? 15 : 25
+        let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
+
+        let backgroundColor = isError
+            ? Color.red.opacity(0.8)
+            : Color(.systemBackground).opacity(0.8)
 
         let base = content()
             .contentShape(Rectangle())
@@ -233,69 +237,27 @@ struct UploadBannerView: View {
                 guard allowMinimizeOnTap else { return }
                 LucidBannerMinimizeCoordinator.shared.handleTap(state)
             }
+            .frame(maxWidth: maxWidth)
 
-        if isMinimized || isSuccess {
-            if #available(iOS 26, *) {
-                if isError {
-                    base
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(errorColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                } else {
-                    base
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(backgroundColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                }
-            } else {
-                let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
+        if #available(iOS 26, *) {
+            base
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                )
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                .frame(maxWidth: .infinity, alignment: .center)
 
-                base
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .stroke(colorBg, lineWidth: 0.6)
-                    )
-                    .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
-            }
         } else {
-            let contentBase = base
-                .frame(maxWidth: 500)
-
-            if #available(iOS 26, *) {
-                if isError {
-                    contentBase
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(errorColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                } else {
-                    contentBase
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(backgroundColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-            } else {
-                let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
-
-                contentBase
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .stroke(colorBg, lineWidth: 0.6)
-                    )
-                    .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
-                    .frame(maxWidth: .infinity, alignment: .center)
-            }
+            base
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(backgroundColor, lineWidth: 0.6)
+                        .allowsHitTesting(false)
+                )
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }
