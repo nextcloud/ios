@@ -12,6 +12,7 @@ import PopupView
 
 struct NCAssistant: View {
     @EnvironmentObject var model: NCAssistantModel
+    @State var chatModel: NCAssistantChatModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
@@ -19,7 +20,7 @@ struct NCAssistant: View {
         NavigationView {
             ZStack {
                 if model.isSelectedTypeChat {
-                    NCAssistantChat(controller: model.controller)
+                    NCAssistantChat(model: $chatModel)
                 } else {
                     TaskList()
                 }
@@ -45,7 +46,7 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantChatSessions(controller: model.controller)) {
+                    NavigationLink(destination: NCAssistantChatSessions(model: $chatModel)) {
                         Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
@@ -80,10 +81,12 @@ struct NCAssistant: View {
 }
 
 #Preview {
+    @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
     let model = NCAssistantModel(controller: nil)
 
-    NCAssistant()
+    NCAssistant(chatModel: chatModel)
         .environmentObject(model)
+    //        .environment(chatModel)
         .onAppear {
             model.loadDummyData()
         }

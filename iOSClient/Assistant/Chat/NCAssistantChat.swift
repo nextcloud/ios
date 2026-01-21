@@ -24,11 +24,11 @@ import NextcloudKit
 // MARK: - Main View
 
 struct NCAssistantChat: View {
-    @State var model: NCAssistantChatModel
+    @Binding var model: NCAssistantChatModel
 
-    init(controller: NCMainTabBarController?) {
-        self.model = NCAssistantChatModel(controller: controller)
-    }
+//    init(controller: NCMainTabBarController?) {
+//        self.model = NCAssistantChatModel(controller: controller)
+//    }
 
     var body: some View {
         ZStack {
@@ -92,9 +92,9 @@ struct MessageBubbleView: View {
 
     var body: some View {
         HStack {
-//            if message.isFromUser {
-//                Spacer(minLength: 50)
-//            }
+            if message.isFromHuman {
+                Spacer(minLength: 50)
+            }
 
             VStack(alignment: true ? .trailing : .leading, spacing: 4) {
                 Text(message.content)
@@ -112,14 +112,14 @@ struct MessageBubbleView: View {
             .frame(maxWidth: .infinity, alignment: true ? .trailing : .leading)
             .padding(.horizontal)
 
-//            if !message.isFromUser {
-//                Spacer(minLength: 50)
-//            }
+            if !message.isFromHuman {
+                Spacer(minLength: 50)
+            }
         }
     }
 
     private var bubbleBackground: Color {
-        if true {
+        if message.isFromHuman {
             return Color(NCBrandColor.shared.getElement(account: account))
         } else {
             return Color(NCBrandColor.shared.textColor2).opacity(0.1)
@@ -209,8 +209,10 @@ struct EmptyChatView: View {
 // MARK: - Preview
 
 #Preview {
+    @Previewable @State var model = NCAssistantChatModel(controller: nil)
+
     NavigationStack {
-        NCAssistantChat(controller: nil)
+        NCAssistantChat(model: $model)
             .onAppear {
                 // Preview will show empty state
             }
@@ -218,12 +220,14 @@ struct EmptyChatView: View {
 }
 
 #Preview("With Messages") {
-    let chat = NCAssistantChat(controller: nil)
+    @Previewable @State var model = NCAssistantChatModel(controller: nil)
+
+    let chat = NCAssistantChat(model: $model)
 
     return NavigationStack {
         chat
             .onAppear {
-                chat.model.loadDummyData()
+//                chat.model.loadDummyData()
             }
     }
 }

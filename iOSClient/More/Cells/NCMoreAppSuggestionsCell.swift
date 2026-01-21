@@ -61,7 +61,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
 
     @objc func assistantTapped(_ sender: Any?) {
         if let viewController = self.window?.rootViewController {
-            let assistant = NCAssistant()
+            let assistant = NCAssistant(chatModel: NCAssistantChatModel(controller: self.controller))
                 .environmentObject(NCAssistantModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             viewController.present(hostingController, animated: true, completion: nil)

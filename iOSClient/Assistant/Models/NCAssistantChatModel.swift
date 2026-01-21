@@ -36,13 +36,16 @@ import NextcloudKit
 
     func loadAllSessions() {
         Task {
-            let result = await NextcloudKit.shared.textProcessingGetChatSessionsV2Async(account: session.account)
+            let result = await NextcloudKit.shared.getAssistantChatSessionsAsync(account: session.account)
             sessions = result.sessions ?? []
         }
     }
 
     func loadMessages() {
-        
+        Task {
+            let result = await NextcloudKit.shared.getAssistantChatMessagesAsync(sessionId: selectedSession?.id ?? 0, account: session.account)
+            messages = result.chatMessage ?? []
+        }
     }
 
     func sendMessage(input: String) {
@@ -72,37 +75,37 @@ import NextcloudKit
     }
 
     private func addUserMessage(_ text: String) {
-        let message = ChatMessage(content: text, isFromUser: true)
-        messages.append(message)
+//        let message = ChatMessage(content: text, isFromUser: true)
+//        messages.append(message)
     }
 
     private func addAssistantMessage(_ text: String) {
-        let message = ChatMessage(content: text, isFromUser: false)
-        messages.append(message)
+//        let message = ChatMessage(content: text, isFromUser: false)
+//        messages.append(message)
     }
 
-    func loadDummyData() {
-        messages = [
-            ChatMessage(
-                content: "Hello! Can you help me summarize this document?",
-                isFromUser: true,
-                timestamp: Date().addingTimeInterval(-300)
-            ),
-            ChatMessage(
-                content: "Of course! I'd be happy to help you summarize your document. Please share the document or paste the text you'd like me to summarize.",
-                isFromUser: false,
-                timestamp: Date().addingTimeInterval(-240)
-            ),
-            ChatMessage(
-                content: "Here is the text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                isFromUser: true,
-                timestamp: Date().addingTimeInterval(-180)
-            ),
-            ChatMessage(
-                content: "Based on the text you provided, here's a concise summary: The document discusses the classic Lorem Ipsum placeholder text, which has been used in the printing and typesetting industry for centuries as a standard dummy text.",
-                isFromUser: false,
-                timestamp: Date().addingTimeInterval(-120)
-            )
-        ]
-    }
+//    func loadDummyData() {
+//        messages = [
+//            ChatMessage(
+//                content: "Hello! Can you help me summarize this document?",
+//                isFromUser: true,
+//                timestamp: Date().addingTimeInterval(-300)
+//            ),
+//            ChatMessage(
+//                content: "Of course! I'd be happy to help you summarize your document. Please share the document or paste the text you'd like me to summarize.",
+//                isFromUser: false,
+//                timestamp: Date().addingTimeInterval(-240)
+//            ),
+//            ChatMessage(
+//                content: "Here is the text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+//                isFromUser: true,
+//                timestamp: Date().addingTimeInterval(-180)
+//            ),
+//            ChatMessage(
+//                content: "Based on the text you provided, here's a concise summary: The document discusses the classic Lorem Ipsum placeholder text, which has been used in the printing and typesetting industry for centuries as a standard dummy text.",
+//                isFromUser: false,
+//                timestamp: Date().addingTimeInterval(-120)
+//            )
+//        ]
+//    }
 }
