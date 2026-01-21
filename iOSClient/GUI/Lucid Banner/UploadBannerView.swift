@@ -228,8 +228,8 @@ struct UploadBannerView: View {
         let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
 
         let backgroundColor = isError
-            ? Color.red.opacity(0.8)
-            : Color(.systemBackground).opacity(0.8)
+            ? Color.red.opacity(0.7)
+            : Color(.systemBackground).opacity(0.7)
 
         let base = content()
             .contentShape(Rectangle())
@@ -245,12 +245,20 @@ struct UploadBannerView: View {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(backgroundColor)
                 )
+                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
                 .frame(maxWidth: .infinity, alignment: .center)
 
         } else {
             base
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(.ultraThinMaterial)
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .stroke(backgroundColor, lineWidth: 0.6)
