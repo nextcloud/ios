@@ -450,40 +450,51 @@ actor NCNetworkingProcess {
             }
         })
 
-        LucidBanner.shared.update(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                  subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
-                                  footnote: "( " + NSLocalizedString("_tap_to_min_max_", comment: "") + " )",
-                                  systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                  imageAnimation: .rotate)
+        let payload = LucidBannerPayload.Update(
+            title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+            subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+            footnote: "( " + NSLocalizedString("_tap_to_min_max_", comment: "") + " )",
+            systemImage: "gearshape.arrow.triangle.2.circlepath",
+            imageAnimation: .rotate
+        )
+        LucidBanner.shared.update(payload: payload)
 
         let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                 Task {@MainActor in
-                    let progress = Double(counter) / Double(total)
-                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)),
+                        for: tokenBanner
+                    )
                 }
             } uploadStart: { _ in
                 Task {@MainActor in
-                    LucidBanner.shared.update(
+                    let payload = LucidBannerPayload.Update(
                         title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe,
-                        progress: 0,
-                        for: tokenBanner)
+                        progress: 0
+                    )
+                    LucidBanner.shared.update(payload: payload, for: tokenBanner)
                 }
             } uploadProgressHandler: { _, _, progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: progress, for: tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: progress),
+                        for: tokenBanner
+                    )
                 }
             } assembling: {
                 Task {@MainActor in
-                    LucidBanner.shared.update(
+                    let payload = LucidBannerPayload.Update(
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
                         systemImage: "gearshape.arrow.triangle.2.circlepath",
                         imageAnimation: .rotate,
                         progress: 0,
-                        stage: .placeholder,
-                        for: tokenBanner)
+                        stage: .placeholder
+                    )
+                    LucidBanner.shared.update(payload: payload,
+                                              for: tokenBanner)
                 }
             }
 

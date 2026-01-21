@@ -21,19 +21,24 @@ func showBanner(scene: UIWindowScene?,
         scene = UIApplication.shared.mainAppWindow?.windowScene
     }
 
-    LucidBanner.shared.show(
-        scene: scene,
+    let payload = LucidBannerPayload(
         title: NSLocalizedString(title ?? "", comment: ""),
         subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        textColor: Color(uiColor: textColor),
         systemImage: image,
         imageAnimation: imageAnimation,
-        imageColor: Color(uiColor: imageColor),
+        stage: .error,
         backgroundColor: Color(uiColor: backgroundColor),
+        textColor: Color(uiColor: textColor),
+        imageColor: Color(uiColor: imageColor),
         vPosition: vPosition,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true,
+        swipeToDismiss: true
+    )
+
+    LucidBanner.shared.show(
+        scene: scene,
+        payload: payload,
         onTap: { _, _ in
             LucidBanner.shared.dismiss()
         }
@@ -48,40 +53,40 @@ struct MessageBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
-        let showTitle = !(state.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showTitle = !(state.payload.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showSubtitle = !(state.payload.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showFootnote = !(state.payload.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
 
-        containerView(state: state) {
+        containerView(state: state, allowMinimizeOnTap: false) {
             VStack(spacing: 15) {
                 HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: state.systemImage ?? "info.circle")
-                        .applyBannerAnimation(state.imageAnimation)
+                    Image(systemName: state.payload.systemImage ?? "info.circle")
+                        .applyBannerAnimation(state.payload.imageAnimation)
                         .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(state.imageColor)
+                        .foregroundStyle(state.payload.imageColor)
 
                     VStack(alignment: .leading, spacing: 7) {
-                        if showTitle, let title = state.title {
+                        if showTitle, let title = state.payload.title {
                             Text(title)
                                 .font(.subheadline.weight(.bold))
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
-                                .foregroundStyle(state.textColor)
+                                .foregroundStyle(state.payload.textColor)
                         }
 
-                        if showSubtitle, let subtitle = state.subtitle {
+                        if showSubtitle, let subtitle = state.payload.subtitle {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
-                                .foregroundStyle(state.textColor)
+                                .foregroundStyle(state.payload.textColor)
                         }
-                        if showFootnote, let footnote = state.footnote {
+                        if showFootnote, let footnote = state.payload.footnote {
                             Text(footnote)
                                 .font(.caption)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
-                                .foregroundStyle(state.textColor)
+                                .foregroundStyle(state.payload.textColor)
                         }
                     }
                 }
@@ -89,35 +94,6 @@ struct MessageBannerView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    // MARK: - Container
-
-    @ViewBuilder
-    func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
-        let cornerRadius: CGFloat = 22
-        let contentBase = content()
-            .contentShape(Rectangle())
-            .frame(maxWidth: 500)
-
-        if #available(iOS 26, *) {
-            contentBase
-                .background(
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(state.backgroundColor)
-                )
-                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 22))
-                .frame(maxWidth: .infinity, alignment: .center)
-        } else {
-            contentBase
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .stroke(.white.opacity(0.9), lineWidth: 0.6)
-                )
-                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
-                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }
@@ -135,15 +111,15 @@ struct MessageBannerView: View {
             .foregroundStyle(.primary)
             .padding()
 
-        MessageBannerView(
-            state: LucidBannerState(
-                title: "Title",
-                subtitle: "Subtitle",
-                footnote: "footnote",
-                systemImage: "wifi.circle",
-                imageAnimation: .variableColor,
-            )
-        )
+        let state = LucidBannerState(payload: LucidBannerPayload(
+            title: "Title",
+            subtitle: "Subtitle",
+            footnote: "footnote",
+            systemImage: "wifi.circle",
+            imageAnimation: .variableColor
+        ))
+
+        MessageBannerView(state: state)
         .padding()
     }
 }

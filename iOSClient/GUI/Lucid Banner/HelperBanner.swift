@@ -7,6 +7,60 @@ import LucidBanner
 
 public extension View {
     @ViewBuilder
+    func containerView<Content: View>(state: LucidBannerState,
+                                      allowMinimizeOnTap: Bool,
+                                      bgColor: UIColor = .systemBackground,
+                                      @ViewBuilder _ content: () -> Content) -> some View {
+        let isError = state.payload.stage == .error
+        let isSuccess = state.payload.stage == .success
+        let isMinimized = state.isMinimized
+
+        let cornerRadius: CGFloat = isMinimized ? 15 : 25
+        let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
+
+        let backgroundColor = isError
+            ? Color.red.opacity(0.8)
+            : Color(bgColor).opacity(0.7)
+
+        let base = content()
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard allowMinimizeOnTap else { return }
+                LucidBannerMinimizeCoordinator.shared.handleTap(state)
+            }
+            .frame(maxWidth: maxWidth)
+
+        if #available(iOS 26, *) {
+            base
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                )
+                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                .frame(maxWidth: .infinity, alignment: .center)
+
+        } else {
+            base
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(.ultraThinMaterial)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(backgroundColor, lineWidth: 0.6)
+                        .allowsHitTesting(false)
+                )
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    @ViewBuilder
     func applyBannerAnimation(_ style: LucidBanner.LucidBannerAnimationStyle) -> some View {
         switch style {
 

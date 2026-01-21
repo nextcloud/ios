@@ -295,9 +295,8 @@ class NCCreate: NSObject {
                 } progressHandler: { progress in
                     Task { @MainActor in
                         LucidBanner.shared.update(
-                            progress: progress.fractionCompleted,
-                            for: token
-                        )
+                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                            for: token)
                     }
                 }
 

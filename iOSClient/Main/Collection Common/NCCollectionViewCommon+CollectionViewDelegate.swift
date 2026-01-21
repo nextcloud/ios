@@ -51,7 +51,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 downloadRequest = request
             } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                        for: tokenBanner)
                 }
             }
             await MainActor.run {

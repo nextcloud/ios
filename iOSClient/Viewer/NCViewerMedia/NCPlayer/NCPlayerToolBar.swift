@@ -475,7 +475,9 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }, progressHandler: { progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                        LucidBanner.shared.update(
+                            payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                            for: token)
                     }
                 }) { _, etag, _, _, _, _, error in
                     Task {

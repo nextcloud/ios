@@ -168,7 +168,9 @@ class NCViewerMedia: UIViewController {
                                     downloadRequest = request
                                 } progressHandler: { progress in
                                     Task {@MainActor in
-                                        LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                                        LucidBanner.shared.update(
+                                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                                            for: token)
                                     }
                                 }
                                 LucidBanner.shared.dismiss()

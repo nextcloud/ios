@@ -47,13 +47,12 @@ class NCNetworkingE2EEUpload: NSObject {
             }
         }
 
-        LucidBanner.shared.update(
-            title: NSLocalizedString("_wait_file_encryption_", comment: ""),
-            subtitle: NSLocalizedString("_e2ee_upload_tip_", comment: ""),
-            systemImage: "lock.circle.fill",
-            for: tokenBanner
-        )
+        var payload = LucidBannerPayload.Update()
+        payload.title = NSLocalizedString("_wait_file_encryption_", comment: "")
+        payload.subtitle = NSLocalizedString("_e2ee_upload_tip_", comment: "")
+        payload.systemImage = "lock.circle.fill"
 
+        LucidBanner.shared.update(payload: payload, for: tokenBanner)
         LucidBanner.shared.requestRelayout(animated: true)
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -225,42 +224,47 @@ class NCNetworkingE2EEUpload: NSObject {
                           currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
     async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
         if metadata.chunk > 0 {
-            LucidBanner.shared.update(
+            let payload = LucidBannerPayload.Update(
                 title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageAnimation: .rotate,
                 progress: 0,
-                stage: stageBanner,
-                for: tokenBanner)
+                stage: stageBanner
+            )
+            LucidBanner.shared.update(payload: payload, for: tokenBanner)
 
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
                         let progress = Double(counter) / Double(total)
-                        LucidBanner.shared.update(progress: progress, for: tokenBanner)
+                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: tokenBanner)
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
-                        LucidBanner.shared.update(
+                        let payload = LucidBannerPayload.Update(
                             title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                             systemImage: "arrowshape.up.circle",
                             imageAnimation: .breathe,
-                            progress: 0,
-                            for: tokenBanner)
+                            progress: 0
+                        )
+                        LucidBanner.shared.update(payload: payload, for: tokenBanner)
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(progress: progress, for: tokenBanner)
+                        LucidBanner.shared.update(
+                            payload: LucidBannerPayload.Update(progress: progress),
+                            for: tokenBanner)
                     }
                 } assembling: {
                     Task {@MainActor in
-                        LucidBanner.shared.update(
+                        let payload = LucidBannerPayload.Update(
                             title: NSLocalizedString("_finalizing_wait_", comment: ""),
                             systemImage: "gearshape.arrow.triangle.2.circlepath",
                             imageAnimation: .rotate,
                             progress: 0,
-                            stage: .placeholder,
-                            for: tokenBanner)
+                            stage: .placeholder
+                        )
+                        LucidBanner.shared.update(payload: payload, for: tokenBanner)
                     }
                 }
 
@@ -271,13 +275,14 @@ class NCNetworkingE2EEUpload: NSObject {
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
         } else {
-            LucidBanner.shared.update(
+            let payload = LucidBannerPayload.Update(
                 title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0,
-                stage: stageBanner,
-                for: tokenBanner)
+                stage: stageBanner
+            )
+            LucidBanner.shared.update(payload: payload, for: tokenBanner)
 
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
@@ -293,7 +298,9 @@ class NCNetworkingE2EEUpload: NSObject {
                 requestHandle(request)
             } progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: fractionCompleted, for: tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: fractionCompleted),
+                        for: tokenBanner)
                 }
             }
 

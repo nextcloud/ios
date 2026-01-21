@@ -207,10 +207,13 @@ class NCDragDrop: NSObject {
             }
         })
 
-        LucidBanner.shared.update(title: NSLocalizedString("_transfer_in_progress_", comment: ""),
-                                  subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-                                  systemImage: "arrow.left.arrow.right.circle",
-                                  imageAnimation: .pulsebyLayer)
+        let payload = LucidBannerPayload.Update(
+            title: NSLocalizedString("_transfer_in_progress_", comment: ""),
+            subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+            systemImage: "arrow.left.arrow.right.circle",
+            imageAnimation: .pulsebyLayer,
+        )
+        LucidBanner.shared.update(payload: payload)
 
         for (index, metadata) in metadatas.enumerated() {
             if metadata.directory {
@@ -252,7 +255,9 @@ class NCDragDrop: NSObject {
                 break
             }
 
-            LucidBanner.shared.update(progress: Double(index + 1) / Double(metadatas.count), for: token)
+            LucidBanner.shared.update(
+                payload: LucidBannerPayload.Update(progress: Double(index + 1) / Double(metadatas.count)),
+                for: token)
         }
 
         await collectionViewCommon.getServerData(forced: true)

@@ -599,7 +599,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                                              serverUrlFileName: serverUrlFileName) { _ in
                     } progressHandler: { _, _, fractionCompleted in
                         Task {@MainActor in
-                            LucidBanner.shared.update(progress: fractionCompleted, for: token)
+                            LucidBanner.shared.update(
+                                payload: LucidBannerPayload.Update(progress: fractionCompleted),
+                                for: token
+                            )
                         }
                     }
 
