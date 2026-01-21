@@ -78,11 +78,6 @@ class NCContextMenu: NSObject {
             topActionsMenu.append(makeFavoriteAction(metadata: metadata))
         }
 
-//        let favorite =
-//        let share = makeShareAction()
-
-//        var result: [UIMenuElement] = metadata.lock ? [detail] : [detail, share, favorite]
-//        result.append(contentsOf: items)
         return topActionsMenu
     }
 
