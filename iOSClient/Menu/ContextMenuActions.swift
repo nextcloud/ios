@@ -143,14 +143,18 @@ enum ContextMenuActions {
                             metadatas: [tableMetadata],
                             completion: (() -> Void)? = nil) -> UIAction {
          let titleKey: String
-         if metadatas.count == 1 {
+         var subtitleKey: String = ""
+
+         if metadatas.count == 1, let metadata = metadatas.first {
              titleKey = shouldLock ? "_lock_file_" : "_unlock_file_"
+             subtitleKey = !shouldLock ? String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName) : ""
          } else {
              titleKey = shouldLock ? "_lock_selected_files_" : "_unlock_selected_files_"
          }
 
          return UIAction(
              title: NSLocalizedString(titleKey, comment: ""),
+             subtitle: subtitleKey,
              image: UIImage(systemName: shouldLock ? "lock" : "lock.open")
          ) { _ in
              for metadata in metadatas where metadata.lock != shouldLock {
