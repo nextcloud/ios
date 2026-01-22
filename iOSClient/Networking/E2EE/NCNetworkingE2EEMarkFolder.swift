@@ -41,7 +41,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         await self.database.createDirectory(metadata: metadata)
 
         await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
-        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
             await self.database.updateCounterE2eMetadataAsync(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
 
