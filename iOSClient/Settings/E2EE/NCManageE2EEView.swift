@@ -93,10 +93,7 @@ struct NCManageE2EEView: View {
                                 model.requestPasscodeType("startE2E")
                             } else {
                                 Task {
-                                    await showInfoBanner(scene: model.scene,
-                                                         title: "_info_",
-                                                         subtitle: "_e2e_settings_lock_not_active_",
-                                                         backgroundColor: NCBrandColor.shared.getElement(account: model.session.account))
+                                    await showInfoBanner(scene: model.scene, subtitle: "_e2e_settings_lock_not_active_")
                                 }
                             }
                         }

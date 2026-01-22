@@ -48,23 +48,24 @@ func showBanner(scene: UIWindowScene?,
 
 @MainActor
 func showInfoBanner(scene: UIWindowScene?,
-                    title: String?,
+                    title: String = "_info_",
                     subtitle: String? = nil,
                     footnote: String? = nil,
-                    backgroundColor: UIColor) async {
+                    foregroundColor: UIColor = .white,
+                    backgroundColor: UIColor = NCBrandColor.shared.customer) async {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
     }
 
     let payload = LucidBannerPayload(
-        title: NSLocalizedString(title ?? "", comment: ""),
+        title: NSLocalizedString(title, comment: ""),
         subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "checkmark.circle",
         backgroundColor: Color(uiColor: backgroundColor),
-        textColor: .white,
-        imageColor: .white,
+        textColor: Color(uiColor: foregroundColor),
+        imageColor: Color(uiColor: foregroundColor),
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
