@@ -16,8 +16,7 @@ public extension View {
 
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
         let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
-
-        let backgroundColor = isError ? .red : state.payload.backgroundColor.opacity(0.7)
+        let backgroundColor = isError ? .red : state.payload.backgroundColor.opacity(0.9)
 
         let base = content()
             .contentShape(Rectangle())

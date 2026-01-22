@@ -213,21 +213,32 @@ struct HudBannerView: View {
     @ViewBuilder
     func hudContainerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         let cornerRadius: CGFloat = 22
-        let backgroundColor = Color(.systemBackground).opacity(0.65)
+        let backgroundColor = Color(.systemBackground).opacity(0.9)
 
         if #available(iOS 26, *) {
             content()
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(backgroundColor)
+                        .id(backgroundColor)
                 )
                 .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         } else {
             content()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                        .id(backgroundColor)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(.ultraThinMaterial)
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .stroke(.white.opacity(0.9), lineWidth: 0.6)
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(backgroundColor, lineWidth: 0.6)
+                        .allowsHitTesting(false)
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
@@ -269,7 +280,7 @@ private struct HudBannerPreviewWrapper: View {
                 }
 
                 try? await Task.sleep(nanoseconds: 400_000_000)
-                state.payload.stage = .error
+                state.payload.stage = .success
             }
     }
 }

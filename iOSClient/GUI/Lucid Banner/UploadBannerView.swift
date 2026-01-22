@@ -81,7 +81,7 @@ struct UploadBannerView: View {
                         .applyBannerAnimation(state.payload.imageAnimation)
                         .font(.body.weight(.medium))
                         .frame(width: 20, height: 20)
-                        .foregroundStyle(state.payload.textColor)
+                        .foregroundStyle(state.payload.imageColor)
 
                     if let p = state.payload.progress {
                         Text("\(Int(p * 100))%")
@@ -141,12 +141,12 @@ struct UploadBannerView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 VStack(spacing: 15) {
-                    HStack(alignment: .center, spacing: 10) {
+                    HStack(alignment: .top, spacing: 10) {
                         if let systemImage = state.payload.systemImage {
                             Image(systemName: systemImage)
                                 .applyBannerAnimation(state.payload.imageAnimation)
                                 .font(.system(size: 30, weight: .regular))
-                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                                .foregroundStyle(state.payload.imageColor)
                         }
 
                         VStack(alignment: .leading, spacing: 7) {
@@ -174,6 +174,7 @@ struct UploadBannerView: View {
                             }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     ProgressView(value: state.payload.progress ?? 0)
                         .tint(.accentColor)
@@ -213,7 +214,7 @@ struct UploadBannerView: View {
                                      systemImage: "arrowshape.up.circle",
                                      imageAnimation: .none,
                                      progress: 0.4,
-                                     stage: .error)
+                                     stage: .button)
     let state = LucidBannerState(payload: payload)
 
     return ZStack {
