@@ -94,7 +94,7 @@ final class NCGlobal: Sendable {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    let e2eeVersions                                = ["1.1", "1.2", "2.0"]
+    let e2eeVersions                                = ["1.1", "1.2", "2.0", "2.1"]
     let e2eeVersionV11                              = "1.1"
     let e2eeVersionV12                              = "1.2"
     let e2eeVersionV20                              = "2.0"
