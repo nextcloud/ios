@@ -47,6 +47,42 @@ func showBanner(scene: UIWindowScene?,
     }
 }
 
+@MainActor
+func showErrorBanner(controller: UITabBarController?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showErrorBanner(scene: scene,
+                          errorDescription: NSLocalizedString(errorDescription, comment: ""),
+                          footnote: NSLocalizedString(footnote ?? "", comment: ""),
+                          sleepBefore: sleepBefore)
+}
+
+@MainActor
+func showErrorBanner(scene: UIWindowScene?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
+    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
+
+    let payload = LucidBannerPayload(
+        subtitle: NSLocalizedString(errorDescription, comment: ""),
+        footnote: NSLocalizedString(footnote ?? "", comment: ""),
+        backgroundColor: .red,
+        vPosition: .top,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
+    )
+    LucidBanner.shared.show(
+        scene: scene,
+        payload: payload,
+        onTap: { _, _ in
+            LucidBanner.shared.dismiss()
+        }
+    ) { state in
+        MessageBannerView(state: state)
+    }
+}
+
 // MARK: - SwiftUI
 
 struct MessageBannerView: View {

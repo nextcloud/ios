@@ -205,7 +205,6 @@
 		F70557B72ED44E2700135623 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F70557B62ED44E2700135623 /* LucidBanner */; };
 		F70557B92ED44E4700135623 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F70557B82ED44E4700135623 /* LucidBanner */; };
 		F70557BD2ED44F1800135623 /* UploadBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BB2ED44F1800135623 /* UploadBannerView.swift */; };
-		F70557BE2ED44F1800135623 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BA2ED44F1800135623 /* ErrorBannerView.swift */; };
 		F70557BF2ED44F1800135623 /* UploadBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70557BB2ED44F1800135623 /* UploadBannerView.swift */; };
 		F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70716E52987F81500E72C1D /* DocumentActionViewController.swift */; };
 		F70716ED2987F81500E72C1D /* File Provider Extension UI.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1296,7 +1295,6 @@
 		F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflict.swift; sourceTree = "<group>"; };
 		F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCCreateFormUploadConflictCell.xib; sourceTree = "<group>"; };
 		F704B5E82430C0B800632F5F /* NCCreateFormUploadConflictCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflictCell.swift; sourceTree = "<group>"; };
-		F70557BA2ED44F1800135623 /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
 		F70557BB2ED44F1800135623 /* UploadBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadBannerView.swift; sourceTree = "<group>"; };
 		F70716E32987F81500E72C1D /* File Provider Extension UI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension UI.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F70716E52987F81500E72C1D /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
@@ -2243,7 +2241,6 @@
 		F70557BC2ED44F1800135623 /* Lucid Banner */ = {
 			isa = PBXGroup;
 			children = (
-				F70557BA2ED44F1800135623 /* ErrorBannerView.swift */,
 				F7DF7B412F1A36B600514020 /* HelperBanner.swift */,
 				F714A1462ED84AF00050A43B /* HudBannerView.swift */,
 				F7DF7B3E2F1A2EE400514020 /* MessageBannerView.swift */,
@@ -4572,7 +4569,6 @@
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
 				F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */,
 				F70557BD2ED44F1800135623 /* UploadBannerView.swift in Sources */,
-				F70557BE2ED44F1800135623 /* ErrorBannerView.swift in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,

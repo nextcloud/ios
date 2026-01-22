@@ -7,24 +7,13 @@ import LucidBanner
 
 @MainActor
 func showUploadBanner(scene: UIWindowScene?,
-                      vPosition: LucidBanner.VerticalPosition = .center,
-                      verticalMargin: CGFloat = 0,
-                      blocksTouches: Bool = false,
-                      draggable: Bool = false,
-                      stage: LucidBanner.Stage? = nil,
-                      policy: LucidBanner.ShowPolicy = .drop,
-                      allowMinimizeOnTap: Bool = false,
+                      payload: LucidBannerPayload,
+                      allowMinimizeOnTap: Bool,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
-
-    let payload = LucidBannerPayload(stage: stage,
-                                     vPosition: vPosition,
-                                     verticalMargin: verticalMargin,
-                                     blocksTouches: blocksTouches,
-                                     draggable: draggable)
 
     let token = LucidBanner.shared.show(scene: scene,
                                         payload: payload,
-                                        policy: policy) { state in
+                                        policy: .drop) { state in
         UploadBannerView(state: state,
                          allowMinimizeOnTap: allowMinimizeOnTap,
                          onButtonTap: onButtonTap)

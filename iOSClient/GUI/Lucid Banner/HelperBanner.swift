@@ -9,7 +9,6 @@ public extension View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState,
                                       allowMinimizeOnTap: Bool,
-                                      bgColor: UIColor = .systemBackground,
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
         let isSuccess = state.payload.stage == .success
@@ -18,9 +17,7 @@ public extension View {
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
         let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
 
-        let backgroundColor = isError
-            ? Color.red.opacity(0.8)
-            : Color(bgColor).opacity(0.7)
+        let backgroundColor = isError ? .red : state.payload.backgroundColor.opacity(0.7)
 
         let base = content()
             .contentShape(Rectangle())
@@ -35,6 +32,7 @@ public extension View {
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(backgroundColor)
+                        .id(backgroundColor)
                 )
                 .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
@@ -45,6 +43,7 @@ public extension View {
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(backgroundColor)
+                        .id(backgroundColor)
                 )
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)

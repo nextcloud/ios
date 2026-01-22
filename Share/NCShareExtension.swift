@@ -6,6 +6,7 @@
 import UIKit
 import NextcloudKit
 import LucidBanner
+import SwiftUI
 
 enum NCShareExtensionError: Error {
     case cancel, fileUpload, noAccount, noFiles, versionMismatch
@@ -367,16 +368,24 @@ extension NCShareExtension {
     @MainActor
     func uploadAndExit() async {
         var error: NKError?
-        token = showUploadBanner(scene: self.view.window?.windowScene, blocksTouches: true)
+        let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
+                                         vPosition: .center,
+                                         verticalMargin: 0,
+                                         blocksTouches: true,
+                                         draggable: false)
+        token = showUploadBanner(scene: self.view.window?.windowScene,
+                                 payload: payload,
+                                 allowMinimizeOnTap: false
+        )
 
         for metadata in self.uploadMetadata {
             // BANNER
-            let payload = LucidBannerPayload.Update(
+            let payloadUpdate = LucidBannerPayload.Update(
                 title: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)",
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0)
-            LucidBanner.shared.update(payload: payload)
+            LucidBanner.shared.update(payload: payloadUpdate)
 
             error = await self.upload(metadata: metadata)
             if error != .success {
@@ -385,8 +394,8 @@ extension NCShareExtension {
         }
 
         if error == .success {
-            let payload = LucidBannerPayload.Update(stage: .success)
-            LucidBanner.shared.update(payload: payload, for: self.token)
+            let payloadUpdate = LucidBannerPayload.Update(stage: .success)
+            LucidBanner.shared.update(payload: payloadUpdate, for: self.token)
         } else {
             let payload = LucidBannerPayload.Update(
                 subtitle: error?.errorDescription,
