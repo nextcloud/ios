@@ -94,7 +94,7 @@ public extension View {
         // ---- iOS 26+ effect: drawOn ----
         case .drawOn:
             if #available(iOS 26, *) {
-                self
+                self.symbolEffect(.drawOn)
             } else {
                 self
             }

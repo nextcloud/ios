@@ -92,7 +92,12 @@ struct NCManageE2EEView: View {
                             if NCPreferences().passcode != nil {
                                 model.requestPasscodeType("startE2E")
                             } else {
-                                NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                Task {
+                                    await showInfoBanner(scene: model.scene,
+                                                         title: "_info_",
+                                                         subtitle: "_e2e_settings_lock_not_active_",
+                                                         backgroundColor: NCBrandColor.shared.getElement(account: model.session.account))
+                                }
                             }
                         }
                     }

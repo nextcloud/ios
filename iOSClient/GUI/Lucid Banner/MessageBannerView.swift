@@ -50,8 +50,8 @@ func showBanner(scene: UIWindowScene?,
 func showInfoBanner(scene: UIWindowScene?,
                     title: String?,
                     subtitle: String? = nil,
-                    footnote: String? = nil
-    ) async {
+                    footnote: String? = nil,
+                    backgroundColor: UIColor) async {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
@@ -61,9 +61,10 @@ func showInfoBanner(scene: UIWindowScene?,
         title: NSLocalizedString(title ?? "", comment: ""),
         subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        systemImage: "checkmark",
-        backgroundColor: Color(uiColor: .black),
-        textColor: .primary,
+        systemImage: "checkmark.circle",
+        imageAnimation: .none,
+        backgroundColor: Color(uiColor: backgroundColor),
+        textColor: .white,
         imageColor: .white,
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
@@ -188,7 +189,7 @@ struct MessageBannerView: View {
             subtitle: "Subtitle",
             footnote: "footnote",
             systemImage: "wifi.circle",
-            imageAnimation: .variableColor
+            imageAnimation: .drawOn
         ))
 
         MessageBannerView(state: state)
