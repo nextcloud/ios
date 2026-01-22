@@ -27,7 +27,6 @@ func showBanner(scene: UIWindowScene?,
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: image,
         imageAnimation: imageAnimation,
-        stage: .error,
         backgroundColor: Color(uiColor: backgroundColor),
         textColor: Color(uiColor: textColor),
         imageColor: Color(uiColor: imageColor),
@@ -48,8 +47,37 @@ func showBanner(scene: UIWindowScene?,
 }
 
 @MainActor
-func showInfoBanner(scene: UIWindowScene?, subtitle: String) async {
-    
+func showInfoBanner(scene: UIWindowScene?,
+                    title: String?,
+                    subtitle: String? = nil,
+                    footnote: String? = nil
+    ) async {
+    var scene = scene
+    if scene == nil {
+        scene = UIApplication.shared.mainAppWindow?.windowScene
+    }
+
+    let payload = LucidBannerPayload(
+        title: NSLocalizedString(title ?? "", comment: ""),
+        subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
+        footnote: NSLocalizedString(footnote ?? "", comment: ""),
+        systemImage: "checkmark",
+        backgroundColor: Color(uiColor: .black),
+        textColor: .primary,
+        imageColor: .white,
+        vPosition: .top,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
+    )
+    LucidBanner.shared.show(
+        scene: scene,
+        payload: payload,
+        onTap: { _, _ in
+            LucidBanner.shared.dismiss()
+        }
+    ) { state in
+        MessageBannerView(state: state)
+    }
 }
 
 @MainActor
@@ -72,7 +100,10 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, footnote: 
     let payload = LucidBannerPayload(
         subtitle: NSLocalizedString(errorDescription, comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
+        systemImage: "xmark.circle.fill",
         backgroundColor: .red,
+        textColor: .primary,
+        imageColor: .white,
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
