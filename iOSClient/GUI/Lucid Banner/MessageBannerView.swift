@@ -62,7 +62,6 @@ func showInfoBanner(scene: UIWindowScene?,
         subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "checkmark.circle",
-        imageAnimation: .none,
         backgroundColor: Color(uiColor: backgroundColor),
         textColor: .white,
         imageColor: .white,
@@ -135,7 +134,7 @@ struct MessageBannerView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: state.payload.systemImage ?? "info.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.system(size: 30, weight: .bold))
+                        .font(.system(size: 30, weight: .regular))
                         .foregroundStyle(state.payload.imageColor)
 
                     VStack(alignment: .leading, spacing: 7) {
