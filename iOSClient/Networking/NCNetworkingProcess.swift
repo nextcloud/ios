@@ -392,8 +392,7 @@ actor NCNetworkingProcess {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
                     let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
 
-                    let payload = LucidBannerPayload(stage: nil,
-                                                     backgroundColor: Color(.systemBackground),
+                    let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
                                                      vPosition: .center,
                                                      verticalMargin: 0,
                                                      blocksTouches: true,
@@ -445,14 +444,13 @@ actor NCNetworkingProcess {
         var tokenBanner: Int?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
 
-        let payload = LucidBannerPayload(stage: .button,
-                                         backgroundColor: Color(.systemBackground),
-                                         vPosition: .bottom,
-                                         verticalMargin: 55,
-                                         blocksTouches: false,
-                                         draggable: true)
         tokenBanner = showUploadBanner(scene: scene,
-                                       payload: payload,
+                                       payload: LucidBannerPayload(stage: .button,
+                                                                   backgroundColor: Color(.systemBackground),
+                                                                   vPosition: .bottom,
+                                                                   verticalMargin: 55,
+                                                                   blocksTouches: false,
+                                                                   draggable: true),
                                        allowMinimizeOnTap: true,
                                        onButtonTap: {
             Task {
@@ -461,51 +459,47 @@ actor NCNetworkingProcess {
             }
         })
 
-        let payloadUpdate = LucidBannerPayload.Update(
+        LucidBanner.shared.update(payload: LucidBannerPayload.Update(
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
             subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
             footnote: "( " + NSLocalizedString("_tap_to_min_max_", comment: "") + " )",
             systemImage: "gearshape.arrow.triangle.2.circlepath",
             imageAnimation: .rotate
-        )
-        LucidBanner.shared.update(payload: payloadUpdate)
+        ))
 
         let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
             let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
-                Task {@MainActor in
+                Task {
                     LucidBanner.shared.update(
                         payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)),
                         for: tokenBanner
                     )
                 }
             } uploadStart: { _ in
-                Task {@MainActor in
-                    let payloadUpdate = LucidBannerPayload.Update(
+                Task {
+                    LucidBanner.shared.update(payload: LucidBannerPayload.Update(
                         title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe,
                         progress: 0
-                    )
-                    LucidBanner.shared.update(payload: payloadUpdate, for: tokenBanner)
+                    ), for: tokenBanner)
                 }
             } uploadProgressHandler: { _, _, progress in
-                Task {@MainActor in
+                Task {
                     LucidBanner.shared.update(
                         payload: LucidBannerPayload.Update(progress: progress),
                         for: tokenBanner
                     )
                 }
             } assembling: {
-                Task {@MainActor in
-                    let payload = LucidBannerPayload.Update(
+                Task {
+                    LucidBanner.shared.update(payload: LucidBannerPayload.Update(
                         title: NSLocalizedString("_finalizing_wait_", comment: ""),
                         systemImage: "gearshape.arrow.triangle.2.circlepath",
                         imageAnimation: .rotate,
                         progress: .nan,
                         stage: .placeholder
-                    )
-                    LucidBanner.shared.update(payload: payloadUpdate,
-                                              for: tokenBanner)
+                    ), for: tokenBanner)
                 }
             }
 

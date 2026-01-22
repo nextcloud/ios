@@ -48,6 +48,11 @@ func showBanner(scene: UIWindowScene?,
 }
 
 @MainActor
+func showInfoBanner(scene: UIWindowScene?, subtitle: String) async {
+    
+}
+
+@MainActor
 func showErrorBanner(controller: UITabBarController?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,

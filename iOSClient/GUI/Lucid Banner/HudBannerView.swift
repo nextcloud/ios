@@ -91,7 +91,7 @@ struct HudBannerView: View {
             return .primary
         }()
 
-        containerView(state: state, allowMinimizeOnTap: false) {
+        hudContainerView {
             VStack(spacing: 18) {
 
                 // TITLE
@@ -205,6 +205,31 @@ struct HudBannerView: View {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Container
+
+    @ViewBuilder
+    func hudContainerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let cornerRadius: CGFloat = 22
+        let backgroundColor = Color(.systemBackground).opacity(0.65)
+
+        if #available(iOS 26, *) {
+            content()
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(backgroundColor)
+                )
+                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
+        } else {
+            content()
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .stroke(.white.opacity(0.9), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
     }
 }

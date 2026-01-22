@@ -81,13 +81,13 @@ struct UploadBannerView: View {
                         .applyBannerAnimation(state.payload.imageAnimation)
                         .font(.body.weight(.medium))
                         .frame(width: 20, height: 20)
-                        .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                        .foregroundStyle(state.payload.textColor)
 
                     if let p = state.payload.progress {
                         Text("\(Int(p * 100))%")
                             .font(.caption2.monospacedDigit())
                             .frame(height: 20)
-                            .foregroundStyle(textColor)
+                            .foregroundStyle(state.payload.textColor)
                     }
                 }
                 .padding(.horizontal, 10)
