@@ -136,10 +136,9 @@ class NCContextMenu: NSObject {
         // Lock/Unlock
         if NCNetworking.shared.isOnline,
            !metadata.directory,
-           metadata.canUnlock(as: metadata.userId),
            !capabilities.filesLockVersion.isEmpty {
             mainActionsMenu.append(
-                ContextMenuActions.lockUnlock(shouldLock: !metadata.lock, metadatas: [metadata])
+                ContextMenuActions.lockUnlock(isLocked: metadata.lock, metadata: metadata)
             )
         }
 
