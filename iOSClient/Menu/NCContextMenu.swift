@@ -32,10 +32,7 @@ class NCContextMenu: NSObject {
             return UIMenu()
         }
 
-        // Build top menu items
-        let detail = makeDetailAction(metadata: metadata)
-        let favorite = makeFavoriteAction(metadata: metadata)
-        let share = makeShareAction()
+        let topMenuItems = buildTopMenuItems(metadata: metadata)
 
         let mainActionsMenu = buildMainActionsMenu(
             metadata: metadata,
@@ -49,21 +46,39 @@ class NCContextMenu: NSObject {
 
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
-        // Assemble final menu
-        if NCNetworking.shared.isOnline {
-            let baseChildren = [
-                UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
-                UIMenu(title: "", options: .displayInline, children: clientIntegrationMenu),
-                UIMenu(title: "", options: .displayInline, children: deleteMenu)
-            ]
-
-            let finalMenu = UIMenu(title: "", children: (metadata.lock ? [detail] : [detail, share, favorite]) + baseChildren)
-            finalMenu.preferredElementSize = .medium
-
-            return finalMenu
-        } else {
+        if !NCNetworking.shared.isOnline {
             return UIMenu()
         }
+
+        // Assemble final menu
+        let baseChildren = [
+            UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
+            UIMenu(title: "", options: .displayInline, children: clientIntegrationMenu),
+            UIMenu(title: "", options: .displayInline, children: deleteMenu)
+        ]
+
+        let finalMenu = UIMenu(title: "", children: topMenuItems + baseChildren)
+        finalMenu.preferredElementSize = .medium // top menu items are shown in a short format style
+
+        return finalMenu
+    }
+
+    // MARK: Top Menu Items
+
+    private func buildTopMenuItems(metadata: tableMetadata, appending items: [UIMenuElement] = []) -> [UIMenuElement] {
+        var topActionsMenu: [UIMenuElement] = []
+
+        if metadata.canShare {
+            topActionsMenu.append(makeShareAction())
+        }
+
+        topActionsMenu.append(makeDetailAction(metadata: metadata))
+
+        if !metadata.lock {
+            topActionsMenu.append(makeFavoriteAction(metadata: metadata))
+        }
+
+        return topActionsMenu
     }
 
     // MARK: Basic Actions
@@ -121,10 +136,9 @@ class NCContextMenu: NSObject {
         // Lock/Unlock
         if NCNetworking.shared.isOnline,
            !metadata.directory,
-           metadata.canUnlock(as: metadata.userId),
            !capabilities.filesLockVersion.isEmpty {
             mainActionsMenu.append(
-                ContextMenuActions.lockUnlock(shouldLock: !metadata.lock, metadatas: [metadata])
+                ContextMenuActions.lockUnlock(isLocked: metadata.lock, metadata: metadata)
             )
         }
 
@@ -565,3 +579,4 @@ class NCContextMenu: NSObject {
         return clientIntegrationMenu
     }
 }
+
