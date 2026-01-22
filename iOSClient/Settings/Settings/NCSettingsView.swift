@@ -175,7 +175,7 @@ struct NCSettingsView: View {
                 Text(NSLocalizedString("_users_footer_", comment: ""))
             })
             // E2EEncryption` Section
-            if capabilities.e2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.e2EEApiVersion) {
+            if capabilities.e2EEEnabled && NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) {
                 E2EESection(model: model)
             }
             // `Advanced` Section
