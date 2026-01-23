@@ -64,7 +64,9 @@ struct NCManageE2EEView: View {
                         if NCPreferences().passcode != nil {
                             model.requestPasscodeType("removeLocallyEncryption")
                         } else {
-                            NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                            Task {
+                                await showInfoBanner(scene: model.scene, text: "_e2e_settings_lock_not_active_")
+                            }
                         }
                     }
 #if DEBUG
@@ -93,7 +95,7 @@ struct NCManageE2EEView: View {
                                 model.requestPasscodeType("startE2E")
                             } else {
                                 Task {
-                                    await showInfoBanner(scene: model.scene, subtitle: "_e2e_settings_lock_not_active_")
+                                    await showInfoBanner(scene: model.scene, text: "_e2e_settings_lock_not_active_")
                                 }
                             }
                         }

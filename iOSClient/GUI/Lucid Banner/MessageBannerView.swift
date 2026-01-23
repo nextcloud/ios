@@ -49,7 +49,7 @@ func showBanner(scene: UIWindowScene?,
 @MainActor
 func showInfoBanner(scene: UIWindowScene?,
                     title: String = "_info_",
-                    subtitle: String? = nil,
+                    text: String? = nil,
                     footnote: String? = nil,
                     foregroundColor: UIColor = .white,
                     backgroundColor: UIColor = NCBrandColor.shared.customer) async {
@@ -60,7 +60,7 @@ func showInfoBanner(scene: UIWindowScene?,
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
-        subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
+        subtitle: NSLocalizedString(text ?? "", comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "checkmark.circle",
         backgroundColor: Color(uiColor: backgroundColor),
@@ -82,16 +82,28 @@ func showInfoBanner(scene: UIWindowScene?,
 }
 
 @MainActor
-func showErrorBanner(controller: UITabBarController?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
+func showErrorBanner(controller: UITabBarController?,
+                     errorDescription: String,
+                     footnote: String? = nil,
+                     foregroundColor: UIColor = .white,
+                     backgroundColor: UIColor = .red,
+                     sleepBefore: Double = 1) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
                           errorDescription: NSLocalizedString(errorDescription, comment: ""),
                           footnote: NSLocalizedString(footnote ?? "", comment: ""),
+                          foregroundColor: foregroundColor,
+                          backgroundColor: backgroundColor,
                           sleepBefore: sleepBefore)
 }
 
 @MainActor
-func showErrorBanner(scene: UIWindowScene?, errorDescription: String, footnote: String? = nil, sleepBefore: Double = 1) async {
+func showErrorBanner(scene: UIWindowScene?,
+                     errorDescription: String,
+                     footnote: String? = nil,
+                     foregroundColor: UIColor = .white,
+                     backgroundColor: UIColor = .red,
+                     sleepBefore: Double = 1) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
     var scene = scene
     if scene == nil {
@@ -102,9 +114,9 @@ func showErrorBanner(scene: UIWindowScene?, errorDescription: String, footnote: 
         subtitle: NSLocalizedString(errorDescription, comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "xmark.circle.fill",
-        backgroundColor: .red,
-        textColor: .primary,
-        imageColor: .white,
+        backgroundColor: Color(uiColor: backgroundColor),
+        textColor: Color(uiColor: foregroundColor),
+        imageColor: Color(uiColor: foregroundColor),
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
