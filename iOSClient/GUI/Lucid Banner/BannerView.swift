@@ -5,6 +5,8 @@
 import SwiftUI
 import LucidBanner
 
+// MARK: - Show Banner
+
 @MainActor
 func showBanner(scene: UIWindowScene?,
                 title: String?,
@@ -37,13 +39,26 @@ func showBanner(scene: UIWindowScene?,
 
     LucidBanner.shared.show(
         scene: scene,
-        payload: payload,
-        onTap: { _, _ in
-            LucidBanner.shared.dismiss()
-        }
-    ) { state in
+        payload: payload) { state in
         MessageBannerView(state: state)
     }
+}
+
+// MARK: - Show Info
+
+@MainActor
+func showInfoBanner(controller: UITabBarController?,
+                    title: String = "_info_",
+                    text: String? = nil,
+                    footnote: String? = nil,
+                    foregroundColor: UIColor = .label,
+                    backgroundColor: UIColor = .systemBackground) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showInfoBanner(scene: scene,
+                         title: title,
+                         text: text,
+                         foregroundColor: foregroundColor,
+                         backgroundColor: backgroundColor)
 }
 
 @MainActor
@@ -51,8 +66,8 @@ func showInfoBanner(scene: UIWindowScene?,
                     title: String = "_info_",
                     text: String? = nil,
                     footnote: String? = nil,
-                    foregroundColor: UIColor = .white,
-                    backgroundColor: UIColor = NCBrandColor.shared.customer) async {
+                    foregroundColor: UIColor = .label,
+                    backgroundColor: UIColor = .systemBackground) async {
     var scene = scene
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
@@ -65,21 +80,19 @@ func showInfoBanner(scene: UIWindowScene?,
         systemImage: "checkmark.circle",
         backgroundColor: Color(uiColor: backgroundColor),
         textColor: Color(uiColor: foregroundColor),
-        imageColor: Color(uiColor: foregroundColor),
+        imageColor: Color(uiColor: NCBrandColor.shared.customer),
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )
     LucidBanner.shared.show(
         scene: scene,
-        payload: payload,
-        onTap: { _, _ in
-            LucidBanner.shared.dismiss()
+        payload: payload) { state in
+            MessageBannerView(state: state)
         }
-    ) { state in
-        MessageBannerView(state: state)
-    }
 }
+
+// MARK: - Show Error
 
 @MainActor
 func showErrorBanner(controller: UITabBarController?,
@@ -90,8 +103,8 @@ func showErrorBanner(controller: UITabBarController?,
                      sleepBefore: Double = 1) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
-                          errorDescription: NSLocalizedString(errorDescription, comment: ""),
-                          footnote: NSLocalizedString(footnote ?? "", comment: ""),
+                          errorDescription: errorDescription,
+                          footnote: footnote,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
                           sleepBefore: sleepBefore)
@@ -116,7 +129,7 @@ func showErrorBanner(scene: UIWindowScene?,
         systemImage: "xmark.circle.fill",
         backgroundColor: Color(uiColor: backgroundColor),
         textColor: Color(uiColor: foregroundColor),
-        imageColor: Color(uiColor: foregroundColor),
+        imageColor: .white,
         vPosition: .top,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,

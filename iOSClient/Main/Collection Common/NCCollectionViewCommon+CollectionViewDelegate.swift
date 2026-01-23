@@ -20,6 +20,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     return
                 }
             } else {
+                Task {
+                    await showInfoBanner(controller: self.controller, text: "_e2e_server_disabled_")
+
+                }
                 NCContentPresenter().showInfo(error: NKError(errorCode: global.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
                 return
             }
