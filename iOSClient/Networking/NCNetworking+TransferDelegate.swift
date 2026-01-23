@@ -137,7 +137,7 @@ extension NCNetworking: NCTransferDelegate {
                                 assetRequest.addResource(with: .photo, data: data, options: nil)
                             }) { success, _ in
                                 if !success {
-                                    Task {@MainActor in
+                                    Task {
                                         await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                                     }
                                 }
@@ -147,19 +147,19 @@ extension NCNetworking: NCTransferDelegate {
                                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: fileNamePath))
                             }) { success, _ in
                                 if !success {
-                                    Task {@MainActor in
+                                    Task {
                                         await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                                     }
                                 }
                             }
                         } else {
-                            Task {@MainActor in
+                            Task {
                                 await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                             }
                             return
                         }
                     } catch {
-                        Task {@MainActor in
+                        Task {
                             await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
                         }
                     }
@@ -229,7 +229,7 @@ extension NCNetworking: NCTransferDelegate {
             }
         }
         guard resultsFile.error == .success, let file = resultsFile.file else {
-            Task {@MainActor in
+            Task {
                 await showErrorBanner(controller: viewController.tabBarController, errorDescription: resultsFile.error.errorDescription)
             }
             return

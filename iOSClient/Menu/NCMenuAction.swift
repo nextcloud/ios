@@ -266,7 +266,7 @@ extension NCMenuAction {
             sender: sender,
             action: { _ in
                 for metadata in metadatas where metadata.lock != shouldLock {
-                    NCNetworking.shared.lockUnlockFile(metadata, shoulLock: shouldLock)
+                    NCNetworking.shared.lockUnlockFile(metadata, shouldLock: shouldLock)
                 }
                 completion?()
             }

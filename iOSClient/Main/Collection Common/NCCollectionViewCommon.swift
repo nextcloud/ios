@@ -623,7 +623,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                             }
                         }
                     } else {
-                        Task {@MainActor in
+                        Task {
                             await showErrorBanner(scene: scene, errorDescription: resultsUpload.error.errorDescription)
                         }
                     }
@@ -744,7 +744,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
-                Task {@MainActor in
+                Task {
                     await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                 }
             }

@@ -83,7 +83,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    Task {@MainActor in
+                    Task {
                         await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                     }
                 }
@@ -438,7 +438,7 @@ extension NCActivity {
             if error == .success, let comments = comments {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                Task {@MainActor in
+                Task {
                     await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                 }
             }
@@ -610,7 +610,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                         if error == .success {
                             self.loadComments()
                         } else {
-                            Task {@MainActor in
+                            Task {
                                 await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
                             }
                         }

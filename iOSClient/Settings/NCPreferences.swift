@@ -450,7 +450,7 @@ final class NCPreferences: NSObject {
               let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
               let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,
               let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty,
-              NCGlobal.shared.e2eeVersions.contains(capabilities.e2EEApiVersion) else {
+              NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) else {
             return false
         }
         return true

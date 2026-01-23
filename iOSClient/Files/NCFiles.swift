@@ -325,9 +325,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
             } else {
                 // show error
-                Task {@MainActor in
-                    await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
-                }
+                await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
             }
 
             return(metadatas, error, reloadRequired)
@@ -338,25 +336,21 @@ class NCFiles: NCCollectionViewCommon {
 
         if errorDecodeMetadata == .success {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-            if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+            if version == "v1", NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
                 NCContentPresenter().showInfo(description: "Conversion metadata v1 to v2 required, please wait...")
                 nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                 NCActivityIndicator.shared.start()
 
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
-                    Task {@MainActor in
-                        await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
-                    }
+                    await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
                 }
                 NCActivityIndicator.shared.stop()
             }
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            Task {@MainActor in
-                await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
-            }
+            await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
         }
 
         return (metadatas, error, reloadRequired)
