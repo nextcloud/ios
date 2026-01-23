@@ -327,6 +327,7 @@
 		F7386E482DA90E0F009A00F6 /* NCAppVersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7386E452DA90E02009A00F6 /* NCAppVersionManager.swift */; };
 		F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD1B265546890069EA0D /* SwiftEntryKit */; };
 		F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD2026554F8E0069EA0D /* SwiftEntryKit */; };
+		F73BC74F2F23811E003170C2 /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DF7B3E2F1A2EE400514020 /* BannerView.swift */; };
 		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
 		F73D11FA253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D11F9253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard */; };
 		F73EF7A72B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7A62B0223900087E6E9 /* NCManageDatabase+Comments.swift */; };
@@ -4236,6 +4237,7 @@
 				F7D4BF302CA2E8D800A5E746 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */,
 				F7D4BF312CA2E8D800A5E746 /* TOPasscodeSettingsViewController.m in Sources */,
 				F71916122E2901FB00E13E96 /* NCNetworking+Upload.swift in Sources */,
+				F73BC74F2F23811E003170C2 /* BannerView.swift in Sources */,
 				F7D4BF322CA2E8D800A5E746 /* TOPasscodeCircleImage.m in Sources */,
 				F7CAFE192F168F6000DB35A5 /* NCDebouncer.swift in Sources */,
 				F7D4BF332CA2E8D800A5E746 /* TOPasscodeView.m in Sources */,

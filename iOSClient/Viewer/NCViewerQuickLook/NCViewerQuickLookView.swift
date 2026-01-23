@@ -28,8 +28,9 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if model.previewStore[index].assetType == .livePhoto && model.previewStore[index].asset.type == .livePhoto && model.previewStore[index].data == nil {
-                let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
-                NCContentPresenter().showInfo(error: error)
+                Task {
+                    await showInfoBanner(controller: self.model.controller, text: "_message_disable_livephoto_")
+                }
             }
         }
 
