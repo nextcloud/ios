@@ -62,6 +62,35 @@ func showInfoBanner(controller: UITabBarController?,
 }
 
 @MainActor
+func showInfoBanner(title: String = "_error_",
+                    text: String,
+                    footnote: String? = nil,
+                    foregroundColor: UIColor = .label,
+                    backgroundColor: UIColor = .systemBackground) async {
+    await showInfoBanner(scene: nil,
+                         title: title,
+                         text: text,
+                         footnote: footnote,
+                         foregroundColor: foregroundColor,
+                         backgroundColor: backgroundColor)
+}
+
+@MainActor
+func showInfoBanner(sceneIdentifier: String,
+                    title: String = "_error_",
+                    text: String,
+                    footnote: String? = nil,
+                    foregroundColor: UIColor = .label,
+                    backgroundColor: UIColor = .systemBackground) async {
+    await showInfoBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+                         title: title,
+                         text: text,
+                         footnote: footnote,
+                         foregroundColor: foregroundColor,
+                         backgroundColor: backgroundColor)
+}
+
+@MainActor
 func showInfoBanner(scene: UIWindowScene?,
                     title: String = "_info_",
                     text: String? = nil,
@@ -104,6 +133,39 @@ func showErrorBanner(controller: UITabBarController?,
                      sleepBefore: Double = 1) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
+                          text: text,
+                          footnote: footnote,
+                          foregroundColor: foregroundColor,
+                          backgroundColor: backgroundColor,
+                          sleepBefore: sleepBefore)
+}
+
+@MainActor
+func showErrorBanner(title: String = "_error_",
+                     text: String,
+                     footnote: String? = nil,
+                     foregroundColor: UIColor = .white,
+                     backgroundColor: UIColor = .red,
+                     sleepBefore: Double = 1) async {
+    await showErrorBanner(scene: nil,
+                          title: title,
+                          text: text,
+                          footnote: footnote,
+                          foregroundColor: foregroundColor,
+                          backgroundColor: backgroundColor,
+                          sleepBefore: sleepBefore)
+}
+
+@MainActor
+func showErrorBanner(sceneIdentifier: String?,
+                     title: String = "_error_",
+                     text: String,
+                     footnote: String? = nil,
+                     foregroundColor: UIColor = .white,
+                     backgroundColor: UIColor = .red,
+                     sleepBefore: Double = 1) async {
+    await showErrorBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+                          title: title,
                           text: text,
                           footnote: footnote,
                           foregroundColor: foregroundColor,
