@@ -7,7 +7,6 @@ import NextcloudKit
 @Observable class NCAssistantChatModel {
     var messages: [ChatMessage] = []
     var isThinking: Bool = false
-//    var inputText: String = ""
     var hasError: Bool = false
     var selectedSession: AssistantSession? {
         didSet {
@@ -15,22 +14,13 @@ import NextcloudKit
         }
     }
 
-//    @ObservationIgnored private let session: NCSession.Session
     var sessions: [AssistantSession] = []
-//    @ObservationIgnored private let taskType: TaskTypeData?
-//    @ObservationIgnored private let useV2: Bool
     @ObservationIgnored var controller: NCMainTabBarController?
     private let session: NCSession.Session
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         self.session = NCSession.shared.getSession(controller: controller)
-//        self.session = session
-//        self.taskType = taskType
-
-//        self.useV2 = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion30
-
-//        getSessions()
         loadAllSessions()
     }
 
@@ -49,13 +39,21 @@ import NextcloudKit
     }
 
     func sendMessage(input: String) {
-//        guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard let selectedSession else { return }
 
-//        let userMessage = inputText
-        addUserMessage(input)
+        let request = ChatMessageRequest(sessionId: selectedSession.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970 * 1000))
 
-        isThinking = true
-//        scheduleTask(input: userMessage)
+        Task {
+            let result = await NextcloudKit.shared.createAssistantChatMessageAsync(messageRequest: request, account: session.account)
+            if result.error == .success {
+                guard let chatMessage = result.chatMessage else { return }
+                messages.append(chatMessage)
+            }
+            if result.error != .success {
+                // TODO
+            }
+        }
+
     }
 
     private func handleTaskResponse(task: AssistantTask?, error: NKError?) {
