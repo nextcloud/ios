@@ -121,13 +121,10 @@ extension NCNetworking: NCTransferDelegate {
                 NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                     guard hasPermission else {
                         Task {@MainActor in
-                            let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
-                            await showErrorBanner(scene: scene, errorDescription: error.errorDescription)
+                            await showErrorBanner(scene: scene, text: "_access_photo_not_enabled_msg_")
                         }
                         return
                     }
-
-                    let errorSave = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
 
                     do {
                         if metadata.isImage {
@@ -138,7 +135,7 @@ extension NCNetworking: NCTransferDelegate {
                             }) { success, _ in
                                 if !success {
                                     Task {
-                                        await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
+                                        await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_")
                                     }
                                 }
                             }
@@ -148,19 +145,19 @@ extension NCNetworking: NCTransferDelegate {
                             }) { success, _ in
                                 if !success {
                                     Task {
-                                        await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
+                                        await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_")
                                     }
                                 }
                             }
                         } else {
                             Task {
-                                await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
+                                await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_")
                             }
                             return
                         }
                     } catch {
                         Task {
-                            await showErrorBanner(scene: scene, errorDescription: errorSave.errorDescription)
+                            await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_")
                         }
                     }
                 }
@@ -230,7 +227,7 @@ extension NCNetworking: NCTransferDelegate {
         }
         guard resultsFile.error == .success, let file = resultsFile.file else {
             Task {
-                await showErrorBanner(controller: viewController.tabBarController, errorDescription: resultsFile.error.errorDescription)
+                await showErrorBanner(controller: viewController.tabBarController, text: resultsFile.error.errorDescription)
             }
             return
         }

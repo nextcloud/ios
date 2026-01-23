@@ -66,7 +66,9 @@ enum NCViewerContextMenu {
                ) { _ in
                    NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                        if error != .success {
-                           NCContentPresenter().showError(error: error)
+                           Task {
+                               await showErrorBanner(controller: controller, text: error.errorDescription)
+                           }
                        }
                    }
                }

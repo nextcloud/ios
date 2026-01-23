@@ -145,8 +145,7 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                let error = NKError(error: error)
-                await showErrorBanner(controller: controller, errorDescription: error.errorDescription)
+                await showErrorBanner(controller: controller, text: error.localizedDescription)
             }
             return
         }
@@ -236,7 +235,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription)
+                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
                     break
                 }
             }
@@ -258,7 +257,7 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(scene: scene, errorDescription: results.error.errorDescription)
+                await showErrorBanner(scene: scene, text: results.error.errorDescription)
                 break
             }
 

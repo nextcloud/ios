@@ -96,14 +96,15 @@ func showInfoBanner(scene: UIWindowScene?,
 
 @MainActor
 func showErrorBanner(controller: UITabBarController?,
-                     errorDescription: String,
+                     title: String = "_error_",
+                     text: String,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
-                          errorDescription: errorDescription,
+                          text: text,
                           footnote: footnote,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
@@ -112,7 +113,8 @@ func showErrorBanner(controller: UITabBarController?,
 
 @MainActor
 func showErrorBanner(scene: UIWindowScene?,
-                     errorDescription: String,
+                     title: String = "_error_",
+                     text: String,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
@@ -124,7 +126,8 @@ func showErrorBanner(scene: UIWindowScene?,
     }
 
     let payload = LucidBannerPayload(
-        subtitle: NSLocalizedString(errorDescription, comment: ""),
+        title: NSLocalizedString(title, comment: ""),
+        subtitle: NSLocalizedString(text, comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "xmark.circle.fill",
         backgroundColor: Color(uiColor: backgroundColor),

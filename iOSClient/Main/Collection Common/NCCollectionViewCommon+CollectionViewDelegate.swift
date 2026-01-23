@@ -22,9 +22,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             } else {
                 Task {
                     await showInfoBanner(controller: self.controller, text: "_e2e_server_disabled_")
-
                 }
-                NCContentPresenter().showInfo(error: NKError(errorCode: global.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
                 return
             }
         }
@@ -67,7 +65,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription)
+                await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
             }
         }
 
@@ -120,8 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     }
                 } else {
                     Task {
-                        await showErrorBanner(controller: controller, errorDescription: "_go_online_")
-
+                        await showErrorBanner(controller: controller, text: "_go_online_")
                     }
                 }
             }

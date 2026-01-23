@@ -70,7 +70,11 @@ extension NCNetworking {
                 groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
 
                 if serverInfo.maintenance {
-                    NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
+                    Task {
+                        await showInfoBanner(controller: controller,
+                                             title: "_warning_",
+                                             text: "_maintenance_mode_")
+                    }
                 }
             case .failure:
                 break

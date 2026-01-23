@@ -60,13 +60,18 @@ class NCEndToEndInitialize: NSObject {
             } else if error != .success {
                 switch error.errorCode {
                 case NCGlobal.shared.errorBadRequest:
-                    let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
-                    NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    Task {
+                        await showInfoBanner(controller: self.controller,
+                                             title: "E2E get publicKey",
+                                             text: "Bad request: internal error")
+                    }
                 case NCGlobal.shared.errorResourceNotFound:
                     guard let csr = NCEndToEndEncryption.shared().createCSR(self.session.userId, directory: self.utilityFileSystem.directoryUserData) else {
-                        let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating CSR")
-                        NCContentPresenter().messageNotification("E2E Csr", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-
+                        Task {
+                            await showInfoBanner(controller: self.controller,
+                                                 title: "E2E Csr",
+                                                 text: "Error creating CSR")
+                        }
                         return
                     }
 
