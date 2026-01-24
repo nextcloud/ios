@@ -184,20 +184,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 if capabilities.notification.count == 0 {
                     self.controller?.availableNotifications = false
                 } else {
-                    let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
+                    _ = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
                         Task {
                             let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                                         name: "getNotifications")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
-                    if resultsNotification.error == .success,
-                       let notifications = resultsNotification.notifications,
-                       notifications.count > 0 {
-                        self.controller?.availableNotifications = true
-                    } else {
-                        self.controller?.availableNotifications = false
-                    }
+                    self.controller?.availableNotifications = true
                 }
                 await self.updateRightBarButtonItems()
 
