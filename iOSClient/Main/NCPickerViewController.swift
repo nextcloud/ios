@@ -71,7 +71,6 @@ class NCPhotosPickerViewController: NSObject {
         }
 
         pickerVC?.handleNoCameraPermissions = { _ in
-            let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_denied_camera_")
             Task {
                 await showErrorBanner(controller: self.controller, text: "_denied_camera_")
             }
