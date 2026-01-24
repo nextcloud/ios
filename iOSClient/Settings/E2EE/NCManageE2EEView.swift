@@ -67,7 +67,7 @@ struct NCManageE2EEView: View {
                             model.requestPasscodeType("removeLocallyEncryption")
                         } else {
                             Task {
-                                await showInfoBanner(scene: model.scene, text: "_e2e_settings_lock_not_active_")
+                                await showInfoBanner(controller: model.controller, text: "_e2e_settings_lock_not_active_")
                             }
                         }
                     }
@@ -97,7 +97,7 @@ struct NCManageE2EEView: View {
                                 model.requestPasscodeType("startE2E")
                             } else {
                                 Task {
-                                    await showInfoBanner(scene: model.scene, text: "_e2e_settings_lock_not_active_")
+                                    await showInfoBanner(controller: model.controller, text: "_e2e_settings_lock_not_active_")
                                 }
                             }
                         }
