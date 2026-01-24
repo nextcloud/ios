@@ -7,25 +7,13 @@ import LucidBanner
 
 @MainActor
 func showUploadBanner(scene: UIWindowScene?,
-                      vPosition: LucidBanner.VerticalPosition = .center,
-                      hAlignment: LucidBanner.HorizontalAlignment = .center,
-                      verticalMargin: CGFloat = 0,
-                      blocksTouches: Bool = false,
-                      draggable: Bool = false,
-                      stage: LucidBanner.Stage? = nil,
-                      policy: LucidBanner.ShowPolicy = .drop,
-                      allowMinimizeOnTap: Bool = false,
+                      payload: LucidBannerPayload,
+                      allowMinimizeOnTap: Bool,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
-    let token = LucidBanner.shared.show(
-        scene: scene,
-        vPosition: vPosition,
-        hAlignment: hAlignment,
-        verticalMargin: verticalMargin,
-        blocksTouches: blocksTouches,
-        draggable: draggable,
-        stage: stage,
-        policy: policy
-    ) { state in
+
+    let token = LucidBanner.shared.show(scene: scene,
+                                        payload: payload,
+                                        policy: .drop) { state in
         UploadBannerView(state: state,
                          allowMinimizeOnTap: allowMinimizeOnTap,
                          onButtonTap: onButtonTap)
@@ -78,28 +66,28 @@ struct UploadBannerView: View {
     }
 
     var body: some View {
-        let showTitle = !(state.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        let showFootnote = !(state.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showTitle = !(state.payload.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showSubtitle = !(state.payload.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showFootnote = !(state.payload.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
 
-        let isSuccess = (state.typedStage == .success)
-        let isError = (state.typedStage == .error)
-        let isButton = (state.typedStage == .button)
+        let isSuccess = (state.payload.stage == .success)
+        let isError = (state.payload.stage == .error)
+        let isButton = (state.payload.stage == .button)
 
-        containerView(state: state) {
+        containerView(state: state, allowMinimizeOnTap: allowMinimizeOnTap) {
             if state.isMinimized {
                 HStack(spacing: 5) {
-                    Image(systemName: state.systemImage ?? "arrow.up.circle")
-                        .applyBannerAnimation(state.imageAnimation)
+                    Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
+                        .applyBannerAnimation(state.payload.imageAnimation)
                         .font(.body.weight(.medium))
                         .frame(width: 20, height: 20)
-                        .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                        .foregroundStyle(state.payload.imageColor)
 
-                    if let p = state.progress {
+                    if let p = state.payload.progress {
                         Text("\(Int(p * 100))%")
                             .font(.caption2.monospacedDigit())
                             .frame(height: 20)
-                            .foregroundStyle(textColor)
+                            .foregroundStyle(state.payload.textColor)
                     }
                 }
                 .padding(.horizontal, 10)
@@ -138,7 +126,7 @@ struct UploadBannerView: View {
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
                                 .foregroundStyle(textColor)
-                            if showSubtitle, let subtitle = state.subtitle {
+                            if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
@@ -153,16 +141,16 @@ struct UploadBannerView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 VStack(spacing: 15) {
-                    HStack(alignment: .center, spacing: 10) {
-                        if let systemImage = state.systemImage {
+                    HStack(alignment: .top, spacing: 10) {
+                        if let systemImage = state.payload.systemImage {
                             Image(systemName: systemImage)
-                                .applyBannerAnimation(state.imageAnimation)
+                                .applyBannerAnimation(state.payload.imageAnimation)
                                 .font(.system(size: 30, weight: .regular))
-                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                                .foregroundStyle(state.payload.imageColor)
                         }
 
                         VStack(alignment: .leading, spacing: 7) {
-                            if showTitle, let title = state.title {
+                            if showTitle, let title = state.payload.title {
                                 Text(title)
                                     .font(.subheadline.weight(.bold))
                                     .multilineTextAlignment(.leading)
@@ -170,14 +158,14 @@ struct UploadBannerView: View {
                                     .minimumScaleFactor(0.9)
                                     .foregroundStyle(textColor)
                             }
-                            if showSubtitle, let subtitle = state.subtitle {
+                            if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(textColor)
                             }
-                            if showFootnote, let footnote = state.footnote {
+                            if showFootnote, let footnote = state.payload.footnote {
                                 Text(footnote)
                                     .font(.caption)
                                     .multilineTextAlignment(.leading)
@@ -186,11 +174,12 @@ struct UploadBannerView: View {
                             }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                    ProgressView(value: state.progress ?? 0)
+                    ProgressView(value: state.payload.progress ?? 0)
                         .tint(.accentColor)
-                        .opacity(state.progress == nil ? 0 : 1)
-                        .animation(.easeInOut(duration: 0.2), value: state.progress == nil)
+                        .opacity(state.payload.progress == nil ? 0 : 1)
+                        .animation(.easeInOut(duration: 0.2), value: state.payload.progress == nil)
 
                     if isButton {
                         VStack {
@@ -215,105 +204,18 @@ struct UploadBannerView: View {
             }
         }
     }
-
-    // MARK: - Container
-
-    @ViewBuilder
-    func containerView<Content: View>(state: LucidBannerState, @ViewBuilder _ content: () -> Content) -> some View {
-        let isError = (state.typedStage == .error)
-        let isSuccess = (state.typedStage == .success)
-        let isMinimized = state.isMinimized
-        let cornerRadius: CGFloat = state.isMinimized ? 15 : 25
-        let backgroundColor = Color(.systemBackground).opacity(0.65)
-        let errorColor = Color.red.opacity(0.75)
-
-        let base = content()
-            .contentShape(Rectangle())
-            .onTapGesture {
-                guard allowMinimizeOnTap else { return }
-                LucidBannerMinimizeCoordinator.shared.handleTap(state)
-            }
-
-        if isMinimized || isSuccess {
-            if #available(iOS 26, *) {
-                if isError {
-                    base
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(errorColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                } else {
-                    base
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(backgroundColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                }
-            } else {
-                let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
-
-                base
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .stroke(colorBg, lineWidth: 0.6)
-                    )
-                    .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
-            }
-        } else {
-            let contentBase = base
-                .frame(maxWidth: 500)
-
-            if #available(iOS 26, *) {
-                if isError {
-                    contentBase
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(errorColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                } else {
-                    contentBase
-                        .background(
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(backgroundColor)
-                        )
-                        .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-            } else {
-                let colorBg = isError ? Color.red.opacity(0.9) : Color.white.opacity(0.9)
-
-                contentBase
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .stroke(colorBg, lineWidth: 0.6)
-                    )
-                    .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
-                    .frame(maxWidth: .infinity, alignment: .center)
-            }
-        }
-    }
 }
 
 // MARK: - Preview
 
 #Preview {
-    // Create a mutable preview state
-    let state = LucidBannerState(
-        title: "Uploading…",
-        subtitle: "Minimized style preview",
-        systemImage: "arrow.up.circle",
-        imageAnimation: .none,
-        progress: 0.71,
-        stage: "button"
-    )
-
-    state.isMinimized = false
+    let payload = LucidBannerPayload(title: "Uploading…",
+                                     subtitle: "Minimized style preview",
+                                     systemImage: "arrowshape.up.circle",
+                                     imageAnimation: .none,
+                                     progress: 0.4,
+                                     stage: .button)
+    let state = LucidBannerState(payload: payload)
 
     return ZStack {
         Text(

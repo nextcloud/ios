@@ -63,8 +63,9 @@ class NCLoginProvider: UIViewController {
         nkLog(debug: "Login provider appeared.")
 
         guard let url = URL(string: initialURLString) else {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
-            NCContentPresenter().showError(error: error, priority: .max)
+            Task {
+                await showErrorBanner(controller: self.controller, text: "_login_url_error_")
+            }
             return
         }
 

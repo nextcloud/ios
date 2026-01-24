@@ -347,7 +347,10 @@ extension NCNetworking {
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
                     let num = numIncrement()
-                    LucidBanner.shared.update(progress: Double(num) / Double(total), for: token)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
+                        for: token
+                    )
                 }
             }
             LucidBanner.shared.dismiss()
@@ -398,7 +401,10 @@ extension NCNetworking {
 
                     Task {@MainActor in
                         num += 1
-                        LucidBanner.shared.update(progress: Double(num) / Double(total), for: token)
+                        LucidBanner.shared.update(
+                            payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
+                            for: token
+                        )
                     }
 
                     await self.transferDispatcher.notifyAllDelegates { delegate in

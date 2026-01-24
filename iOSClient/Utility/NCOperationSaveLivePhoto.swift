@@ -34,9 +34,11 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
             tokenBanner = showHudBanner(scene: scene, title: NSLocalizedString("_download_image_", comment: ""))
 
             let resultsMetadata = await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
-            } progressHandler: { progess in
+            } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: progess.fractionCompleted, for: self.tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                        for: self.tokenBanner)
                 }
             }
 
@@ -48,9 +50,11 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
             }
 
             let resultsMetadataLive = await NCNetworking.shared.downloadFile(metadata: metadataLive) { _ in
-            } progressHandler: { progess in
+            } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: progess.fractionCompleted, for: self.tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                        for: self.tokenBanner)
                 }
             }
 
@@ -77,12 +81,16 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                                                                                                  userId: metadataMov.userId,
                                                                                                  urlBase: metadataMov.urlBase))
 
-        LucidBanner.shared.update(title: NSLocalizedString("_livephoto_save_", comment: ""),
-                                  for: self.tokenBanner)
+        let payload = LucidBannerPayload.Update(
+            title: NSLocalizedString("_livephoto_save_", comment: ""),
+        )
+        LucidBanner.shared.update(payload: payload, for: self.tokenBanner)
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             Task {@MainActor in
-                LucidBanner.shared.update(progress: progress, for: self.tokenBanner)
+                LucidBanner.shared.update(
+                    payload: LucidBannerPayload.Update(progress: progress),
+                    for: self.tokenBanner)
             }
         }, completion: { _, resources in
             if let resources {

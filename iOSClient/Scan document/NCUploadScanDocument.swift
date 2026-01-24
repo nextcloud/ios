@@ -91,9 +91,12 @@ class NCUploadScanDocument: ObservableObject {
             } else {
                 for char in self.password.unicodeScalars {
                     if !char.isASCII {
-                        let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
-                        NCContentPresenter().showError(error: error)
-                        return DispatchQueue.main.async { completion(true) }
+                        Task {
+                            await showErrorBanner(controller: self.controller, text: "_password_ascii_")
+                        }
+                        return DispatchQueue.main.async {
+                            completion(true)
+                        }
                     }
                 }
                 let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: self.password, kCGPDFContextOwnerPassword as String: self.password]

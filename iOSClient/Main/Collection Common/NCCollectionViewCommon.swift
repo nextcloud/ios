@@ -599,7 +599,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                                              serverUrlFileName: serverUrlFileName) { _ in
                     } progressHandler: { _, _, fractionCompleted in
                         Task {@MainActor in
-                            LucidBanner.shared.update(progress: fractionCompleted, for: token)
+                            LucidBanner.shared.update(
+                                payload: LucidBannerPayload.Update(progress: fractionCompleted),
+                                for: token
+                            )
                         }
                     }
 
@@ -624,7 +627,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                         }
                     } else {
                         Task {
-                            await showErrorBanner(scene: scene, errorDescription: resultsUpload.error.errorDescription)
+                            await showErrorBanner(scene: scene, text: resultsUpload.error.errorDescription)
                         }
                     }
                 }
@@ -745,7 +748,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
                 Task {
-                    await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription)
                 }
             }
 
@@ -916,7 +919,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(controller: self.controller, errorDescription: error.errorDescription)
+                await showErrorBanner(controller: self.controller, text: error.errorDescription)
             }
             guard session.account == account else {
                 return

@@ -84,7 +84,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.loadComments()
                 } else {
                     Task {
-                        await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
+                        await showErrorBanner(controller: self.tabBarController, text: error.errorDescription)
                     }
                 }
             }
@@ -439,7 +439,7 @@ extension NCActivity {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 Task {
-                    await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
+                    await showErrorBanner(controller: self.tabBarController, text: error.errorDescription)
                 }
             }
 
@@ -579,7 +579,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                                 self.loadComments()
                             } else {
                                 Task {@MainActor in
-                                    await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
+                                    await showErrorBanner(controller: self.tabBarController, text: error.errorDescription)
                                 }
                             }
                         }
@@ -611,7 +611,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             self.loadComments()
                         } else {
                             Task {
-                                await showErrorBanner(controller: self.tabBarController, errorDescription: error.errorDescription)
+                                await showErrorBanner(controller: self.tabBarController, text: error.errorDescription)
                             }
                         }
                     }
