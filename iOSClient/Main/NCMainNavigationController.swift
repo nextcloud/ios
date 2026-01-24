@@ -178,37 +178,31 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             Task { @MainActor in
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-                guard capabilities.notification.count > 0 else {
-                    if self.isNotificationsButtonVisible() {
-                        self.controller?.availableNotifications = false
-                        await self.updateRightBarButtonItems()
-                    }
-                    return
-                }
 
                 // Notification
-                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                    name: "getNotifications")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
-                if resultsNotification.error == .success,
-                    let notifications = resultsNotification.notifications,
-                    notifications.count > 0 {
-                    if !self.isNotificationsButtonVisible() {
-                        self.controller?.availableNotifications = true
-                        await self.updateRightBarButtonItems()
-                    }
+                //
+                if capabilities.notification.count == 0 {
+                    self.controller?.availableNotifications = false
                 } else {
-                    if self.isNotificationsButtonVisible() {
+                    let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                        name: "getNotifications")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
+                    if resultsNotification.error == .success,
+                       let notifications = resultsNotification.notifications,
+                       notifications.count > 0 {
+                        self.controller?.availableNotifications = true
+                    } else {
                         self.controller?.availableNotifications = false
-                        await self.updateRightBarButtonItems()
                     }
                 }
+                await self.updateRightBarButtonItems()
 
                 // Menu Plus
+                //
                 let session = NCSession.shared.getSession(account: account)
                 await self.createPlusMenu(session: session, capabilities: capabilities)
             }
