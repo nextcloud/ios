@@ -219,7 +219,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                         destination: String?,
                         error: NKError) {
         if error != .success {
-            NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(sceneIdentifier: sceneIdentifier, text: error.errorDescription)
+            }
         }
 
         Task { @MainActor in

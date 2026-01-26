@@ -250,8 +250,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         self.documentController?.presentOptionsMenu(from: CGRect.zero, in: self.view, animated: true)
                                     }
                                 } else {
-
-                                    NCContentPresenter().showError(error: error)
+                                    Task {
+                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                                    }
                                 }
                             })
                         }
@@ -311,8 +312,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else {
-                    NCContentPresenter().showError(error: error)
-                }
+                    Task {
+                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                    }                }
             }
         }
     }
@@ -332,7 +334,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                }
             }
         }
     }
