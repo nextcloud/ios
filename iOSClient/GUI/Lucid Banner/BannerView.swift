@@ -19,10 +19,7 @@ func showBanner(scene: UIWindowScene?,
                 vPosition: LucidBanner.VerticalPosition = .top,
                 backgroundColor: UIColor) async {
 #if !EXTENSION
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title ?? "", comment: ""),
@@ -102,10 +99,7 @@ func showInfoBanner(scene: UIWindowScene?,
                     foregroundColor: UIColor = .label,
                     backgroundColor: UIColor = .systemBackground) async {
 #if !EXTENSION
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
 
     let payload = LucidBannerPayload(
@@ -192,10 +186,7 @@ func showErrorBanner(scene: UIWindowScene?,
                      sleepBefore: Double = 1) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
 #if !EXTENSION
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
 
     let payload = LucidBannerPayload(
