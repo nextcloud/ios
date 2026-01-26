@@ -11,7 +11,7 @@ import NextcloudKit
 import PopupView
 
 struct NCAssistant: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @State var model: NCAssistantModel
     @State var chatModel: NCAssistantChatModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
@@ -88,7 +88,7 @@ struct NCAssistant: View {
 }
 
 struct TaskList: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Binding var model: NCAssistantModel
     @State var presentEditTask = false
     @State var showDeleteConfirmation = false
 
@@ -177,7 +177,7 @@ struct TaskList: View {
 }
 
 struct TypeButton: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Binding var model: NCAssistantModel
 
     let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
@@ -212,7 +212,7 @@ struct TypeButton: View {
 }
 
 struct TaskItem: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Binding var model: NCAssistantModel
     @Binding var showDeleteConfirmation: Bool
     @Binding var taskToDelete: AssistantTask?
     var task: AssistantTask
@@ -257,7 +257,7 @@ struct TaskItem: View {
 }
 
 struct TypeList: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Binding var model: NCAssistantModel
 
     var body: some View {
         ScrollViewReader { scrollProxy in
