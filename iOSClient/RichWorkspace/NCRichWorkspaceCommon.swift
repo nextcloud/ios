@@ -10,8 +10,9 @@ class NCRichWorkspaceCommon: NSObject {
 
     func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(controller: controller, text: "_go_online_")
+            }
             return
         }
 
@@ -46,10 +47,12 @@ class NCRichWorkspaceCommon: NSObject {
         }
     }
 
-    func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, session: NCSession.Session) {
+    func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            return NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(controller: controller, text: "_go_online_")
+            }
+            return
         }
 
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
@@ -78,7 +81,9 @@ class NCRichWorkspaceCommon: NSObject {
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
                     } else if error != .success {
-                        NCContentPresenter().showError(error: error)
+                        Task {
+                            await showErrorBanner(controller: controller, text: error.errorDescription)
+                        }
                     }
                 }
             } else {

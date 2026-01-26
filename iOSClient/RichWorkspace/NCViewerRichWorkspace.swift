@@ -73,6 +73,9 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self, session: session)
+        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl,
+                                                    viewController: self,
+                                                    controller: delegate?.tabBarController as? NCMainTabBarController,
+                                                    session: session)
     }
 }

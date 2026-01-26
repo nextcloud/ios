@@ -342,7 +342,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                                    NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
                             richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: self.controller, session: session)
                         } else {
-                            richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
+                            richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: controller, session: session)
                         }
                     }
                 }
