@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 import NextcloudKit
 import Alamofire
 import LucidBanner
+import SwiftUI
 
 class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -144,8 +145,7 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                let error = NKError(error: error)
-                await showErrorBanner(controller: controller, errorDescription: error.errorDescription)
+                await showErrorBanner(controller: controller, text: error.localizedDescription)
             }
             return
         }
@@ -196,9 +196,15 @@ class NCDragDrop: NSObject {
         var downloadRequest: DownloadRequest?
         let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
 
+        let payload = LucidBannerPayload(stage: nil,
+                                         backgroundColor: Color(.systemBackground),
+                                         vPosition: .bottom,
+                                         verticalMargin: 55,
+                                         blocksTouches: false,
+                                         draggable: false)
         let token = showUploadBanner(scene: scene,
-                                     vPosition: .bottom,
-                                     verticalMargin: 55,
+                                     payload: payload,
+                                     allowMinimizeOnTap: false,
                                      onButtonTap: {
             if let downloadRequest {
                 downloadRequest.cancel()
@@ -207,10 +213,13 @@ class NCDragDrop: NSObject {
             }
         })
 
-        LucidBanner.shared.update(title: NSLocalizedString("_transfer_in_progress_", comment: ""),
-                                  subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-                                  systemImage: "arrow.left.arrow.right.circle",
-                                  imageAnimation: .pulsebyLayer)
+        let payloadUpdate = LucidBannerPayload.Update(
+            title: NSLocalizedString("_transfer_in_progress_", comment: ""),
+            subtitle: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+            systemImage: "arrow.left.arrow.right.circle",
+            imageAnimation: .pulsebyLayer,
+        )
+        LucidBanner.shared.update(payload: payloadUpdate)
 
         for (index, metadata) in metadatas.enumerated() {
             if metadata.directory {
@@ -226,7 +235,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription)
+                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
                     break
                 }
             }
@@ -248,11 +257,13 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(scene: scene, errorDescription: results.error.errorDescription)
+                await showErrorBanner(scene: scene, text: results.error.errorDescription)
                 break
             }
 
-            LucidBanner.shared.update(progress: Double(index + 1) / Double(metadatas.count), for: token)
+            LucidBanner.shared.update(
+                payload: LucidBannerPayload.Update(progress: Double(index + 1) / Double(metadatas.count)),
+                for: token)
         }
 
         await collectionViewCommon.getServerData(forced: true)

@@ -64,12 +64,14 @@ class NCService: NSObject {
             if serverInfo.maintenance {
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-                NCContentPresenter().showWarning(error: error, priority: .max)
+                await showInfoBanner(controller: controller,
+                                     title: "_warning_",
+                                     text: "_warning_owncloud_")
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-                NCContentPresenter().showWarning(error: error, priority: .max)
+                await showInfoBanner(controller: controller,
+                                     title: "_warning_",
+                                     text: "_warning_unsupported_")
             }
         case .failure:
             return false

@@ -92,8 +92,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 photosPermissionsGranted = value
 
                 if value, UIApplication.shared.backgroundRefreshStatus != .available {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_background_app_refresh_denied_", comment: ""), responseData: nil)
-                    NCContentPresenter().messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .info)
+                    Task {
+                        await showInfoBanner(controller: controller,
+                                             text: "_access_background_app_refresh_denied_")
+                    }
                 }
             }
         }

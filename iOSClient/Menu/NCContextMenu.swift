@@ -104,7 +104,9 @@ class NCContextMenu: NSObject {
         ) { _ in
             NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                 if error != .success {
-                    NCContentPresenter().showError(error: error)
+                    Task {
+                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                    }
                 }
             }
         }
@@ -230,7 +232,7 @@ class NCContextMenu: NSObject {
                     userId: metadata.userId
                 )
                 if error != .success {
-                    NCContentPresenter().showError(error: error)
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
                 }
             }
         }
@@ -268,12 +270,9 @@ class NCContextMenu: NSObject {
                     await NCManageDatabase.shared.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
-                    NCContentPresenter().messageNotification(
-                        NSLocalizedString("_e2e_error_", comment: ""),
-                        error: results.error,
-                        delay: NCGlobal.shared.dismissAfterSecond,
-                        type: .error
-                    )
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier,
+                                          title: "_e2e_error_",
+                                          text: results.error.errorDescription)
                 }
             }
         }
@@ -337,9 +336,7 @@ class NCContextMenu: NSObject {
                         fileNameNew
                     )
                 ) != nil {
-                    NCContentPresenter().showError(
-                        error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_")
-                    )
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: "_rename_already_exists_")
                     return
                 }
 
@@ -542,7 +539,7 @@ class NCContextMenu: NSObject {
                                                                                               params: item.params)
 
                                     if response.error != .success {
-                                        NCContentPresenter().showError(error: response.error)
+                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: response.error.errorDescription)
                                     } else {
                                         if let tooltip = response.uiResponse?.ocs.data.tooltip {
                                             NCContentPresenter().showCustomMessage(message: tooltip, type: .success)

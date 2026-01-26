@@ -41,7 +41,7 @@ class NCCreate: NSObject {
             }
             guard results.error == .success, let url = results.url else {
                 Task {
-                    await showErrorBanner(controller: controller, errorDescription: results.error.errorDescription)
+                    await showErrorBanner(controller: controller, text: results.error.errorDescription)
                 }
                 return
             }
@@ -68,7 +68,7 @@ class NCCreate: NSObject {
             }
             guard results.error == .success, let url = results.url else {
                 Task {
-                    await showErrorBanner(controller: controller, errorDescription: results.error.errorDescription)
+                    await showErrorBanner(controller: controller, text: results.error.errorDescription)
                 }
                 return
             }
@@ -295,9 +295,8 @@ class NCCreate: NSObject {
                 } progressHandler: { progress in
                     Task { @MainActor in
                         LucidBanner.shared.update(
-                            progress: progress.fractionCompleted,
-                            for: token
-                        )
+                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                            for: token)
                     }
                 }
 

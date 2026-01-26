@@ -20,7 +20,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     return
                 }
             } else {
-                NCContentPresenter().showInfo(error: NKError(errorCode: global.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
+                Task {
+                    await showInfoBanner(controller: self.controller, text: "_e2e_server_disabled_")
+                }
                 return
             }
         }
@@ -51,7 +53,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 downloadRequest = request
             } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: tokenBanner)
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                        for: tokenBanner)
                 }
             }
             await MainActor.run {
@@ -61,7 +65,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await showErrorBanner(scene: scene, errorDescription: results.nkError.errorDescription)
+                await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
             }
         }
 
@@ -114,8 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     }
                 } else {
                     Task {
-                        await showErrorBanner(controller: controller, errorDescription: "_go_online_")
-
+                        await showErrorBanner(controller: controller, text: "_go_online_")
                     }
                 }
             }

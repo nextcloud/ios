@@ -475,7 +475,9 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }, progressHandler: { progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(progress: Double(progress.fractionCompleted), for: token)
+                        LucidBanner.shared.update(
+                            payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                            for: token)
                     }
                 }) { _, etag, _, _, _, _, error in
                     Task {
@@ -492,7 +494,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                         if error == .success {
                             self.addPlaybackSlave(type: type, metadata: metadata)
                         } else if error.errorCode != 200 {
-                            await showErrorBanner(scene: scene, errorDescription: error.errorDescription)
+                            await showErrorBanner(scene: scene, text: error.errorDescription)
                         }
                     }
                 }
