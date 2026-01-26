@@ -1,33 +1,30 @@
-//
-//  NCAssistant.swift
-//  Nextcloud
-//
-//  Created by Milen on 03.04.24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
 import PopupView
 
 struct NCAssistant: View {
-    @State var model: NCAssistantModel
+    @State var assistantModel: NCAssistantModel
     @State var chatModel: NCAssistantChatModel
+    
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
             ZStack {
-                if model.types.isEmpty, !model.isLoading {
+                if assistantModel.types.isEmpty, !assistantModel.isLoading {
                     NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
-                } else if model.isSelectedTypeChat {
-                    NCAssistantChat(model: $chatModel)
+                } else if assistantModel.isSelectedTypeChat {
+                    NCAssistantChat()
                 } else {
                     TaskList()
                 }
 
-                if model.isLoading, !model.isRefreshing {
+                if assistantModel.isLoading, !assistantModel.isRefreshing {
                     ProgressView()
                         .controlSize(.regular)
                 }
@@ -46,7 +43,7 @@ struct NCAssistant: View {
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
-                    .disabled(model.selectedType == nil)
+                    .disabled(assistantModel.selectedType == nil)
                     .accessibilityIdentifier("SessionsButton")
                 }
             }
@@ -59,7 +56,7 @@ struct NCAssistant: View {
 
         }
         .navigationViewStyle(.stack)
-        .popup(isPresented: $model.hasError) {
+        .popup(isPresented: $assistantModel.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
                 .padding()
                 .background(.red)
@@ -71,7 +68,8 @@ struct NCAssistant: View {
                 .position(.bottom)
         }
         .accentColor(Color(NCBrandColor.shared.iconImageColor))
-        .environmentObject(model)
+        .environment(assistantModel)
+        .environment(chatModel)
     }
 }
 
@@ -79,16 +77,14 @@ struct NCAssistant: View {
     @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
     let model = NCAssistantModel(controller: nil)
 
-    NCAssistant(chatModel: chatModel)
-        .environmentObject(model)
-    //        .environment(chatModel)
+    NCAssistant(assistantModel: model, chatModel: chatModel)
         .onAppear {
             model.loadDummyData()
         }
 }
 
 struct TaskList: View {
-    @Binding var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
     @State var presentEditTask = false
     @State var showDeleteConfirmation = false
 
@@ -165,9 +161,9 @@ struct TaskList: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField(isLoading: model.$isLoading) { input in
-                model.scheduleTask(input: input)
-            }
+//            ChatInputField(isLoading: model._isLoading) { input in
+//                model.scheduleTask(input: input)
+//            }
         }
 
         if model.filteredTasks.isEmpty, !model.isLoading {
@@ -177,7 +173,7 @@ struct TaskList: View {
 }
 
 struct TypeButton: View {
-    @Binding var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
 
     let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
@@ -212,7 +208,7 @@ struct TypeButton: View {
 }
 
 struct TaskItem: View {
-    @Binding var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
     @Binding var showDeleteConfirmation: Bool
     @Binding var taskToDelete: AssistantTask?
     var task: AssistantTask
@@ -257,7 +253,7 @@ struct TaskItem: View {
 }
 
 struct TypeList: View {
-    @Binding var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
 
     var body: some View {
         ScrollViewReader { scrollProxy in

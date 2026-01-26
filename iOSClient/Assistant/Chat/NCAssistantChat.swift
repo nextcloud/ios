@@ -24,14 +24,14 @@ import NextcloudKit
 // MARK: - Main View
 
 struct NCAssistantChat: View {
-    @Binding var model: NCAssistantChatModel
+    @Environment(NCAssistantChatModel.self) var chatModel
 
 //    init(controller: NCMainTabBarController?) {
 //        self.model = NCAssistantChatModel(controller: controller)
 //    }
 
     var body: some View {
-        if model.messages.isEmpty {
+        if chatModel.messages.isEmpty {
                 NCAssistantEmptyView(titleKey: "_no_chat_", subtitleKey: "_no_chat_subtitle_")
         }
         
@@ -46,9 +46,9 @@ struct NCAssistantChat: View {
 //            }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField { input in
-                model.sendMessage(input: input)
-            }
+//            ChatInputField { input in
+//                chatModel.sendMessage(input: input)
+//            }
         }
         .navigationTitle("Assistant Chat")
         .navigationBarTitleDisplayMode(.inline)
@@ -58,26 +58,26 @@ struct NCAssistantChat: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 12) {
-                    ForEach(model.messages) { message in
-                        MessageBubbleView(message: message, account: model.controller?.account ?? "")
+                    ForEach(chatModel.messages) { message in
+                        MessageBubbleView(message: message, account: chatModel.controller?.account ?? "")
                             .id(message.id)
                     }
 
-                    if model.isThinking {
+                    if chatModel.isThinking {
                         ThinkingBubbleView()
                             .id("thinking")
                     }
                 }
                 .padding(.vertical)
             }
-            .onChange(of: model.messages.count) { _, _ in
+            .onChange(of: chatModel.messages.count) { _, _ in
                 withAnimation {
-                    if let lastMessage = model.messages.last {
+                    if let lastMessage = chatModel.messages.last {
                         proxy.scrollTo(lastMessage.id, anchor: .bottom)
                     }
                 }
             }
-            .onChange(of: model.isThinking) { _, isThinking in
+            .onChange(of: chatModel.isThinking) { _, isThinking in
                 if isThinking {
                     withAnimation {
                         proxy.scrollTo("thinking", anchor: .bottom)
@@ -178,14 +178,10 @@ struct ThinkingBubbleView: View {
     }
 }
 
-// MARK: - Chat Input Field
-
-
 // MARK: - Empty Chat View
 
 struct EmptyChatView: View {
-//    let account: String
-    @Bindable var model: NCAssistantChatModel
+    @Environment(NCAssistantChatModel.self) var chatModel
 
     var body: some View {
         VStack(spacing: 16) {
@@ -193,7 +189,7 @@ struct EmptyChatView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
+                .foregroundStyle(Color(NCBrandColor.shared.getElement(account: chatModel.controller?.account)))
                 .font(Font.system(.body).weight(.light))
                 .frame(height: 100)
 
@@ -216,7 +212,8 @@ struct EmptyChatView: View {
     @Previewable @State var model = NCAssistantChatModel(controller: nil)
 
     NavigationStack {
-        NCAssistantChat(model: $model)
+        NCAssistantChat()
+            .environment(model)
             .onAppear {
                 // Preview will show empty state
             }
@@ -226,13 +223,11 @@ struct EmptyChatView: View {
 #Preview("With Messages") {
     @Previewable @State var model = NCAssistantChatModel(controller: nil)
 
-    let chat = NCAssistantChat(model: $model)
-
-    return NavigationStack {
-        chat
+    NavigationStack {
+        NCAssistantChat()
+            .environment(model)
             .onAppear {
 //                chat.model.loadDummyData()
             }
     }
 }
-

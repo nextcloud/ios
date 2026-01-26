@@ -7,27 +7,28 @@ import UIKit
 import NextcloudKit
 import SwiftUI
 
-class NCAssistantModel: ObservableObject {
-    @Published var types: [TaskTypeData] = []
-    @Published var filteredTasks: [AssistantTask] = []
-    @Published var selectedType: TaskTypeData?
-    @Published var selectedTask: AssistantTask?
+@Observable
+class NCAssistantModel {
+    var types: [TaskTypeData] = []
+    var filteredTasks: [AssistantTask] = []
+    var selectedType: TaskTypeData?
+    var selectedTask: AssistantTask?
 
-    @Published var hasError: Bool = false
-    @Published var isLoading: Bool = false
-    @Published var isRefreshing: Bool = false
+    var hasError: Bool = false
+    var isLoading: Bool = false
+    var isRefreshing: Bool = false
 
-    let controller: NCMainTabBarController?
+    @ObservationIgnored let controller: NCMainTabBarController?
 
-    private var tasks: [AssistantTask] = []
+    @ObservationIgnored private var tasks: [AssistantTask] = []
 
-    private let session: NCSession.Session
+    @ObservationIgnored private let session: NCSession.Session
 
-    private let useV2: Bool
+    @ObservationIgnored private let useV2: Bool
 
-    private let chatTypeId = "core:text2text:chat"
+    @ObservationIgnored private let chatTypeId = "core:text2text:chat"
 
-    var isSelectedTypeChat: Bool { selectedType?.id == chatTypeId }
+    @ObservationIgnored var isSelectedTypeChat: Bool { selectedType?.id == chatTypeId }
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller

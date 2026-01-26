@@ -98,8 +98,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
         assistantButton.tintColor = NCBrandColor.shared.iconImageColor
         assistantButton.addAction(UIAction(handler: { _ in
-            let assistant = NCAssistant(chatModel: NCAssistantChatModel(controller: self.controller))
-                .environmentObject(NCAssistantModel(controller: self.controller))
+            let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: self.controller), chatModel: NCAssistantChatModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             self.present(hostingController, animated: true, completion: nil)
         }), for: .touchUpInside)
