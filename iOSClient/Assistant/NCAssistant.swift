@@ -19,7 +19,9 @@ struct NCAssistant: View {
     var body: some View {
         NavigationView {
             ZStack {
-                if model.isSelectedTypeChat {
+                if model.types.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
+                } else if model.isSelectedTypeChat {
                     NCAssistantChat(model: $chatModel)
                 } else {
                     TaskList()
@@ -29,13 +31,6 @@ struct NCAssistant: View {
                     ProgressView()
                         .controlSize(.regular)
                 }
-
-                if model.types.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
-                } else if model.filteredTasks.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
-                }
-
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -170,9 +165,13 @@ struct TaskList: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField { input in
+            ChatInputField(isLoading: model.$isLoading) { input in
                 model.scheduleTask(input: input)
             }
+        }
+
+        if model.filteredTasks.isEmpty, !model.isLoading {
+            NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
         }
     }
 }

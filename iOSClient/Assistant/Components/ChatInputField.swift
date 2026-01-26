@@ -7,9 +7,10 @@ import SwiftUI
 
 struct ChatInputField: View {
 //    @Bindable var model: NCAssistantChatModel
-    var onSend: ((_ input: String) -> Void)? = nil
     @FocusState private var isInputFocused: Bool
     @State var text: String = ""
+    @Binding var isLoading: Bool
+    var onSend: ((_ input: String) -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 8) {
@@ -31,7 +32,7 @@ struct ChatInputField: View {
                     .font(.system(size: 28))
 //                    .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
             }
-//            .disabled(model.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.isThinking)
+            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
 //            .opacity(model.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.isThinking ? 0.5 : 1.0)
         }
         .padding(.horizontal)

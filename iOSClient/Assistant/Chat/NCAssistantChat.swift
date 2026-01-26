@@ -31,6 +31,10 @@ struct NCAssistantChat: View {
 //    }
 
     var body: some View {
+        if model.messages.isEmpty {
+                NCAssistantEmptyView(titleKey: "_no_chat_", subtitleKey: "_no_chat_subtitle_")
+        }
+        
         ZStack {
             VStack(spacing: 0) {
                 messageListView
