@@ -21,7 +21,7 @@ func showUploadBanner(scene: UIWindowScene?,
 
 #if !EXTENSION
     if allowMinimizeOnTap {
-        LucidBannerMinimizeCoordinator.shared.register(token: token) { context in
+        LucidBannerVariantCoordinator.shared.register(token: token) { context in
             let bounds = context.bounds
             let controller = SceneManager.shared.getController(scene: scene)
             var height: CGFloat = 0
@@ -75,7 +75,7 @@ struct UploadBannerView: View {
         let isButton = (state.payload.stage == .button)
 
         containerView(state: state, allowMinimizeOnTap: allowMinimizeOnTap) {
-            if state.isMinimized {
+            if state.variant == .alternate {
                 HStack(spacing: 5) {
                     Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
