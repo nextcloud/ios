@@ -272,7 +272,7 @@ class NCShareExtension: UIViewController {
         guard let capabilities = NCNetworking.shared.capabilities[session.account] else {
             return
         }
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities, scene: self.view.window?.windowScene) { error in
             if error == .success {
                 Task {
                     await self.loadFolder()

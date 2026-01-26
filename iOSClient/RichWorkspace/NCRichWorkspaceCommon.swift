@@ -8,7 +8,7 @@ import NextcloudKit
 class NCRichWorkspaceCommon: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, session: NCSession.Session) {
+    func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             NCContentPresenter().showError(error: error)
@@ -39,7 +39,9 @@ class NCRichWorkspaceCommon: NSObject {
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
             } else if error != .success {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: controller, text: error.errorDescription)
+                }
             }
         }
     }

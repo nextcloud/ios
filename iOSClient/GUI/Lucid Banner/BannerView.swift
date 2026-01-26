@@ -161,22 +161,6 @@ func showErrorBanner(sceneIdentifier: String?,
 #endif
 
 @MainActor
-func showErrorBanner(title: String = "_error_",
-                     text: String,
-                     footnote: String? = nil,
-                     foregroundColor: UIColor = .white,
-                     backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
-    await showErrorBanner(scene: nil,
-                          title: title,
-                          text: text,
-                          footnote: footnote,
-                          foregroundColor: foregroundColor,
-                          backgroundColor: backgroundColor,
-                          sleepBefore: sleepBefore)
-}
-
-@MainActor
 func showErrorBanner(scene: UIWindowScene?,
                      title: String = "_error_",
                      text: String,

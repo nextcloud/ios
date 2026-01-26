@@ -169,6 +169,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     viewController.includeImages = true
                     viewController.type = ""
                     viewController.session = session
+                    viewController.controller = self.tabBarController as? NCMainTabBarController
 
                     self.present(navigationController, animated: true, completion: nil)
                 }
