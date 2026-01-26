@@ -6,6 +6,31 @@ import SwiftUI
 import LucidBanner
 
 // MARK: - Show Banner
+#if !EXTENSION
+@MainActor
+func showBannerActiveScenes(title: String?,
+                            subtitle: String? = nil,
+                            footnote: String? = nil,
+                            textColor: UIColor,
+                            image: String?,
+                            imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                            imageColor: UIColor,
+                            vPosition: LucidBanner.VerticalPosition = .top,
+                            backgroundColor: UIColor) async {
+    for scene in UIApplication.shared.foregroundActiveScenes {
+        await showBanner(scene: scene,
+                         title: title,
+                         subtitle: subtitle,
+                         footnote: footnote,
+                         textColor: textColor,
+                         image: image,
+                         imageAnimation: imageAnimation,
+                         imageColor: imageColor,
+                         vPosition: vPosition,
+                         backgroundColor: backgroundColor)
+    }
+}
+#endif
 
 @MainActor
 func showBanner(scene: UIWindowScene?,
@@ -46,6 +71,22 @@ func showBanner(scene: UIWindowScene?,
 
 #if !EXTENSION
 @MainActor
+func showInfoBannerActiveScenes(title: String = "_error_",
+                                text: String,
+                                footnote: String? = nil,
+                                foregroundColor: UIColor = .label,
+                                backgroundColor: UIColor = .systemBackground) async {
+    for scene in UIApplication.shared.foregroundActiveScenes {
+        await showInfoBanner(scene: scene,
+                             title: title,
+                             text: text,
+                             footnote: footnote,
+                             foregroundColor: foregroundColor,
+                             backgroundColor: backgroundColor)
+    }
+}
+
+@MainActor
 func showInfoBanner(controller: UITabBarController?,
                     title: String = "_info_",
                     text: String,
@@ -76,20 +117,6 @@ func showInfoBanner(sceneIdentifier: String?,
 }
 
 #endif
-
-@MainActor
-func showInfoBanner(title: String = "_error_",
-                    text: String,
-                    footnote: String? = nil,
-                    foregroundColor: UIColor = .label,
-                    backgroundColor: UIColor = .systemBackground) async {
-    await showInfoBanner(scene: nil,
-                         title: title,
-                         text: text,
-                         footnote: footnote,
-                         foregroundColor: foregroundColor,
-                         backgroundColor: backgroundColor)
-}
 
 @MainActor
 func showInfoBanner(scene: UIWindowScene?,
@@ -124,6 +151,24 @@ func showInfoBanner(scene: UIWindowScene?,
 // MARK: - Show Error
 
 #if !EXTENSION
+@MainActor
+func showErrorBannerActiveScenes(title: String = "_error_",
+                                 text: String,
+                                 footnote: String? = nil,
+                                 foregroundColor: UIColor = .white,
+                                 backgroundColor: UIColor = .red,
+                                 sleepBefore: Double = 1) async {
+    for scene in UIApplication.shared.foregroundActiveScenes {
+        await showErrorBanner(scene: scene,
+                              title: title,
+                              text: text,
+                              footnote: footnote,
+                              foregroundColor: foregroundColor,
+                              backgroundColor: backgroundColor,
+                              sleepBefore: sleepBefore)
+    }
+}
+
 @MainActor
 func showErrorBanner(controller: UITabBarController?,
                      title: String = "_error_",
