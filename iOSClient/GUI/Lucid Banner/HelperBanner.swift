@@ -12,7 +12,7 @@ public extension View {
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
         let isSuccess = state.payload.stage == .success
-        let isMinimized = state.isMinimized
+        let isMinimized = state.variant == .alternate
 
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
         let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
@@ -22,7 +22,7 @@ public extension View {
             .contentShape(Rectangle())
             .onTapGesture {
                 guard allowMinimizeOnTap else { return }
-                LucidBannerMinimizeCoordinator.shared.handleTap(state)
+                LucidBannerVariantCoordinator.shared.handleTap(state)
             }
             .frame(maxWidth: maxWidth)
 
