@@ -139,19 +139,17 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     }
 
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any) {
-        if !isEditMode {
-            toggleMenuMore(with: objectId, image: image, isGridCell: false, sender: sender)
-        } else if let button = sender as? UIView {
+        // Menu is now shown via native context menu on the button
+        if isEditMode, let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        } // else: undefined sender
+        }
     }
 
     func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any) {
-        if !isEditMode {
-            toggleMenuMore(with: objectId, image: image, isGridCell: true, sender: sender)
-        } else if let button = sender as? UIView {
+        // Menu is now shown via native context menu on the button
+        if isEditMode, let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
             collectionView(self.collectionView, didSelectItemAt: indexPath!)

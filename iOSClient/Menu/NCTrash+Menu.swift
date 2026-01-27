@@ -24,77 +24,44 @@
 //
 
 import UIKit
-import FloatingPanel
 import NextcloudKit
 
-extension NCTrash {
-    func toggleMenuMore(with objectId: String, image: UIImage?, isGridCell: Bool, sender: Any?) {
-        guard let tblTrash = self.database.getTableTrash(fileId: objectId, account: session.account)
-        else {
-            return
-        }
-        guard isGridCell
-        else {
-            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: tblTrash.trashbinFileName, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
-                Task {
-                    await self.deleteItems(with: [objectId])
-                }
-            }))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-            self.present(alert, animated: true, completion: nil)
-            return
-        }
+class NCContextMenuTrash: NSObject {
+    let objectId: String
+    let utility = NCUtility()
+    weak var trashController: NCTrash?
 
-        var actions: [NCMenuAction] = []
+    init(objectId: String, trashController: NCTrash?) {
+        self.objectId = objectId
+        self.trashController = trashController
+    }
 
-        var iconHeader: UIImage!
-        if let icon = utility.getImage(ocId: tblTrash.fileId, etag: tblTrash.fileName, ext: NCGlobal.shared.previewExt512, userId: session.userId, urlBase: session.urlBase) {
-            iconHeader = icon
-        } else {
-            if tblTrash.directory {
-                iconHeader = NCImageCache.shared.getFolder(account: tblTrash.account)
-            } else {
-                iconHeader = NCImageCache.shared.getImageFile()
+    func viewMenu() -> UIMenu {
+        var actions: [UIMenuElement] = []
+
+        let restoreAction = UIAction(
+            title: NSLocalizedString("_restore_", comment: ""),
+            image: utility.loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
+        ) { [weak self] _ in
+            guard let self, let controller = self.trashController else { return }
+            Task {
+                await controller.restoreItem(with: self.objectId)
             }
         }
+        actions.append(restoreAction)
 
-        actions.append(
-            NCMenuAction(
-                title: tblTrash.trashbinFileName,
-                icon: iconHeader,
-                sender: sender,
-                action: nil
-            )
-        )
+        let deleteAction = UIAction(
+            title: NSLocalizedString("_delete_", comment: ""),
+            image: utility.loadImage(named: "trash", colors: [.red]),
+            attributes: .destructive
+        ) { [weak self] _ in
+            guard let self, let controller = self.trashController else { return }
+            Task {
+                await controller.deleteItems(with: [self.objectId])
+            }
+        }
+        actions.append(deleteAction)
 
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_restore_", comment: ""),
-                icon: utility.loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor]),
-                sender: sender,
-                action: { _ in
-                    Task {
-                        await self.restoreItem(with: objectId)
-                    }
-                }
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_delete_", comment: ""),
-                destructive: true,
-                icon: utility.loadImage(named: "trash", colors: [.red]),
-                sender: sender,
-                action: { _ in
-                    Task {
-                        await self.deleteItems(with: [objectId])
-                    }
-                }
-            )
-        )
-
-        presentMenu(with: actions, controller: controller, sender: sender)
+        return UIMenu(title: "", children: actions)
     }
 }
