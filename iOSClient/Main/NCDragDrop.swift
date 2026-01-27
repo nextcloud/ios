@@ -198,8 +198,8 @@ class NCDragDrop: NSObject {
 
         let payload = LucidBannerPayload(stage: nil,
                                          backgroundColor: Color(.systemBackground),
-                                         vPosition: .bottom,
-                                         verticalMargin: 55,
+                                         vPosition: .center,
+                                         horizontalMargin: 20,
                                          blocksTouches: false,
                                          draggable: false)
         let token = showUploadBanner(scene: scene,
