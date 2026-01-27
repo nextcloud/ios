@@ -284,7 +284,9 @@ extension NCNetworking {
             await uploadCancelFile(metadata: metadata)
         } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) && error.errorDescription.localizedCaseInsensitiveContains("virus") {
             await uploadCancelFile(metadata: metadata)
-            NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
+            #if !EXTENSION
+            await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: "_virus_detect_")
+            #endif
             // Client Diagnostic
             await NCManageDatabase.shared.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
         } else if error.errorCode == self.global.errorForbidden {

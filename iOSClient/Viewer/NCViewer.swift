@@ -84,7 +84,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
-                        NCContentPresenter().showError(error: results.error)
+                        await showErrorBanner(controller: delegate?.tabBarController as? NCMainTabBarController, text: results.error.errorDescription)
                         return nil
                     }
 
@@ -138,7 +138,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
-                        NCContentPresenter().showError(error: results.error)
+                        await showErrorBanner(controller: delegate?.tabBarController as? NCMainTabBarController, text: results.error.errorDescription)
                         return nil
                     }
 

@@ -173,9 +173,12 @@ class NCShareExtension: UIViewController {
 
     // MARK: -
 
-    func cancel(with error: NCShareExtensionError) {
-        // make sure no uploads are continued
-        extensionContext?.cancelRequest(withError: error)
+    func cancel(with error: NCShareExtensionError? = nil) {
+        if let error {
+            extensionContext?.cancelRequest(withError: error)
+        } else {
+            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+        }
     }
 
     func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
@@ -264,7 +267,7 @@ class NCShareExtension: UIViewController {
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        cancel(with: .cancel)
+        cancel()
     }
 
     @objc func actionCreateFolder(_ sender: Any?) {
@@ -272,7 +275,7 @@ class NCShareExtension: UIViewController {
         guard let capabilities = NCNetworking.shared.capabilities[session.account] else {
             return
         }
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities, scene: self.view.window?.windowScene) { error in
             if error == .success {
                 Task {
                     await self.loadFolder()
@@ -368,15 +371,17 @@ extension NCShareExtension {
     @MainActor
     func uploadAndExit() async {
         var error: NKError?
-        let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
+        let payload = LucidBannerPayload(stage: .button,
+                                         backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         verticalMargin: 0,
-                                         blocksTouches: true,
-                                         draggable: false)
+                                         horizontalMargin: 20,
+                                         blocksTouches: true)
         token = showUploadBanner(scene: self.view.window?.windowScene,
                                  payload: payload,
-                                 allowMinimizeOnTap: false
-        )
+                                 allowMinimizeOnTap: false,
+                                 onButtonTap: {
+            self.cancel()
+        })
 
         for metadata in self.uploadMetadata {
             // BANNER
@@ -405,7 +410,7 @@ extension NCShareExtension {
         }
 
         LucidBanner.shared.dismiss(after: 2) {
-            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            self.cancel()
         }
     }
 
@@ -447,8 +452,7 @@ extension NCShareExtension {
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
-                        let progress = Double(counter) / Double(total)
-                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
+                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
@@ -460,10 +464,7 @@ extension NCShareExtension {
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(
-                            payload: LucidBannerPayload.Update(progress: progress),
-                            for: self.token)
-                        LucidBanner.shared.update(payload: payload, for: self.token)
+                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
                     }
                 } assembling: {
                     Task {@MainActor in

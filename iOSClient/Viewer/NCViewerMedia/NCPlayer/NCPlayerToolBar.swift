@@ -365,6 +365,7 @@ extension NCPlayerToolBar {
                         viewController.type = "subtitle"
                         viewController.serverUrl = metadata.serverUrl
                         viewController.session = NCSession.shared.getSession(account: metadata.account)
+                        viewController.controller = nil
 
                         self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                     }
@@ -430,6 +431,7 @@ extension NCPlayerToolBar {
                         viewController.type = "audio"
                         viewController.serverUrl = metadata.serverUrl
                         viewController.session = NCSession.shared.getSession(account: metadata.account)
+                        viewController.controller = nil
 
                         self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                     }

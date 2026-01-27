@@ -394,7 +394,7 @@ actor NCNetworkingProcess {
 
                     let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
                                                      vPosition: .center,
-                                                     verticalMargin: 0,
+                                                     horizontalMargin: 20,
                                                      blocksTouches: true,
                                                      draggable: false)
                     let token = await showUploadBanner(scene: scene,
@@ -448,7 +448,8 @@ actor NCNetworkingProcess {
                                        payload: LucidBannerPayload(stage: .button,
                                                                    backgroundColor: Color(.systemBackground),
                                                                    vPosition: .bottom,
-                                                                   verticalMargin: 55,
+                                                                   horizontalMargin: 20,
+                                                                   verticalMargin: 80,
                                                                    blocksTouches: false,
                                                                    draggable: true),
                                        allowMinimizeOnTap: true,
