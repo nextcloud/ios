@@ -29,9 +29,9 @@ import NextcloudKit
 class NCContextMenuTrash: NSObject {
     let objectId: String
     let utility = NCUtility()
-    weak var trashController: NCTrash?
+    let trashController: NCTrash
 
-    init(objectId: String, trashController: NCTrash?) {
+    init(objectId: String, trashController: NCTrash) {
         self.objectId = objectId
         self.trashController = trashController
     }
@@ -42,10 +42,9 @@ class NCContextMenuTrash: NSObject {
         let restoreAction = UIAction(
             title: NSLocalizedString("_restore_", comment: ""),
             image: utility.loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
-        ) { [weak self] _ in
-            guard let self, let controller = self.trashController else { return }
+        ) { [self] _ in
             Task {
-                await controller.restoreItem(with: self.objectId)
+                await trashController.restoreItem(with: objectId)
             }
         }
         actions.append(restoreAction)
@@ -54,10 +53,9 @@ class NCContextMenuTrash: NSObject {
             title: NSLocalizedString("_delete_", comment: ""),
             image: utility.loadImage(named: "trash", colors: [.red]),
             attributes: .destructive
-        ) { [weak self] _ in
-            guard let self, let controller = self.trashController else { return }
+        ) { [self] _ in
             Task {
-                await controller.deleteItems(with: [self.objectId])
+                await trashController.deleteItems(with: [objectId])
             }
         }
         actions.append(deleteAction)

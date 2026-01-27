@@ -368,6 +368,12 @@ extension NCShare: UITableViewDataSource {
             }
             cell.isDirectory = metadata.directory
             cell.setupCellUI()
+
+            if cell.tableShare != nil, let tableShare = shares.firstShareLink {
+                cell.menuButton.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self).viewMenu()
+                cell.menuButton.showsMenuAsPrimaryAction = true
+            }
+
             shareLinksCount += 1
             return cell
         }
@@ -383,6 +389,8 @@ extension NCShare: UITableViewDataSource {
                 cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI(titleAppendString: String(shareLinksCount))
+                cell.menuButton.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self).viewMenu()
+                cell.menuButton.showsMenuAsPrimaryAction = true
                 if tableShare.shareType == NKShare.ShareType.publicLink.rawValue { shareLinksCount += 1 }
                 return cell
             }
@@ -394,6 +402,9 @@ extension NCShare: UITableViewDataSource {
                 cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI(userId: session.userId, session: session, metadata: metadata)
+
+                cell.buttonMenu.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self).viewMenu()
+                cell.buttonMenu.showsMenuAsPrimaryAction = true
 
                 return cell
             }

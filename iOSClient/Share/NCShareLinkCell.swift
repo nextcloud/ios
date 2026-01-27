@@ -30,13 +30,14 @@ class NCShareLinkCell: UITableViewCell {
 
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var statusStackView: UIStackView!
-    @IBOutlet private weak var menuButton: UIButton!
+    @IBOutlet weak var menuButton: UIButton!
     @IBOutlet private weak var copyButton: UIButton!
     @IBOutlet weak var imageDownArrow: UIImageView!
 
     var tableShare: tableShare?
     var isDirectory = false
     weak var delegate: NCShareLinkCellDelegate?
+//    weak var shareController: NCShare?
     var isInternalLink = false
     var indexPath = IndexPath()
     let utility = NCUtility()
@@ -113,6 +114,41 @@ class NCShareLinkCell: UITableViewCell {
         statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
+
+        contentView.bringSubviewToFront(menuButton)
+        menuButton.menu = nil
+        menuButton.showsMenuAsPrimaryAction = true
+
+//        contentView.bringSubviewToFront()
+
+//
+//        // Configure native context menus
+//        if let tableShare, let shareController {
+//            let contextMenu = NCContextMenuShare(
+//                share: tableShare,
+//                isDirectory: isDirectory,
+//                canReshare: shareController.canReshare,
+//                shareController: shareController
+//            )
+//            menuButton.menu = contextMenu.viewMenu()
+//            menuButton.showsMenuAsPrimaryAction = true
+//
+//            // Create an invisible button over the status stack for quick permissions menu
+//            let quickMenuButton = UIButton(type: .system)
+//            quickMenuButton.translatesAutoresizingMaskIntoConstraints = false
+//            statusStackView.addSubview(quickMenuButton)
+//            NSLayoutConstraint.activate([
+//                quickMenuButton.leadingAnchor.constraint(equalTo: statusStackView.leadingAnchor),
+//                quickMenuButton.trailingAnchor.constraint(equalTo: statusStackView.trailingAnchor),
+//                quickMenuButton.topAnchor.constraint(equalTo: statusStackView.topAnchor),
+//                quickMenuButton.bottomAnchor.constraint(equalTo: statusStackView.bottomAnchor)
+//            ])
+//            quickMenuButton.menu = contextMenu.quickPermissionsMenu()
+//            quickMenuButton.showsMenuAsPrimaryAction = true
+//        } else {
+//            // For internal link or add new link, keep the old gesture
+//            statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
+//        }
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
@@ -124,7 +160,7 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     @objc func openQuickStatus(_ sender: UITapGestureRecognizer) {
-        delegate?.quickStatus(with: tableShare, sender: sender)
+//        delegate?.quickStatus(with: tableShare, sender: sender)
     }
 }
 
