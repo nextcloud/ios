@@ -31,6 +31,8 @@ struct NCAssistantChat: View {
 //    }
 
     var body: some View {
+        @Bindable var chatModel = chatModel
+
         if chatModel.messages.isEmpty {
                 NCAssistantEmptyView(titleKey: "_no_chat_", subtitleKey: "_no_chat_subtitle_")
         }
@@ -46,9 +48,9 @@ struct NCAssistantChat: View {
 //            }
         }
         .safeAreaInset(edge: .bottom) {
-//            ChatInputField { input in
-//                chatModel.sendMessage(input: input)
-//            }
+            ChatInputField(isLoading: $chatModel.isThinking) { input in
+                chatModel.sendMessage(input: input)
+            }
         }
         .navigationTitle("Assistant Chat")
         .navigationBarTitleDisplayMode(.inline)

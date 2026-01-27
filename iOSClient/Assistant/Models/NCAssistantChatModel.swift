@@ -56,6 +56,19 @@ import NextcloudKit
 
     }
 
+    func createNewSession(title: String? = nil) async -> AssistantSession? {
+        let ts = Int(Date().timeIntervalSince1970 * 1000)
+        let result = await NextcloudKit.shared.createAssistantChatSessionAsync(title: title, timestamp: ts, account: session.account)
+        if result.error == .success, let newSession = result.conversation?.session {
+            sessions.insert(newSession, at: 0)
+            selectedSession = newSession
+            return newSession
+        } else {
+            hasError = true
+            return nil
+        }
+    }
+
     private func handleTaskResponse(task: AssistantTask?, error: NKError?) {
         isThinking = false
 
@@ -107,3 +120,4 @@ import NextcloudKit
 //        ]
 //    }
 }
+

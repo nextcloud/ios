@@ -4,9 +4,7 @@
 
 import SwiftUI
 
-
 struct ChatInputField: View {
-//    @Bindable var model: NCAssistantChatModel
     @FocusState private var isInputFocused: Bool
     @State var text: String = ""
     @Binding var isLoading: Bool
@@ -25,19 +23,16 @@ struct ChatInputField: View {
 
             Button(action: {
                 isInputFocused = false
-                onSend?(text)
+                onSend?(text.trimmingCharacters(in: .whitespaces))
                 text = ""
             }) {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 28))
-//                    .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
             }
-            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
-//            .opacity(model.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.isThinking ? 0.5 : 1.0)
+            .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || isLoading)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
         .background(Color(uiColor: .systemBackground))
     }
 }
-

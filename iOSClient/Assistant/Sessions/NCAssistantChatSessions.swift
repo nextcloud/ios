@@ -37,15 +37,25 @@ struct NCAssistantChatSessions: View {
         Group {
 //            if model.isLoading {
 //                ProgressView()
-            if model.sessions.isEmpty {
-                Text("No sessions found")
-            } else {
+//            if model.sessions.isEmpty {
+//                Text("No sessions found")
+//            } else {
                 List(model.sessions, id: \.id) { session in
-                    Text(session.title ?? "Untitled Session")
+                    Text(session.title ?? "")
                         .onTapGesture {
                             model.selectedSession = session
                             dismiss()
                         }
+                }
+//            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("New Conversation", systemImage: "plus.message.fill") {
+                    Task {
+                        _ = await model.createNewSession()
+                        dismiss()
+                    }
                 }
             }
         }

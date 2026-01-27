@@ -84,7 +84,7 @@ struct NCAssistant: View {
 }
 
 struct TaskList: View {
-    @Environment(NCAssistantModel.self) var model
+    @Environment(NCAssistantModel.self) var assistantModel
     @State var presentEditTask = false
     @State var showDeleteConfirmation = false
 
@@ -92,11 +92,13 @@ struct TaskList: View {
     @State var taskToDelete: AssistantTask?
 
     var body: some View {
-        List(model.filteredTasks, id: \.id) { task in
+        @Bindable var assistantModel = assistantModel
+
+        List(assistantModel.filteredTasks, id: \.id) { task in
             TaskItem(showDeleteConfirmation: $showDeleteConfirmation, taskToDelete: $taskToDelete, task: task)
                 .contextMenu {
                     Button {
-                        model.shareTask(task)
+                        assistantModel.shareTask(task)
                     } label: {
                         Label {
                             Text("_share_")
@@ -106,7 +108,7 @@ struct TaskList: View {
                     }
 
                     Button {
-                        model.scheduleTask(input: task.input?.input ?? "")
+                        assistantModel.scheduleTask(input: task.input?.input ?? "")
                     } label: {
                         Label {
                             Text("_retry_")
@@ -142,16 +144,16 @@ struct TaskList: View {
                 }
                 .accessibilityIdentifier("TaskContextMenu")
         }
-        .if(!model.types.isEmpty) { view in
+        .if(!assistantModel.types.isEmpty) { view in
             view.refreshable {
-                model.refresh()
+                assistantModel.refresh()
             }
         }
         .confirmationDialog("", isPresented: $showDeleteConfirmation) {
             Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
                 withAnimation {
                     guard let taskToDelete else { return }
-                    model.deleteTask(taskToDelete)
+                    assistantModel.deleteTask(taskToDelete)
                 }
             }
         }
@@ -161,12 +163,12 @@ struct TaskList: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-//            ChatInputField(isLoading: model._isLoading) { input in
-//                model.scheduleTask(input: input)
-//            }
+            ChatInputField(isLoading: $assistantModel.isLoading) { input in
+                assistantModel.scheduleTask(input: input)
+            }
         }
 
-        if model.filteredTasks.isEmpty, !model.isLoading {
+        if assistantModel.filteredTasks.isEmpty, !assistantModel.isLoading {
             NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
         }
     }
