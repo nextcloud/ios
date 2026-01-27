@@ -173,9 +173,12 @@ class NCShareExtension: UIViewController {
 
     // MARK: -
 
-    func cancel(with error: NCShareExtensionError) {
-        // make sure no uploads are continued
-        extensionContext?.cancelRequest(withError: error)
+    func cancel(with error: NCShareExtensionError? = nil) {
+        if let error {
+            extensionContext?.cancelRequest(withError: error)
+        } else {
+            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+        }
     }
 
     func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
@@ -264,7 +267,7 @@ class NCShareExtension: UIViewController {
     // MARK: ACTION
 
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
-        cancel(with: .cancel)
+        cancel()
     }
 
     @objc func actionCreateFolder(_ sender: Any?) {
@@ -377,7 +380,7 @@ extension NCShareExtension {
                                  payload: payload,
                                  allowMinimizeOnTap: false,
                                  onButtonTap: {
-            self.cancel(with: .cancel)
+            self.cancel()
         })
 
         for metadata in self.uploadMetadata {
@@ -407,7 +410,7 @@ extension NCShareExtension {
         }
 
         LucidBanner.shared.dismiss(after: 2) {
-            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            self.cancel()
         }
     }
 
