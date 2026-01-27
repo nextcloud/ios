@@ -368,15 +368,16 @@ extension NCShareExtension {
     @MainActor
     func uploadAndExit() async {
         var error: NKError?
-        let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
+        let payload = LucidBannerPayload(stage: .button,
+                                         backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         verticalMargin: 0,
-                                         blocksTouches: true,
-                                         draggable: false)
+                                         blocksTouches: true)
         token = showUploadBanner(scene: self.view.window?.windowScene,
                                  payload: payload,
-                                 allowMinimizeOnTap: false
-        )
+                                 allowMinimizeOnTap: false,
+                                 onButtonTap: {
+            self.cancel(with: .cancel)
+        })
 
         for metadata in self.uploadMetadata {
             // BANNER
@@ -447,8 +448,7 @@ extension NCShareExtension {
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
-                        let progress = Double(counter) / Double(total)
-                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
+                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
@@ -460,10 +460,7 @@ extension NCShareExtension {
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(
-                            payload: LucidBannerPayload.Update(progress: progress),
-                            for: self.token)
-                        LucidBanner.shared.update(payload: payload, for: self.token)
+                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
                     }
                 } assembling: {
                     Task {@MainActor in

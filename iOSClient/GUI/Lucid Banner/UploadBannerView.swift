@@ -180,6 +180,7 @@ struct UploadBannerView: View {
                         .tint(.accentColor)
                         .opacity(state.payload.progress == nil ? 0 : 1)
                         .animation(.easeInOut(duration: 0.2), value: state.payload.progress == nil)
+                        .padding(.horizontal, 5)
 
                     if isButton {
                         VStack {
