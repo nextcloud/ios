@@ -11,7 +11,10 @@ import NextcloudKit
 import SVGKit
 import LucidBanner
 
-class NCContextMenu: NSObject {
+/// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
+/// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
+/// ``NCCollectionViewCommon/contextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
+class NCContextMenuMain: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
