@@ -179,7 +179,3 @@ class NCContextMenuShare: NSObject {
         shareController.networking?.unShare(idShare: share.idShare)
     }
 }
-
-extension NCShare {
-    
-}
