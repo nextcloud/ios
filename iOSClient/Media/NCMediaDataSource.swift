@@ -11,11 +11,19 @@ extension NCMedia {
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", self.session.account)) else {
             return
         }
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
         let mediaPredicate = self.imageCache.getMediaPredicate(session: self.session,
                                                                mediaPath: tblAccount.mediaPath,
                                                                showOnlyImages: self.showOnlyImages,
                                                                showOnlyVideos: self.showOnlyVideos)
-        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
+        var sortedByKeyPath: String
+        if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
+            sortedByKeyPath = "datePhotosOriginal"
+        } else {
+            sortedByKeyPath = "date"
+        }
+
+        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: sortedByKeyPath, ascending: false) {
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
                     self.dataSource = NCMediaDataSource(metadatas: metadatas)
@@ -63,6 +71,7 @@ extension NCMedia {
             return
         }
 
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
         var visibleCells: [NCMediaCell] = []
@@ -96,15 +105,15 @@ extension NCMedia {
             }
 
             visibleCells = visibleCells.sorted {
-                guard let date1 = $0.datePhotosOriginal, let date2 = $1.datePhotosOriginal else {
+                guard let date1 = $0.date, let date2 = $1.date else {
                     return false
                 }
                 return date1 > date2
             }
 
             if !visibleCells.isEmpty, !distant {
-                let firstCellDate = visibleCells.first?.datePhotosOriginal
-                let lastCellDate = visibleCells.last?.datePhotosOriginal
+                let firstCellDate = visibleCells.first?.date
+                let lastCellDate = visibleCells.last?.date
 
                 if collectionView.contentOffset.y <= 0 {
                     lessDate = .distantFuture
@@ -112,7 +121,7 @@ extension NCMedia {
                     lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate ?? .distantFuture) ?? .distantFuture
                 }
 
-                if lastCellDate == self.dataSource.metadatas.last?.datePhotosOriginal {
+                if lastCellDate == self.dataSource.metadatas.last?.date {
                     greaterDate = .distantPast
                 } else {
                     greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate ?? .distantPast) ?? .distantPast
@@ -165,10 +174,19 @@ extension NCMedia {
                                                                          mediaPath: tblAccount.mediaPath,
                                                                          showOnlyImages: self.showOnlyImages,
                                                                          showOnlyVideos: self.showOnlyVideos)
-            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
+
+            var predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                NSPredicate(format: "date >= %@ AND date <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
                 mediaPredicate
             ])
+
+            if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
+                    mediaPredicate
+                ])
+            }
+
             let localMetadatas = await self.database.getMetadatasAsync(predicate: predicate)
 
             await MainActor.run {
@@ -190,7 +208,7 @@ extension NCMedia {
 @MainActor
 public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
-        let datePhotosOriginal: Date
+        let date: Date
         let etag: String
         let imageSize: CGSize
         let isImage: Bool
@@ -198,14 +216,14 @@ public class NCMediaDataSource: NSObject {
         let isVideo: Bool
         let ocId: String
 
-        init(datePhotosOriginal: Date,
+        init(date: Date,
              etag: String,
              imageSize: CGSize,
              isImage: Bool,
              isLivePhoto: Bool,
              isVideo: Bool,
              ocId: String) {
-            self.datePhotosOriginal = datePhotosOriginal
+            self.date = date
             self.etag = etag
             self.imageSize = imageSize
             self.isImage = isImage
@@ -229,7 +247,7 @@ public class NCMediaDataSource: NSObject {
 
     private func insertInMetadatas(metadata: Metadata) {
         for i in 0..<self.metadatas.count {
-            if (metadata.datePhotosOriginal as Date) > self.metadatas[i].datePhotosOriginal {
+            if (metadata.date) > self.metadatas[i].date {
                 self.metadatas.insert(metadata, at: i)
                 return
             }
@@ -239,7 +257,14 @@ public class NCMediaDataSource: NSObject {
     }
 
     private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
-        return Metadata(datePhotosOriginal: metadata.datePhotosOriginal as Date,
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+        let date: Date
+        if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
+            date = metadata.datePhotosOriginal as Date
+        } else {
+            date = metadata.date as Date
+        }
+        return Metadata(date: date,
                         etag: metadata.etag,
                         imageSize: CGSize(width: metadata.width, height: metadata.height),
                         isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
