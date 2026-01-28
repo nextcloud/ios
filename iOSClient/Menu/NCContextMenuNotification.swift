@@ -22,30 +22,34 @@
 //
 
 import UIKit
-import FloatingPanel
 import SwiftyJSON
 import NextcloudKit
 
-extension NCNotification {
-    func toggleMenu(notification: NKNotifications, sender: Any?) {
-        var actions = [NCMenuAction]()
+class NCContextMenuNotification: NSObject {
+    let notification: NKNotifications
+    weak var delegate: NCNotificationCellDelegate?
 
-        if let notificationActions = notification.actions, let jsonNotificationActionsActions = JSON(notificationActions).array {
-            for action in jsonNotificationActionsActions {
+    init(notification: NKNotifications, delegate: NCNotificationCellDelegate?) {
+        self.notification = notification
+        self.delegate = delegate
+    }
+
+    func viewMenu() -> UIMenu {
+        var actions: [UIAction] = []
+
+        if let notificationActions = notification.actions,
+           let jsonActions = JSON(notificationActions).array {
+            for action in jsonActions {
                 let label = action["label"].stringValue
                 actions.append(
-                    NCMenuAction(
-                        title: action["label"].stringValue,
-                        icon: UIImage(),
-                        sender: sender,
-                        action: { _ in
-                            self.tapAction(with: notification, label: label, sender: sender)
-                        }
-                    )
+                    UIAction(title: label, image: nil) { [weak self] _ in
+                        guard let self else { return }
+                        self.delegate?.tapAction(with: self.notification, label: label, sender: nil)
+                    }
                 )
             }
         }
 
-        presentMenu(with: actions, sender: sender)
+        return UIMenu(title: "", children: actions)
     }
 }

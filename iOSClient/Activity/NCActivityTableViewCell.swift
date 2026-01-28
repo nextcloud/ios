@@ -5,7 +5,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import FloatingPanel
 import Queuer
 
 class NCActivityCollectionViewCell: UICollectionViewCell {

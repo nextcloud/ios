@@ -9,7 +9,6 @@ import UIKit
 import AVKit
 import MediaPlayer
 import MobileVLCKit
-import FloatingPanel
 import Alamofire
 import LucidBanner
 

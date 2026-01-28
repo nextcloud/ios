@@ -25,7 +25,6 @@ import DropDown
 import NextcloudKit
 
 class NCShareUserCell: UITableViewCell, NCCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!
@@ -41,6 +40,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     var isDirectory = false
     let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
+//    weak var shareController: NCShare?
 
     var indexPath: IndexPath {
         get { return index }
@@ -119,6 +119,25 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, account: metadata.account, view: self))
         }
+
+        contentView.bringSubviewToFront(buttonMenu)
+        buttonMenu.menu = nil
+        buttonMenu.showsMenuAsPrimaryAction = true
+
+//        // Configure native context menus
+//        if let shareController {
+//            let contextMenu = NCContextMenuShare(
+//                share: tableShare,
+//                isDirectory: isDirectory,
+//                canReshare: shareController.canReshare,
+//                shareController: shareController
+//            )
+//            buttonMenu.menu = contextMenu.viewMenu()
+//            buttonMenu.showsMenuAsPrimaryAction = true
+//
+//            btnQuickStatus.menu = contextMenu.quickPermissionsMenu()
+//            btnQuickStatus.showsMenuAsPrimaryAction = true
+//        }
     }
 
     private func getTypeString(_ tableShare: tableShareV2) -> String {

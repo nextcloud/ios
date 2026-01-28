@@ -47,9 +47,9 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     }
 
     func tapMenu(with tableShare: tableShare?, sender: Any) {
-        if let tableShare = tableShare {
-            self.toggleShareMenu(for: tableShare, sender: sender)
-        } else {
+        // Menu is now shown via native context menu on the button
+        // Only handle the case where there's no tableShare (add new link)
+        if tableShare == nil {
             self.makeNewLinkShare()
         }
     }
@@ -60,7 +60,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     }
 
     func quickStatus(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare, let metadata else { return }
-        self.toggleQuickPermissionsMenu(isDirectory: metadata.directory, share: tableShare, sender: sender)
+        guard let tableShare else { return }
+        presentQuickStatusActionSheet(for: tableShare, sender: sender)
     }
 }

@@ -224,6 +224,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 cell.more.isEnabled = true
                 cell.more.isHidden = false
                 cell.more.setTitle("…", for: .normal)
+
+                let contextMenu = NCContextMenuNotification(
+                    notification: notification,
+                    delegate: self
+                )
+                cell.more.menu = contextMenu.viewMenu()
+                cell.more.showsMenuAsPrimaryAction = true
             }
 
             var buttonWidth = max(cell.primary.intrinsicContentSize.width, cell.secondary.intrinsicContentSize.width)
@@ -310,7 +317,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     }
 
     func tapMore(with notification: NKNotifications, sender: Any?) {
-       toggleMenu(notification: notification, sender: sender)
+//       toggleMenu(notification: notification, sender: sender)
     }
 
     // MARK: - Load notification networking
