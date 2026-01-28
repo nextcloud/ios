@@ -60,6 +60,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     }
 
     func quickStatus(with tableShare: tableShare?, sender: Any) {
-        // Menu is now shown via native context menu on the button
+        guard let tableShare else { return }
+        presentQuickStatusActionSheet(for: tableShare, sender: sender)
     }
 }
