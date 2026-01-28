@@ -221,6 +221,90 @@ class NCShare: UIViewController, NCSharePagingContent {
         cnPicker.predicateForSelectionOfProperty = NSPredicate(format: "emailAddresses.@count > 0")
         self.present(cnPicker, animated: true)
     }
+
+    func presentQuickStatusActionSheet(for share: tableShare, sender: Any?) {
+        guard let metadata = metadata else { return }
+
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let isDirectory = metadata.directory
+
+        // Read Only
+        let readOnlyAction = UIAlertAction(title: NSLocalizedString("_share_read_only_", comment: ""), style: .default) { [weak self] _ in
+            let permissions = NCSharePermissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
+            self?.updateSharePermissions(share: share, permissions: permissions)
+        }
+        alertController.addAction(readOnlyAction)
+
+        // Editing
+        let editingAction = UIAlertAction(title: NSLocalizedString("_share_editing_", comment: ""), style: .default) { [weak self] _ in
+            let permissions = NCSharePermissions.getPermissionValue(canCreate: true, canEdit: true, canDelete: true, canShare: true, isDirectory: isDirectory)
+            self?.updateSharePermissions(share: share, permissions: permissions)
+        }
+        alertController.addAction(editingAction)
+
+        // File Drop (only for directories with public link or email share)
+        if isDirectory && (share.shareType == NKShare.ShareType.publicLink.rawValue || share.shareType == NKShare.ShareType.email.rawValue) {
+            let fileDropAction = UIAlertAction(title: NSLocalizedString("_share_file_drop_", comment: ""), style: .default) { [weak self] _ in
+                let permissions = NCSharePermissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
+                self?.updateSharePermissions(share: share, permissions: permissions)
+            }
+            alertController.addAction(fileDropAction)
+        }
+
+        // Custom Permissions
+        let customAction = UIAlertAction(title: NSLocalizedString("_custom_permissions_", comment: ""), style: .default) { [weak self] _ in
+            self?.openAdvancePermission(for: share)
+        }
+        alertController.addAction(customAction)
+
+        // Cancel
+        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
+        alertController.addAction(cancelAction)
+
+        // iPad popover support
+        if let popover = alertController.popoverPresentationController,
+           let sourceView = sender as? UIView {
+            let barItem = UIBarButtonItem(customView: sourceView)
+            popover.sourceItem = barItem
+        }
+
+        present(alertController, animated: true)
+    }
+
+    private func openAdvancePermission(for share: tableShare) {
+        guard let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
+              !share.isInvalidated,
+              let metadata = metadata else { return }
+
+        advancePermission.networking = networking
+        advancePermission.share = tableShare(value: share)
+        advancePermission.oldTableShare = tableShare(value: share)
+        advancePermission.metadata = metadata
+
+        if let downloadLimit = try? NCManageDatabase.shared.getDownloadLimit(byAccount: metadata.account, shareToken: share.token) {
+            advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
+        }
+
+        navigationController?.pushViewController(advancePermission, animated: true)
+    }
+
+    func updateSharePermissions(share: tableShare, permissions: Int) {
+        let updatedShare = tableShare(value: share)
+        updatedShare.permissions = permissions
+
+        var downloadLimit: DownloadLimitViewModel = .unlimited
+
+        do {
+            if let model = try database.getDownloadLimit(byAccount: metadata.account, shareToken: updatedShare.token) {
+                downloadLimit = .limited(limit: model.limit, count: model.count)
+            }
+        } catch {
+            nkLog(error: "Failed to get download limit from database!")
+            return
+        }
+
+        networking?.updateShare(updatedShare, downloadLimit: downloadLimit)
+    }
 }
 
 // MARK: - NCShareNetworkingDelegate

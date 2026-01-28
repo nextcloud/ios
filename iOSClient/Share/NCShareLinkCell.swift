@@ -160,7 +160,7 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     @objc func openQuickStatus(_ sender: UITapGestureRecognizer) {
-        delegate?.quickStatus(with: tableShare, sender: sender)
+        delegate?.quickStatus(with: tableShare, sender: sender.view ?? sender)
     }
 }
 
