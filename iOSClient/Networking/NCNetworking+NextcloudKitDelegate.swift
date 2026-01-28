@@ -15,16 +15,16 @@ extension NCNetworking {
             lastReachability = true
         } else {
             if lastReachability {
-                let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
                 Task {
-                    await showBanner(scene: scene,
-                                     title: NSLocalizedString("_info_", comment: ""),
-                                     subtitle: NSLocalizedString("_network_not_available_", comment: ""),
-                                     textColor: .white,
-                                     image: "wifi.exclamationmark.circle",
-                                     imageAnimation: .bounce,
-                                     imageColor: .white,
-                                     backgroundColor: UIColor.lightGray.withAlphaComponent(0.75))
+                    await showBannerActiveScenes(
+                        title: NSLocalizedString("_info_", comment: ""),
+                        subtitle: NSLocalizedString("_network_not_available_", comment: ""),
+                        textColor: .white,
+                        image: "wifi.exclamationmark.circle",
+                        imageAnimation: .bounce,
+                        imageColor: .white,
+                        backgroundColor: UIColor.lightGray.withAlphaComponent(0.75)
+                    )
                 }
             }
             lastReachability = false

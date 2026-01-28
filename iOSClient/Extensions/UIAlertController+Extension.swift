@@ -37,6 +37,7 @@ extension UIAlertController {
                              markE2ee: Bool = false,
                              sceneIdentifier: String? = nil,
                              capabilities: NKCapabilities.Capabilities,
+                             scene: UIWindowScene? = nil,
                              completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
@@ -61,10 +62,10 @@ extension UIAlertController {
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId)
                         if error != .success {
-                            NCContentPresenter().showError(error: error)
+                            await showErrorBanner(scene: scene, text: error.errorDescription)
                         }
                     } else {
-                        NCContentPresenter().showError(error: createFolderResults.error)
+                        await showErrorBanner(scene: scene, text: createFolderResults.error.errorDescription)
                     }
                 }
             } else if isDirectoryEncrypted {

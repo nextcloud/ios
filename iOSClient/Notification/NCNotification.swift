@@ -253,7 +253,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 }
                 self.tableView.reloadData()
             } else if error != .success {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                }
             } else {
                 print("[Error] The user has been changed during networking process.")
             }
@@ -298,7 +300,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                     self.dismiss(animated: true)
                 }
             } else if error != .success {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                }
             } else {
                 print("[Error] The user has been changed during networking process.")
             }

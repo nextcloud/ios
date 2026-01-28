@@ -6,6 +6,31 @@ import SwiftUI
 import LucidBanner
 
 // MARK: - Show Banner
+#if !EXTENSION
+@MainActor
+func showBannerActiveScenes(title: String?,
+                            subtitle: String? = nil,
+                            footnote: String? = nil,
+                            textColor: UIColor,
+                            image: String?,
+                            imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                            imageColor: UIColor,
+                            vPosition: LucidBanner.VerticalPosition = .top,
+                            backgroundColor: UIColor) async {
+    for scene in UIApplication.shared.foregroundActiveScenes {
+        await showBanner(scene: scene,
+                         title: title,
+                         subtitle: subtitle,
+                         footnote: footnote,
+                         textColor: textColor,
+                         image: image,
+                         imageAnimation: imageAnimation,
+                         imageColor: imageColor,
+                         vPosition: vPosition,
+                         backgroundColor: backgroundColor)
+    }
+}
+#endif
 
 @MainActor
 func showBanner(scene: UIWindowScene?,
@@ -19,10 +44,7 @@ func showBanner(scene: UIWindowScene?,
                 vPosition: LucidBanner.VerticalPosition = .top,
                 backgroundColor: UIColor) async {
 #if !EXTENSION
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title ?? "", comment: ""),
@@ -48,6 +70,22 @@ func showBanner(scene: UIWindowScene?,
 // MARK: - Show Info
 
 #if !EXTENSION
+@MainActor
+func showInfoBannerActiveScenes(title: String = "_error_",
+                                text: String,
+                                footnote: String? = nil,
+                                foregroundColor: UIColor = .label,
+                                backgroundColor: UIColor = .systemBackground) async {
+    for scene in UIApplication.shared.foregroundActiveScenes {
+        await showInfoBanner(scene: scene,
+                             title: title,
+                             text: text,
+                             footnote: footnote,
+                             foregroundColor: foregroundColor,
+                             backgroundColor: backgroundColor)
+    }
+}
+
 @MainActor
 func showInfoBanner(controller: UITabBarController?,
                     title: String = "_info_",
@@ -81,20 +119,6 @@ func showInfoBanner(sceneIdentifier: String?,
 #endif
 
 @MainActor
-func showInfoBanner(title: String = "_error_",
-                    text: String,
-                    footnote: String? = nil,
-                    foregroundColor: UIColor = .label,
-                    backgroundColor: UIColor = .systemBackground) async {
-    await showInfoBanner(scene: nil,
-                         title: title,
-                         text: text,
-                         footnote: footnote,
-                         foregroundColor: foregroundColor,
-                         backgroundColor: backgroundColor)
-}
-
-@MainActor
 func showInfoBanner(scene: UIWindowScene?,
                     title: String = "_info_",
                     text: String,
@@ -102,10 +126,7 @@ func showInfoBanner(scene: UIWindowScene?,
                     foregroundColor: UIColor = .label,
                     backgroundColor: UIColor = .systemBackground) async {
 #if !EXTENSION
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
 
     let payload = LucidBannerPayload(
@@ -117,6 +138,8 @@ func showInfoBanner(scene: UIWindowScene?,
         textColor: Color(uiColor: foregroundColor),
         imageColor: Color(uiColor: NCBrandColor.shared.customer),
         vPosition: .top,
+        horizontalMargin: 20,
+        verticalMargin: 10,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )
@@ -130,6 +153,24 @@ func showInfoBanner(scene: UIWindowScene?,
 // MARK: - Show Error
 
 #if !EXTENSION
+@MainActor
+func showErrorBannerActiveScenes(title: String = "_error_",
+                                 text: String,
+                                 footnote: String? = nil,
+                                 foregroundColor: UIColor = .white,
+                                 backgroundColor: UIColor = .red,
+                                 sleepBefore: Double = 1) async {
+    for scene in UIApplication.shared.foregroundActiveScenes {
+        await showErrorBanner(scene: scene,
+                              title: title,
+                              text: text,
+                              footnote: footnote,
+                              foregroundColor: foregroundColor,
+                              backgroundColor: backgroundColor,
+                              sleepBefore: sleepBefore)
+    }
+}
+
 @MainActor
 func showErrorBanner(controller: UITabBarController?,
                      title: String = "_error_",
@@ -167,22 +208,6 @@ func showErrorBanner(sceneIdentifier: String?,
 #endif
 
 @MainActor
-func showErrorBanner(title: String = "_error_",
-                     text: String,
-                     footnote: String? = nil,
-                     foregroundColor: UIColor = .white,
-                     backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
-    await showErrorBanner(scene: nil,
-                          title: title,
-                          text: text,
-                          footnote: footnote,
-                          foregroundColor: foregroundColor,
-                          backgroundColor: backgroundColor,
-                          sleepBefore: sleepBefore)
-}
-
-@MainActor
 func showErrorBanner(scene: UIWindowScene?,
                      title: String = "_error_",
                      text: String,
@@ -192,10 +217,7 @@ func showErrorBanner(scene: UIWindowScene?,
                      sleepBefore: Double = 1) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
 #if !EXTENSION
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
 
     let payload = LucidBannerPayload(
@@ -207,6 +229,8 @@ func showErrorBanner(scene: UIWindowScene?,
         textColor: Color(uiColor: foregroundColor),
         imageColor: .white,
         vPosition: .top,
+        horizontalMargin: 20,
+        verticalMargin: 10,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )

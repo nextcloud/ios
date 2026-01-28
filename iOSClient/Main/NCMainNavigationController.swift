@@ -293,7 +293,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         menuActionElement.append(UIAction(title: titleCreateFolder,
                                           image: imageCreateFolder) { _ in
             DispatchQueue.main.async {
-                let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
+                let alertController = UIAlertController.createFolder(
+                    serverUrl: serverUrl,
+                    session: session,
+                    sceneIdentifier: controller.sceneIdentifier,
+                    capabilities: capabilities,
+                    scene: SceneManager.shared.getWindow(controller: self.controller)?.windowScene)
                 controller.present(alertController, animated: true, completion: nil)
             }
         })
@@ -306,7 +311,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                                             image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 DispatchQueue.main.async {
-                    let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, markE2ee: true, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
+                    let alertController = UIAlertController.createFolder(
+                        serverUrl: serverUrl,
+                        session: session,
+                        markE2ee: true,
+                        sceneIdentifier: controller.sceneIdentifier,
+                        capabilities: capabilities,
+                        scene: SceneManager.shared.getWindow(controller: self.controller)?.windowScene)
                     controller.present(alertController, animated: true, completion: nil)
                 }
             })
@@ -328,9 +339,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                                    session.account,
                                                    serverUrl,
                                                    NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
-                            richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
+                            richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: self.controller, session: session)
                         } else {
-                            richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
+                            richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: controller, session: session)
                         }
                     }
                 }

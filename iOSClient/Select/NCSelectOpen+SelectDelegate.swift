@@ -67,6 +67,7 @@ final class NCSelectOpen: NCSelectDelegate {
             vc.items = copyItems
             vc.serverUrl = serverUrl
             vc.session = session
+            vc.controller = controller
 
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)

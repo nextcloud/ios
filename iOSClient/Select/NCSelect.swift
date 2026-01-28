@@ -61,6 +61,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     var session: NCSession.Session!
+    var controller: NCMainTabBarController?
     // -------------------------------------------------------------
 
     private var dataSourceTask: URLSessionTask?
@@ -219,7 +220,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                         destination: String?,
                         error: NKError) {
         if error != .success {
-            NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(sceneIdentifier: sceneIdentifier, text: error.errorDescription)
+            }
         }
 
         Task { @MainActor in
