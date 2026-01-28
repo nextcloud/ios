@@ -52,6 +52,8 @@ final class NCGlobal: Sendable {
     let nextcloudVersion28: Int                     = 28
     let nextcloudVersion30: Int                     = 30
     let nextcloudVersion31: Int                     = 31
+    let nextcloudVersionFuture: Int                 = 99999
+
 
     // Nextcloud unsupported
     //

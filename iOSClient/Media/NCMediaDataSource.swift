@@ -63,7 +63,6 @@ extension NCMedia {
             return
         }
 
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
         var visibleCells: [NCMediaCell] = []
@@ -121,20 +120,6 @@ extension NCMedia {
             }
         }
 
-        let elementDate: String
-        var lessDateAny: Any
-        var greaterDateAny: Any
-
-        if capabilities.serverVersionMajor >= self.global.nextcloudVersion31 {
-            elementDate = "nc:metadata-photos-original_date_time"
-            lessDateAny = Int(lessDate.timeIntervalSince1970)
-            greaterDateAny = Int(greaterDate.timeIntervalSince1970)
-        } else {
-            elementDate = "d:getlastmodified"
-            lessDateAny = lessDate
-            greaterDateAny = greaterDate
-        }
-
         let limit = await MainActor.run {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
@@ -142,9 +127,8 @@ extension NCMedia {
         let options = NKRequestOptions(timeout: 180, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         let result = await searchMediaAsync(path: tblAccount.mediaPath,
-                                            lessDate: lessDateAny,
-                                            greaterDate: greaterDateAny,
-                                            elementDate: elementDate,
+                                            lessDate: lessDate,
+                                            greaterDate: greaterDate,
                                             limit: limit,
                                             account: self.session.account,
                                             options: options) { task in

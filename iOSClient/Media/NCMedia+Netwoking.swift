@@ -8,9 +8,8 @@ import Alamofire
 
 extension NCMedia {
     func searchMediaAsync(path: String = "",
-                          lessDate: Any,
-                          greaterDate: Any,
-                          elementDate: String,
+                          lessDate: Date,
+                          greaterDate: Date,
                           limit: Int,
                           account: String,
                           options: NKRequestOptions = NKRequestOptions(),
@@ -19,22 +18,22 @@ extension NCMedia {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return (account, nil, .urlError)
         }
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let files: [NKFile] = []
-        let elementDate = elementDate + "/"
-        var greaterDateString: String?, lessDateString: String?
         let href = "/files/" + nkSession.userId + path
-        if let lessDate = lessDate as? Date {
+
+        let elementDate: String
+        var lessDateString: String
+        var greaterDateString: String
+
+        if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
+            elementDate = "nc:metadata-photos-original_date_time"
+            lessDateString = String(lessDate.timeIntervalSince1970)
+            greaterDateString = String(greaterDate.timeIntervalSince1970)
+        } else {
+            elementDate = "d:getlastmodified"
             lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        } else if let lessDate = lessDate as? Int {
-            lessDateString = String(lessDate)
-        }
-        if let greaterDate = greaterDate as? Date {
             greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        } else if let greaterDate = greaterDate as? Int {
-            greaterDateString = String(greaterDate)
-        }
-        guard let lessDateString, let greaterDateString else {
-            return (account, files, .invalidDate)
         }
 
         let httpBodyString = String(format: getRequestBodySearchMedia(
@@ -96,7 +95,7 @@ extension NCMedia {
             <!-- ===================================================== -->
             <d:orderby>
                 <d:order>
-                    <d:prop><\(elementDate)></d:prop>
+                    <d:prop><\(elementDate)/></d:prop>
                     <d:descending/>
                 </d:order>
                 <d:order>
@@ -128,11 +127,11 @@ extension NCMedia {
                     <!-- Date / numeric range filter -->
                     <d:and>
                         <d:lt>
-                            <d:prop><\(elementDate)></d:prop>
+                            <d:prop><\(elementDate)/></d:prop>
                             <d:literal>\(lessDate)</d:literal>
                         </d:lt>
                         <d:gt>
-                            <d:prop><\(elementDate)></d:prop>
+                            <d:prop><\(elementDate)/></d:prop>
                             <d:literal>\(greaterDate)</d:literal>
                         </d:gt>
                     </d:and>
