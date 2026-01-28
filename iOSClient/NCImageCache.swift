@@ -56,7 +56,7 @@ final class NCImageCache: @unchecked Sendable {
 
                     // MEDIA
                     let predicate = self.getMediaPredicate(session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
-                    guard let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) else {
+                    guard let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", limit: self.countLimit) else {
                         return
                     }
 
