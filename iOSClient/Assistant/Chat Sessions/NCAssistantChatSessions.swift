@@ -41,7 +41,7 @@ struct NCAssistantChatSessions: View {
 //                Text("No sessions found")
 //            } else {
                 List(model.sessions, id: \.id) { session in
-                    Text(session.title ?? "")
+                    Text(session.validTitle)
                         .onTapGesture {
                             model.selectedSession = session
                             dismiss()
@@ -49,6 +49,7 @@ struct NCAssistantChatSessions: View {
                 }
 //            }
         }
+        .navigationTitle("Conversations")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("New Conversation", systemImage: "plus.message.fill") {

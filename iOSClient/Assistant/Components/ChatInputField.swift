@@ -9,7 +9,12 @@ struct ChatInputField: View {
     @State var text: String = ""
     @Binding var isLoading: Bool
     var onSend: ((_ input: String) -> Void)? = nil
-
+    
+    init(isLoading: Binding<Bool> = .constant(false), onSend: ((_: String) -> Void)? = nil) {
+        _isLoading = isLoading
+        self.onSend = onSend
+    }
+    
     var body: some View {
         HStack(spacing: 8) {
             TextField(NSLocalizedString("_type_message_", comment: ""), text: $text, axis: .vertical)

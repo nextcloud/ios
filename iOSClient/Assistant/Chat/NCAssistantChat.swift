@@ -34,26 +34,24 @@ struct NCAssistantChat: View {
         @Bindable var chatModel = chatModel
 
         if chatModel.messages.isEmpty {
-                NCAssistantEmptyView(titleKey: "_no_chat_", subtitleKey: "_no_chat_subtitle_")
+            NCAssistantEmptyView(titleKey: "_no_chat_", subtitleKey: "_no_chat_subtitle_")
         }
-        
+
         ZStack {
             VStack(spacing: 0) {
                 messageListView
             }
-          
-
-//            if model.messages.isEmpty && !model.isThinking {
-//                EmptyChatView(model: model)
-//            }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField(isLoading: $chatModel.isThinking) { input in
+            ChatInputField { input in
                 chatModel.sendMessage(input: input)
             }
         }
         .navigationTitle("Assistant Chat")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            chatModel.stopPolling()
+        }
     }
 
     private var messageListView: some View {

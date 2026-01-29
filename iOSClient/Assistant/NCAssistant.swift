@@ -9,7 +9,6 @@ import PopupView
 struct NCAssistant: View {
     @State var assistantModel: NCAssistantModel
     @State var chatModel: NCAssistantChatModel
-    
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 

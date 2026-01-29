@@ -19,15 +19,10 @@ class NCAssistantModel {
     var isRefreshing: Bool = false
 
     @ObservationIgnored let controller: NCMainTabBarController?
-
     @ObservationIgnored private var tasks: [AssistantTask] = []
-
     @ObservationIgnored private let session: NCSession.Session
-
     @ObservationIgnored private let useV2: Bool
-
     @ObservationIgnored private let chatTypeId = "core:text2text:chat"
-
     @ObservationIgnored var isSelectedTypeChat: Bool { selectedType?.id == chatTypeId }
 
     init(controller: NCMainTabBarController?) {

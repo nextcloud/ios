@@ -2163,13 +2163,13 @@
 		F3A0478E2BD2668800658E7B /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
-				F3DDFE1F2F1F951000A784C8 /* Sessions */,
-				F3DDFE0D2F15452F00A784C8 /* Chat */,
 				F3A047962BD2668800658E7B /* NCAssistant.swift */,
+				F3A047932BD2668800658E7B /* NCAssistantModel.swift */,
+				F3DDFE0D2F15452F00A784C8 /* Chat */,
+				F3DDFE1F2F1F951000A784C8 /* Chat Sessions */,
 				F3A047902BD2668800658E7B /* Create Task */,
 				F3A047942BD2668800658E7B /* Task Detail */,
 				F3374A7F2D64AB40002A38F9 /* Components */,
-				F3A047922BD2668800658E7B /* Models */,
 			);
 			path = Assistant;
 			sourceTree = "<group>";
@@ -2180,15 +2180,6 @@
 				F3A047912BD2668800658E7B /* NCAssistantCreateNewTask.swift */,
 			);
 			path = "Create Task";
-			sourceTree = "<group>";
-		};
-		F3A047922BD2668800658E7B /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				F3A047932BD2668800658E7B /* NCAssistantModel.swift */,
-				F3DDFE222F1FB4C300A784C8 /* NCAssistantChatModel.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		F3A047942BD2668800658E7B /* Task Detail */ = {
@@ -2214,16 +2205,17 @@
 			isa = PBXGroup;
 			children = (
 				F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */,
+				F3DDFE222F1FB4C300A784C8 /* NCAssistantChatModel.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
 		};
-		F3DDFE1F2F1F951000A784C8 /* Sessions */ = {
+		F3DDFE1F2F1F951000A784C8 /* Chat Sessions */ = {
 			isa = PBXGroup;
 			children = (
 				F3DDFE202F1F953000A784C8 /* NCAssistantChatSessions.swift */,
 			);
-			path = Sessions;
+			path = "Chat Sessions";
 			sourceTree = "<group>";
 		};
 		F3E173BE2C9B1057006D177A /* ScreenAwakeManager */ = {
