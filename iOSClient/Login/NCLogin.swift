@@ -378,6 +378,22 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         guard let value else {
             return
         }
+
+        func getParameters(parameters: String) -> (server: String?, user: String?, password: String?) {
+            guard parameters.contains("user:"),
+                  parameters.contains("password:"),
+                  parameters.contains("server:") else {
+                return(nil, nil, nil)
+            }
+            let parametersArray = parameters.components(separatedBy: "&")
+
+            let user = parametersArray[0].replacingOccurrences(of: "user:", with: "")
+            let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
+            let server = parametersArray[2].replacingOccurrences(of: "server:", with: "")
+
+            return(server, user, password)
+        }
+
         let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
         let protocolLoginOneTime = NCBrandOptions.shared.webLoginAutenticationProtocol + "onetime-login/"
         var parameters: String = ""
@@ -390,28 +406,27 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             return
         }
 
-        if parameters.contains("user:"), parameters.contains("password:"), parameters.contains("server:") {
-            let parametersArray = parameters.components(separatedBy: "&")
-            if parametersArray.count == 3 {
-                let user = parametersArray[0].replacingOccurrences(of: "user:", with: "")
-                let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
-                let urlBase = parametersArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/remote.php/dav"
-                loginButton.isEnabled = false
-                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
-                    self.loginButton.isEnabled = true
-                    if error == .success {
-                        if value.hasPrefix(protocolLogin) {
-                            self.createAccount(urlBase: urlBase, user: user, password: password)
+        guard parameters.contains("user:"),
+              parameters.contains("password:"),
+              parameters.contains("server:") else {
+            return
+        }
+        let parametersArray = parameters.components(separatedBy: "&")
+        let user = parametersArray[0].replacingOccurrences(of: "user:", with: "")
+        let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
+        let server = parametersArray[2].replacingOccurrences(of: "server:", with: "")
 
-                        } else if value.hasPrefix(protocolLoginOneTime) {
-                            
-                        }
-                    } else {
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.present(alertController, animated: true)
+        if value.hasPrefix(protocolLogin) {
+            self.createAccount(urlBase: server, user: user, password: password)
+        } else if value.hasPrefix(protocolLoginOneTime) {
+            NextcloudKit.shared.getAppPasswordOnetime(url: server, user: user, onetimeToken: password) { token, _, error in
+                if error == .success, let token {
+                    self.createAccount(urlBase: server, user: user, password: token)
+                } else {
+                    Task {
+                        await showErrorBanner(controller: self.controller, text: error.errorDescription)
                     }
+                    self.dismiss(animated: true, completion: nil)
                 }
             }
         }
