@@ -6145,7 +6145,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = main;
+				branch = "X-NC-WebDAV-Auto-Mkcol";
 				kind = branch;
 			};
 		};
