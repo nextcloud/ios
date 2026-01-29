@@ -375,21 +375,38 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - QRCode
 
     func dismissQRCode(_ value: String?, metadataType: String?) {
-        guard var value = value else { return }
+        guard let value else {
+            return
+        }
         let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
-        if value.hasPrefix(protocolLogin) && value.contains("user:") && value.contains("password:") && value.contains("server:") {
-            value = value.replacingOccurrences(of: protocolLogin, with: "")
-            let valueArray = value.components(separatedBy: "&")
-            if valueArray.count == 3 {
-                let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
-                let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
-                let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
+        let protocolLoginOneTime = NCBrandOptions.shared.webLoginAutenticationProtocol + "onetime-login/"
+        var parameters: String = ""
+
+        if value.hasPrefix(protocolLogin) {
+            parameters = value.replacingOccurrences(of: protocolLogin, with: "")
+        } else if value.hasPrefix(protocolLoginOneTime) {
+            parameters = value.replacingOccurrences(of: protocolLoginOneTime, with: "")
+        } else {
+            return
+        }
+
+        if parameters.contains("user:"), parameters.contains("password:"), parameters.contains("server:") {
+            let parametersArray = parameters.components(separatedBy: "&")
+            if parametersArray.count == 3 {
+                let user = parametersArray[0].replacingOccurrences(of: "user:", with: "")
+                let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
+                let urlBase = parametersArray[2].replacingOccurrences(of: "server:", with: "")
                 let serverUrl = urlBase + "/remote.php/dav"
                 loginButton.isEnabled = false
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
                     self.loginButton.isEnabled = true
                     if error == .success {
-                        self.createAccount(urlBase: urlBase, user: user, password: password)
+                        if value.hasPrefix(protocolLogin) {
+                            self.createAccount(urlBase: urlBase, user: user, password: password)
+
+                        } else if value.hasPrefix(protocolLoginOneTime) {
+                            
+                        }
                     } else {
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
