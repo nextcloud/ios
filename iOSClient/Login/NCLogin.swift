@@ -424,7 +424,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.createAccount(urlBase: server, user: user, password: token)
                 } else {
                     Task {
-                        await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                        await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                     }
                     self.dismiss(animated: true, completion: nil)
                 }
