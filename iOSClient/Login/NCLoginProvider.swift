@@ -196,7 +196,7 @@ class NCLoginProvider: UIViewController {
                 try Task.checkCancellation()
 
                 grantValues = await poll(token: token, endpoint: endpoint, options: options)
-                try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
+                try await Task.sleep(for: .seconds(1))
             } while grantValues == nil
 
             guard let grantValues else {

@@ -208,7 +208,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 self.refreshControl.endRefreshing()
 
                 // Wait 1.5 seconds before resetting the button alpha
-                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                try? await Task.sleep(for: .seconds(1.5))
                 self.mainNavigationController?.resetPlusButtonAlpha()
             }
         }
