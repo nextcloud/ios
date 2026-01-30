@@ -27,8 +27,16 @@ extension NCNetworking {
               size: Int64,
               response: AFDataResponse<Data>?,
               error: NKError) {
+        // let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+        // let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: creationDate, dateModificationFile: dateModificationFile, account: account, options: options) { request in
+        let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
+                                                            fileNameLocalPath: fileNameLocalPath,
+                                                            dateCreationFile: creationDate,
+                                                            dateModificationFile: dateModificationFile,
+                                                            autoMkcol: true,
+                                                            account: account,
+                                                            options: options) { request in
             requestHandler(request)
         } taskHandler: { task in
             Task {
@@ -175,6 +183,8 @@ extension NCNetworking {
                                 taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
                                 start: @escaping () -> Void = { })
     async -> NKError {
+        // let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        // let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                   fileName: metadata.fileName,
                                                                                   userId: metadata.userId,
@@ -191,6 +201,7 @@ extension NCNetworking {
                                                                     fileNameLocalPath: fileNameLocalPath,
                                                                     dateCreationFile: metadata.creationDate as Date,
                                                                     dateModificationFile: metadata.date as Date,
+                                                                    autoMkcol: true,
                                                                     account: metadata.account,
                                                                     sessionIdentifier: metadata.session)
 
