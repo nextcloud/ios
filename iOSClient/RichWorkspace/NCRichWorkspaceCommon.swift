@@ -11,7 +11,7 @@ class NCRichWorkspaceCommon: NSObject {
     func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                await showErrorBanner(controller: controller, text: "_go_online_")
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
             }
             return
         }
@@ -41,7 +41,7 @@ class NCRichWorkspaceCommon: NSObject {
                 }
             } else if error != .success {
                 Task {
-                    await showErrorBanner(controller: controller, text: error.errorDescription)
+                    await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }
@@ -50,7 +50,7 @@ class NCRichWorkspaceCommon: NSObject {
     func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                await showErrorBanner(controller: controller, text: "_go_online_")
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
             }
             return
         }
@@ -82,7 +82,7 @@ class NCRichWorkspaceCommon: NSObject {
                         }
                     } else if error != .success {
                         Task {
-                            await showErrorBanner(controller: controller, text: error.errorDescription)
+                            await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
                         }
                     }
                 }
