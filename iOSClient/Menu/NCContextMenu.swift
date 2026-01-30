@@ -105,7 +105,7 @@ class NCContextMenu: NSObject {
             NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                 if error != .success {
                     Task {
-                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
             }
@@ -232,7 +232,7 @@ class NCContextMenu: NSObject {
                     userId: metadata.userId
                 )
                 if error != .success {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }
@@ -272,7 +272,8 @@ class NCContextMenu: NSObject {
                 } else {
                     await showErrorBanner(sceneIdentifier: self.sceneIdentifier,
                                           title: "_e2e_error_",
-                                          text: results.error.errorDescription)
+                                          text: results.error.errorDescription,
+                                          errorCode: results.error.errorCode)
                 }
             }
         }
@@ -336,7 +337,7 @@ class NCContextMenu: NSObject {
                         fileNameNew
                     )
                 ) != nil {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: "_rename_already_exists_")
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: "_rename_already_exists_", errorCode: 0)
                     return
                 }
 
@@ -531,23 +532,23 @@ class NCContextMenu: NSObject {
                                 image: iconImage
                             ) { _ in
                                 Task {
-                                    let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
-                                                                                              fileId: metadata.fileId,
-                                                                                              filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
-                                                                                              url: item.url,
-                                                                                              method: item.method,
-                                                                                              params: item.params)
+                                    let results = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
+                                                                                             fileId: metadata.fileId,
+                                                                                             filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
+                                                                                             url: item.url,
+                                                                                             method: item.method,
+                                                                                             params: item.params)
 
-                                    if response.error != .success {
-                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: response.error.errorDescription)
+                                    if results.error != .success {
+                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: results.error.errorDescription, errorCode: results.error.errorCode)
                                     } else {
-                                        if let tooltip = response.uiResponse?.ocs.data.tooltip {
+                                        if let tooltip = results.uiResponse?.ocs.data.tooltip {
                                             NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
                                         } else {
                                             let baseURL = metadata.urlBase
 
                                             await MainActor.run {
-                                                guard let ui = response.uiResponse?.ocs.data.root, let firstRow = ui.rows.first, let child = firstRow.children.first else { return }
+                                                guard let ui = results.uiResponse?.ocs.data.root, let firstRow = ui.rows.first, let child = firstRow.children.first else { return }
 
                                                 let viewer = ClientIntegrationUIViewer(
                                                     rows: [.init(element: child.element, title: child.text, urlString: child.url)],

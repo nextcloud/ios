@@ -76,7 +76,7 @@ extension NCTrash {
 
     func emptyTrash() async {
         let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
-        let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
+        let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
                                                                                             path: serverUrlFileName,
@@ -85,8 +85,8 @@ extension NCTrash {
             }
         }
 
-        if response.error != .success {
-            await showErrorBanner(controller: self.controller, text: response.error.errorDescription)
+        if results.error != .success {
+            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
         }
         await self.database.deleteTrashAsync(fileId: nil, account: session.account)
         await self.reloadDataSource()
@@ -98,7 +98,7 @@ extension NCTrash {
                 continue
             }
             let serverUrlFileName = result.filePath + result.fileName
-            let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
+            let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
                                                                                                 path: serverUrlFileName,
@@ -106,8 +106,8 @@ extension NCTrash {
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
-            if response.error != .success {
-                await showErrorBanner(controller: self.controller, text: response.error.errorDescription)
+            if results.error != .success {
+                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
             }
             await self.database.deleteTrashAsync(fileId: fileId, account: session.account)
             await self.reloadDataSource()

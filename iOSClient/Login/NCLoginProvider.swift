@@ -64,7 +64,7 @@ class NCLoginProvider: UIViewController {
 
         guard let url = URL(string: initialURLString) else {
             Task {
-                await showErrorBanner(controller: self.controller, text: "_login_url_error_")
+                await showErrorBanner(controller: self.controller, text: "_login_url_error_", errorCode: 0)
             }
             return
         }

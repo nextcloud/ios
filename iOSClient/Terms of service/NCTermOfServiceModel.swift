@@ -58,7 +58,7 @@ class NCTermOfServiceModel: ObservableObject {
                         delegate.transferReloadDataSource(serverUrl: nil, requestData: true, status: nil)
                     }
                 } else {
-                    await showErrorBanner(controller: controller, text: error.errorDescription)
+                    await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
             self.dismissView = true

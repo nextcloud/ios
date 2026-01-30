@@ -228,7 +228,7 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
         case .error:
             NCActivityIndicator.shared.stop()
             Task {
-                await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: "_error_something_wrong_")
+                await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: "_error_something_wrong_", errorCode: 0)
             }
             print("Played mode: ERROR")
         case .playing:
@@ -286,7 +286,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
                         error: NKError) {
         if error != .success {
             Task {
-                await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
             }
         }
 

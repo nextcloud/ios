@@ -221,7 +221,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                         error: NKError) {
         if error != .success {
             Task {
-                await showErrorBanner(sceneIdentifier: sceneIdentifier, text: error.errorDescription)
+                await showErrorBanner(sceneIdentifier: sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
             }
         }
 

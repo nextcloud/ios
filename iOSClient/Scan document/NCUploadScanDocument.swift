@@ -92,7 +92,7 @@ class NCUploadScanDocument: ObservableObject {
                 for char in self.password.unicodeScalars {
                     if !char.isASCII {
                         Task {
-                            await showErrorBanner(controller: self.controller, text: "_password_ascii_")
+                            await showErrorBanner(controller: self.controller, text: "_password_ascii_", errorCode: 0)
                         }
                         return DispatchQueue.main.async {
                             completion(true)

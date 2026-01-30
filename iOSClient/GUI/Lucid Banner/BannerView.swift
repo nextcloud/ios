@@ -159,7 +159,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                                  footnote: String? = nil,
                                  foregroundColor: UIColor = .white,
                                  backgroundColor: UIColor = .red,
-                                 sleepBefore: Double = 1) async {
+                                 sleepBefore: Double = 1,
+                                 errorCode: Int) async {
     for scene in UIApplication.shared.foregroundActiveScenes {
         await showErrorBanner(scene: scene,
                               title: title,
@@ -167,7 +168,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                               footnote: footnote,
                               foregroundColor: foregroundColor,
                               backgroundColor: backgroundColor,
-                              sleepBefore: sleepBefore)
+                              sleepBefore: sleepBefore,
+                              errorCode: errorCode)
     }
 }
 
@@ -178,14 +180,16 @@ func showErrorBanner(controller: UITabBarController?,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
+                     sleepBefore: Double = 1,
+                     errorCode: Int) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
                           text: text,
                           footnote: footnote,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
-                          sleepBefore: sleepBefore)
+                          sleepBefore: sleepBefore,
+                          errorCode: errorCode)
 }
 
 @MainActor
@@ -195,14 +199,16 @@ func showErrorBanner(sceneIdentifier: String?,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
+                     sleepBefore: Double = 1,
+                     errorCode: Int) async {
     await showErrorBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
                           title: title,
                           text: text,
                           footnote: footnote,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
-                          sleepBefore: sleepBefore)
+                          sleepBefore: sleepBefore,
+                          errorCode: errorCode)
 }
 
 #endif
@@ -214,7 +220,8 @@ func showErrorBanner(scene: UIWindowScene?,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
+                     sleepBefore: Double = 1,
+                     errorCode: Int) async {
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
 #if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
