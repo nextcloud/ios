@@ -533,7 +533,7 @@ extension NCNetworking {
             Task {
                 let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
                 if error != .success {
-                    await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: error.errorDescription)
+                    await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
 #endif

@@ -275,11 +275,11 @@ private struct HudBannerPreviewWrapper: View {
         HudBannerView(state: state)
             .task {
                 for i in 0...100 {
-                    try? await Task.sleep(nanoseconds: 45_000_000)
+                    try? await Task.sleep(for: .milliseconds(45))
                     state.payload.progress = Double(i) / 100
                 }
 
-                try? await Task.sleep(nanoseconds: 400_000_000)
+                try? await Task.sleep(for: .seconds(0.4))
                 state.payload.stage = .success
             }
     }

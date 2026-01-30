@@ -65,7 +65,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
+                await showErrorBanner(scene: scene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
             }
         }
 
@@ -118,7 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     }
                 } else {
                     Task {
-                        await showErrorBanner(controller: controller, text: "_go_online_")
+                        await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
                     }
                 }
             }
