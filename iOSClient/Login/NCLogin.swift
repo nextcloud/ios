@@ -379,21 +379,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             return
         }
 
-        func getParameters(parameters: String) -> (server: String?, user: String?, password: String?) {
-            guard parameters.contains("user:"),
-                  parameters.contains("password:"),
-                  parameters.contains("server:") else {
-                return(nil, nil, nil)
-            }
-            let parametersArray = parameters.components(separatedBy: "&")
-
-            let user = parametersArray[0].replacingOccurrences(of: "user:", with: "")
-            let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
-            let server = parametersArray[2].replacingOccurrences(of: "server:", with: "")
-
-            return(server, user, password)
-        }
-
         let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
         let protocolLoginOneTime = NCBrandOptions.shared.webLoginAutenticationProtocol + "onetime-login/"
         var parameters: String = ""
