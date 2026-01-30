@@ -222,6 +222,7 @@ func showErrorBanner(scene: UIWindowScene?,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
                      errorCode: Int) async {
+#if !EXTENSION
     // Prevent repeated display of the same user-facing error during the current foreground session.
     // If this error code has already been shown, do nothing.
     // Otherwise, record it and allow the UX notification to be displayed once.
@@ -236,11 +237,10 @@ func showErrorBanner(scene: UIWindowScene?,
             shownErrors.insert(errorCode)
         }
     }
-
-    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
-#if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
+
+    try? await Task.sleep(for: .seconds(sleepBefore))
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
