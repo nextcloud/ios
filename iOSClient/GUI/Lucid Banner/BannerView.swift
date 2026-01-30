@@ -222,6 +222,21 @@ func showErrorBanner(scene: UIWindowScene?,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
                      errorCode: Int) async {
+    // Prevent repeated display of the same user-facing error during the current foreground session.
+    // If this error code has already been shown, do nothing.
+    // Otherwise, record it and allow the UX notification to be displayed once.
+    if shownErrors.contains(errorCode) {
+        return
+    } else {
+        // Coalesce user-facing errors across the current foreground session.
+        // The same error code is shown to the user only once.
+        // Error 507 (insufficient storage) is recorded to avoid repeated UX notifications
+        // for subsequent uploads failing for the same reason.
+        if errorCode == 507 {
+            shownErrors.insert(errorCode)
+        }
+    }
+
     try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
 #if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
