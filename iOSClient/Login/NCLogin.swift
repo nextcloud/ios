@@ -384,6 +384,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             return
         }
         QRCodeCheck = true
+
         Task { @MainActor in
             let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
             let protocolLoginOneTime = NCBrandOptions.shared.webLoginAutenticationProtocol + "onetime-login/"
@@ -445,7 +446,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
-        QRCodeCheck = false
     }
 }
 
