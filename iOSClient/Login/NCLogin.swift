@@ -383,10 +383,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         let protocolLoginOneTime = NCBrandOptions.shared.webLoginAutenticationProtocol + "onetime-login/"
         var parameters: String = ""
 
-        if value.hasPrefix(protocolLogin) {
-            parameters = value.replacingOccurrences(of: protocolLogin, with: "")
-        } else if value.hasPrefix(protocolLoginOneTime) {
+        if value.hasPrefix(protocolLoginOneTime) {
             parameters = value.replacingOccurrences(of: protocolLoginOneTime, with: "")
+        } else if value.hasPrefix(protocolLogin) {
+            parameters = value.replacingOccurrences(of: protocolLogin, with: "")
         } else {
             return
         }
@@ -401,9 +401,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
         let server = parametersArray[2].replacingOccurrences(of: "server:", with: "")
 
-        if value.hasPrefix(protocolLogin) {
-            self.createAccount(urlBase: server, user: user, password: password)
-        } else if value.hasPrefix(protocolLoginOneTime) {
+        if value.hasPrefix(protocolLoginOneTime) {
             NextcloudKit.shared.getAppPasswordOnetime(url: server, user: user, onetimeToken: password) { token, _, error in
                 if error == .success, let token {
                     self.createAccount(urlBase: server, user: user, password: token)
@@ -414,6 +412,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.dismiss(animated: true, completion: nil)
                 }
             }
+        } else if value.hasPrefix(protocolLogin) {
+            self.createAccount(urlBase: server, user: user, password: password)
         }
     }
 
