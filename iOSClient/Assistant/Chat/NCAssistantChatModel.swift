@@ -19,9 +19,8 @@ import NextcloudKit
     private let ncSession: NCSession.Session
     private var pollingTask: Task<Void, Never>?
 
-    //    @ObservationIgnored static let chatTypeId = "core:text2text:chat"
     @ObservationIgnored var controller: NCMainTabBarController?
-    @ObservationIgnored private var currentChatTaskId: String?
+    @ObservationIgnored private var currentChatTaskId: Int?
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -29,7 +28,7 @@ import NextcloudKit
         loadAllSessions()
     }
 
-    func startPolling(interval: TimeInterval = 2.0) {
+    func startPolling(interval: TimeInterval = 10.0) {
         stopPolling()
         pollingTask = Task {
             while !Task.isCancelled {
@@ -111,7 +110,7 @@ import NextcloudKit
         }
     }
 
-    private func createNewConversation(title: String? = nil) async -> AssistantSession? {
+    func createNewConversation(title: String? = nil) async -> AssistantSession? {
         let timestamp = Int(Date().timeIntervalSince1970)
         let result = await NextcloudKit.shared.createAssistantChatConversationAsync(title: title, timestamp: timestamp, account: ncSession.account)
         if result.error == .success, let newSession = result.conversation?.session {

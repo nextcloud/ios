@@ -54,7 +54,7 @@ struct NCAssistantChatSessions: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("New Conversation", systemImage: "plus.message.fill") {
                     Task {
-                        _ = await model.createNewSession()
+                        _ = await model.createNewConversation()
                         dismiss()
                     }
                 }
