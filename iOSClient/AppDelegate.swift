@@ -270,6 +270,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
+        // Accounts
+        let accounts = Set(metadatas.map { $0.account })
+        var accountVersions: [String: Int] = [:]
+        for account in accounts {
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+            accountVersions[account] = capabilities.serverVersionMajor
+        }
+
         // Create all pending Auto Upload folders (fail-fast)
         let pendingCreateFolders = metadatas.lazy.filter {
             $0.status == self.global.metadataStatusWaitCreateFolder &&
@@ -279,10 +287,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         for metadata in pendingCreateFolders {
             guard !expired else { return }
 
+            // skip folder creation for this account Nextcloud >= 33
+            if let serverVersion = accountVersions[metadata.account],
+               serverVersion >= self.global.nextcloudVersion33 {
+                continue
+            }
+
             let err = await NCNetworking.shared.createFolderForAutoUpload(
                 serverUrlFileName: metadata.serverUrlFileName,
                 account: metadata.account
             )
+
             // Fail-fast: abort the whole sync on first failure
             if err != .success {
                 nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Create folder '\(metadata.serverUrlFileName)' failed: \(err.errorCode) – aborting sync")

@@ -77,6 +77,7 @@ class NCAutoUpload: NSObject {
                               tblAccount: tableAccount,
                               assets: [PHAsset],
                               fileNames: [String]) async -> Int {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
         let session = NCSession.shared.getSession(account: tblAccount.account)
         let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
@@ -156,11 +157,16 @@ class NCAutoUpload: NSObject {
         }
 
         if !metadatas.isEmpty {
-            let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
-                assets: assets,
-                useSubFolder: tblAccount.autoUploadCreateSubfolder,
-                session: session)
-            await self.database.addMetadatasAsync(metadatasFolder + metadatas)
+            if capabilities.serverVersionMajor >= self.global.nextcloudVersion33 {
+                await self.database.addMetadatasAsync(metadatas)
+            } else {
+                // Create folders for Nextcloud version < 33
+                let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
+                    assets: assets,
+                    useSubFolder: tblAccount.autoUploadCreateSubfolder,
+                    session: session)
+                await self.database.addMetadatasAsync(metadatasFolder + metadatas)
+            }
         }
 
         return metadatas.count
