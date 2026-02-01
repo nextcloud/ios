@@ -15,7 +15,6 @@ public extension View {
         let isMinimized = state.variant == .alternate
 
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
-        let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
         let backgroundColor = isError ? .red : state.payload.backgroundColor.opacity(0.9)
 
         let base = content()
@@ -24,7 +23,7 @@ public extension View {
                 guard allowMinimizeOnTap else { return }
                 LucidBannerVariantCoordinator.shared.handleTap(state)
             }
-            .frame(maxWidth: maxWidth)
+            .frame(maxWidth: .infinity, alignment: .center)
 
         if #available(iOS 26, *) {
             base
