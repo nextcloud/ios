@@ -11,7 +11,7 @@ public extension View {
                                       allowMinimizeOnTap: Bool,
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
-        let isSuccess = state.payload.stage == .success
+        // let isSuccess = state.payload.stage == .success
         let isMinimized = state.variant == .alternate
 
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
