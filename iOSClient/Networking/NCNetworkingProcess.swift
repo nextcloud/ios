@@ -419,13 +419,19 @@ actor NCNetworkingProcess {
                         }
                     }
 
-                    // wait dismiss banner before open another (loop)
-                    await LucidBanner.shared.dismissAsync()
+                    // wait dismiss banner
+                    Task {@MainActor in
+                        await LucidBanner.shared.dismissAsync()
+                        currentUploadTask = nil
+                    }
 
                 // UPLOAD CHUNK
                 //
-                } else if metadata.chunk > 0 {
-                    await uploadChunk(metadata: metadata)
+                } else if metadata.chunk > 0,
+                          await currentUploadTask == nil {
+                    Task {
+                        await uploadChunk(metadata: metadata)
+                    }
                 // UPLOAD IN BACKGROUND
                 //
                 } else {
@@ -509,6 +515,7 @@ actor NCNetworkingProcess {
 
         currentUploadTask = task
         _ = await task.value
+        currentUploadTask = nil
 
         LucidBanner.shared.dismiss()
     }
