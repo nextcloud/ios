@@ -35,12 +35,12 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var imageDownArrow: UIImageView!
 
     private var index = IndexPath()
+    private var avatarButton: UIButton!
 
     var tableShare: tableShare?
     var isDirectory = false
     let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
-//    weak var shareController: NCShare?
 
     var indexPath: IndexPath {
         get { return index }
@@ -58,10 +58,6 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         guard let tableShare = tableShare else {
             return
         }
-        self.accessibilityCustomActions = [UIAccessibilityCustomAction(
-            name: NSLocalizedString("_show_profile_", comment: ""),
-            target: self,
-            selector: #selector(tapAvatarImage(_:)))]
         labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname)
 
         let type = getTypeString(tableShare)
@@ -121,6 +117,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         contentView.bringSubviewToFront(buttonMenu)
         buttonMenu.menu = nil
         buttonMenu.showsMenuAsPrimaryAction = true
+
+        // Configure avatar menu
+        avatarButton.menu = delegate?.profileMenu(with: tableShare)
     }
 
     private func getTypeString(_ tableShare: tableShareV2) -> String {
@@ -138,15 +137,21 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
-        imageItem?.addGestureRecognizer(tapGesture)
+
+        avatarButton = UIButton(type: .system)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        avatarButton.backgroundColor = .clear
+        contentView.addSubview(avatarButton)
+        NSLayoutConstraint.activate([
+            avatarButton.topAnchor.constraint(equalTo: imageItem.topAnchor),
+            avatarButton.bottomAnchor.constraint(equalTo: imageItem.bottomAnchor),
+            avatarButton.leadingAnchor.constraint(equalTo: imageItem.leadingAnchor),
+            avatarButton.trailingAnchor.constraint(equalTo: imageItem.trailingAnchor)
+        ])
+        avatarButton.showsMenuAsPrimaryAction = true
 
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
-    }
-
-    @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
-        delegate?.showProfile(with: tableShare, sender: sender)
     }
 
     @IBAction func touchUpInsideMenu(_ sender: Any) {
@@ -160,7 +165,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
 protocol NCShareUserCellDelegate: AnyObject {
     func tapMenu(with tableShare: tableShare?, sender: Any)
-    func showProfile(with tableComment: tableShare?, sender: Any)
+    func profileMenu(with tableShare: tableShare?) -> UIMenu?
     func quickStatus(with tableShare: tableShare?, sender: Any)
 }
 

@@ -65,6 +65,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     var capabilities = NKCapabilities.Capabilities()
 
     private var dropDown = DropDown()
+    private var avatarButton: UIButton!
     var networking: NCShareNetworking?
 
     // MARK: - View Life Cycle
@@ -144,10 +145,18 @@ class NCShare: UIViewController, NCSharePagingContent {
         sharedWithYouByImage.image = utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: session.urlBase)
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
-        let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile(_:)))
-        sharedWithYouByImage.addGestureRecognizer(shareAction)
-        let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile(_:)))
-        sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
+        avatarButton = UIButton(type: .system)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        avatarButton.backgroundColor = .clear
+        sharedWithYouByView.addSubview(avatarButton)
+        NSLayoutConstraint.activate([
+            avatarButton.topAnchor.constraint(equalTo: sharedWithYouByImage.topAnchor),
+            avatarButton.bottomAnchor.constraint(equalTo: sharedWithYouByImage.bottomAnchor),
+            avatarButton.leadingAnchor.constraint(equalTo: sharedWithYouByImage.leadingAnchor),
+            avatarButton.trailingAnchor.constraint(equalTo: sharedWithYouByLabel.trailingAnchor)
+        ])
+        avatarButton.showsMenuAsPrimaryAction = true
+        avatarButton.menu = profileMenu(userId: metadata.ownerId, session: session)
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
         let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
@@ -181,12 +190,6 @@ class NCShare: UIViewController, NCSharePagingContent {
         }
 
         reloadData()
-    }
-
-    // MARK: - Notification Center
-
-    @objc func openShareProfile(_ sender: UITapGestureRecognizer) {
-        self.showProfileMenu(userId: metadata.ownerId, session: session, sender: sender.view)
     }
 
     // MARK: -
@@ -560,3 +563,4 @@ extension NCShare {
         return emailPred.evaluate(with: email)
     }
 }
+

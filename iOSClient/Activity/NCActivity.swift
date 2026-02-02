@@ -217,6 +217,7 @@ extension NCActivity: UITableViewDataSource {
         cell.indexPath = indexPath
         cell.tableComments = comment
         cell.delegate = self
+        cell.configureAvatarMenu()
 
         // Avatar
         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
@@ -306,6 +307,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
             cell.subjectLeadingConstraint.constant = 15
+            cell.configureAvatarMenu()
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
             let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
@@ -532,11 +534,9 @@ extension NCActivity {
 }
 
 extension NCActivity: NCShareCommentsCellDelegate {
-    func showProfile(with tableComment: tableComments?, sender: Any) {
-        guard let tableComment = tableComment else {
-            return
-        }
-        self.showProfileMenu(userId: tableComment.actorId, session: session, sender: sender)
+    func profileMenu(with tableComment: tableComments?) -> UIMenu? {
+        guard let tableComment = tableComment else { return nil }
+        return profileMenu(userId: tableComment.actorId, session: session)
     }
 
     func tapMenu(with tableComments: tableComments?, sender: Any) {

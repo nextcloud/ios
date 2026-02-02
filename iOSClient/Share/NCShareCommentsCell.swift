@@ -35,6 +35,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var labelMessage: UILabel!
 
     private var index = IndexPath()
+    private var avatarButton: UIButton!
 
     var tableComments: tableComments?
     weak var delegate: NCShareCommentsCellDelegate?
@@ -54,12 +55,25 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
-        imageItem?.addGestureRecognizer(tapGesture)
+        avatarButton = UIButton(type: .system)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        avatarButton.backgroundColor = .clear
+        contentView.addSubview(avatarButton)
+        NSLayoutConstraint.activate([
+            avatarButton.topAnchor.constraint(equalTo: imageItem.topAnchor),
+            avatarButton.bottomAnchor.constraint(equalTo: imageItem.bottomAnchor),
+            avatarButton.leadingAnchor.constraint(equalTo: imageItem.leadingAnchor),
+            avatarButton.trailingAnchor.constraint(equalTo: imageItem.trailingAnchor)
+        ])
+        avatarButton.showsMenuAsPrimaryAction = true
     }
 
-    @objc func tapAvatarImage(_ sender: UITapGestureRecognizer) {
-        self.delegate?.showProfile(with: tableComments, sender: sender)
+    func configureAvatarMenu() {
+        guard let tableComments = tableComments else {
+            avatarButton.menu = nil
+            return
+        }
+        avatarButton.menu = delegate?.profileMenu(with: tableComments)
     }
 
     @IBAction func touchUpInsideMenu(_ sender: Any) {
@@ -69,5 +83,5 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
 
 protocol NCShareCommentsCellDelegate: AnyObject {
     func tapMenu(with tableComments: tableComments?, sender: Any)
-    func showProfile(with tableComment: tableComments?, sender: Any)
+    func profileMenu(with tableComment: tableComments?) -> UIMenu?
 }

@@ -22,6 +22,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
     private var user: String = ""
     private var index = IndexPath()
+    private var avatarButton: UIButton!
 
     var idActivity: Int = 0
     var activityPreviews: [tableActivityPreview] = []
@@ -47,13 +48,25 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
-        avatar.addGestureRecognizer(avatarRecognizer)
+        avatarButton = UIButton(type: .system)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        avatarButton.backgroundColor = .clear
+        contentView.addSubview(avatarButton)
+        NSLayoutConstraint.activate([
+            avatarButton.topAnchor.constraint(equalTo: avatar.topAnchor),
+            avatarButton.bottomAnchor.constraint(equalTo: avatar.bottomAnchor),
+            avatarButton.leadingAnchor.constraint(equalTo: avatar.leadingAnchor),
+            avatarButton.trailingAnchor.constraint(equalTo: avatar.trailingAnchor)
+        ])
+        avatarButton.showsMenuAsPrimaryAction = true
     }
 
-    @objc func tapAvatarImage(_ sender: Any?) {
-        guard let fileUser = fileUser else { return }
-        viewController.showProfileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account), sender: sender)
+    func configureAvatarMenu() {
+        guard let fileUser = fileUser else {
+            avatarButton.menu = nil
+            return
+        }
+        avatarButton.menu = viewController.profileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account))
     }
 }
 

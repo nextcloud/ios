@@ -54,9 +54,9 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         }
     }
 
-    func showProfile(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare else { return }
-        showProfileMenu(userId: tableShare.shareWith, session: session, sender: sender)
+    func profileMenu(with tableShare: tableShare?) -> UIMenu? {
+        guard let tableShare else { return nil }
+        return profileMenu(userId: tableShare.shareWith, session: session)
     }
 
     func quickStatus(with tableShare: tableShare?, sender: Any) {

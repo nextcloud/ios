@@ -24,80 +24,17 @@
 import Foundation
 import UIKit
 import MessageUI
-import SVGKit
 import NextcloudKit
 
 extension UIViewController {
-    fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String, session: NCSession.Session) {
-        switch action.appId {
-        case "email":
-            guard
-                let url = action.hyperlinkUrl,
-                url.scheme == "mailto",
-                let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            else {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_cannot_send_mail_error_")
-                NCContentPresenter().showError(error: error)
-                return
-            }
-            sendEmail(to: components.path)
-
-        case "spreed":
-            guard
-                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withUser=\(userId)"),
-                UIApplication.shared.canOpenURL(talkUrl)
-            else { fallthrough /* default: open web link in browser */ }
-            UIApplication.shared.open(talkUrl)
-
-        default:
-            guard let url = action.hyperlinkUrl, UIApplication.shared.canOpenURL(url) else {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_open_url_error_")
-                NCContentPresenter().showError(error: error)
-                return
-            }
-            UIApplication.shared.open(url, options: [:])
-        }
-    }
-
-    func showProfileMenu(userId: String, session: NCSession.Session, sender: Any?) {
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-        guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else {
-            return
-        }
-
-        NextcloudKit.shared.getHovercard(for: userId, account: session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                            path: userId,
-                                                                                            name: "getHovercard")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { account, card, _, _ in
-            guard let card = card, account == session.account else { return }
-
-            let personHeader = NCMenuAction(
-                title: card.displayName,
-                icon: NCUtility().loadUserImage(for: userId, displayName: card.displayName, urlBase: session.urlBase),
-                sender: sender,
-                action: nil)
-
-            let actions = card.actions.map { action -> NCMenuAction in
-                var image = NCUtility().loadImage(named: "user", colors: [NCBrandColor.shared.iconImageColor])
-                if let url = URL(string: action.icon),
-                   let svgSource = SVGKSourceURL.source(from: url),
-                   let svg = SVGKImage(source: svgSource) {
-                    image = svg.uiImage.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
-                }
-                return NCMenuAction(
-                    title: action.title,
-                    icon: image,
-                    sender: sender,
-                    action: { _ in self.handleProfileAction(action, for: userId, session: session) })
-            }
-
-            let allActions = [personHeader] + actions
-            self.presentMenu(with: allActions, sender: sender)
-        }
+    /// Creates a profile context menu for the given user
+    /// Returns a UIMenu for use with button.menu
+    func profileMenu(userId: String, session: NCSession.Session) -> UIMenu {
+        return NCContextMenuProfile(
+            userId: userId,
+            session: session,
+            viewController: self
+        ).viewMenu()
     }
 
     func sendEmail(to email: String) {
