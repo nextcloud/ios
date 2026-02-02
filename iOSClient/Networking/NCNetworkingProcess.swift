@@ -388,13 +388,16 @@ actor NCNetworkingProcess {
 
                 // UPLOAD E2EE
                 //
-                if metadata.isDirectoryE2EE {
+                if metadata.isDirectoryE2EE,
+                   let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
+                   let window = await scene.windows.first {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    let scene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
-
+                    let horizontalLayout = await horizontalLayoutBanner(bounds: window.bounds,
+                                                                        safeAreaInsets: window.safeAreaInsets,
+                                                                        idiom: window.traitCollection.userInterfaceIdiom)
                     let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
                                                      vPosition: .center,
-                                                     horizontalLayout: .centered(width: 500),
+                                                     horizontalLayout: horizontalLayout,
                                                      blocksTouches: true,
                                                      draggable: false)
                     let token = await showUploadBanner(scene: scene,
@@ -441,15 +444,21 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
+        guard let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
+              let window = scene.windows.first else {
+            return
+        }
         var tokenBanner: Int?
-        let scene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                      safeAreaInsets: window.safeAreaInsets,
+                                                      idiom: window.traitCollection.userInterfaceIdiom)
 
         tokenBanner = showUploadBanner(scene: scene,
                                        payload: LucidBannerPayload(stage: .button,
                                                                    backgroundColor: Color(.systemBackground),
                                                                    vPosition: .bottom,
                                                                    verticalMargin: 80,
-                                                                   horizontalLayout: .stretch(margins: 100),
+                                                                   horizontalLayout: horizontalLayout,
                                                                    blocksTouches: false,
                                                                    draggable: true),
                                        allowMinimizeOnTap: true,

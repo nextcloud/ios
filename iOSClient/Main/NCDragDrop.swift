@@ -188,18 +188,21 @@ class NCDragDrop: NSObject {
         defer {
             LucidBanner.shared.dismiss()
         }
-
-        guard let metadatas = DragDropHover.shared.sourceMetadatas else {
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
+        guard let metadatas = DragDropHover.shared.sourceMetadatas,
+              let window = scene?.windows.first else {
             return
         }
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
-        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
+        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                      safeAreaInsets: window.safeAreaInsets,
+                                                      idiom: window.traitCollection.userInterfaceIdiom)
 
         let payload = LucidBannerPayload(stage: nil,
                                          backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalLayout: .centered(width: 500),
+                                         horizontalLayout: horizontalLayout,
                                          blocksTouches: false,
                                          draggable: false)
         let token = showUploadBanner(scene: scene,

@@ -128,6 +128,12 @@ func showInfoBanner(scene: UIWindowScene?,
 #if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
+    guard let window = scene?.windows.first else {
+        return
+    }
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
@@ -139,7 +145,7 @@ func showInfoBanner(scene: UIWindowScene?,
         imageColor: Color(uiColor: NCBrandColor.shared.customer),
         vPosition: .top,
         verticalMargin: 10,
-        horizontalLayout: .centered(width: 500),
+        horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )
@@ -239,6 +245,12 @@ func showErrorBanner(scene: UIWindowScene?,
     }
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
+    guard let window = scene?.windows.first else {
+        return
+    }
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     try? await Task.sleep(for: .seconds(sleepBefore))
 
@@ -252,7 +264,7 @@ func showErrorBanner(scene: UIWindowScene?,
         imageColor: .white,
         vPosition: .top,
         verticalMargin: 10,
-        horizontalLayout: .centered(width: 500),
+        horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )

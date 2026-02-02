@@ -599,7 +599,9 @@ final class SceneManager: @unchecked Sendable {
             }
         }
         guard let mainTabBarController,
-              let scene = sceneController[mainTabBarController] else { return UIApplication.shared.mainAppWindow }
+              let scene = sceneController[mainTabBarController] else {
+            return UIApplication.shared.mainAppWindow
+        }
         return getWindow(scene: scene)
     }
 

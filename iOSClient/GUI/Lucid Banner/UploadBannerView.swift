@@ -45,7 +45,7 @@ func showUploadBanner(scene: UIWindowScene?,
             return LucidBannerVariantCoordinator.VariantResolution(
                 targetPoint: point,
                 payloadUpdate: .init(
-                    horizontalLayout: .centered(width: 120),
+                    horizontalLayout: .centered(width: 100),
                     swipeToDismiss: false,
                     draggable: false
                 )

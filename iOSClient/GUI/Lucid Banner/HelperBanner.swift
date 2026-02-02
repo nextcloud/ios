@@ -11,7 +11,7 @@ public extension View {
                                       allowMinimizeOnTap: Bool,
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
-        let isSuccess = state.payload.stage == .success
+        // let isSuccess = state.payload.stage == .success
         let isMinimized = state.variant == .alternate
 
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
@@ -102,5 +102,23 @@ public extension View {
         case .none:
             self
         }
+    }
+}
+
+func horizontalLayoutBanner(bounds: CGRect,
+                            safeAreaInsets: UIEdgeInsets,
+                            idiom: UIUserInterfaceIdiom,
+                            phoneSideMargin: CGFloat = 20,
+                            maxPadWidth: CGFloat = 500) -> LucidBanner.HorizontalLayout {
+    let availableWidth = bounds.width - safeAreaInsets.left - safeAreaInsets.right
+
+    switch idiom {
+
+    case .pad:
+        let width = min(maxPadWidth, availableWidth)
+        return .centered(width: width)
+
+    default:
+        return .stretch(margins: phoneSideMargin)
     }
 }
