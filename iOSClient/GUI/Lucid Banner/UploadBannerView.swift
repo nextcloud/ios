@@ -22,28 +22,23 @@ func showUploadBanner(scene: UIWindowScene?,
     if allowMinimizeOnTap {
         LucidBannerVariantCoordinator.shared.register(token: token) { context in
             let bounds = context.bounds
-            let controller = SceneManager.shared.getController(scene: scene)
-            var height: CGFloat = 0
-            let over: CGFloat = 30
-            if let scene,
-               let controller,
-               let window = scene.windows.first {
-                let regularLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
-                let iPad = UIDevice.current.userInterfaceIdiom == .pad
-                if iPad, regularLayout {
-                    height = over
-                } else {
-                    height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
-                }
+            let insets = context.safeAreaInsets
+            let trait = context.window.traitCollection
+            let controller = SceneManager.shared.getController(scene: context.window.windowScene)
+            let tabBarHeight: CGFloat = controller?.barHeightBottom ?? 0
+            let verticalSpacing: CGFloat
+            let y: CGFloat
+
+            if trait.horizontalSizeClass == .regular {
+                verticalSpacing = 24
+                y = bounds.maxY - insets.bottom - verticalSpacing
+            } else {
+                verticalSpacing = 20
+                y = bounds.maxY - tabBarHeight - insets.bottom - verticalSpacing
             }
 
-            let point = CGPoint(
-                x: bounds.midX,
-                y: bounds.maxY - height
-            )
-
             return LucidBannerVariantCoordinator.VariantResolution(
-                targetPoint: point,
+                targetPoint: CGPoint(x: bounds.midX, y: y),
                 payloadUpdate: .init(
                     horizontalLayout: .centered(width: 100),
                     swipeToDismiss: false,

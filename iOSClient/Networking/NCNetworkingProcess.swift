@@ -252,6 +252,9 @@ actor NCNetworkingProcess {
                 // Set Live Photo
                 await NCNetworking.shared.setLivePhoto(account: currentAccount)
 
+                // Clear the errors
+                shownErrors.removeAll()
+
                 if lastUsedInterval != maxInterval {
                     await startTimer(interval: maxInterval)
                 }
