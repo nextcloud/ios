@@ -6017,7 +6017,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
 			requirement = {
-				branch = hostview;
+				branch = main;
 				kind = branch;
 			};
 		};
