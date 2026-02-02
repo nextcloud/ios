@@ -316,10 +316,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         }
     }
 
-    func tapMore(with notification: NKNotifications, sender: Any?) {
-//       toggleMenu(notification: notification, sender: sender)
-    }
-
     // MARK: - Load notification networking
 
     @MainActor
@@ -410,15 +406,9 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         else { return }
         delegate?.tapAction(with: notification, label: label, sender: sender)
     }
-
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        guard let notification = notification else { return }
-        delegate?.tapMore(with: notification, sender: sender)
-    }
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
     func tapRemove(with notification: NKNotifications, sender: Any?)
     func tapAction(with notification: NKNotifications, label: String, sender: Any?)
-    func tapMore(with notification: NKNotifications, sender: Any?)
 }

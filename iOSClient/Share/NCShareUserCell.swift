@@ -30,7 +30,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
-    @IBOutlet weak var btnQuickStatus: UIButton!
+    @IBOutlet weak var stackViewQuickStatus: UIStackView!
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var imageDownArrow: UIImageView!
 
@@ -90,9 +90,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             buttonMenu.isHidden = true
         }
 
-        btnQuickStatus.accessibilityHint = NSLocalizedString("_user_sharee_footer_", comment: "")
-        btnQuickStatus.setTitle("", for: .normal)
-        btnQuickStatus.contentHorizontalAlignment = .left
+//        btnQuickStatus.accessibilityHint = NSLocalizedString("_user_sharee_footer_", comment: "")
+//        btnQuickStatus.setTitle("", for: .normal)
+//        btnQuickStatus.contentHorizontalAlignment = .left
 
         if NCSharePermissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
             labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
@@ -119,6 +119,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, account: metadata.account, view: self))
         }
+
+        stackViewQuickStatus.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
 
         contentView.bringSubviewToFront(buttonMenu)
         buttonMenu.menu = nil
@@ -170,8 +172,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         delegate?.tapMenu(with: tableShare, sender: sender)
     }
 
-    @IBAction func quickStatusClicked(_ sender: Any) {
-        delegate?.quickStatus(with: tableShare, sender: sender)
+    @objc func openQuickStatus(_ sender: UIGestureRecognizer) {
+        delegate?.quickStatus(with: tableShare, sender: sender.view ?? sender)
     }
 }
 

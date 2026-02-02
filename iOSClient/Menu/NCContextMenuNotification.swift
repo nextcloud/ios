@@ -42,9 +42,8 @@ class NCContextMenuNotification: NSObject {
             for action in jsonActions {
                 let label = action["label"].stringValue
                 actions.append(
-                    UIAction(title: label, image: nil) { [weak self] _ in
-                        guard let self else { return }
-                        self.delegate?.tapAction(with: self.notification, label: label, sender: nil)
+                    UIAction(title: label, image: nil) { [self] _ in
+                        delegate?.tapAction(with: notification, label: label, sender: nil)
                     }
                 )
             }
