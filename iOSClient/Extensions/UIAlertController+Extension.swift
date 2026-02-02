@@ -62,10 +62,10 @@ extension UIAlertController {
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId)
                         if error != .success {
-                            await showErrorBanner(scene: scene, text: error.errorDescription)
+                            await showErrorBanner(scene: scene, text: error.errorDescription, errorCode: error.errorCode)
                         }
                     } else {
-                        await showErrorBanner(scene: scene, text: createFolderResults.error.errorDescription)
+                        await showErrorBanner(scene: scene, text: createFolderResults.error.errorDescription, errorCode: createFolderResults.error.errorCode)
                     }
                 }
             } else if isDirectoryEncrypted {

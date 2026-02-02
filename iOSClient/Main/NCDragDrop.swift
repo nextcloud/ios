@@ -145,7 +145,7 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                await showErrorBanner(controller: controller, text: error.localizedDescription)
+                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: 0)
             }
             return
         }
@@ -199,7 +199,7 @@ class NCDragDrop: NSObject {
         let payload = LucidBannerPayload(stage: nil,
                                          backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalMargin: 20,
+                                         horizontalLayout: .centered(width: 500),
                                          blocksTouches: false,
                                          draggable: false)
         let token = showUploadBanner(scene: scene,
@@ -235,7 +235,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
+                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     break
                 }
             }
@@ -257,7 +257,7 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(scene: scene, text: results.error.errorDescription)
+                await showErrorBanner(scene: scene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
 

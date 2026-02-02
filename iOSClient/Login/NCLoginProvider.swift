@@ -63,7 +63,7 @@ class NCLoginProvider: UIViewController {
 
         guard let url = URL(string: initialURLString) else {
             Task {
-                await showErrorBanner(controller: self.controller, text: "_login_url_error_")
+                await showErrorBanner(controller: self.controller, text: "_login_url_error_", errorCode: 0)
             }
             return
         }
@@ -195,7 +195,7 @@ class NCLoginProvider: UIViewController {
                 try Task.checkCancellation()
 
                 grantValues = await poll(token: token, endpoint: endpoint, options: options)
-                try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
+                try await Task.sleep(for: .seconds(1))
             } while grantValues == nil
 
             guard let grantValues else {
