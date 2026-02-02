@@ -25,29 +25,30 @@ func showUploadBanner(scene: UIWindowScene?,
             let controller = SceneManager.shared.getController(scene: scene)
             var height: CGFloat = 0
             let over: CGFloat = 30
-
             if let scene,
                let controller,
                let window = scene.windows.first {
-                let regularLayout =
-                    window.rootViewController?.traitCollection.horizontalSizeClass == .regular
-                let isPad = UIDevice.current.userInterfaceIdiom == .pad
-
-                if isPad && regularLayout {
+                let regularLayout = (window.rootViewController?.traitCollection.horizontalSizeClass == .regular)
+                let iPad = UIDevice.current.userInterfaceIdiom == .pad
+                if iPad, regularLayout {
                     height = over
                 } else {
-                    height = controller.barHeightBottom
-                        + context.safeAreaInsets.bottom
-                        + over
+                    height = controller.barHeightBottom + context.safeAreaInsets.bottom + over
                 }
             }
 
-            return .init(
-                targetPoint: CGPoint(
-                    x: bounds.midX,
-                    y: bounds.maxY - height
-                ),
-                horizontalLayout: .centered(width: 120)
+            let point = CGPoint(
+                x: bounds.midX,
+                y: bounds.maxY - height
+            )
+
+            return LucidBannerVariantCoordinator.VariantResolution(
+                targetPoint: point,
+                payloadUpdate: .init(
+                    horizontalLayout: .centered(width: 120),
+                    swipeToDismiss: false,
+                    draggable: false
+                )
             )
         }
     }

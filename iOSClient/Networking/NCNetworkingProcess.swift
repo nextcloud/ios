@@ -449,7 +449,7 @@ actor NCNetworkingProcess {
                                                                    backgroundColor: Color(.systemBackground),
                                                                    vPosition: .bottom,
                                                                    verticalMargin: 80,
-                                                                   horizontalLayout: .centered(width: 500),
+                                                                   horizontalLayout: .stretch(margins: 100),
                                                                    blocksTouches: false,
                                                                    draggable: true),
                                        allowMinimizeOnTap: true,
