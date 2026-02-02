@@ -22,9 +22,10 @@ import NextcloudKit
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatResponseTaskId: Int?
 
-    init(controller: NCMainTabBarController?) {
+    init(controller: NCMainTabBarController?, messages: [ChatMessage] = []) {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
+        self.messages = messages
         loadAllSessions()
     }
 
@@ -128,56 +129,36 @@ import NextcloudKit
             return nil
         }
     }
-
-    private func handleTaskResponse(task: AssistantTask?, error: NKError?) {
-        isThinking = false
-
-        if error != .success {
-            hasError = true
-            return
-        }
-
-        guard let task, let output = task.output?.output else {
-            hasError = true
-            return
-        }
-
-        addAssistantMessage(output)
-    }
-
-    private func addUserMessage(_ text: String) {
-        //        let message = ChatMessage(content: text, isFromUser: true)
-        //        messages.append(message)
-    }
-
-    private func addAssistantMessage(_ text: String) {
-        //        let message = ChatMessage(content: text, isFromUser: false)
-        //        messages.append(message)
-    }
-
-    //    func loadDummyData() {
-    //        messages = [
-    //            ChatMessage(
-    //                content: "Hello! Can you help me summarize this document?",
-    //                isFromUser: true,
-    //                timestamp: Date().addingTimeInterval(-300)
-    //            ),
-    //            ChatMessage(
-    //                content: "Of course! I'd be happy to help you summarize your document. Please share the document or paste the text you'd like me to summarize.",
-    //                isFromUser: false,
-    //                timestamp: Date().addingTimeInterval(-240)
-    //            ),
-    //            ChatMessage(
-    //                content: "Here is the text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    //                isFromUser: true,
-    //                timestamp: Date().addingTimeInterval(-180)
-    //            ),
-    //            ChatMessage(
-    //                content: "Based on the text you provided, here's a concise summary: The document discusses the classic Lorem Ipsum placeholder text, which has been used in the printing and typesetting industry for centuries as a standard dummy text.",
-    //                isFromUser: false,
-    //                timestamp: Date().addingTimeInterval(-120)
-    //            )
-    //        ]
-    //    }
 }
 
+extension NCAssistantChatModel {
+    static var example = NCAssistantChatModel(controller: nil, messages: [
+        ChatMessage(
+            id: 1,
+            sessionId: 0,
+            role: "human",
+            content: "Hello! Can you help me summarize this document?",
+            timestamp: Int(Date().addingTimeInterval(-300).timeIntervalSince1970 * 1000)
+        ),
+        ChatMessage(
+            id: 2,
+            sessionId: 0,
+            role: "assistant",
+            content: "Of course! I'd be happy to help you summarize your document. Please share the document or paste the text you'd like me to summarize.",
+            timestamp: Int(Date().addingTimeInterval(-240).timeIntervalSince1970 * 1000)
+        ),
+        ChatMessage(
+            id: 3,
+            sessionId: 0,
+            role: "human",
+            content: "Here is the text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            timestamp: Int(Date().addingTimeInterval(-180).timeIntervalSince1970 * 1000)
+        ),
+        ChatMessage(
+            id: 4,
+            sessionId: 0,
+            role: "assistant",
+            content: "Based on the text you provided, here's a concise summary: The document discusses the classic Lorem Ipsum placeholder text, which has been used in the printing and typesetting industry for centuries as a standard dummy text.",
+            timestamp: Int(Date().addingTimeInterval(-120).timeIntervalSince1970 * 1000)
+        )])
+}

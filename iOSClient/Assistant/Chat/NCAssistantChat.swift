@@ -5,30 +5,8 @@
 import SwiftUI
 import NextcloudKit
 
-// MARK: - Data Models
-//
-//struct ChatMessage: Identifiable, Equatable {
-//    let id: UUID
-//    let content: String
-//    let isFromUser: Bool
-//    let timestamp: Date
-//
-//    init(id: UUID = UUID(), content: String, isFromUser: Bool, timestamp: Date = Date()) {
-//        self.id = id
-//        self.content = content
-//        self.isFromUser = isFromUser
-//        self.timestamp = timestamp
-//    }
-//}
-
-// MARK: - Main View
-
 struct NCAssistantChat: View {
     @Environment(NCAssistantChatModel.self) var chatModel
-
-//    init(controller: NCMainTabBarController?) {
-//        self.model = NCAssistantChatModel(controller: controller)
-//    }
 
     var body: some View {
         @Bindable var chatModel = chatModel
@@ -209,25 +187,15 @@ struct EmptyChatView: View {
 // MARK: - Preview
 
 #Preview {
-    @Previewable @State var model = NCAssistantChatModel(controller: nil)
-
     NavigationStack {
         NCAssistantChat()
-            .environment(model)
-            .onAppear {
-                // Preview will show empty state
-            }
+            .environment(NCAssistantChatModel(controller: nil))
     }
 }
 
 #Preview("With Messages") {
-    @Previewable @State var model = NCAssistantChatModel(controller: nil)
-
     NavigationStack {
         NCAssistantChat()
-            .environment(model)
-            .onAppear {
-//                chat.model.loadDummyData()
-            }
+            .environment(NCAssistantChatModel.example)
     }
 }
