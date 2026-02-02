@@ -148,7 +148,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     }
 
     func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any) {
-        // Menu is now shown via native context menu on the button
         if isEditMode, let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)

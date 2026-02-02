@@ -90,10 +90,6 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             buttonMenu.isHidden = true
         }
 
-//        btnQuickStatus.accessibilityHint = NSLocalizedString("_user_sharee_footer_", comment: "")
-//        btnQuickStatus.setTitle("", for: .normal)
-//        btnQuickStatus.contentHorizontalAlignment = .left
-
         if NCSharePermissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
             labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
         } else if tableShare.permissions == NKShare.Permission.read.rawValue { // Read only
@@ -125,21 +121,6 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         contentView.bringSubviewToFront(buttonMenu)
         buttonMenu.menu = nil
         buttonMenu.showsMenuAsPrimaryAction = true
-
-//        // Configure native context menus
-//        if let shareController {
-//            let contextMenu = NCContextMenuShare(
-//                share: tableShare,
-//                isDirectory: isDirectory,
-//                canReshare: shareController.canReshare,
-//                shareController: shareController
-//            )
-//            buttonMenu.menu = contextMenu.viewMenu()
-//            buttonMenu.showsMenuAsPrimaryAction = true
-//
-//            btnQuickStatus.menu = contextMenu.quickPermissionsMenu()
-//            btnQuickStatus.showsMenuAsPrimaryAction = true
-//        }
     }
 
     private func getTypeString(_ tableShare: tableShareV2) -> String {
