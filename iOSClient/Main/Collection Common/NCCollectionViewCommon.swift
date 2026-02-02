@@ -208,7 +208,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 self.refreshControl.endRefreshing()
 
                 // Wait 1.5 seconds before resetting the button alpha
-                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                try? await Task.sleep(for: .seconds(1.5))
                 self.mainNavigationController?.resetPlusButtonAlpha()
             }
         }
@@ -627,7 +627,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                         }
                     } else {
                         Task {
-                            await showErrorBanner(scene: scene, text: resultsUpload.error.errorDescription)
+                            await showErrorBanner(scene: scene, text: resultsUpload.error.errorDescription, errorCode: resultsUpload.error.errorCode)
                         }
                     }
                 }
@@ -748,7 +748,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
                 Task {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
 
@@ -919,7 +919,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
             }
             guard session.account == account else {
                 return

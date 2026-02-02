@@ -374,7 +374,7 @@ extension NCShareExtension {
         let payload = LucidBannerPayload(stage: .button,
                                          backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalMargin: 20,
+                                         horizontalLayout: .centered(width: 500),
                                          blocksTouches: true)
         token = showUploadBanner(scene: self.view.window?.windowScene,
                                  payload: payload,

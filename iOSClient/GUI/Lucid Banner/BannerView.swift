@@ -128,6 +128,12 @@ func showInfoBanner(scene: UIWindowScene?,
 #if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
+    guard let window = scene?.windows.first else {
+        return
+    }
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
@@ -138,8 +144,8 @@ func showInfoBanner(scene: UIWindowScene?,
         textColor: Color(uiColor: foregroundColor),
         imageColor: Color(uiColor: NCBrandColor.shared.customer),
         vPosition: .top,
-        horizontalMargin: 20,
         verticalMargin: 10,
+        horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )
@@ -159,7 +165,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                                  footnote: String? = nil,
                                  foregroundColor: UIColor = .white,
                                  backgroundColor: UIColor = .red,
-                                 sleepBefore: Double = 1) async {
+                                 sleepBefore: Double = 1,
+                                 errorCode: Int) async {
     for scene in UIApplication.shared.foregroundActiveScenes {
         await showErrorBanner(scene: scene,
                               title: title,
@@ -167,7 +174,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                               footnote: footnote,
                               foregroundColor: foregroundColor,
                               backgroundColor: backgroundColor,
-                              sleepBefore: sleepBefore)
+                              sleepBefore: sleepBefore,
+                              errorCode: errorCode)
     }
 }
 
@@ -178,14 +186,16 @@ func showErrorBanner(controller: UITabBarController?,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
+                     sleepBefore: Double = 1,
+                     errorCode: Int) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
                           text: text,
                           footnote: footnote,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
-                          sleepBefore: sleepBefore)
+                          sleepBefore: sleepBefore,
+                          errorCode: errorCode)
 }
 
 @MainActor
@@ -195,14 +205,16 @@ func showErrorBanner(sceneIdentifier: String?,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
+                     sleepBefore: Double = 1,
+                     errorCode: Int) async {
     await showErrorBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
                           title: title,
                           text: text,
                           footnote: footnote,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
-                          sleepBefore: sleepBefore)
+                          sleepBefore: sleepBefore,
+                          errorCode: errorCode)
 }
 
 #endif
@@ -214,11 +226,33 @@ func showErrorBanner(scene: UIWindowScene?,
                      footnote: String? = nil,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1) async {
-    try? await Task.sleep(nanoseconds: UInt64(sleepBefore * 1e9))
+                     sleepBefore: Double = 1,
+                     errorCode: Int) async {
 #if !EXTENSION
+    // Prevent repeated display of the same user-facing error during the current foreground session.
+    // If this error code has already been shown, do nothing.
+    // Otherwise, record it and allow the UX notification to be displayed once.
+    if shownErrors.contains(errorCode) {
+        return
+    } else {
+        // Coalesce user-facing errors across the current foreground session.
+        // The same error code is shown to the user only once.
+        // Error 507 (insufficient storage) is recorded to avoid repeated UX notifications
+        // for subsequent uploads failing for the same reason.
+        if errorCode == 507 {
+            shownErrors.insert(errorCode)
+        }
+    }
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
+    guard let window = scene?.windows.first else {
+        return
+    }
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
+
+    try? await Task.sleep(for: .seconds(sleepBefore))
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
@@ -229,8 +263,8 @@ func showErrorBanner(scene: UIWindowScene?,
         textColor: Color(uiColor: foregroundColor),
         imageColor: .white,
         vPosition: .top,
-        horizontalMargin: 20,
         verticalMargin: 10,
+        horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )

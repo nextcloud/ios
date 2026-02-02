@@ -11,11 +11,10 @@ public extension View {
                                       allowMinimizeOnTap: Bool,
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
-        let isSuccess = state.payload.stage == .success
+        // let isSuccess = state.payload.stage == .success
         let isMinimized = state.variant == .alternate
 
         let cornerRadius: CGFloat = isMinimized ? 15 : 25
-        let maxWidth: CGFloat? = (isMinimized || isSuccess) ? nil : 500
         let backgroundColor = isError ? .red : state.payload.backgroundColor.opacity(0.9)
 
         let base = content()
@@ -24,7 +23,7 @@ public extension View {
                 guard allowMinimizeOnTap else { return }
                 LucidBannerVariantCoordinator.shared.handleTap(state)
             }
-            .frame(maxWidth: maxWidth)
+            .frame(maxWidth: .infinity, alignment: .center)
 
         if #available(iOS 26, *) {
             base
@@ -103,5 +102,23 @@ public extension View {
         case .none:
             self
         }
+    }
+}
+
+func horizontalLayoutBanner(bounds: CGRect,
+                            safeAreaInsets: UIEdgeInsets,
+                            idiom: UIUserInterfaceIdiom,
+                            phoneSideMargin: CGFloat = 20,
+                            maxPadWidth: CGFloat = 500) -> LucidBanner.HorizontalLayout {
+    let availableWidth = bounds.width - safeAreaInsets.left - safeAreaInsets.right
+
+    switch idiom {
+
+    case .pad:
+        let width = min(maxPadWidth, availableWidth)
+        return .centered(width: width)
+
+    default:
+        return .stretch(margins: phoneSideMargin)
     }
 }

@@ -145,7 +145,7 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                await showErrorBanner(controller: controller, text: error.localizedDescription)
+                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: 0)
             }
             return
         }
@@ -188,18 +188,21 @@ class NCDragDrop: NSObject {
         defer {
             LucidBanner.shared.dismiss()
         }
-
-        guard let metadatas = DragDropHover.shared.sourceMetadatas else {
+        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
+        guard let metadatas = DragDropHover.shared.sourceMetadatas,
+              let window = scene?.windows.first else {
             return
         }
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
-        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
+        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                      safeAreaInsets: window.safeAreaInsets,
+                                                      idiom: window.traitCollection.userInterfaceIdiom)
 
         let payload = LucidBannerPayload(stage: nil,
                                          backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalMargin: 20,
+                                         horizontalLayout: horizontalLayout,
                                          blocksTouches: false,
                                          draggable: false)
         let token = showUploadBanner(scene: scene,
@@ -235,7 +238,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription)
+                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
                     break
                 }
             }
@@ -257,7 +260,7 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(scene: scene, text: results.error.errorDescription)
+                await showErrorBanner(scene: scene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
 

@@ -252,7 +252,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     }
                                 } else {
                                     Task {
-                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
                                     }
                                 }
                             })
@@ -314,8 +314,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else {
                     Task {
-                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
-                    }                }
+                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                    }
+                }
             }
         }
     }
@@ -336,7 +337,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else {
                 Task {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription)
+                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }

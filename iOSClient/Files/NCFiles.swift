@@ -321,11 +321,11 @@ class NCFiles: NCCollectionViewCommon {
                 await showInfoBanner(controller: self.controller, text: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
             } else {
                 // show error
-                await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
             }
 
             return(metadatas, error, reloadRequired)
@@ -343,14 +343,14 @@ class NCFiles: NCCollectionViewCommon {
 
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription)
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
                 NCActivityIndicator.shared.stop()
             }
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            await showErrorBanner(controller: self.controller, text: error.errorDescription)
+            await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
         }
 
         return (metadatas, error, reloadRequired)
