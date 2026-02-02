@@ -73,7 +73,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
             avatarButton.menu = nil
             return
         }
-        avatarButton.menu = delegate?.profileMenu(with: tableComments)
+        avatarButton.menu = delegate?.openProfileMenu(with: tableComments)
     }
 
     @IBAction func touchUpInsideMenu(_ sender: Any) {
@@ -83,5 +83,5 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
 
 protocol NCShareCommentsCellDelegate: AnyObject {
     func tapMenu(with tableComments: tableComments?, sender: Any)
-    func profileMenu(with tableComment: tableComments?) -> UIMenu?
+    func openProfileMenu(with tableComment: tableComments?) -> UIMenu?
 }

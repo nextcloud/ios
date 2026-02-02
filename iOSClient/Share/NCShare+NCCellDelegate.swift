@@ -54,12 +54,12 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         }
     }
 
-    func profileMenu(with tableShare: tableShare?) -> UIMenu? {
+    func tapProfileMenu(with tableShare: tableShare?) -> UIMenu? {
         guard let tableShare else { return nil }
-        return profileMenu(userId: tableShare.shareWith, session: session)
+        return NCContextMenuProfile(userId: tableShare.shareWith, session: session, viewController: self).viewMenu()
     }
 
-    func quickStatus(with tableShare: tableShare?, sender: Any) {
+    func tapQuickStatus(with tableShare: tableShare?, sender: Any) {
         guard let tableShare else { return }
         presentQuickStatusActionSheet(for: tableShare, sender: sender)
     }

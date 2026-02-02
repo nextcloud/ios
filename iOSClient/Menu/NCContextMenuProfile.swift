@@ -73,11 +73,6 @@ class NCContextMenuProfile: NSObject {
     private func buildProfileMenu(from card: NKHovercard) -> [UIMenuElement] {
         var menuElements: [UIMenuElement] = []
 
-        // Header action (display name with avatar)
-        let headerAction = makeHeaderAction(card: card)
-        menuElements.append(headerAction)
-
-        // Action items from hovercard
         let actionsMenu = buildActionsMenu(from: card.actions)
         if !actionsMenu.isEmpty {
             let actionsSection = UIMenu(title: "", options: .displayInline, children: actionsMenu)
@@ -93,20 +88,6 @@ class NCContextMenuProfile: NSObject {
 
     // MARK: - Action Makers
 
-    private func makeHeaderAction(card: NKHovercard) -> UIAction {
-        let avatarImage = utility.loadUserImage(
-            for: userId,
-            displayName: card.displayName,
-            urlBase: session.urlBase
-        )
-
-        return UIAction(
-            title: card.displayName,
-            image: avatarImage,
-            attributes: .disabled
-        ) { _ in }
-    }
-
     private func makeActionItem(from action: NKHovercard.Action) -> UIAction {
         var image = utility.loadImage(named: "person", colors: [NCBrandColor.shared.iconImageColor])
 
@@ -121,7 +102,8 @@ class NCContextMenuProfile: NSObject {
 
         return UIAction(
             title: action.title,
-            image: image
+            image: image,
+            attributes: action.appId == "timezone" ? .disabled : []
         ) { _ in
             self.handleProfileAction(action)
         }

@@ -66,7 +66,9 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
             avatarButton.menu = nil
             return
         }
-        avatarButton.menu = viewController.profileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account))
+        let session = NCSession.shared.getSession(account: account)
+
+        avatarButton.menu = NCContextMenuProfile(userId: fileUser, session: session, viewController: viewController).viewMenu()
     }
 }
 

@@ -119,7 +119,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         buttonMenu.showsMenuAsPrimaryAction = true
 
         // Configure avatar menu
-        avatarButton.menu = delegate?.profileMenu(with: tableShare)
+        avatarButton.menu = delegate?.tapProfileMenu(with: tableShare)
     }
 
     private func getTypeString(_ tableShare: tableShareV2) -> String {
@@ -159,14 +159,14 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     }
 
     @objc func openQuickStatus(_ sender: UIGestureRecognizer) {
-        delegate?.quickStatus(with: tableShare, sender: sender.view ?? sender)
+        delegate?.tapQuickStatus(with: tableShare, sender: sender.view ?? sender)
     }
 }
 
 protocol NCShareUserCellDelegate: AnyObject {
     func tapMenu(with tableShare: tableShare?, sender: Any)
-    func profileMenu(with tableShare: tableShare?) -> UIMenu?
-    func quickStatus(with tableShare: tableShare?, sender: Any)
+    func tapProfileMenu(with tableShare: tableShare?) -> UIMenu?
+    func tapQuickStatus(with tableShare: tableShare?, sender: Any)
 }
 
 // MARK: - NCSearchUserDropDownCell

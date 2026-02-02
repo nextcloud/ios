@@ -156,7 +156,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             avatarButton.trailingAnchor.constraint(equalTo: sharedWithYouByLabel.trailingAnchor)
         ])
         avatarButton.showsMenuAsPrimaryAction = true
-        avatarButton.menu = profileMenu(userId: metadata.ownerId, session: session)
+        avatarButton.menu = NCContextMenuProfile(userId: metadata.ownerId, session: session, viewController: self).viewMenu()
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
         let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)

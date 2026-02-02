@@ -534,9 +534,9 @@ extension NCActivity {
 }
 
 extension NCActivity: NCShareCommentsCellDelegate {
-    func profileMenu(with tableComment: tableComments?) -> UIMenu? {
+    func openProfileMenu(with tableComment: tableComments?) -> UIMenu? {
         guard let tableComment = tableComment else { return nil }
-        return profileMenu(userId: tableComment.actorId, session: session)
+        return NCContextMenuProfile(userId: tableComment.actorId, session: session, viewController: self).viewMenu()
     }
 
     func tapMenu(with tableComments: tableComments?, sender: Any) {

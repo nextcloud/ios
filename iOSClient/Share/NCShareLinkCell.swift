@@ -128,12 +128,12 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     @objc func openQuickStatus(_ sender: UITapGestureRecognizer) {
-        delegate?.quickStatus(with: tableShare, sender: sender.view ?? sender)
+        delegate?.tapQuickStatus(with: tableShare, sender: sender.view ?? sender)
     }
 }
 
 protocol NCShareLinkCellDelegate: AnyObject {
     func tapCopy(with tableShare: tableShare?, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
-    func quickStatus(with tableShare: tableShare?, sender: Any)
+    func tapQuickStatus(with tableShare: tableShare?, sender: Any)
 }

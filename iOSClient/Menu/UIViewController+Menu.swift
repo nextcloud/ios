@@ -27,16 +27,6 @@ import MessageUI
 import NextcloudKit
 
 extension UIViewController {
-    /// Creates a profile context menu for the given user
-    /// Returns a UIMenu for use with button.menu
-    func profileMenu(userId: String, session: NCSession.Session) -> UIMenu {
-        return NCContextMenuProfile(
-            userId: userId,
-            session: session,
-            viewController: self
-        ).viewMenu()
-    }
-
     func sendEmail(to email: String) {
         guard MFMailComposeViewController.canSendMail() else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_cannot_send_mail_error_")
