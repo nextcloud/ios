@@ -10,7 +10,6 @@ func showUploadBanner(scene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
                       onButtonTap: (() -> Void)? = nil) -> Int? {
-
     let token = LucidBanner.shared.show(scene: scene,
                                         payload: payload,
                                         policy: .drop) { state in
@@ -38,9 +37,18 @@ func showUploadBanner(scene: UIWindowScene?,
                 }
             }
 
-            return CGPoint(
+            let point = CGPoint(
                 x: bounds.midX,
                 y: bounds.maxY - height
+            )
+
+            return LucidBannerVariantCoordinator.VariantResolution(
+                targetPoint: point,
+                payloadUpdate: .init(
+                    horizontalLayout: .centered(width: 100),
+                    swipeToDismiss: false,
+                    draggable: false
+                )
             )
         }
     }
@@ -57,9 +65,7 @@ struct UploadBannerView: View {
     let allowMinimizeOnTap: Bool
     let textColor = Color(.label)
 
-    init(state: LucidBannerState,
-         allowMinimizeOnTap: Bool = false,
-         onButtonTap: (() -> Void)? = nil) {
+    init(state: LucidBannerState, allowMinimizeOnTap: Bool = false, onButtonTap: (() -> Void)? = nil) {
         self.state = state
         self.allowMinimizeOnTap = allowMinimizeOnTap
         self.onButtonTap = onButtonTap
