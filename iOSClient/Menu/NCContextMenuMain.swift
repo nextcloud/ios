@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
-// SPDX-FileCopyrightText: 2023 Marino Faggiana
-// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -11,7 +10,10 @@ import NextcloudKit
 import SVGKit
 import LucidBanner
 
-class NCContextMenu: NSObject {
+/// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
+/// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
+/// ``NCCollectionViewCommon/openContextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
+class NCContextMenuMain: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
