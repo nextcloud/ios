@@ -61,6 +61,9 @@ actor NCNetworkingProcess {
             guard let self else { return }
 
             Task {
+                let count = await self.inWaitingCount()
+                try? await UNUserNotificationCenter.current().setBadgeCount(count)
+
                 await self.stopTimer()
                 await self.cancelCurrentTaskOnBackground()
                 await self.cancelCurrentUpload()
@@ -197,8 +200,6 @@ actor NCNetworkingProcess {
             if count != inWaitingCount {
                 inWaitingCount = count
                 Task { @MainActor in
-                    UNUserNotificationCenter.current().setBadgeCount(count)
-
                     if let controller = getRootController(),
                        let files = controller.tabBar.items?.first {
                             files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
