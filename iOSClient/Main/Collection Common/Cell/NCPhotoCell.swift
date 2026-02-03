@@ -6,7 +6,7 @@ import UIKit
 
 protocol NCPhotoCellDelegate: AnyObject {
     func onMenuIntent(with metadata: tableMetadata?)
-    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
+    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
 class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
@@ -20,7 +20,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     var metadata: tableMetadata? {
         didSet {
-            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+            delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
 

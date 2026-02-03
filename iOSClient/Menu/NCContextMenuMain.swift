@@ -12,7 +12,7 @@ import LucidBanner
 
 /// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
 /// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
-/// ``NCCollectionViewCommon/contextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
+/// ``NCCollectionViewCommon/openContextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
 class NCContextMenuMain: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
