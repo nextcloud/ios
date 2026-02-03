@@ -417,7 +417,7 @@ class NCContextMenuMain: NSObject {
         )
 
         if metadata.directory {
-            if !metadata.isDirectoryE2EE && !metadata.e2eEncrypted {
+            if !metadata.isDirectoryE2EE && metadata.e2eEncrypted {
                 deleteMenu.append(deleteSubMenu)
             }
         } else {
