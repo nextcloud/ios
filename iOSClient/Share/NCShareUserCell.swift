@@ -25,7 +25,6 @@ import DropDown
 import NextcloudKit
 
 class NCShareUserCell: UITableViewCell, NCCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!

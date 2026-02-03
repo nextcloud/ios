@@ -12,7 +12,7 @@ struct NCAssistantChat: View {
         @Bindable var chatModel = chatModel
 
         if chatModel.messages.isEmpty {
-            NCAssistantEmptyView(titleKey: "_no_chat_", subtitleKey: "_no_chat_subtitle_")
+            NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_no_chat_subtitle_")
         }
 
         ZStack {
@@ -21,7 +21,7 @@ struct NCAssistantChat: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField { input in
+            ChatInputField(isLoading: $chatModel.isThinking) { input in
                 chatModel.sendMessage(input: input)
             }
         }
