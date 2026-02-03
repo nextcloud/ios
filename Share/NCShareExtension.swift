@@ -371,12 +371,19 @@ extension NCShareExtension {
     @MainActor
     func uploadAndExit() async {
         var error: NKError?
+        guard let window = self.view.window else {
+            return
+        }
+        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                      safeAreaInsets: window.safeAreaInsets,
+                                                      idiom: window.traitCollection.userInterfaceIdiom)
+
         let payload = LucidBannerPayload(stage: .button,
                                          backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalLayout: .centered(width: 500),
+                                         horizontalLayout: horizontalLayout,
                                          blocksTouches: true)
-        token = showUploadBanner(scene: self.view.window?.windowScene,
+        token = showUploadBanner(scene: window.windowScene,
                                  payload: payload,
                                  allowMinimizeOnTap: false,
                                  onButtonTap: {
@@ -399,14 +406,11 @@ extension NCShareExtension {
         }
 
         if error == .success {
-            let payloadUpdate = LucidBannerPayload.Update(stage: .success)
-            LucidBanner.shared.update(payload: payloadUpdate, for: self.token)
+            LucidBanner.shared.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)),
+                                      for: self.token)
         } else {
-            let payload = LucidBannerPayload.Update(
-                subtitle: error?.errorDescription,
-                stage: .error
-            )
-            LucidBanner.shared.update(payload: payload, for: self.token)
+            LucidBanner.shared.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription,stage: .error),
+                                      for: self.token)
         }
 
         LucidBanner.shared.dismiss(after: 2) {
@@ -444,11 +448,9 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, stageBanner: nil, tokenBanner: self.token)
         } else if metadata.chunk > 0 {
-            let payload = LucidBannerPayload.Update(
-                systemImage: "gearshape.arrow.triangle.2.circlepath",
-                imageAnimation: .rotate
-            )
-            LucidBanner.shared.update(payload: payload, for: self.token)
+            LucidBanner.shared.update(payload: LucidBannerPayload.Update(systemImage: "gearshape.arrow.triangle.2.circlepath",
+                                                                         imageAnimation: .rotate),
+                                      for: self.token)
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
@@ -494,9 +496,8 @@ extension NCShareExtension {
                                                                dateModificationFile: metadata.date as Date) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
-                    LucidBanner.shared.update(
-                        payload: LucidBannerPayload.Update(progress: fractionCompleted),
-                        for: self.token)
+                    LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: fractionCompleted),
+                                              for: self.token)
                 }
             }
             error = results.error

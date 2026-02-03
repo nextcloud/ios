@@ -201,7 +201,6 @@ class NCDragDrop: NSObject {
 
         let payload = LucidBannerPayload(stage: nil,
                                          backgroundColor: Color(.systemBackground),
-                                         vPosition: .center,
                                          horizontalLayout: horizontalLayout,
                                          blocksTouches: false,
                                          draggable: false)
