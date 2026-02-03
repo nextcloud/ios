@@ -132,7 +132,17 @@ class NCContextMenuProfile: NSObject {
             return
         }
 
-        viewController.sendEmail(to: components.path)
+        guard MFMailComposeViewController.canSendMail() else {
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_cannot_send_mail_error_")
+            NCContentPresenter().showError(error: error)
+            return
+        }
+
+        let mail = MFMailComposeViewController()
+        mail.mailComposeDelegate = viewController
+        mail.setToRecipients([components.path])
+
+        viewController.present(mail, animated: true)
     }
 
     private func handleSpreedAction(_ action: NKHovercard.Action) {
