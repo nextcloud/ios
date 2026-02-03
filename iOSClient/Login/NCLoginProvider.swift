@@ -6,7 +6,6 @@
 import UIKit
 @preconcurrency import WebKit
 import NextcloudKit
-import FloatingPanel
 
 protocol NCLoginProviderDelegate: AnyObject {
     ///

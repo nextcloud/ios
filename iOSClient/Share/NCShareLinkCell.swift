@@ -30,7 +30,7 @@ class NCShareLinkCell: UITableViewCell {
 
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var statusStackView: UIStackView!
-    @IBOutlet private weak var menuButton: UIButton!
+    @IBOutlet weak var menuButton: UIButton!
     @IBOutlet private weak var copyButton: UIButton!
     @IBOutlet weak var imageDownArrow: UIImageView!
 
@@ -113,6 +113,10 @@ class NCShareLinkCell: UITableViewCell {
         statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
+
+        contentView.bringSubviewToFront(menuButton)
+        menuButton.menu = nil
+        menuButton.showsMenuAsPrimaryAction = true
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
@@ -124,12 +128,12 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     @objc func openQuickStatus(_ sender: UITapGestureRecognizer) {
-        delegate?.quickStatus(with: tableShare, sender: sender)
+        delegate?.tapQuickStatus(with: tableShare, sender: sender.view ?? sender)
     }
 }
 
 protocol NCShareLinkCellDelegate: AnyObject {
     func tapCopy(with tableShare: tableShare?, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
-    func quickStatus(with tableShare: tableShare?, sender: Any)
+    func tapQuickStatus(with tableShare: tableShare?, sender: Any)
 }
