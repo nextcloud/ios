@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
-// SPDX-FileCopyrightText: 2023 Marino Faggiana
-// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation

@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
-// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
 import MobileVLCKit
 
+/// A context menu for video player track selection (subtitles, audio tracks).
+/// See ``NCPlayerToolBar`` for usage details.
 class NCContextMenuPlayerTracks: NSObject {
     enum TrackType {
         case subtitle
