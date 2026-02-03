@@ -416,14 +416,8 @@ class NCContextMenuMain: NSObject {
             children: [deleteConfirmLocal, deleteConfirmFile]
         )
 
-        if metadata.directory {
-            if !metadata.isDirectoryE2EE && metadata.e2eEncrypted {
-                deleteMenu.append(deleteSubMenu)
-            }
-        } else {
-            if !metadata.lock {
-                deleteMenu.append(deleteSubMenu)
-            }
+        if metadata.isDeletable {
+            deleteMenu.append(deleteSubMenu)
         }
 
         return deleteMenu
