@@ -144,6 +144,9 @@ class NCPlayerToolBar: UIView {
         }
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = position
+
+        setupSubtitleButton()
+        setupAudioButton()
     }
 
     public func updatePlaybackPosition() {
@@ -254,7 +257,7 @@ class NCPlayerToolBar: UIView {
         viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
 
-    @IBAction func tapSubTitle(_ sender: Any) {
+    private func setupSubtitleButton() {
         guard let player = ncplayer?.player else { return }
 
         var currentIndex: Int?
@@ -275,7 +278,7 @@ class NCPlayerToolBar: UIView {
         ).viewMenu()
     }
 
-    @IBAction func tapAudio(_ sender: Any) {
+    private func setupAudioButton() {
         guard let player = ncplayer?.player else { return }
 
         var currentIndex: Int?

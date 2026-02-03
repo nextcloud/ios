@@ -13,8 +13,6 @@ class NCContextMenuPlayerTracks: NSObject {
     }
 
     let trackType: TrackType
-    let tracks: [Any]
-    let trackIndexes: [Any]
     let currentIndex: Int?
     let ncplayer: NCPlayer?
     let metadata: tableMetadata?
@@ -29,8 +27,6 @@ class NCContextMenuPlayerTracks: NSObject {
          metadata: tableMetadata?,
          viewerMediaPage: NCViewerMediaPage?) {
         self.trackType = trackType
-        self.tracks = tracks
-        self.trackIndexes = trackIndexes
         self.currentIndex = currentIndex
         self.ncplayer = ncplayer
         self.metadata = metadata
@@ -40,18 +36,66 @@ class NCContextMenuPlayerTracks: NSObject {
     func viewMenu() -> UIMenu {
         var children: [UIMenuElement] = []
 
-        // Track selection items
-        if !tracks.isEmpty {
-            for index in 0..<tracks.count {
-                guard let title = tracks[index] as? String,
-                      let idx = trackIndexes[index] as? Int32 else { continue }
+        // Add track action
+        switch self.trackType {
+        case .subtitle:
+            let deferredElement = UIDeferredMenuElement.uncached { [self] completion in
+                guard let player = ncplayer?.player else { return completion([]) }
+                let spuTracks = player.videoSubTitlesNames
+                let spuTrackIndexes = player.videoSubTitlesIndexes
 
-                let isSelected = (currentIndex ?? -9999) == Int(idx)
-                children.append(makeTrackAction(title: title, index: idx, isSelected: isSelected))
+                var actions = [UIAction]()
+                var subTitleIndex: Int?
+
+                if let data = self.database.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
+                    subTitleIndex = idx
+                } else if let idx = ncplayer?.player.currentVideoSubTitleIndex {
+                    subTitleIndex = Int(idx)
+                }
+
+                if !spuTracks.isEmpty {
+                    for index in 0...spuTracks.count - 1 {
+                        guard let title = spuTracks[index] as? String, let idx = spuTrackIndexes[index] as? Int32 else { return }
+
+                        let action = makeTrackAction(title: title, index: idx, isSelected: (subTitleIndex ?? -9999) == idx)
+                        actions.append(action)
+                    }
+                }
+
+                completion(actions)
             }
+
+            children.append(deferredElement)
+        case .audio:
+            let deferredElement = UIDeferredMenuElement.uncached { [self] completion in
+                guard let player = ncplayer?.player else { return completion([]) }
+                let audioTracks = player.audioTrackNames
+                let audioTrackIndexes = player.audioTrackIndexes
+
+                var actions = [UIAction]()
+                var audioIndex: Int?
+
+                if let data = self.database.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
+                    audioIndex = idx
+                } else if let idx = ncplayer?.player.currentAudioTrackIndex {
+                    audioIndex = Int(idx)
+                }
+
+                if !audioTracks.isEmpty {
+                    for index in 0...audioTracks.count - 1 {
+                        guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32 else { return }
+
+                        let action = makeTrackAction(title: title, index: idx, isSelected: (audioIndex ?? -9999) == idx)
+                        actions.append(action)
+                    }
+                }
+
+                completion(actions)
+            }
+
+            children.append(deferredElement)
         }
 
-        // Add track action
         children.append(makeAddTrackAction())
 
         return UIMenu(title: "", children: children)
