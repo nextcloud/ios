@@ -79,11 +79,11 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     }
 
     func configureCommentMenu() {
-        buttonMenu.menu = delegate?.commentMenu(with: tableComments)
+        buttonMenu.menu = delegate?.openCommentMenu(with: tableComments)
     }
 }
 
 protocol NCShareCommentsCellDelegate: AnyObject {
-    func commentMenu(with tableComments: tableComments?) -> UIMenu?
+    func openCommentMenu(with tableComments: tableComments?) -> UIMenu?
     func openProfileMenu(with tableComment: tableComments?) -> UIMenu?
 }

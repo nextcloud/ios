@@ -265,7 +265,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
+    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
 #if !EXTENSION
         Task {
             guard let viewController = self.viewController, let metadata else {

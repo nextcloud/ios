@@ -1,5 +1,5 @@
 extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate {
-    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
+    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
             guard let metadata else { return }
             button.menu = NCContextMenuMain(metadata: metadata, viewController: self, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()

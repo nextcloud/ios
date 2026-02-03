@@ -540,7 +540,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         return NCContextMenuProfile(userId: tableComment.actorId, session: session, viewController: self).viewMenu()
     }
 
-    func commentMenu(with tableComments: tableComments?) -> UIMenu? {
+    func openCommentMenu(with tableComments: tableComments?) -> UIMenu? {
         guard let tableComments, let metadata else { return nil }
         return NCContextMenuComment(
             tableComments: tableComments,
