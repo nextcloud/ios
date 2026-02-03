@@ -66,6 +66,8 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
             avatarButton.trailingAnchor.constraint(equalTo: imageItem.trailingAnchor)
         ])
         avatarButton.showsMenuAsPrimaryAction = true
+
+        buttonMenu.showsMenuAsPrimaryAction = true
     }
 
     func configureAvatarMenu() {
@@ -76,12 +78,12 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         avatarButton.menu = delegate?.openProfileMenu(with: tableComments)
     }
 
-    @IBAction func touchUpInsideMenu(_ sender: Any) {
-        delegate?.tapMenu(with: tableComments, sender: sender)
+    func configureCommentMenu() {
+        buttonMenu.menu = delegate?.commentMenu(with: tableComments)
     }
 }
 
 protocol NCShareCommentsCellDelegate: AnyObject {
-    func tapMenu(with tableComments: tableComments?, sender: Any)
+    func commentMenu(with tableComments: tableComments?) -> UIMenu?
     func openProfileMenu(with tableComment: tableComments?) -> UIMenu?
 }

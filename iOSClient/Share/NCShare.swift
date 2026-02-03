@@ -514,24 +514,26 @@ extension NCShare: CNContactPickerDelegate {
     }
 
     func showEmailList(arrEmail: [String], sender: Any?) {
-        var actions = [NCMenuAction]()
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
         for email in arrEmail {
-            actions.append(
-                NCMenuAction(
-                    title: email,
-                    icon: utility.loadImage(named: "email", colors: [NCBrandColor.shared.iconImageColor]),
-                    selected: false,
-                    on: false,
-                    sender: sender,
-                    action: { _ in
-                        self.searchField?.text = email
-                        self.networking?.getSharees(searchString: email)
-                    }
-                )
-            )
+            alert.addAction(UIAlertAction(title: email, style: .default) { _ in
+                self.searchField?.text = email
+                self.networking?.getSharees(searchString: email)
+            })
         }
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+
+        // iPad popover support
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = self.view
+            popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.presentMenu(with: actions, sender: sender)
+            self.present(alert, animated: true)
         }
     }
 }

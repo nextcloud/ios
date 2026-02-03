@@ -247,6 +247,7 @@ extension NCActivity: UITableViewDataSource {
         // Button Menu
         if comment.actorId == metadata.userId {
             cell.buttonMenu.isHidden = false
+            cell.configureCommentMenu()
         } else {
             cell.buttonMenu.isHidden = true
         }
@@ -539,86 +540,12 @@ extension NCActivity: NCShareCommentsCellDelegate {
         return NCContextMenuProfile(userId: tableComment.actorId, session: session, viewController: self).viewMenu()
     }
 
-    func tapMenu(with tableComments: tableComments?, sender: Any) {
-        toggleMenu(with: tableComments, sender: sender)
-    }
-
-    func toggleMenu(with tableComments: tableComments?, sender: Any) {
-        var actions = [NCMenuAction]()
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
-                sender: sender,
-                action: { _ in
-                    guard let metadata = self.metadata,
-                          let tableComments = tableComments else {
-                        return
-                    }
-
-                    let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-
-                    alert.addTextField(configurationHandler: { textField in
-                        textField.placeholder = NSLocalizedString("_new_comment_", comment: "")
-                    })
-
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                        guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
-
-                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: metadata.account) { task in
-                            Task {
-                                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                            path: metadata.fileId,
-                                                                                                            name: "updateComments")
-                                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                            }
-                        } completion: { _, _, error in
-                            if error == .success {
-                                self.loadComments()
-                            } else {
-                                Task {@MainActor in
-                                    await showErrorBanner(controller: self.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
-                                }
-                            }
-                        }
-                    }))
-
-                    self.present(alert, animated: true)
-                }
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_delete_comment_", comment: ""),
-                destructive: true,
-                icon: utility.loadImage(named: "trash", colors: [.red]),
-                sender: sender,
-                action: { _ in
-                    guard let metadata = self.metadata, let tableComments = tableComments else { return }
-
-                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                        path: metadata.fileId,
-                                                                                                        name: "deleteComments")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    } completion: { _, _, error in
-                        if error == .success {
-                            self.loadComments()
-                        } else {
-                            Task {
-                                await showErrorBanner(controller: self.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
-                            }
-                        }
-                    }
-                }
-            )
-        )
-
-        presentMenu(with: actions, sender: sender)
+    func commentMenu(with tableComments: tableComments?) -> UIMenu? {
+        guard let tableComments, let metadata else { return nil }
+        return NCContextMenuComment(
+            tableComments: tableComments,
+            metadata: metadata,
+            viewController: self
+        ).viewMenu()
     }
 }
