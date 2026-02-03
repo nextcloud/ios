@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
-// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
@@ -87,7 +87,7 @@ class NCContextMenuComment: NSObject {
                 }
             } completion: { _, _, error in
                 if error == .success {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
+                    (self.viewController as? NCActivity)?.loadComments()
                 } else {
                     Task { @MainActor in
                         await showErrorBanner(controller: self.viewController?.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
