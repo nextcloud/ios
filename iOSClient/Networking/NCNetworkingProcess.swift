@@ -399,7 +399,6 @@ actor NCNetworkingProcess {
                                                                         safeAreaInsets: window.safeAreaInsets,
                                                                         idiom: window.traitCollection.userInterfaceIdiom)
                     let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
-                                                     vPosition: .center,
                                                      horizontalLayout: horizontalLayout,
                                                      blocksTouches: true,
                                                      draggable: false)
@@ -460,7 +459,7 @@ actor NCNetworkingProcess {
                                        payload: LucidBannerPayload(stage: .button,
                                                                    backgroundColor: Color(.systemBackground),
                                                                    vPosition: .bottom,
-                                                                   verticalMargin: 80,
+                                                                   verticalMargin: 50,
                                                                    horizontalLayout: horizontalLayout,
                                                                    blocksTouches: false,
                                                                    draggable: true),
