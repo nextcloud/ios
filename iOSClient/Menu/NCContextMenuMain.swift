@@ -573,4 +573,3 @@ class NCContextMenuMain: NSObject {
         return clientIntegrationMenu
     }
 }
-

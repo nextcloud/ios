@@ -6002,7 +6002,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
 			requirement = {
-				branch = main;
+				branch = 0.5.0;
 				kind = branch;
 			};
 		};
@@ -6122,7 +6122,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = main;
+				branch = 7.2.4;
 				kind = branch;
 			};
 		};
