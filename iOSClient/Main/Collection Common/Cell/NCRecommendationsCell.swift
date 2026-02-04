@@ -6,7 +6,7 @@ import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
     func onMenuIntent(with metadata: tableMetadata?)
-    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
+    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
@@ -20,7 +20,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     var metadata: tableMetadata? {
         didSet {
-            delegate?.contextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
+            delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
 

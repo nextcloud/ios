@@ -249,7 +249,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
             let cell = collectionView.cellForItem(at: indexPath)
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: cell)
+            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: cell)
             return contextMenu.viewMenu()
         })
 #endif
@@ -265,13 +265,13 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func contextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
+    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
 #if !EXTENSION
         Task {
             guard let viewController = self.viewController, let metadata else {
                 return
             }
-            button.menu = NCContextMenu(metadata: metadata, viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
+            button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
         }
 #endif
     }

@@ -51,11 +51,6 @@ class NCApplicationHandle: NSObject {
     func downloadedFile(selector: String, metadata: tableMetadata) {
     }
 
-    // class: NCCollectionViewCommon (+Menu)
-    // func: toggleMenu(metadata: tableMetadata, imageIcon: UIImage?)
-    func addCollectionViewCommonMenu(metadata: tableMetadata, image: UIImage?, actions: inout [NCMenuAction]) {
-    }
-
     // class: NCMore
     // func: loadItems()
     func loadItems(functionMenu: inout [NKExternalSite]) {

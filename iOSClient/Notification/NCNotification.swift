@@ -224,6 +224,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 cell.more.isEnabled = true
                 cell.more.isHidden = false
                 cell.more.setTitle("…", for: .normal)
+
+                let contextMenu = NCContextMenuNotification(
+                    notification: notification,
+                    delegate: self
+                )
+                cell.more.menu = contextMenu.viewMenu()
+                cell.more.showsMenuAsPrimaryAction = true
             }
 
             var buttonWidth = max(cell.primary.intrinsicContentSize.width, cell.secondary.intrinsicContentSize.width)
@@ -307,10 +314,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 print("[Error] The user has been changed during networking process.")
             }
         }
-    }
-
-    func tapMore(with notification: NKNotifications, sender: Any?) {
-       toggleMenu(notification: notification, sender: sender)
     }
 
     // MARK: - Load notification networking
@@ -403,15 +406,9 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         else { return }
         delegate?.tapAction(with: notification, label: label, sender: sender)
     }
-
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        guard let notification = notification else { return }
-        delegate?.tapMore(with: notification, sender: sender)
-    }
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
     func tapRemove(with notification: NKNotifications, sender: Any?)
     func tapAction(with notification: NKNotifications, label: String, sender: Any?)
-    func tapMore(with notification: NKNotifications, sender: Any?)
 }

@@ -47,7 +47,7 @@ class NCViewerMediaPage: UIViewController {
         primaryAction: nil,
         menu: UIMenu(title: "", children: [
             UIDeferredMenuElement.uncached { [self] completion in
-                if let menu = NCViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, sender: self) {
+                if let menu = NCViewerContextMenu(metadata: currentViewController.metadata, controller: self.tabBarController as? NCMainTabBarController, webView: false, sender: self).viewMenu() {
                     completion(menu.children)
                 }
             }

@@ -20,25 +20,8 @@ func showUploadBanner(scene: UIWindowScene?,
 
 #if !EXTENSION
     if allowMinimizeOnTap {
-        LucidBannerVariantCoordinator.shared.register(token: token) { context in
-            let bounds = context.bounds
-            let insets = context.safeAreaInsets
-            let trait = context.window.traitCollection
-            let controller = SceneManager.shared.getController(scene: context.window.windowScene)
-            let tabBarHeight: CGFloat = controller?.barHeightBottom ?? 0
-            let verticalSpacing: CGFloat
-            let y: CGFloat
-
-            if trait.horizontalSizeClass == .regular {
-                verticalSpacing = 24
-                y = bounds.maxY - insets.bottom - verticalSpacing
-            } else {
-                verticalSpacing = 20
-                y = bounds.maxY - tabBarHeight - insets.bottom - verticalSpacing
-            }
-
-            return LucidBannerVariantCoordinator.VariantResolution(
-                targetPoint: CGPoint(x: bounds.midX, y: y),
+        LucidBannerVariantCoordinator.shared.register(token: token) { _ in
+            return .init(
                 payloadUpdate: .init(
                     horizontalLayout: .centered(width: 100),
                     swipeToDismiss: false,
