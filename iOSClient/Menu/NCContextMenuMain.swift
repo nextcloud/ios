@@ -7,7 +7,6 @@ import UIKit
 import SwiftUI
 import Alamofire
 import NextcloudKit
-import SVGKit
 import LucidBanner
 
 /// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``

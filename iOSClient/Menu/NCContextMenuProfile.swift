@@ -5,7 +5,6 @@
 import Foundation
 import UIKit
 import MessageUI
-import SVGKit
 import NextcloudKit
 
 /// A context menu for user profile actions (email, talk, etc.)
@@ -89,24 +88,34 @@ class NCContextMenuProfile: NSObject {
     // MARK: - Action Makers
 
     private func makeActionItem(from action: NKHovercard.Action) -> UIAction {
-        var image = utility.loadImage(named: "person", colors: [NCBrandColor.shared.iconImageColor])
-
-        if let url = URL(string: action.icon),
-           let svgSource = SVGKSourceURL.source(from: url),
-           let svg = SVGKImage(source: svgSource) {
-            image = svg.uiImage.withTintColor(
-                NCBrandColor.shared.iconImageColor,
-                renderingMode: .alwaysOriginal
-            )
-        }
-
-        return UIAction(
+        // Placeholder
+        let placeholder = utility.loadImage(named: "person", colors: [NCBrandColor.shared.iconImageColor])
+        let uiAction = UIAction(
             title: action.title,
-            image: image,
+            image: placeholder,
             attributes: action.appId == "timezone" ? .disabled : []
         ) { _ in
             self.handleProfileAction(action)
         }
+
+        // SVG async load + render
+        if let url = URL(string: action.icon) {
+            Task { @MainActor in
+                do {
+                    let data = try Data(contentsOf: url)
+                    let image = try await NCSVGRenderer().renderSVGToUIImage( svgData: data, size: CGSize(width: 24, height: 24))
+                    let tinted = image.withTintColor(
+                        NCBrandColor.shared.iconImageColor,
+                        renderingMode: .alwaysOriginal
+                    )
+                    uiAction.image = tinted
+                } catch {
+                    nkLog(error: "SVG render failed: \(error)")
+                }
+            }
+        }
+
+        return uiAction
     }
 
     // MARK: - Action Handlers
