@@ -265,6 +265,8 @@
 		F71F6D0B2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D0C2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D0D2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
+		F71FA7902F337F3300E86192 /* NCSVGRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71FA78F2F337F3000E86192 /* NCSVGRenderer.swift */; };
+		F71FA7912F337F3300E86192 /* NCSVGRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71FA78F2F337F3000E86192 /* NCSVGRenderer.swift */; };
 		F722133B2D40EF9D002F7438 /* NCFilesNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F722133A2D40EF8C002F7438 /* NCFilesNavigationController.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722F0112CFF569500065FB5 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F722F0102CFF569500065FB5 /* MainInterface.storyboard */; };
@@ -1335,6 +1337,7 @@
 		F71CFA662F2A07C6007A3AE9 /* NCMedia+Netwoking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMedia+Netwoking.swift"; sourceTree = "<group>"; };
 		F71D2FB62E09BBD700B751CC /* NCAutoUploadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadModel.swift; sourceTree = "<group>"; };
 		F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeArray.swift; sourceTree = "<group>"; };
+		F71FA78F2F337F3000E86192 /* NCSVGRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSVGRenderer.swift; sourceTree = "<group>"; };
 		F722133A2D40EF8C002F7438 /* NCFilesNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFilesNavigationController.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F722F0102CFF569500065FB5 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
@@ -2939,6 +2942,7 @@
 				F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */,
 				F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
+				F71FA78F2F337F3000E86192 /* NCSVGRenderer.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */,
 				F359D8662A7D03420023F405 /* NCUtility+Exif.swift */,
@@ -4243,6 +4247,7 @@
 				F7D4BF3C2CA2E8D800A5E746 /* TOPasscodeViewController.m in Sources */,
 				F74AF3A5247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */,
+				F71FA7912F337F3300E86192 /* NCSVGRenderer.swift in Sources */,
 				AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */,
 				F74D50362C9856D300BBBF4C /* NCCollectionViewDataSource.swift in Sources */,
 				F7A573692E190387009C9257 /* NCShareExtensionData.swift in Sources */,
@@ -4491,6 +4496,7 @@
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
 				AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
+				F71FA7902F337F3300E86192 /* NCSVGRenderer.swift in Sources */,
 				AA8D31552D41052300FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
 				F758B460212C56A400515F55 /* NCScan.swift in Sources */,
 				F76882262C0DD1E7001CF441 /* NCSettingsView.swift in Sources */,

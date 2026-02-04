@@ -512,13 +512,12 @@ class NCContextMenuMain: NSObject {
                                 }.withRenderingMode(image.renderingMode)
                             }
 
-                            var iconImage: UIImage
+                            var iconImage = UIImage()
 
                             if let iconUrl = item.icon,
                                let url = URL(string: metadata.urlBase + iconUrl) {
                                 let (data, _) = try await URLSession.shared.data(from: url)
-                                let svgkImage = SVGKImage(data: data)?.uiImage.withRenderingMode(.alwaysTemplate)
-                                iconImage = resizedRasterImage(svgkImage ?? UIImage(), to: .init(width: 23, height: 23))
+                                iconImage = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 23, height: 23))
                             } else {
                                 iconImage = UIImage()
                             }
