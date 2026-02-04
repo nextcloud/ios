@@ -406,11 +406,9 @@ extension NCShareExtension {
         }
 
         if error == .success {
-            LucidBanner.shared.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)),
-                                      for: self.token)
+            LucidBanner.shared.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
-            LucidBanner.shared.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription,stage: .error),
-                                      for: self.token)
+            LucidBanner.shared.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
         }
 
         LucidBanner.shared.dismiss(after: 2) {
