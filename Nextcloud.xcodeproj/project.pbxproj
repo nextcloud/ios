@@ -163,6 +163,7 @@
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3C587AE2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */; };
+		F3C6F6F62F34CC0900C531B6 /* NCAssistantChatSessionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6F6F52F34CC0900C531B6 /* NCAssistantChatSessionsModel.swift */; };
 		F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */; };
 		F3DDFE0F2F15453900A784C8 /* NCAssistantChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */; };
 		F3DDFE1E2F1F8EC600A784C8 /* ChatInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE1D2F1F8EC600A784C8 /* ChatInputField.swift */; };
@@ -1277,6 +1278,7 @@
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetCollectionThumbnailLoader.swift; sourceTree = "<group>"; };
+		F3C6F6F52F34CC0900C531B6 /* NCAssistantChatSessionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatSessionsModel.swift; sourceTree = "<group>"; };
 		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
 		F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChat.swift; sourceTree = "<group>"; };
 		F3DDFE102F16732D00A784C8 /* NextcloudKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = NextcloudKit; path = ../NextcloudKit; sourceTree = SOURCE_ROOT; };
@@ -2210,6 +2212,7 @@
 			isa = PBXGroup;
 			children = (
 				F3DDFE202F1F953000A784C8 /* NCAssistantChatSessions.swift */,
+				F3C6F6F52F34CC0900C531B6 /* NCAssistantChatSessionsModel.swift */,
 			);
 			path = "Chat Sessions";
 			sourceTree = "<group>";
@@ -4455,6 +4458,7 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F77DD6A82C5CC093009448FB /* NCSession.swift in Sources */,
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
+				F3C6F6F62F34CC0900C531B6 /* NCAssistantChatSessionsModel.swift in Sources */,
 				F76340FC2EBDF64D0056F538 /* NCManageDatabase+Tag.swift in Sources */,
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,

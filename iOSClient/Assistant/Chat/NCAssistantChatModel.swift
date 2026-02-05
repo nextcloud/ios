@@ -13,28 +13,24 @@ import NextcloudKit
             stopPolling()
             loadMessages()
 
-            if messages.last.isFromHuman {
+            if messages.last?.isFromHuman == true {
                 startPollingForResponse()
             }
         }
     }
 
-
     // A session that has been selected at least once while this screen is showing is added here.
     var alreadyOpenedSessions: Set<AssistantSession> = []
 
-    var sessions: [AssistantSession] = []
     private let ncSession: NCSession.Session
     private var pollingTask: Task<Void, Never>?
 
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatResponseTaskId: Int?
-
     init(controller: NCMainTabBarController?, messages: [ChatMessage] = []) {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
         self.messages = messages
-        loadAllSessions()
     }
 
     func startPollingForResponse(interval: TimeInterval = 4.0) {
@@ -67,13 +63,6 @@ import NextcloudKit
         }
     }
 
-    private func loadAllSessions() {
-        Task {
-            let result = await NextcloudKit.shared.getAssistantChatConversationsAsync(account: ncSession.account)
-            sessions = result.sessions ?? []
-        }
-    }
-
     private func loadMessages() {
         guard let sessionId = selectedSession?.id else { return }
 
@@ -99,42 +88,22 @@ import NextcloudKit
     }
 
     func sendMessage(input: String) {
-        if let selectedSession {
-            let request = ChatMessageRequest(sessionId: selectedSession.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970 * 1000), firstHumanMessage: messages.isEmpty)
-            isThinking = true
+        guard let selectedSession else { return }
 
-            Task {
-                let result = await NextcloudKit.shared.createAssistantChatMessageAsync(messageRequest: request, account: ncSession.account)
-                if result.error == .success {
-                    guard let chatMessage = result.chatMessage else { return }
-                    messages.append(chatMessage)
+        let request = ChatMessageRequest(sessionId: selectedSession.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970 * 1000), firstHumanMessage: messages.isEmpty)
+        isThinking = true
 
-                    stopPolling()
-                    requestResponse()
-                } else {
-                    //TODO
-                }
+        Task {
+            let result = await NextcloudKit.shared.createAssistantChatMessageAsync(messageRequest: request, account: ncSession.account)
+            if result.error == .success {
+                guard let chatMessage = result.chatMessage else { return }
+                messages.append(chatMessage)
 
+                stopPolling()
+                requestResponse()
+            } else {
+                //TODO
             }
-        } else {
-            Task {
-                let session = await createNewConversation(title: input)
-                selectedSession = session
-                sendMessage(input: input)
-            }
-        }
-    }
-
-    func createNewConversation(title: String? = nil) async -> AssistantSession? {
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let result = await NextcloudKit.shared.createAssistantChatConversationAsync(title: title, timestamp: timestamp, account: ncSession.account)
-        if result.error == .success, let newSession = result.conversation?.session {
-            sessions.insert(newSession, at: 0)
-            selectedSession = newSession
-            return newSession
-        } else {
-            hasError = true
-            return nil
         }
     }
 }

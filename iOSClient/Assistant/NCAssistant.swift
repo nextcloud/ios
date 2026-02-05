@@ -9,6 +9,7 @@ import PopupView
 struct NCAssistant: View {
     @State var assistantModel: NCAssistantModel
     @State var chatModel: NCAssistantChatModel
+    @State var sessionsModel: NCAssistantChatSessionsModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
@@ -37,7 +38,9 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantChatSessions(model: $chatModel)) {
+                    NavigationLink(destination: NCAssistantChatSessions(onSessionSelected: { session in
+                        chatModel.selectedSession = session
+                    })) {
                         Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
@@ -69,14 +72,16 @@ struct NCAssistant: View {
         .accentColor(Color(NCBrandColor.shared.iconImageColor))
         .environment(assistantModel)
         .environment(chatModel)
+        .environment(sessionsModel)
     }
 }
 
 #Preview {
     @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
     let model = NCAssistantModel(controller: nil)
+    let sessionsModel = NCAssistantChatSessionsModel(controller: nil)
 
-    NCAssistant(assistantModel: model, chatModel: chatModel)
+    NCAssistant(assistantModel: model, chatModel: chatModel, sessionsModel: sessionsModel)
         .onAppear {
             model.loadDummyData()
         }
