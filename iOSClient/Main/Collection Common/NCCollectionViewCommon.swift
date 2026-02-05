@@ -668,13 +668,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
               !literalSearch.isEmpty else {
             return
         }
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
         self.networkSearchInProgress = true
         self.dataSource.removeAll()
-        Task {
-            await self.reloadDataSource()
-        }
+        await self.reloadDataSource()
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             self.networking.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
@@ -700,35 +698,26 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 self.networkSearchInProgress = false
             }
         } else {
-            self.networking.searchFiles(literal: literalSearch, account: session.account) { task in
+            let results = await self.networking.searchFiles(literal: literalSearch, account: session.account) { task in
                 self.searchDataSourceTask = task
                 Task {
                     await self.reloadDataSource()
                 }
-            } completion: { metadatasSearch, error in
-                Task {
-                    guard let metadatasSearch,
-                          error == .success,
-                          self.isSearchingMode
-                    else {
-                        self.networkSearchInProgress = false
-                        await self.reloadDataSource()
-                        return
-                    }
-                    let ocId = metadatasSearch.map { $0.ocId }
-                    let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocId),
-                                                                          withLayout: self.layoutForView,
-                                                                          withAccount: self.session.account)
-
-                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
-                                                                 layoutForView: self.layoutForView,
-                                                                 providers: self.providers,
-                                                                 searchResults: self.searchResults,
-                                                                 account: self.session.account)
-                    self.networkSearchInProgress = false
-                    await self.reloadDataSource()
-                }
             }
+            if let ocIds = results.ocIds, results.error == .success {
+                let metadatas = await self.database.getMetadatasAsync(
+                    predicate: NSPredicate(format: "ocId IN %@", ocIds),
+                    withLayout: self.layoutForView,
+                    withAccount: self.session.account
+                )
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                             layoutForView: self.layoutForView,
+                                                             providers: self.providers,
+                                                             searchResults: self.searchResults,
+                                                             account: self.session.account)
+            }
+            self.networkSearchInProgress = false
+            await self.reloadDataSource()
         }
     }
 

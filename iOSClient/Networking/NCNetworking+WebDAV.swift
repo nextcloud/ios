@@ -836,33 +836,31 @@ extension NCNetworking {
     // MARK: - Search
 
     /// WebDAV search
-    func searchFiles(literal: String,
-                     account: String,
-                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                     completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+    func searchFiles(literal: String, account: String, taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (ocIds: [String]?, error: NKError) {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
-        NextcloudKit.shared.searchLiteral(serverUrl: serverUrl,
-                                          depth: "infinity",
-                                          literal: literal,
-                                          showHiddenFiles: showHiddenFiles,
-                                          account: account,
-                                          options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+
+        let results = await NextcloudKit.shared.searchLiteralAsync(serverUrl: serverUrl,
+                                                                   depth: "infinity",
+                                                                   literal: literal,
+                                                                   showHiddenFiles: showHiddenFiles,
+                                                                   account: account) { task in
+            taskHandler(task)
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                             path: serverUrl,
                                                                                             name: "searchLiteral")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
-            taskHandler(task)
-        } completion: { _, files, _, error in
-            guard error == .success, let files else { return completion(nil, error) }
+        }
 
-            Task {
-                let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
-                NCManageDatabase.shared.addMetadatas(metadatas)
-                completion(metadatas, error)
-            }
+        if results.error == .success, let files = results.files {
+            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+            NCManageDatabase.shared.addMetadatas(metadatas)
+            let ocIds = metadatas.map { $0.ocId }
+            return(ocIds, .success)
+        } else {
+            return(nil, results.error)
         }
     }
 
