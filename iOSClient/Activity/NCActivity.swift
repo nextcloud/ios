@@ -5,7 +5,6 @@
 import UIKit
 import SwiftRichString
 import NextcloudKit
-import SVGKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
@@ -278,11 +277,27 @@ extension NCActivity: UITableViewDataSource {
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNameIcon)
 
-            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath)?.uiImage : UIImage(contentsOfFile: fileNameLocalPath)
-
-                if let image {
-                    cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
+            if FileManager.default.fileExists(atPath: fileNameLocalPath),
+               fileNameIcon.contains(".svg") {
+                Task {
+                    do {
+                        let url = URL(fileURLWithPath: fileNameLocalPath)
+                        let data = try Data(contentsOf: url)
+                        if let image = UIImage(data: data) {
+                            cell.icon.image = image
+                        } else {
+                            let image = try await NCSVGRenderer().renderSVGToUIImage(
+                                svgData: data,
+                                size: CGSize(width: 24, height: 24),
+                                backgroundColor: .clear
+                            )
+                            if cell.idActivity == activity.idActivity {
+                                cell.icon.image = image
+                            }
+                        }
+                    } catch {
+                        print("SVG render failed: \(error)")
+                    }
                 }
             } else {
                 NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { task in

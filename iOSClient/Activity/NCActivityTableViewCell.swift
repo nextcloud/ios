@@ -10,7 +10,7 @@ import Queuer
 class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
 
-    var fileId = ""
+    var fileId: Int = 0
     var indexPath = IndexPath()
 }
 
@@ -30,7 +30,6 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var viewController = NCActivity()
     let utilityFileSystem = NCUtilityFileSystem()
     var account: String!
-
     let utility = NCUtility()
 
     var indexPath: IndexPath {
@@ -130,37 +129,37 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: NCActivityCollectionViewCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell)!
+        let activityPreview = activityPreviews[indexPath.row]
 
         cell.imageView.image = nil
         cell.indexPath = indexPath
-
-        let activityPreview = activityPreviews[indexPath.row]
-        let fileId = String(activityPreview.fileId)
+        cell.imageView.image = NCImageCache.shared.getImageFile()
+        cell.fileId = activityPreview.fileId
 
         // Trashbin
         if activityPreview.view == "trashbin" {
             let source = activityPreview.source
-
-            utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: account, id: idActivity) { imageNamePath, id in
-                if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
+            Task {
+                let results = await utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, size: 100, rewrite: false, account: account, id: idActivity)
+                if let image = results.image,
+                   let idActivity = results.id,
+                   cell.fileId == activityPreview.fileId {
                     cell.imageView.image = image
-                } else {
-                    cell.imageView.image = NCImageCache.shared.getImageFile()
                 }
             }
         } else {
             if activityPreview.isMimeTypeIcon {
                 let source = activityPreview.source
-
-                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 150, rewrite: false, account: account, id: idActivity) { imageNamePath, id in
-                    if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
+                Task {
+                    let results = await utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, size: 150, rewrite: false, account: account, id: idActivity)
+                    if let image = results.image,
+                       let idActivity = results.id,
+                       cell.fileId == activityPreview.fileId {
                         cell.imageView.image = image
-                    } else {
-                        cell.imageView.image = NCImageCache.shared.getImageFile()
                     }
                 }
             } else {
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: String(activityPreview.fileId)) {
                     let fileNamePath = NCUtilityFileSystem().createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: activitySubjectRich.name)
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
@@ -169,10 +168,10 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                     } else {
                         cell.imageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
                         cell.imageView?.contentMode = .scaleAspectFit
-                        cell.fileId = fileId
+                        cell.fileId = activityPreview.fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
-                            if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, etag: "", fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
+                            if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == activityPreview.fileId }).isEmpty {
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: activityPreview.fileId, etag: "", fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
                             }
                         }
                     }
@@ -200,11 +199,11 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Sendable {
     var collectionView: UICollectionView?
     var fileNamePreviewLocalPath: String
-    var fileId: String
+    var fileId: Int
     var account: String
     var etag: String
 
-    init(fileId: String, etag: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
+    init(fileId: Int, etag: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
         self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
         self.fileId = fileId
         self.account = account
@@ -214,10 +213,10 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-        NextcloudKit.shared.downloadPreview(fileId: fileId, etag: etag, account: account) { task in
+        NextcloudKit.shared.downloadPreview(fileId: String(fileId), etag: etag, account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                            path: self.fileId,
+                                                                                            path: String(self.fileId),
                                                                                             name: "DownloadPreview")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }

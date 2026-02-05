@@ -5,7 +5,6 @@
 import UIKit
 @preconcurrency import NextcloudKit
 import RealmSwift
-import SVGKit
 
 class NCService: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -42,9 +41,6 @@ class NCService: NSObject {
 
             // Start a background synchronization task
             await synchronize(account: account)
-
-            // Fetch and display dashboard widgets if available
-            await requestDashboardWidget(account: account)
         }
     }
 
@@ -259,59 +255,6 @@ class NCService: NSObject {
                 await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
-            }
-        }
-    }
-
-    // MARK: -
-
-    private func requestDashboardWidget(account: String) async {
-        let results = await NextcloudKit.shared.getDashboardWidgetAsync(account: account, taskHandler: { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "getDashboardWidget")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        })
-        if results.error == .success,
-           let dashboardWidgets = results.dashboardWidgets {
-            await NCManageDatabase.shared.addDashboardWidgetAsync(account: account, dashboardWidgets: dashboardWidgets)
-            for widget in dashboardWidgets {
-                if let url = URL(string: widget.iconUrl),
-                   let fileName = widget.iconClass {
-                    let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                        path: url.absoluteString,
-                                                                                                        name: "DownloadPreview")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    if results.error == .success,
-                       let data = results.responseData?.data {
-                        await MainActor.run {
-                            let size = CGSize(width: 256, height: 256)
-                            let finalImage: UIImage?
-                            if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
-                                finalImage = uiImage
-                            } else if let svgImage = SVGKImage(data: data) {
-                                svgImage.size = size
-                                finalImage = svgImage.uiImage
-                            } else {
-                                print("Unsupported image format")
-                                finalImage = nil
-                            }
-                            if let image = finalImage {
-                                let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
-                                do {
-                                    try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
-                                } catch {
-                                    print("Failed to write image to disk: \(error.localizedDescription)")
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }

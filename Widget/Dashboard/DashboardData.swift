@@ -26,7 +26,6 @@ import WidgetKit
 import Intents
 import NextcloudKit
 import RealmSwift
-import SVGKit
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
@@ -76,7 +75,7 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> UIImage? {
+func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) async -> UIImage? {
     guard let data = data else {
         return nil
     }
@@ -85,12 +84,14 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
 
     if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
         imageData = image
-    } else if let image = SVGKImage(data: data) {
-        image.size = size
-        imageData = image.uiImage
     } else {
-        print("error")
+        do {
+            imageData = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: size)
+        } catch {
+            print("Unsupported image format: \(error.localizedDescription)")
+        }
     }
+
     if let fileName = fileNameToWrite, let image = imageData {
         do {
             let fileNamePath: String = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName + ".png")
@@ -229,7 +230,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                         let (_, _, error) = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: activeTableAccount.account)
                                         if error == .success,
                                            let data = responseData?.data,
-                                           let image = convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
+                                           let image = await convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
                                             icon = image
                                         }
                                     }

@@ -9,10 +9,25 @@ import WebKit
 final class NCSVGRenderer: NSObject, WKNavigationDelegate {
     private var navigationContinuation: CheckedContinuation<Void, Error>?
     private var webView: WKWebView?
+    private let utilityFileSystem = NCUtilityFileSystem()
 
     func renderSVGToUIImage(svgData: Data,
                             size: CGSize,
+                            fileName: String,
                             backgroundColor: UIColor = .clear) async throws -> UIImage {
+        // try to get from directoryUserData
+        let fileName = fileName.replacingOccurrences(of: ".svg", with: ".png")
+        let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+        if FileManager.default.fileExists(atPath: path) {
+            do {
+                let url = URL(fileURLWithPath: path)
+                let data = try Data(contentsOf: url)
+                if let image = UIImage(data: data) {
+                    return image
+                }
+            } catch { }
+        }
+
         let webView = WKWebView(frame: CGRect(origin: .zero, size: size))
         self.webView = webView
 
@@ -61,10 +76,28 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         config.rect = CGRect(origin: .zero, size: size)
 
         let image = try await takeSnapshotAsync(webView: webView, configuration: config)
+        if let data = image.pngData() {
+            try data.write(to: URL(fileURLWithPath: path))
+        }
+
         return image
     }
 
-    // MARK: - Async bridges
+    func xx(path: String) async throws -> UIImage? {
+        guard FileManager.default.fileExists(atPath: path) else {
+            return nil
+        }
+
+        do {
+            let url = URL(fileURLWithPath: path)
+            let data = try Data(contentsOf: url)
+            let image = UIImage(data: data)
+            return image
+        } catch {
+            print("SVG render failed: \(error)")
+            return nil
+        }
+    }
 
     private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
         try await withCheckedThrowingContinuation { cont in
@@ -82,17 +115,15 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         })();
         """
 
+        // wait max 3 sec.
         for _ in 0..<60 {
             let ready = try await webView.evaluateJavaScript(js) as? Bool
             if ready == true { return }
             try await Task.sleep(nanoseconds: 50_000_000)
         }
-
-        throw NSError(domain: "NCSVGRenderer", code: -20)
     }
 
-    private func takeSnapshotAsync(webView: WKWebView,
-                                  configuration: WKSnapshotConfiguration) async throws -> UIImage {
+    private func takeSnapshotAsync(webView: WKWebView, configuration: WKSnapshotConfiguration) async throws -> UIImage {
         try await withCheckedThrowingContinuation { cont in
             webView.takeSnapshot(with: configuration) { image, error in
                 if let image {
