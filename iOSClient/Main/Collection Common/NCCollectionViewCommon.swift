@@ -493,7 +493,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
-            networkSearch()
+            Task {
+                await networkSearch()
+            }
         }
     }
 
@@ -657,7 +659,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func getServerData(forced: Bool = false) async { }
 
-    @objc func networkSearch() {
+    func networkSearch() async {
         guard !networkSearchInProgress else {
             return
         }
@@ -936,7 +938,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
 
             if self.isSearchingMode {
                 await self.debouncerNetworkSearch.call {
-                    self.networkSearch()
+                    await self.networkSearch()
                 }
             } else if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
                 await self.debouncerReloadDataSource.call {
@@ -950,7 +952,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if self.isSearchingMode {
                 await self.debouncerNetworkSearch.call {
-                    self.networkSearch()
+                    await self.networkSearch()
                 }
                 return
             }
