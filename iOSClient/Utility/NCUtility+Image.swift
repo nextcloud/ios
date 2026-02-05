@@ -127,7 +127,7 @@ extension NCUtility {
     }
 
     func createImageFileFrom(data: Data, metadata: tableMetadata) {
-        createImageFileFrom( data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+        createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
     }
 
     func createImageFileFrom(data: Data, ocId: String, etag: String, userId: String, urlBase: String) {

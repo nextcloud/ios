@@ -306,13 +306,14 @@ class NCViewerMedia: UIViewController {
                 do {
                     let url = URL(fileURLWithPath: fileNamePath)
                     let data = try Data(contentsOf: url)
-                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024), backgroundColor: UIColor(white: 0.95, alpha: 1)) {
+                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024), fileName: metadata.fileName, backgroundColor: UIColor(white: 0.95, alpha: 1)),
+                        let imageData = image.pngData() {
                         if !NCUtility().existsImage(ocId: metadata.ocId,
                                                     etag: metadata.etag,
                                                     ext: global.previewExt1024,
                                                     userId: metadata.userId,
-                                                    urlBase: metadata.urlBase), let data = image.jpegData(compressionQuality: 1.0) {
-                            utility.createImageFileFrom(data: data, metadata: metadata)
+                                                    urlBase: metadata.urlBase) {
+                            utility.createImageFileFrom(data: imageData, metadata: metadata)
                         }
                         self.image = image
                         self.imageVideoContainer.image = self.image
