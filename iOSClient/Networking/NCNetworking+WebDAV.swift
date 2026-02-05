@@ -836,7 +836,10 @@ extension NCNetworking {
     // MARK: - Search
 
     /// WebDAV search
-    func searchFiles(literal: String, account: String, taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (ocIds: [String]?, error: NKError) {
+    func searchFiles(literal: String,
+                     account: String,
+                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }
+    ) async -> (ocIds: [String]?, error: NKError) {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
 
@@ -866,6 +869,93 @@ extension NCNetworking {
 
     /// Unified Search (NC>=20)
     ///
+    func unifiedSearchFiles(literal: String,
+                            account: String,
+                            taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                            providers: @escaping (_ account: String, _ searchProviders: [NKSearchProvider]?) -> Void,
+                            update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void
+    ) async {
+        let session = NCSession.shared.getSession(account: account)
+        let results = await NextcloudKit.shared.unifiedSearchAsync(term: literal,
+                                                                   timeout: 30,
+                                                                   timeoutProvider: 90,
+                                                                   account: account) { _ in
+            // example filter
+            // ["calendar", "files", "fulltextsearch"].contains(provider.id)
+            return true
+        } request: { request in
+            if let request {
+                self.requestsUnifiedSearch.append(request)
+            }
+        } taskHandler: { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: literal,
+                                                                                            name: "unifiedSearch")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+            taskHandler(task)
+        } providers: { account, searchProviders in
+            providers(account, searchProviders)
+        } update: { account, searchResult, provider, error in
+            guard let searchResult else {
+                return
+            }
+            Task {
+                var metadatas: [tableMetadata] = []
+
+                switch provider.id {
+                case "files":
+                    for entry in searchResult.entries {
+                        if let filePath = entry.filePath {
+                            if let metadata = await self.loadMetadata(session: session, filePath: filePath) {
+                                metadatas.append(metadata)
+                            }
+                        } else {
+                            print(#function, "[ERROR]: File search entry has no path: \(entry)")
+                        }
+                    }
+                    Task {
+                        update(account, provider.id, searchResult, metadatas)
+                    }
+                case "fulltextsearch":
+                    // NOTE: FTS could also return attributes like files
+                    // https://github.com/nextcloud/files_fulltextsearch/issues/143
+                    for entry in searchResult.entries {
+                        let url = URLComponents(string: entry.resourceURL)
+                        guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
+                        if let metadata = await NCManageDatabase.shared.getMetadataAsync(
+                            predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", session.account, "/remote.php/dav/files/" + session.user + dir, filename)) {
+                            metadatas.append(metadata)
+                        } else {
+                            if let metadata = await self.loadMetadata(session: session, filePath: dir + filename) {
+                                metadatas.append(metadata)
+                            }
+                        }
+
+                    }
+                    update(account, provider.id, searchResult, metadatas)
+                default:
+                    for entry in searchResult.entries {
+                        let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                            fileName: entry.title,
+                            ocId: NSUUID().uuidString,
+                            serverUrl: session.urlBase,
+                            url: entry.resourceURL,
+                            isUrl: true,
+                            name: searchResult.id,
+                            subline: entry.subline,
+                            iconUrl: entry.thumbnailURL,
+                            session: session,
+                            sceneIdentifier: nil)
+                        metadatas.append(metadata)
+                    }
+                    update(account, provider.id, searchResult, metadatas)
+                }
+            }
+        }
+    }
+
     func unifiedSearchFiles(literal: String,
                             account: String,
                             taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
@@ -1065,6 +1155,18 @@ extension NCNetworking {
             NCManageDatabase.shared.addMetadata(metadata)
             completion(account, returnMetadata, error)
         }
+    }
+
+    private func loadMetadata(session: NCSession.Session,
+                              filePath: String) async -> tableMetadata? {
+        let urlPath = session.urlBase + "/remote.php/dav/files/" + session.user + filePath
+        let results = await self.readFileAsync(serverUrlFileName: urlPath, account: session.account)
+        guard let metadata = results.metadata else {
+            return nil
+        }
+
+        NCManageDatabase.shared.addMetadata(metadata)
+        return metadata
     }
 }
 
