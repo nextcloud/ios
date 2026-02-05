@@ -675,9 +675,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         await self.reloadDataSource()
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
-            self.networking.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
-                self.searchDataSourceTask = task
+            await self.networking.unifiedSearchFiles(literal: literalSearch,
+                                                     account: session.account) { task in
                 Task {
+                    self.searchDataSourceTask = task
                     await self.reloadDataSource()
                 }
             } providers: { account, searchProviders in
@@ -688,14 +689,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                              providers: self.providers,
                                                              searchResults: self.searchResults,
                                                              account: account)
-            } update: { _, _, searchResult, metadatas in
-                guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
-                self.networking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
-            } completion: { _, _ in
-                Task {
-                    await self.reloadDataSource()
+            } update: { account, id, searchResult, metadatas in
+                guard let metadatas,
+                      !metadatas.isEmpty,
+                      self.isSearchingMode,
+                      let searchResult else {
+                    return
                 }
-                self.networkSearchInProgress = false
+                self.networking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             }
         } else {
             let results = await self.networking.searchFiles(literal: literalSearch, account: session.account) { task in
@@ -721,37 +722,42 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
     }
 
-    func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
+    func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
         guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
-        Task {
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: nil)
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadData(serverUrl: nil)
+        }
+
+        let results = await self.networking.unifiedSearchFilesProvider(providerId: lastSearchResult.id,
+                                                                       term: term,
+                                                                       limit: 20,
+                                                                       cursor: cursor,
+                                                                       account: session.account) { task in
+            Task {
+                self.searchDataSourceTask = task
+                await self.reloadDataSource()
             }
         }
 
-        self.networking.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
-            self.searchDataSourceTask = task
+        if results.error != .success {
             Task {
-                await self.reloadDataSource()
+                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
             }
-        } completion: { _, searchResult, metadatas, error in
-            if error != .success {
-                Task {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
-                }
-            }
+        }
 
-            metadataForSection.unifiedSearchInProgress = false
-            guard let searchResult = searchResult, let metadatas = metadatas else { return }
-            self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
+        guard results.error == .success,
+              let searchResult = results.searchResult,
+              let metadatas = results.metadatas else {
+            return
+        }
 
-            Task {
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: nil)
-                }
-            }
+        metadataForSection.unifiedSearchInProgress = false
+        self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
+
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadData(serverUrl: nil)
         }
     }
 
@@ -884,7 +890,9 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
 
 extension NCCollectionViewCommon: NCSectionFooterDelegate {
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
-        unifiedSearchMore(metadataForSection: metadataForSection)
+        Task {
+            await unifiedSearchMore(metadataForSection: metadataForSection)
+        }
     }
 }
 
