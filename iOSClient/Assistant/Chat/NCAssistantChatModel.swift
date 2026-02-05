@@ -27,6 +27,7 @@ import NextcloudKit
 
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatResponseTaskId: Int?
+    
     init(controller: NCMainTabBarController?, messages: [ChatMessage] = []) {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
@@ -104,6 +105,14 @@ import NextcloudKit
             } else {
                 //TODO
             }
+        }
+    }
+
+    func startNewConversation(input: String, sessionsModel: NCAssistantChatSessionsModel) {
+        Task {
+            let session = await sessionsModel.createNewConversation(title: input)
+            selectedSession = session
+            sendMessage(input: input)
         }
     }
 }

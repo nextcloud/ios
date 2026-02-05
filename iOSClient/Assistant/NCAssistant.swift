@@ -19,7 +19,7 @@ struct NCAssistant: View {
                 if assistantModel.types.isEmpty, !assistantModel.isLoading {
                     NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
                 } else if assistantModel.isSelectedTypeChat {
-                    NCAssistantChat()
+                    NCAssistantChat(sessionsModel: sessionsModel)
                 } else {
                     TaskList()
                 }
@@ -38,7 +38,7 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantChatSessions(onSessionSelected: { session in
+                    NavigationLink(destination: NCAssistantChatSessions(sessionsModel: sessionsModel, onSessionSelected: { session in
                         chatModel.selectedSession = session
                     })) {
                         Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
@@ -72,7 +72,6 @@ struct NCAssistant: View {
         .accentColor(Color(NCBrandColor.shared.iconImageColor))
         .environment(assistantModel)
         .environment(chatModel)
-        .environment(sessionsModel)
     }
 }
 

@@ -7,7 +7,7 @@ import SwiftUI
 import NextcloudKit
 
 struct NCAssistantChatSessions: View {
-    @Environment(NCAssistantChatSessionsModel.self) var sessionsModel
+    var sessionsModel: NCAssistantChatSessionsModel
     var onSessionSelected: (AssistantSession?) -> Void
     @Environment(\.dismiss) private var dismiss
 
@@ -37,6 +37,5 @@ struct NCAssistantChatSessions: View {
 }
 
 #Preview {
-    NCAssistantChatSessions(onSessionSelected: { _ in })
-        .environment(NCAssistantChatSessionsModel(controller: nil))
+    NCAssistantChatSessions(sessionsModel: NCAssistantChatSessionsModel(controller: nil), onSessionSelected: { _ in })
 }

@@ -7,7 +7,7 @@ import NextcloudKit
 
 struct NCAssistantChat: View {
     @Environment(NCAssistantChatModel.self) var chatModel
-    @Environment(NCAssistantChatSessionsModel.self) var sessionsModel
+    var sessionsModel: NCAssistantChatSessionsModel
 
     var body: some View {
         @Bindable var chatModel = chatModel
@@ -26,11 +26,7 @@ struct NCAssistantChat: View {
                 if chatModel.selectedSession != nil {
                     chatModel.sendMessage(input: input)
                 } else {
-                    Task {
-                        let session = await sessionsModel.createNewConversation(title: input)
-                        chatModel.selectedSession = session
-                        chatModel.sendMessage(input: input)
-                    }
+                    chatModel.startNewConversation(input: input, sessionsModel: sessionsModel)
                 }
             }
         }
@@ -197,16 +193,14 @@ struct EmptyChatView: View {
 
 #Preview {
     NavigationStack {
-        NCAssistantChat()
+        NCAssistantChat(sessionsModel: NCAssistantChatSessionsModel(controller: nil))
             .environment(NCAssistantChatModel(controller: nil))
-            .environment(NCAssistantChatSessionsModel(controller: nil))
     }
 }
 
 #Preview("With Messages") {
     NavigationStack {
-        NCAssistantChat()
+        NCAssistantChat(sessionsModel: NCAssistantChatSessionsModel(controller: nil))
             .environment(NCAssistantChatModel.example)
-            .environment(NCAssistantChatSessionsModel(controller: nil))
     }
 }
