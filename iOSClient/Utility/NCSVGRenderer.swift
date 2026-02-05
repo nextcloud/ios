@@ -13,19 +13,21 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
 
     func renderSVGToUIImage(svgData: Data,
                             size: CGSize,
-                            fileName: String,
+                            fileName: String? = nil,
                             backgroundColor: UIColor = .clear) async throws -> UIImage {
         // try to get from directoryUserData
-        let fileName = fileName.replacingOccurrences(of: ".svg", with: ".png")
-        let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-        if FileManager.default.fileExists(atPath: path) {
-            do {
-                let url = URL(fileURLWithPath: path)
-                let data = try Data(contentsOf: url)
-                if let image = UIImage(data: data) {
-                    return image
-                }
-            } catch { }
+        if let fileName {
+            let fileName = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: fileName).lastPathComponent, with: "png")
+            let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+            if FileManager.default.fileExists(atPath: path) {
+                do {
+                    let url = URL(fileURLWithPath: path)
+                    let data = try Data(contentsOf: url)
+                    if let image = UIImage(data: data) {
+                        return image
+                    }
+                } catch { }
+            }
         }
 
         let webView = WKWebView(frame: CGRect(origin: .zero, size: size))
@@ -76,7 +78,11 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         config.rect = CGRect(origin: .zero, size: size)
 
         let image = try await takeSnapshotAsync(webView: webView, configuration: config)
-        if let data = image.pngData() {
+
+        if let fileName,
+           let data = image.pngData() {
+            let fileName = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: fileName).lastPathComponent, with: "png")
+            let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
             try data.write(to: URL(fileURLWithPath: path))
         }
 

@@ -510,13 +510,14 @@ class NCContextMenuMain: NSObject {
                                     image.draw(in: CGRect(origin: .zero, size: size))
                                 }.withRenderingMode(image.renderingMode)
                             }
-
                             var iconImage = UIImage()
 
                             if let iconUrl = item.icon,
                                let url = URL(string: metadata.urlBase + iconUrl) {
                                 let (data, _) = try await URLSession.shared.data(from: url)
-                                iconImage = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 23, height: 23))
+                                iconImage = try await NCSVGRenderer().renderSVGToUIImage(svgData: data,
+                                                                                         size: .init(width: 23, height: 23),
+                                                                                         fileName: iconUrl)
                             } else {
                                 iconImage = UIImage()
                             }

@@ -260,29 +260,23 @@ extension NCUtility {
         return avatarImage
     }
 
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String,
-                                        fileName: String? = nil,
+    func convertSVGtoPNGWriteToUserData(fileName: String,
                                         size: CGFloat,
                                         rewrite: Bool,
                                         account: String,
                                         id: Int? = nil) async -> (image: UIImage?, id: Int?) {
-        var fileNamePNG = ""
-        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let iconURL = URL(string: svgUrlString) else {
-            return (nil, id)
+        var serverUrl: String?
+        if let url = fileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            serverUrl = URL(string: url)?.absoluteString
         }
-        if let fileName {
-            fileNamePNG = fileName
-        } else {
-            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
-        }
-        let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
+        let fileName = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: fileName).lastPathComponent, with: "png")
+        let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
-        if !FileManager.default.fileExists(atPath: path) || rewrite {
-            let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: iconURL.absoluteString, account: account) { task in
+        if let serverUrl, (!FileManager.default.fileExists(atPath: path) || rewrite) {
+            let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: serverUrl, account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                path: iconURL.absoluteString,
+                                                                                                path: serverUrl,
                                                                                                 name: "downloadContent")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
@@ -316,7 +310,7 @@ extension NCUtility {
 
             // is a SVG
             do {
-                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size))
+                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size), fileName: fileName)
                 guard let pngImageData = image.pngData() else {
                     return(nil, id)
                 }

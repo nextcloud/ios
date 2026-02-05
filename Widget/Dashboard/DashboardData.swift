@@ -75,7 +75,7 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) async -> UIImage? {
+func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?, user: String) async -> UIImage? {
     guard let data = data else {
         return nil
     }
@@ -86,7 +86,9 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) asy
         imageData = image
     } else {
         do {
-            imageData = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: size)
+            imageData = try await NCSVGRenderer().renderSVGToUIImage(svgData: data,
+                                                                     size: size,
+                                                                     fileName: fileNameToWrite)
         } catch {
             print("Unsupported image format: \(error.localizedDescription)")
         }
@@ -230,7 +232,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                         let (_, _, error) = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: activeTableAccount.account)
                                         if error == .success,
                                            let data = responseData?.data,
-                                           let image = await convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
+                                           let image = await convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName, user: activeTableAccount.userId) {
                                             icon = image
                                         }
                                     }
