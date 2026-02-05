@@ -12,8 +12,16 @@ import NextcloudKit
         didSet {
             stopPolling()
             loadMessages()
+
+            if messages.last.isFromHuman {
+                startPollingForResponse()
+            }
         }
     }
+
+
+    // A session that has been selected at least once while this screen is showing is added here.
+    var alreadyOpenedSessions: Set<AssistantSession> = []
 
     var sessions: [AssistantSession] = []
     private let ncSession: NCSession.Session
