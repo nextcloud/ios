@@ -249,6 +249,7 @@ class NCViewerMedia: UIViewController {
 
     // MARK: - Image
 
+    @MainActor
     func loadImage() async {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
@@ -305,7 +306,7 @@ class NCViewerMedia: UIViewController {
                 do {
                     let url = URL(fileURLWithPath: fileNamePath)
                     let data = try Data(contentsOf: url)
-                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024)) {
+                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024), backgroundColor: UIColor(white: 0.95, alpha: 1)) {
                         if !NCUtility().existsImage(ocId: metadata.ocId,
                                                     etag: metadata.etag,
                                                     ext: global.previewExt1024,
