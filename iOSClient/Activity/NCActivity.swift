@@ -273,46 +273,27 @@ extension NCActivity: UITableViewDataSource {
 
         // icon
         if !activity.icon.isEmpty {
-            activity.icon = activity.icon.replacingOccurrences(of: ".png", with: ".svg")
-            let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNameIcon)
-
-            if FileManager.default.fileExists(atPath: fileNameLocalPath),
-               fileNameIcon.contains(".svg") {
-                Task {
-                    do {
-                        let url = URL(fileURLWithPath: fileNameLocalPath)
-                        let data = try Data(contentsOf: url)
-                        if let image = UIImage(data: data) {
-                            cell.icon.image = image
-                        } else {
-                            let image = try await NCSVGRenderer().renderSVGToUIImage(
-                                svgData: data,
-                                size: CGSize(width: 24, height: 24),
-                                backgroundColor: .clear
-                            )
+            Task {
+                let fileName = (activity.icon as NSString).lastPathComponent
+                if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: nil, fileName: fileName) {
+                    if cell.idActivity == activity.idActivity {
+                        cell.icon.image = image
+                    }
+                } else {
+                    let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: activity.icon, account: activity.account) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                                        path: activity.icon,
+                                                                                                        name: "downloadContent")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
+                    if let data = results.responseData?.data {
+                        if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: nil, fileName: fileName) {
                             if cell.idActivity == activity.idActivity {
                                 cell.icon.image = image
                             }
                         }
-                    } catch {
-                        print("SVG render failed: \(error)")
-                    }
-                }
-            } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                    path: activity.icon,
-                                                                                                    name: "downloadContent")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                } completion: { _, responseData, error in
-                    if error == .success, let data = responseData?.data {
-                        do {
-                            try data.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                            self.tableView.reloadData()
-                        } catch { return }
                     }
                 }
             }

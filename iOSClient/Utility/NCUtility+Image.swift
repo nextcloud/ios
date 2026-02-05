@@ -261,7 +261,7 @@ extension NCUtility {
     }
 
     func convertSVGtoPNGWriteToUserData(fileName: String,
-                                        size: CGFloat,
+                                        size: CGFloat = 128,
                                         rewrite: Bool,
                                         account: String,
                                         id: Int? = nil) async -> (image: UIImage?, id: Int?) {
@@ -311,8 +311,9 @@ extension NCUtility {
             // is a SVG
             do {
                 let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size), fileName: fileName)
-                guard let pngImageData = image.pngData() else {
-                    return(nil, id)
+                guard let image,
+                      let pngImageData = image.pngData() else {
+                        return(nil, id)
                 }
                 try pngImageData.write(to: URL(fileURLWithPath: path))
                 return(image, id)

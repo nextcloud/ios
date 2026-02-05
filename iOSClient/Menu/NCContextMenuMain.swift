@@ -502,24 +502,14 @@ class NCContextMenuMain: NSObject {
                 if shouldShowMenu {
                     let deferredElement = UIDeferredMenuElement { completion in
                         Task {
-                            func resizedRasterImage(_ image: UIImage, to size: CGSize) -> UIImage {
-                                let format = UIGraphicsImageRendererFormat.default()
-                                format.scale = image.scale
-                                let renderer = UIGraphicsImageRenderer(size: size, format: format)
-                                return renderer.image { _ in
-                                    image.draw(in: CGRect(origin: .zero, size: size))
-                                }.withRenderingMode(image.renderingMode)
-                            }
                             var iconImage = UIImage()
-
                             if let iconUrl = item.icon,
                                let url = URL(string: metadata.urlBase + iconUrl) {
                                 let (data, _) = try await URLSession.shared.data(from: url)
-                                iconImage = try await NCSVGRenderer().renderSVGToUIImage(svgData: data,
-                                                                                         size: .init(width: 23, height: 23),
-                                                                                         fileName: iconUrl)
-                            } else {
-                                iconImage = UIImage()
+                                if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data,
+                                                                                            fileName: iconUrl) {
+                                    iconImage = image
+                                }
                             }
 
                             let action = await UIAction(

@@ -11,10 +11,10 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
     private var webView: WKWebView?
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    func renderSVGToUIImage(svgData: Data,
-                            size: CGSize,
+    func renderSVGToUIImage(svgData: Data?,
+                            size: CGSize = CGSize(width: 128, height: 128),
                             fileName: String? = nil,
-                            backgroundColor: UIColor = .clear) async throws -> UIImage {
+                            backgroundColor: UIColor = .clear) async throws -> UIImage? {
         // try to get from directoryUserData
         if let fileName {
             let fileName = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: fileName).lastPathComponent, with: "png")
@@ -28,6 +28,9 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
                     }
                 } catch { }
             }
+        }
+        guard let svgData else {
+            return nil
         }
 
         let webView = WKWebView(frame: CGRect(origin: .zero, size: size))

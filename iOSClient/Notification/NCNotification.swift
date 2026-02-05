@@ -341,7 +341,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         for notification in sortedNotifications {
             if let icon = notification.icon {
                 let results = await self.utility.convertSVGtoPNGWriteToUserData(fileName: icon,
-                                                                                size: 25,
                                                                                 rewrite: false,
                                                                                 account: session.account)
                 if results.image != nil {

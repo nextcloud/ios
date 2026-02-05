@@ -305,16 +305,17 @@ class NCViewerMedia: UIViewController {
                 do {
                     let url = URL(fileURLWithPath: fileNamePath)
                     let data = try Data(contentsOf: url)
-                    let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024))
-                    if !NCUtility().existsImage(ocId: metadata.ocId,
-                                                etag: metadata.etag,
-                                                ext: global.previewExt1024,
-                                                userId: metadata.userId,
-                                                urlBase: metadata.urlBase), let data = image.jpegData(compressionQuality: 1.0) {
-                        utility.createImageFileFrom(data: data, metadata: metadata)
+                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024)) {
+                        if !NCUtility().existsImage(ocId: metadata.ocId,
+                                                    etag: metadata.etag,
+                                                    ext: global.previewExt1024,
+                                                    userId: metadata.userId,
+                                                    urlBase: metadata.urlBase), let data = image.jpegData(compressionQuality: 1.0) {
+                            utility.createImageFileFrom(data: data, metadata: metadata)
+                        }
+                        self.image = image
+                        self.imageVideoContainer.image = self.image
                     }
-                    self.image = image
-                    self.imageVideoContainer.image = self.image
                     return
                 } catch {
                     print("Unsupported image format: \(error.localizedDescription)")

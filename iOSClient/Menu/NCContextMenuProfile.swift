@@ -103,12 +103,13 @@ class NCContextMenuProfile: NSObject {
             Task { @MainActor in
                 do {
                     let data = try Data(contentsOf: url)
-                    let image = try await NCSVGRenderer().renderSVGToUIImage( svgData: data, size: CGSize(width: 24, height: 24))
+                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data) {
                     let tinted = image.withTintColor(
                         NCBrandColor.shared.iconImageColor,
                         renderingMode: .alwaysOriginal
                     )
                     uiAction.image = tinted
+                }
                 } catch {
                     nkLog(error: "SVG render failed: \(error)")
                 }
