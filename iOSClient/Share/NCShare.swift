@@ -565,4 +565,3 @@ extension NCShare {
         return emailPred.evaluate(with: email)
     }
 }
-

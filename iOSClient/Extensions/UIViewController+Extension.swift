@@ -70,4 +70,3 @@ extension UIViewController: @retroactive MFMailComposeViewControllerDelegate {
         controller.dismiss(animated: true)
     }
 }
-
