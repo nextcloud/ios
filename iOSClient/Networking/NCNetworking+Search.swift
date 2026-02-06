@@ -41,7 +41,7 @@ extension NCNetworking {
                             account: String,
                             taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                             providers: @escaping (_ account: String, _ searchProviders: [NKSearchProvider]?) -> Void,
-                            update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void
+                            update: @escaping (NKSearchResult?, [tableMetadata]?) -> Void
     ) async {
         let session = NCSession.shared.getSession(account: account)
         let results = await NextcloudKit.shared.unifiedSearchAsync(term: literal,
@@ -65,15 +65,17 @@ extension NCNetworking {
             taskHandler(task)
         } providers: { account, searchProviders in
             providers(account, searchProviders)
-        } update: { account, searchResult, provider, error in
-            guard let searchResult else {
+        } update: { _, searchResult, provider, error in
+            guard let searchResult, error == .success else {
                 return
             }
             Task {
                 let metadatas = await self.getSearchResultMetadatas(session: session, providerId: provider.id, searchResult: searchResult)
-                update(account, provider.id, searchResult, metadatas)
+                update(searchResult, metadatas)
             }
         }
+
+        print(results)
     }
 
     func unifiedSearchFilesProvider(providerId: String,

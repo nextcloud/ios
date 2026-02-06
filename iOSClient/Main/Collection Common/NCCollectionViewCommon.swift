@@ -689,7 +689,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                              providers: self.providers,
                                                              searchResults: self.searchResults,
                                                              account: account)
-            } update: { account, id, searchResult, metadatas in
+            } update: { searchResult, metadatas in
                 guard let metadatas,
                       !metadatas.isEmpty,
                       self.isSearchingMode,
