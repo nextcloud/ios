@@ -38,10 +38,10 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantChatConversations(conversationsModel: conversationsModel, onConversationSelected: { conversation in
+                    NavigationLink(destination: NCAssistantChatConversations(conversationsModel: conversationsModel, selectedConversation: chatModel.selectedConversation) { conversation in
                         chatModel.selectedConversation = conversation
                         assistantModel.selectChatTaskType()
-                    })) {
+                    }) {
                         Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))

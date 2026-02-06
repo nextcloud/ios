@@ -8,15 +8,27 @@ import NextcloudKit
 
 struct NCAssistantChatConversations: View {
     var conversationsModel: NCAssistantChatConversationsModel
+    var selectedConversation: AssistantConversation?
     var onConversationSelected: (AssistantConversation?) -> Void
+    
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         Group {
             List(conversationsModel.conversations, id: \.id) { conversation in
-                Button(conversation.validTitle) {
+                Button {
                     onConversationSelected(conversation)
                     dismiss()
+                } label: {
+                    HStack {
+                        Text(conversation.validTitle)
+                        Spacer()
+                        if selectedConversation?.id == conversation.id {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.blue)
+                        }
+                    }
+                    .contentShape(Rectangle())
                 }
             }
         }
@@ -36,5 +48,5 @@ struct NCAssistantChatConversations: View {
 }
 
 #Preview {
-    NCAssistantChatConversations(conversationsModel: NCAssistantChatConversationsModel(controller: nil), onConversationSelected: { _ in })
+    NCAssistantChatConversations(conversationsModel: NCAssistantChatConversationsModel(controller: nil), selectedConversation: nil, onConversationSelected: { _ in })
 }
