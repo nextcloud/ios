@@ -21,7 +21,7 @@ struct NCAssistantChatConversations: View {
                     }
             }
         }
-        .navigationTitle("_conversations_")
+        .navigationTitle(NSLocalizedString("_conversations_", comment: ""))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("_new_conversation_", systemImage: "plus.message.fill") {

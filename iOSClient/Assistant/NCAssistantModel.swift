@@ -49,6 +49,10 @@ class NCAssistantModel {
         self.filteredTasks = filteredTasks.sorted(by: { $0.completionExpectedAt ?? 0 > $1.completionExpectedAt ?? 0 })
     }
 
+    func selectChatTaskType() {
+        selectTaskType(types.first)
+    }
+
     func selectTaskType(_ type: TaskTypeData?) {
         selectedType = type
 

@@ -206,7 +206,7 @@ struct EmptyChatView: View {
 
 #Preview {
     NavigationStack {
-        NCAssistantChat(conversationsModel: NCAssistantChatConversationsModel(controller: nil))
+        NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
             .environment(NCAssistantChatModel(controller: nil))
             .environment(NCAssistantModel(controller: nil))
     }
@@ -214,7 +214,7 @@ struct EmptyChatView: View {
 
 #Preview("With Messages") {
     NavigationStack {
-        NCAssistantChat(conversationsModel: NCAssistantChatConversationsModel(controller: nil))
+        NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
             .environment(NCAssistantChatModel.example)
             .environment(NCAssistantModel(controller: nil))
     }
