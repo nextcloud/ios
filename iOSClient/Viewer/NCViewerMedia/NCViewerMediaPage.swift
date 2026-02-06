@@ -615,13 +615,13 @@ extension NCViewerMediaPage: NCTransferDelegate {
                         ncplayer.openAVPlayer(url: url)
                     }
                 } else if metadata.isImage {
-                    self.currentViewController.loadImage()
+                    await self.currentViewController.loadImage()
                 }
             // UPLOAD
             case self.global.networkingStatusUploaded:
                 guard error == .success else { return }
                 if self.currentViewController.metadata.ocId == ocId {
-                    self.currentViewController.loadImage()
+                    await self.currentViewController.loadImage()
                 } else {
                     self.modifiedOcId.append(ocId)
                 }

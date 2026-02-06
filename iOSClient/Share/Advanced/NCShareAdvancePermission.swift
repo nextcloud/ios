@@ -23,7 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import SVGKit
 import CloudKit
 
 class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate, NCShareNavigationTitleSetting {

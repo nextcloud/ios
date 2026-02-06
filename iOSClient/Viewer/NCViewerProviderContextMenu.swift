@@ -4,7 +4,6 @@
 
 import UIKit
 import NextcloudKit
-import SVGKit
 import MobileVLCKit
 
 class NCViewerProviderContextMenu: UIViewController {
@@ -47,7 +46,9 @@ class NCViewerProviderContextMenu: UIViewController {
             }
             // VIEW IMAGE
             if metadata.isImage && utilityFileSystem.fileProviderStorageExists(metadata) {
-                viewImage(metadata: metadata)
+                Task {@MainActor in
+                    await viewImage(metadata: metadata)
+                }
             }
             // VIEW LIVE PHOTO
             if let metadataLivePhoto = metadataLivePhoto, utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
@@ -144,7 +145,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
     // MARK: - Viewer
 
-    private func viewImage(metadata: tableMetadata) {
+    private func viewImage(metadata: tableMetadata) async {
         var image: UIImage?
         let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                          fileName: metadata.fileNameView,
@@ -158,9 +159,16 @@ class NCViewerProviderContextMenu: UIViewController {
                                                                               fileName: metadata.fileNameView,
                                                                               userId: metadata.userId,
                                                                               urlBase: metadata.urlBase)
-            if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                svgImage.size = NCGlobal.shared.size1024
-                image = svgImage.uiImage
+            do {
+                let url = URL(fileURLWithPath: imagePath)
+                let data = try Data(contentsOf: url)
+                image = try await NCSVGRenderer().renderSVGToUIImage(
+                    svgData: data,
+                    size: CGSize(width: 1024, height: 1024),
+                    backgroundColor: .clear
+                )
+            } catch {
+                print("SVG render error: \(error.localizedDescription)")
             }
         } else {
             image = UIImage(contentsOfFile: filePath)
@@ -302,7 +310,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
                    ocId == self.metadata?.ocId,
                    let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
                     if metadata.isImage {
-                        self.viewImage(metadata: metadata)
+                        await self.viewImage(metadata: metadata)
                     } else if metadata.isVideo || metadata.isAudio {
                         self.viewVideo(metadata: metadata)
                     }
