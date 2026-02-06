@@ -17,6 +17,7 @@ class NCAssistantModel {
     var hasError: Bool = false
     var isLoading: Bool = false
     var isRefreshing: Bool = false
+    var scrollTypeListToTop: Bool = false
 
     @ObservationIgnored let controller: NCMainTabBarController?
     @ObservationIgnored private var tasks: [AssistantTask] = []
@@ -51,6 +52,7 @@ class NCAssistantModel {
 
     func selectChatTaskType() {
         selectTaskType(types.first)
+        scrollTypeListToTop.toggle()
     }
 
     func selectTaskType(_ type: TaskTypeData?) {

@@ -273,6 +273,11 @@ struct TypeList: View {
                 .frame(height: 50)
             }
             .background(.ultraThinMaterial)
+            .onChange(of: model.scrollTypeListToTop) {
+                withAnimation(.easeInOut(duration: 0.7)) {
+                    scrollProxy.scrollTo(model.types.first?.id, anchor: .center)
+                }
+            }
         }
     }
 }

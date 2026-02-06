@@ -13,12 +13,11 @@ struct NCAssistantChatConversations: View {
 
     var body: some View {
         Group {
-            List(conversationsModel.conversations, id: \.id) { conversations in
-                Text(conversations.validTitle)
-                    .onTapGesture {
-                        onConversationSelected(conversations)
-                        dismiss()
-                    }
+            List(conversationsModel.conversations, id: \.id) { conversation in
+                Button(conversation.validTitle) {
+                    onConversationSelected(conversation)
+                    dismiss()
+                }
             }
         }
         .navigationTitle(NSLocalizedString("_conversations_", comment: ""))
