@@ -52,15 +52,15 @@ struct NCAssistantChat: View {
                         let button = Button("_retry_response_generation_") {
                             chatModel.requestResponse()
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                            .frame(maxWidth: .infinity)
+                            .padding()
 
                         if #available(iOS 26.0, *) {
                             button
-                                .buttonStyle(.glassProminent)
+                                .buttonStyle(.glass)
                         } else {
                             button
-                                .buttonStyle(.borderedProminent)
+                                .buttonStyle(.bordered)
                         }
                     }
                 }
@@ -109,7 +109,7 @@ struct MessageBubbleView: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)
             }
-            .frame(maxWidth: .infinity, alignment: true ? .trailing : .leading)
+            .frame(maxWidth: .infinity, alignment: message.isFromHuman ? .trailing : .leading)
             .padding(.horizontal)
 
             if !message.isFromHuman {

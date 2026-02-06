@@ -52,6 +52,7 @@ struct NCAssistant: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
+//            .navigationSubtitle("Test")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
                 TypeList()
