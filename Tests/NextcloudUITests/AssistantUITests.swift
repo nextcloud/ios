@@ -50,7 +50,7 @@ final class AssistantUITests: BaseUIXCTestCase {
     }
 
     private func createTask(input: String) {
-        app.navigationBars["Assistant"].buttons["SessionsButton"].tap()
+        app.navigationBars["Assistant"].buttons["ConversationsButton"].tap()
 
         let inputTextEditor = app.textViews["InputTextEditor"]
         inputTextEditor.await()

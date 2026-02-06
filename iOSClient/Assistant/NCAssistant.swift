@@ -9,7 +9,7 @@ import PopupView
 struct NCAssistant: View {
     @State var assistantModel: NCAssistantModel
     @State var chatModel: NCAssistantChatModel
-    @State var sessionsModel: NCAssistantChatSessionsModel
+    @State var conversationsModel: NCAssistantChatConversationsModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
@@ -19,7 +19,7 @@ struct NCAssistant: View {
                 if assistantModel.types.isEmpty, !assistantModel.isLoading {
                     NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
                 } else if assistantModel.isSelectedTypeChat {
-                    NCAssistantChat(sessionsModel: sessionsModel)
+                    NCAssistantChat(conversationsModel: $conversationsModel)
                 } else {
                     TaskList()
                 }
@@ -38,15 +38,15 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantChatSessions(sessionsModel: sessionsModel, onSessionSelected: { session in
-                        chatModel.selectedSession = session
+                    NavigationLink(destination: NCAssistantChatConversations(conversationsModel: conversationsModel, onConversationSelected: { conversation in
+                        chatModel.selectedConversation = conversation
                     })) {
                         Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
                     .disabled(assistantModel.selectedType == nil)
-                    .accessibilityIdentifier("SessionsButton")
+                    .accessibilityIdentifier("ConversationsButton")
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -78,9 +78,9 @@ struct NCAssistant: View {
 #Preview {
     @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
     let model = NCAssistantModel(controller: nil)
-    let sessionsModel = NCAssistantChatSessionsModel(controller: nil)
+    let conversationsModel = NCAssistantChatConversationsModel(controller: nil)
 
-    NCAssistant(assistantModel: model, chatModel: chatModel, sessionsModel: sessionsModel)
+    NCAssistant(assistantModel: model, chatModel: chatModel, conversationsModel: conversationsModel)
         .onAppear {
             model.loadDummyData()
         }

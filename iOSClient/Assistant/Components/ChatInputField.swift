@@ -44,7 +44,9 @@ struct ChatInputField: View {
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.top, 16)
+        .padding(.bottom, 16)
+        .background(.background)
     }
 }
 

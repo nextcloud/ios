@@ -7,7 +7,7 @@ import NextcloudKit
 
 struct NCAssistantChat: View {
     @Environment(NCAssistantChatModel.self) var chatModel
-    var sessionsModel: NCAssistantChatSessionsModel
+    @Binding var conversationsModel: NCAssistantChatConversationsModel
 
     var body: some View {
         @Bindable var chatModel = chatModel
@@ -23,18 +23,15 @@ struct NCAssistantChat: View {
         }
         .safeAreaInset(edge: .bottom) {
             ChatInputField(isLoading: $chatModel.isThinking) { input in
-                if chatModel.selectedSession != nil {
+                if chatModel.selectedConversation != nil {
                     chatModel.sendMessage(input: input)
                 } else {
-                    chatModel.startNewConversation(input: input, sessionsModel: sessionsModel)
+                    chatModel.startNewConversation(input: input, sessionsModel: conversationsModel)
                 }
             }
         }
         .navigationTitle("Assistant Chat")
         .navigationBarTitleDisplayMode(.inline)
-        .onDisappear {
-            chatModel.stopPolling()
-        }
     }
 
     private var messageListView: some View {
@@ -49,6 +46,22 @@ struct NCAssistantChat: View {
                     if chatModel.isThinking {
                         ThinkingBubbleView()
                             .id("thinking")
+                    }
+
+                    if chatModel.showRetryResponseGenerationButton {
+                        let button = Button("_retry_response_generation_") {
+                            chatModel.requestResponse()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+
+                        if #available(iOS 26.0, *) {
+                            button
+                                .buttonStyle(.glassProminent)
+                        } else {
+                            button
+                                .buttonStyle(.borderedProminent)
+                        }
                     }
                 }
                 .padding(.vertical)
@@ -83,15 +96,15 @@ struct MessageBubbleView: View {
                 Spacer(minLength: 50)
             }
 
-            VStack(alignment: true ? .trailing : .leading, spacing: 4) {
+            VStack(alignment: message.isFromHuman ? .trailing : .leading, spacing: 4) {
                 Text(message.content)
                     .font(.body)
-                    .foregroundStyle(true ? .white : .primary)
+                    .foregroundStyle(message.isFromHuman ? .white : .primary)
                     .padding()
                     .background(bubbleBackground)
                     .clipShape(.rect(cornerRadius: 16))
 
-                Text(NCUtility().getRelativeDateTitle(Date(timeIntervalSince1970: TimeInterval(message.timestamp / 1000))))
+                Text(NCUtility().getRelativeDateTitle(Date(timeIntervalSince1970: TimeInterval(message.timestamp))))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)
@@ -193,14 +206,16 @@ struct EmptyChatView: View {
 
 #Preview {
     NavigationStack {
-        NCAssistantChat(sessionsModel: NCAssistantChatSessionsModel(controller: nil))
+        NCAssistantChat(conversationsModel: NCAssistantChatConversationsModel(controller: nil))
             .environment(NCAssistantChatModel(controller: nil))
+            .environment(NCAssistantModel(controller: nil))
     }
 }
 
 #Preview("With Messages") {
     NavigationStack {
-        NCAssistantChat(sessionsModel: NCAssistantChatSessionsModel(controller: nil))
+        NCAssistantChat(conversationsModel: NCAssistantChatConversationsModel(controller: nil))
             .environment(NCAssistantChatModel.example)
+            .environment(NCAssistantModel(controller: nil))
     }
 }

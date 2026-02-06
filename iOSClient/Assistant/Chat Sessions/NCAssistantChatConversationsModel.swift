@@ -5,8 +5,8 @@
 import Foundation
 import NextcloudKit
 
-@Observable class NCAssistantChatSessionsModel {
-    var sessions: [AssistantSession] = []
+@Observable class NCAssistantChatConversationsModel {
+    var conversations: [AssistantConversation] = []
     var isLoading: Bool = false
     var hasError: Bool = false
 
@@ -20,16 +20,16 @@ import NextcloudKit
     func loadAllSessions() {
         Task {
             let result = await NextcloudKit.shared.getAssistantChatConversationsAsync(account: ncSession.account)
-            sessions = result.sessions ?? []
+            conversations = result.sessions ?? []
         }
     }
 
-    func createNewConversation(title: String? = nil) async -> AssistantSession? {
+    func createNewConversation(title: String? = nil) async -> AssistantConversation? {
         let timestamp = Int(Date().timeIntervalSince1970)
         let result = await NextcloudKit.shared.createAssistantChatConversationAsync(title: title, timestamp: timestamp, account: ncSession.account)
-        if result.error == .success, let newSession = result.conversation?.session {
-            sessions.insert(newSession, at: 0)
-            return newSession
+        if result.error == .success, let newConversation = result.conversation?.conversation {
+            conversations.insert(newConversation, at: 0)
+            return newConversation
         } else {
             hasError = true
             return nil
