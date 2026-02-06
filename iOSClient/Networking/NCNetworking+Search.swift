@@ -37,68 +37,49 @@ extension NCNetworking {
         }
     }
 
-    func unifiedSearchFiles(literal: String,
-                            account: String,
-                            taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                            providers: @escaping (_ account: String, _ searchProviders: [NKSearchProvider]?) -> Void,
-                            update: @escaping (NKSearchResult?, [tableMetadata]?) -> Void
-    ) async {
+    func unifiedSearchProviders(account: String,
+                                taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+    ) async -> (providers: [NKSearchProvider]?, error: NKError) {
         let session = NCSession.shared.getSession(account: account)
-        let results = await NextcloudKit.shared.unifiedSearchAsync(term: literal,
-                                                                   timeout: 30,
-                                                                   timeoutProvider: 90,
-                                                                   account: account) { _ in
+        let results = await NextcloudKit.shared.unifiedSearchProviders(timeout: 30,
+                                                                       account: account) { _ in
             // example filter
             // ["calendar", "files", "fulltextsearch"].contains(provider.id)
             return true
-        } request: { request in
-            if let request {
-                self.requestsUnifiedSearch.append(request)
-            }
         } taskHandler: { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: literal,
                                                                                             name: "unifiedSearch")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)
-        } providers: { account, searchProviders in
-            providers(account, searchProviders)
-        } update: { _, searchResult, provider, error in
-            guard let searchResult, error == .success else {
-                return
-            }
-            Task {
-                let metadatas = await self.getSearchResultMetadatas(session: session, providerId: provider.id, searchResult: searchResult)
-                update(searchResult, metadatas)
-            }
         }
 
-        print(results)
+        return results
     }
 
-    func unifiedSearchFilesProvider(providerId: String,
-                                    term: String,
-                                    limit: Int, cursor: Int,
-                                    account: String,
-                                    taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+    func unifiedSearch(providerId: String,
+                       term: String,
+                       limit: Int,
+                       cursor: Int,
+                       account: String,
+                       taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
     ) async -> (searchResult: NKSearchResult?, metadatas: [tableMetadata]?, error: NKError) {
         let session = NCSession.shared.getSession(account: account)
-        let results = await NextcloudKit.shared.searchProviderAsync(providerId,
-                                                                    term: term,
-                                                                    limit: limit,
-                                                                    cursor: cursor,
-                                                                    timeout: 60,
-                                                                    account: account) { task in
+        let results = await NextcloudKit.shared.unifiedSearch(providerId: providerId,
+                                                              term: term,
+                                                              limit: limit,
+                                                              cursor: cursor,
+                                                              timeout: 90,
+                                                              account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: term,
                                                                                             name: "searchProvider")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)
         }
+
         guard let searchResult = results.searchResult else {
             return(nil, nil, results.error)
         }
