@@ -10,7 +10,7 @@ struct NCAssistantChatConversations: View {
     var conversationsModel: NCAssistantChatConversationsModel
     var selectedConversation: AssistantConversation?
     var onConversationSelected: (AssistantConversation?) -> Void
-    
+
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

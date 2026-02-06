@@ -6,7 +6,9 @@ import NextcloudKit
 
 @Observable class NCAssistantChatModel {
     var messages: [ChatMessage] = []
+    var isSending: Bool = false
     var isThinking: Bool = false
+    var isSendingDisabled = false
     var hasError: Bool = false
     var showRetryResponseGenerationButton = false
 
@@ -30,7 +32,7 @@ import NextcloudKit
 
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatResponseTaskId: Int?
-    
+
     init(controller: NCMainTabBarController?, messages: [ChatMessage] = []) {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
@@ -39,6 +41,7 @@ import NextcloudKit
 
     func startPollingForResponse(interval: TimeInterval = 4.0) {
         stopPolling()
+        isSendingDisabled = true
         isThinking = true
         showRetryResponseGenerationButton = false
 
@@ -55,6 +58,7 @@ import NextcloudKit
         pollingTask?.cancel()
         pollingTask = nil
         isThinking = false
+        isSendingDisabled = false
     }
 
     private func onConversationSelected() {
@@ -98,7 +102,6 @@ import NextcloudKit
 
             if let lastMessage, lastMessage.role == "assistant" {
                 stopPolling()
-                isThinking = false
                 messages.append(lastMessage)
             }
     }
@@ -107,7 +110,8 @@ import NextcloudKit
         guard let selectedConversation else { return }
 
         let request = ChatMessageRequest(sessionId: selectedConversation.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970 * 1000), firstHumanMessage: messages.isEmpty)
-        isThinking = true
+        isSending = true
+        isSendingDisabled = true
         alreadyMessagedConversations.insert(selectedConversation)
 
         Task {
@@ -121,6 +125,9 @@ import NextcloudKit
             } else {
                 //TODO
             }
+
+            isSending = false
+            isSendingDisabled = false
         }
     }
 

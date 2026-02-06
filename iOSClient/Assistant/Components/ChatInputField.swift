@@ -8,10 +8,12 @@ struct ChatInputField: View {
     @FocusState private var isInputFocused: Bool
     @State var text: String = ""
     @Binding var isLoading: Bool
+    @Binding var isDisabled: Bool
     var onSend: ((_ input: String) -> Void)?
 
-    init(isLoading: Binding<Bool> = .constant(false), onSend: ((_: String) -> Void)? = nil) {
+    init(isLoading: Binding<Bool> = .constant(false), isDisabled: Binding<Bool> = .constant(false), onSend: ((_: String) -> Void)? = nil) {
         _isLoading = isLoading
+        _isDisabled = isDisabled
         self.onSend = onSend
     }
 
@@ -37,10 +39,15 @@ struct ChatInputField: View {
                     onSend?(text.trimmingCharacters(in: .whitespaces))
                     text = ""
                 }) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.system(size: 28))
+                    if isLoading {
+                        ProgressView()
+                            .frame(width: 28, height: 28)
+                    } else {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.system(size: 28))
+                    }
                 }
-                .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || isLoading)
+                .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || isDisabled || isLoading)
             }
         }
         .padding(.horizontal)
@@ -52,4 +59,5 @@ struct ChatInputField: View {
 
 #Preview {
     ChatInputField(isLoading: .constant(false))
+    ChatInputField(isLoading: .constant(true))
 }

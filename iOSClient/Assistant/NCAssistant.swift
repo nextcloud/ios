@@ -52,7 +52,7 @@ struct NCAssistant: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
-//            .navigationSubtitle("Test")
+            .modifier(NavigationSubtitleModifier(subtitle: assistantModel.isSelectedTypeChat ? chatModel.selectedConversation?.validTitle : ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
                 TypeList()
@@ -255,6 +255,18 @@ struct TaskItem: View {
                 }
                 .tint(.red)
             }
+        }
+    }
+}
+
+struct NavigationSubtitleModifier: ViewModifier {
+    let subtitle: String?
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.navigationSubtitle(subtitle ?? "")
+        } else {
+            content
         }
     }
 }

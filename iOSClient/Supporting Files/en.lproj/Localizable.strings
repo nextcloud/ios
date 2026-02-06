@@ -719,7 +719,8 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_no_chat_subtitle_"             = "Try sending a message to spark a conversation.";
 "_retry_response_generation_"    = "Retry response generation";
 "_conversations_"                = "Conversations";
-"_new_conversation_"    = "New conversation";
+"_new_conversation_"             = "New conversation";
+"_type_message_"                 = "Type a message...";
 
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate.";
