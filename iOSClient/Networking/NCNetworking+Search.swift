@@ -40,9 +40,7 @@ extension NCNetworking {
     func unifiedSearchProviders(account: String,
                                 taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
     ) async -> (providers: [NKSearchProvider]?, error: NKError) {
-        let session = NCSession.shared.getSession(account: account)
-        let results = await NextcloudKit.shared.unifiedSearchProviders(timeout: 30,
-                                                                       account: account) { _ in
+        let results = await NextcloudKit.shared.unifiedSearchProviders(account: account) { _ in
             // example filter
             // ["calendar", "files", "fulltextsearch"].contains(provider.id)
             return true
@@ -54,7 +52,6 @@ extension NCNetworking {
             }
             taskHandler(task)
         }
-
         return results
     }
 

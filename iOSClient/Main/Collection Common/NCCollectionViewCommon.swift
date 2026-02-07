@@ -681,7 +681,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             let results = await self.networking.unifiedSearchProviders(account: session.account) { task in
                 Task {
                     self.searchDataSourceTask = task
-                    await self.reloadDataSource()
                 }
             }
 
@@ -697,7 +696,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                          providers: providers,
                                                          searchResults: [],
                                                          account: session.account)
-
             if let providers = results.providers {
                 for provider in providers {
                     let results = await self.networking.unifiedSearch(providerId: provider.id,
@@ -705,7 +703,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                                       limit: 10,
                                                                       cursor: 0,
                                                                       account: session.account) { task in
-
+                        Task {
+                            self.searchDataSourceTask = task
+                            await self.reloadDataSource()
+                        }
                     }
                     guard let searchResult = results.searchResult,
                           let metadatas = results.metadatas,
@@ -714,7 +715,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                         self.networkSearchInProgress = false
                         return
                     }
-
                     self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
 
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -722,35 +722,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                     }
                 }
             }
-
-            /*
-
-
-            await self.networking.unifiedSearchFiles(literal: literalSearch,
-                                                     account: session.account) { task in
-                Task {
-                    self.searchDataSourceTask = task
-                    await self.reloadDataSource()
-                }
-            } providers: { searchProviders in
-                self.providers = searchProviders
-                self.providers?.insert(NKSearchProvider(id: "inthisfolder", name: NSLocalizedString("_in_this_folder_", comment: ""), order: 0), at: 0)
-                self.searchResults = []
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatasInThisFolder,
-                                                             layoutForView: self.layoutForView,
-                                                             providers: self.providers,
-                                                             searchResults: self.searchResults,
-                                                             account: self.session.account)
-            } update: { searchResult, metadatas in
-                guard let metadatas,
-                      !metadatas.isEmpty,
-                      self.isSearchingMode,
-                      let searchResult else {
-                    return
-                }
-                self.networking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
-            }
-            */
         } else {
             let results = await self.networking.searchFiles(literal: term, account: session.account) { task in
                 self.searchDataSourceTask = task
