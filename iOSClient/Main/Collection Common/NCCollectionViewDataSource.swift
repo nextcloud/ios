@@ -78,32 +78,25 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     internal func createSections() {
-        for metadata in self.metadatas {
-            // skipped livePhoto VIDEO part
-            if metadata.isLivePhoto, metadata.classFile == NKTypeClassFile.video.rawValue {
+        for metadata in metadatas {
+            if metadata.isLivePhoto,
+               metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
-            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
-            if !self.sectionsValue.contains(section) {
-                self.sectionsValue.append(section)
+
+            let section = NSLocalizedString(getSectionValue(metadata: metadata), comment: "")
+            if !sectionsValue.contains(section) {
+                sectionsValue.append(section)
             }
         }
         // Unified search
         if let providers = self.providers, !providers.isEmpty {
-            let sectionsDictionary = ThreadSafeDictionary<String, Int>()
-            for section in self.sectionsValue {
-                if let provider = providers.filter({ $0.id == section}).first {
-                    sectionsDictionary[section] = provider.order
-                }
-            }
-            self.sectionsValue.removeAll()
-            let sectionsDictionarySorted = sectionsDictionary.sorted(by: {$0.value < $1.value })
-            for section in sectionsDictionarySorted {
-                if section.key == global.appName {
-                    self.sectionsValue.insert(section.key, at: 0)
-                } else {
-                    self.sectionsValue.append(section.key)
-                }
+            let orderMap = Dictionary(uniqueKeysWithValues:
+                providers.map { ($0.id, $0.order) }
+            )
+
+            sectionsValue = sectionsValue.sorted {
+                (orderMap[$0] ?? 0) < (orderMap[$1] ?? 0)
             }
         } else {
             // normal

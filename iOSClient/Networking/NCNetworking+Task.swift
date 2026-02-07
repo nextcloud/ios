@@ -13,7 +13,6 @@ extension NCNetworking {
         downloadThumbnailActivityQueue.cancelAll()
         downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
-        unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
     }
 
