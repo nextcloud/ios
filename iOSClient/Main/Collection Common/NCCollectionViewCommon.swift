@@ -657,10 +657,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     func getServerData(forced: Bool = false) async { }
 
     func networkSearch() async {
-        guard !networkSearchInProgress else {
-            return
-        }
-        guard !session.account.isEmpty,
+        guard !networkSearchInProgress,
+              !session.account.isEmpty,
               let term = literalSearch,
               !term.isEmpty else {
             return
@@ -672,20 +670,29 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         await self.reloadDataSource()
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
-            // In This folder
+
+            // ---> In This folder
             let metadatasInThisFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, term)) ?? []
             for metadatas in metadatasInThisFolder {
                 metadatas.name = "inthisfolder"
             }
+            let provider = NKSearchProvider(id: "inthisfolder", name: "inthisfolder", order: 0)
 
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatasInThisFolder,
+                                                         layoutForView: self.layoutForView,
+                                                         providers: [provider],
+                                                         searchResults: [],
+                                                         account: session.account)
+            self.collectionView.reloadData()
+
+            // ---> Get providers
             let results = await self.networking.unifiedSearchProviders(account: session.account) { task in
                 Task {
                     self.searchDataSourceTask = task
                 }
             }
 
-            guard let providers = results.providers,
-                  results.error == .success else {
+            guard results.error == .success else {
                 await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
                 networkSearchInProgress = false
                 return
@@ -693,9 +700,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatasInThisFolder,
                                                          layoutForView: self.layoutForView,
-                                                         providers: providers,
+                                                         providers: results.providers,
                                                          searchResults: [],
                                                          account: session.account)
+
+            // ---> Get metadatas for providers
             if let providers = results.providers {
                 for provider in providers {
                     let results = await self.networking.unifiedSearch(providerId: provider.id,
@@ -705,24 +714,29 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                                       account: session.account) { task in
                         Task {
                             self.searchDataSourceTask = task
-                            await self.reloadDataSource()
                         }
                     }
-                    guard let searchResult = results.searchResult,
-                          let metadatas = results.metadatas,
-                          results.error == .success else {
+
+                    guard results.error == .success else {
                         await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
                         self.networkSearchInProgress = false
                         return
                     }
-                    self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
 
-                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferReloadData(serverUrl: nil)
+                    guard let metadatas = results.metadatas,
+                          !metadatas.isEmpty,
+                          let searchResult = results.searchResult else {
+                        continue
                     }
+
+                    self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+                    self.collectionView.reloadData()
                 }
             }
+            self.networkSearchInProgress = false
+
         } else {
+
             let results = await self.networking.searchFiles(literal: term, account: session.account) { task in
                 self.searchDataSourceTask = task
                 Task {
