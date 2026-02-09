@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 
 extension NCCollectionViewCommon {
-    func searchTerm() async {
+    func search() async {
         guard !networkSearchInProgress,
               !session.account.isEmpty,
               let term = literalSearch,
@@ -20,112 +20,124 @@ extension NCCollectionViewCommon {
         await self.reloadDataSource()
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
-
-            // ---> In This folder
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, term)) ?? []
-            for metadatas in metadatas {
-                metadatas.name = "inthisfolder"
-            }
-            let provider = NKSearchProvider(id: "inthisfolder", name: "inthisfolder", order: 0)
-
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
-                                                         layoutForView: self.layoutForView,
-                                                         providers: [provider],
-                                                         searchResults: [],
-                                                         account: session.account)
-            self.collectionView.reloadData()
-
-            // ---> Get providers
-            let results = await NextcloudKit.shared.unifiedSearchProviders(account: session.account) { _ in
-                // example filter
-                // ["calendar", "files", "fulltextsearch"].contains(provider.id)
-                return true
-            } taskHandler: { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                name: "unifiedSearchProviders")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    self.searchDataSourceTask = task
-                }
-            }
-
-            guard results.error == .success else {
-                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                networkSearchInProgress = false
-                return
-            }
-
-            // ---> Get metadatas for providers
-            if let providers = results.providers {
-                for provider in providers {
-                    let results = await NextcloudKit.shared.unifiedSearch(providerId: provider.id,
-                                                                          term: term,
-                                                                          limit: 10,
-                                                                          cursor: 0,
-                                                                          timeout: 90,
-                                                                          account: session.account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                        name: "unifiedSearch")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                            self.searchDataSourceTask = task
-                        }
-                    }
-
-                    guard results.error == .success,
-                          let searchResult = results.searchResult else {
-                        await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                        self.networkSearchInProgress = false
-                        return
-                    }
-                    if let metadatas = await getSearchResultMetadatas(session: session,
-                                                                      providerId: provider.id,
-                                                                      searchResult: searchResult) {
-                        self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
-                        self.collectionView.reloadData()
-                    }
-                }
-            }
-
-            self.networkSearchInProgress = false
-
+            await unifiedSearch(term: term)
         } else {
-            let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
-            let urlBase = NCSession.shared.getSession(account: session.account).urlBase
-
-            let results = await NextcloudKit.shared.searchLiteralAsync(serverUrl: urlBase,
-                                                                       depth: "infinity",
-                                                                       literal: term,
-                                                                       showHiddenFiles: showHiddenFiles,
-                                                                       account: self.session.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                path: urlBase,
-                                                                                                name: "searchLiteral")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    self.searchDataSourceTask = task
-                }
-            }
-
-            if results.error == .success,
-               let files = results.files {
-                let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
-                NCManageDatabase.shared.addMetadatas(metadatas)
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
-                                                             layoutForView: self.layoutForView,
-                                                             account: self.session.account)
-            } else {
-                await showErrorBanner(controller: self.controller,
-                                      text: results.error.errorDescription,
-                                      errorCode: results.error.errorCode)
-            }
-
-            self.collectionView.reloadData()
-            self.networkSearchInProgress = false
+            await searchLiteral(term: term)
         }
     }
 
-    func searchTermMore(metadataForSection: NCMetadataForSection?) async {
+    // MARK: - search Literal
+
+    private func searchLiteral(term: String) async {
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
+        let urlBase = NCSession.shared.getSession(account: session.account).urlBase
+
+        let results = await NextcloudKit.shared.searchLiteralAsync(serverUrl: urlBase,
+                                                                   depth: "infinity",
+                                                                   literal: term,
+                                                                   showHiddenFiles: showHiddenFiles,
+                                                                   account: self.session.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            path: urlBase,
+                                                                                            name: "searchLiteral")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                self.searchDataSourceTask = task
+            }
+        }
+
+        if results.error == .success,
+           let files = results.files {
+            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+            NCManageDatabase.shared.addMetadatas(metadatas)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                         layoutForView: self.layoutForView,
+                                                         account: self.session.account)
+        } else {
+            await showErrorBanner(controller: self.controller,
+                                  text: results.error.errorDescription,
+                                  errorCode: results.error.errorCode)
+        }
+
+        self.collectionView.reloadData()
+        self.networkSearchInProgress = false
+    }
+
+    // MARK: - Unifield Search
+
+    private func unifiedSearch(term: String) async {
+
+        // ---> In This folder
+        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, term)) ?? []
+        for metadatas in metadatas {
+            metadatas.name = "inthisfolder"
+        }
+        let provider = NKSearchProvider(id: "inthisfolder", name: "inthisfolder", order: 0)
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: self.layoutForView,
+                                                     providers: [provider],
+                                                     searchResults: [],
+                                                     account: session.account)
+        self.collectionView.reloadData()
+
+        // ---> Get providers
+        let results = await NextcloudKit.shared.unifiedSearchProviders(account: session.account) { _ in
+            // example filter
+            // ["calendar", "files", "fulltextsearch"].contains(provider.id)
+            return true
+        } taskHandler: { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "unifiedSearchProviders")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                self.searchDataSourceTask = task
+            }
+        }
+
+        guard results.error == .success else {
+            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            networkSearchInProgress = false
+            return
+        }
+
+        // ---> Get metadatas for providers
+        if let providers = results.providers {
+            for provider in providers {
+                let results = await NextcloudKit.shared.unifiedSearch(providerId: provider.id,
+                                                                      term: term,
+                                                                      limit: 10,
+                                                                      cursor: 0,
+                                                                      timeout: 90,
+                                                                      account: session.account) { task in
+                    Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                    name: "unifiedSearch")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        self.searchDataSourceTask = task
+                    }
+                }
+
+                guard results.error == .success,
+                      let searchResult = results.searchResult else {
+                    await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                    self.networkSearchInProgress = false
+                    return
+                }
+                if let metadatas = await getSearchResultMetadatas(session: session,
+                                                                  providerId: provider.id,
+                                                                  searchResult: searchResult) {
+                    self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+
+        self.networkSearchInProgress = false
+
+    }
+
+    func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
         guard let metadataForSection = metadataForSection,
               let lastSearchResult = metadataForSection.lastSearchResult,
               let cursor = lastSearchResult.cursor,
