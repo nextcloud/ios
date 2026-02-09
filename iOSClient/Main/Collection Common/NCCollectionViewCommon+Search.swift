@@ -68,11 +68,12 @@ extension NCCollectionViewCommon {
     private func unifiedSearch(term: String) async {
 
         // ---> In This folder
+        let name = NSLocalizedString("_in_this_folder_", comment: "")
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, term)) ?? []
         for metadatas in metadatas {
-            metadatas.name = "inthisfolder"
+            metadatas.name = name
         }
-        let provider = NKSearchProvider(id: "inthisfolder", name: "inthisfolder", order: 0)
+        let provider = NKSearchProvider(id: name, name: name , order: 0)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: self.layoutForView,
@@ -106,7 +107,7 @@ extension NCCollectionViewCommon {
             for provider in providers {
                 let results = await NextcloudKit.shared.unifiedSearch(providerId: provider.id,
                                                                       term: term,
-                                                                      limit: 10,
+                                                                      limit: 3,
                                                                       cursor: 0,
                                                                       timeout: 90,
                                                                       account: session.account) { task in

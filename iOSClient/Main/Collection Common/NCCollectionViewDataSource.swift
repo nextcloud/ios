@@ -224,7 +224,8 @@ class NCCollectionViewDataSource: NSObject {
             return ""
         }
 
-        if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
+        if let searchResults = self.searchResults,
+           let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
             return searchResult.name
         }
 
