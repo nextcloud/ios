@@ -66,15 +66,16 @@ class NCAssistantModel {
         selectedTask = task
         isLoading = true
 
-        if useV2 {
-            NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { _, _, _, error in
-                handle(task: task, error: error)
-            })
-        } else {
-            NextcloudKit.shared.textProcessingGetTask(taskId: Int(task.id), account: session.account) { _, task, _, error in
-                guard let task else { return }
-                let taskV2 = NKTextProcessingTask.toV2(tasks: [task]).tasks.first
-                handle(task: taskV2, error: error)
+        Task {
+            if useV2 {
+                let result = await NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account)
+                handle(task: task, error: result.error)
+            } else {
+                NextcloudKit.shared.textProcessingGetTask(taskId: Int(task.id), account: session.account) { _, task, _, error in
+                    guard let task else { return }
+                    let taskV2 = NKTextProcessingTask.toV2(tasks: [task]).tasks.first
+                    handle(task: taskV2, error: error)
+                }
             }
         }
 
@@ -93,15 +94,16 @@ class NCAssistantModel {
     func scheduleTask(input: String) {
         isLoading = true
 
-        if useV2 {
-            guard let selectedType else { return }
-            NextcloudKit.shared.textProcessingScheduleV2(input: input, taskType: selectedType, account: session.account) { _, task, _, error in
-                handle(task: task, error: error)
-            }
-        } else {
-            NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant", account: session.account) { _, task, _, error in
-                guard let task, let taskV2 = NKTextProcessingTask.toV2(tasks: [task]).tasks.first else { return }
-                handle(task: taskV2, error: error)
+        Task {
+            if useV2 {
+                guard let selectedType else { return }
+                let result = await NextcloudKit.shared.textProcessingScheduleV2(input: input, taskType: selectedType, account: session.account)
+                handle(task: result.task, error: result.error)
+            } else {
+                NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant", account: session.account) { _, task, _, error in
+                    guard let task, let taskV2 = NKTextProcessingTask.toV2(tasks: [task]).tasks.first else { return }
+                    handle(task: taskV2, error: error)
+                }
             }
         }
 
@@ -123,13 +125,14 @@ class NCAssistantModel {
     func deleteTask(_ task: AssistantTask) {
         isLoading = true
 
-        if useV2 {
-            NextcloudKit.shared.textProcessingDeleteTaskV2(taskId: task.id, account: session.account) { _, _, error in
-                handle(task: task, error: error)
-            }
-        } else {
-            NextcloudKit.shared.textProcessingDeleteTask(taskId: Int(task.id), account: session.account) { _, _, _, error in
-                handle(task: task, error: error)
+        Task {
+            if useV2 {
+                let result = await NextcloudKit.shared.textProcessingDeleteTaskV2(taskId: task.id, account: session.account)
+                handle(task: task, error: result.error)
+            } else {
+                NextcloudKit.shared.textProcessingDeleteTask(taskId: Int(task.id), account: session.account) { _, _, _, error in
+                    handle(task: task, error: error)
+                }
             }
         }
 
@@ -154,16 +157,17 @@ class NCAssistantModel {
     private func loadAllTypes() {
         isLoading = true
 
-        if useV2 {
-            NextcloudKit.shared.textProcessingGetTypesV2(account: session.account) { _, types, _, error in
-                handle(types: types, error: error)
-            }
-        } else {
-            NextcloudKit.shared.textProcessingGetTypes(account: session.account) { _, types, _, error in
-                guard let types else { return }
-                let typesV2 = NKTextProcessingTaskType.toV2(type: types).types
+        Task {
+            if useV2 {
+                let result = await NextcloudKit.shared.textProcessingGetTypesV2(account: session.account)
+                handle(types: result.types, error: result.error)
+            } else {
+                NextcloudKit.shared.textProcessingGetTypes(account: session.account) { _, types, _, error in
+                    guard let types else { return }
+                    let typesV2 = NKTextProcessingTaskType.toV2(type: types).types
 
-                handle(types: typesV2, error: error)
+                    handle(types: typesV2, error: error)
+                }
             }
         }
 
@@ -190,15 +194,16 @@ class NCAssistantModel {
     private func loadAllTasks(appId: String = "assistant", type: TaskTypeData?) {
         isLoading = true
 
-        if useV2 {
-            NextcloudKit.shared.textProcessingGetTasksV2(taskType: type?.id ?? "", account: session.account) { _, tasks, _, error in
-                guard let tasks = tasks?.tasks.filter({ $0.appId == "assistant" }) else { return }
-                handle(tasks: tasks, error: error)
-            }
-        } else {
-            NextcloudKit.shared.textProcessingTaskList(appId: appId, account: session.account) { _, tasks, _, error in
-                guard let tasks else { return }
-                handle(tasks: NKTextProcessingTask.toV2(tasks: tasks).tasks, error: error)
+        Task {
+            if useV2 {
+                let result = await NextcloudKit.shared.textProcessingGetTasksV2(taskType: type?.id ?? "", account: session.account)
+                guard let tasks = result.tasks?.tasks.filter({ $0.appId == "assistant" }) else { return }
+                handle(tasks: tasks, error: result.error)
+            } else {
+                NextcloudKit.shared.textProcessingTaskList(appId: appId, account: session.account) { _, tasks, _, error in
+                    guard let tasks else { return }
+                    handle(tasks: NKTextProcessingTask.toV2(tasks: tasks).tasks, error: error)
+                }
             }
         }
 
@@ -232,7 +237,7 @@ extension NCAssistantModel {
             TaskTypeData(id: "2", name: "Summarize", description: "", inputShape: nil, outputShape: nil),
             TaskTypeData(id: "3", name: "Generate headline", description: "", inputShape: nil, outputShape: nil),
             TaskTypeData(id: "4", name: "Reformulate", description: "", inputShape: nil, outputShape: nil),
-            TaskTypeData(id: "5", name: "Free Prompt", description: "", inputShape: nil, outputShape: nil),
+            TaskTypeData(id: "5", name: "Free Prompt", description: "", inputShape: nil, outputShape: nil)
         ]
 
         self.tasks = tasks

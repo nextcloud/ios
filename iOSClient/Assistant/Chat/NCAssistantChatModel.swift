@@ -63,6 +63,7 @@ import NextcloudKit
 
     private func onConversationSelected() {
         stopPolling()
+        showRetryResponseGenerationButton = false
 
         Task {
             await loadMessages()
@@ -80,7 +81,7 @@ import NextcloudKit
         guard let sessionId = selectedConversation?.id else { return }
 
         Task {
-            let result = await NextcloudKit.shared.generateAssistantChatSessionAsync(sessionId: sessionId, account: ncSession.account)
+            let result = await NextcloudKit.shared.generateAssistantChatSession(sessionId: sessionId, account: ncSession.account)
             chatResponseTaskId = result.sessionTask?.taskId
 
             startPollingForResponse()
@@ -90,32 +91,32 @@ import NextcloudKit
     private func loadMessages() async {
         guard let sessionId = selectedConversation?.id else { return }
 
-        let result = await NextcloudKit.shared.getAssistantChatMessagesAsync(sessionId: sessionId, account: ncSession.account)
-        messages = result.chatMessage ?? []
+        let result = await NextcloudKit.shared.getAssistantChatMessages(sessionId: sessionId, account: ncSession.account)
+        messages = result.chatMessages ?? []
     }
 
     private func loadLastMessage() async {
         guard let chatResponseTaskId else { return }
-        
-            let result = await NextcloudKit.shared.checkAssistantChatGenerationAsync(taskId: chatResponseTaskId, sessionId: selectedConversation?.id ?? 0, account: ncSession.account)
-            let lastMessage = result.chatMessage
 
-            if let lastMessage, lastMessage.role == "assistant" {
-                stopPolling()
-                messages.append(lastMessage)
-            }
+        let result = await NextcloudKit.shared.checkAssistantChatGeneration(taskId: chatResponseTaskId, sessionId: selectedConversation?.id ?? 0, account: ncSession.account)
+        let lastMessage = result.chatMessage
+
+        if let lastMessage, lastMessage.role == "assistant" {
+            stopPolling()
+            messages.append(lastMessage)
+        }
     }
 
     func sendMessage(input: String) {
         guard let selectedConversation else { return }
 
-        let request = ChatMessageRequest(sessionId: selectedConversation.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970 * 1000), firstHumanMessage: messages.isEmpty)
+        let request = ChatMessageRequest(sessionId: selectedConversation.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970), firstHumanMessage: messages.isEmpty)
         isSending = true
         isSendingDisabled = true
         alreadyMessagedConversations.insert(selectedConversation)
 
         Task {
-            let result = await NextcloudKit.shared.createAssistantChatMessageAsync(messageRequest: request, account: ncSession.account)
+            let result = await NextcloudKit.shared.createAssistantChatMessage(messageRequest: request, account: ncSession.account)
             if result.error == .success {
                 guard let chatMessage = result.chatMessage else { return }
                 messages.append(chatMessage)
