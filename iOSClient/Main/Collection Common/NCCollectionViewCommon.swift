@@ -172,10 +172,20 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchController?.searchResultsUpdater = self
             searchController?.obscuresBackgroundDuringPresentation = false
             searchController?.delegate = self
-            searchController?.searchBar.delegate = self
-            searchController?.searchBar.autocapitalizationType = .none
+
+            let searchBar = searchController?.searchBar
+            searchBar?.delegate = self
+            searchBar?.autocapitalizationType = .none
+            searchBar?.backgroundImage = UIImage()
+
+            let textField = searchBar?.searchTextField
+            textField?.backgroundColor = .systemBackground
+            textField?.borderStyle = .none
+            textField?.layer.cornerRadius = 12
+            textField?.clipsToBounds = true
+
             navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = true
+            navigationItem.hidesSearchBarWhenScrolling = false
         }
 
         // Cell
