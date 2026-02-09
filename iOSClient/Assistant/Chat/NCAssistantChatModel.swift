@@ -20,15 +20,6 @@ import NextcloudKit
 
     var currentSession: AssistantSession?
 
-    //    /// This is true when `sendMessage()` has been called at least once while this conversation is selected.
-    //    private var isSelectedConversationAlreadyMessaged: Bool {
-    //        guard let selectedConversation else { return false }
-    //        return alreadyMessagedConversations.contains(selectedConversation)
-    //    }
-
-    //    /// A conversation that has been messaged to at least once while this screen is showing is added here.
-    //    private var alreadyMessagedConversations: Set<AssistantConversation> = []
-
     private let ncSession: NCSession.Session
     private var pollingTask: Task<Void, Never>?
 
@@ -75,7 +66,7 @@ import NextcloudKit
             currentSession = await checkChatSession(sessionId: selectedConversation.id)
             chatMessageTaskId = currentSession?.messageTaskId
 
-            if messages.last?.isFromHuman == true, chatMessageTaskId == nil {
+            if messages.last?.isFromHuman == true, chatMessageTaskId == nil, isSending == false {
                 ////                if isSelectedConversationAlreadyMessaged {
                 ////                    generateChatSession()
                 ////                } else {
@@ -132,7 +123,6 @@ import NextcloudKit
         let request = ChatMessageRequest(sessionId: selectedConversation.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970), firstHumanMessage: messages.isEmpty)
         isSending = true
         isSendingDisabled = true
-        //        alreadyMessagedConversations.insert(selectedConversation)
 
         Task {
             let result = await NextcloudKit.shared.createAssistantChatMessage(messageRequest: request, account: ncSession.account)
@@ -148,15 +138,14 @@ import NextcloudKit
             }
 
             isSending = false
-            isSendingDisabled = false
         }
     }
 
     func startNewConversation(input: String, sessionsModel: NCAssistantChatConversationsModel) {
         Task {
             let session = await sessionsModel.createNewConversation(title: input)
-            selectedConversation = session
             sendMessage(input: input)
+            selectedConversation = session
         }
     }
 }
