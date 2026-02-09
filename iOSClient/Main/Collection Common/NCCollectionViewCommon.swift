@@ -166,6 +166,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
         refreshControl.tintColor = .clear
+        definesPresentationContext = true
 
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
@@ -179,7 +180,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchBar?.backgroundImage = UIImage()
 
             let textField = searchBar?.searchTextField
-            textField?.backgroundColor = .systemBackground
+            let isDark = traitCollection.userInterfaceStyle == .dark
+            textField?.backgroundColor = isDark ? .black : .white
             textField?.borderStyle = .none
             textField?.layer.cornerRadius = 12
             textField?.clipsToBounds = true
@@ -240,8 +242,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: NCCollectionViewCommon, _) in
             guard let self else { return }
+            let isDark = traitCollection.userInterfaceStyle == .dark
 
-            self.sectionFirstHeader?.setRichWorkspaceColor(style: view.traitCollection.userInterfaceStyle)
+            if enableSearchBar {
+                searchController?.searchBar.searchTextField.backgroundColor = isDark ? .black : .white
+            }
+
+            sectionFirstHeader?.setRichWorkspaceColor(style: view.traitCollection.userInterfaceStyle)
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { _ in

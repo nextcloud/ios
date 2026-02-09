@@ -15,6 +15,7 @@ class NCCollectionViewDataSource: NSObject {
     private var sections: [String] = []
     private var isSections: Bool = false
     private var searchResults: [NKSearchResult]?
+    private var providers: [NKSearchProvider]?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
@@ -58,13 +59,20 @@ class NCCollectionViewDataSource: NSObject {
         hasGetServerData = state
     }
 
-    // MARK: -
+    func setProviders(_ providers: [NKSearchProvider]) {
+        self.providers = providers
+    }
+
+    func getProvider(id: String) -> NKSearchProvider? {
+        return providers?.filter({ $0.id == id}).first
+    }
 
     func removeAll() {
+        self.sections.removeAll()
+        self.searchResults?.removeAll()
+        self.providers?.removeAll()
         self.metadatas.removeAll()
         self.metadatasForSection.removeAll()
-        self.sections.removeAll()
-        self.searchResults = nil
     }
 
     func addSection(metadatas: [tableMetadata], searchResult: NKSearchResult?) {

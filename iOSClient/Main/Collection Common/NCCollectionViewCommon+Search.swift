@@ -107,6 +107,9 @@ extension NCCollectionViewCommon {
             return
         }
 
+        // Added providers in DataSource
+        self.dataSource.setProviders(providers)
+
         // ---> Get metadatas for providers
         for provider in providers {
             let results = await NextcloudKit.shared.unifiedSearch(providerId: provider.id,
@@ -172,15 +175,14 @@ extension NCCollectionViewCommon {
             await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
         }
 
-        /*
         if let searchResult = results.searchResult,
+           let provider = self.dataSource.getProvider(id: searchResult.id),
            let metadatas = await getSearchResultMetadatas(session: session,
                                                           provider: provider,
                                                           searchResult: searchResult) {
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
             self.collectionView.reloadData()
         }
-        */
 
         metadataForSection.unifiedSearchInProgress = false
     }
