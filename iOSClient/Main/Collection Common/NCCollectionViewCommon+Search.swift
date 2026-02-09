@@ -42,7 +42,7 @@ extension NCCollectionViewCommon {
                                                                                             path: urlBase,
                                                                                             name: "searchLiteral")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                self.searchDataSourceTask = task
+                self.searchTask = task
             }
         }
 
@@ -92,17 +92,17 @@ extension NCCollectionViewCommon {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
                                                                                             name: "unifiedSearchProviders")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                self.searchDataSourceTask = task
+                self.searchTask = task
+                self.collectionView.reloadData()
             }
         }
 
         if results.error != .success {
             await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-            networkSearchInProgress = false
-            return
         }
 
-        guard let providers = results.providers else {
+        guard results.error == .success,
+              let providers = results.providers else {
             networkSearchInProgress = false
             return
         }
@@ -119,7 +119,8 @@ extension NCCollectionViewCommon {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
                                                                                                 name: "unifiedSearch")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    self.searchDataSourceTask = task
+                    self.searchTask = task
+                    self.collectionView.reloadData()
                 }
             }
 
@@ -129,15 +130,10 @@ extension NCCollectionViewCommon {
                     text: results.error.errorDescription,
                     errorCode: results.error.errorCode
                 )
-                self.networkSearchInProgress = false
-                return
             }
 
-            guard let searchResult = results.searchResult else {
-                self.networkSearchInProgress = false
-                return
-            }
-            if let metadatas = await getSearchResultMetadatas(session: session,
+            if let searchResult = results.searchResult,
+               let metadatas = await getSearchResultMetadatas(session: session,
                                                               providerId: provider.id,
                                                               searchResult: searchResult) {
                 self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
@@ -155,41 +151,36 @@ extension NCCollectionViewCommon {
               let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
-        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferReloadData(serverUrl: nil)
-        }
+        self.collectionView.reloadData()
 
-        /*
-        let results = await self.networking.unifiedSearchFilesProvider(providerId: lastSearchResult.id,
-                                                                       term: term,
-                                                                       limit: 20,
-                                                                       cursor: cursor,
-                                                                       account: session.account) { task in
+        let results = await NextcloudKit.shared.unifiedSearch(providerId: lastSearchResult.id,
+                                                              term: term,
+                                                              limit: 10,
+                                                              cursor: cursor,
+                                                              timeout: 60,
+                                                              account: session.account) { task in
             Task {
-                self.searchDataSourceTask = task
-                await self.reloadDataSource()
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "unifiedSearch")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                self.searchTask = task
+                self.collectionView.reloadData()
             }
         }
 
         if results.error != .success {
-            Task {
-                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-            }
+            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
         }
 
-        guard results.error == .success,
-              let searchResult = results.searchResult,
-              let metadatas = results.metadatas else {
-            return
+        if let searchResult = results.searchResult,
+           let metadatas = await getSearchResultMetadatas(session: session,
+                                                          providerId: lastSearchResult.id,
+                                                          searchResult: searchResult) {
+            self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+            self.collectionView.reloadData()
         }
 
         metadataForSection.unifiedSearchInProgress = false
-        self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
-
-        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferReloadData(serverUrl: nil)
-        }
-        */
     }
 
     // MARK: - Helper

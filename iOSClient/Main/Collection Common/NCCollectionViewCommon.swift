@@ -39,9 +39,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     var isSearchingMode: Bool = false
     var networkSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
-    var searchDataSourceTask: URLSessionTask?
-    //var providers: [NKSearchProvider]?
-    //var searchResults: [NKSearchResult]?
+    var searchTask: URLSessionTask?
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
@@ -305,12 +303,12 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        self.searchDataSourceTask?.cancel()
+        self.searchTask?.cancel()
         dismissTip()
 
         // Cancel Queue & Retrieves Properties
         self.networking.downloadThumbnailQueue.cancelAll()
-        searchDataSourceTask?.cancel()
+        searchTask?.cancel()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -498,7 +496,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.searchDataSourceTask?.cancel()
+        self.searchTask?.cancel()
 
         self.isSearchingMode = false
         self.networkSearchInProgress = false
