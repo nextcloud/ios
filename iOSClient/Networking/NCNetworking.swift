@@ -58,7 +58,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
-    var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKTypeReachability?
     weak var certificateDelegate: ClientCertificateDelegate?
