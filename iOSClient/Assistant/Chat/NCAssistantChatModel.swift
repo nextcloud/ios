@@ -68,18 +68,18 @@ import NextcloudKit
             }
     }
 
-    func generateChatSession() {
+    func generateChatSession() async {
         guard let sessionId = selectedConversation?.id else { return }
 
-        Task {
-            let result = await NextcloudKit.shared.generateAssistantChatSession(sessionId: sessionId, account: ncSession.account)
-            chatMessageTaskId = result.sessionTask?.taskId
-        }
+        let result = await NextcloudKit.shared.generateAssistantChatSession(sessionId: sessionId, account: ncSession.account)
+        chatMessageTaskId = result.sessionTask?.taskId
     }
 
     func onRetryResponseGeneration() {
-        generateChatSession()
-        startPollingForResponse()
+        Task {
+            await generateChatSession()
+            startPollingForResponse()
+        }
     }
 
     private func checkChatSession(sessionId: Int) async -> AssistantSession? {
@@ -120,7 +120,7 @@ import NextcloudKit
                 messages.append(chatMessage)
 
                 stopPolling()
-                generateChatSession()
+                await generateChatSession()
                 startPollingForResponse()
             } else {
                 //TODO
