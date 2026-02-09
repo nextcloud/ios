@@ -52,7 +52,9 @@ struct NCAssistant: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
-            .modifier(NavigationSubtitleModifier(subtitle: assistantModel.isSelectedTypeChat ? chatModel.selectedConversation?.validTitle : ""))
+            .modifier(NavigationSubtitleModifier(subtitle: assistantModel.isSelectedTypeChat ?
+                                                 chatModel.currentSession?.sessionTitle ?? chatModel.selectedConversation?.validTitle
+                                                 : ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
                 TypeList()
@@ -74,6 +76,9 @@ struct NCAssistant: View {
         .accentColor(Color(NCBrandColor.shared.iconImageColor))
         .environment(assistantModel)
         .environment(chatModel)
+        .onDisappear {
+            chatModel.stopPolling()
+        }
     }
 }
 

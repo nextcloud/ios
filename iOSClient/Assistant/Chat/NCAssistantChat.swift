@@ -50,7 +50,7 @@ struct NCAssistantChat: View {
 
                     if chatModel.showRetryResponseGenerationButton {
                         let button = Button("_retry_response_generation_") {
-                            chatModel.requestResponse()
+                            chatModel.onRetryResponseGeneration()
                         }
                             .frame(maxWidth: .infinity)
                             .padding()
