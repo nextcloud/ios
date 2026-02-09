@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 
 extension NCCollectionViewCommon {
-    func networkSearch() async {
+    func searchTerm() async {
         guard !networkSearchInProgress,
               !session.account.isEmpty,
               let term = literalSearch,
@@ -119,11 +119,13 @@ extension NCCollectionViewCommon {
                                       text: results.error.errorDescription,
                                       errorCode: results.error.errorCode)
             }
+
+            self.collectionView.reloadData()
             self.networkSearchInProgress = false
         }
     }
 
-    func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
+    func searchTermMore(metadataForSection: NCMetadataForSection?) async {
         guard let metadataForSection = metadataForSection,
               let lastSearchResult = metadataForSection.lastSearchResult,
               let cursor = lastSearchResult.cursor,
@@ -166,6 +168,8 @@ extension NCCollectionViewCommon {
         }
         */
     }
+
+    // MARK: - Helper
 
     private func getSearchResultMetadatas(session: NCSession.Session,
                                           providerId: String,

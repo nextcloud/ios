@@ -492,7 +492,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
             Task {
-                await networkSearch()
+                await searchTerm()
             }
         }
     }
@@ -786,7 +786,7 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
 extension NCCollectionViewCommon: NCSectionFooterDelegate {
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
         Task {
-            await unifiedSearchMore(metadataForSection: metadataForSection)
+            await searchTermMore(metadataForSection: metadataForSection)
         }
     }
 }
@@ -830,7 +830,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
 
             if self.isSearchingMode {
                 await self.debouncerNetworkSearch.call {
-                    await self.networkSearch()
+                    await self.searchTerm()
                 }
             } else if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
                 await self.debouncerReloadDataSource.call {
@@ -844,7 +844,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if self.isSearchingMode {
                 await self.debouncerNetworkSearch.call {
-                    await self.networkSearch()
+                    await self.searchTerm()
                 }
                 return
             }

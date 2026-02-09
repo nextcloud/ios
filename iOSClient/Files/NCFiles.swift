@@ -188,7 +188,7 @@ class NCFiles: NCCollectionViewCommon {
         await networking.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
 
         guard !isSearchingMode else {
-            await networkSearch()
+            await searchTerm()
             return
         }
 
