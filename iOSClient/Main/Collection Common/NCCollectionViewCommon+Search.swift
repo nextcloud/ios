@@ -16,6 +16,9 @@ extension NCCollectionViewCommon {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
         self.networkSearchInProgress = true
+        // STOP PREEMPTIVE SYNC METADATA
+        self.stopSyncMetadata()
+        // Clear datasotce
         self.dataSource.removeAll()
         await self.reloadDataSource()
 
@@ -176,7 +179,7 @@ extension NCCollectionViewCommon {
            let metadatas = await getSearchResultMetadatas(session: session,
                                                           providerId: lastSearchResult.id,
                                                           searchResult: searchResult) {
-            self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+            self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
             self.collectionView.reloadData()
         }
 
