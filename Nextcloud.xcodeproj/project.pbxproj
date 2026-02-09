@@ -1279,7 +1279,6 @@
 		F3C6F6F52F34CC0900C531B6 /* NCAssistantChatConversationsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatConversationsModel.swift; sourceTree = "<group>"; };
 		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
 		F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChat.swift; sourceTree = "<group>"; };
-		F3DDFE102F16732D00A784C8 /* NextcloudKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = NextcloudKit; path = ../NextcloudKit; sourceTree = SOURCE_ROOT; };
 		F3DDFE1D2F1F8EC600A784C8 /* ChatInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputField.swift; sourceTree = "<group>"; };
 		F3DDFE202F1F953000A784C8 /* NCAssistantChatConversations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatConversations.swift; sourceTree = "<group>"; };
 		F3DDFE222F1FB4C300A784C8 /* NCAssistantChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatModel.swift; sourceTree = "<group>"; };
@@ -3263,7 +3262,6 @@
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
-				F3DDFE102F16732D00A784C8 /* NextcloudKit */,
 			);
 			sourceTree = "<group>";
 		};
