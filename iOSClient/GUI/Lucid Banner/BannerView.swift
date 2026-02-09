@@ -279,7 +279,7 @@ func showErrorBanner(scene: UIWindowScene?,
 }
 
 // MARK: - Helper
-
+#if !EXTENSION
 func bannerContainsErrorCode(errorCode: Int?) -> Bool {
     guard let errorCode else {
         return false
@@ -300,6 +300,7 @@ func bannerContainsErrorCode(errorCode: Int?) -> Bool {
         return false
     }
 }
+#endif
 
 // MARK: - SwiftUI
 
