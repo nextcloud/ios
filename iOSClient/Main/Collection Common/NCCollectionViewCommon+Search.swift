@@ -71,16 +71,13 @@ extension NCCollectionViewCommon {
     private func unifiedSearch(term: String) async {
 
         // ---> In This folder
-        let name = NSLocalizedString("_in_this_folder_", comment: "")
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, term)) ?? []
         for metadatas in metadatas {
-            metadatas.name = name
+            metadatas.section = NSLocalizedString("_in_this_folder_", comment: "")
         }
-        let provider = NKSearchProvider(id: name, name: name, order: 0)
-
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: self.layoutForView,
-                                                     providers: [provider],
+                                                     IsSections: true,
                                                      searchResults: [],
                                                      account: session.account)
         self.collectionView.reloadData()
@@ -137,7 +134,7 @@ extension NCCollectionViewCommon {
 
             if let searchResult = results.searchResult,
                let metadatas = await getSearchResultMetadatas(session: session,
-                                                              providerId: provider.id,
+                                                              provider: provider,
                                                               searchResult: searchResult) {
                 self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
                 self.collectionView.reloadData()
@@ -175,13 +172,15 @@ extension NCCollectionViewCommon {
             await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
         }
 
+        /*
         if let searchResult = results.searchResult,
            let metadatas = await getSearchResultMetadatas(session: session,
-                                                          providerId: lastSearchResult.id,
+                                                          provider: provider,
                                                           searchResult: searchResult) {
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
             self.collectionView.reloadData()
         }
+        */
 
         metadataForSection.unifiedSearchInProgress = false
     }
@@ -189,16 +188,16 @@ extension NCCollectionViewCommon {
     // MARK: - Helper
 
     private func getSearchResultMetadatas(session: NCSession.Session,
-                                          providerId: String,
+                                          provider: NKSearchProvider,
                                           searchResult: NKSearchResult,
     ) async -> [tableMetadata]? {
         var metadatas: [tableMetadata] = []
 
-        switch providerId {
+        switch provider.id {
         case "files":
             for entry in searchResult.entries {
                 if let filePath = entry.filePath {
-                    if let metadata = await loadMetadata(session: session, filePath: filePath) {
+                    if let metadata = await loadMetadata(session: session, provider: provider, filePath: filePath) {
                         metadatas.append(metadata)
                     }
                 } else {
@@ -218,7 +217,7 @@ extension NCCollectionViewCommon {
                         predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", session.account, "/remote.php/dav/files/" + session.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
-                        if let metadata = await loadMetadata(session: session, filePath: dir + filename) {
+                        if let metadata = await loadMetadata(session: session, provider: provider, filePath: dir + filename) {
                             metadatas.append(metadata)
                         }
                     }
@@ -245,12 +244,14 @@ extension NCCollectionViewCommon {
         }
 
     private func loadMetadata(session: NCSession.Session,
+                              provider: NKSearchProvider,
                               filePath: String) async -> tableMetadata? {
         let urlPath = session.urlBase + "/remote.php/dav/files/" + session.user + filePath
         let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: urlPath, account: session.account)
         guard let metadata = results.metadata else {
             return nil
         }
+        metadata.section = provider.name
 
         NCManageDatabase.shared.addMetadata(metadata)
         return metadata
