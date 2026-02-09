@@ -73,7 +73,7 @@ extension NCCollectionViewCommon {
         for metadatas in metadatas {
             metadatas.name = name
         }
-        let provider = NKSearchProvider(id: name, name: name , order: 0)
+        let provider = NKSearchProvider(id: name, name: name, order: 0)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: self.layoutForView,
@@ -96,46 +96,56 @@ extension NCCollectionViewCommon {
             }
         }
 
-        guard results.error == .success else {
+        if results.error != .success {
             await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
             networkSearchInProgress = false
             return
         }
 
-        // ---> Get metadatas for providers
-        if let providers = results.providers {
-            for provider in providers {
-                let results = await NextcloudKit.shared.unifiedSearch(providerId: provider.id,
-                                                                      term: term,
-                                                                      limit: 3,
-                                                                      cursor: 0,
-                                                                      timeout: 90,
-                                                                      account: session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                    name: "unifiedSearch")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        self.searchDataSourceTask = task
-                    }
-                }
+        guard let providers = results.providers else {
+            networkSearchInProgress = false
+            return
+        }
 
-                guard results.error == .success,
-                      let searchResult = results.searchResult else {
-                    await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                    self.networkSearchInProgress = false
-                    return
+        // ---> Get metadatas for providers
+        for provider in providers {
+            let results = await NextcloudKit.shared.unifiedSearch(providerId: provider.id,
+                                                                  term: term,
+                                                                  limit: 3,
+                                                                  cursor: 0,
+                                                                  timeout: 90,
+                                                                  account: session.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                name: "unifiedSearch")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    self.searchDataSourceTask = task
                 }
-                if let metadatas = await getSearchResultMetadatas(session: session,
-                                                                  providerId: provider.id,
-                                                                  searchResult: searchResult) {
-                    self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
-                    self.collectionView.reloadData()
-                }
+            }
+
+            if results.error != .success {
+                await showErrorBanner(
+                    controller: self.controller,
+                    text: results.error.errorDescription,
+                    errorCode: results.error.errorCode
+                )
+                self.networkSearchInProgress = false
+                return
+            }
+
+            guard let searchResult = results.searchResult else {
+                self.networkSearchInProgress = false
+                return
+            }
+            if let metadatas = await getSearchResultMetadatas(session: session,
+                                                              providerId: provider.id,
+                                                              searchResult: searchResult) {
+                self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+                self.collectionView.reloadData()
             }
         }
 
         self.networkSearchInProgress = false
-
     }
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {

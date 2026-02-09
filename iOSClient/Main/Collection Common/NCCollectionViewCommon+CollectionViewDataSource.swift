@@ -189,7 +189,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.info?.text = metadata.sessionError
         } else {
             cell.subInfo?.isHidden = false
-
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
@@ -434,6 +433,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // TAGS
         cell.setTags(tags: Array(metadata.tags))
+
+        // SearchingMode - Separator
+        if isSearchingMode {
+            cell.tagSeparator?.isHidden = true
+        }
 
         // Layout photo
         if isLayoutPhoto {
