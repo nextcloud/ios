@@ -135,8 +135,13 @@ extension NCCollectionViewCommon {
                 )
             }
 
-            if let searchResult = results.searchResult,
-               let metadatas = await getSearchResultMetadatas(session: session,
+            guard results.error == .success,
+                  let searchResult = results.searchResult else {
+                networkSearchInProgress = false
+                return
+            }
+
+            if let metadatas = await getSearchResultMetadatas(session: session,
                                                               provider: provider,
                                                               searchResult: searchResult) {
                 self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
