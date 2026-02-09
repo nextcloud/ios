@@ -138,7 +138,7 @@ class NCCollectionViewDataSource: NSObject {
     internal func createMetadataForSection(section: String) {
         var searchResult: NKSearchResult?
         if isSections, let searchResults = self.searchResults {
-            searchResult = searchResults.filter({ $0.id == section}).first
+            searchResult = searchResults.filter({ $0.name == section}).first
         }
         let metadatas = self.metadatas.filter({ $0.section == section})
         let metadataForSection = NCMetadataForSection(section: section,

@@ -237,6 +237,7 @@ extension NCCollectionViewCommon {
                         iconUrl: entry.thumbnailURL,
                         session: session,
                         sceneIdentifier: nil)
+                    metadata.section = provider.name
                     metadatas.append(metadata)
                 }
                 return(metadatas)
