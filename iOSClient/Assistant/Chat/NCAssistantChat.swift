@@ -26,7 +26,7 @@ struct NCAssistantChat: View {
                 if chatModel.selectedConversation != nil {
                     chatModel.sendMessage(input: input)
                 } else {
-                    chatModel.startNewConversation(input: input, sessionsModel: conversationsModel)
+                    chatModel.startNewConversationViaMessage(input: input, sessionsModel: conversationsModel)
                 }
             }
         }

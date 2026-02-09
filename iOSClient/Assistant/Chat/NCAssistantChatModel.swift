@@ -12,11 +12,7 @@ import NextcloudKit
     var hasError: Bool = false
     var showRetryResponseGenerationButton = false
 
-    var selectedConversation: AssistantConversation? {
-        didSet {
-            onConversationSelected()
-        }
-    }
+    public private(set) var selectedConversation: AssistantConversation?
 
     var currentSession: AssistantSession?
 
@@ -54,29 +50,22 @@ import NextcloudKit
         isSendingDisabled = false
     }
 
-    private func onConversationSelected() {
-        guard let selectedConversation else { return }
+    func selectConversation(selectedConversation: AssistantConversation) async {
+        self.selectedConversation = selectedConversation
 
         stopPolling()
         showRetryResponseGenerationButton = false
         currentSession = nil
 
-        Task {
             await loadAllMessages()
             currentSession = await checkChatSession(sessionId: selectedConversation.id)
             chatMessageTaskId = currentSession?.messageTaskId
 
             if messages.last?.isFromHuman == true, chatMessageTaskId == nil, isSending == false {
-                ////                if isSelectedConversationAlreadyMessaged {
-                ////                    generateChatSession()
-                ////                } else {
                 showRetryResponseGenerationButton = true
-                ////                }
             } else if chatMessageTaskId != nil {
                 startPollingForResponse()
             }
-
-        }
     }
 
     func generateChatSession() {
@@ -141,11 +130,12 @@ import NextcloudKit
         }
     }
 
-    func startNewConversation(input: String, sessionsModel: NCAssistantChatConversationsModel) {
+    func startNewConversationViaMessage(input: String, sessionsModel: NCAssistantChatConversationsModel) {
         Task {
-            let session = await sessionsModel.createNewConversation(title: input)
+            isSending = true
+            guard let conversation = await sessionsModel.createNewConversation(title: input) else { return }
+            await selectConversation(selectedConversation: conversation)
             sendMessage(input: input)
-            selectedConversation = session
         }
     }
 }

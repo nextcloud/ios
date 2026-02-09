@@ -39,8 +39,12 @@ struct NCAssistant: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: NCAssistantChatConversations(conversationsModel: conversationsModel, selectedConversation: chatModel.selectedConversation) { conversation in
-                        chatModel.selectedConversation = conversation
-                        assistantModel.selectChatTaskType()
+                        guard let conversation else { return }
+
+                        Task {
+                            await chatModel.selectConversation(selectedConversation: conversation)
+                            assistantModel.selectChatTaskType()
+                        }
                     }) {
                         Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
