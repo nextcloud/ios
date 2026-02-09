@@ -97,11 +97,7 @@ extension NCCollectionViewCommon {
             }
         }
 
-        if results.error != .success {
-            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-        }
-
-        guard results.error == .success,
+        guard await continueSearch(error: results.error),
               let providers = results.providers else {
             networkSearchInProgress = false
             return
@@ -127,15 +123,7 @@ extension NCCollectionViewCommon {
                 }
             }
 
-            if results.error != .success {
-                await showErrorBanner(
-                    controller: self.controller,
-                    text: results.error.errorDescription,
-                    errorCode: results.error.errorCode
-                )
-            }
-
-            guard results.error == .success,
+            guard await continueSearch(error: results.error),
                   let searchResult = results.searchResult else {
                 networkSearchInProgress = false
                 return
@@ -263,5 +251,20 @@ extension NCCollectionViewCommon {
 
         NCManageDatabase.shared.addMetadata(metadata)
         return metadata
+    }
+
+    private func continueSearch(error: NKError) async -> Bool {
+        if error != .success {
+            await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+        }
+
+        guard isSearchingMode else {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
+            }
+            return false
+        }
+
+        return true
     }
 }
