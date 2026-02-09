@@ -77,7 +77,7 @@ extension NCCollectionViewCommon {
         }
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: self.layoutForView,
-                                                     IsSections: true,
+                                                     isSections: true,
                                                      searchResults: [],
                                                      account: session.account)
         self.collectionView.reloadData()

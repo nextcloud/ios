@@ -13,7 +13,7 @@ class NCCollectionViewDataSource: NSObject {
     private let database = NCManageDatabase.shared
 
     private var sections: [String] = []
-    private var IsSections: Bool = false
+    private var isSections: Bool = false
     private var searchResults: [NKSearchResult]?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
@@ -26,7 +26,7 @@ class NCCollectionViewDataSource: NSObject {
 
     init(metadatas: [tableMetadata],
          layoutForView: NCDBLayoutForView? = nil,
-         IsSections: Bool = false,
+         isSections: Bool = false,
          searchResults: [NKSearchResult]? = nil,
          account: String? = nil) {
         super.init()
@@ -39,11 +39,11 @@ class NCCollectionViewDataSource: NSObject {
             self.favoriteOnTop = NCPreferences().getFavoriteOnTop(account: account)
         }
         // is Sections
-        self.IsSections = IsSections
+        self.isSections = isSections
         // unified search
         self.searchResults = searchResults
 
-        if IsSections || (layoutForView?.groupBy != "none") {
+        if isSections || (layoutForView?.groupBy != "none") {
             createSections()
         }
     }
@@ -89,7 +89,7 @@ class NCCollectionViewDataSource: NSObject {
             }
         }
         // Section order
-        if IsSections {
+        if isSections {
             /*
             sectionsValue = sectionsValue.sorted {
                 (orderMap[$0] ?? 0) < (orderMap[$1] ?? 0)
@@ -137,7 +137,7 @@ class NCCollectionViewDataSource: NSObject {
 
     internal func createMetadataForSection(section: String) {
         var searchResult: NKSearchResult?
-        if IsSections, let searchResults = self.searchResults {
+        if isSections, let searchResults = self.searchResults {
             searchResult = searchResults.filter({ $0.id == section}).first
         }
         let metadatas = self.metadatas.filter({ $0.section == section})
