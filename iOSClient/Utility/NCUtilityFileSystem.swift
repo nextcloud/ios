@@ -815,4 +815,17 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             return path
         }
     }
+
+    func extractFileIdFromFPath(from urlString: String?) -> String? {
+        guard let urlString,
+              var url = URL(string: urlString) else {
+            return nil
+        }
+        if url.lastPathComponent.isEmpty {
+            url.deleteLastPathComponent()
+        }
+        let id = url.lastPathComponent
+        let parent = url.deletingLastPathComponent().lastPathComponent
+        return parent == "f" ? id : nil
+    }
 }
