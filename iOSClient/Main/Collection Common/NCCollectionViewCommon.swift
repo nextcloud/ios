@@ -36,20 +36,22 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
-    var isSearchingMode: Bool = false
     var networkSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
-    var searchTask: URLSessionTask?
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
     var layoutType = NCGlobal.shared.layoutList
-    var textSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     var tipViewAccounts: EasyTipView?
     var syncMetadatasTask: Task<Void, Never>?
+    // Search
+    var isSearchingMode: Bool = false
+    var searchTask: URLSessionTask?
+    var searchResultText: String?
+    var searchResultStore: String?
 
     // DECLARE
     var layoutKey = ""
@@ -485,7 +487,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func updateSearchResults(for searchController: UISearchController) {
-        self.textSearch = searchController.searchBar.text
+        searchResultText = searchController.searchBar.text
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -503,7 +505,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if isSearchingMode,
-           self.textSearch?.count ?? 0 >= 2 {
+           searchResultText?.count ?? 0 >= 2 {
             Task {
                 await self.search()
             }
@@ -517,7 +519,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.searchTask?.cancel()
         self.isSearchingMode = false
         self.networkSearchInProgress = false
-        self.textSearch = ""
+        self.searchResultText = nil
+        self.searchResultStore = nil
 
         Task {
             self.dataSource.removeAll()

@@ -9,8 +9,8 @@ extension NCCollectionViewCommon {
     func search() async {
         guard !networkSearchInProgress,
               !session.account.isEmpty,
-              let textSearch = textSearch,
-              !textSearch.isEmpty else {
+              let text = searchResultText,
+              !text.isEmpty else {
             return
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
@@ -23,15 +23,15 @@ extension NCCollectionViewCommon {
         self.collectionView.reloadData()
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
-            await unifiedSearch(textSearch: textSearch)
+            await unifiedSearch(text: text)
         } else {
-            await searchLiteral(textSearch: textSearch)
+            await searchLiteral(text: text)
         }
     }
 
     // MARK: - search Literal
 
-    private func searchLiteral(textSearch: String) async {
+    private func searchLiteral(text: String) async {
         defer {
             self.networkSearchInProgress = false
         }
@@ -42,7 +42,7 @@ extension NCCollectionViewCommon {
         let results = await NextcloudKit.shared.searchLiteralAsync(
             serverUrl: urlBase,
             depth: "infinity",
-            literal: textSearch,
+            literal: text,
             showHiddenFiles: showHiddenFiles,
             account: self.session.account
         ) { task in
@@ -75,7 +75,7 @@ extension NCCollectionViewCommon {
 
     // MARK: - Unifield Search
 
-    private func unifiedSearch(textSearch: String) async {
+    private func unifiedSearch(text: String) async {
         defer {
             networkSearchInProgress = false
             Task {
@@ -86,8 +86,11 @@ extension NCCollectionViewCommon {
             }
         }
 
+        // Store the search
+        self.searchResultStore = text
+
         // ---> In This folder
-        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, textSearch)) ?? []
+        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, text)) ?? []
         for metadatas in metadatas {
             metadatas.section = NSLocalizedString("_in_this_folder_", comment: "")
         }
@@ -132,7 +135,7 @@ extension NCCollectionViewCommon {
         for provider in providers {
             let results = await NextcloudKit.shared.unifiedSearch(
                 providerId: provider.id,
-                term: textSearch,
+                term: text,
                 limit: 3,
                 cursor: 0,
                 timeout: 90,
@@ -154,6 +157,7 @@ extension NCCollectionViewCommon {
             }
 
             guard isSearchingMode,
+                  self.searchResultText == text,
                   results.error == .success,
                   let searchResult = results.searchResult else {
                 return
@@ -183,7 +187,7 @@ extension NCCollectionViewCommon {
         guard let metadataForSection = metadataForSection,
               let lastSearchResult = metadataForSection.lastSearchResult,
               let cursor = lastSearchResult.cursor,
-              let textSearch else {
+              let searchResultStore else {
             return
         }
 
@@ -192,7 +196,7 @@ extension NCCollectionViewCommon {
 
         let results = await NextcloudKit.shared.unifiedSearch(
             providerId: lastSearchResult.id,
-            term: textSearch,
+            term: searchResultStore,
             limit: 10,
             cursor: cursor,
             timeout: 60,
