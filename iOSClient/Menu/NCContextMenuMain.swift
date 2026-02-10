@@ -506,8 +506,10 @@ class NCContextMenuMain: NSObject {
                             if let iconUrl = item.icon,
                                let url = URL(string: metadata.urlBase + iconUrl) {
                                 let (data, _) = try await URLSession.shared.data(from: url)
-                                if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data,
-                                                                                            fileName: iconUrl) {
+                                if let image = try await NCSVGRenderer().renderSVGToUIImage(
+                                    svgData: data,
+                                    fileName: iconUrl
+                                ) {
                                     iconImage = image
                                 }
                             }
@@ -517,13 +519,14 @@ class NCContextMenuMain: NSObject {
                                 image: iconImage
                             ) { _ in
                                 Task {
-                                    let results = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
-                                                                                             fileId: metadata.fileId,
-                                                                                             filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
-                                                                                             url: item.url,
-                                                                                             method: item.method,
-                                                                                             params: item.params)
-
+                                    let results = await NextcloudKit.shared.sendRequestAsync(
+                                        account: metadata.account,
+                                        fileId: metadata.fileId,
+                                        filePath: self.utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId),
+                                        url: item.url,
+                                        method: item.method,
+                                        params: item.params
+                                    )
                                     if results.error != .success {
                                         await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: results.error.errorDescription, errorCode: results.error.errorCode)
                                     } else {

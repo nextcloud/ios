@@ -86,8 +86,10 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?, use
         imageData = image
     } else {
         do {
-            imageData = try await NCSVGRenderer().renderSVGToUIImage(svgData: data,
-                                                                     fileName: fileNameToWrite)
+            imageData = try await NCSVGRenderer().renderSVGToUIImage(
+                svgData: data,
+                fileName: fileNameToWrite
+            )
         } catch {
             print("Unsupported image format: \(error.localizedDescription)")
         }
