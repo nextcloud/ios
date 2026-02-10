@@ -4,6 +4,7 @@
 
 import SwiftUI
 import LucidBanner
+import Alamofire
 
 // MARK: - Show Banner
 #if !EXTENSION
@@ -133,7 +134,7 @@ func showInfoBanner(scene: UIWindowScene?,
                     backgroundColor: UIColor = .systemBackground,
                     errorCode: Int? = nil) async {
 #if !EXTENSION
-    guard !bannerContainsErrorCode(errorCode: errorCode) else {
+    guard !bannerContainsError(errorCode: errorCode) else {
         return
     }
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
@@ -176,7 +177,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                                  foregroundColor: UIColor = .white,
                                  backgroundColor: UIColor = .red,
                                  sleepBefore: Double = 1,
-                                 errorCode: Int) async {
+                                 errorCode: Int,
+                                 afError: AFError? = nil) async {
     for scene in UIApplication.shared.foregroundActiveScenes {
         await showErrorBanner(scene: scene,
                               title: title,
@@ -185,7 +187,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                               foregroundColor: foregroundColor,
                               backgroundColor: backgroundColor,
                               sleepBefore: sleepBefore,
-                              errorCode: errorCode)
+                              errorCode: errorCode,
+                              afError: afError)
     }
 }
 
@@ -197,7 +200,8 @@ func showErrorBanner(controller: UITabBarController?,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
-                     errorCode: Int) async {
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
                           text: text,
@@ -205,7 +209,8 @@ func showErrorBanner(controller: UITabBarController?,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
                           sleepBefore: sleepBefore,
-                          errorCode: errorCode)
+                          errorCode: errorCode,
+                          afError: afError)
 }
 
 @MainActor
@@ -216,7 +221,8 @@ func showErrorBanner(sceneIdentifier: String?,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
-                     errorCode: Int) async {
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
     await showErrorBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
                           title: title,
                           text: text,
@@ -224,7 +230,8 @@ func showErrorBanner(sceneIdentifier: String?,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
                           sleepBefore: sleepBefore,
-                          errorCode: errorCode)
+                          errorCode: errorCode,
+                          afError: afError)
 }
 
 #endif
@@ -237,9 +244,10 @@ func showErrorBanner(scene: UIWindowScene?,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
-                     errorCode: Int) async {
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
 #if !EXTENSION
-    guard !bannerContainsErrorCode(errorCode: errorCode) else {
+    guard !bannerContainsError(errorCode: errorCode, afError: afError) else {
         return
     }
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
@@ -280,12 +288,15 @@ func showErrorBanner(scene: UIWindowScene?,
 
 // MARK: - Helper
 #if !EXTENSION
-func bannerContainsErrorCode(errorCode: Int?) -> Bool {
+func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
     guard let errorCode else {
         return false
     }
     // List of errors not to be displayed
     if errorCode == -999 {
+        return true
+    }
+    if let afError, case .explicitlyCancelled = afError {
         return true
     }
     // Prevent repeated display of the same user-facing error during the current foreground session.
@@ -382,3 +393,4 @@ struct MessageBannerView: View {
         .padding()
     }
 }
+
