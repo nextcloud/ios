@@ -289,7 +289,7 @@ extension NCActivity: UITableViewDataSource {
                         }
                     }
                     if let data = results.responseData?.data {
-                        if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: nil, fileName: fileName) {
+                        if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, fileName: fileName) {
                             if cell.idActivity == activity.idActivity {
                                 cell.icon.image = image
                             }
