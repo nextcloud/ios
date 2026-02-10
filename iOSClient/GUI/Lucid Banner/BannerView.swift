@@ -284,6 +284,10 @@ func bannerContainsErrorCode(errorCode: Int?) -> Bool {
     guard let errorCode else {
         return false
     }
+    // List errors (no error)
+    if errorCode == -999 {
+        return true
+    }
     // Prevent repeated display of the same user-facing error during the current foreground session.
     // If this error code has already been shown, do nothing.
     // Otherwise, record it and allow the UX notification to be displayed once.
