@@ -20,7 +20,7 @@ extension NCCollectionViewCommon {
         self.stopSyncMetadata()
         // Clear datasotce
         self.dataSource.removeAll()
-        await self.reloadDataSource()
+        self.collectionView.reloadData()
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             await unifiedSearch(term: term)
@@ -32,6 +32,10 @@ extension NCCollectionViewCommon {
     // MARK: - search Literal
 
     private func searchLiteral(term: String) async {
+        defer {
+            self.networkSearchInProgress = false
+        }
+
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let urlBase = NCSession.shared.getSession(account: session.account).urlBase
 
@@ -63,12 +67,21 @@ extension NCCollectionViewCommon {
         }
 
         self.collectionView.reloadData()
-        self.networkSearchInProgress = false
     }
 
     // MARK: - Unifield Search
 
     private func unifiedSearch(term: String) async {
+        defer {
+            networkSearchInProgress = false
+            Task {
+                if !isSearchingMode {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
+                    }
+                }
+            }
+        }
 
         // ---> In This folder
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[c] %@", session.account, self.serverUrl, term)) ?? []
@@ -97,9 +110,13 @@ extension NCCollectionViewCommon {
             }
         }
 
-        guard await continueSearch(error: results.error),
+        if results.error != .success {
+            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+        }
+
+        guard isSearchingMode,
+              results.error == .success,
               let providers = results.providers else {
-            networkSearchInProgress = false
             return
         }
 
@@ -123,9 +140,13 @@ extension NCCollectionViewCommon {
                 }
             }
 
-            guard await continueSearch(error: results.error),
+            if results.error != .success {
+                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            }
+
+            guard isSearchingMode,
+                  results.error == .success,
                   let searchResult = results.searchResult else {
-                networkSearchInProgress = false
                 return
             }
 
@@ -136,11 +157,20 @@ extension NCCollectionViewCommon {
                 self.collectionView.reloadData()
             }
         }
-
-        self.networkSearchInProgress = false
     }
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
+        defer {
+            metadataForSection?.unifiedSearchInProgress = false
+            Task {
+                if !isSearchingMode {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
+                    }
+                }
+            }
+        }
+
         guard let metadataForSection = metadataForSection,
               let lastSearchResult = metadataForSection.lastSearchResult,
               let cursor = lastSearchResult.cursor,
@@ -168,16 +198,19 @@ extension NCCollectionViewCommon {
             await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
         }
 
-        if let searchResult = results.searchResult,
-           let provider = self.dataSource.getProvider(id: searchResult.id),
-           let metadatas = await getSearchResultMetadatas(session: session,
+        guard isSearchingMode,
+              results.error == .success,
+              let searchResult = results.searchResult,
+                let provider = self.dataSource.getProvider(id: searchResult.id) else {
+            return
+        }
+
+        if let metadatas = await getSearchResultMetadatas(session: session,
                                                           provider: provider,
                                                           searchResult: searchResult) {
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
             self.collectionView.reloadData()
         }
-
-        metadataForSection.unifiedSearchInProgress = false
     }
 
     // MARK: - Helper
@@ -251,20 +284,5 @@ extension NCCollectionViewCommon {
 
         NCManageDatabase.shared.addMetadata(metadata)
         return metadata
-    }
-
-    private func continueSearch(error: NKError) async -> Bool {
-        if error != .success {
-            await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
-        }
-
-        guard isSearchingMode else {
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
-            }
-            return false
-        }
-
-        return true
     }
 }
