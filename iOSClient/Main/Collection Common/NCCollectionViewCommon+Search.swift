@@ -61,9 +61,11 @@ extension NCCollectionViewCommon {
            let files = results.files {
             let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
             NCManageDatabase.shared.addMetadatas(metadatas)
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
-                                                         layoutForView: self.layoutForView,
-                                                         account: self.session.account)
+            self.dataSource = NCCollectionViewDataSource(
+                metadatas: metadatas,
+                layoutForView: self.layoutForView,
+                account: self.session.account
+            )
         } else {
             await showErrorBanner(controller: self.controller,
                                   text: results.error.errorDescription,
@@ -94,11 +96,14 @@ extension NCCollectionViewCommon {
         for metadatas in metadatas {
             metadatas.section = NSLocalizedString("_in_this_folder_", comment: "")
         }
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
-                                                     layoutForView: self.layoutForView,
-                                                     isSections: true,
-                                                     searchResults: [],
-                                                     account: session.account)
+
+        self.dataSource = NCCollectionViewDataSource(
+            metadatas: metadatas,
+            layoutForView: layoutForView,
+            isSections: true,
+            searchResults: [],
+            account: session.account
+        )
         self.collectionView.reloadData()
 
         // ---> Get providers
@@ -130,13 +135,20 @@ extension NCCollectionViewCommon {
 
         // Added providers in DataSource
         self.dataSource.setProviders(providers)
+        // "files" first position
+        /*
+        if let index = providers.firstIndex(where: { $0.id == NCGlobal.shared.appName }) {
+            let files = providers.remove(at: index)
+            providers.insert(files, at: 0)
+        }
+        */
 
         // ---> Get metadatas for providers
         for provider in providers {
             let results = await NextcloudKit.shared.unifiedSearch(
                 providerId: provider.id,
                 term: text,
-                limit: 3,
+                limit: 5,
                 cursor: 0,
                 timeout: 90,
                 account: session.account
@@ -163,9 +175,11 @@ extension NCCollectionViewCommon {
                 return
             }
 
-            if let metadatas = await getSearchResultMetadatas(session: session,
-                                                              provider: provider,
-                                                              searchResult: searchResult) {
+            if let metadatas = await getSearchResultMetadatas(
+                session: session,
+                provider: provider,
+                searchResult: searchResult
+            ) {
                 self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
                 self.collectionView.reloadData()
             }
@@ -197,7 +211,7 @@ extension NCCollectionViewCommon {
         let results = await NextcloudKit.shared.unifiedSearch(
             providerId: lastSearchResult.id,
             term: searchResultStore,
-            limit: 10,
+            limit: 5,
             cursor: cursor,
             timeout: 60,
             account: session.account
@@ -224,9 +238,11 @@ extension NCCollectionViewCommon {
             return
         }
 
-        if let metadatas = await getSearchResultMetadatas(session: session,
-                                                          provider: provider,
-                                                          searchResult: searchResult) {
+        if let metadatas = await getSearchResultMetadatas(
+            session: session,
+            provider: provider,
+            searchResult: searchResult
+        ) {
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
             self.collectionView.reloadData()
         }

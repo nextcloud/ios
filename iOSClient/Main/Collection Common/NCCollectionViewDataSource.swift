@@ -98,11 +98,7 @@ class NCCollectionViewDataSource: NSObject {
         }
         // Section order
         if isSections {
-            /*
-            sectionsValue = sectionsValue.sorted {
-                (orderMap[$0] ?? 0) < (orderMap[$1] ?? 0)
-            }
-            */
+            // like inserted
         } else {
             // normal
             let favorite = NSLocalizedString("favorite", comment: "").lowercased().firstUppercased
