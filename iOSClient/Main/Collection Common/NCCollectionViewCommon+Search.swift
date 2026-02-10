@@ -6,6 +6,7 @@ import Foundation
 import NextcloudKit
 
 extension NCCollectionViewCommon {
+    @MainActor
     func search() async {
         guard !networkSearchInProgress,
               !session.account.isEmpty,
@@ -129,19 +130,17 @@ extension NCCollectionViewCommon {
 
         guard isSearchingMode,
               results.error == .success,
-              let providers = results.providers else {
+              var providers = results.providers else {
             return
         }
 
         // Added providers in DataSource
         self.dataSource.setProviders(providers)
         // "files" first position
-        /*
         if let index = providers.firstIndex(where: { $0.id == NCGlobal.shared.appName }) {
             let files = providers.remove(at: index)
             providers.insert(files, at: 0)
         }
-        */
 
         // ---> Get metadatas for providers
         for provider in providers {
@@ -259,58 +258,66 @@ extension NCCollectionViewCommon {
         switch provider.id {
         case "files":
             for entry in searchResult.entries {
-                if let filePath = entry.filePath {
-                    if let metadata = await loadMetadata(session: session,
-                                                         provider: provider,
-                                                         filePath: filePath) {
-                        metadatas.append(metadata)
-                    }
-                } else {
-                    print(#function, "[ERROR]: File search entry has no path: \(entry)")
-                }
-            }
-
-            return(metadatas)
-
-            case "fulltextsearch":
-                for entry in searchResult.entries {
-                    let url = URLComponents(string: entry.resourceURL)
-                    guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else {
-                        return(nil)
-                    }
-                    if let metadata = await NCManageDatabase.shared.getMetadataAsync(
-                        predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", session.account, "/remote.php/dav/files/" + session.user + dir, filename)) {
-                        metadatas.append(metadata)
-                    } else {
-                        if let metadata = await loadMetadata(session: session,
-                                                             provider: provider,
-                                                             filePath: dir + filename) {
-                            metadatas.append(metadata)
-                        }
-                    }
-
-                }
-                return(metadatas)
-            default:
-                for entry in searchResult.entries {
-                    let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                        fileName: entry.title,
-                        ocId: NSUUID().uuidString,
-                        serverUrl: session.urlBase,
-                        url: entry.resourceURL,
-                        isUrl: true,
-                        name: searchResult.id,
-                        subline: entry.subline,
-                        iconUrl: entry.thumbnailURL,
-                        session: session,
-                        sceneIdentifier: nil
-                    )
+                if let fileId = utilityFileSystem.extractFileIdFromFPath(from: entry.resourceURL),
+                   let metadata = database.getMetadataFromFileId(fileId) {
                     metadata.section = provider.name
                     metadatas.append(metadata)
+                } else {
+                    if let filePath = entry.filePath {
+                        if let metadata = await loadMetadata(session: session,
+                                                             provider: provider,
+                                                             filePath: filePath) {
+                            metadatas.append(metadata)
+                        }
+                    } else {
+                        print(#function, "[ERROR]: File search entry has no path: \(entry)")
+                    }
                 }
-                return(metadatas)
             }
+            return(metadatas)
+
+        case "fulltextsearch":
+            for entry in searchResult.entries {
+                let url = URLComponents(string: entry.resourceURL)
+                guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else {
+                    return(nil)
+                }
+                if let metadata = await NCManageDatabase.shared.getMetadataAsync(
+                    predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", session.account, "/remote.php/dav/files/" + session.user + dir, filename)) {
+                    metadatas.append(metadata)
+                } else {
+                    if let metadata = await loadMetadata(session: session,
+                                                         provider: provider,
+                                                         filePath: dir + filename) {
+                        metadatas.append(metadata)
+                    }
+                }
+
+            }
+            return(metadatas)
+
+        default:
+            for entry in searchResult.entries {
+                let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                    fileName: entry.title,
+                    ocId: NSUUID().uuidString,
+                    serverUrl: session.urlBase,
+                    url: entry.resourceURL,
+                    isUrl: true,
+                    name: searchResult.id,
+                    subline: entry.subline,
+                    iconUrl: entry.thumbnailURL,
+                    session: session,
+                    sceneIdentifier: nil
+                )
+                metadata.hasPreview = false
+                metadata.section = provider.name
+                metadatas.append(metadata)
+            }
+            return(metadatas)
+
         }
+    }
 
     private func loadMetadata(session: NCSession.Session,
                               provider: NKSearchProvider,
