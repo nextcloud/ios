@@ -19,7 +19,7 @@ extension NCCollectionViewCommon {
 
         self.networkSearchInProgress = true
         // STOP PREEMPTIVE SYNC METADATA
-        self.stopSyncMetadata()
+        await self.stopSyncMetadata()
         // Clear datasotce
         self.dataSource.removeAll()
         self.collectionView.reloadData()

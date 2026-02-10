@@ -43,8 +43,8 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.stopSyncMetadata()
             Task {
+                await self.stopSyncMetadata()
                 await self.searchOperationHandle.cancel()
             }
         }
@@ -130,8 +130,8 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        stopSyncMetadata()
         Task {
+            await stopSyncMetadata()
             await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
     }
