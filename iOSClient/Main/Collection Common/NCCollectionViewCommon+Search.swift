@@ -22,6 +22,8 @@ extension NCCollectionViewCommon {
         // Clear datasotce
         self.dataSource.removeAll()
         self.collectionView.reloadData()
+        // Start spinner
+        setSearchBarLoading(true)
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             await unifiedSearch(text: text)
@@ -34,7 +36,8 @@ extension NCCollectionViewCommon {
 
     private func searchLiteral(text: String) async {
         defer {
-            self.networkSearchInProgress = false
+            networkSearchInProgress = false
+            setSearchBarLoading(false)
         }
 
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
@@ -81,6 +84,7 @@ extension NCCollectionViewCommon {
     private func unifiedSearch(text: String) async {
         defer {
             networkSearchInProgress = false
+            setSearchBarLoading(false)
             Task {
                 if !isSearchingMode {
                     self.dataSource.removeAll()
