@@ -80,9 +80,8 @@ extension NCCollectionViewCommon {
             networkSearchInProgress = false
             Task {
                 if !isSearchingMode {
-                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
-                    }
+                    self.dataSource.removeAll()
+                    await self.reloadDataSource()
                 }
             }
         }

@@ -488,20 +488,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.textSearch = searchController.searchBar.text
     }
 
-    /*
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        isSearchingMode = true
-        self.dataSource.removeAll()
-        Task {
-            await self.reloadDataSource()
-        }
-        // TIP
-        dismissTip()
-        //
-        mainNavigationController?.hiddenPlusButton(true)
-    }
-    */
-
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         // TIP
         dismissTip()
@@ -534,9 +520,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.textSearch = ""
 
         Task {
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
-            }
+            self.dataSource.removeAll()
+            await self.reloadDataSource()
         }
     }
 
