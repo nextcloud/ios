@@ -49,6 +49,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     var syncMetadatasTask: Task<Void, Never>?
     // Search
     var isSearchingMode: Bool = false
+    var searchOperationHandle = NKOperationHandle()
     var searchTask: URLSessionTask?
     var searchResultText: String?
     var searchResultStore: String?
@@ -265,6 +266,24 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
+
+        Task {
+            for await event in await searchOperationHandle.events() {
+                switch event {
+                case .didSetTask(let task):
+                    searchTask = task
+                    if dataSource.isEmpty() {
+                        collectionView.reloadData()
+                    }
+                case .didSetRequest(let request):
+                    print("Request available:", request)
+                case .didCancel:
+                    print("Operation cancelled")
+                case .didClear:
+                    print("Handle cleared")
+                }
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -315,13 +334,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        self.searchTask?.cancel()
         dismissTip()
 
         // Cancel Queue & Retrieves Properties
         self.networking.downloadThumbnailQueue.cancelAll()
-        searchTask?.cancel()
+        Task {
+            await searchOperationHandle.cancel()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -516,13 +535,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         //
         mainNavigationController?.hiddenPlusButton(false)
 
-        self.searchTask?.cancel()
         self.isSearchingMode = false
         self.networkSearchInProgress = false
         self.searchResultText = nil
         self.searchResultStore = nil
 
         Task {
+            await searchOperationHandle.cancel()
             self.dataSource.removeAll()
             await self.reloadDataSource()
         }

@@ -44,6 +44,9 @@ class NCFiles: NCCollectionViewCommon {
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.stopSyncMetadata()
+            Task {
+                await self.searchOperationHandle.cancel()
+            }
         }
 
         if self.serverUrl.isEmpty {
