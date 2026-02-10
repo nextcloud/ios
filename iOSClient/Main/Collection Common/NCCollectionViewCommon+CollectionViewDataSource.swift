@@ -424,8 +424,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.title?.textColor = NCBrandColor.shared.textColor
         cell.title?.font = .systemFont(ofSize: 15)
 
-        if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.title?.text {
-            let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
+        if isSearchingMode,
+           let textSearch,
+           let title = cell.title?.text {
+            let longestWordRange = (title.lowercased() as NSString).range(of: textSearch)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
             attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.title?.attributedText = attributedString

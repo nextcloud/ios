@@ -488,20 +488,27 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         self.textSearch = searchController.searchBar.text
     }
 
+    /*
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        isSearchingMode = true
+        self.dataSource.removeAll()
+        Task {
+            await self.reloadDataSource()
+        }
+        // TIP
+        dismissTip()
+        //
+        mainNavigationController?.hiddenPlusButton(true)
+    }
+    */
+
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         // TIP
         dismissTip()
         //
         mainNavigationController?.hiddenPlusButton(true)
         //
-        var timer: Double = 0
-        if isSearchingMode {
-            isSearchingMode = false
-            self.searchTask?.cancel()
-            timer = 0.1
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + timer) {
+        if !isSearchingMode {
             self.isSearchingMode = true
             self.dataSource.removeAll()
             self.collectionView.reloadData()
@@ -518,15 +525,19 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        //
+        mainNavigationController?.hiddenPlusButton(false)
+
         self.searchTask?.cancel()
         self.isSearchingMode = false
         self.networkSearchInProgress = false
         self.textSearch = ""
-        self.dataSource.removeAll()
+
         Task {
-            await self.reloadDataSource()
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
+            }
         }
-        mainNavigationController?.hiddenPlusButton(false)
     }
 
     // MARK: - TAP EVENT
