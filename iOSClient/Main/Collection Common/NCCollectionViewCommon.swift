@@ -44,7 +44,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
     var layoutType = NCGlobal.shared.layoutList
-    var literalSearch: String?
+    var textSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
@@ -472,34 +472,45 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // MARK: - SEARCH
 
     func searchController(enabled: Bool) {
-        guard enableSearchBar else { return }
+        guard enableSearchBar else {
+            return
+        }
         searchController?.searchBar.isUserInteractionEnabled = enabled
+
         if enabled {
             searchController?.searchBar.alpha = 1
         } else {
             searchController?.searchBar.alpha = 0.3
-
         }
     }
 
     func updateSearchResults(for searchController: UISearchController) {
-        self.literalSearch = searchController.searchBar.text
+        self.textSearch = searchController.searchBar.text
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        isSearchingMode = true
-        self.dataSource.removeAll()
-        Task {
-            await self.reloadDataSource()
-        }
         // TIP
         dismissTip()
         //
         mainNavigationController?.hiddenPlusButton(true)
+        //
+        var timer: Double = 0
+        if isSearchingMode {
+            isSearchingMode = false
+            self.searchTask?.cancel()
+            timer = 0.1
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + timer) {
+            self.isSearchingMode = true
+            self.dataSource.removeAll()
+            self.collectionView.reloadData()
+        }
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
+        if isSearchingMode,
+           self.textSearch?.count ?? 0 >= 2 {
             Task {
                 await self.search()
             }
@@ -508,15 +519,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.searchTask?.cancel()
-
         self.isSearchingMode = false
         self.networkSearchInProgress = false
-        self.literalSearch = ""
+        self.textSearch = ""
         self.dataSource.removeAll()
         Task {
             await self.reloadDataSource()
         }
-        //
         mainNavigationController?.hiddenPlusButton(false)
     }
 
