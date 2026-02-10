@@ -79,6 +79,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return separator }
         set { separator = newValue }
     }
+    var tagSeparator: UILabel? {
+        get { return labelInfoSeparator }
+        set { labelInfoSeparator = newValue }
+    }
 
     override var accessibilityIdentifier: String? {
         get {
