@@ -4,6 +4,7 @@
 
 import Foundation
 import NextcloudKit
+import Alamofire
 
 extension NCCollectionViewCommon {
     @MainActor
@@ -18,7 +19,7 @@ extension NCCollectionViewCommon {
 
         self.networkSearchInProgress = true
         // STOP PREEMPTIVE SYNC METADATA
-        self.stopSyncMetadata()
+        await self.stopSyncMetadata()
         // Clear datasotce
         self.dataSource.removeAll()
         self.collectionView.reloadData()
@@ -112,24 +113,17 @@ extension NCCollectionViewCommon {
         self.collectionView.reloadData()
 
         // ---> Get providers
-        let results = await NextcloudKit.shared.unifiedSearchProviders(account: session.account) { _ in
+        let results = await NextcloudKit.shared.unifiedSearchProviders(account: session.account, handle: searchOperationHandle) { _ in
             // example filter
             // ["calendar", "files", "fulltextsearch"].contains(provider.id)
             return true
-        } taskHandler: { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.session.account,
-                    name: "unifiedSearchProviders"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                self.searchTask = task
-                self.collectionView.reloadData()
-            }
         }
 
         if results.error != .success {
-            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            await showErrorBanner(controller: self.controller,
+                                  text: results.error.errorDescription,
+                                  errorCode: results.error.errorCode,
+                                  afError: results.error.error as? AFError)
         }
 
         guard isSearchingMode,
@@ -154,21 +148,15 @@ extension NCCollectionViewCommon {
                 limit: 5,
                 cursor: 0,
                 timeout: 90,
-                account: session.account
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: self.session.account,
-                        name: "unifiedSearch"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    self.searchTask = task
-                    self.collectionView.reloadData()
-                }
-            }
+                account: session.account,
+                handle: searchOperationHandle
+            )
 
             if results.error != .success {
-                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(controller: self.controller,
+                                      text: results.error.errorDescription,
+                                      errorCode: results.error.errorCode,
+                                      afError: results.error.error as? AFError)
             }
 
             guard isSearchingMode,
@@ -217,21 +205,15 @@ extension NCCollectionViewCommon {
             limit: 5,
             cursor: cursor,
             timeout: 60,
-            account: session.account
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.session.account,
-                    name: "unifiedSearch"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                self.searchTask = task
-                self.collectionView.reloadData()
-            }
-        }
+            account: session.account,
+            handle: searchOperationHandle
+        )
 
         if results.error != .success {
-            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            await showErrorBanner(controller: self.controller,
+                                  text: results.error.errorDescription,
+                                  errorCode: results.error.errorCode,
+                                  afError: results.error.error as? AFError)
         }
 
         guard isSearchingMode,
@@ -339,3 +321,4 @@ extension NCCollectionViewCommon {
         return metadata
     }
 }
+

@@ -42,7 +42,7 @@ extension NCCollectionViewCommon {
     /// Cancels the running sync task (if any) and releases the reference.
     ///
     /// Use this when the page/screen is about to disappear or the user navigates away.
-    func stopSyncMetadata() {
+    func stopSyncMetadata() async {
         if let task = syncMetadatasTask {
             if task.isCancelled {
                 nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .stop, message: "Sync Metadata for \(self.serverUrl) was already cancelled.", consoleOnly: true)
