@@ -120,12 +120,10 @@ extension NCCollectionViewCommon {
         }
 
         if results.error != .success {
-            // If Alamofire reported an explicit cancellation, skip showing an error banner
-            if let afError = results.error.error as? AFError, case .explicitlyCancelled = afError {
-                // Silently ignore cancellation
-            } else {
-                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
-            }
+            await showErrorBanner(controller: self.controller,
+                                  text: results.error.errorDescription,
+                                  errorCode: results.error.errorCode,
+                                  afError: results.error.error as? AFError)
         }
 
         guard isSearchingMode,
@@ -155,7 +153,10 @@ extension NCCollectionViewCommon {
             )
 
             if results.error != .success {
-                await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(controller: self.controller,
+                                      text: results.error.errorDescription,
+                                      errorCode: results.error.errorCode,
+                                      afError: results.error.error as? AFError)
             }
 
             guard isSearchingMode,
@@ -209,7 +210,10 @@ extension NCCollectionViewCommon {
         )
 
         if results.error != .success {
-            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            await showErrorBanner(controller: self.controller,
+                                  text: results.error.errorDescription,
+                                  errorCode: results.error.errorCode,
+                                  afError: results.error.error as? AFError)
         }
 
         guard isSearchingMode,
