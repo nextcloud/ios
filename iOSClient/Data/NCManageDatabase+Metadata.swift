@@ -131,6 +131,7 @@ class tableMetadata: Object {
 
     /// Used only for UI state (not persisted, not observed by Realm)
     var isOffline: Bool = false
+    var section: String = ""
 
     override static func primaryKey() -> String {
         return "ocId"

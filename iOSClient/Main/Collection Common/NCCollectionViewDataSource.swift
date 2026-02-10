@@ -12,9 +12,10 @@ class NCCollectionViewDataSource: NSObject {
     private let global = NCGlobal.shared
     private let database = NCManageDatabase.shared
 
-    private var sectionsValue: [String] = []
-    private var providers: [NKSearchProvider]?
+    private var sections: [String] = []
+    private var isSections: Bool = false
     private var searchResults: [NKSearchResult]?
+    private var providers: [NKSearchProvider]?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
@@ -26,7 +27,7 @@ class NCCollectionViewDataSource: NSObject {
 
     init(metadatas: [tableMetadata],
          layoutForView: NCDBLayoutForView? = nil,
-         providers: [NKSearchProvider]? = nil,
+         isSections: Bool = false,
          searchResults: [NKSearchResult]? = nil,
          account: String? = nil) {
         super.init()
@@ -38,11 +39,12 @@ class NCCollectionViewDataSource: NSObject {
             self.directoryOnTop = NCPreferences().getDirectoryOnTop(account: account)
             self.favoriteOnTop = NCPreferences().getFavoriteOnTop(account: account)
         }
+        // is Sections
+        self.isSections = isSections
         // unified search
-        self.providers = providers
         self.searchResults = searchResults
 
-        if let providers, !providers.isEmpty || (layoutForView?.groupBy != "none") {
+        if isSections || (layoutForView?.groupBy != "none") {
             createSections()
         }
     }
@@ -57,14 +59,20 @@ class NCCollectionViewDataSource: NSObject {
         hasGetServerData = state
     }
 
-    // MARK: -
+    func setProviders(_ providers: [NKSearchProvider]) {
+        self.providers = providers
+    }
+
+    func getProvider(id: String) -> NKSearchProvider? {
+        return providers?.filter({ $0.id == id}).first
+    }
 
     func removeAll() {
+        self.sections.removeAll()
+        self.searchResults?.removeAll()
+        self.providers?.removeAll()
         self.metadatas.removeAll()
         self.metadatasForSection.removeAll()
-        self.sectionsValue.removeAll()
-        self.providers = nil
-        self.searchResults = nil
     }
 
     func addSection(metadatas: [tableMetadata], searchResult: NKSearchResult?) {
@@ -78,39 +86,25 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     internal func createSections() {
-        for metadata in self.metadatas {
-            // skipped livePhoto VIDEO part
-            if metadata.isLivePhoto, metadata.classFile == NKTypeClassFile.video.rawValue {
+        for metadata in metadatas {
+            if metadata.isLivePhoto,
+               metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
-            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
-            if !self.sectionsValue.contains(section) {
-                self.sectionsValue.append(section)
+
+            if !sections.contains(metadata.section) {
+                sections.append(metadata.section)
             }
         }
-        // Unified search
-        if let providers = self.providers, !providers.isEmpty {
-            let sectionsDictionary = ThreadSafeDictionary<String, Int>()
-            for section in self.sectionsValue {
-                if let provider = providers.filter({ $0.id == section}).first {
-                    sectionsDictionary[section] = provider.order
-                }
-            }
-            self.sectionsValue.removeAll()
-            let sectionsDictionarySorted = sectionsDictionary.sorted(by: {$0.value < $1.value })
-            for section in sectionsDictionarySorted {
-                if section.key == global.appName {
-                    self.sectionsValue.insert(section.key, at: 0)
-                } else {
-                    self.sectionsValue.append(section.key)
-                }
-            }
+        // Section order
+        if isSections {
+            // like inserted
         } else {
             // normal
             let favorite = NSLocalizedString("favorite", comment: "").lowercased().firstUppercased
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
 
-            self.sectionsValue = self.sectionsValue.sorted { lhs, rhs in
+            self.sections = self.sections.sorted { lhs, rhs in
                 // 1. favorite on top
                 if favoriteOnTop {
                     if lhs == favorite && rhs != favorite {
@@ -137,21 +131,21 @@ class NCCollectionViewDataSource: NSObject {
             }
         }
 
-        for sectionValue in self.sectionsValue {
-            if !existsMetadataForSection(sectionValue: sectionValue) {
-                print("DATASOURCE: create metadata for section: " + sectionValue)
-                createMetadataForSection(sectionValue: sectionValue)
+        for section in self.sections {
+            if !existsMetadataForSection(section: section) {
+                print("DATASOURCE: create metadata for section: " + section)
+                createMetadataForSection(section: section)
             }
         }
     }
 
-    internal func createMetadataForSection(sectionValue: String) {
+    internal func createMetadataForSection(section: String) {
         var searchResult: NKSearchResult?
-        if let providers = self.providers, !providers.isEmpty, let searchResults = self.searchResults {
-            searchResult = searchResults.filter({ $0.id == sectionValue}).first
+        if isSections, let searchResults = self.searchResults {
+            searchResult = searchResults.filter({ $0.name == section}).first
         }
-        let metadatas = self.metadatas.filter({ getSectionValue(metadata: $0) == sectionValue})
-        let metadataForSection = NCMetadataForSection(sectionValue: sectionValue,
+        let metadatas = self.metadatas.filter({ $0.section == section})
+        let metadataForSection = NCMetadataForSection(section: section,
                                                       metadatas: metadatas,
                                                       lastSearchResult: searchResult,
                                                       layoutForView: self.layoutForView,
@@ -163,7 +157,7 @@ class NCCollectionViewDataSource: NSObject {
     // MARK: -
 
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) {
-        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue)
+        guard let sectionIndex = getSectionIndex(metadataForSection.section)
         else {
             return
         }
@@ -192,7 +186,7 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
-        guard self.sectionsValue.isEmpty else {
+        guard self.sections.isEmpty else {
             return nil
         }
 
@@ -204,15 +198,15 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func numberOfSections() -> Int {
-        guard !self.sectionsValue.isEmpty else {
+        guard !self.sections.isEmpty else {
             return 1
         }
 
-        return self.sectionsValue.count
+        return self.sections.count
     }
 
     func numberOfItemsInSection(_ section: Int) -> Int {
-        if self.sectionsValue.isEmpty {
+        if self.sections.isEmpty {
             return metadatas.count
         }
 
@@ -231,11 +225,12 @@ class NCCollectionViewDataSource: NSObject {
             return ""
         }
 
-        if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
+        if let searchResults = self.searchResults,
+           let searchResult = searchResults.filter({ $0.id == metadataForSection.section}).first {
             return searchResult.name
         }
 
-        return metadataForSection.sectionValue
+        return metadataForSection.section
     }
 
     func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
@@ -279,36 +274,25 @@ class NCCollectionViewDataSource: NSObject {
         return numberOfSections == self.numberOfSections()
     }
 
-    internal func getSectionValue(metadata: tableMetadata) -> String {
-        switch self.layoutForView?.groupBy {
-        case "name", "none":
-            return NSLocalizedString(metadata.name, comment: "")
-        case "classFile":
-            return NSLocalizedString(metadata.classFile, comment: "").lowercased().firstUppercased
-        default:
-            return NSLocalizedString(metadata.name, comment: "")
-        }
+    internal func getIndexMetadatasForSection(_ section: String) -> Int? {
+        return self.metadatasForSection.firstIndex(where: {$0.section == section })
     }
 
-    internal func getIndexMetadatasForSection(_ sectionValue: String) -> Int? {
-        return self.metadatasForSection.firstIndex(where: {$0.sectionValue == sectionValue })
+    internal func getSectionIndex(_ section: String) -> Int? {
+         return self.sections.firstIndex(where: {$0 == section })
     }
 
-    internal func getSectionIndex(_ sectionValue: String) -> Int? {
-         return self.sectionsValue.firstIndex(where: {$0 == sectionValue })
-    }
-
-    internal func existsMetadataForSection(sectionValue: String) -> Bool {
-        return !self.metadatasForSection.filter({ $0.sectionValue == sectionValue }).isEmpty
+    internal func existsMetadataForSection(section: String) -> Bool {
+        return !self.metadatasForSection.filter({ $0.section == section }).isEmpty
     }
 
     internal func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
-        guard section < sectionsValue.count, let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionsValue[section]}).first else { return nil }
+        guard section < sections.count, let metadataForSection = self.metadatasForSection.filter({ $0.section == sections[section]}).first else { return nil }
         return metadataForSection
     }
 
-    internal func getMetadataForSection(_ sectionValue: String) -> NCMetadataForSection? {
-        guard let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionValue }).first else { return nil }
+    internal func getMetadataForSection(_ section: String) -> NCMetadataForSection? {
+        guard let metadataForSection = self.metadatasForSection.filter({ $0.section == section }).first else { return nil }
         return metadataForSection
     }
 }
@@ -316,7 +300,7 @@ class NCCollectionViewDataSource: NSObject {
 // MARK: -
 
 class NCMetadataForSection: NSObject {
-    var sectionValue: String
+    var section: String
     var metadatas: [tableMetadata]
     var lastSearchResult: NKSearchResult?
     var unifiedSearchInProgress: Bool = false
@@ -334,8 +318,8 @@ class NCMetadataForSection: NSObject {
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
 
-    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, favoriteOnTop: Bool, directoryOnTop: Bool) {
-        self.sectionValue = sectionValue
+    init(section: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, favoriteOnTop: Bool, directoryOnTop: Bool) {
+        self.section = section
         self.metadatas = metadatas
         self.lastSearchResult = lastSearchResult
         self.layoutForView = layoutForView

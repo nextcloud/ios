@@ -189,7 +189,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.info?.text = metadata.sessionError
         } else {
             cell.subInfo?.isHidden = false
-
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
@@ -425,8 +424,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.title?.textColor = NCBrandColor.shared.textColor
         cell.title?.font = .systemFont(ofSize: 15)
 
-        if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.title?.text {
-            let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
+        if isSearchingMode,
+           let searchResultStore,
+           let title = cell.title?.text {
+            let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
             attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.title?.attributedText = attributedString
@@ -434,6 +435,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // TAGS
         cell.setTags(tags: Array(metadata.tags))
+
+        // SearchingMode - TAG Separator Hidden
+        if isSearchingMode {
+            cell.tagSeparator?.isHidden = true
+        }
 
         // Layout photo
         if isLayoutPhoto {
@@ -509,13 +515,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 if isSearchingMode {
                     emptyImage = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                    if self.searchDataSourceTask?.state == .running {
+                    if self.searchTask?.state == .running {
                         emptyTitle = NSLocalizedString("_search_in_progress_", comment: "")
                     } else {
                         emptyTitle = NSLocalizedString("_search_no_record_found_", comment: "")
                     }
                     emptyDescription = NSLocalizedString("_search_instruction_", comment: "")
-                } else if self.searchDataSourceTask?.state == .running || !self.dataSource.getGetServerData() {
+                } else if self.searchTask?.state == .running || !self.dataSource.getGetServerData() {
                     emptyImage = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
                     emptyTitle = NSLocalizedString("_request_in_progress_", comment: "")
                     emptyDescription = ""
