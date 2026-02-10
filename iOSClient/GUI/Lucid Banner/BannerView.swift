@@ -284,7 +284,7 @@ func bannerContainsErrorCode(errorCode: Int?) -> Bool {
     guard let errorCode else {
         return false
     }
-    // List errors (no error)
+    // List of errors not to be displayed
     if errorCode == -999 {
         return true
     }

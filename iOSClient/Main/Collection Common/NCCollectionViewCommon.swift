@@ -159,18 +159,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        func searchTextColor() {
-            let isDark = traitCollection.userInterfaceStyle == .dark
-            let textField = searchController?.searchBar.searchTextField
-
-            textField?.backgroundColor = isDark ? .black : .white
-            textField?.layer.borderColor = isDark ? UIColor.white.withAlphaComponent(0.30).cgColor : UIColor.black.withAlphaComponent(0.10).cgColor
-            textField?.borderStyle = .none
-            textField?.layer.borderWidth = 0.5
-            textField?.layer.cornerRadius = 20
-            textField?.clipsToBounds = true
-        }
-
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
@@ -191,7 +179,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchBar?.autocapitalizationType = .none
             searchBar?.backgroundImage = UIImage()
 
-            searchTextColor()
+            let textField = searchController?.searchBar.searchTextField
+            textField?.backgroundColor = .systemGray.withAlphaComponent(0.30)
+            textField?.borderStyle = .none
+            textField?.layer.cornerRadius = 20
+            textField?.clipsToBounds = true
 
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
@@ -249,10 +241,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: NCCollectionViewCommon, _) in
             guard let self else { return }
-
-            if enableSearchBar {
-                searchTextColor()
-            }
 
             sectionFirstHeader?.setRichWorkspaceColor(style: view.traitCollection.userInterfaceStyle)
         }
