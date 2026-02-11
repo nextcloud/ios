@@ -18,7 +18,11 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
             return nil
         }
 
-        let webView = WKWebView(frame: CGRect(origin: .zero, size: size))
+        let targetSize = size
+        let logicalSize = CGSize(width: max(1, targetSize.width / max(UIScreen.main.scale, 1)),
+                                 height: max(1, targetSize.height / max(UIScreen.main.scale, 1)))
+
+        let webView = WKWebView(frame: CGRect(origin: .zero, size: logicalSize))
         self.webView = webView
 
         webView.navigationDelegate = self
@@ -32,58 +36,49 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         let html = """
         <html>
         <head>
-        <meta name="viewport" content="width=\(Int(size.width)), height=\(Int(size.height)), initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <meta name="viewport" content="width=\(Int(logicalSize.width)), height=\(Int(logicalSize.height)), initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
         <style>
         html, body {
             margin: 0;
             padding: 0;
-            width: \(Int(size.width))px;
-            height: \(Int(size.height))px;
+            width: \(Int(logicalSize.width))px;
+            height: \(Int(logicalSize.height))px;
             overflow: hidden;
             background: \(cssBackground);
         }
 
         #svgImage {
             position: absolute;
-            left: 0;
-            top: 0;
-            width: \(Int(size.width))px;
-            height: \(Int(size.height))px;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* preserve aspect ratio, allow bands */
+            display: block;
         }
         </style>
         </head>
         <body>
-        <img id="svgImage"
-             src="data:image/svg+xml;base64,\(svgData.base64EncodedString())"/>
+        <img id="svgImage" src="data:image/svg+xml;base64,\(svgData.base64EncodedString())"/>
         </body>
         </html>
         """
 
         try await loadHTMLAsync(webView: webView, html: html)
-        try await waitForImageReady(webView: webView)
+        try await waitForSVGReady(webView: webView)
 
         let config = WKSnapshotConfiguration()
-        config.rect = CGRect(origin: .zero, size: size)
+        config.rect = CGRect(origin: .zero, size: logicalSize)
+        config.afterScreenUpdates = true
 
         let image = try await takeSnapshotAsync(webView: webView, configuration: config)
-
-        return image
-    }
-
-    func xx(path: String) async throws -> UIImage? {
-        guard FileManager.default.fileExists(atPath: path) else {
-            return nil
+        // Upscale to requested target size using Core Graphics
+        let rendererFormat = UIGraphicsImageRendererFormat.default()
+        rendererFormat.scale = 1.0
+        let renderer = UIGraphicsImageRenderer(size: targetSize, format: rendererFormat)
+        let scaled = renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
         }
-
-        do {
-            let url = URL(fileURLWithPath: path)
-            let data = try Data(contentsOf: url)
-            let image = UIImage(data: data)
-            return image
-        } catch {
-            print("SVG render failed: \(error)")
-            return nil
-        }
+        return scaled
     }
 
     private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
@@ -103,6 +98,30 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         """
 
         // wait max 3 sec.
+        for _ in 0..<60 {
+            let ready = try await webView.evaluateJavaScript(js) as? Bool
+            if ready == true { return }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+    }
+
+    private func waitForSVGReady(webView: WKWebView) async throws {
+        let js = """
+        (function() {
+          const svg = document.querySelector('#svgRoot') || document.querySelector('svg');
+          if (!svg) return false;
+          try {
+            if (svg.getBBox) {
+              const bb = svg.getBBox();
+              return bb && bb.width > 0 && bb.height > 0;
+            }
+          } catch (e) {
+            // Some SVGs may throw on getBBox; consider ready if the element exists
+            return true;
+          }
+          return true;
+        })();
+        """
         for _ in 0..<60 {
             let ready = try await webView.evaluateJavaScript(js) as? Bool
             if ready == true { return }
@@ -136,3 +155,4 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         navigationContinuation = nil
     }
 }
+
