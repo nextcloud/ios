@@ -568,7 +568,6 @@
 		F78026102E9CFA3700B63436 /* NCTransfersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F780260F2E9CF9DE00B63436 /* NCTransfersView.swift */; };
 		F78026122E9CFA6300B63436 /* NCTransfersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78026112E9CFA6000B63436 /* NCTransfersModel.swift */; };
 		F7802B322BD5584F00D74270 /* NCMedia+DragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7802B312BD5584F00D74270 /* NCMedia+DragDrop.swift */; };
-		F7814E962F3B5F170074DA3A /* NCSVGRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7814E952F3B5F170074DA3A /* NCSVGRenderer.swift */; };
 		F7814E972F3B5F170074DA3A /* NCSVGRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7814E952F3B5F170074DA3A /* NCSVGRenderer.swift */; };
 		F7816EF22C2C3E1F00A52517 /* NCPushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7816EF12C2C3E1F00A52517 /* NCPushNotification.swift */; };
 		F7817CF829801A3500FFBC65 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7817CF729801A3500FFBC65 /* Data+Extension.swift */; };
@@ -4243,7 +4242,6 @@
 				F799DF832C4B7DCC003410B5 /* NCSectionFooter.swift in Sources */,
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F799DF862C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
-				F7814E962F3B5F170074DA3A /* NCSVGRenderer.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F72437802C10B92400C7C68D /* NCSharePermissions.swift in Sources */,
 				F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */,
@@ -5749,7 +5747,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5815,7 +5813,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
