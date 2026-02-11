@@ -41,6 +41,9 @@ class NCService: NSObject {
 
             // Start a background synchronization task
             await synchronize(account: account)
+
+            // Fetch and display dashboard widgets if available
+            await requestDashboardWidget(account: account)
         }
     }
 
@@ -116,6 +119,40 @@ class NCService: NSObject {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": resultsDownload.error])
         } else {
             await self.database.setAvatarLoadedAsync(fileName: fileName)
+        }
+    }
+
+    private func requestDashboardWidget(account: String) async {
+        let resultsDashboardWidget = await NextcloudKit.shared.getDashboardWidgetAsync(account: account)
+        if resultsDashboardWidget.error == .success,
+           let dashboardWidgets = resultsDashboardWidget.dashboardWidgets {
+            await NCManageDatabase.shared.addDashboardWidgetAsync(account: account, dashboardWidgets: dashboardWidgets)
+            for widget in dashboardWidgets {
+                if let url = URL(string: widget.iconUrl),
+                   let fileName = widget.iconClass {
+                    let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account)
+                    if resultsDownloadPreview.error == .success,
+                       let data = resultsDownloadPreview.responseData?.data {
+                        var image: UIImage?
+                        let size = CGSize(width: 256, height: 256)
+
+                        if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
+                            image = uiImage
+                        } else if let svgImage = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: size) {
+                            image = svgImage
+                        }
+
+                        if let image {
+                            let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
+                            do {
+                                try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+                            } catch {
+                                print("Failed to write image to disk: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
