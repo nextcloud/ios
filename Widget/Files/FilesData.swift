@@ -61,27 +61,22 @@ func getTitleFilesWidget(tableAccount: tableAccount?) -> String {
     }
 }
 
-func getFilesItems(displaySize: CGSize) -> Int {
-    let items = Int((displaySize.height - 90) / 55)
-    return items
-}
-
-func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
+func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize) async -> FilesDataEntry {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let filesItems = getFilesItems(displaySize: displaySize)
-    let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
+    let maxItems = 5
+    let datasPlaceholder = Array(filesDatasTest[0...maxItems - 1])
     var activeTableAccount: tableAccount?
     let versionApp = NCUtility().getVersionMaintenance()
 
     if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
           lastVersion != versionApp {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NSLocalizedString("_version_mismatch_error_", comment: "")))
+        return (FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NSLocalizedString("_version_mismatch_error_", comment: "")))
     }
 
     if isPreview {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+        return (FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
@@ -92,18 +87,15 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     guard let activeTableAccount else {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return (FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
-
-    // NETWORKING
-    let password = NCPreferences().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                       urlBase: activeTableAccount.urlBase,
                                       user: activeTableAccount.user,
                                       userId: activeTableAccount.userId,
-                                      password: password,
+                                      password: NCPreferences().getPassword(account: activeTableAccount.account),
                                       userAgent: userAgent,
                                       httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                       httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
@@ -170,82 +162,80 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     // LOG
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
-
     NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
-
     nkLog(debug: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in
-        Task {
-            var datas: [FilesData] = []
-            let title = getTitleFilesWidget(tableAccount: activeTableAccount)
-            let files = files?.sorted(by: { ($0.date as Date) > ($1.date as Date) }) ?? []
+    let results = await NextcloudKit.shared.searchBodyRequestAsync(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: showHiddenFiles, account: activeTableAccount.account, options: options)
 
-            for file in files {
-                var useTypeIconFile = false
-                var image: UIImage?
+    var datas: [FilesData] = []
+    let title = getTitleFilesWidget(tableAccount: activeTableAccount)
+    let files = results.files?.sorted(by: { ($0.date as Date) > ($1.date as Date) }) ?? []
 
-                if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKTypeClassFile.video.rawValue) {
-                    continue
-                }
+    for file in files {
+        var useTypeIconFile = false
+        var image: UIImage?
 
-                // SUBTITLE
-                let subTitle = utility.getRelativeDateTitle(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
+        if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKTypeClassFile.video.rawValue) {
+            continue
+        }
 
-                // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = utilityFileSystem.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
-                if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = file.user.urlEncoded else { continue }
-                let link = file.urlBase + "/f/" + file.fileId
-                let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
-                guard let url = URL(string: urlString) else { continue }
+        // SUBTITLE
+        let subTitle = utility.getRelativeDateTitle(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
 
-                // IMAGE
+        // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+        guard var path = utilityFileSystem.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+        if path.first == "/" { path = String(path.dropFirst())}
+        guard let user = file.user.urlEncoded else { continue }
+        let link = file.urlBase + "/f/" + file.fileId
+        let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
+        guard let url = URL(string: urlString) else { continue }
+
+        // IMAGE
+        image = utility.getImage(ocId: file.ocId,
+                                 etag: file.etag,
+                                 ext: NCGlobal.shared.previewExt512,
+                                 userId: activeTableAccount.userId,
+                                 urlBase: activeTableAccount.urlBase)
+        if image == nil, file.hasPreview {
+            let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
+                                                                        etag: file.etag,
+                                                                        account: activeTableAccount.account,
+                                                                        options: options)
+            if result.error == .success, let data = result.responseData?.data {
+                utility.createImageFileFrom(data: data,
+                                            ocId: file.ocId,
+                                            etag: file.etag,
+                                            userId: activeTableAccount.userId,
+                                            urlBase: activeTableAccount.urlBase)
                 image = utility.getImage(ocId: file.ocId,
                                          etag: file.etag,
-                                         ext: NCGlobal.shared.previewExt512,
+                                         ext: NCGlobal.shared.previewExt256,
                                          userId: activeTableAccount.userId,
                                          urlBase: activeTableAccount.urlBase)
-                if image == nil, file.hasPreview {
-                    let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
-                                                                                etag: file.etag,
-                                                                                account: activeTableAccount.account,
-                                                                                options: options)
-                    if result.error == .success, let data = result.responseData?.data {
-                        utility.createImageFileFrom(data: data,
-                                                    ocId: file.ocId,
-                                                    etag: file.etag,
-                                                    userId: activeTableAccount.userId,
-                                                    urlBase: activeTableAccount.urlBase)
-                        image = utility.getImage(ocId: file.ocId,
-                                                 etag: file.etag,
-                                                 ext: NCGlobal.shared.previewExt256,
-                                                 userId: activeTableAccount.userId,
-                                                 urlBase: activeTableAccount.urlBase)
-                    }
-                }
-                if image == nil {
-                    image = utility.loadImage(named: file.iconName, useTypeIconFile: true, account: file.account)
-                    useTypeIconFile = true
-                }
-
-                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-
-                // DATA
-                let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
-                datas.append(data)
-                if datas.count == filesItems { break}
-            }
-
-            let alias = (activeTableAccount.alias.isEmpty) ? "" : (" (" + activeTableAccount.alias + ")")
-            let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
-
-            if error != .success {
-                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
-            } else {
-                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
+        if image == nil {
+            image = utility.loadImage(named: file.iconName, useTypeIconFile: true, account: file.account)
+            useTypeIconFile = true
+        }
+
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+
+        // DATA
+        let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
+        datas.append(data)
+        if datas.count == maxItems {
+            break
+        }
+    }
+
+    let alias = (activeTableAccount.alias.isEmpty) ? "" : (" (" + activeTableAccount.alias + ")")
+    let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
+
+    if results.error != .success {
+        return(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "xmark.icloud", footerText: results.error.errorDescription))
+    } else {
+        return(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
     }
 }
