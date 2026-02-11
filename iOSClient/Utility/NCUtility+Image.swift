@@ -262,6 +262,7 @@ extension NCUtility {
         return avatarImage
     }
 
+#if !EXTENSION
     func convertSVGtoPNGWriteToUserData(serverUrl: String,
                                         size: CGFloat = 128,
                                         rewrite: Bool,
@@ -331,6 +332,7 @@ extension NCUtility {
             }
         }
     }
+#endif
 
     func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage?, statusImageColor: UIColor, statusMessage: String, descriptionMessage: String) {
         var statusImage: UIImage?

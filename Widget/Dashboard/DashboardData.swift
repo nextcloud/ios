@@ -168,9 +168,12 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                let data = results.responseData?.data {
                                 if let image = UIImage(data: data) {
                                     iconImage = image
-                                } else if let image = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data) {
+                                }
+                                /* NO MEMORY
+                                else if let image = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data) {
                                     iconImage = image
                                 }
+                                */
                             }
                         }
                     }
