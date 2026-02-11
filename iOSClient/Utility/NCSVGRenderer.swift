@@ -64,7 +64,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         """
 
         try await loadHTMLAsync(webView: webView, html: html)
-        try await waitForSVGReady(webView: webView)
+        try await waitForImageReady(webView: webView)
 
         let config = WKSnapshotConfiguration()
         config.rect = CGRect(origin: .zero, size: logicalSize)
@@ -82,6 +82,13 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
     }
 
     private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
+        // Cancel any in-flight load to avoid overlapping delegates/continuations
+        webView.stopLoading()
+        if let pending = navigationContinuation {
+            pending.resume(throwing: NSError(domain: "NCSVGRenderer", code: -22, userInfo: [NSLocalizedDescriptionKey: "Cancelled previous load"]))
+            navigationContinuation = nil
+        }
+
         try await withCheckedThrowingContinuation { cont in
             navigationContinuation = cont
             webView.loadHTMLString(html, baseURL: nil)
@@ -97,36 +104,13 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         })();
         """
 
-        // wait max 3 sec.
-        for _ in 0..<60 {
+        // wait max ~3 sec
+        for _ in 0..<100 {
             let ready = try await webView.evaluateJavaScript(js) as? Bool
             if ready == true { return }
-            try await Task.sleep(nanoseconds: 50_000_000)
+            try await Task.sleep(nanoseconds: 30_000_000)
         }
-    }
-
-    private func waitForSVGReady(webView: WKWebView) async throws {
-        let js = """
-        (function() {
-          const svg = document.querySelector('#svgRoot') || document.querySelector('svg');
-          if (!svg) return false;
-          try {
-            if (svg.getBBox) {
-              const bb = svg.getBBox();
-              return bb && bb.width > 0 && bb.height > 0;
-            }
-          } catch (e) {
-            // Some SVGs may throw on getBBox; consider ready if the element exists
-            return true;
-          }
-          return true;
-        })();
-        """
-        for _ in 0..<60 {
-            let ready = try await webView.evaluateJavaScript(js) as? Bool
-            if ready == true { return }
-            try await Task.sleep(nanoseconds: 50_000_000)
-        }
+        throw NSError(domain: "NCSVGRenderer", code: -24, userInfo: [NSLocalizedDescriptionKey: "Image not ready within timeout"])
     }
 
     private func takeSnapshotAsync(webView: WKWebView, configuration: WKSnapshotConfiguration) async throws -> UIImage {
@@ -148,11 +132,8 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         navigationContinuation = nil
     }
 
-    func webView(_ webView: WKWebView,
-                 didFail navigation: WKNavigation!,
-                 withError error: Error) {
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         navigationContinuation?.resume(throwing: error)
         navigationContinuation = nil
     }
 }
-
