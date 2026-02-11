@@ -131,7 +131,9 @@ extension NCUtility {
     }
 
     func createImageFileFrom(data: Data, ocId: String, etag: String, userId: String, urlBase: String) {
-        guard let image = UIImage(data: data) else { return }
+        guard let image = UIImage(data: data) else {
+            return
+        }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId,
                                                                                            etag: etag,
                                                                                            ext: global.previewExt1024,
@@ -260,19 +262,19 @@ extension NCUtility {
         return avatarImage
     }
 
-    func convertSVGtoPNGWriteToUserData(fileName: String,
+    func convertSVGtoPNGWriteToUserData(serverUrl: String,
                                         size: CGFloat = 128,
                                         rewrite: Bool,
                                         account: String,
                                         id: Int? = nil) async -> (image: UIImage?, id: Int?) {
-        var serverUrl: String?
-        if let url = fileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-            serverUrl = URL(string: url)?.absoluteString
+        var serverUrl = serverUrl
+        if let url = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            serverUrl = URL(string: url)?.absoluteString ?? serverUrl
         }
-        let fileName = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: fileName).lastPathComponent, with: "png")
-        let path = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+        let fileNamePNG = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: serverUrl).lastPathComponent, with: "png")
+        let pathPNG = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
 
-        if let serverUrl, (!FileManager.default.fileExists(atPath: path) || rewrite) {
+        if !FileManager.default.fileExists(atPath: pathPNG) || rewrite {
             let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: serverUrl, account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
@@ -301,7 +303,7 @@ extension NCUtility {
                 }
 
                 do {
-                    try pngImageData.write(to: URL(fileURLWithPath: path))
+                    try pngImageData.write(to: URL(fileURLWithPath: pathPNG))
                     return(newImage, id)
                 } catch {
                     return(nil, id)
@@ -310,20 +312,19 @@ extension NCUtility {
 
             // is a SVG
             do {
-                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size), fileName: fileName)
+                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size))
                 guard let image,
                       let pngImageData = image.pngData() else {
                         return(nil, id)
                 }
-                try pngImageData.write(to: URL(fileURLWithPath: path))
+                try pngImageData.write(to: URL(fileURLWithPath: pathPNG))
                 return(image, id)
             } catch {
                 return(nil, id)
             }
         } else {
             do {
-                let url = URL(fileURLWithPath: path)
-                let data = try Data(contentsOf: url)
+                let data = try Data(contentsOf: URL(fileURLWithPath: pathPNG))
                 return(UIImage(data: data), id)
             } catch {
                 return(nil, id)

@@ -140,7 +140,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
         if activityPreview.view == "trashbin" {
             let source = activityPreview.source
             Task {
-                let results = await utility.convertSVGtoPNGWriteToUserData(fileName: source, rewrite: false, account: account, id: idActivity)
+                let results = await utility.convertSVGtoPNGWriteToUserData(serverUrl: source, rewrite: false, account: account, id: idActivity)
                 if let image = results.image,
                    cell.fileId == results.id {
                     cell.imageView.image = image
@@ -150,7 +150,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
             if activityPreview.isMimeTypeIcon {
                 let source = activityPreview.source
                 Task {
-                    let results = await utility.convertSVGtoPNGWriteToUserData(fileName: source, rewrite: false, account: account, id: idActivity)
+                    let results = await utility.convertSVGtoPNGWriteToUserData(serverUrl: source, rewrite: false, account: account, id: idActivity)
                     if let image = results.image,
                        cell.fileId == results.id {
                         cell.imageView.image = image

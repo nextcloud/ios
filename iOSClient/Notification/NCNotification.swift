@@ -340,10 +340,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         let sortedNotifications = notifications.sorted { $0.date > $1.date }
         for notification in sortedNotifications {
             if let icon = notification.icon {
-                let results = await self.utility.convertSVGtoPNGWriteToUserData(fileName: icon,
-                                                                                rewrite: false,
-                                                                                account: session.account)
-                if results.image != nil {
+                if await self.utility.convertSVGtoPNGWriteToUserData(serverUrl: icon, rewrite: false, account: session.account).image != nil {
                     self.tableView.reloadData()
                 }
             }

@@ -503,13 +503,10 @@ class NCContextMenuMain: NSObject {
                     let deferredElement = UIDeferredMenuElement { completion in
                         Task {
                             var iconImage = UIImage()
-                            if let iconUrl = item.icon,
-                               let url = URL(string: metadata.urlBase + iconUrl) {
-                                let (data, _) = try await URLSession.shared.data(from: url)
-                                if let image = try await NCSVGRenderer().renderSVGToUIImage(
-                                    svgData: data,
-                                    fileName: iconUrl
-                                ) {
+                            if let iconUrl = item.icon {
+                                if let image = await NCUtility().convertSVGtoPNGWriteToUserData(serverUrl: metadata.urlBase + iconUrl,
+                                                                                                rewrite: false,
+                                                                                                account: metadata.account).image {
                                     iconImage = image
                                 }
                             }

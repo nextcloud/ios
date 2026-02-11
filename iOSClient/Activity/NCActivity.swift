@@ -274,27 +274,13 @@ extension NCActivity: UITableViewDataSource {
         // icon
         if !activity.icon.isEmpty {
             Task {
-                let fileName = (activity.icon as NSString).lastPathComponent
-                if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: nil, fileName: fileName) {
-                    if cell.idActivity == activity.idActivity {
-                        cell.icon.image = image
-                    }
-                } else {
-                    let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: activity.icon, account: activity.account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                        path: activity.icon,
-                                                                                                        name: "downloadContent")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    if let data = results.responseData?.data {
-                        if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, fileName: fileName) {
-                            if cell.idActivity == activity.idActivity {
-                                cell.icon.image = image
-                            }
-                        }
-                    }
+                let results = await NCUtility().convertSVGtoPNGWriteToUserData(serverUrl: activity.icon,
+                                                                               rewrite: false,
+                                                                               account: activity.account,
+                                                                               id: activity.idActivity)
+                if let image = results.image,
+                   cell.idActivity == results.id {
+                    cell.icon.image = image
                 }
             }
         }
