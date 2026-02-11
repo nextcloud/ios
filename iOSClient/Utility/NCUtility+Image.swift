@@ -271,7 +271,7 @@ extension NCUtility {
         if let url = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
             serverUrl = URL(string: url)?.absoluteString ?? serverUrl
         }
-        let fileNamePNG = utilityFileSystem.replaceExtension(of: URL(fileURLWithPath: serverUrl).lastPathComponent, with: "png")
+        let fileNamePNG = utilityFileSystem.replaceExtension(fileName: URL(fileURLWithPath: serverUrl).lastPathComponent, with: "png")
         let pathPNG = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
 
         if !FileManager.default.fileExists(atPath: pathPNG) || rewrite {

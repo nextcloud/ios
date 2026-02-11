@@ -273,9 +273,7 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
-            Task {
-                await downloadImage()
-            }
+            await downloadImage()
         }
 
         if metadata.isVideo && !metadata.hasPreview {
@@ -304,19 +302,20 @@ class NCViewerMedia: UIViewController {
                 return
             } else if fileNameExtension == "SVG" {
                 do {
-                    let url = URL(fileURLWithPath: fileNamePath)
-                    let data = try Data(contentsOf: url)
-                    if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: .init(width: 1024, height: 1024), fileName: metadata.fileName, backgroundColor: UIColor(white: 0.95, alpha: 1)),
-                        let imageData = image.pngData() {
-                        if !NCUtility().existsImage(ocId: metadata.ocId,
-                                                    etag: metadata.etag,
-                                                    ext: global.previewExt1024,
-                                                    userId: metadata.userId,
-                                                    urlBase: metadata.urlBase) {
-                            utility.createImageFileFrom(data: imageData, metadata: metadata)
-                        }
-                        self.image = image
+                    let fileNamePathPNG = utilityFileSystem.replaceExtension(fileNamePath: fileNamePath, with: "png")
+                    if FileManager.default.fileExists(atPath: fileNamePathPNG) {
+                        let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePathPNG))
+                        self.image = UIImage(data: data)
                         self.imageVideoContainer.image = self.image
+                    } else {
+                        let svgData = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
+                        if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: svgData, size: CGSize(width: 1024, height: 1024)),
+                           let data = image.pngData() {
+                            self.image = image
+                            self.imageVideoContainer.image = self.image
+                            try data.write(to: URL(fileURLWithPath: fileNamePathPNG))
+                            utility.createImageFileFrom(data: data, metadata: metadata)
+                        }
                     }
                     return
                 } catch {
@@ -371,7 +370,6 @@ class NCViewerMedia: UIViewController {
                 self.allowOpeningDetails = false
             } taskHandler: { _ in }
             self.allowOpeningDetails = true
-
         }
     }
 
