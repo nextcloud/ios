@@ -9,7 +9,6 @@ import PDFKit
 import Accelerate
 import CoreMedia
 import Photos
-import SVGKit
 
 extension NCUtility {
     func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil, useTypeIconFile: Bool = false, account: String? = nil) -> UIImage {
@@ -128,11 +127,13 @@ extension NCUtility {
     }
 
     func createImageFileFrom(data: Data, metadata: tableMetadata) {
-        createImageFileFrom( data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+        createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
     }
 
     func createImageFileFrom(data: Data, ocId: String, etag: String, userId: String, urlBase: String) {
-        guard let image = UIImage(data: data) else { return }
+        guard let image = UIImage(data: data) else {
+            return
+        }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId,
                                                                                            etag: etag,
                                                                                            ext: global.previewExt1024,
@@ -261,79 +262,77 @@ extension NCUtility {
         return avatarImage
     }
 
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
-        var fileNamePNG = ""
-        guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let iconURL = URL(string: svgUrlString) else {
-            return completion(nil, id)
+#if !EXTENSION
+    func convertSVGtoPNGWriteToUserData(serverUrl: String,
+                                        size: CGFloat = 128,
+                                        rewrite: Bool,
+                                        account: String,
+                                        id: Int? = nil) async -> (image: UIImage?, id: Int?) {
+        var serverUrl = serverUrl
+        if let url = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            serverUrl = URL(string: url)?.absoluteString ?? serverUrl
         }
-        if let fileName = fileName {
-            fileNamePNG = fileName
-        } else {
-            fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
-        }
-        let imageNamePath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
+        let fileNamePNG = utilityFileSystem.replaceExtension(fileName: URL(fileURLWithPath: serverUrl).lastPathComponent, with: "png")
+        let pathPNG = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
 
-        if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
-            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { task in
+        if !FileManager.default.fileExists(atPath: pathPNG) || rewrite {
+            let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: serverUrl, account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                path: iconURL.absoluteString,
+                                                                                                path: serverUrl,
                                                                                                 name: "downloadContent")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
-            } completion: { _, responseData, error in
-                if error == .success, let data = responseData?.data {
-                    if let image = UIImage(data: data) {
-                        var newImage: UIImage = image
+            }
+            guard results.error == .success,
+                  let data = results.responseData?.data else {
+                return(nil, id)
+            }
 
-                        if width != nil {
+            // is an image
+            if let image = UIImage(data: data) {
+                let ratio = image.size.height / image.size.width
+                let size = CGSize(width: size, height: size * ratio)
+                let renderFormat = UIGraphicsImageRendererFormat.default()
+                renderFormat.opaque = false
+                let renderer = UIGraphicsImageRenderer(size: CGSize(width: size.width, height: size.height), format: renderFormat)
+                let newImage = renderer.image { _ in
+                    image.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+                }
+                guard let pngImageData = newImage.pngData() else {
+                    return(nil, id)
+                }
 
-                            let ratio = image.size.height / image.size.width
-                            let newSize = CGSize(width: width!, height: width! * ratio)
-
-                            let renderFormat = UIGraphicsImageRendererFormat.default()
-                            renderFormat.opaque = false
-                            let renderer = UIGraphicsImageRenderer(size: CGSize(width: newSize.width, height: newSize.height), format: renderFormat)
-                            newImage = renderer.image { _ in
-                                image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-                            }
-                        }
-                        guard let pngImageData = newImage.pngData() else {
-                            return completion(nil, id)
-                        }
-                        try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
-
-                        return completion(imageNamePath, id)
-                    } else {
-                        guard let svgImage: SVGKImage = SVGKImage(data: data) else {
-                            return completion(nil, id)
-                        }
-
-                        if width != nil {
-                            let scale = svgImage.size.height / svgImage.size.width
-                            svgImage.size = CGSize(width: width!, height: width! * scale)
-                        }
-                        guard let image: UIImage = svgImage.uiImage else {
-                            return completion(nil, id)
-                        }
-                        guard let pngImageData = image.pngData() else {
-                            return completion(nil, id)
-                        }
-
-                        try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
-
-                        return completion(imageNamePath, id)
-                    }
-                } else {
-                    return completion(nil, id)
+                do {
+                    try pngImageData.write(to: URL(fileURLWithPath: pathPNG))
+                    return(newImage, id)
+                } catch {
+                    return(nil, id)
                 }
             }
 
+            // is a SVG
+            do {
+                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size))
+                guard let image,
+                      let pngImageData = image.pngData() else {
+                        return(nil, id)
+                }
+                try pngImageData.write(to: URL(fileURLWithPath: pathPNG))
+                return(image, id)
+            } catch {
+                return(nil, id)
+            }
         } else {
-            return completion(imageNamePath, id)
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: pathPNG))
+                return(UIImage(data: data), id)
+            } catch {
+                return(nil, id)
+            }
         }
     }
+#endif
 
     func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage?, statusImageColor: UIColor, statusMessage: String, descriptionMessage: String) {
         var statusImage: UIImage?

@@ -5,7 +5,6 @@
 import UIKit
 import SwiftRichString
 import NextcloudKit
-import SVGKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
@@ -274,31 +273,14 @@ extension NCActivity: UITableViewDataSource {
 
         // icon
         if !activity.icon.isEmpty {
-            activity.icon = activity.icon.replacingOccurrences(of: ".png", with: ".svg")
-            let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNameIcon)
-
-            if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath)?.uiImage : UIImage(contentsOfFile: fileNameLocalPath)
-
-                if let image {
-                    cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-                }
-            } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                    path: activity.icon,
-                                                                                                    name: "downloadContent")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                } completion: { _, responseData, error in
-                    if error == .success, let data = responseData?.data {
-                        do {
-                            try data.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
-                            self.tableView.reloadData()
-                        } catch { return }
-                    }
+            Task {
+                let results = await NCUtility().convertSVGtoPNGWriteToUserData(serverUrl: activity.icon,
+                                                                               rewrite: false,
+                                                                               account: activity.account,
+                                                                               id: activity.idActivity)
+                if let image = results.image,
+                   cell.idActivity == results.id {
+                    cell.icon.image = image
                 }
             }
         }

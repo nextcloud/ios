@@ -1,35 +1,13 @@
-//
-//  FilesWidgetView.swift
-//  Widget
-//
-//  Created by Marino Faggiana on 25/08/22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2022 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import WidgetKit
 
 struct FilesWidgetView: View {
-
     var entry: FilesDataEntry
-
     var body: some View {
-
         let parameterLink = "&user=\(entry.userId)&url=\(entry.url)"
         let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
         let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
@@ -55,7 +33,6 @@ struct FilesWidgetView: View {
             }
 
             ZStack(alignment: .topLeading) {
-
                 HStack {
                     Text(entry.tile)
                         .font(.system(size: 12))
@@ -72,39 +49,43 @@ struct FilesWidgetView: View {
                         VStack(spacing: 0) {
                             ForEach(entry.datas, id: \.id) { element in
                                 Link(destination: element.url) {
-                                    HStack {
-                                        if element.useTypeIconFile {
-                                            Image(uiImage: element.image)
-                                                .resizable()
-                                                .renderingMode(.template)
-                                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
-                                                .scaledToFit()
-                                                .frame(width: 35, height: 35)
-                                        } else {
-                                            Image(uiImage: element.image)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 35, height: 35)
-                                                .clipped()
-                                                .cornerRadius(5)
+                                    HStack(spacing: 10) {
+                                        Group {
+                                            if element.useTypeIconFile {
+                                                Image(uiImage: element.image)
+                                                    .resizable()
+                                                    .renderingMode(.template)
+                                                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+                                                    .scaledToFit()
+                                                    .frame(width: 35, height: 35)
+                                            } else {
+                                                Image(uiImage: element.image)
+                                                    .resizable()
+                                                    .frame(width: 35, height: 35)
+                                                    .background(Color(.secondarySystemBackground))
+                                                    .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                                            }
                                         }
 
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(element.title)
                                                 .font(.system(size: 12))
-                                                .fontWeight(.regular)
+                                                .lineLimit(1)
+                                                .truncationMode(.tail)
                                             Text(element.subTitle)
-                                                .font(.system(size: CGFloat(10)))
+                                                .font(.system(size: 10))
                                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+                                                .lineLimit(1)
+                                                .truncationMode(.tail)
                                         }
-                                        Spacer()
+                                        Spacer(minLength: 0)
                                     }
-                                    .padding(.leading, 10)
-                                    .frame(height: 50)
+                                    .padding(.horizontal, 10)
+                                    .frame(height: 44)
                                 }
                                 if element != entry.datas.last {
                                     Divider()
-                                        .padding(.leading, 54)
+                                        .padding(.leading, 52)
                                 }
                             }
                         }
@@ -113,59 +94,67 @@ struct FilesWidgetView: View {
                     .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 }
 
-                HStack(spacing: 0) {
-                    let sizeButton: CGFloat = 40
+                HStack(spacing: 10) {
+                    let buttonSize: CGFloat = 40
 
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset) {
                         Image(systemName: "photo.badge.plus")
                             .resizable()
                             .renderingMode(.template)
+                            .scaledToFit()
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
+                            .frame(width: 18, height: 18)
                             .padding(11)
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                             .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
+                            .frame(width: buttonSize, height: buttonSize)
+                    }
+                    .frame(maxWidth: .infinity)
 
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument) {
                         Image(systemName: "doc.text.viewfinder")
                             .resizable()
                             .renderingMode(.template)
+                            .scaledToFit()
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
+                            .frame(width: 18, height: 18)
                             .padding(11)
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                             .clipShape(Circle())
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
+                            .frame(width: buttonSize, height: buttonSize)
+                    }
+                    .frame(maxWidth: .infinity)
 
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument) {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
+                            .scaledToFit()
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
+                            .frame(width: 18, height: 18)
                             .padding(11)
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                             .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
+                            .frame(width: buttonSize, height: buttonSize)
+                    }
+                    .frame(maxWidth: .infinity)
 
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo) {
                         Image("microphone")
                             .resizable()
                             .renderingMode(.template)
+                            .scaledToFit()
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
+                            .frame(width: 18, height: 18)
                             .padding(11)
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                             .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
+                            .frame(width: buttonSize, height: buttonSize)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(width: geo.size.width, height: geo.size.height - 22, alignment: .bottomTrailing)
+                .padding(.horizontal, 10)
+                .frame(maxWidth: .infinity, maxHeight: geo.size.height - 25, alignment: .bottom)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
@@ -181,18 +170,17 @@ struct FilesWidgetView: View {
                         .lineLimit(1)
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                 }
-                .padding(.horizontal, 15.0)
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height, alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color(UIColor.systemBackground))
+        .containerBackground(.background, for: .widget)
     }
 }
 
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(filesDatasTest[0...4])
-        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", account: "", tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: false, userId: "", url: "", account: "", tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

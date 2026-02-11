@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
-import SVGKit
 import NextcloudKit
 import EasyTipView
 import SwiftUI
@@ -108,7 +107,9 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        loadImage()
+        Task {@MainActor in
+            await loadImage()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -125,7 +126,9 @@ class NCViewerMedia: UIViewController {
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
                 viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
-                loadImage()
+                Task {@MainActor in
+                    await loadImage()
+                }
             }
         }
     }
@@ -246,7 +249,8 @@ class NCViewerMedia: UIViewController {
 
     // MARK: - Image
 
-    func loadImage() {
+    @MainActor
+    func loadImage() async {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -269,9 +273,7 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
-            Task {
-                await downloadImage()
-            }
+            await downloadImage()
         }
 
         if metadata.isVideo && !metadata.hasPreview {
@@ -299,23 +301,28 @@ class NCViewerMedia: UIViewController {
                 }
                 return
             } else if fileNameExtension == "SVG" {
-                if let svgImage = SVGKImage(contentsOfFile: fileNamePath) {
-                    svgImage.size = global.size1024
-                    if let image = svgImage.uiImage {
-                        if !NCUtility().existsImage(ocId: metadata.ocId,
-                                                    etag: metadata.etag,
-                                                    ext: global.previewExt1024,
-                                                    userId: metadata.userId,
-                                                    urlBase: metadata.urlBase), let data = image.jpegData(compressionQuality: 1.0) {
+                do {
+                    let fileNamePathPNG = utilityFileSystem.replaceExtension(fileNamePath: fileNamePath, with: "png")
+                    if FileManager.default.fileExists(atPath: fileNamePathPNG) {
+                        let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePathPNG))
+                        self.image = UIImage(data: data)
+                        self.imageVideoContainer.image = self.image
+                    } else {
+                        let svgData = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
+                        if let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: svgData, size: CGSize(width: 1024, height: 1024)),
+                           let data = image.pngData() {
+                            self.image = image
+                            self.imageVideoContainer.image = self.image
+                            try data.write(to: URL(fileURLWithPath: fileNamePathPNG))
                             utility.createImageFileFrom(data: data, metadata: metadata)
                         }
-                        self.image = image
-                        self.imageVideoContainer.image = self.image
-                        return
                     }
+                    return
+                } catch {
+                    print("Unsupported image format: \(error.localizedDescription)")
+                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.imageVideoContainer.image = self.image
                 }
-                self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
-                self.imageVideoContainer.image = self.image
                 return
             } else if let image = UIImage(contentsOfFile: fileNamePath) {
                 self.image = image
@@ -363,7 +370,6 @@ class NCViewerMedia: UIViewController {
                 self.allowOpeningDetails = false
             } taskHandler: { _ in }
             self.allowOpeningDetails = true
-
         }
     }
 

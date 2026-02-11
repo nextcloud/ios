@@ -354,6 +354,20 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
+    func replaceExtension(fileName: String, with newExtension: String) -> String {
+        URL(fileURLWithPath: fileName)
+            .deletingPathExtension()
+            .appendingPathExtension(newExtension)
+            .lastPathComponent
+    }
+
+    func replaceExtension(fileNamePath: String, with newExtension: String) -> String {
+        let url = URL(fileURLWithPath: fileNamePath)
+            .deletingPathExtension()
+            .appendingPathExtension(newExtension)
+        return url.path
+    }
+
     func getFileCreationDate(filePath: String) -> NSDate? {
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
