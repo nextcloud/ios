@@ -1,25 +1,6 @@
-//
-//  DashboardData.swift
-//  Widget
-//
-//  Created by Marino Faggiana on 20/08/22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2022 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import WidgetKit
@@ -47,22 +28,21 @@ struct DashboardData: Identifiable, Hashable {
     let subTitle: String
     let link: URL
     let icon: UIImage
-    let template: Bool
     let avatar: Bool
     let imageColor: UIColor?
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil),
-    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, template: true, avatar: false, imageColor: nil)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil)
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
@@ -162,7 +142,6 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                     }
                     var iconImage = UIImage(systemName: "circle.fill") ?? UIImage()
 
-                    var imageTemplate: Bool = false
                     var imageAvatar: Bool = false
                     var imageColorized: Bool = false
                     var imageColor: UIColor?
@@ -172,9 +151,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                             let path = (urlComponents.path as NSString)
                             let pathComponents = path.components(separatedBy: "/")
 
-                            if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
-                                imageTemplate = true
-                            } else if pathComponents.contains("avatar") {
+                            if pathComponents.contains("avatar") {
                                 imageAvatar = true
                             } else if pathComponents.contains("getCalendarDotSvg") {
                                 imageColorized = true
@@ -198,7 +175,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                         }
                     }
 
-                    let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: iconImage, template: imageTemplate, avatar: imageAvatar, imageColor: imageColor)
+                    let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: iconImage, avatar: imageAvatar, imageColor: imageColor)
                     datas.append(data)
 
                     if datas.count == dashboardItems { break }
