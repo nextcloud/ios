@@ -34,18 +34,20 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
         let dashboardItems = getDashboardItems(displaySize: context.displaySize, withButton: false)
         let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems])
         let title = "Dashboard"
-        let titleImage = UIImage(named: "widget")!
+        let titleImage = UIImage(systemName:  "circle.fill") ?? UIImage()
         return Entry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget", account: "")
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {
-        getDashboardDataEntry(configuration: configuration, isPreview: false, displaySize: context.displaySize) { entry in
+        Task {
+            let entry = await getDashboardDataEntry(configuration: configuration, isPreview: false, displaySize: context.displaySize)
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<DashboardDataEntry>) -> Void) {
-        getDashboardDataEntry(configuration: configuration, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        Task {
+            let entry = await getDashboardDataEntry(configuration: configuration, isPreview: context.isPreview, displaySize: context.displaySize)
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }
