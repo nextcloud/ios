@@ -60,7 +60,7 @@ struct DashboardWidgetView: View {
                                                 .frame(width: 20, height: 20)
                                                 .foregroundColor(Color(color))
                                         } else {
-                                            if entry.dashboard?.itemIconsRound ?? false || element.avatar {
+                                            if entry.dashboard?.itemIconsRound ?? false || element.circle {
                                                 Image(uiImage: element.icon)
                                                     .resizable()
                                                     .scaledToFill()
@@ -137,7 +137,7 @@ struct DashboardWidgetView: View {
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                 }
                 .padding(.horizontal, 15.0)
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
         .containerBackground(.background, for: .widget)
@@ -149,7 +149,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(systemName: "circle.fill")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget", account: "")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget", account: "")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

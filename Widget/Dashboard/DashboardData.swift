@@ -28,21 +28,21 @@ struct DashboardData: Identifiable, Hashable {
     let subTitle: String
     let link: URL
     let icon: UIImage
-    let avatar: Bool
+    let circle: Bool
     let imageColor: UIColor?
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil),
-    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, avatar: false, imageColor: nil)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageColor: nil),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageColor: nil),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageColor: nil),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "document")!, circle: false, imageColor: nil),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageColor: nil),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageColor: nil),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageColor: nil),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageColor: nil),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageColor: nil),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(systemName: "circle.fill")!, circle: false, imageColor: nil)
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
@@ -140,9 +140,9 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                         let url = URL(string: entryLink) {
                         link = url
                     }
-                    var iconImage = UIImage(systemName: "circle.fill") ?? UIImage()
+                    var iconImage = UIImage(systemName: "document") ?? UIImage()
 
-                    var imageAvatar: Bool = false
+                    var imageCircle: Bool = false
                     var imageColorized: Bool = false
                     var imageColor: UIColor?
 
@@ -152,7 +152,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                             let pathComponents = path.components(separatedBy: "/")
 
                             if pathComponents.contains("avatar") {
-                                imageAvatar = true
+                                imageCircle = true
                             } else if pathComponents.contains("getCalendarDotSvg") {
                                 imageColorized = true
                             }
@@ -178,7 +178,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                         }
                     }
 
-                    let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: iconImage, avatar: imageAvatar, imageColor: imageColor)
+                    let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: iconImage, circle: imageCircle, imageColor: imageColor)
                     datas.append(data)
 
                     if datas.count == dashboardItems { break }
