@@ -36,12 +36,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
-    var networkSearchInProgress: Bool = false
+    // Layout
     var layoutForView: NCDBLayoutForView?
+    var layoutForViewLayoutStore: String?
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
     var layoutType = NCGlobal.shared.layoutList
+
     var tabBarSelect: NCCollectionViewCommonSelectTabBar?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
@@ -49,6 +51,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     var syncMetadatasTask: Task<Void, Never>?
     // Search
     var isSearchingMode: Bool = false
+    var networkSearchInProgress: Bool = false
     var searchOperationHandle = NKOperationHandle()
     var searchTask: URLSessionTask?
     var searchResultText: String?
@@ -532,7 +535,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //
+        // (+)
         mainNavigationController?.hiddenPlusButton(false)
 
         self.isSearchingMode = false
@@ -544,6 +547,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             await searchOperationHandle.cancel()
             self.dataSource.removeAll()
             await self.reloadDataSource()
+
+            // Restore Layout
+            if let layoutForViewLayoutStore {
+                let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
+                layoutForView.layout = layoutForViewLayoutStore
+                changeLayout(layoutForView: layoutForView)
+            }
         }
     }
 

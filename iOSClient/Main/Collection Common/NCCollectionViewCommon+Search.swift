@@ -17,14 +17,20 @@ extension NCCollectionViewCommon {
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
-        self.networkSearchInProgress = true
+        // Force layoutList
+        let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
+        layoutForViewLayoutStore = layoutForView.layout
+        layoutForView.layout = self.global.layoutList
+        changeLayout(layoutForView: layoutForView)
+
         // STOP PREEMPTIVE SYNC METADATA
         await self.stopSyncMetadata()
         // Clear datasotce
-        self.dataSource.removeAll()
-        self.collectionView.reloadData()
+        dataSource.removeAll()
+        collectionView.reloadData()
         // Start spinner
         setSearchBarLoading(true)
+        networkSearchInProgress = true
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             await unifiedSearch(text: text)
