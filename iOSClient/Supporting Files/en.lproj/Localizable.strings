@@ -722,6 +722,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_conversations_"                = "Conversations";
 "_new_conversation_"             = "New conversation";
 "_type_message_"                 = "Type a message...";
+"_assistant_chat_"               = "Assistant Chat";
 
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate.";

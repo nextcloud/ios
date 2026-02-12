@@ -5,7 +5,7 @@
 import NextcloudKit
 
 @Observable class NCAssistantChatModel {
-    var messages: [ChatMessage] = []
+    var messages: [AssistantChatMessage] = []
     var isSending: Bool = false
     var isThinking: Bool = false
     var isSendingDisabled = false
@@ -22,7 +22,7 @@ import NextcloudKit
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatMessageTaskId: Int?
 
-    init(controller: NCMainTabBarController?, messages: [ChatMessage] = []) {
+    init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = []) {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
         self.messages = messages
@@ -109,7 +109,7 @@ import NextcloudKit
     func sendMessage(input: String) {
         guard let selectedConversation else { return }
 
-        let request = ChatMessageRequest(sessionId: selectedConversation.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970), firstHumanMessage: messages.isEmpty)
+        let request = AssistantChatMessageRequest(sessionId: selectedConversation.id, role: "human", content: input, timestamp: Int(Date().timeIntervalSince1970), firstHumanMessage: messages.isEmpty)
         isSending = true
         isSendingDisabled = true
 
@@ -142,28 +142,28 @@ import NextcloudKit
 
 extension NCAssistantChatModel {
     static var example = NCAssistantChatModel(controller: nil, messages: [
-        ChatMessage(
+        AssistantChatMessage(
             id: 1,
             sessionId: 0,
             role: "human",
             content: "Hello! Can you help me summarize this document?",
             timestamp: Int(Date().addingTimeInterval(-300).timeIntervalSince1970 * 1000)
         ),
-        ChatMessage(
+        AssistantChatMessage(
             id: 2,
             sessionId: 0,
             role: "assistant",
             content: "Of course! I'd be happy to help you summarize your document. Please share the document or paste the text you'd like me to summarize.",
             timestamp: Int(Date().addingTimeInterval(-240).timeIntervalSince1970 * 1000)
         ),
-        ChatMessage(
+        AssistantChatMessage(
             id: 3,
             sessionId: 0,
             role: "human",
             content: "Here is the text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             timestamp: Int(Date().addingTimeInterval(-180).timeIntervalSince1970 * 1000)
         ),
-        ChatMessage(
+        AssistantChatMessage(
             id: 4,
             sessionId: 0,
             role: "assistant",

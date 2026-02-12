@@ -30,7 +30,7 @@ struct NCAssistantChat: View {
                 }
             }
         }
-        .navigationTitle("Assistant Chat")
+        .navigationTitle("_assistant_chat_")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -87,7 +87,7 @@ struct NCAssistantChat: View {
 // MARK: - Message Bubble View
 
 struct MessageBubbleView: View {
-    let message: ChatMessage
+    let message: AssistantChatMessage
     let account: String
 
     var body: some View {
