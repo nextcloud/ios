@@ -31,6 +31,11 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var isSelectedEmpty = true
     @Published var metadatas: [tableMetadata] = []
 
+    var isFilesLockCapabilityEnabled: Bool {
+        let capabilities = NCNetworking.shared.capabilities[controller?.account ?? ""] ?? NKCapabilities.Capabilities()
+        return !capabilities.filesLockVersion.isEmpty
+    }
+
     init(controller: NCMainTabBarController? = nil, viewController: UIViewController, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         guard let controller else {
             return
@@ -127,7 +132,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                 } // else: file is not offline, continue
             }
             let capabilities = NCNetworking.shared.capabilities[controller?.account ?? ""] ?? NKCapabilities.Capabilities()
-            enableLock = !isAnyDirectory && canUnlock && !capabilities.filesLockVersion.isEmpty
+            enableLock = !isAnyDirectory && canUnlock && isFilesLockCapabilityEnabled
         }
         self.isSelectedEmpty = fileSelect.isEmpty
     }
@@ -187,17 +192,18 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                     })
                     .disabled(!tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty))
 
-                    Button(action: {
-                        tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)
-                    }, label: {
-                        Label(NSLocalizedString(tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_", comment: ""), systemImage: tabBarSelect.isAnyLocked ? "lock.open" : "lock")
+                    if tabBarSelect.isFilesLockCapabilityEnabled {
+                        Button(action: {
+                            tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)
+                        }, label: {
+                            Label(NSLocalizedString(tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_", comment: ""), systemImage: tabBarSelect.isAnyLocked ? "lock.open" : "lock")
 
-                        if !tabBarSelect.enableLock {
-                            Text(NSLocalizedString("_lock_no_permissions_selected_", comment: ""))
-                        }
-                    })
-                    .disabled(!tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty)
-
+                            if !tabBarSelect.enableLock {
+                                Text(NSLocalizedString("_lock_no_permissions_selected_", comment: ""))
+                            }
+                        })
+                        .disabled(!tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty)
+                    }
                     Button(action: {
                         tabBarSelect.delegate?.selectAll()
                     }, label: {
