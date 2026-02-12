@@ -419,15 +419,6 @@ extension NCShare: NCShareNetworkingDelegate {
         dropDown.bottomOffset = CGPoint(x: 10, y: textField?.bounds.height ?? 0)
         dropDown.width = (textField?.bounds.width ?? 0) - 20
         dropDown.direction = .bottom
-//        dropDown.bottomOffset = CGPoint(x: 0, y: textField?.bounds.height ?? 0)
-//        dropDown.width = textField?.bounds.width ?? 0
-//        if (UIDevice.current.userInterfaceIdiom == .phone || UIDevice.current.orientation.isLandscape), UIScreen.main.bounds.width < 1111  {
-//            dropDown.topOffset = CGPoint(x: 0, y: -(textField?.bounds.height ?? 0))
-//            dropDown.direction = .top
-//        } else {
-//            dropDown.bottomOffset = CGPoint(x: 0, y: (textField?.bounds.height ?? 0) - 80)
-//            dropDown.direction = .any
-//        }
 
         dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) in
@@ -445,6 +436,11 @@ extension NCShare: NCShareNetworkingDelegate {
                 let navigationController = self.navigationController else { return }
             self.checkEnforcedPassword(shareType: sharee.shareType) { password in
                 let shareOptions = TransientShare(sharee: sharee, metadata: self.metadata, password: password)
+                if !shareOptions.shareWithDisplayname.isEmpty {
+                    shareOptions.shareWithDisplayname = shareOptions.shareWithDisplayname
+                } else {
+                    shareOptions.shareWithDisplayname = sharee.label
+                }
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
                 advancePermission.metadata = self.metadata
@@ -511,15 +507,6 @@ extension NCShare: UITableViewDataSource {
         case .emails:
             return shareEmails.count
         }
-//        var numRows = shares.share?.count ?? 0
-//        if section == 0 {
-//            if metadata.e2eEncrypted, capabilities.e2EEApiVersion == "1.2" {
-//                numRows = 1
-//            } else {
-//                // don't allow link creation if reshare is disabled
-//                numRows = shares.firstShareLink != nil || canReshare ? 2 : 1
-//            }
-//        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -532,20 +519,6 @@ extension NCShare: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "NCShareEmailFieldCell", for: indexPath) as? NCShareEmailFieldCell else {
                 return UITableViewCell()
             }
-//        // Setup default share cells
-//        guard indexPath.section != 0 else {
-//            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
-//            else { return UITableViewCell() }
-//            cell.delegate = self
-//            if metadata.e2eEncrypted, capabilities.e2EEApiVersion == "1.2" {
-//                cell.tableShare = shares.firstShareLink
-//            } else {
-//                if indexPath.row == 0 {
-//                    cell.isInternalLink = true
-//                } else if shares.firstShareLink?.isInvalidated != true {
-//                    cell.tableShare = shares.firstShareLink
-//                }
-//            }
             cell.searchField.addTarget(self, action: #selector(searchFieldDidEndOnExit(textField:)), for: .editingDidEndOnExit)
             cell.searchField.addTarget(self, action: #selector(searchFieldDidChange(textField:)), for: .editingChanged)
             cell.btnContact.addTarget(self, action: #selector(selectContactClicked(_:)), for: .touchUpInside)

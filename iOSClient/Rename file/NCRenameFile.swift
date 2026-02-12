@@ -82,8 +82,13 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 ext.isEnabled = false
                 ext.textColor = .lightGray
             }
+            NCUtility().createImageFileFrom(metadata: metadata)
+            if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
+                Task { @MainActor in
+                    previewFile.image = image
+                }
+            }
 
-            previewFile.image = imagePreview
             previewFile.layer.cornerRadius = 10
             previewFile.layer.masksToBounds = true
 

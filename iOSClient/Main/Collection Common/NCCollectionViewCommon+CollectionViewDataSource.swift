@@ -11,7 +11,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return self.dataSource.numberOfSections()
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // get auto upload folder
         self.autoUploadFileName = self.database.getAccountAutoUploadFileName(account: session.account)
@@ -26,54 +26,54 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         return self.dataSource.numberOfItemsInSection(section)
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
                 return
             }
-
+            
             for case let operation as NCCollectionViewDownloadThumbnail in self.networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
             return
         }
         let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
-
+        
         if metadata.hasPreview,
            !existsImagePreview,
            self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
         }
-
+        
     }
-
+    
     private func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata, ext: String) -> NCPhotoCell {
         let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
-
+        
         cell.metadata = metadata
         // cell.hideButtonMore(true) NO MORE USED
         cell.hideImageStatus(true)
-
+        
         // Image
         //
         if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-
+            
             cell.previewImageView?.image = image
             cell.previewImageView?.contentMode = .scaleAspectFill
-
+            
         } else {
-
+            
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
                 cell.previewImageView?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
             }
-
+            
             DispatchQueue.global(qos: .userInteractive).async {
                 let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
                 if let image {
@@ -94,7 +94,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
         }
-
+        
         // Edit mode
         //
         if fileSelect.contains(metadata.ocId) {
@@ -102,15 +102,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.selected(false, isEditMode: isEditMode)
         }
-
+        
         if width > 100 {
             // cell.hideButtonMore(false) NO MORE USED
             cell.hideImageStatus(false)
         }
-
+        
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: NCCellProtocol & UICollectionViewCell
         var isShare = false
@@ -120,7 +120,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
+        let shareItems = shares.share ?? []
 
+        // Determine Link Shares: true if firstShareLink is public OR if any item in shareItems is public
+        let hasLinkShares = (shares.firstShareLink?.shareType == NKShare.ShareType.publicLink.rawValue) ||
+                            shareItems.contains { $0.shareType == NKShare.ShareType.publicLink.rawValue }
+
+        // Determine Email Shares: true if any item in shareItems is email type
+        let hasEmailShares = shareItems.contains { $0.shareType == NKShare.ShareType.email.rawValue }
+
+        // Combined Logic
+        let hasEmailAndLinkShares = hasLinkShares && hasEmailShares
+        
         defer {
             let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
             if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
@@ -205,31 +216,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if metadata.directory {
             let tblDirectory = database.getTableDirectory(ocId: metadata.ocId)
 
-//            if metadata.e2eEncrypted {
-//                cell.previewImageView?.image = imageCache.getFolderEncrypted()
-//            } else if isShare {
-//                cell.previewImageView?.image = imageCache.getFolderSharedWithMe()
-//            } else if !metadata.shareType.isEmpty {
-//                metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-//                (cell.previewImageView?.image = imageCache.getFolderPublic()) :
-//                (cell.previewImageView?.image = imageCache.getFolderSharedWithMe())
-//            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) {
-//                cell.previewImageView?.image = imageCache.getFolderPublic()
-//            } else if metadata.mountType == "group" {
-//                cell.previewImageView?.image = imageCache.getFolderGroup()
-//            } else if isMounted {
-//                cell.previewImageView?.image = imageCache.getFolderExternal()
-//            } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-//                cell.previewImageView?.image = imageCache.getFolderAutomaticUpload()
-//            } else {
-//                cell.previewImageView?.image = imageCache.getFolder()
-//            }
             if metadata.e2eEncrypted {
-                cell.previewImageView?.image = NCImageCache.shared.getFolderEncrypted()
+                cell.previewImageView?.image = imageCache.getFolderEncrypted()
             } else if metadata.permissions.contains("S"), (metadata.permissions.range(of: "S") != nil) {
-                cell.previewImageView?.image = NCImageCache.shared.getFolderSharedWithMe()
-            } else if isShare || !metadata.shareType.isEmpty {
-                cell.previewImageView?.image = NCImageCache.shared.getFolderPublic()
+                cell.previewImageView?.image = imageCache.getFolderSharedWithMe()
+            } else if isShare || !metadata.shareType.isEmpty || hasEmailAndLinkShares {
+                cell.previewImageView?.image = imageCache.getFolderPublic()
             } else if !metadata.shareType.isEmpty {
                 metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
                 (cell.previewImageView?.image = imageCache.getFolderPublic()) :

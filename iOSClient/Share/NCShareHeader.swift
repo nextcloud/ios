@@ -23,6 +23,7 @@
 
 import UIKit
 import TagListView
+import NextcloudKit
 
 class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
@@ -128,8 +129,9 @@ class NCShareAdvancePermissionHeader: UITableViewHeaderFooterView {
         info.textColor = NCBrandColor.shared.textInfo
         
         let isShare = metadata.permissions.contains(NCPermissions().permissionShared)
-        let hasShares = (linkCount > 0 || emailCount > 0)
-
+        let isMounted = metadata.permissions.contains(NCPermissions().permissionMounted)
+        let hasEmailAndLinkShares = (linkCount > 0 && emailCount > 0)
+        
         if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase) {
             fullWidthImageView.image = image
             fullWidthImageView.contentMode = .scaleAspectFill
@@ -140,8 +142,18 @@ class NCShareAdvancePermissionHeader: UITableViewHeaderFooterView {
                 imageView.image = NCImageCache.shared.getFolderEncrypted()
             } else if metadata.permissions.contains("S"), (metadata.permissions.range(of: "S") != nil) {
                 imageView.image = NCImageCache.shared.getFolderSharedWithMe()
-            } else if isShare || !metadata.shareType.isEmpty {
+            } else if isShare || !metadata.shareType.isEmpty || hasEmailAndLinkShares {
                 imageView.image = NCImageCache.shared.getFolderPublic()
+            } else if !metadata.shareType.isEmpty {
+                metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
+                (imageView.image = NCImageCache.shared.getFolderPublic()) :
+                (imageView.image = NCImageCache.shared.getFolderSharedWithMe())
+            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) {
+                imageView.image = NCImageCache.shared.getFolderPublic()
+            } else if metadata.mountType == "group" {
+                imageView.image = NCImageCache.shared.getFolderGroup()
+            } else if isMounted {
+                imageView.image = NCImageCache.shared.getFolderExternal()
             } else if metadata.directory {
                 imageView.image = NCImageCache.shared.getFolder()
             } else if !metadata.iconName.isEmpty {
