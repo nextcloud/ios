@@ -73,7 +73,8 @@ extension NCNetworking {
                     Task {
                         await showInfoBanner(controller: controller,
                                              title: "_warning_",
-                                             text: "_maintenance_mode_")
+                                             text: "_maintenance_mode_",
+                                             errorCode: 401)
                     }
                 }
             case .failure:

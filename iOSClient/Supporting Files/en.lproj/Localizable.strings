@@ -561,7 +561,7 @@
 "_privacy_screen_footer_"   = "Hide the content in the app and show a splash screen when the app is inactive.";
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
-"_show_more_results_"       = "Show more results";
+"_show_more_results_"       = "⋯ Load more results";
 "_waiting_for_"             = "Waiting for:";
 "_reachable_wifi_"          = "network reachable via Wi-Fi or cable";
 "_copy_passphrase_"         = "Copy passphrase";
@@ -676,6 +676,7 @@
 "_large_upload_tip_"        = "Large files require the app to remain open until the transfer is complete";
 "_e2ee_upload_tip_"         = "End-to-end files require the app to remain open until the transfer is complete";
 "_finalizing_wait_"         = "Waiting for finalization …";
+"_in_this_folder_"          = "In this folder";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

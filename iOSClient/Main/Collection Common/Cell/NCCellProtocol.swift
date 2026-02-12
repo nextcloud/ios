@@ -17,6 +17,7 @@ protocol NCCellProtocol {
     var favoriteImageView: UIImageView? { get set }
     var shareImageView: UIImageView? { get set }
     var separatorView: UIView? { get set }
+    var tagSeparator: UILabel? { get set }
 
     func titleInfoTrailingFull()
     func writeInfoDateSize(date: NSDate, size: Int64)
@@ -77,6 +78,11 @@ extension NCCellProtocol {
     }
 
     var separatorView: UIView? {
+        get { return nil }
+        set {}
+    }
+
+    var tagSeparator: UILabel? {
         get { return nil }
         set {}
     }

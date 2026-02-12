@@ -4,6 +4,7 @@
 
 import SwiftUI
 import LucidBanner
+import Alamofire
 
 // MARK: - Show Banner
 #if !EXTENSION
@@ -75,14 +76,16 @@ func showInfoBannerActiveScenes(title: String = "_error_",
                                 text: String,
                                 footnote: String? = nil,
                                 foregroundColor: UIColor = .label,
-                                backgroundColor: UIColor = .systemBackground) async {
+                                backgroundColor: UIColor = .systemBackground,
+                                errorCode: Int? = nil) async {
     for scene in UIApplication.shared.foregroundActiveScenes {
         await showInfoBanner(scene: scene,
                              title: title,
                              text: text,
                              footnote: footnote,
                              foregroundColor: foregroundColor,
-                             backgroundColor: backgroundColor)
+                             backgroundColor: backgroundColor,
+                             errorCode: errorCode)
     }
 }
 
@@ -92,13 +95,15 @@ func showInfoBanner(controller: UITabBarController?,
                     text: String,
                     footnote: String? = nil,
                     foregroundColor: UIColor = .label,
-                    backgroundColor: UIColor = .systemBackground) async {
+                    backgroundColor: UIColor = .systemBackground,
+                    errorCode: Int? = nil) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showInfoBanner(scene: scene,
                          title: title,
                          text: text,
                          foregroundColor: foregroundColor,
-                         backgroundColor: backgroundColor)
+                         backgroundColor: backgroundColor,
+                         errorCode: errorCode)
 }
 
 @MainActor
@@ -107,13 +112,15 @@ func showInfoBanner(sceneIdentifier: String?,
                     text: String,
                     footnote: String? = nil,
                     foregroundColor: UIColor = .label,
-                    backgroundColor: UIColor = .systemBackground) async {
+                    backgroundColor: UIColor = .systemBackground,
+                    errorCode: Int? = nil) async {
     await showInfoBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
                          title: title,
                          text: text,
                          footnote: footnote,
                          foregroundColor: foregroundColor,
-                         backgroundColor: backgroundColor)
+                         backgroundColor: backgroundColor,
+                         errorCode: errorCode)
 }
 
 #endif
@@ -124,8 +131,12 @@ func showInfoBanner(scene: UIWindowScene?,
                     text: String,
                     footnote: String? = nil,
                     foregroundColor: UIColor = .label,
-                    backgroundColor: UIColor = .systemBackground) async {
+                    backgroundColor: UIColor = .systemBackground,
+                    errorCode: Int? = nil) async {
 #if !EXTENSION
+    guard !bannerContainsError(errorCode: errorCode) else {
+        return
+    }
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
     guard let window = scene?.windows.first else {
@@ -166,7 +177,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                                  foregroundColor: UIColor = .white,
                                  backgroundColor: UIColor = .red,
                                  sleepBefore: Double = 1,
-                                 errorCode: Int) async {
+                                 errorCode: Int,
+                                 afError: AFError? = nil) async {
     for scene in UIApplication.shared.foregroundActiveScenes {
         await showErrorBanner(scene: scene,
                               title: title,
@@ -175,7 +187,8 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                               foregroundColor: foregroundColor,
                               backgroundColor: backgroundColor,
                               sleepBefore: sleepBefore,
-                              errorCode: errorCode)
+                              errorCode: errorCode,
+                              afError: afError)
     }
 }
 
@@ -187,7 +200,8 @@ func showErrorBanner(controller: UITabBarController?,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
-                     errorCode: Int) async {
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
     let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
     await showErrorBanner(scene: scene,
                           text: text,
@@ -195,7 +209,8 @@ func showErrorBanner(controller: UITabBarController?,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
                           sleepBefore: sleepBefore,
-                          errorCode: errorCode)
+                          errorCode: errorCode,
+                          afError: afError)
 }
 
 @MainActor
@@ -206,7 +221,8 @@ func showErrorBanner(sceneIdentifier: String?,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
-                     errorCode: Int) async {
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
     await showErrorBanner(controller: SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
                           title: title,
                           text: text,
@@ -214,7 +230,8 @@ func showErrorBanner(sceneIdentifier: String?,
                           foregroundColor: foregroundColor,
                           backgroundColor: backgroundColor,
                           sleepBefore: sleepBefore,
-                          errorCode: errorCode)
+                          errorCode: errorCode,
+                          afError: afError)
 }
 
 #endif
@@ -227,21 +244,11 @@ func showErrorBanner(scene: UIWindowScene?,
                      foregroundColor: UIColor = .white,
                      backgroundColor: UIColor = .red,
                      sleepBefore: Double = 1,
-                     errorCode: Int) async {
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
 #if !EXTENSION
-    // Prevent repeated display of the same user-facing error during the current foreground session.
-    // If this error code has already been shown, do nothing.
-    // Otherwise, record it and allow the UX notification to be displayed once.
-    if shownErrors.contains(errorCode) {
+    guard !bannerContainsError(errorCode: errorCode, afError: afError) else {
         return
-    } else {
-        // Coalesce user-facing errors across the current foreground session.
-        // The same error code is shown to the user only once.
-        // Error 507 (insufficient storage) is recorded to avoid repeated UX notifications
-        // for subsequent uploads failing for the same reason.
-        if errorCode == 507 {
-            shownErrors.insert(errorCode)
-        }
     }
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
@@ -278,6 +285,37 @@ func showErrorBanner(scene: UIWindowScene?,
         MessageBannerView(state: state)
     }
 }
+
+// MARK: - Helper
+#if !EXTENSION
+func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
+    guard let errorCode else {
+        return false
+    }
+    // List of errors not to be displayed
+    if errorCode == -999 {
+        return true
+    }
+    if let afError, case .explicitlyCancelled = afError {
+        return true
+    }
+    // Prevent repeated display of the same user-facing error during the current foreground session.
+    // If this error code has already been shown, do nothing.
+    // Otherwise, record it and allow the UX notification to be displayed once.
+    if shownErrors.contains(errorCode) {
+        return true
+    } else {
+        // Coalesce user-facing errors across the current foreground session.
+        // The same error code is shown to the user only once.
+        // Error 401 (maintenance mode)
+        // Error 507 (insufficient storage)
+        if errorCode == 401 || errorCode == 507 {
+            shownErrors.insert(errorCode)
+        }
+        return false
+    }
+}
+#endif
 
 // MARK: - SwiftUI
 
@@ -355,3 +393,4 @@ struct MessageBannerView: View {
         .padding()
     }
 }
+

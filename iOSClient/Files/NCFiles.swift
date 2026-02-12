@@ -43,7 +43,10 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.stopSyncMetadata()
+            Task {
+                await self.stopSyncMetadata()
+                await self.searchOperationHandle.cancel()
+            }
         }
 
         if self.serverUrl.isEmpty {
@@ -127,8 +130,8 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        stopSyncMetadata()
         Task {
+            await stopSyncMetadata()
             await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
     }
@@ -185,27 +188,11 @@ class NCFiles: NCCollectionViewCommon {
             startSyncMetadata(metadatas: self.dataSource.getMetadatas())
         }
 
-        Task {
-            await networking.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
-        }
+        await networking.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
 
         guard !isSearchingMode else {
-            return networkSearch()
-        }
-
-        func downloadMetadata(_ metadata: tableMetadata) async -> Bool {
-            let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId,
-                                                                     fileName: metadata.fileNameView,
-                                                                     userId: metadata.userId,
-                                                                     urlBase: metadata.urlBase)
-            guard fileSize > 0 else { return false }
-
-            if let tblLocalFile = await database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                if tblLocalFile.etag != metadata.etag {
-                    return true
-                }
-            }
-            return false
+            await self.search()
+            return
         }
 
         let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: forced)
@@ -216,7 +203,7 @@ class NCFiles: NCCollectionViewCommon {
         let metadatasForDownload: [tableMetadata] = resultsReadFolder.metadatas ?? self.dataSource.getMetadatas()
         Task.detached(priority: .utility) {
             for metadata in metadatasForDownload where !metadata.directory {
-                if await downloadMetadata(metadata) {
+                if await self.downloadMetadata(metadata) {
                     if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                 session: NCNetworking.shared.sessionDownload,
                                                                                                 selector: NCGlobal.shared.selectorDownloadFile,
@@ -228,6 +215,23 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         await self.reloadDataSource()
+    }
+
+    private func downloadMetadata(_ metadata: tableMetadata) async -> Bool {
+        let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId,
+                                                                 fileName: metadata.fileNameView,
+                                                                 userId: metadata.userId,
+                                                                 urlBase: metadata.urlBase)
+        guard fileSize > 0 else {
+            return false
+        }
+
+        if let tblLocalFile = await database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            if tblLocalFile.etag != metadata.etag {
+                return true
+            }
+        }
+        return false
     }
 
     private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
