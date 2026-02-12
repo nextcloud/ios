@@ -163,6 +163,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                             let path = (urlComponents.path as NSString)
                             let colorString = ((path.lastPathComponent) as NSString).deletingPathExtension
                             imageColor = UIColor(hex: colorString)
+                            iconImage = UIImage(systemName: "circle.fill") ?? UIImage()
                         } else {
                             let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: activeTableAccount.account)
                             if results.error == .success,

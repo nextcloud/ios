@@ -59,6 +59,7 @@ struct DashboardWidgetView: View {
                                                 .resizable()
                                                 .frame(width: 35, height: 35)
                                                 .foregroundColor(Color(color))
+                                                .scaleEffect(0.8)
                                         } else if element.imageSystem {
                                             Image(uiImage: element.icon)
                                                 .resizable()
