@@ -90,10 +90,11 @@ class NCViewerContextMenu: NSObject {
             title: NSLocalizedString("_view_in_folder_", comment: ""),
             image: UIImage(systemName: "questionmark.folder")
         ) { _ in
-            NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
-                                                     fileNameBlink: metadata.fileName,
-                                                     fileNameOpen: nil,
-                                                     sceneIdentifier: controller.sceneIdentifier)
+            Task {
+                await NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
+                                                               fileNameBlink: metadata.fileName,
+                                                               sceneIdentifier: controller.sceneIdentifier)
+            }
         }
     }
 

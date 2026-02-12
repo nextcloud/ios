@@ -74,7 +74,7 @@
 "_denied_album_"            = "This app does not have access to \"Photos\". You can enable access in Privacy Settings.";
 "_denied_camera_"           = "This app does not have access to the \"Camera\". You can enable access in Privacy Settings.";
 "_force_start_"             = "Force the start";
-"_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@.";
+"_account_not_available_"   = "The account %@ of %@ does not exist, please add it.";
 "_the_account_"             = "The account";
 "_does_not_exist_"          = "does not exist";
 "_sharing_"                 = "Sharing";

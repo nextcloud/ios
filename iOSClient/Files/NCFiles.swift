@@ -9,7 +9,7 @@ import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
-    internal var fileNameOpen: String?
+    internal var openMetadata: tableMetadata?
 
     internal var lastOffsetY: CGFloat = 0
     internal var lastScrollTime: TimeInterval = 0
@@ -110,13 +110,13 @@ class NCFiles: NCCollectionViewCommon {
         super.viewDidAppear(animated)
 
         if !self.dataSource.isEmpty() {
-            self.blinkCell(fileName: self.fileNameBlink)
-            self.openFile(fileName: self.fileNameOpen)
-            self.fileNameBlink = nil
-            self.fileNameOpen = nil
+            blinkCell(fileName: self.fileNameBlink)
+            fileNameBlink = nil
         }
 
         Task {
+            // Automatically open
+            await open(metadata: self.openMetadata)
             // Plus Menu reload
             let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
             await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
@@ -140,7 +140,7 @@ class NCFiles: NCCollectionViewCommon {
         super.viewDidDisappear(animated)
 
         fileNameBlink = nil
-        fileNameOpen = nil
+        openMetadata = nil
     }
 
     // MARK: - DataSource
@@ -380,15 +380,12 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    func openFile(fileName: String?) {
-        if let fileName = fileName, let metadata = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
-            if let indexPath = indexPath {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.collectionView(self.collectionView, didSelectItemAt: indexPath)
-                }
-            }
+    func open(metadata: tableMetadata?) async {
+        guard let metadata else {
+            return
         }
+        await didSelectMetadata(metadata, withOcIds: false)
+        self.openMetadata = nil
     }
 
     // MARK: - NCAccountSettingsModelDelegate

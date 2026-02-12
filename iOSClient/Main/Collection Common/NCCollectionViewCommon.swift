@@ -847,7 +847,9 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
     }
 
     func tapRecommendations(with metadata: tableMetadata) {
-        didSelectMetadata(metadata, withOcIds: false)
+        Task {
+            await didSelectMetadata(metadata, withOcIds: false)
+        }
     }
 }
 
