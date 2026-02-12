@@ -9,8 +9,6 @@ import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
-    internal var openMetadata: tableMetadata?
-
     internal var lastOffsetY: CGFloat = 0
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
@@ -115,8 +113,6 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         Task {
-            // Automatically open
-            await open(metadata: self.openMetadata)
             // Plus Menu reload
             let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
             await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
@@ -140,7 +136,6 @@ class NCFiles: NCCollectionViewCommon {
         super.viewDidDisappear(animated)
 
         fileNameBlink = nil
-        openMetadata = nil
     }
 
     // MARK: - DataSource
@@ -385,7 +380,6 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
         await didSelectMetadata(metadata, withOcIds: false)
-        self.openMetadata = nil
     }
 
     // MARK: - NCAccountSettingsModelDelegate

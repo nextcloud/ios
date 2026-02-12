@@ -412,9 +412,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     if results.error == .success, let file = results.file {
                         let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
                         await NCManageDatabase.shared.addMetadataAsync(metadata)
-                        await NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
-                                                                       metadata: metadata,
-                                                                       sceneIdentifier: controller.sceneIdentifier)
+                        if metadata.hasPreview {
+                            let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
+                            if results.error == .success,
+                               let data = results.responseData?.data {
+                                NCUtility().createImageFileFrom(data: data, metadata: metadata)
+                            }
+                        }
+                        await NCNetworking.shared.openFileView(serverUrl: metadata.serverUrl,
+                                                               metadata: metadata,
+                                                               sceneIdentifier: controller.sceneIdentifier)
                     }
                 }
             }

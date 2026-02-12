@@ -287,10 +287,23 @@ extension NCNetworking: NCTransferDelegate {
     // MARK: -
 
     @MainActor
-    func openFileViewInFolder(serverUrl: String,
-                              fileNameBlink: String? = nil,
-                              metadata: tableMetadata? = nil,
-                              sceneIdentifier: String) async {
+    func openFileView(serverUrl: String,
+                      metadata: tableMetadata? = nil,
+                      sceneIdentifier: String) async {
+        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+              let navigationController = controller.viewControllers?.first as? UINavigationController
+        else { return }
+        controller.selectedIndex = 0
+
+        if let viewController = navigationController.topViewController as? NCFiles {
+            await viewController.open(metadata: metadata)
+        }
+    }
+
+    @MainActor
+    func blinkInFolder(serverUrl: String,
+                       fileName: String,
+                       sceneIdentifier: String) async {
         guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
@@ -302,8 +315,7 @@ extension NCNetworking: NCTransferDelegate {
         if serverUrlPush == serverUrl,
             let viewController = navigationController.topViewController as? NCFiles {
             Task {
-                viewController.blinkCell(fileName: fileNameBlink)
-                await viewController.open(metadata: metadata)
+                viewController.blinkCell(fileName: fileName)
             }
             return
         }
@@ -318,8 +330,7 @@ extension NCNetworking: NCTransferDelegate {
             serverUrlPush = self.utilityFileSystem.createServerUrl(serverUrl: serverUrlPush, fileName: String(dir))
 
             if let viewController = controller.navigationCollectionViewCommon.first(where: { $0.navigationController == navigationController && $0.serverUrl == serverUrlPush})?.viewController as? NCFiles, viewController.isViewLoaded {
-                viewController.fileNameBlink = fileNameBlink
-                viewController.openMetadata = metadata
+                viewController.fileNameBlink = fileName
                 navigationController.pushViewController(viewController, animated: false)
             } else {
                 if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
@@ -330,8 +341,7 @@ extension NCNetworking: NCTransferDelegate {
                     controller.navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: navigationController, viewController: viewController))
 
                     if serverUrlPush == serverUrl {
-                        viewController.fileNameBlink = fileNameBlink
-                        viewController.openMetadata = metadata
+                        viewController.fileNameBlink = fileName
                     }
                     navigationController.pushViewController(viewController, animated: false)
                 }

@@ -91,9 +91,9 @@ class NCViewerContextMenu: NSObject {
             image: UIImage(systemName: "questionmark.folder")
         ) { _ in
             Task {
-                await NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
-                                                               fileNameBlink: metadata.fileName,
-                                                               sceneIdentifier: controller.sceneIdentifier)
+                await NCNetworking.shared.blinkInFolder(serverUrl: metadata.serverUrl,
+                                                        fileName: metadata.fileName,
+                                                        sceneIdentifier: controller.sceneIdentifier)
             }
         }
     }
