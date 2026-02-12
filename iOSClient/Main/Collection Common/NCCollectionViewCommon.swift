@@ -185,11 +185,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchBar?.autocapitalizationType = .none
             searchBar?.backgroundImage = UIImage()
 
-            let textField = searchController?.searchBar.searchTextField
-            textField?.backgroundColor = .systemGray.withAlphaComponent(0.30)
-            textField?.borderStyle = .none
-            textField?.layer.cornerRadius = 20
-            textField?.clipsToBounds = true
+            updateSearchFieldAppearance()
 
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
@@ -247,7 +243,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: NCCollectionViewCommon, _) in
             guard let self else { return }
-
             sectionFirstHeader?.setRichWorkspaceColor(style: view.traitCollection.userInterfaceStyle)
         }
 
@@ -359,22 +354,12 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         removeImageCache(metadatas: self.dataSource.getMetadatas())
     }
 
-    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        let viewController = presentationController.presentedViewController
-
-        if viewController is NCViewerRichWorkspaceWebView {
-            closeRichWorkspaceWebView()
-        }
-    }
-
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { _ in
-            let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
-                self.collectionView?.collectionViewLayout.invalidateLayout()
-            }
-            animator.startAnimation()
+            self.updateSearchFieldAppearance()
+            self.collectionView?.collectionViewLayout.invalidateLayout()
         })
 
         self.dismissTip()
@@ -382,6 +367,28 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     override var canBecomeFirstResponder: Bool {
         return true
+    }
+
+    private func updateSearchFieldAppearance() {
+        let textField = searchController?.searchBar.searchTextField
+
+        if traitCollection.horizontalSizeClass == .regular {
+            textField?.backgroundColor = nil
+            textField?.layer.cornerRadius = 0
+        } else {
+            textField?.backgroundColor = UIColor.systemGray.withAlphaComponent(0.30)
+            textField?.borderStyle = .none
+            textField?.layer.cornerRadius = 20
+            textField?.clipsToBounds = true
+        }
+    }
+
+    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        let viewController = presentationController.presentedViewController
+
+        if viewController is NCViewerRichWorkspaceWebView {
+            closeRichWorkspaceWebView()
+        }
     }
 
     // MARK: - NotificationCenter
