@@ -57,8 +57,14 @@ struct DashboardWidgetView: View {
                                             Image(uiImage: element.icon)
                                                 .renderingMode(.template)
                                                 .resizable()
-                                                .frame(width: 20, height: 20)
+                                                .frame(width: 35, height: 35)
                                                 .foregroundColor(Color(color))
+                                        } else if element.imageSystem {
+                                            Image(uiImage: element.icon)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 35, height: 35)
+                                                .scaleEffect(0.8)
                                         } else {
                                             if entry.dashboard?.itemIconsRound ?? false || element.circle {
                                                 Image(uiImage: element.icon)
