@@ -337,12 +337,12 @@ extension NCSelect: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                (cell as? NCCellProtocol)?.previewImageView?.image = image
+                (cell as? NCCellProtocol)?.previewImage?.image = image
             } else {
                 if metadata.iconName.isEmpty {
-                    (cell as? NCCellProtocol)?.previewImageView?.image = NCImageCache.shared.getImageFile()
+                    (cell as? NCCellProtocol)?.previewImage?.image = NCImageCache.shared.getImageFile()
                 } else {
-                    (cell as? NCCellProtocol)?.previewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                    (cell as? NCCellProtocol)?.previewImage?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 }
                 if metadata.hasPreview,
                    metadata.status == NCGlobal.shared.metadataStatusNormal {

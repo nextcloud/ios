@@ -46,7 +46,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         get { return index }
         set { index = newValue }
     }
-    var avatarImageView: UIImageView? {
+    var avatarImage: UIImageView? {
         return imageItem
     }
     var fileUser: String? {
@@ -187,7 +187,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         get { return index }
         set { index = newValue }
     }
-    var avatarImageView: UIImageView? {
+    var avatarImage: UIImageView? {
         return imageItem
     }
     var fileUser: String? {

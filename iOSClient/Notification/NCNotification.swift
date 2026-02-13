@@ -142,9 +142,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
             if results.image == nil {
-                cell.avatarImageView?.image = utility.loadUserImage(for: user, displayName: json["user"]?["name"].string, urlBase: session.urlBase)
+                cell.avatarImage?.image = utility.loadUserImage(for: user, displayName: json["user"]?["name"].string, urlBase: session.urlBase)
             } else {
-                cell.avatarImageView?.image = results.image
+                cell.avatarImage?.image = results.image
             }
 
             if !(results.tblAvatar?.loaded ?? false),
@@ -378,7 +378,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         get { return index }
         set { index = newValue }
     }
-    var avatarImageView: UIImageView? {
+    var avatarImage: UIImageView? {
         return avatar
     }
     var fileUser: String? {

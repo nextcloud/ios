@@ -6,8 +6,8 @@ import UIKit
 
 protocol NCCellProtocol {
     var metadata: tableMetadata? {get set }
-    var avatarImageView: UIImageView? { get }
-    var previewImageView: UIImageView? { get set }
+    var avatarImage: UIImageView? { get }
+    var previewImage: UIImageView? { get set }
 
     func hideButtonMore(_ status: Bool)
     func hideImageStatus(_ status: Bool)
@@ -18,10 +18,10 @@ extension NCCellProtocol {
         get { return nil }
         set {}
     }
-    var avatarImageView: UIImageView? {
+    var avatarImage: UIImageView? {
         return nil
     }
-    var previewImageView: UIImageView? {
+    var previewImage: UIImageView? {
         get { return nil }
         set {}
     }

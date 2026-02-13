@@ -43,12 +43,12 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
 
                 Task { @MainActor in
                     for case let cell as NCCellProtocol in collectionView.visibleCells where cell.metadata?.ocId == self.metadata.ocId {
-                        if let previewImageView = cell.previewImageView {
-                            previewImageView.contentMode = .scaleAspectFill
+                        if let previewImage = cell.previewImage {
+                            previewImage.contentMode = .scaleAspectFill
 
                             if self.metadata.hasPreviewBorder {
-                                previewImageView.layer.borderWidth = 0.2
-                                previewImageView.layer.borderColor = UIColor.systemGray3.cgColor
+                                previewImage.layer.borderWidth = 0.2
+                                previewImage.layer.borderColor = UIColor.systemGray3.cgColor
                             }
 
                             if let photoCell = (cell as? NCPhotoCell),
@@ -58,11 +58,11 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                             }
 
                             UIView.transition(
-                                with: previewImageView,
+                                with: previewImage,
                                 duration: 0.75,
                                 options: .transitionCrossDissolve,
                                 animations: {
-                                    previewImageView.image = image
+                                    previewImage.image = image
                                 },
                                 completion: nil
                             )

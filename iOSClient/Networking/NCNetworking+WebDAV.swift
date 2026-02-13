@@ -841,14 +841,14 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
     var etag: String?
     var view: UIView?
     var account: String
-    var isPreviewImageView: Bool
+    var isPreviewImage: Bool
 
-    init(user: String, fileName: String, account: String, view: UIView?, isPreviewImageView: Bool = false) {
+    init(user: String, fileName: String, account: String, view: UIView?, isPreviewImage: Bool = false) {
         self.user = user
         self.fileName = fileName
         self.account = account
         self.view = view
-        self.isPreviewImageView = isPreviewImageView
+        self.isPreviewImage = isPreviewImage
         self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
     }
 
@@ -882,10 +882,10 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                     let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
                     for case let cell as NCCellProtocol in visibleCells {
                         if self.user == cell.metadata?.ownerId {
-                            if self.isPreviewImageView, let previewImageView = cell.previewImageView {
-                                UIView.transition(with: previewImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImageView.image = image}, completion: nil)
-                            } else if let avatarImageView = cell.avatarImageView {
-                                UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { avatarImageView.image = image}, completion: nil)
+                            if self.isPreviewImage, let previewImage = cell.previewImage {
+                                UIView.transition(with: previewImage, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImage.image = image}, completion: nil)
+                            } else if let avatarImage = cell.avatarImage {
+                                UIView.transition(with: avatarImage, duration: 0.75, options: .transitionCrossDissolve, animations: { avatarImage.image = image}, completion: nil)
                             }
                             break
                         }
