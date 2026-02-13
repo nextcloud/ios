@@ -375,11 +375,18 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         if traitCollection.horizontalSizeClass == .regular {
             textField?.backgroundColor = nil
             textField?.layer.cornerRadius = 0
+            textField?.layer.shadowOpacity = 0
         } else {
-            textField?.backgroundColor = UIColor.systemGray.withAlphaComponent(0.30)
+            textField?.backgroundColor = UIColor { trait in
+                trait.userInterfaceStyle == .dark ? UIColor.systemGray.withAlphaComponent(0.20) : .white
+            }
             textField?.borderStyle = .none
-            textField?.layer.cornerRadius = 20
-            textField?.clipsToBounds = true
+            textField?.layer.cornerRadius = 21
+            textField?.layer.masksToBounds = false
+            textField?.layer.shadowColor = UIColor.black.withAlphaComponent(0.10).cgColor
+            textField?.layer.shadowOpacity = 1
+            textField?.layer.shadowOffset = .zero
+            textField?.layer.shadowRadius = 1.1
         }
     }
 
