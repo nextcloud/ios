@@ -82,10 +82,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         buttonMore.setImage(image, for: .normal)
     }
 
-    func hideButtonMore(_ status: Bool) {
-       // buttonMore.isHidden = status NO MORE USED
-    }
-
     func hideImageStatus(_ status: Bool) {
         imageStatus.isHidden = status
     }
@@ -115,7 +111,6 @@ extension NCCollectionViewCommon {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
         cell.metadata = metadata
-        // cell.hideButtonMore(true) NO MORE USED
         cell.hideImageStatus(true)
 
         // Image

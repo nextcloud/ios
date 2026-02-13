@@ -19,7 +19,8 @@ extension NCCellProtocol {
         set {}
     }
     var avatarImage: UIImageView? {
-        return nil
+        get { return nil }
+        set {}
     }
     var previewImage: UIImageView? {
         get { return nil }

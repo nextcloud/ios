@@ -393,7 +393,6 @@ extension NCCollectionViewCommon {
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
             cell.imageLocal?.image = nil
-            cell.hideButtonMore(true)
         }
 
         // Edit mode
@@ -410,11 +409,6 @@ extension NCCollectionViewCommon {
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
         cell.labelTitle?.font = .systemFont(ofSize: 15)
-
-        // Hide buttons
-        if metadata.name != global.appName {
-            cell.hideButtonMore(true)
-        }
 
         // Obligatory here, at the end !!
         cell.metadata = metadata
