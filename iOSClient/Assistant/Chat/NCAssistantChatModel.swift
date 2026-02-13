@@ -11,6 +11,7 @@ import NextcloudKit
     var isSendingDisabled = false
     var hasError: Bool = false
     var showRetryResponseGenerationButton = false
+    var showMessageNotSentError: Bool = false
 
     public private(set) var selectedConversation: AssistantConversation?
 
@@ -91,16 +92,26 @@ import NextcloudKit
         guard let sessionId = selectedConversation?.id else { return }
 
         let result = await NextcloudKit.shared.getAssistantChatMessages(sessionId: sessionId, account: ncSession.account)
-        messages = result.chatMessages ?? []
+
+        if result.error == .success {
+            messages = result.chatMessages ?? []
+        } else {
+            await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_load_messages_", errorCode: result.error.errorCode)
+        }
     }
 
     private func loadLastMessage() async {
         guard let chatMessageTaskId else { return }
 
         let result = await NextcloudKit.shared.checkAssistantChatGeneration(taskId: chatMessageTaskId, sessionId: selectedConversation?.id ?? 0, account: ncSession.account)
-        let lastMessage = result.chatMessage
 
-        if let lastMessage, lastMessage.role == "assistant" {
+        if result.error != .success {
+            stopPolling()
+            await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
+            return
+        }
+
+        if let lastMessage = result.chatMessage, lastMessage.role == "assistant" {
             stopPolling()
             messages.append(lastMessage)
         }
@@ -123,7 +134,7 @@ import NextcloudKit
                 await generateChatSession()
                 startPollingForResponse()
             } else {
-                //TODO
+                await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_send_message_", errorCode: 20)
             }
 
             isSending = false

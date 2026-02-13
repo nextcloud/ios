@@ -15,11 +15,12 @@ struct NCAssistantChat: View {
         if chatModel.messages.isEmpty {
             NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_no_chat_subtitle_")
         }
-
+        
         ZStack {
             VStack(spacing: 0) {
                 messageListView
             }
+
         }
         .safeAreaInset(edge: .bottom) {
             ChatInputField(isLoading: $chatModel.isSending, isDisabled: $chatModel.isSendingDisabled) { input in
@@ -30,7 +31,7 @@ struct NCAssistantChat: View {
                 }
             }
         }
-        .navigationTitle("_assistant_chat_")
+        .navigationTitle(NSLocalizedString("_assistant_chat_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
     }
 

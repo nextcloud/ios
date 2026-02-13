@@ -723,7 +723,9 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_new_conversation_"             = "New conversation";
 "_type_message_"                 = "Type a message...";
 "_assistant_chat_"               = "Assistant Chat";
-
+"_assistant_error_send_message_"  = "Could not send message. Please try again.";
+"_assistant_error_load_messages_" = "Could not load messages. Please try again.";
+"_assistant_error_generate_response_" = "Could not generate response. Please try again.";
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate.";
 "_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
