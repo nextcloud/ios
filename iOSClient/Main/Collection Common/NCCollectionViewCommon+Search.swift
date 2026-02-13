@@ -327,4 +327,3 @@ extension NCCollectionViewCommon {
         return metadata
     }
 }
-

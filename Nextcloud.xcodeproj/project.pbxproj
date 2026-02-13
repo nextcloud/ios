@@ -728,7 +728,6 @@
 		F7C30DFE291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DFC291BD0B80017149B /* NCNetworkingE2EEDelete.swift */; };
 		F7C30E00291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DFF291BD2610017149B /* NCNetworkingE2EERename.swift */; };
 		F7C30E01291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DFF291BD2610017149B /* NCNetworkingE2EERename.swift */; };
-		F7C49B7E2F3F169600B18F5F /* NCCollectionViewCommon+CellLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C49B7D2F3F168000B18F5F /* NCCollectionViewCommon+CellLayout.swift */; };
 		F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EA2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EB2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
@@ -1685,7 +1684,6 @@
 		F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EECreateFolder.swift; sourceTree = "<group>"; };
 		F7C30DFC291BD0B80017149B /* NCNetworkingE2EEDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEDelete.swift; sourceTree = "<group>"; };
 		F7C30DFF291BD2610017149B /* NCNetworkingE2EERename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EERename.swift; sourceTree = "<group>"; };
-		F7C49B7D2F3F168000B18F5F /* NCCollectionViewCommon+CellLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+CellLayout.swift"; sourceTree = "<group>"; };
 		F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+RecommendedFiles.swift"; sourceTree = "<group>"; };
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
 		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
@@ -2479,7 +2477,6 @@
 				F75FE06B2BB01D0D00A0EFEF /* Cell */,
 				F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */,
 				F7CAFE172F164B9200DB35A5 /* NCCollectionViewCommon+CellDelegate.swift */,
-				F7C49B7D2F3F168000B18F5F /* NCCollectionViewCommon+CellLayout.swift */,
 				F7743A132C33F13A0034F670 /* NCCollectionViewCommon+CollectionViewDataSource.swift */,
 				F74D50342C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */,
 				F7743A112C33F0A20034F670 /* NCCollectionViewCommon+CollectionViewDelegate.swift */,
@@ -4511,7 +4508,6 @@
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F724377B2C10B83E00C7C68D /* NCSharePermissions.swift in Sources */,
 				F317C82E2E844C5300761AEA /* ClientIntegrationUIViewer.swift in Sources */,
-				F7C49B7E2F3F169600B18F5F /* NCCollectionViewCommon+CellLayout.swift in Sources */,
 				F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */,
 				F7D4BF3D2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,

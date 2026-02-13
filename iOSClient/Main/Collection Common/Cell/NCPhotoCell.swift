@@ -103,3 +103,61 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityValue = value
     }
 }
+
+extension NCCollectionViewCommon {
+    // MARK: - LAYOUT PHOTO
+    //
+    func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
+        let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
+        let ext = global.getSizeExtension(column: self.numberOfColumns)
+
+        cell.metadata = metadata
+        // cell.hideButtonMore(true) NO MORE USED
+        cell.hideImageStatus(true)
+
+        // Image
+        //
+        if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            cell.previewImageView?.image = image
+            cell.previewImageView?.contentMode = .scaleAspectFill
+        } else {
+            if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
+                cell.previewImageView?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
+            }
+
+            DispatchQueue.global(qos: .userInteractive).async {
+                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
+                if let image {
+                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+                    DispatchQueue.main.async {
+                        cell.previewImageView?.image = image
+                        cell.previewImageView?.contentMode = .scaleAspectFill
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        cell.previewImageView?.contentMode = .scaleAspectFit
+                        if metadata.iconName.isEmpty {
+                            cell.previewImageView?.image = NCImageCache.shared.getImageFile()
+                        } else {
+                            cell.previewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                        }
+                    }
+                }
+            }
+        }
+
+        // Edit mode
+        //
+        if fileSelect.contains(metadata.ocId) {
+            cell.selected(true, isEditMode: isEditMode)
+        } else {
+            cell.selected(false, isEditMode: isEditMode)
+        }
+
+        if width > 100 {
+            cell.hideImageStatus(false)
+        }
+
+        return cell
+    }
+}
