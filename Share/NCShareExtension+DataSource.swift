@@ -86,7 +86,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
+        cell.imageLocal?.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
         cell.imageMore.image = nil
@@ -153,7 +153,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
+            cell.imageLocal?.image = NCImageCache.shared.getImageOfflineFlag()
         }
     }
 }

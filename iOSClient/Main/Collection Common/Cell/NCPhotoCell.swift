@@ -11,9 +11,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     // Cell Protocol
     var metadata: tableMetadata?
-    var avatarImage: UIImageView? {
-        return nil
-    }
     var previewImage: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
@@ -61,7 +58,6 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT PHOTO
     //
     func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
-        let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
         cell.metadata = metadata

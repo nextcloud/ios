@@ -384,7 +384,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
+        cell.imageLocal?.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
         cell.imageMore.image = nil
@@ -419,9 +419,9 @@ extension NCSelect: UICollectionViewDataSource {
 
             self.database.getTableLocal(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) { tblLocalFile in
                 if let tblLocalFile, tblLocalFile.offline {
-                    cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
+                    cell.imageLocal?.image = NCImageCache.shared.getImageOfflineFlag()
                 } else if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                    cell.imageLocal.image = NCImageCache.shared.getImageLocal()
+                    cell.imageLocal?.image = NCImageCache.shared.getImageLocal()
                 }
             }
         }
