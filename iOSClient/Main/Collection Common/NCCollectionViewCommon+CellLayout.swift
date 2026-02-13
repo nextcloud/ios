@@ -11,8 +11,15 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT PHOTO
     //
     internal func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
+        defer {
+            let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
+                cell.hideButtonShare(true)
+            }
+        }
         let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
+
 
         cell.metadata = metadata
         // cell.hideButtonMore(true) NO MORE USED
@@ -71,6 +78,12 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT GRID
     //
     internal func gridCell(cell: NCGridCell, indexPath: IndexPath, metadata: tableMetadata) -> NCGridCell {
+        defer {
+            let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
+                cell.hideButtonShare(true)
+            }
+        }
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -405,6 +418,12 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT LIST
     //
     internal func listCell(cell: NCListCell, indexPath: IndexPath, metadata: tableMetadata) -> NCListCell {
+        defer {
+            let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
+                cell.hideButtonShare(true)
+            }
+        }
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []

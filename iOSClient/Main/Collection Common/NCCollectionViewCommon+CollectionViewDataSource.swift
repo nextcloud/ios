@@ -54,15 +54,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell: NCCellProtocol & UICollectionViewCell
         let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
-
-        defer {
-            let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-                cell.hideButtonShare(true)
-            }
-        }
 
         // E2EE create preview
         if self.isDirectoryE2EE,
@@ -76,30 +68,25 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.isImageOrVideo {
                 let photoCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell)!
                 photoCell.delegate = self
-                cell = photoCell
                 return self.photoCell(cell: photoCell, indexPath: indexPath, metadata: metadata)
             } else {
                 let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
                 gridCell.delegate = self
-                cell = gridCell
                 return self.gridCell(cell: gridCell, indexPath: indexPath, metadata: metadata)
             }
         } else if isLayoutGrid {
             // LAYOUT GRID
             let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
             gridCell.delegate = self
-            cell = gridCell
             return self.gridCell(cell: gridCell, indexPath: indexPath, metadata: metadata)
         } else {
             // LAYOUT LIST
             let listCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
             listCell.delegate = self
-            cell = listCell
             return self.listCell(cell: listCell, indexPath: indexPath, metadata: metadata)
         }
     }
 
-    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
             let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
