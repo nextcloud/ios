@@ -27,10 +27,14 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     weak var delegate: NCGridCellDelegate?
 
+    // Cell Protocol
     var metadata: tableMetadata? {
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
+    }
+    var avatarImage: UIImageView? {
+        return nil
     }
     var previewImage: UIImageView? {
         get { return imageItem }
@@ -100,31 +104,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.setImage(image, for: .normal)
     }
 
-    func hideImageItem(_ status: Bool) {
-        imageItem.isHidden = status
-    }
-
-    func hideImageFavorite(_ status: Bool) {
-        imageFavorite.isHidden = status
-    }
-
-    func hideImageStatus(_ status: Bool) {
-        imageStatus.isHidden = status
-    }
-
-    func hideImageLocal(_ status: Bool) {
-        imageLocal.isHidden = status
-    }
-
-    func hideLabelInfo(_ status: Bool) {
-        labelInfo.isHidden = status
-    }
-
-    func hideLabelSubinfo(_ status: Bool) {
-        labelSubinfo.isHidden = status
-    }
-
-    func hideButtonMore(_ status: Bool) {
+    func setButtonMore(_ status: Bool) {
         buttonMore.isHidden = status
     }
 
@@ -159,8 +139,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityLabel = label
         accessibilityValue = value
     }
-
-    func setIconOutlines() {}
 }
 
 // MARK: - Grid Layout
@@ -437,8 +415,6 @@ extension NCCollectionViewCommon {
         if metadata.name != global.appName {
             cell.hideButtonMore(true)
         }
-
-        cell.setIconOutlines()
 
         // Obligatory here, at the end !!
         cell.metadata = metadata

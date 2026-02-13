@@ -18,12 +18,15 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     weak var delegate: NCPhotoCellDelegate?
 
+    // Cell Protocol
     var metadata: tableMetadata? {
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
-
+    var avatarImage: UIImageView? {
+        return nil
+    }
     var previewImage: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }

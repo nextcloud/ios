@@ -37,12 +37,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     weak var delegate: NCListCellDelegate?
 
+    // Cell Protocol
     var metadata: tableMetadata? {
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
-
     var avatarImage: UIImageView? {
         return imageShared
     }
