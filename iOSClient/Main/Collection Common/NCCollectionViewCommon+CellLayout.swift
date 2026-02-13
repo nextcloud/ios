@@ -11,15 +11,8 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT PHOTO
     //
     internal func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
-        defer {
-            let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-                cell.hideButtonShare(true)
-            }
-        }
         let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-
 
         cell.metadata = metadata
         // cell.hideButtonMore(true) NO MORE USED
@@ -78,12 +71,6 @@ extension NCCollectionViewCommon {
     // MARK: - LAYOUT GRID
     //
     internal func gridCell(cell: NCGridCell, indexPath: IndexPath, metadata: tableMetadata) -> NCGridCell {
-        defer {
-            let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-                cell.hideButtonShare(true)
-            }
-        }
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -109,22 +96,15 @@ extension NCCollectionViewCommon {
             isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionMounted)
         }
 
-        if isSearchingMode {
-            if metadata.name == global.appName {
-                cell.info?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
-            } else {
-                cell.info?.text = metadata.subline
-            }
-            cell.subInfo?.isHidden = true
-        } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
-            cell.subInfo?.isHidden = false
-            cell.info?.text = metadata.sessionError
+        if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
+            cell.labelSubinfo?.isHidden = false
+            cell.labelInfo?.text = metadata.sessionError
         } else {
-            cell.subInfo?.isHidden = false
+            cell.labelSubinfo?.isHidden = false
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.title?.text = metadata.fileNameView
+        cell.labelTitle?.text = metadata.fileNameView
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
@@ -158,7 +138,7 @@ extension NCCollectionViewCommon {
             metadata.isOffline = tblDirectory?.offline ?? false
 
             if metadata.isOffline {
-                cell.localImageView?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
+                cell.imageLocal?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             }
 
             // color folder
@@ -237,27 +217,16 @@ extension NCCollectionViewCommon {
 
             if metadata.isOffline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                cell.localImageView?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
+                cell.imageLocal?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.localImageView?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])
+                cell.imageLocal?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])
             }
         }
 
         // image Favorite
         if metadata.favorite {
-            cell.favoriteImageView?.image = imageCache.getImageFavorite()
+            cell.imageFavorite?.image = imageCache.getImageFavorite()
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
-        }
-
-        // Share image
-        if isShare {
-            cell.shareImageView?.image = imageCache.getImageShared()
-        } else if !metadata.shareType.isEmpty {
-            metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-            (cell.shareImageView?.image = imageCache.getImageShareByLink()) :
-            (cell.shareImageView?.image = imageCache.getImageShared())
-        } else {
-            cell.shareImageView?.image = imageCache.getImageCanShare()
         }
 
         // Button More
@@ -270,34 +239,34 @@ extension NCCollectionViewCommon {
 
         // Status
         if metadata.isLivePhoto {
-            cell.statusImageView?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            cell.imageStatus?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.statusImageView?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
+            cell.imageStatus?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
         }
 
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
-            cell.statusImageView?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
         case global.metadataStatusWaitFavorite:
-            cell.statusImageView?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
         case global.metadataStatusWaitCopy:
-            cell.statusImageView?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_copy_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_copy_", comment: "")
         case global.metadataStatusWaitMove:
-            cell.statusImageView?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_move_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_move_", comment: "")
         case global.metadataStatusWaitRename:
-            cell.statusImageView?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_rename_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_rename_", comment: "")
         case global.metadataStatusWaitDownload:
-            cell.statusImageView?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloading:
-            cell.statusImageView?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            cell.statusImageView?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         default:
             break
         }
@@ -329,16 +298,8 @@ extension NCCollectionViewCommon {
 
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
-            cell.localImageView?.image = nil
-            cell.hideButtonShare(true)
+            cell.imageLocal?.image = nil
             cell.hideButtonMore(true)
-        }
-
-        // Separator
-        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearchingMode {
-            cell.separatorView?.isHidden = true
-        } else {
-            cell.separatorView?.isHidden = false
         }
 
         // Edit mode
@@ -350,28 +311,11 @@ extension NCCollectionViewCommon {
         }
 
         // Accessibility
-        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.info?.text ?? "") + (cell.subInfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.labelInfo?.text ?? "") + (cell.labelSubinfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
-        cell.title?.textColor = NCBrandColor.shared.textColor
-        cell.title?.font = .systemFont(ofSize: 15)
-
-        if isSearchingMode,
-           let searchResultStore,
-           let title = cell.title?.text {
-            let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
-            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
-            cell.title?.attributedText = attributedString
-        }
-
-        // TAGS
-        cell.setTags(tags: Array(metadata.tags))
-
-        // SearchingMode - TAG Separator Hidden
-        if isSearchingMode {
-            cell.tagSeparator?.isHidden = true
-        }
+        cell.labelTitle?.textColor = NCBrandColor.shared.textColor
+        cell.labelTitle?.font = .systemFont(ofSize: 15)
 
         // Layout photo
         if isLayoutPhoto {
@@ -384,12 +328,12 @@ extension NCCollectionViewCommon {
             cell.hideLabelInfo(false)
             cell.hideLabelSubinfo(false)
             cell.hideImageStatus(false)
-            cell.title?.font = UIFont.systemFont(ofSize: 15)
+            cell.labelTitle?.font = UIFont.systemFont(ofSize: 15)
 
             if width < 120 {
                 cell.hideImageFavorite(true)
                 cell.hideImageLocal(true)
-                cell.title?.font = UIFont.systemFont(ofSize: 10)
+                cell.labelTitle?.font = UIFont.systemFont(ofSize: 10)
                 if width < 100 {
                     cell.hideImageItem(true)
                     cell.hideButtonMore(true)
@@ -402,8 +346,6 @@ extension NCCollectionViewCommon {
 
         // Hide buttons
         if metadata.name != global.appName {
-            cell.titleInfoTrailingFull()
-            cell.hideButtonShare(true)
             cell.hideButtonMore(true)
         }
 
@@ -451,20 +393,20 @@ extension NCCollectionViewCommon {
 
         if isSearchingMode {
             if metadata.name == global.appName {
-                cell.info?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
+                cell.labelInfo?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
             } else {
-                cell.info?.text = metadata.subline
+                cell.labelInfo?.text = metadata.subline
             }
-            cell.subInfo?.isHidden = true
+            cell.labelSubinfo?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
-            cell.subInfo?.isHidden = false
-            cell.info?.text = metadata.sessionError
+            cell.labelSubinfo?.isHidden = false
+            cell.labelInfo?.text = metadata.sessionError
         } else {
-            cell.subInfo?.isHidden = false
+            cell.labelSubinfo?.isHidden = false
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.title?.text = metadata.fileNameView
+        cell.labelTitle?.text = metadata.fileNameView
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
@@ -498,7 +440,7 @@ extension NCCollectionViewCommon {
             metadata.isOffline = tblDirectory?.offline ?? false
 
             if metadata.isOffline {
-                cell.localImageView?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
+                cell.imageLocal?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             }
 
             // color folder
@@ -577,27 +519,27 @@ extension NCCollectionViewCommon {
 
             if metadata.isOffline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                cell.localImageView?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
+                cell.imageLocal?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.localImageView?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])
+                cell.imageLocal?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])
             }
         }
 
         // image Favorite
         if metadata.favorite {
-            cell.favoriteImageView?.image = imageCache.getImageFavorite()
+            cell.imageFavorite?.image = imageCache.getImageFavorite()
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
         // Share image
         if isShare {
-            cell.shareImageView?.image = imageCache.getImageShared()
+            cell.imageShared?.image = imageCache.getImageShared()
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-            (cell.shareImageView?.image = imageCache.getImageShareByLink()) :
-            (cell.shareImageView?.image = imageCache.getImageShared())
+            (cell.imageShared?.image = imageCache.getImageShareByLink()) :
+            (cell.imageShared?.image = imageCache.getImageShared())
         } else {
-            cell.shareImageView?.image = imageCache.getImageCanShare()
+            cell.imageShared?.image = imageCache.getImageCanShare()
         }
 
         // Button More
@@ -610,34 +552,34 @@ extension NCCollectionViewCommon {
 
         // Status
         if metadata.isLivePhoto {
-            cell.statusImageView?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            cell.imageStatus?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.statusImageView?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
+            cell.imageStatus?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
         }
 
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
-            cell.statusImageView?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
         case global.metadataStatusWaitFavorite:
-            cell.statusImageView?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
         case global.metadataStatusWaitCopy:
-            cell.statusImageView?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_copy_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_copy_", comment: "")
         case global.metadataStatusWaitMove:
-            cell.statusImageView?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_move_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_move_", comment: "")
         case global.metadataStatusWaitRename:
-            cell.statusImageView?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.info?.text = NSLocalizedString("_status_wait_rename_", comment: "")
+            cell.imageStatus?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo?.text = NSLocalizedString("_status_wait_rename_", comment: "")
         case global.metadataStatusWaitDownload:
-            cell.statusImageView?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloading:
-            cell.statusImageView?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            cell.statusImageView?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         default:
             break
         }
@@ -669,16 +611,16 @@ extension NCCollectionViewCommon {
 
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
-            cell.localImageView?.image = nil
+            cell.imageLocal?.image = nil
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)
         }
 
         // Separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearchingMode {
-            cell.separatorView?.isHidden = true
+            cell.separator?.isHidden = true
         } else {
-            cell.separatorView?.isHidden = false
+            cell.separator?.isHidden = false
         }
 
         // Edit mode
@@ -690,19 +632,19 @@ extension NCCollectionViewCommon {
         }
 
         // Accessibility
-        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.info?.text ?? "") + (cell.subInfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.labelInfo?.text ?? "") + (cell.labelSubinfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
-        cell.title?.textColor = NCBrandColor.shared.textColor
-        cell.title?.font = .systemFont(ofSize: 15)
+        cell.labelTitle?.textColor = NCBrandColor.shared.textColor
+        cell.labelTitle?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode,
            let searchResultStore,
-           let title = cell.title?.text {
+           let title = cell.labelTitle?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
             attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
-            cell.title?.attributedText = attributedString
+            cell.labelTitle?.attributedText = attributedString
         }
 
         // TAGS
@@ -710,34 +652,7 @@ extension NCCollectionViewCommon {
 
         // SearchingMode - TAG Separator Hidden
         if isSearchingMode {
-            cell.tagSeparator?.isHidden = true
-        }
-
-        // Layout photo
-        if isLayoutPhoto {
-            let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
-
-            cell.hideImageFavorite(false)
-            cell.hideImageLocal(false)
-            cell.hideImageItem(false)
-            cell.hideButtonMore(false)
-            cell.hideLabelInfo(false)
-            cell.hideLabelSubinfo(false)
-            cell.hideImageStatus(false)
-            cell.title?.font = UIFont.systemFont(ofSize: 15)
-
-            if width < 120 {
-                cell.hideImageFavorite(true)
-                cell.hideImageLocal(true)
-                cell.title?.font = UIFont.systemFont(ofSize: 10)
-                if width < 100 {
-                    cell.hideImageItem(true)
-                    cell.hideButtonMore(true)
-                    cell.hideLabelInfo(true)
-                    cell.hideLabelSubinfo(true)
-                    cell.hideImageStatus(true)
-                }
-            }
+            cell.labelInfoSeparator.isHidden = true
         }
 
         // Hide buttons

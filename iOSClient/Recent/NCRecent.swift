@@ -141,7 +141,7 @@ class NCRecent: NCCollectionViewCommon {
         <d:orderby>
             <d:order>
                 <d:prop>
-        /Users/marinofaggiana/Developer/ios/iOSClient/Assistant                 <d:getlastmodified/>
+                    <d:getlastmodified/>
                 </d:prop>
                 <d:descending/>
             </d:order>

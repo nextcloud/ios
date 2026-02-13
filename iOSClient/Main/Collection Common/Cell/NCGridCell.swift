@@ -34,30 +34,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var title: UILabel? {
-        get { return labelTitle }
-        set { labelTitle = newValue }
-    }
-    var info: UILabel? {
-        get { return labelInfo }
-        set { labelInfo = newValue }
-    }
-    var subInfo: UILabel? {
-        get { return labelSubinfo }
-        set { labelSubinfo = newValue }
-    }
-    var statusImageView: UIImageView? {
-        get { return imageStatus }
-        set { imageStatus = newValue }
-    }
-    var localImageView: UIImageView? {
-        get { return imageLocal }
-        set { imageLocal = newValue }
-    }
-    var favoriteImageView: UIImageView? {
-        get { return imageFavorite }
-        set { imageFavorite = newValue }
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()

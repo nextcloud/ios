@@ -28,10 +28,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var statusImageView: UIImageView? {
-        get { return imageStatus }
-        set { imageStatus = newValue }
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
