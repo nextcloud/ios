@@ -4,43 +4,19 @@
 
 import UIKit
 
-protocol NCPhotoCellDelegate: AnyObject {
-    func onMenuIntent(with metadata: tableMetadata?)
-    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
-}
-
 class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
-    @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    weak var delegate: NCPhotoCellDelegate?
-
     // Cell Protocol
-    var metadata: tableMetadata? {
-        didSet {
-            delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
-        }
-    }
+    var metadata: tableMetadata?
     var avatarImage: UIImageView? {
         return nil
     }
     var previewImage: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
-    }
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
-        tapObserver.cancelsTouchesInView = false
-        tapObserver.delegate = self
-        contentView.addGestureRecognizer(tapObserver)
-
-        initCell()
     }
 
     override func prepareForReuse() {
@@ -56,34 +32,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         imageItem.image = nil
         imageSelect.isHidden = true
         imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageStatus.image = nil
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
-
-        buttonMore.isHidden = true
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
-        contentView.bringSubviewToFront(buttonMore)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
-    }
-
-    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let location = g.location(in: contentView)
-
-        if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: metadata)
-        }
-    }
-
-    func setButtonMore(image: UIImage) {
-        buttonMore.setImage(image, for: .normal)
-    }
-
-    func hideImageStatus(_ status: Bool) {
-        imageStatus.isHidden = status
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {
@@ -111,7 +65,6 @@ extension NCCollectionViewCommon {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
         cell.metadata = metadata
-        cell.hideImageStatus(true)
 
         // Image
         //
@@ -150,10 +103,6 @@ extension NCCollectionViewCommon {
             cell.selected(true, isEditMode: isEditMode)
         } else {
             cell.selected(false, isEditMode: isEditMode)
-        }
-
-        if width > 100 {
-            cell.hideImageStatus(false)
         }
 
         return cell

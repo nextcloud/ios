@@ -67,7 +67,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if isLayoutPhoto {
             if metadata.isImageOrVideo {
                 let photoCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell)!
-                photoCell.delegate = self
                 return self.photoCell(cell: photoCell, indexPath: indexPath, metadata: metadata)
             } else {
                 let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
