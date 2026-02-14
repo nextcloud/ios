@@ -69,7 +69,7 @@ extension NCCollectionViewCommon {
         cell.previewImage?.image = cell.previewImage?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
     }
 
-    func setCellFile(cell: NCCellProtocol, metadata: tableMetadata,) {
+    func setCellFile(cell: NCCellProtocol, metadata: tableMetadata, a11yValues: inout [String]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
@@ -142,7 +142,7 @@ extension NCCollectionViewCommon {
         metadata.isOffline = tableLocalFile?.offline ?? false
 
         if metadata.isOffline {
-            //a11yValues.append(NSLocalizedString("_offline_", comment: ""))
+            a11yValues.append(NSLocalizedString("_offline_", comment: ""))
             cell.imageLocal?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
         } else if utilityFileSystem.fileProviderStorageExists(metadata) {
             cell.imageLocal?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])

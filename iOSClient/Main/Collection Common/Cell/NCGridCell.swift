@@ -229,7 +229,7 @@ extension NCCollectionViewCommon {
         if metadata.directory {
             setCellDirectory(cell: cell, metadata: metadata, isShare: isShare, isMounted: isMounted)
         } else {
-            setCellFile(cell: cell, metadata: metadata)
+            setCellFile(cell: cell, metadata: metadata, a11yValues: &a11yValues)
         }
 
         // image Favorite
