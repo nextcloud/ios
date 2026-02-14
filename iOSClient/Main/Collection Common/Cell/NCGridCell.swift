@@ -247,38 +247,7 @@ extension NCCollectionViewCommon {
         }
 
         // Status
-        if metadata.isLivePhoto {
-            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
-            a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
-        } else if metadata.isVideo {
-            cell.imageStatus.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
-        }
-
-        switch metadata.status {
-        case global.metadataStatusWaitCreateFolder:
-            cell.imageStatus.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
-        case global.metadataStatusWaitFavorite:
-            cell.imageStatus.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo.text = NSLocalizedString("_status_wait_favorite_", comment: "")
-        case global.metadataStatusWaitCopy:
-            cell.imageStatus.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo.text = NSLocalizedString("_status_wait_copy_", comment: "")
-        case global.metadataStatusWaitMove:
-            cell.imageStatus.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo.text = NSLocalizedString("_status_wait_move_", comment: "")
-        case global.metadataStatusWaitRename:
-            cell.imageStatus.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo.text = NSLocalizedString("_status_wait_rename_", comment: "")
-        case global.metadataStatusWaitDownload:
-            cell.imageStatus.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-        case global.metadataStatusDownloading:
-            cell.imageStatus.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            cell.imageStatus.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        default:
-            break
-        }
+        cellMainStatus(cell: cell, metadata: metadata, a11yValues: &a11yValues)
 
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
