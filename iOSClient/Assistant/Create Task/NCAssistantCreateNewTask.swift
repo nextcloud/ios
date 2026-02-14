@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NCAssistantCreateNewTask: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
     @State var text = ""
     @FocusState private var inFocus: Bool
     @Environment(\.presentationMode) var presentationMode
@@ -60,7 +60,7 @@ struct NCAssistantCreateNewTask: View {
     let model = NCAssistantModel(controller: nil)
 
     NCAssistantCreateNewTask()
-        .environmentObject(model)
+        .environment(model)
         .onAppear {
             model.loadDummyData()
         }
