@@ -185,8 +185,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchBar?.autocapitalizationType = .none
             searchBar?.backgroundImage = UIImage()
 
-            updateSearchFieldAppearance()
-
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
         }
@@ -358,7 +356,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { _ in
-            self.updateSearchFieldAppearance()
             self.collectionView?.collectionViewLayout.invalidateLayout()
         })
 
@@ -367,20 +364,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     override var canBecomeFirstResponder: Bool {
         return true
-    }
-
-    private func updateSearchFieldAppearance() {
-        let textField = searchController?.searchBar.searchTextField
-
-        if traitCollection.horizontalSizeClass == .regular {
-            textField?.backgroundColor = nil
-            textField?.layer.cornerRadius = 0
-        } else {
-            textField?.backgroundColor = UIColor.systemGray.withAlphaComponent(0.30)
-            textField?.borderStyle = .none
-            textField?.layer.cornerRadius = 20
-            textField?.clipsToBounds = true
-        }
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {

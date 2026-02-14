@@ -1,4 +1,4 @@
-extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate {
+extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate {
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
             guard let metadata else { return }

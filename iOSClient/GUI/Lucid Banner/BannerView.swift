@@ -393,4 +393,3 @@ struct MessageBannerView: View {
         .padding()
     }
 }
-

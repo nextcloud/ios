@@ -26,7 +26,7 @@ import NextcloudKit
 
 // MARK: - NCShareCommentsCell
 
-class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
+class NCShareCommentsCell: UITableViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!
@@ -44,7 +44,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         get { return index }
         set { index = newValue }
     }
-    var avatarImageView: UIImageView? {
+    var avatarImage: UIImageView? {
         return imageItem
     }
     var fileUser: String? {
