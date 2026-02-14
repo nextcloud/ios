@@ -35,10 +35,10 @@ extension NCCellMainProtocol {
 
 #if !EXTENSION
 extension NCCollectionViewCommon {
-    func setCellDirectory(cell: NCCellMainProtocol,
-                          metadata: tableMetadata,
-                          isShare: Bool,
-                          isMounted: Bool) {
+    func cellMainDirectory(cell: NCCellMainProtocol,
+                           metadata: tableMetadata,
+                           isShare: Bool,
+                           isMounted: Bool) {
         let tblDirectory = database.getTableDirectory(ocId: metadata.ocId)
 
         if metadata.e2eEncrypted {
@@ -72,9 +72,9 @@ extension NCCollectionViewCommon {
         cell.previewImage?.image = cell.previewImage?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
     }
 
-    func setCellFile(cell: NCCellMainProtocol,
-                     metadata: tableMetadata,
-                     a11yValues: inout [String]) {
+    func cellMainFile(cell: NCCellMainProtocol,
+                      metadata: tableMetadata,
+                      a11yValues: inout [String]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 

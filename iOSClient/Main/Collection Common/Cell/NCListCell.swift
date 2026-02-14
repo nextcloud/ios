@@ -424,9 +424,9 @@ extension NCCollectionViewCommon {
         }
 
         if metadata.directory {
-            setCellDirectory(cell: cell, metadata: metadata, isShare: isShare, isMounted: isMounted)
+            cellMainDirectory(cell: cell, metadata: metadata, isShare: isShare, isMounted: isMounted)
         } else {
-            setCellFile(cell: cell, metadata: metadata, a11yValues: &a11yValues)
+            cellMainFile(cell: cell, metadata: metadata, a11yValues: &a11yValues)
         }
 
         // image Favorite

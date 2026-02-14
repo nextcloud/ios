@@ -227,14 +227,14 @@ extension NCCollectionViewCommon {
         }
 
         if metadata.directory {
-            setCellDirectory(cell: cell, metadata: metadata, isShare: isShare, isMounted: isMounted)
+            cellMainDirectory(cell: cell, metadata: metadata, isShare: isShare, isMounted: isMounted)
         } else {
-            setCellFile(cell: cell, metadata: metadata, a11yValues: &a11yValues)
+            cellMainFile(cell: cell, metadata: metadata, a11yValues: &a11yValues)
         }
 
         // image Favorite
         if metadata.favorite {
-            cell.imageFavorite?.image = imageCache.getImageFavorite()
+            cell.imageFavorite.image = imageCache.getImageFavorite()
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
@@ -248,34 +248,34 @@ extension NCCollectionViewCommon {
 
         // Status
         if metadata.isLivePhoto {
-            cell.imageStatus?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.imageStatus?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
+            cell.imageStatus.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
         }
 
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
-            cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
+            cell.imageStatus.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
         case global.metadataStatusWaitFavorite:
-            cell.imageStatus?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
+            cell.imageStatus.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo.text = NSLocalizedString("_status_wait_favorite_", comment: "")
         case global.metadataStatusWaitCopy:
-            cell.imageStatus?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo?.text = NSLocalizedString("_status_wait_copy_", comment: "")
+            cell.imageStatus.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo.text = NSLocalizedString("_status_wait_copy_", comment: "")
         case global.metadataStatusWaitMove:
-            cell.imageStatus?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo?.text = NSLocalizedString("_status_wait_move_", comment: "")
+            cell.imageStatus.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo.text = NSLocalizedString("_status_wait_move_", comment: "")
         case global.metadataStatusWaitRename:
-            cell.imageStatus?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            cell.labelInfo?.text = NSLocalizedString("_status_wait_rename_", comment: "")
+            cell.imageStatus.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelInfo.text = NSLocalizedString("_status_wait_rename_", comment: "")
         case global.metadataStatusWaitDownload:
-            cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloading:
-            cell.imageStatus?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            cell.imageStatus?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         default:
             break
         }
@@ -294,11 +294,11 @@ extension NCCollectionViewCommon {
         }
 
         // Accessibility
-        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.labelInfo?.text ?? "") + (cell.labelSubinfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.labelInfo.text ?? "") + (cell.labelSubinfo.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
-        cell.labelTitle?.textColor = NCBrandColor.shared.textColor
-        cell.labelTitle?.font = .systemFont(ofSize: 15)
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
+        cell.labelTitle.font = .systemFont(ofSize: 15)
 
         // Obligatory here, at the end !!
         cell.metadata = metadata
