@@ -12,7 +12,7 @@ protocol NCGridCellDelegate: AnyObject {
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!

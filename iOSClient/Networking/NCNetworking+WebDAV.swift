@@ -880,7 +880,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
 
                 DispatchQueue.main.async {
                     let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
-                    for case let cell as NCCellProtocol in visibleCells {
+                    for case let cell as NCCellMainProtocol in visibleCells {
                         if self.user == cell.metadata?.ownerId {
                             if self.isPreviewImage, let previewImage = cell.previewImage {
                                 UIView.transition(with: previewImage, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImage.image = image}, completion: nil)

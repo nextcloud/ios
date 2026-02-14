@@ -4,7 +4,7 @@
 
 import UIKit
 
-class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!

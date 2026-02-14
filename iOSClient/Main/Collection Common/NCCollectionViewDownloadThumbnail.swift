@@ -42,7 +42,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                 let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
                 Task { @MainActor in
-                    for case let cell as NCCellProtocol in collectionView.visibleCells where cell.metadata?.ocId == self.metadata.ocId {
+                    for case let cell as NCCellMainProtocol in collectionView.visibleCells where cell.metadata?.ocId == self.metadata.ocId {
                         if let previewImage = cell.previewImage {
                             previewImage.contentMode = .scaleAspectFill
 

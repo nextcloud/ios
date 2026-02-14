@@ -7,14 +7,14 @@ import UIKit
 import NextcloudKit
 import RealmSwift
 
-protocol NCCellProtocol {
+protocol NCCellMainProtocol {
     var metadata: tableMetadata? {get set }
     var avatarImage: UIImageView? { get }
     var previewImage: UIImageView? { get set }
     var imageLocal: UIImageView? { get set }
 }
 
-extension NCCellProtocol {
+extension NCCellMainProtocol {
     var metadata: tableMetadata? {
         get { return nil }
         set {}
@@ -35,7 +35,10 @@ extension NCCellProtocol {
 
 #if !EXTENSION
 extension NCCollectionViewCommon {
-    func setCellDirectory(cell: NCCellProtocol, metadata: tableMetadata, isShare: Bool, isMounted: Bool) {
+    func setCellDirectory(cell: NCCellMainProtocol,
+                          metadata: tableMetadata,
+                          isShare: Bool,
+                          isMounted: Bool) {
         let tblDirectory = database.getTableDirectory(ocId: metadata.ocId)
 
         if metadata.e2eEncrypted {
@@ -69,7 +72,9 @@ extension NCCollectionViewCommon {
         cell.previewImage?.image = cell.previewImage?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
     }
 
-    func setCellFile(cell: NCCellProtocol, metadata: tableMetadata, a11yValues: inout [String]) {
+    func setCellFile(cell: NCCellMainProtocol,
+                     metadata: tableMetadata,
+                     a11yValues: inout [String]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 

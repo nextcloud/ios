@@ -13,7 +13,7 @@ protocol NCListCellDelegate: AnyObject {
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
