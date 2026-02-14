@@ -14,15 +14,15 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
     var indexPath = IndexPath()
 }
 
-class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
+class NCActivityTableViewCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var subjectLeadingConstraint: NSLayoutConstraint!
 
-    private var user: String = ""
-    private var index = IndexPath()
-    private var avatarButton: UIButton!
+    var user: String = ""
+    var index = IndexPath()
+    var avatarButton: UIButton!
 
     var idActivity: Int = 0
     var activityPreviews: [tableActivityPreview] = []
@@ -31,18 +31,6 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     let utilityFileSystem = NCUtilityFileSystem()
     var account: String!
     let utility = NCUtility()
-
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
-    var avatarImage: UIImageView? {
-        return avatar
-    }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -61,13 +49,9 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     }
 
     func configureAvatarMenu() {
-        guard let fileUser = fileUser else {
-            avatarButton.menu = nil
-            return
-        }
         let session = NCSession.shared.getSession(account: account)
 
-        avatarButton.menu = NCContextMenuProfile(userId: fileUser, session: session, viewController: viewController).viewMenu()
+        avatarButton.menu = NCContextMenuProfile(userId: user, session: session, viewController: viewController).viewMenu()
     }
 }
 

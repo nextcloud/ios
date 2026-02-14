@@ -26,7 +26,7 @@ import NextcloudKit
 
 // MARK: - NCShareCommentsCell
 
-class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
+class NCShareCommentsCell: UITableViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelUser: UILabel!

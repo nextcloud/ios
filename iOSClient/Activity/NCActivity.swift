@@ -264,7 +264,7 @@ extension NCActivity: UITableViewDataSource {
 
         cell.idActivity = activity.idActivity
         cell.account = activity.account
-        cell.indexPath = indexPath
+        cell.index = indexPath
         cell.avatar.image = nil
         cell.avatar.isHidden = true
         cell.didSelectItemEnable = self.didSelectItemEnable
@@ -288,7 +288,7 @@ extension NCActivity: UITableViewDataSource {
         // avatar
         if !activity.user.isEmpty && activity.user != session.userId {
             cell.avatar.isHidden = false
-            cell.fileUser = activity.user
+            cell.user = activity.user
             cell.subjectLeadingConstraint.constant = 15
             cell.configureAvatarMenu()
 
@@ -296,9 +296,9 @@ extension NCActivity: UITableViewDataSource {
             let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
             if results.image == nil {
-                cell.avatarImage?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
+                cell.avatar?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
             } else {
-                cell.avatarImage?.image = results.image
+                cell.avatar?.image = results.image
             }
 
             if !(results.tblAvatar?.loaded ?? false),

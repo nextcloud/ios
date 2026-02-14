@@ -24,7 +24,7 @@ import UIKit
 import DropDown
 import NextcloudKit
 
-class NCShareUserCell: UITableViewCell, NCCellProtocol {
+class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!
@@ -34,14 +34,15 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var imageDownArrow: UIImageView!
 
-    private var index = IndexPath()
-    private var avatarButton: UIButton!
+    var index = IndexPath()
+    var avatarButton: UIButton!
 
     var tableShare: tableShare?
     var isDirectory = false
     let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
 
+    /*
     var indexPath: IndexPath {
         get { return index }
         set { index = newValue }
@@ -53,6 +54,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         get { return tableShare?.shareWith }
         set {}
     }
+    */
 
     func setupCellUI(userId: String, session: NCSession.Session, metadata: tableMetadata) {
         guard let tableShare = tableShare else {
