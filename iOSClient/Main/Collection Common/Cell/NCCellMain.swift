@@ -75,7 +75,6 @@ extension NCCollectionViewCommon {
     func cellMainFile(cell: NCCellMainProtocol,
                       metadata: tableMetadata,
                       a11yValues: inout [String]) {
-        let ext = global.getSizeExtension(column: self.numberOfColumns)
         let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
         if metadata.hasPreviewBorder {
@@ -84,6 +83,7 @@ extension NCCollectionViewCommon {
         }
 
         if metadata.name == global.appName {
+            let ext = global.getSizeExtension(column: self.numberOfColumns)
             if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                 cell.previewImage?.image = image
             } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase) {
