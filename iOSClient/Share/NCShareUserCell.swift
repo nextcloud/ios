@@ -42,20 +42,6 @@ class NCShareUserCell: UITableViewCell {
     let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
 
-    /*
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
-    var avatarImage: UIImageView? {
-        return imageItem
-    }
-    var fileUser: String? {
-        get { return tableShare?.shareWith }
-        set {}
-    }
-    */
-
     func setupCellUI(userId: String, session: NCSession.Session, metadata: tableMetadata) {
         guard let tableShare = tableShare else {
             return
@@ -173,7 +159,7 @@ protocol NCShareUserCellDelegate: AnyObject {
 
 // MARK: - NCSearchUserDropDownCell
 
-class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
+class NCSearchUserDropDownCell: DropDownCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -181,21 +167,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
 
-    private var user: String = ""
-    private var index = IndexPath()
+    var user: String = ""
+    var index = IndexPath()
     private let utilityFileSystem = NCUtilityFileSystem()
-
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
-    var avatarImage: UIImageView? {
-        return imageItem
-    }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
 
     func setupCell(sharee: NKSharee, session: NCSession.Session) {
         let utility = NCUtility()
