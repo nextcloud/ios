@@ -882,9 +882,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                     let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
                     for case let cell as NCCellMainProtocol in visibleCells {
                         if self.user == cell.metadata?.ownerId {
-                            if self.isPreviewImage, let previewImage = cell.previewImage {
+                            if self.isPreviewImage, let previewImage = cell.previewImg {
                                 UIView.transition(with: previewImage, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImage.image = image}, completion: nil)
-                            } else if let avatarImage = cell.avatarImage {
+                            } else if let avatarImage = cell.avatarImg {
                                 UIView.transition(with: avatarImage, duration: 0.75, options: .transitionCrossDissolve, animations: { avatarImage.image = image}, completion: nil)
                             }
                             break

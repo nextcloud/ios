@@ -45,12 +45,25 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
-    var avatarImage: UIImageView? {
-        return imageShared
+    var avatarImg: UIImageView? {
+        get { return imageShared }
+        set { imageShared = newValue }
     }
-    var previewImage: UIImageView? {
+    var previewImg: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
+    }
+    var localImg: UIImageView? {
+        get { return imageLocal }
+        set { imageLocal = newValue }
+    }
+    var statusImg: UIImageView? {
+        get { return imageStatus }
+        set { imageStatus = newValue }
+    }
+    var infoLbl: UILabel? {
+        get { return labelInfo }
+        set { labelInfo = newValue }
     }
 
     override var accessibilityIdentifier: String? {
@@ -390,13 +403,13 @@ extension NCCollectionViewCommon {
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // CONTENT MODE
-        cell.avatarImage?.contentMode = .center
-        cell.previewImage?.layer.borderWidth = 0
+        cell.avatarImg?.contentMode = .center
+        cell.previewImg?.layer.borderWidth = 0
 
         if existsImagePreview && layoutForView?.layout != global.layoutPhotoRatio {
-            cell.previewImage?.contentMode = .scaleAspectFill
+            cell.previewImg?.contentMode = .scaleAspectFill
         } else {
-            cell.previewImage?.contentMode = .scaleAspectFit
+            cell.previewImg?.contentMode = .scaleAspectFit
         }
 
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
@@ -468,17 +481,17 @@ extension NCCollectionViewCommon {
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
             if let image = NCImageCache.shared.getImageCache(key: fileName) {
-                cell.avatarImage?.contentMode = .scaleAspectFill
-                cell.avatarImage?.image = image
+                cell.avatarImg?.contentMode = .scaleAspectFill
+                cell.avatarImg?.image = image
             } else {
                 self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
                     if let image {
-                        cell.avatarImage?.contentMode = .scaleAspectFill
-                        cell.avatarImage?.image = image
+                        cell.avatarImg?.contentMode = .scaleAspectFill
+                        cell.avatarImg?.image = image
                         NCImageCache.shared.addImageCache(image: image, key: fileName)
                     } else {
-                        cell.avatarImage?.contentMode = .scaleAspectFill
-                        cell.avatarImage?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                        cell.avatarImg?.contentMode = .scaleAspectFill
+                        cell.avatarImg?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
                     }
 
                     if !(tblAvatar?.loaded ?? false),

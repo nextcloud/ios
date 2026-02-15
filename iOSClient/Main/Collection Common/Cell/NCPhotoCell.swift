@@ -10,7 +10,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     var metadata: tableMetadata?
-    var previewImage: UIImageView? {
+    var previewImg: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
@@ -65,11 +65,11 @@ extension NCCollectionViewCommon {
         // Image
         //
         if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            cell.previewImage?.image = image
-            cell.previewImage?.contentMode = .scaleAspectFill
+            cell.previewImg?.image = image
+            cell.previewImg?.contentMode = .scaleAspectFill
         } else {
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.previewImage?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
+                cell.previewImg?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
             }
 
             DispatchQueue.global(qos: .userInteractive).async {
@@ -77,16 +77,16 @@ extension NCCollectionViewCommon {
                 if let image {
                     self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
                     DispatchQueue.main.async {
-                        cell.previewImage?.image = image
-                        cell.previewImage?.contentMode = .scaleAspectFill
+                        cell.previewImg?.image = image
+                        cell.previewImg?.contentMode = .scaleAspectFill
                     }
                 } else {
                     DispatchQueue.main.async {
-                        cell.previewImage?.contentMode = .scaleAspectFit
+                        cell.previewImg?.contentMode = .scaleAspectFit
                         if metadata.iconName.isEmpty {
-                            cell.previewImage?.image = NCImageCache.shared.getImageFile()
+                            cell.previewImg?.image = NCImageCache.shared.getImageFile()
                         } else {
-                            cell.previewImage?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                            cell.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                         }
                     }
                 }

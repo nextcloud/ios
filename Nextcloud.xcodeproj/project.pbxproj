@@ -2458,9 +2458,9 @@
 			isa = PBXGroup;
 			children = (
 				370D26AE248A3D7A00121797 /* NCCellMain.swift */,
+				F78ACD4121903CE00088454D /* NCListCell.swift */,
 				F78ACD3F21903CC20088454D /* NCGridCell.swift */,
 				F751247A2C42919C00E63DB8 /* NCPhotoCell.swift */,
-				F78ACD4121903CE00088454D /* NCListCell.swift */,
 				F78ACD4521903D010088454D /* NCGridCell.xib */,
 				F78ACD4321903CF20088454D /* NCListCell.xib */,
 				F751247B2C42919C00E63DB8 /* NCPhotoCell.xib */,
