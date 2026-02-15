@@ -40,44 +40,26 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let notificationsButtonTag = 102
     let transfersButtonTag = 103
 
-    lazy var menuButton: UIButton = {
-        let button = UIButton(type: .system)
-        return button
-    }()
-    var menuBarButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: menuButton)
+    lazy var menuBarButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem()
         item.tag = menuButtonTag
         return item
-    }
-    lazy var assistantButton: UIButton = {
-        let button = UIButton(type: .system)
-        return button
     }()
-    var assistantButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: assistantButton)
+    lazy var assistantButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem()
         item.tag = assistantButtonTag
         return item
-    }
-
-    lazy var notificationsButton: UIButton = {
-        let button = UIButton(type: .system)
-        return button
     }()
-    var notificationsButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: notificationsButton)
+    lazy var notificationsButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem()
         item.tag = notificationsButtonTag
         return item
-    }
-
-    lazy var transfersButton: UIButton = {
-        let button = UIButton(type: .system)
-        return button
     }()
-    var transfersButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: transfersButton)
+    lazy var transfersButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem()
         item.tag = transfersButtonTag
         return item
-    }
+    }()
 
     // MARK: - View Life Cycle
 
@@ -89,35 +71,37 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         setNavigationBarHidden(false, animated: true)
 
         Task {
-            menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-            menuButton.tintColor = NCBrandColor.shared.iconImageColor
-            menuButton.menu = await createRightMenu()
-            menuButton.showsMenuAsPrimaryAction = true
+            menuBarButtonItem.image = UIImage(systemName: "ellipsis")
+            menuBarButtonItem.tintColor = NCBrandColor.shared.iconImageColor
+            menuBarButtonItem.menu = await createRightMenu()
         }
 
-        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
-        assistantButton.tintColor = NCBrandColor.shared.iconImageColor
-        assistantButton.addAction(UIAction(handler: { _ in
+        assistantButtonItem.image = UIImage(systemName: "sparkles")
+        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
+        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
+        assistantButtonItem.primaryAction = UIAction(handler: { _ in
             let assistant = NCAssistant()
                 .environmentObject(NCAssistantModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             self.present(hostingController, animated: true, completion: nil)
-        }), for: .touchUpInside)
+        })
 
-        notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
-        notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
-        notificationsButton.addAction(UIAction(handler: { _ in
+        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
+        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
+        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
+        notificationsButtonItem.primaryAction = UIAction(handler: { _ in
             if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCNotification {
                 viewController.modalPresentationStyle = .pageSheet
                 viewController.session = self.session
                 self.present(navigationController, animated: true, completion: nil)
             }
-        }), for: .touchUpInside)
+        })
 
-        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
-        transfersButton.tintColor = NCBrandColor.shared.iconImageColor
-        transfersButton.addAction(UIAction(handler: { _ in
+        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
+        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
+        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
+        transfersButtonItem.primaryAction = UIAction(handler: { _ in
             let rootView = TransfersView(session: self.session, onClose: { [weak self] in
                 self?.dismiss(animated: true)
             })
@@ -125,7 +109,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             hosting.modalPresentationStyle = .pageSheet
 
             self.present(hosting, animated: true)
-        }), for: .touchUpInside)
+        })
 
         // PLUS BUTTON ONLY IN FILES
         let widthAnchor: CGFloat
@@ -186,8 +170,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 } else {
                     _ = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
                         Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                        name: "getNotifications")
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                                account: account,
+                                name: "getNotifications"
+                            )
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
@@ -612,10 +598,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func createRightMenu() async -> UIMenu? { return nil }
 
     func updateRightMenu() async {
-        if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems,
-            let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
-            let menuButton = menuBarButtonItem.customView as? UIButton {
-            menuButton.menu = await createRightMenu()
+        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == menuButtonTag }) != nil {
+            menuBarButtonItem.menu = await createRightMenu()
         }
     }
 
@@ -869,11 +853,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func setRightItemColor(tag: Int, to color: UIColor) {
         guard
             let items = topViewController?.navigationItem.rightBarButtonItems,
-            let item = items.first(where: { $0.tag == tag }),
-            let button = item.customView as? UIButton
+            let item = items.first(where: { $0.tag == tag })
         else { return }
 
-        applyTint(button, color: color)
+        applyTint(item, color: color)
     }
 
     /// Changes the tint color of all right bar button items currently visible
@@ -884,9 +867,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         guard let items = topViewController?.navigationItem.rightBarButtonItems else { return }
 
         for item in items {
-            if let button = item.customView as? UIButton {
-                applyTint(button, color: color)
-            }
+            applyTint(item, color: color)
         }
     }
 
@@ -902,11 +883,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func setLeftItemColor(tag: Int, to color: UIColor) {
         guard
             let items = topViewController?.navigationItem.leftBarButtonItems,
-            let item = items.first(where: { $0.tag == tag }),
-            let button = item.customView as? UIButton
+            let item = items.first(where: { $0.tag == tag })
         else { return }
 
-        applyTint(button, color: color)
+        applyTint(item, color: color)
     }
 
     /// Changes the tint color of all left bar button items currently visible
@@ -917,9 +897,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         guard let items = topViewController?.navigationItem.leftBarButtonItems else { return }
 
         for item in items {
-            if let button = item.customView as? UIButton {
-                applyTint(button, color: color)
-            }
+            applyTint(item, color: color)
         }
     }
 
@@ -943,35 +921,33 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
+    @MainActor
+    private func applyTint(_ item: UIBarButtonItem, color: UIColor) {
+        if let button = item.customView as? UIButton {
+            applyTint(button, color: color)
+        } else {
+            item.tintColor = color
+        }
+    }
+
     /// Updates the tint color of all preloaded and currently visible right bar buttons.
     /// - Parameter color: The UIColor to be applied to all right bar button items.
     @MainActor
     func updateRightBarButtonsTint(to color: UIColor) {
-        let rightButtons: [UIButton] = [
-            menuButton,
-            assistantButton,
-            notificationsButton,
-            transfersButton
+        let rightItems: [UIBarButtonItem] = [
+            menuBarButtonItem,
+            assistantButtonItem,
+            notificationsButtonItem,
+            transfersButtonItem
         ]
 
-        // Apply color to preloaded button instances
-        for button in rightButtons {
-            if var cfg = button.configuration {
-                cfg.baseForegroundColor = color
-                button.configuration = cfg
-            } else {
-                button.tintColor = color
-                button.setTitleColor(color, for: .normal)
-            }
+        for item in rightItems {
+            applyTint(item, color: color)
         }
 
-        // Update also those already visible in the navigation bar
-        if let rightItems = topViewController?.navigationItem.rightBarButtonItems {
-            for item in rightItems {
-                if let button = item.customView as? UIButton {
-                    button.tintColor = color
-                    button.setTitleColor(color, for: .normal)
-                }
+        if let visibleItems = topViewController?.navigationItem.rightBarButtonItems {
+            for item in visibleItems {
+                applyTint(item, color: color)
             }
         }
     }

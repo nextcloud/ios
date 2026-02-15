@@ -42,27 +42,21 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                 let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
                 Task { @MainActor in
-                    for case let cell as NCCellProtocol in collectionView.visibleCells where cell.metadata?.ocId == self.metadata.ocId {
-                        if let previewImageView = cell.previewImageView {
-                            previewImageView.contentMode = .scaleAspectFill
+                    for case let cell as NCCellMainProtocol in collectionView.visibleCells where cell.metadata?.ocId == self.metadata.ocId {
+                        if let previewImage = cell.previewImg {
+                            previewImage.contentMode = .scaleAspectFill
 
                             if self.metadata.hasPreviewBorder {
-                                previewImageView.layer.borderWidth = 0.2
-                                previewImageView.layer.borderColor = UIColor.systemGray3.cgColor
-                            }
-
-                            if let photoCell = (cell as? NCPhotoCell),
-                               photoCell.bounds.size.width > 100 {
-                                cell.hideButtonMore(false)
-                                cell.hideImageStatus(false)
+                                previewImage.layer.borderWidth = 0.2
+                                previewImage.layer.borderColor = UIColor.systemGray3.cgColor
                             }
 
                             UIView.transition(
-                                with: previewImageView,
+                                with: previewImage,
                                 duration: 0.75,
                                 options: .transitionCrossDissolve,
                                 animations: {
-                                    previewImageView.image = image
+                                    previewImage.image = image
                                 },
                                 completion: nil
                             )

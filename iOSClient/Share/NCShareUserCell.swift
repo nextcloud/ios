@@ -24,7 +24,7 @@ import UIKit
 import DropDown
 import NextcloudKit
 
-class NCShareUserCell: UITableViewCell, NCCellProtocol {
+class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMenu: UIButton!
@@ -34,25 +34,13 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var imageDownArrow: UIImageView!
 
-    private var index = IndexPath()
-    private var avatarButton: UIButton!
+    var index = IndexPath()
+    var avatarButton: UIButton!
 
     var tableShare: tableShare?
     var isDirectory = false
     let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
-
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
-    var avatarImageView: UIImageView? {
-        return imageItem
-    }
-    var fileUser: String? {
-        get { return tableShare?.shareWith }
-        set {}
-    }
 
     func setupCellUI(userId: String, session: NCSession.Session, metadata: tableMetadata) {
         guard let tableShare = tableShare else {
@@ -171,7 +159,7 @@ protocol NCShareUserCellDelegate: AnyObject {
 
 // MARK: - NCSearchUserDropDownCell
 
-class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
+class NCSearchUserDropDownCell: DropDownCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -179,21 +167,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
 
-    private var user: String = ""
-    private var index = IndexPath()
+    var user: String = ""
+    var index = IndexPath()
     private let utilityFileSystem = NCUtilityFileSystem()
-
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
-    var avatarImageView: UIImageView? {
-        return imageItem
-    }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
 
     func setupCell(sharee: NKSharee, session: NCSession.Session) {
         let utility = NCUtility()

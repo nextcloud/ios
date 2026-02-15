@@ -60,6 +60,7 @@ class NCAssistantModel: ObservableObject {
         selectedTask = task
         isLoading = true
 
+        /*
         if useV2 {
             NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { _, _, _, error in
                 handle(task: task, error: error)
@@ -71,6 +72,7 @@ class NCAssistantModel: ObservableObject {
                 handle(task: taskV2, error: error)
             }
         }
+        */
 
         func handle(task: AssistantTask?, error: NKError?) {
             self.isLoading = false
@@ -87,6 +89,7 @@ class NCAssistantModel: ObservableObject {
     func scheduleTask(input: String) {
         isLoading = true
 
+        /*
         if useV2 {
             guard let selectedType else { return }
             NextcloudKit.shared.textProcessingScheduleV2(input: input, taskType: selectedType, account: session.account) { _, task, _, error in
@@ -98,6 +101,7 @@ class NCAssistantModel: ObservableObject {
                 handle(task: taskV2, error: error)
             }
         }
+        */
 
         func handle(task: AssistantTask?, error: NKError?) {
             self.isLoading = false
@@ -117,6 +121,7 @@ class NCAssistantModel: ObservableObject {
     func deleteTask(_ task: AssistantTask) {
         isLoading = true
 
+        /*
         if useV2 {
             NextcloudKit.shared.textProcessingDeleteTaskV2(taskId: task.id, account: session.account) { _, _, error in
                 handle(task: task, error: error)
@@ -126,6 +131,7 @@ class NCAssistantModel: ObservableObject {
                 handle(task: task, error: error)
             }
         }
+        */
 
         func handle(task: AssistantTask, error: NKError?) {
             self.isLoading = false
@@ -148,6 +154,7 @@ class NCAssistantModel: ObservableObject {
     private func loadAllTypes() {
         isLoading = true
 
+        /*
         if useV2 {
             NextcloudKit.shared.textProcessingGetTypesV2(account: session.account) { _, types, _, error in
                 handle(types: types, error: error)
@@ -160,6 +167,7 @@ class NCAssistantModel: ObservableObject {
                 handle(types: typesV2, error: error)
             }
         }
+        */
 
         func handle(types: [TaskTypeData]?, error: NKError) {
             self.isLoading = false
@@ -184,6 +192,7 @@ class NCAssistantModel: ObservableObject {
     private func loadAllTasks(appId: String = "assistant", type: TaskTypeData?) {
         isLoading = true
 
+        /*
         if useV2 {
             NextcloudKit.shared.textProcessingGetTasksV2(taskType: type?.id ?? "", account: session.account) { _, tasks, _, error in
                 guard let tasks = tasks?.tasks.filter({ $0.appId == "assistant" }) else { return }
@@ -195,6 +204,7 @@ class NCAssistantModel: ObservableObject {
                 handle(tasks: NKTextProcessingTask.toV2(tasks: tasks).tasks, error: error)
             }
         }
+        */
 
         func handle(tasks: [AssistantTask], error: NKError?) {
             isLoading = false
