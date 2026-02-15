@@ -9,7 +9,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    // Cell Protocol
     var metadata: tableMetadata?
     var previewImage: UIImageView? {
         get { return imageItem }
@@ -18,6 +17,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
 
     override func prepareForReuse() {
         super.prepareForReuse()
+
         initCell()
     }
 
