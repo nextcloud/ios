@@ -12,6 +12,9 @@ protocol NCCellMainProtocol {
     var avatarImage: UIImageView? { get }
     var previewImage: UIImageView? { get set }
     var imageLocal: UIImageView? { get set }
+    var imageStatus: UIImageView? { get set }
+    var labelInfo: UILabel? { get set }
+
 }
 
 extension NCCellMainProtocol {
@@ -31,6 +34,14 @@ extension NCCellMainProtocol {
         get { return nil }
         set {}
     }
+    var imageStatus: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var labelInfo: UILabel? {
+        get { return nil }
+        set {}
+    }
 }
 
 #if !EXTENSION
@@ -44,7 +55,7 @@ extension NCCollectionViewCommon {
         } else if metadata.isVideo {
             cell.imageStatus?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
         }
-        
+
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
             cell.imageStatus?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)

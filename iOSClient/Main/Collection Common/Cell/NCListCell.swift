@@ -19,17 +19,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
+    @IBOutlet weak var imageShared: UIImageView!
+    @IBOutlet weak var imageMore: UIImageView!
+
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
-    @IBOutlet weak var labelInfoSeparator: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
-    @IBOutlet weak var imageShared: UIImageView!
-    @IBOutlet weak var buttonShared: UIButton!
-    @IBOutlet weak var imageMore: UIImageView!
-    @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var labelInfoSeparator: UILabel!
     @IBOutlet weak var tag0: UILabel!
     @IBOutlet weak var tag1: UILabel!
+
+    @IBOutlet weak var buttonShared: UIButton!
+    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var separator: UIView!
 
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
@@ -77,6 +79,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     override func prepareForReuse() {
         super.prepareForReuse()
+
         initCell()
     }
 
@@ -92,19 +95,25 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
+        imageShared.image = nil
+        imageMore.image = nil
+        imageSelect.image = nil
+
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-        imageShared.image = nil
-        imageMore.image = nil
-        separatorHeightConstraint.constant = 0.5
+        labelInfoSeparator.text = ""
         tag0.text = ""
         tag1.text = ""
+
+        separatorHeightConstraint.constant = 0.5
+
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
+
         titleTrailingConstraint.constant = 90
 
         contentView.bringSubviewToFront(buttonMore)
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -123,7 +132,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         }
     }
 
-    // Allow the button to receive taps even with the long press gesture
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         let location = touch.location(in: contentView)
         return buttonMore.frame.contains(location)
@@ -241,7 +249,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
                 view.removeFromSuperview()
             }
         }
-
     }
 
     override func layoutSubviews() {

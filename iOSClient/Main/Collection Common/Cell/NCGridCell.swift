@@ -18,10 +18,13 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
+
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
+
     @IBOutlet weak var buttonMore: UIButton!
+
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
@@ -51,6 +54,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     override func prepareForReuse() {
         super.prepareForReuse()
+
         initCell()
     }
 
@@ -68,9 +72,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
+
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
+
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
