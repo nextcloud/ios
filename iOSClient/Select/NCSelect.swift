@@ -337,12 +337,12 @@ extension NCSelect: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                (cell as? NCCellProtocol)?.previewImageView?.image = image
+                (cell as? NCListCell)?.previewImg?.image = image
             } else {
                 if metadata.iconName.isEmpty {
-                    (cell as? NCCellProtocol)?.previewImageView?.image = NCImageCache.shared.getImageFile()
+                    (cell as? NCListCell)?.previewImg?.image = NCImageCache.shared.getImageFile()
                 } else {
-                    (cell as? NCCellProtocol)?.previewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                    (cell as? NCListCell)?.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 }
                 if metadata.hasPreview,
                    metadata.status == NCGlobal.shared.metadataStatusNormal {
@@ -384,7 +384,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
+        cell.imageLocal?.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
         cell.imageMore.image = nil
@@ -419,9 +419,9 @@ extension NCSelect: UICollectionViewDataSource {
 
             self.database.getTableLocal(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) { tblLocalFile in
                 if let tblLocalFile, tblLocalFile.offline {
-                    cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
+                    cell.imageLocal?.image = NCImageCache.shared.getImageOfflineFlag()
                 } else if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                    cell.imageLocal.image = NCImageCache.shared.getImageLocal()
+                    cell.imageLocal?.image = NCImageCache.shared.getImageLocal()
                 }
             }
         }

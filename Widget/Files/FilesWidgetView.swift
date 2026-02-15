@@ -170,7 +170,7 @@ struct FilesWidgetView: View {
                         .lineLimit(1)
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                 }
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height, alignment: .bottomTrailing)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
         .containerBackground(.background, for: .widget)

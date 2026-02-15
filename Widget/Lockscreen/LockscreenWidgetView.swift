@@ -6,7 +6,6 @@ import SwiftUI
 import WidgetKit
 
 struct LockscreenWidgetView: View {
-
     let entry: LockscreenData
     @Environment(\.widgetFamily) private var family
 
@@ -23,7 +22,7 @@ struct LockscreenWidgetView: View {
                     }
                 )
                 .gaugeStyle(.accessoryCircularCapacity)
-                .widgetBackground(Color.clear)
+                .containerBackground(.clear, for: .widget)
             } else {
                 Gauge(
                     value: entry.quotaRelative,
@@ -37,21 +36,19 @@ struct LockscreenWidgetView: View {
                 )
                 .gaugeStyle(.accessoryCircular)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-                .widgetBackground(Color.clear)
+                .containerBackground(.clear, for: .widget)
             }
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 1) {
-                    Image("activity")
+                    Image(systemName: "bolt.fill")
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
-                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                         .frame(width: 11, height: 11)
                     Text(NSLocalizedString("_recent_activity_", comment: ""))
                         .font(.system(size: 11))
                         .fontWeight(.heavy)
-                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 if entry.error {
                     VStack(spacing: 1) {
@@ -66,7 +63,7 @@ struct LockscreenWidgetView: View {
             }
             .widgetURL(entry.link)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-            .widgetBackground(Color.clear)
+            .containerBackground(.clear, for: .widget)
         default:
             Text("Not implemented")
         }

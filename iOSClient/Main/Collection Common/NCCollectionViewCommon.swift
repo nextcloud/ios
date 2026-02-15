@@ -13,121 +13,131 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    let database = NCManageDatabase.shared
-    let global = NCGlobal.shared
-    let utility = NCUtility()
-    let utilityFileSystem = NCUtilityFileSystem()
-    let imageCache = NCImageCache.shared
-    var dataSource = NCCollectionViewDataSource()
-    let networking = NCNetworking.shared
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
+    internal let database = NCManageDatabase.shared
+    internal let global = NCGlobal.shared
+    internal let utility = NCUtility()
+    internal let utilityFileSystem = NCUtilityFileSystem()
+    internal let imageCache = NCImageCache.shared
+    internal var dataSource = NCCollectionViewDataSource()
+    internal let networking = NCNetworking.shared
+    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    internal var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
-    var autoUploadFileName = ""
-    var autoUploadDirectory = ""
-    let refreshControl = UIRefreshControl()
-    var searchController: UISearchController?
-    var backgroundImageView = UIImageView()
-    var serverUrl: String = ""
-    var isEditMode = false
-    var isDirectoryE2EE = false
-    var fileSelect: [String] = []
-    var metadataFolder: tableMetadata?
-    var richWorkspaceText: String?
-    var sectionFirstHeader: NCSectionFirstHeader?
-    var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
-    var networkSearchInProgress: Bool = false
-    var layoutForView: NCDBLayoutForView?
-    var listLayout = NCListLayout()
-    var gridLayout = NCGridLayout()
-    var mediaLayout = NCMediaLayout()
-    var layoutType = NCGlobal.shared.layoutList
-    var tabBarSelect: NCCollectionViewCommonSelectTabBar?
-    var attributesZoomIn: UIMenuElement.Attributes = []
-    var attributesZoomOut: UIMenuElement.Attributes = []
-    var tipViewAccounts: EasyTipView?
-    var syncMetadatasTask: Task<Void, Never>?
+    internal var autoUploadFileName = ""
+    internal var autoUploadDirectory = ""
+    internal let refreshControl = UIRefreshControl()
+    internal var searchController: UISearchController?
+    internal var backgroundImageView = UIImageView()
+    internal var serverUrl: String = ""
+    internal var isEditMode = false
+    internal var isDirectoryE2EE = false
+    internal var fileSelect: [String] = []
+    internal var metadataFolder: tableMetadata?
+    internal var richWorkspaceText: String?
+    internal var sectionFirstHeader: NCSectionFirstHeader?
+    internal var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
+
+    // Layout
+    //
+    internal var layoutForView: NCDBLayoutForView?
+    internal var layoutForViewLayoutStore: String?
+    internal var listLayout = NCListLayout()
+    internal var gridLayout = NCGridLayout()
+    internal var mediaLayout = NCMediaLayout()
+    internal var layoutType = NCGlobal.shared.layoutList
+
+    internal var tabBarSelect: NCCollectionViewCommonSelectTabBar?
+
+    internal var attributesZoomIn: UIMenuElement.Attributes = []
+    internal var attributesZoomOut: UIMenuElement.Attributes = []
+
+    internal var tipViewAccounts: EasyTipView?
+    internal var syncMetadatasTask: Task<Void, Never>?
+
     // Search
-    var isSearchingMode: Bool = false
-    var searchOperationHandle = NKOperationHandle()
-    var searchTask: URLSessionTask?
-    var searchResultText: String?
-    var searchResultStore: String?
+    //
+    internal var isSearchingMode: Bool = false
+    internal var networkSearchInProgress: Bool = false
+    internal var searchOperationHandle = NKOperationHandle()
+    internal var searchTask: URLSessionTask?
+    internal var searchResultText: String?
+    internal var searchResultStore: String?
 
     // DECLARE
-    var layoutKey = ""
-    var titleCurrentFolder = ""
-    var titlePreviusFolder: String?
-    var enableSearchBar: Bool = false
-    var headerRichWorkspaceDisable: Bool = false
+    //
+    internal var layoutKey = ""
+    internal var titleCurrentFolder = ""
+    internal var titlePreviusFolder: String?
+    internal var enableSearchBar: Bool = false
+    internal var headerRichWorkspaceDisable: Bool = false
 
-    var emptyImageName: String?
-    var emptyImageColors: [UIColor]?
-    var emptyTitle: String = ""
+    internal var emptyImageName: String?
+    internal var emptyImageColors: [UIColor]?
+    internal var emptyTitle: String = ""
 
-    var emptyDescription: String = ""
-    var emptyDataPortaitOffset: CGFloat = 0
-    var emptyDataLandscapeOffset: CGFloat = -20
+    internal var emptyDescription: String = ""
+    internal var emptyDataPortaitOffset: CGFloat = 0
+    internal var emptyDataLandscapeOffset: CGFloat = -20
 
-    var lastScale: CGFloat = 1.0
-    var currentScale: CGFloat = 1.0
-    var maxColumns: Int {
+    internal var lastScale: CGFloat = 1.0
+    internal var currentScale: CGFloat = 1.0
+    internal var maxColumns: Int {
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
         let column = Int(screenWidth / 44)
 
         return column
     }
-    var transitionColumns = false
-    var numberOfColumns: Int = 0
-    var lastNumberOfColumns: Int = 0
+    internal var transitionColumns = false
+    internal var numberOfColumns: Int = 0
+    internal var lastNumberOfColumns: Int = 0
 
-    let heightHeaderRecommendations: CGFloat = 160
-    let heightHeaderSection: CGFloat = 30
+    internal let heightHeaderRecommendations: CGFloat = 160
+    internal let heightHeaderSection: CGFloat = 30
 
     @MainActor
-    var session: NCSession.Session {
+    internal var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
 
-    var isLayoutPhoto: Bool {
+    internal var isLayoutPhoto: Bool {
         layoutForView?.layout == global.layoutPhotoRatio || layoutForView?.layout == global.layoutPhotoSquare
     }
 
-    var isLayoutGrid: Bool {
+    internal var isLayoutGrid: Bool {
         layoutForView?.layout == global.layoutGrid
     }
 
-    var isLayoutList: Bool {
+    internal var isLayoutList: Bool {
         layoutForView?.layout == global.layoutList
     }
 
-    var showDescription: Bool {
+    internal var showDescription: Bool {
         !headerRichWorkspaceDisable && NCPreferences().showDescription
     }
 
-    var isRecommendationActived: Bool {
+    internal var isRecommendationActived: Bool {
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
-    var infoLabelsSeparator: String {
+    internal var infoLabelsSeparator: String {
         layoutForView?.layout == global.layoutList ? " - " : ""
     }
 
     @MainActor
-    var controller: NCMainTabBarController? {
+    internal var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
 
-    var mainNavigationController: NCMainNavigationController? {
+    internal var mainNavigationController: NCMainNavigationController? {
         self.navigationController as? NCMainNavigationController
     }
 
-    var sceneIdentifier: String {
+    internal var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
-    var isNumberOfItemsInAllSectionsNull: Bool {
+    internal var isNumberOfItemsInAllSectionsNull: Bool {
         var totalItems = 0
         for section in 0..<self.collectionView.numberOfSections {
             totalItems += self.collectionView.numberOfItems(inSection: section)
@@ -135,7 +145,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         return totalItems == 0
     }
 
-    var numberOfItemsInAllSections: Int {
+    internal var numberOfItemsInAllSections: Int {
         var totalItems = 0
         for section in 0..<self.collectionView.numberOfSections {
             totalItems += self.collectionView.numberOfItems(inSection: section)
@@ -143,7 +153,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         return totalItems
     }
 
-    var isPinchGestureActive: Bool {
+    internal var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
@@ -181,12 +191,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchBar?.delegate = self
             searchBar?.autocapitalizationType = .none
             searchBar?.backgroundImage = UIImage()
-
-            let textField = searchController?.searchBar.searchTextField
-            textField?.backgroundColor = .systemGray.withAlphaComponent(0.30)
-            textField?.borderStyle = .none
-            textField?.layer.cornerRadius = 20
-            textField?.clipsToBounds = true
 
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
@@ -244,7 +248,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (view: NCCollectionViewCommon, _) in
             guard let self else { return }
-
             sectionFirstHeader?.setRichWorkspaceColor(style: view.traitCollection.userInterfaceStyle)
         }
 
@@ -356,22 +359,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         removeImageCache(metadatas: self.dataSource.getMetadatas())
     }
 
-    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        let viewController = presentationController.presentedViewController
-
-        if viewController is NCViewerRichWorkspaceWebView {
-            closeRichWorkspaceWebView()
-        }
-    }
-
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { _ in
-            let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
-                self.collectionView?.collectionViewLayout.invalidateLayout()
-            }
-            animator.startAnimation()
+            self.collectionView?.collectionViewLayout.invalidateLayout()
         })
 
         self.dismissTip()
@@ -379,6 +371,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     override var canBecomeFirstResponder: Bool {
         return true
+    }
+
+    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        let viewController = presentationController.presentedViewController
+
+        if viewController is NCViewerRichWorkspaceWebView {
+            closeRichWorkspaceWebView()
+        }
     }
 
     // MARK: - NotificationCenter
@@ -532,7 +532,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //
+        // (+)
         mainNavigationController?.hiddenPlusButton(false)
 
         self.isSearchingMode = false
@@ -544,6 +544,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             await searchOperationHandle.cancel()
             self.dataSource.removeAll()
             await self.reloadDataSource()
+
+            // Restore Layout
+            if let layoutForViewLayoutStore {
+                let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
+                layoutForView.layout = layoutForViewLayoutStore
+                changeLayout(layoutForView: layoutForView)
+            }
         }
     }
 
@@ -830,7 +837,9 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
     }
 
     func tapRecommendations(with metadata: tableMetadata) {
-        didSelectMetadata(metadata, withOcIds: false)
+        Task {
+            await didSelectMetadata(metadata, withOcIds: false)
+        }
     }
 }
 

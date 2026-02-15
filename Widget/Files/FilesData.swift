@@ -186,9 +186,8 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
         guard var path = utilityFileSystem.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
         if path.first == "/" { path = String(path.dropFirst())}
-        guard let user = file.user.urlEncoded else { continue }
         let link = file.urlBase + "/f/" + file.fileId
-        let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
+        let urlString = "nextcloud://open-file?path=\(path)&user=\(file.userId)&link=\(link)&account=\(file.account)"
         guard let url = URL(string: urlString) else { continue }
 
         // IMAGE

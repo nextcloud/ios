@@ -2,61 +2,55 @@
 // SPDX-FileCopyrightText: 2018 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import UIKit
+import NextcloudKit
+import RealmSwift
 
 protocol NCGridCellDelegate: AnyObject {
     func onMenuIntent(with metadata: tableMetadata?)
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
+
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
+
     @IBOutlet weak var buttonMore: UIButton!
+
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
 
     weak var delegate: NCGridCellDelegate?
 
+    // Cell Protocol
     var metadata: tableMetadata? {
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
     }
-
-    var previewImageView: UIImageView? {
+    var previewImg: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var title: UILabel? {
-        get { return labelTitle }
-        set { labelTitle = newValue }
-    }
-    var info: UILabel? {
-        get { return labelInfo }
-        set { labelInfo = newValue }
-    }
-    var subInfo: UILabel? {
-        get { return labelSubinfo }
-        set { labelSubinfo = newValue }
-    }
-    var statusImageView: UIImageView? {
-        get { return imageStatus }
-        set { imageStatus = newValue }
-    }
-    var localImageView: UIImageView? {
+    var localImg: UIImageView? {
         get { return imageLocal }
         set { imageLocal = newValue }
     }
-    var favoriteImageView: UIImageView? {
-        get { return imageFavorite }
-        set { imageFavorite = newValue }
+    var statusImg: UIImageView? {
+        get { return imageStatus }
+        set { imageStatus = newValue }
+    }
+    var infoLbl: UILabel? {
+        get { return labelInfo }
+        set { labelInfo = newValue }
     }
 
     override func awakeFromNib() {
@@ -72,6 +66,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func prepareForReuse() {
         super.prepareForReuse()
+
         initCell()
     }
 
@@ -89,9 +84,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
+
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
+
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
@@ -122,31 +119,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.setImage(image, for: .normal)
     }
 
-    func hideImageItem(_ status: Bool) {
-        imageItem.isHidden = status
-    }
-
-    func hideImageFavorite(_ status: Bool) {
-        imageFavorite.isHidden = status
-    }
-
-    func hideImageStatus(_ status: Bool) {
-        imageStatus.isHidden = status
-    }
-
-    func hideImageLocal(_ status: Bool) {
-        imageLocal.isHidden = status
-    }
-
-    func hideLabelInfo(_ status: Bool) {
-        labelInfo.isHidden = status
-    }
-
-    func hideLabelSubinfo(_ status: Bool) {
-        labelSubinfo.isHidden = status
-    }
-
-    func hideButtonMore(_ status: Bool) {
+    func setButtonMore(_ status: Bool) {
         buttonMore.isHidden = status
     }
 
@@ -181,8 +154,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityLabel = label
         accessibilityValue = value
     }
-
-    func setIconOutlines() {}
 }
 
 // MARK: - Grid Layout
@@ -230,5 +201,95 @@ class NCGridLayout: UICollectionViewFlowLayout {
 
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
+    }
+}
+
+extension NCCollectionViewCommon {
+    func gridCell(cell: NCGridCell, indexPath: IndexPath, metadata: tableMetadata) -> NCGridCell {
+        var isShare = false
+        var isMounted = false
+        var a11yValues: [String] = []
+        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        // CONTENT MODE
+        cell.previewImg?.layer.borderWidth = 0
+
+        if existsImagePreview && layoutForView?.layout != global.layoutPhotoRatio {
+            cell.previewImg?.contentMode = .scaleAspectFill
+        } else {
+            cell.previewImg?.contentMode = .scaleAspectFit
+        }
+
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return cell
+        }
+
+        if metadataFolder != nil {
+            isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionShared)
+            isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionMounted)
+        }
+
+        if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
+            cell.labelSubinfo.isHidden = false
+            cell.labelInfo.text = metadata.sessionError
+        } else {
+            cell.labelSubinfo.isHidden = false
+            cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
+        }
+
+        cell.labelTitle.text = metadata.fileNameView
+
+        // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
+        if metadata.ownerId != metadata.userId {
+            a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
+        }
+
+        if metadata.directory {
+            cellMainDirectory(cell: cell, metadata: metadata, isShare: isShare, isMounted: isMounted)
+        } else {
+            cellMainFile(cell: cell, metadata: metadata, a11yValues: &a11yValues)
+        }
+
+        // image Favorite
+        if metadata.favorite {
+            cell.imageFavorite.image = imageCache.getImageFavorite()
+            a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
+        }
+
+        // Button More
+        if metadata.lock == true {
+            cell.setButtonMore(image: imageCache.getImageButtonMoreLock())
+            a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
+        } else {
+            cell.setButtonMore(image: imageCache.getImageButtonMore())
+        }
+
+        // Status
+        cellMainStatus(cell: cell, metadata: metadata, a11yValues: &a11yValues)
+
+        // URL
+        if metadata.classFile == NKTypeClassFile.url.rawValue {
+            cell.imageLocal.image = nil
+        }
+
+        // Edit mode
+        if fileSelect.contains(metadata.ocId) {
+            cell.selected(true, isEditMode: isEditMode)
+            a11yValues.append(NSLocalizedString("_selected_", comment: ""))
+        } else {
+            cell.selected(false, isEditMode: isEditMode)
+        }
+
+        // Accessibility
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.labelInfo.text ?? "") + (cell.labelSubinfo.text ?? ""), value: a11yValues.joined(separator: ", "))
+
+        // Color string find in search
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
+        cell.labelTitle.font = .systemFont(ofSize: 15)
+
+        // Obligatory here, at the end !!
+        cell.metadata = metadata
+
+        return cell
     }
 }
