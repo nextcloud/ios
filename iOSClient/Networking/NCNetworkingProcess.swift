@@ -57,6 +57,14 @@ actor NCNetworkingProcess {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterNetworkProcess), object: nil, queue: nil) { [weak self] _ in
+            guard let self else { return }
+
+            Task { @MainActor in
+                await self.handleTimerTick()
+            }
+        }
+
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 

@@ -278,6 +278,7 @@ final class NCGlobal: Sendable {
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
     let notificationCenterServerDidUpdate                       = "serverDidUpdate"                 // userInfo: account
     let notificationCenterNetworkReachability                   = "networkReachability"
+    let notificationCenterNetworkProcess                        = "networkProcess"
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
