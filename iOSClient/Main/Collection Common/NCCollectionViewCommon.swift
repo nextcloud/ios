@@ -190,10 +190,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             let searchBar = searchController?.searchBar
             searchBar?.delegate = self
             searchBar?.autocapitalizationType = .none
-            searchBar?.backgroundImage = UIImage()
 
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
+            navigationItem.preferredSearchBarPlacement = .inline
         }
 
         // Cell
