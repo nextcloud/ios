@@ -309,7 +309,8 @@ func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
         // The same error code is shown to the user only once.
         // Error 401 (maintenance mode)
         // Error 507 (insufficient storage)
-        if errorCode == 401 || errorCode == 507 {
+        // Error -1009 (not connected to internet)
+        if errorCode == 401 || errorCode == 507 || errorCode == URLError.notConnectedToInternet.rawValue {
             shownErrors.insert(errorCode)
         }
         return false
