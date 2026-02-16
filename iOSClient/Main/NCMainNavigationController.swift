@@ -911,11 +911,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     @MainActor
     private func applyTint(_ button: UIButton, color: UIColor) {
         if var cfg = button.configuration {
-            // Se in futuro userai UIButton.Configuration, tieni il colore allineato qui
             cfg.baseForegroundColor = color
             button.configuration = cfg
         } else {
-            // Config attuale (nessuna configuration): SF Symbols sono template, quindi basta tintColor
             button.tintColor = color
             button.setTitleColor(color, for: .normal)
         }
