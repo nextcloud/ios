@@ -196,7 +196,8 @@ actor NCNetworkingProcess {
                 return
             }
 
-            guard !currentAccount.isEmpty,
+            guard networking.isOnline,
+                  !currentAccount.isEmpty,
                   networking.noServerErrorAccount(currentAccount)
             else {
                 return
