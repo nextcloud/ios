@@ -80,8 +80,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
         assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         assistantButtonItem.primaryAction = UIAction(handler: { _ in
-            let assistant = NCAssistant()
-                .environmentObject(NCAssistantModel(controller: self.controller))
+            let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: self.controller), chatModel: NCAssistantChatModel(controller: self.controller), conversationsModel: NCAssistantChatConversationsModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             self.present(hostingController, animated: true, completion: nil)
         })

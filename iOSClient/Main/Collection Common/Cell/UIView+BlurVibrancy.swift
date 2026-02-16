@@ -1,8 +1,6 @@
-//
-//  UIView+BlurVibrancy.swift
-//
-//  Created by Xcode Assistant.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import ObjectiveC
@@ -84,66 +82,5 @@ public extension UIView {
 
         blurEffectView = blurView
         return blurView
-    }
-
-    /// Adds a vibrancy overlay tied to a blur view and returns the vibrancy effect view.
-    /// If `blurView` is `nil`, this method will use the previously added blur view or create a new one with default style.
-    /// The vibrancy view is added inside the blur view's contentView and pinned to its edges.
-    ///
-    /// - Parameters:
-    ///   - using: The blur view to attach vibrancy to. If `nil`, uses/creates one.
-    ///   - style: The `UIVibrancyEffectStyle` to use. Defaults to `.label`.
-    ///   - insets: Edge insets to apply when pinning the vibrancy view. Defaults to `.zero`.
-    /// - Returns: The configured and inserted `UIVisualEffectView` for vibrancy, or `nil` if a blur effect could not be determined.
-    @discardableResult
-    func addVibrancyOverlay(using blurView: UIVisualEffectView? = nil,
-                            style: UIVibrancyEffectStyle = .label,
-                            insets: UIEdgeInsets = .zero) -> UIVisualEffectView? {
-        // Ensure we have a blur view
-        let blur: UIVisualEffectView
-        if let provided = blurView {
-            blur = provided
-        } else if let existing = blurEffectView {
-            blur = existing
-        } else {
-            // Create a default blur if none exists
-            blur = addBlurBackground()
-        }
-
-        guard let blurEffect = blur.effect as? UIBlurEffect else { return nil }
-
-        // Remove existing vibrancy (if any) that was previously added via this extension
-        if let existingVibrancy = vibrancyEffectView {
-            existingVibrancy.removeFromSuperview()
-            vibrancyEffectView = nil
-        }
-
-        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect, style: style)
-        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
-        vibrancyView.isUserInteractionEnabled = false
-        vibrancyView.translatesAutoresizingMaskIntoConstraints = false
-
-        blur.contentView.addSubview(vibrancyView)
-        NSLayoutConstraint.activate([
-            vibrancyView.leadingAnchor.constraint(equalTo: blur.contentView.leadingAnchor, constant: insets.left),
-            vibrancyView.trailingAnchor.constraint(equalTo: blur.contentView.trailingAnchor, constant: -insets.right),
-            vibrancyView.topAnchor.constraint(equalTo: blur.contentView.topAnchor, constant: insets.top),
-            vibrancyView.bottomAnchor.constraint(equalTo: blur.contentView.bottomAnchor, constant: -insets.bottom)
-        ])
-
-        vibrancyEffectView = vibrancyView
-        return vibrancyView
-    }
-
-    /// Removes the blur and vibrancy effect views previously added via this extension.
-    func removeBlurAndVibrancy() {
-        if let vibrancy = vibrancyEffectView {
-            vibrancy.removeFromSuperview()
-            vibrancyEffectView = nil
-        }
-        if let blur = blurEffectView {
-            blur.removeFromSuperview()
-            blurEffectView = nil
-        }
     }
 }
