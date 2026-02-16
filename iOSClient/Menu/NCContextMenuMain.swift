@@ -47,10 +47,6 @@ class NCContextMenuMain: NSObject {
 
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
-        if !NCNetworking.shared.isOnline {
-            return UIMenu()
-        }
-
         // Assemble final menu
         let baseChildren = [
             UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
