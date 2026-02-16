@@ -99,6 +99,8 @@ extension UIAlertController {
                 metadata.sessionDate = Date()
 
                 NCManageDatabase.shared.addMetadata(metadata)
+
+                NotificationCenter.default.postOnGlobal(name: NCGlobal.shared.notificationCenterNetworkProcess, second: 0.1)
 #endif
             }
         })
