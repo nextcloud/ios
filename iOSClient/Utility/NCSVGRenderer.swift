@@ -14,7 +14,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
     func renderSVGToUIImage(svgData: Data?,
                             size: CGSize = CGSize(width: 256, height: 256),
                             backgroundColor: UIColor = .clear,
-                            trimTransparentPixels: Bool = false,
+                            trimTransparentPixels: Bool = true,
                             alphaThreshold: UInt8 = 8) async throws -> UIImage? {
         guard let svgData else {
             return nil
