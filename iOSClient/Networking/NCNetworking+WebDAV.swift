@@ -464,6 +464,9 @@ extension NCNetworking {
                 serverUrlss.forEach { serverUrl in
                     delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
                 }
+
+                // START Network process
+                NotificationCenter.default.postOnGlobal(name: NCGlobal.shared.notificationCenterNetworkProcess, second: 0.1)
             }
         }
     }

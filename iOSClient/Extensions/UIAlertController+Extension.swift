@@ -100,6 +100,7 @@ extension UIAlertController {
 
                 NCManageDatabase.shared.addMetadata(metadata)
 
+                // START Network process
                 NotificationCenter.default.postOnGlobal(name: NCGlobal.shared.notificationCenterNetworkProcess, second: 0.1)
 #endif
             }
