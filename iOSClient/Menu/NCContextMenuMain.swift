@@ -503,7 +503,12 @@ class NCContextMenuMain: NSObject {
                                 if let image = await NCUtility().convertSVGtoPNGWriteToUserData(serverUrl: metadata.urlBase + iconUrl,
                                                                                                 rewrite: false,
                                                                                                 account: metadata.account).image {
-                                    iconImage = image
+                                    if let image = image.withTintColor(
+                                        NCBrandColor.shared.iconImageColor,
+                                        renderingMode: .alwaysOriginal
+                                    ).resizeImage(size: CGSize(width: 20, height: 20)) {
+                                        iconImage = image
+                                    }
                                 }
                             }
 

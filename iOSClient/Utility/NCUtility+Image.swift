@@ -264,8 +264,9 @@ extension NCUtility {
 
 #if !EXTENSION
     func convertSVGtoPNGWriteToUserData(serverUrl: String,
-                                        size: CGFloat = 128,
+                                        size: CGFloat = 256,
                                         rewrite: Bool,
+                                        trimTransparentPixels: Bool = true,
                                         account: String,
                                         id: Int? = nil) async -> (image: UIImage?, id: Int?) {
         var serverUrl = serverUrl
@@ -313,7 +314,7 @@ extension NCUtility {
 
             // is a SVG
             do {
-                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size))
+                let image = try await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: CGSize(width: size, height: size), trimTransparentPixels: trimTransparentPixels)
                 guard let image,
                       let pngImageData = image.pngData() else {
                         return(nil, id)
