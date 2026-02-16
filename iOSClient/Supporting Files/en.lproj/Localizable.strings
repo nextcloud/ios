@@ -646,7 +646,7 @@
 "_create_folder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
 "_creating_dir_progress_"   = "Creating directories in progress … keep the application active.";
 "_creating_db_photo_progress_" = "Creating photo archive in progress … keep the application active.";
-"_account_unauthorized_"    = "There was an issue authorizing the account %@. Please log in again.";
+"_account_unauthorized_"    = "There was an issue authorizing the account. Please log in again.";
 "_folder_offline_desc_"     = "Even without an internet connection, you can organize your folders, create files. Once you're back online, your pending actions will automatically sync.";
 "_offline_not_allowed_"     = "This operation is not allowed in offline mode";
 "_Upload_native_format_yes_"= "Upload in native format: yes";
