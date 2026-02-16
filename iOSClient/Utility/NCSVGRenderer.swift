@@ -12,8 +12,10 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
     private let utilityFileSystem = NCUtilityFileSystem()
 
     func renderSVGToUIImage(svgData: Data?,
-                            size: CGSize = CGSize(width: 128, height: 128),
-                            backgroundColor: UIColor = .clear) async throws -> UIImage? {
+                            size: CGSize = CGSize(width: 256, height: 256),
+                            backgroundColor: UIColor = .clear,
+                            trimTransparentPixels: Bool = true,
+                            alphaThreshold: UInt8 = 8) async throws -> UIImage? {
         guard let svgData else {
             return nil
         }
@@ -78,7 +80,68 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         let scaled = renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: targetSize))
         }
+
+        if trimTransparentPixels,
+           let trimmed = Self.trimTransparentPixels(in: scaled, alphaThreshold: alphaThreshold) {
+            return trimmed
+        }
+
         return scaled
+    }
+
+    private static func trimTransparentPixels(in image: UIImage, alphaThreshold: UInt8) -> UIImage? {
+        guard let cgImage = image.cgImage else { return nil }
+
+        let width = cgImage.width
+        let height = cgImage.height
+        let bytesPerRow = width * 4
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ), let data = context.data else {
+            return nil
+        }
+
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        let buffer = data.bindMemory(to: UInt8.self, capacity: width * height * 4)
+        var minX = width
+        var minY = height
+        var maxX = 0
+        var maxY = 0
+        var found = false
+
+        for y in 0..<height {
+            for x in 0..<width {
+                let alpha = buffer[(y * bytesPerRow) + (x * 4) + 3]
+                if alpha > alphaThreshold {
+                    found = true
+                    if x < minX { minX = x }
+                    if y < minY { minY = y }
+                    if x > maxX { maxX = x }
+                    if y > maxY { maxY = y }
+                }
+            }
+        }
+
+        guard found else { return nil }
+
+        let cropRect = CGRect(
+            x: minX,
+            y: minY,
+            width: maxX - minX + 1,
+            height: maxY - minY + 1
+        )
+
+        guard let cropped = cgImage.cropping(to: cropRect) else { return nil }
+        return UIImage(cgImage: cropped, scale: image.scale, orientation: .up)
     }
 
     private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
