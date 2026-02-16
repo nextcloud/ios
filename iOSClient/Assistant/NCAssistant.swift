@@ -1,36 +1,33 @@
-//
-//  NCAssistant.swift
-//  Nextcloud
-//
-//  Created by Milen on 03.04.24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
 import PopupView
 
 struct NCAssistant: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @State var assistantModel: NCAssistantModel
+    @State var chatModel: NCAssistantChatModel
+    @State var conversationsModel: NCAssistantChatConversationsModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
             ZStack {
-                TaskList()
+                if assistantModel.types.isEmpty, !assistantModel.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
+                } else if assistantModel.isSelectedTypeChat {
+                    NCAssistantChat(conversationsModel: $conversationsModel)
+                } else {
+                    TaskList()
+                }
 
-                if model.isLoading, !model.isRefreshing {
+                if assistantModel.isLoading, !assistantModel.isRefreshing {
                     ProgressView()
                         .controlSize(.regular)
                 }
-
-                if model.types.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
-                } else if model.filteredTasks.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
-                }
-
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -41,17 +38,27 @@ struct NCAssistant: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: NCAssistantCreateNewTask()) {
-                        Image(systemName: "plus")
+                    NavigationLink(destination: NCAssistantChatConversations(conversationsModel: conversationsModel, selectedConversation: chatModel.selectedConversation) { conversation in
+                        guard let conversation else { return }
+
+                        Task {
+                            await chatModel.selectConversation(selectedConversation: conversation)
+                            assistantModel.selectChatTaskType()
+                        }
+                    }) {
+                        Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
-                    .disabled(model.selectedType == nil)
-                    .accessibilityIdentifier("CreateButton")
+                    .disabled(assistantModel.selectedType == nil)
+                    .accessibilityIdentifier("ConversationsButton")
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
+            .modifier(NavigationSubtitleModifier(subtitle: assistantModel.isSelectedTypeChat ?
+                                                 chatModel.currentSession?.sessionTitle ?? chatModel.selectedConversation?.validTitle
+                                                 : ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
                 TypeList()
@@ -59,7 +66,7 @@ struct NCAssistant: View {
 
         }
         .navigationViewStyle(.stack)
-        .popup(isPresented: $model.hasError) {
+        .popup(isPresented: $assistantModel.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
                 .padding()
                 .background(.red)
@@ -71,22 +78,27 @@ struct NCAssistant: View {
                 .position(.bottom)
         }
         .accentColor(Color(NCBrandColor.shared.iconImageColor))
-        .environmentObject(model)
+        .environment(assistantModel)
+        .environment(chatModel)
+        .onDisappear {
+            chatModel.stopPolling()
+        }
     }
 }
 
 #Preview {
+    @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
     let model = NCAssistantModel(controller: nil)
+    let conversationsModel = NCAssistantChatConversationsModel(controller: nil)
 
-    NCAssistant()
-        .environmentObject(model)
+    NCAssistant(assistantModel: model, chatModel: chatModel, conversationsModel: conversationsModel)
         .onAppear {
             model.loadDummyData()
         }
 }
 
 struct TaskList: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var assistantModel
     @State var presentEditTask = false
     @State var showDeleteConfirmation = false
 
@@ -94,11 +106,13 @@ struct TaskList: View {
     @State var taskToDelete: AssistantTask?
 
     var body: some View {
-        List(model.filteredTasks, id: \.id) { task in
+        @Bindable var assistantModel = assistantModel
+
+        List(assistantModel.filteredTasks, id: \.id) { task in
             TaskItem(showDeleteConfirmation: $showDeleteConfirmation, taskToDelete: $taskToDelete, task: task)
                 .contextMenu {
                     Button {
-                        model.shareTask(task)
+                        assistantModel.shareTask(task)
                     } label: {
                         Label {
                             Text("_share_")
@@ -108,7 +122,7 @@ struct TaskList: View {
                     }
 
                     Button {
-                        model.scheduleTask(input: task.input?.input ?? "")
+                        assistantModel.scheduleTask(input: task.input?.input ?? "")
                     } label: {
                         Label {
                             Text("_retry_")
@@ -144,16 +158,16 @@ struct TaskList: View {
                 }
                 .accessibilityIdentifier("TaskContextMenu")
         }
-        .if(!model.types.isEmpty) { view in
+        .if(!assistantModel.types.isEmpty) { view in
             view.refreshable {
-                model.refresh()
+                assistantModel.refresh()
             }
         }
         .confirmationDialog("", isPresented: $showDeleteConfirmation) {
             Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
                 withAnimation {
                     guard let taskToDelete else { return }
-                    model.deleteTask(taskToDelete)
+                    assistantModel.deleteTask(taskToDelete)
                 }
             }
         }
@@ -162,11 +176,20 @@ struct TaskList: View {
                 NCAssistantCreateNewTask(text: taskToEdit?.input?.input ?? "", editMode: true)
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            ChatInputField(isLoading: $assistantModel.isLoading) { input in
+                assistantModel.scheduleTask(input: input)
+            }
+        }
+
+        if assistantModel.filteredTasks.isEmpty, !assistantModel.isLoading {
+            NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
+        }
     }
 }
 
 struct TypeButton: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
 
     let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
@@ -201,7 +224,7 @@ struct TypeButton: View {
 }
 
 struct TaskItem: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
     @Binding var showDeleteConfirmation: Bool
     @Binding var taskToDelete: AssistantTask?
     var task: AssistantTask
@@ -245,8 +268,20 @@ struct TaskItem: View {
     }
 }
 
+struct NavigationSubtitleModifier: ViewModifier {
+    let subtitle: String?
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.navigationSubtitle(subtitle ?? "")
+        } else {
+            content
+        }
+    }
+}
+
 struct TypeList: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @Environment(NCAssistantModel.self) var model
 
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -260,6 +295,11 @@ struct TypeList: View {
                 .frame(height: 50)
             }
             .background(.ultraThinMaterial)
+            .onChange(of: model.scrollTypeListToTop) {
+                withAnimation(.easeInOut(duration: 0.7)) {
+                    scrollProxy.scrollTo(model.types.first?.id, anchor: .center)
+                }
+            }
         }
     }
 }

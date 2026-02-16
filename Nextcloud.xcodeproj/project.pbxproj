@@ -160,7 +160,12 @@
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3C587AE2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */; };
+		F3C6F6F62F34CC0900C531B6 /* NCAssistantChatConversationsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6F6F52F34CC0900C531B6 /* NCAssistantChatConversationsModel.swift */; };
 		F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */; };
+		F3DDFE0F2F15453900A784C8 /* NCAssistantChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */; };
+		F3DDFE1E2F1F8EC600A784C8 /* ChatInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE1D2F1F8EC600A784C8 /* ChatInputField.swift */; };
+		F3DDFE212F1F953000A784C8 /* NCAssistantChatConversations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE202F1F953000A784C8 /* NCAssistantChatConversations.swift */; };
+		F3DDFE232F1FB4C300A784C8 /* NCAssistantChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DDFE222F1FB4C300A784C8 /* NCAssistantChatModel.swift */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -1267,7 +1272,12 @@
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetCollectionThumbnailLoader.swift; sourceTree = "<group>"; };
+		F3C6F6F52F34CC0900C531B6 /* NCAssistantChatConversationsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatConversationsModel.swift; sourceTree = "<group>"; };
 		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
+		F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChat.swift; sourceTree = "<group>"; };
+		F3DDFE1D2F1F8EC600A784C8 /* ChatInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputField.swift; sourceTree = "<group>"; };
+		F3DDFE202F1F953000A784C8 /* NCAssistantChatConversations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatConversations.swift; sourceTree = "<group>"; };
+		F3DDFE222F1FB4C300A784C8 /* NCAssistantChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantChatModel.swift; sourceTree = "<group>"; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
 		F3F442ED2DDE292600FD701F /* NCMetadataPermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMetadataPermissions.swift; sourceTree = "<group>"; };
@@ -2107,6 +2117,7 @@
 		F3374A7F2D64AB40002A38F9 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				F3DDFE1D2F1F8EC600A784C8 /* ChatInputField.swift */,
 				F3374A832D64AC2C002A38F9 /* AssistantLabelStyle.swift */,
 				F3374A802D64AB9E002A38F9 /* StatusInfo.swift */,
 				F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */,
@@ -2138,10 +2149,12 @@
 			isa = PBXGroup;
 			children = (
 				F3A047962BD2668800658E7B /* NCAssistant.swift */,
+				F3A047932BD2668800658E7B /* NCAssistantModel.swift */,
+				F3DDFE0D2F15452F00A784C8 /* Chat */,
+				F3DDFE1F2F1F951000A784C8 /* Chat Sessions */,
 				F3A047902BD2668800658E7B /* Create Task */,
 				F3A047942BD2668800658E7B /* Task Detail */,
 				F3374A7F2D64AB40002A38F9 /* Components */,
-				F3A047922BD2668800658E7B /* Models */,
 			);
 			path = Assistant;
 			sourceTree = "<group>";
@@ -2152,14 +2165,6 @@
 				F3A047912BD2668800658E7B /* NCAssistantCreateNewTask.swift */,
 			);
 			path = "Create Task";
-			sourceTree = "<group>";
-		};
-		F3A047922BD2668800658E7B /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				F3A047932BD2668800658E7B /* NCAssistantModel.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		F3A047942BD2668800658E7B /* Task Detail */ = {
@@ -2179,6 +2184,24 @@
 				F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		F3DDFE0D2F15452F00A784C8 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				F3DDFE0E2F15453900A784C8 /* NCAssistantChat.swift */,
+				F3DDFE222F1FB4C300A784C8 /* NCAssistantChatModel.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		F3DDFE1F2F1F951000A784C8 /* Chat Sessions */ = {
+			isa = PBXGroup;
+			children = (
+				F3DDFE202F1F953000A784C8 /* NCAssistantChatConversations.swift */,
+				F3C6F6F52F34CC0900C531B6 /* NCAssistantChatConversationsModel.swift */,
+			);
+			path = "Chat Sessions";
 			sourceTree = "<group>";
 		};
 		F3E173BE2C9B1057006D177A /* ScreenAwakeManager */ = {
@@ -4412,6 +4435,7 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F77DD6A82C5CC093009448FB /* NCSession.swift in Sources */,
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
+				F3C6F6F62F34CC0900C531B6 /* NCAssistantChatConversationsModel.swift in Sources */,
 				F76340FC2EBDF64D0056F538 /* NCManageDatabase+Tag.swift in Sources */,
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCCellMain.swift in Sources */,
@@ -4583,6 +4607,7 @@
 				F7816EF22C2C3E1F00A52517 /* NCPushNotification.swift in Sources */,
 				F76882342C0DD1E7001CF441 /* NCDisplayView.swift in Sources */,
 				F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */,
+				F3DDFE232F1FB4C300A784C8 /* NCAssistantChatModel.swift in Sources */,
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
 				F7411C552D7B26D700F57358 /* NCNetworking+ServerError.swift in Sources */,
 				F72944F22A84246400246839 /* NCEndToEndMetadataV20.swift in Sources */,
@@ -4699,7 +4724,9 @@
 				F7A03E2F2D425A14007AA677 /* NCFavoriteNavigationController.swift in Sources */,
 				F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F76882232C0DD1E7001CF441 /* NCCapabilitiesModel.swift in Sources */,
+				F3DDFE212F1F953000A784C8 /* NCAssistantChatConversations.swift in Sources */,
 				F7E2B64F2DDCC5C30075B4D0 /* NCMedia+TransferDelegate.swift in Sources */,
+				F3DDFE0F2F15453900A784C8 /* NCAssistantChat.swift in Sources */,
 				F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */,
 				F799DF8B2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift in Sources */,
@@ -4723,6 +4750,7 @@
 				F76882272C0DD1E7001CF441 /* NCManageE2EEView.swift in Sources */,
 				F7864ACC2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7327E302B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */,
+				F3DDFE1E2F1F8EC600A784C8 /* ChatInputField.swift in Sources */,
 				F7D61EA82EBF1694007F865B /* NCManageDatabase+TableCapabilities.swift in Sources */,
 				F79FFB262A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingProcess.swift in Sources */,

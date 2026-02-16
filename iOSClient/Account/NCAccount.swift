@@ -194,7 +194,7 @@ class NCAccount: NSObject {
             return
         }
 
-        await showErrorBanner(controller: controller, text: "_account_unauthorized_", errorCode: NCGlobal.shared.errorUnauthorized401)
+        await showErrorBanner(controller: controller, text: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), errorCode: NCGlobal.shared.errorUnauthorized401)
 
         let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tblAccount.urlBase, token: token, account: account) { task in
             Task {
