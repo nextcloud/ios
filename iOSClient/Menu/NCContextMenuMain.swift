@@ -501,6 +501,7 @@ class NCContextMenuMain: NSObject {
                             var iconImage = UIImage()
 
                             if let iconUrl = item.icon {
+<<<<<<< HEAD
                                 if let image = await NCUtility().convertSVGtoPNGWriteToUserData(
                                     serverUrl: metadata.urlBase + iconUrl,
                                     rewrite: false,
@@ -511,6 +512,17 @@ class NCContextMenuMain: NSObject {
                                         NCBrandColor.shared.iconImageColor,
                                         renderingMode: .alwaysOriginal
                                     )
+=======
+                                if let image = await NCUtility().convertSVGtoPNGWriteToUserData(serverUrl: metadata.urlBase + iconUrl,
+                                                                                                rewrite: false,
+                                                                                                account: metadata.account).image {
+                                    if let image = image.withTintColor(
+                                        NCBrandColor.shared.iconImageColor,
+                                        renderingMode: .alwaysOriginal
+                                    ).resizeImage(size: CGSize(width: 20, height: 20)) {
+                                        iconImage = image
+                                    }
+>>>>>>> fd0de89732 (Fix gui svg (#3989))
                                 }
                             }
 
