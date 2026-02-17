@@ -35,6 +35,7 @@ actor NCNetworkingProcess {
     private var lastUsedInterval: TimeInterval = 3.5
     private let maxInterval: TimeInterval = 3.5
     private let minInterval: TimeInterval = 2.5
+    private let offlineInterval: TimeInterval = 10
 
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
@@ -187,8 +188,7 @@ actor NCNetworkingProcess {
                 return
             }
 
-            guard networking.isOnline,
-                  !currentAccount.isEmpty,
+            guard !currentAccount.isEmpty,
                   networking.noServerErrorAccount(currentAccount)
             else {
                 return
@@ -243,7 +243,9 @@ actor NCNetworkingProcess {
 
                 // TODO: Check temperature
 
-                if lastUsedInterval != minInterval {
+                if networking.isOffline {
+                    await startTimer(interval: offlineInterval)
+                } else if lastUsedInterval != minInterval {
                     await startTimer(interval: minInterval)
                 }
             } else {
