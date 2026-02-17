@@ -38,6 +38,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         svgData: Data?,
         size: CGSize = CGSize(width: 256, height: 256),
         backgroundColor: UIColor = .clear,
+        tintColor: UIColor? = nil,
         trimTransparentPixels: Bool = true,
         alphaThreshold: UInt8 = 0
     ) async throws -> UIImage? {
@@ -68,7 +69,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         self.webView = webView
 
         // Inline the SVG into the DOM to avoid <img> rasterization path.
-        let html = makeHTML(svgData: svgData, canvasPointSize: targetPointSize, backgroundColor: backgroundColor)
+        let html = makeHTML(svgData: svgData, canvasPointSize: targetPointSize, backgroundColor: backgroundColor, tintColor: tintColor)
 
         try await loadHTMLAsync(webView: webView, html: html)
         try await waitForInlineSVGReady(webView: webView)
@@ -109,51 +110,48 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         return webView
     }
 
-    private func makeHTML(svgData: Data, canvasPointSize: CGSize, backgroundColor: UIColor) -> String {
+    private func makeHTML(
+        svgData: Data,
+        canvasPointSize: CGSize,
+        backgroundColor: UIColor,
+        tintColor: UIColor?
+    ) -> String {
+
         let w = Int(canvasPointSize.width.rounded(.down))
         let h = Int(canvasPointSize.height.rounded(.down))
 
-        // Base64 payload is decoded in JS and inserted as inline SVG markup.
         let base64 = svgData.base64EncodedString()
-        let cssBackground = (backgroundColor == .clear) ? "transparent" : backgroundColor.toCSSColor()
+
+        let cssBackground: String = (backgroundColor == .clear)
+            ? "transparent"
+            : backgroundColor.toCSSColor()
+
+        // Non-optional CSS tint (inherit if nil)
+        let cssTint: String = tintColor.map { $0.toCSSColor() } ?? "inherit"
+
+        // Apply fill only when tintColor is provided
+        let svgFillRule: String = tintColor != nil
+            ? "#container svg { fill: currentColor; }"
+            : ""
 
         return """
-        <!doctype html>
-        <html>
-        <head>
-          <meta charset="utf-8"/>
-          <meta name="viewport" content="width=\(w), height=\(h), initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: \(w)px;
-              height: \(h)px;
-              overflow: hidden;
-              background: \(cssBackground);
-            }
-            #container {
-              width: 100%;
-              height: 100%;
-              display: block;
-              background: \(cssBackground);
-            }
-            /* Make sure the inline SVG scales to fill the canvas. */
-            #container svg {
-              width: 100%;
-              height: 100%;
-              display: block;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="container"></div>
-          <script>
-            (function() {
-              const container = document.getElementById('container');
-              const svgText = atob('\(base64)');
-              container.innerHTML = svgText;
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=\(w), height=\(h), initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+      <style>
+        html, body {
+          margin: 0;
+          padding: 0;
+          width: \(w)px;
+          height: \(h)px;
+          overflow: hidden;
+          background: \(cssBackground);
+          color: \(cssTint);
+        }
 
+<<<<<<< HEAD
               // Ensure a viewBox exists (better scaling behavior for many icons).
               const svg = container.querySelector('svg');
               if (svg) {
@@ -199,6 +197,47 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
 >>>>>>> fd0de89732 (Fix gui svg (#3989))
 =======
 >>>>>>> d99135d60a (svg-fix (#3990))
+=======
+        #container {
+          width: 100%;
+          height: 100%;
+          display: block;
+          background: \(cssBackground);
+        }
+
+        #container svg {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+
+        \(svgFillRule)
+      </style>
+    </head>
+    <body>
+      <div id="container"></div>
+      <script>
+        (function() {
+          const container = document.getElementById('container');
+          const svgText = atob('\(base64)');
+          container.innerHTML = svgText;
+
+          const svg = container.querySelector('svg');
+          if (svg) {
+            const hasViewBox = svg.getAttribute('viewBox');
+            if (!hasViewBox) {
+              const width = svg.getAttribute('width') || \(w);
+              const height = svg.getAttribute('height') || \(h);
+              svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+            }
+            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+          }
+        })();
+      </script>
+    </body>
+    </html>
+    """
+>>>>>>> 688c5b5c5a (added tintcolor (#3992))
     }
 
     private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
