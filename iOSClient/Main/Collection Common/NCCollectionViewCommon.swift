@@ -880,8 +880,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
             }
 
             if status == self.global.networkingStatusCreateFolder {
-                if error == .success,
-                   serverUrl == self.serverUrl,
+                if serverUrl == self.serverUrl,
                    selector != self.global.selectorUploadAutoUpload,
                    let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
                     self.pushMetadata(metadata)
