@@ -196,8 +196,8 @@
 		F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F702F2FD25EE5D2C008F8E80 /* NYMnemonic.m */; };
 		F702F30225EE5D2C008F8E80 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F702F2FF25EE5D2C008F8E80 /* english.txt */; };
 		F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
-		F70460522499061800BB98A7 /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+Extension.swift */; };
-		F70460532499095400BB98A7 /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+Extension.swift */; };
+		F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
+		F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */; };
 		F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
 		F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */; };
@@ -1292,7 +1292,7 @@
 		F702F2FF25EE5D2C008F8E80 /* english.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F702F30025EE5D2C008F8E80 /* NYMnemonic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPopupViewController.swift; sourceTree = "<group>"; };
-		F70460512499061800BB98A7 /* NotificationCenter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+Extension.swift"; sourceTree = "<group>"; };
+		F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+MainThread.swift"; sourceTree = "<group>"; };
 		F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadConflict.storyboard; sourceTree = "<group>"; };
 		F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflict.swift; sourceTree = "<group>"; };
 		F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCCreateFormUploadConflictCell.xib; sourceTree = "<group>"; };
@@ -2818,7 +2818,7 @@
 				F7AC1CAF28AB94490032D99F /* Array+Extension.swift */,
 				F7817CF729801A3500FFBC65 /* Data+Extension.swift */,
 				AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */,
-				F70460512499061800BB98A7 /* NotificationCenter+Extension.swift */,
+				F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */,
 				F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift */,
 				F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */,
 				F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */,
@@ -4207,7 +4207,7 @@
 				F7CAFE202F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */,
 				F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */,
 				F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
-				F70460532499095400BB98A7 /* NotificationCenter+Extension.swift in Sources */,
+				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
@@ -4574,7 +4574,7 @@
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,
-				F70460522499061800BB98A7 /* NotificationCenter+Extension.swift in Sources */,
+				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F3C587AE2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
 				F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */,
@@ -5625,10 +5625,12 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 33.0.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5648,10 +5650,12 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 33.0.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5802,7 +5806,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 33.0.1;
+				MARKETING_VERSION = 33.0.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -5865,7 +5869,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 33.0.1;
+				MARKETING_VERSION = 33.0.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
