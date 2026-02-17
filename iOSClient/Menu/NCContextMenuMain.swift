@@ -498,19 +498,18 @@ class NCContextMenuMain: NSObject {
                 if shouldShowMenu {
                     let deferredElement = UIDeferredMenuElement { completion in
                         Task {
-                            var iconImage = UIImage()
+                            var iconImage = UIImage(systemName: "exclamationmark.triangle.fill")
 
                             if let iconUrl = item.icon {
-                                if let image = await NCUtility().convertSVGtoPNGWriteToUserData(
-                                    serverUrl: metadata.urlBase + iconUrl,
-                                    rewrite: false,
-                                    account: metadata.account
-                                ).image {
-                                    let image = image.rasterResized(to: CGSize(width: 20, height: 20))
-                                    iconImage = image.withTintColor(
-                                        NCBrandColor.shared.iconImageColor,
-                                        renderingMode: .alwaysOriginal
-                                    )
+                                let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: metadata.urlBase + iconUrl, account: metadata.account)
+                                if results.error == .success, let data = results.responseData?.data,
+                                   let image = try? await NCSVGRenderer().renderSVGToUIImage(
+                                    svgData: data,
+                                    size: CGSize(width: UIScreen.main.scale * 20,
+                                                 height: UIScreen.main.scale * 20),
+                                    tintColor: NCBrandColor.shared.iconImageColor,
+                                    trimTransparentPixels: false) {
+                                    iconImage = image
                                 }
                             }
 
