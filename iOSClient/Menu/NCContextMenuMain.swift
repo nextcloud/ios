@@ -47,10 +47,6 @@ class NCContextMenuMain: NSObject {
 
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
-        if !NCNetworking.shared.isOnline {
-            return UIMenu()
-        }
-
         // Assemble final menu
         let baseChildren = [
             UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
@@ -504,22 +500,13 @@ class NCContextMenuMain: NSObject {
                         Task {
                             var iconImage = UIImage()
 
-                            func resizedRasterImage(_ image: UIImage, to size: CGSize) -> UIImage {
-                                let format = UIGraphicsImageRendererFormat.default()
-                                format.scale = image.scale
-                                let renderer = UIGraphicsImageRenderer(size: size, format: format)
-                                return renderer.image { _ in
-                                    image.draw(in: CGRect(origin: .zero, size: size))
-                                }.withRenderingMode(image.renderingMode)
-                            }
-
                             if let iconUrl = item.icon {
                                 if let image = await NCUtility().convertSVGtoPNGWriteToUserData(
                                     serverUrl: metadata.urlBase + iconUrl,
                                     rewrite: false,
                                     account: metadata.account
                                 ).image {
-                                    let image = resizedRasterImage(image, to: .init(width: 20, height: 20))
+                                    let image = image.rasterResized(to: CGSize(width: 20, height: 20))
                                     iconImage = image.withTintColor(
                                         NCBrandColor.shared.iconImageColor,
                                         renderingMode: .alwaysOriginal
