@@ -502,6 +502,9 @@ class NCContextMenuMain: NSObject {
 
                             if let iconUrl = item.icon {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d99135d60a (svg-fix (#3990))
                                 if let image = await NCUtility().convertSVGtoPNGWriteToUserData(
                                     serverUrl: metadata.urlBase + iconUrl,
                                     rewrite: false,
@@ -509,6 +512,7 @@ class NCContextMenuMain: NSObject {
                                 ).image {
                                     let image = image.rasterResized(to: CGSize(width: 20, height: 20))
                                     iconImage = image.withTintColor(
+<<<<<<< HEAD
                                         NCBrandColor.shared.iconImageColor,
                                         renderingMode: .alwaysOriginal
                                     )
@@ -523,6 +527,11 @@ class NCContextMenuMain: NSObject {
                                         iconImage = image
                                     }
 >>>>>>> fd0de89732 (Fix gui svg (#3989))
+=======
+                                        NCBrandColor.shared.iconImageColor,
+                                        renderingMode: .alwaysOriginal
+                                    )
+>>>>>>> d99135d60a (svg-fix (#3990))
                                 }
                             }
 

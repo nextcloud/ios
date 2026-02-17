@@ -20,6 +20,9 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
     private var webView: WKWebView?
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d99135d60a (svg-fix (#3990))
     // MARK: - Public API
 
     /// Renders an SVG into a UIImage using WKWebView snapshotting.
@@ -38,6 +41,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         trimTransparentPixels: Bool = true,
         alphaThreshold: UInt8 = 0
     ) async throws -> UIImage? {
+<<<<<<< HEAD
 =======
     func renderSVGToUIImage(svgData: Data?,
                             size: CGSize = CGSize(width: 256, height: 256),
@@ -45,6 +49,8 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
                             trimTransparentPixels: Bool = true,
                             alphaThreshold: UInt8 = 8) async throws -> UIImage? {
 >>>>>>> fd0de89732 (Fix gui svg (#3989))
+=======
+>>>>>>> d99135d60a (svg-fix (#3990))
         guard let svgData else {
             return nil
         }
@@ -165,6 +171,7 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         </html>
         """
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
         try await loadHTMLAsync(webView: webView, html: html)
@@ -190,61 +197,8 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
 
         return scaled
 >>>>>>> fd0de89732 (Fix gui svg (#3989))
-    }
-
-    private static func trimTransparentPixels(in image: UIImage, alphaThreshold: UInt8) -> UIImage? {
-        guard let cgImage = image.cgImage else { return nil }
-
-        let width = cgImage.width
-        let height = cgImage.height
-        let bytesPerRow = width * 4
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-
-        guard let context = CGContext(
-            data: nil,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: bytesPerRow,
-            space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-        ), let data = context.data else {
-            return nil
-        }
-
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-
-        let buffer = data.bindMemory(to: UInt8.self, capacity: width * height * 4)
-        var minX = width
-        var minY = height
-        var maxX = 0
-        var maxY = 0
-        var found = false
-
-        for y in 0..<height {
-            for x in 0..<width {
-                let alpha = buffer[(y * bytesPerRow) + (x * 4) + 3]
-                if alpha > alphaThreshold {
-                    found = true
-                    if x < minX { minX = x }
-                    if y < minY { minY = y }
-                    if x > maxX { maxX = x }
-                    if y > maxY { maxY = y }
-                }
-            }
-        }
-
-        guard found else { return nil }
-
-        let cropRect = CGRect(
-            x: minX,
-            y: minY,
-            width: maxX - minX + 1,
-            height: maxY - minY + 1
-        )
-
-        guard let cropped = cgImage.cropping(to: cropRect) else { return nil }
-        return UIImage(cgImage: cropped, scale: image.scale, orientation: .up)
+=======
+>>>>>>> d99135d60a (svg-fix (#3990))
     }
 
     private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
@@ -402,4 +356,163 @@ final class NCSVGRenderer: NSObject, WKNavigationDelegate {
         guard let cropped = cgImage.cropping(to: cropRect) else { return nil }
         return UIImage(cgImage: cropped, scale: image.scale, orientation: .up)
     }
+<<<<<<< HEAD
+
+    private func loadHTMLAsync(webView: WKWebView, html: String) async throws {
+        webView.stopLoading()
+
+        if let pending = navigationContinuation {
+            pending.resume(throwing: NSError(
+                domain: "NCSVGRenderer",
+                code: -22,
+                userInfo: [NSLocalizedDescriptionKey: "Cancelled previous load."]
+            ))
+            navigationContinuation = nil
+        }
+
+        try await withCheckedThrowingContinuation { cont in
+            navigationContinuation = cont
+            webView.loadHTMLString(html, baseURL: nil)
+        }
+    }
+
+    private func waitForInlineSVGReady(webView: WKWebView) async throws {
+        // Wait until the inline SVG exists and has a non-zero bounding box.
+        let js = """
+        (function() {
+          const svg = document.querySelector('#container svg');
+          if (!svg) return false;
+          const box = svg.getBoundingClientRect();
+          return box.width > 0 && box.height > 0;
+        })();
+        """
+
+        // ~3 seconds max (100 * 30ms)
+        for _ in 0..<100 {
+            let ready = try await webView.evaluateJavaScript(js) as? Bool
+            if ready == true { return }
+            try await Task.sleep(nanoseconds: 30_000_000)
+        }
+
+        throw NSError(
+            domain: "NCSVGRenderer",
+            code: -24,
+            userInfo: [NSLocalizedDescriptionKey: "Inline SVG not ready within timeout."]
+        )
+    }
+
+    private func takeSnapshotAsync(webView: WKWebView, configuration: WKSnapshotConfiguration) async throws -> UIImage {
+        try await withCheckedThrowingContinuation { cont in
+            webView.takeSnapshot(with: configuration) { image, error in
+                if let image {
+                    cont.resume(returning: image)
+                } else {
+                    cont.resume(throwing: error ?? NSError(domain: "NCSVGRenderer", code: -21))
+                }
+            }
+        }
+    }
+
+    // MARK: - WKNavigationDelegate
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        navigationContinuation?.resume()
+        navigationContinuation = nil
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        navigationContinuation?.resume(throwing: error)
+        navigationContinuation = nil
+    }
+
+    // MARK: - Image helpers
+
+    /// Ensures an image matches a requested pixel size without "double scaling" artifacts.
+    /// If the snapshot already matches, it is returned unchanged.
+    private static func normalize(_ image: UIImage, toPixelSize pixelSize: CGSize, scale: CGFloat) -> UIImage {
+        let currentPixelSize = CGSize(width: image.size.width * image.scale, height: image.size.height * image.scale)
+
+        // Close enough: avoid any resample.
+        if abs(currentPixelSize.width - pixelSize.width) < 0.5,
+           abs(currentPixelSize.height - pixelSize.height) < 0.5 {
+            return image
+        }
+
+        // Render in points with the intended scale, producing exactly `pixelSize` pixels.
+        let targetPointSize = CGSize(width: pixelSize.width / scale, height: pixelSize.height / scale)
+
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = scale
+        format.opaque = false
+
+        let renderer = UIGraphicsImageRenderer(size: targetPointSize, format: format)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetPointSize))
+        }
+    }
+
+    /// Crops transparent borders while preserving antialiased edges.
+    /// To avoid clipping feathered pixels, default alphaThreshold should be 0.
+    private static func trimTransparentPixels(in image: UIImage, alphaThreshold: UInt8) -> UIImage? {
+        guard let cgImage = image.cgImage else { return nil }
+
+        let width = cgImage.width
+        let height = cgImage.height
+        let bytesPerRow = width * 4
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ), let data = context.data else {
+            return nil
+        }
+
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        let buffer = data.bindMemory(to: UInt8.self, capacity: width * height * 4)
+        var minX = width
+        var minY = height
+        var maxX = 0
+        var maxY = 0
+        var found = false
+
+        for y in 0..<height {
+            for x in 0..<width {
+                let alpha = buffer[(y * bytesPerRow) + (x * 4) + 3]
+                if alpha > alphaThreshold {
+                    found = true
+                    if x < minX { minX = x }
+                    if y < minY { minY = y }
+                    if x > maxX { maxX = x }
+                    if y > maxY { maxY = y }
+                }
+            }
+        }
+
+        guard found else { return nil }
+
+        // Expand by 1 pixel to preserve edge AA when threshold > 0.
+        minX = max(minX - 1, 0)
+        minY = max(minY - 1, 0)
+        maxX = min(maxX + 1, width - 1)
+        maxY = min(maxY + 1, height - 1)
+
+        let cropRect = CGRect(
+            x: minX,
+            y: minY,
+            width: maxX - minX + 1,
+            height: maxY - minY + 1
+        )
+
+        guard let cropped = cgImage.cropping(to: cropRect) else { return nil }
+        return UIImage(cgImage: cropped, scale: image.scale, orientation: .up)
+    }
+=======
+>>>>>>> d99135d60a (svg-fix (#3990))
 }
