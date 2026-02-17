@@ -26,6 +26,24 @@ import UIKit
 import Accelerate
 
 extension UIImage {
+    /// Returns a raster-resized copy of the image at the specified size,
+    /// preserving the original scale and renderingMode.
+    ///
+    /// - Parameter size: Target size in points.
+    /// - Returns: A resized UIImage.
+    func rasterResized(to size: CGSize) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = self.scale
+        format.opaque = false
+
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: size))
+        }
+        .withRenderingMode(self.renderingMode)
+    }
+
     func resizeImage(size: CGSize, isAspectRation: Bool = true) -> UIImage? {
         let originRatio = self.size.width / self.size.height
         let newRatio = size.width / size.height
@@ -51,7 +69,6 @@ extension UIImage {
     }
 
     func fixedOrientation() -> UIImage? {
-
         guard imageOrientation != UIImage.Orientation.up else {
             // This is default orientation, don't need to do anything
             return self.copy() as? UIImage

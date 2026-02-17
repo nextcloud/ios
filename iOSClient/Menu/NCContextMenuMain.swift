@@ -499,16 +499,18 @@ class NCContextMenuMain: NSObject {
                     let deferredElement = UIDeferredMenuElement { completion in
                         Task {
                             var iconImage = UIImage()
+
                             if let iconUrl = item.icon {
-                                if let image = await NCUtility().convertSVGtoPNGWriteToUserData(serverUrl: metadata.urlBase + iconUrl,
-                                                                                                rewrite: false,
-                                                                                                account: metadata.account).image {
-                                    if let image = image.withTintColor(
+                                if let image = await NCUtility().convertSVGtoPNGWriteToUserData(
+                                    serverUrl: metadata.urlBase + iconUrl,
+                                    rewrite: false,
+                                    account: metadata.account
+                                ).image {
+                                    let image = image.rasterResized(to: CGSize(width: 20, height: 20))
+                                    iconImage = image.withTintColor(
                                         NCBrandColor.shared.iconImageColor,
                                         renderingMode: .alwaysOriginal
-                                    ).resizeImage(size: CGSize(width: 20, height: 20)) {
-                                        iconImage = image
-                                    }
+                                    )
                                 }
                             }
 
