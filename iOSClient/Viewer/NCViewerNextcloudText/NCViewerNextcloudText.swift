@@ -44,8 +44,13 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             items.append(moreButton)
         }
 
-        navigationItem.rightBarButtonItems = items
+        let group = UIBarButtonItemGroup(
+            barButtonItems: items,
+            representativeItem: nil
+        )
+        navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
+
         if editor == "nextcloud text" {
             navigationItem.hidesBackButton = true
         }

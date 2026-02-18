@@ -518,40 +518,71 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     // MARK: - Right
 
+    @MainActor
     func setNavigationRightItems() async {
+
+        // COLLECTION EDIT MODE
         if let collectionViewCommon, collectionViewCommon.isEditMode {
-            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect,
-                                                      metadatas: collectionViewCommon.getSelectedMetadatas(),
-                                                      userId: session.userId)
+
+            collectionViewCommon.tabBarSelect?.update(
+                fileSelect: collectionViewCommon.fileSelect,
+                metadatas: collectionViewCommon.getSelectedMetadatas(),
+                userId: session.userId
+            )
             collectionViewCommon.tabBarSelect?.show()
 
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
+            let cancel = UIBarButtonItem(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                style: .plain
+            ) {
                 Task {
                     await collectionViewCommon.setEditMode(false)
                 }
             }
 
-            collectionViewCommon.navigationItem.rightBarButtonItems = [select]
+            let group = UIBarButtonItemGroup(
+                barButtonItems: [cancel],
+                representativeItem: nil
+            )
 
-        } else if let trashViewController, trashViewController.isEditMode {
+            collectionViewCommon.navigationItem.trailingItemGroups = [group]
+            return
+        }
+
+        // TRASH EDIT MODE
+        if let trashViewController, trashViewController.isEditMode {
+
             trashViewController.tabBarSelect.update(selectOcId: [])
             trashViewController.tabBarSelect.show()
 
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
+            let cancel = UIBarButtonItem(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                style: .plain
+            ) {
                 trashViewController.setEditMode(false)
             }
 
-            trashViewController.navigationItem.rightBarButtonItems = [select]
+            let group = UIBarButtonItemGroup(
+                barButtonItems: [cancel],
+                representativeItem: nil
+            )
 
-        } else {
-            trashViewController?.tabBarSelect?.hide()
-            collectionViewCommon?.tabBarSelect?.hide()
-            await self.updateRightBarButtonItems()
+            trashViewController.navigationItem.trailingItemGroups = [group]
+            return
         }
+
+        // NORMAL MODE
+        trashViewController?.tabBarSelect?.hide()
+        collectionViewCommon?.tabBarSelect?.hide()
+        await updateRightBarButtonItems()
     }
 
     @MainActor
     func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async {
+        guard let topViewController else {
+            return
+        }
+
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
@@ -564,34 +595,53 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-        let rightmenu = await createRightMenu()
-        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [self.transfersButtonItem] : [self.menuBarButtonItem, self.transfersButtonItem]
-        var tempTotalTags = 0
-        var totalTags = 0
+        let rightMenu = await createRightMenu()
 
-        for item in tempRightBarButtonItems {
-            tempTotalTags = tempTotalTags + item.tag
-        }
+        // ---------------------------------------------------------
+        // Build desired items
+        // ---------------------------------------------------------
 
-        if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
-            for item in rightBarButtonItems {
-                totalTags += item.tag
-            }
+        var desiredItems: [UIBarButtonItem] = []
+
+        if controller?.availableNotifications ?? false {
+            desiredItems.append(notificationsButtonItem)
         }
 
         if capabilities.assistantEnabled {
-            tempRightBarButtonItems.append(self.assistantButtonItem)
-            tempTotalTags += self.assistantButtonItem.tag
+            desiredItems.append(assistantButtonItem)
         }
 
-        if let controller, controller.availableNotifications {
-            tempRightBarButtonItems.append(self.notificationsButtonItem)
-            tempTotalTags += self.notificationsButtonItem.tag
+        desiredItems.append(transfersButtonItem)
+
+        if let rightMenu {
+            menuBarButtonItem.menu = rightMenu
+            desiredItems.append(menuBarButtonItem)
         }
 
-        if totalTags != tempTotalTags {
-            topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
+        // ---------------------------------------------------------
+        // Read current items from trailingItemGroups
+        // ---------------------------------------------------------
+
+        let currentItems: [UIBarButtonItem] = topViewController.navigationItem.trailingItemGroups.flatMap { $0.barButtonItems }
+
+        let currentTags = currentItems.map { $0.tag }
+        let desiredTags = desiredItems.map { $0.tag }
+
+        // If nothing changed → exit
+        guard currentTags != desiredTags else {
+            return
         }
+
+        // ---------------------------------------------------------
+        // Apply new group
+        // ---------------------------------------------------------
+
+        let group = UIBarButtonItemGroup(
+            barButtonItems: desiredItems,
+            representativeItem: nil
+        )
+
+        topViewController.navigationItem.trailingItemGroups = [group]
     }
 
     func createRightMenu() async -> UIMenu? { return nil }
