@@ -432,7 +432,8 @@ extension NCNetworking {
 
             for metadata in metadatasPlain {
                 if metadata.status == global.metadataStatusWaitCreateFolder {
-                    let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+                    await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                    let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrlFileName))
                     for metadata in metadatas {
                         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
