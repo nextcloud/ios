@@ -881,16 +881,11 @@ extension NCCollectionViewCommon: NCTransferDelegate {
             }
 
             if status == self.global.networkingStatusCreateFolder {
-                if serverUrl == self.serverUrl,
+                if error == .success,
+                   serverUrl == self.serverUrl,
                    selector != self.global.selectorUploadAutoUpload,
                    let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
-                    if error == .success {
-                        self.pushMetadata(metadata)
-                    } else {
-                        await self.debouncerReloadDataSource.call {
-                            await self.reloadDataSource()
-                        }
-                    }
+                    self.pushMetadata(metadata)
                 }
                 return
             }

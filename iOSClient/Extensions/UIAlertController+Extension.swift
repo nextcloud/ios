@@ -100,8 +100,15 @@ extension UIAlertController {
 
                 NCManageDatabase.shared.addMetadata(metadata)
 
-                // START Networking Process
-                NotificationCenter.default.postOnGlobalThread(name: NCGlobal.shared.notificationCenterNetworkingProcess)
+                Task {
+                    // START Networking Process
+                    NotificationCenter.default.postOnGlobalThread(name: NCGlobal.shared.notificationCenterNetworkingProcess)
+
+                    // RELOAD
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: NCGlobal.shared.metadataStatusWaitCreateFolder)
+                    }
+                }
 #endif
             }
         })
