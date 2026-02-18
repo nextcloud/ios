@@ -338,12 +338,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
                         nkLog(debug: "Successfully received login flow information.")
-                        let safariVC = NCLoginProvider()
-                        safariVC.initialURLString = login
-                        safariVC.uiColor = textColor
-                        safariVC.delegate = self
-                        safariVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
-                        navigationController?.pushViewController(safariVC, animated: true)
+                        let loginProviderVC = NCLoginProvider()
+                        loginProviderVC.initialURLString = login
+                        loginProviderVC.uiColor = textColor
+                        loginProviderVC.delegate = self
+                        loginProviderVC.controller = self.controller
+                        loginProviderVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+                        navigationController?.pushViewController(loginProviderVC, animated: true)
                     }
                 }
             case .failure(let error):
