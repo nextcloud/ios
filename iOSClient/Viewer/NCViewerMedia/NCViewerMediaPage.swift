@@ -93,6 +93,7 @@ class NCViewerMediaPage: UIViewController {
         super.viewDidLoad()
 
         let metadata = database.getMetadataFromOcId(ocIds[currentIndex])!
+        var items: [UIBarButtonItem] = []
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -120,10 +121,15 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         if currentViewController.metadata.isImage {
-            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            navigationItem.rightBarButtonItems = [moreNavigationItem]
+            items.append(imageDetailNavigationItem)
         }
+        items.append(moreNavigationItem)
+
+        let group = UIBarButtonItemGroup(
+            barButtonItems: items,
+            representativeItem: nil
+        )
+        navigationItem.trailingItemGroups = [group]
 
         for view in self.pageViewController.view.subviews {
             if let scrollView = view as? UIScrollView {
@@ -415,14 +421,23 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     // START TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
 
-        guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
+        guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else {
+            return
+        }
+        var items: [UIBarButtonItem] = []
+
         nextIndex = nextViewController.index
 
         if nextViewController.metadata.isImage {
-            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            navigationItem.rightBarButtonItems = [moreNavigationItem]
+            items.append(imageDetailNavigationItem)
         }
+        items.append(moreNavigationItem)
+
+        let group = UIBarButtonItemGroup(
+            barButtonItems: items,
+            representativeItem: nil
+        )
+        navigationItem.trailingItemGroups = [group]
 
         if nextViewController.detailView.isShown {
             changeScreenMode(mode: .normal)

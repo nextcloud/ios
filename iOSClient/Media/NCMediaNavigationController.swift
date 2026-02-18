@@ -14,10 +14,18 @@ class NCMediaNavigationController: NCMainNavigationController {
         }
 
         if media.isEditMode {
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
+            let cancel = UIBarButtonItem(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                style: .plain
+            ) {
                 media.setEditMode(false)
             }
-            media.navigationItem.rightBarButtonItems = [select]
+
+            let group = UIBarButtonItemGroup(
+                barButtonItems: [cancel],
+                representativeItem: nil
+            )
+            media.navigationItem.trailingItemGroups = [group]
             media.tabBarSelect.show()
         } else {
             media.tabBarSelect.hide()
