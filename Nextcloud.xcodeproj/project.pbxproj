@@ -305,6 +305,7 @@
 		F72EC7242F45C81600A2135C /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EC7232F45C81600A2135C /* NotificationCenter+Extension.swift */; };
 		F72EC7262F45C91E00A2135C /* NCContextMenuNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EC7252F45C90600A2135C /* NCContextMenuNavigation.swift */; };
 		F72EC7282F45FF1400A2135C /* NCContextMenuPlus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EC7272F45FF0600A2135C /* NCContextMenuPlus.swift */; };
+		F72EC7292F4617F600A2135C /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EC7232F45C81600A2135C /* NotificationCenter+Extension.swift */; };
 		F72FD3B5297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FD3B4297ED49A00075D28 /* NCManageDatabase+E2EE.swift */; };
 		F72FD3B6297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FD3B4297ED49A00075D28 /* NCManageDatabase+E2EE.swift */; };
 		F72FD3B7297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FD3B4297ED49A00075D28 /* NCManageDatabase+E2EE.swift */; };
@@ -4198,6 +4199,7 @@
 				F7864ACF2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F71F6D0A2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F7245925289BB59100474787 /* ThreadSafeDictionary.swift in Sources */,
+				F72EC7292F4617F600A2135C /* NotificationCenter+Extension.swift in Sources */,
 				F7BF9D852934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */,
 				F7C30DFB291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
