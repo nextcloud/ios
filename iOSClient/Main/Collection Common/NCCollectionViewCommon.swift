@@ -225,7 +225,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
                 // Wait 1.5 seconds before resetting the button alpha
                 try? await Task.sleep(for: .seconds(1.5))
-                self.mainNavigationController?.resetPlusButtonAlpha()
+                self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
             }
         }
 
@@ -384,7 +384,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
-        mainNavigationController?.resetPlusButtonAlpha()
+        self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -513,7 +513,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         // TIP
         dismissTip()
         //
-        mainNavigationController?.hiddenPlusButton(true)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(true)
         //
         if !isSearchingMode {
             self.isSearchingMode = true
@@ -533,7 +533,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         // (+)
-        mainNavigationController?.hiddenPlusButton(false)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(false)
 
         self.isSearchingMode = false
         self.networkSearchInProgress = false

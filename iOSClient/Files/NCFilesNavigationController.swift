@@ -30,8 +30,11 @@ class NCFilesNavigationController: NCMainNavigationController {
     // MARK: - Right
 
     override func createRightMenu() async -> UIMenu? {
-        guard let items = await self.createRightMenuActions(),
-              let collectionViewCommon
+        guard let collectionViewCommon,
+              let items = await NCContextMenuNavigation().createRightMenuActions(
+                collectionViewCommon: collectionViewCommon,
+                mainNavigationController: self,
+                session: self.session)
         else {
             return nil
         }

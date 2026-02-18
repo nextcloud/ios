@@ -90,11 +90,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        Task {
-            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
-            await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities, isHidden: true)
-        }
-
         loadItems()
         tableView.reloadData()
     }
