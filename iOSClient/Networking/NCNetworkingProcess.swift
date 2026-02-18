@@ -311,7 +311,14 @@ actor NCNetworkingProcess {
             }
         }
 
+        // OFFLINE TEST
+        //
+        if networking.isOffline {
+            return
+        }
+
         // TEST AVAILABLE PROCESS
+        //
         guard availableProcess > 0, timer != nil else {
             return
         }
@@ -332,6 +339,7 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
+        //
         guard availableProcess > 0, timer != nil else {
             return
         }
@@ -385,6 +393,7 @@ actor NCNetworkingProcess {
                 }
 
                 // AUTO-UPLOAD: CHECK FILE EXISTS
+                //
                 if metadata.sessionSelector == global.selectorUploadAutoUpload {
                     let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
                     if existsResult == .success {
