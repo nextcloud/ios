@@ -512,9 +512,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         // TIP
         dismissTip()
-        //
+
+        // (+)
         self.mainNavigationController?.menuPlus?.hiddenPlusButton(true)
-        //
+
         if !isSearchingMode {
             self.isSearchingMode = true
             self.dataSource.removeAll()

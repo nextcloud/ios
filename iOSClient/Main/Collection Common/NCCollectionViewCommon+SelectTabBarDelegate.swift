@@ -126,6 +126,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         navigationItem.hidesBackButton = editMode
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         searchController(enabled: !editMode)
+
+        // (+)
         mainNavigationController?.menuPlus?.hiddenPlusButton(editMode)
 
         if editMode {
