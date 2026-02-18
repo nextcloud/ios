@@ -201,7 +201,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
-            // PLUS BUTTON
+            // PLUS BUTTON ONLY IN FILES
             if viewController is NCFiles {
                 self.menuPlus?.hiddenPlusButton(false)
             } else {
@@ -227,6 +227,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 userId: session.userId
             )
             collectionViewCommon.tabBarSelect?.show()
+            // SEARCH (OFF)
             collectionViewCommon.navigationItem.searchController = nil
 
             let cancel = UIBarButtonItem(
@@ -272,6 +273,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         // NORMAL MODE
         trashViewController?.tabBarSelect?.hide()
         collectionViewCommon?.tabBarSelect?.hide()
+        // SEARCH (ON)
         collectionViewCommon?.navigationItem.searchController = collectionViewCommon?.searchController
         await updateRightBarButtonItems()
     }

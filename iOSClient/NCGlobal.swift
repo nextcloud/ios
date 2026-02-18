@@ -312,7 +312,6 @@ final class NCGlobal: Sendable {
 
     let networkingStatusReloadAvatar                            = "statusReloadAvatar"
 
-
     // TIP
     //
     let tipPDFThumbnail                                         = "tipPDFThumbnail"
