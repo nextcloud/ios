@@ -310,7 +310,11 @@ func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
         // Error 401 (maintenance mode)
         // Error 507 (insufficient storage)
         // Error -1009 (NSURLErrorNotConnectedToInternet)
-        if errorCode == 401 || errorCode == 507 || errorCode == NSURLErrorNotConnectedToInternet {
+        // Error -1003 (NSURLError​Cannot​Find​Host)
+        if errorCode == 401 ||
+            errorCode == 507 ||
+            errorCode == NSURLErrorNotConnectedToInternet ||
+            errorCode == NSURLErrorCannotFindHost {
             shownErrors.insert(errorCode)
         }
         return false
