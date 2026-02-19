@@ -35,6 +35,7 @@ actor NCNetworkingProcess {
     private var lastUsedInterval: TimeInterval = 3.5
     private let maxInterval: TimeInterval = 3.5
     private let minInterval: TimeInterval = 2.5
+    private let offlineInterval: TimeInterval = 10
 
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
@@ -54,6 +55,14 @@ actor NCNetworkingProcess {
 
             Task { @MainActor in
                 await self.setScreenAwake(true)
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterNetworkingProcess), object: nil, queue: nil) { [weak self] _ in
+            guard let self else { return }
+
+            Task {
+                await self.handleTimerTick()
             }
         }
 
@@ -187,8 +196,7 @@ actor NCNetworkingProcess {
                 return
             }
 
-            guard networking.isOnline,
-                  !currentAccount.isEmpty,
+            guard !currentAccount.isEmpty,
                   networking.noServerErrorAccount(currentAccount)
             else {
                 return
@@ -243,7 +251,9 @@ actor NCNetworkingProcess {
 
                 // TODO: Check temperature
 
-                if lastUsedInterval != minInterval {
+                if networking.isOffline {
+                    await startTimer(interval: offlineInterval)
+                } else if lastUsedInterval != minInterval {
                     await startTimer(interval: minInterval)
                 }
             } else {
@@ -301,7 +311,14 @@ actor NCNetworkingProcess {
             }
         }
 
+        // OFFLINE TEST
+        //
+        if networking.isOffline {
+            return
+        }
+
         // TEST AVAILABLE PROCESS
+        //
         guard availableProcess > 0, timer != nil else {
             return
         }
@@ -322,6 +339,7 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
+        //
         guard availableProcess > 0, timer != nil else {
             return
         }
@@ -375,6 +393,7 @@ actor NCNetworkingProcess {
                 }
 
                 // AUTO-UPLOAD: CHECK FILE EXISTS
+                //
                 if metadata.sessionSelector == global.selectorUploadAutoUpload {
                     let existsResult = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
                     if existsResult == .success {

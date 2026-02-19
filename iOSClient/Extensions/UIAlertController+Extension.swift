@@ -76,12 +76,12 @@ extension UIAlertController {
                     await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
                 }
             } else {
-                #if EXTENSION
+#if EXTENSION
                 Task {
                     let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
                     completion?(error)
                 }
-                #else
+#else
                 var metadata = tableMetadata()
 
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
@@ -99,6 +99,16 @@ extension UIAlertController {
                 metadata.sessionDate = Date()
 
                 NCManageDatabase.shared.addMetadata(metadata)
+
+                Task {
+                    // START Networking Process
+                    NotificationCenter.default.postOnGlobalThread(name: NCGlobal.shared.notificationCenterNetworkingProcess)
+
+                    // RELOAD
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: NCGlobal.shared.metadataStatusWaitCreateFolder)
+                    }
+                }
 #endif
             }
         })

@@ -139,19 +139,8 @@ class NCMainTabBarController: UITabBarController {
                 continue
             }
 
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
-
             // Check error
             await NCNetworking.shared.checkServerError(account: self.account, controller: self)
-
-            // Update right bar button item
-            if let navigationController = self.selectedViewController as? NCMainNavigationController {
-                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
-            }
-            // Update Activity tab bar
-            if let item = self.tabBar.items?[3] {
-                item.isEnabled = capabilities.activityEnabled
-            }
         }
     }
 
