@@ -401,6 +401,8 @@ class NCContextMenuMain: NSObject {
 
     private func buildDeleteMenu(metadata: tableMetadata) -> [UIMenuElement] {
         var deleteMenu: [UIMenuElement] = []
+
+        /*
         let deleteConfirmLocal = makeDeleteLocalAction(metadata: metadata)
         let deleteConfirmFile = makeDeleteFileAction(metadata: metadata)
 
@@ -410,9 +412,12 @@ class NCContextMenuMain: NSObject {
             options: .destructive,
             children: [deleteConfirmLocal, deleteConfirmFile]
         )
+        */
+
+        deleteMenu.append(makeDeleteLocalAction(metadata: metadata))
 
         if metadata.isDeletable {
-            deleteMenu.append(deleteSubMenu)
+            deleteMenu.append(makeDeleteFileAction(metadata: metadata))
         }
 
         return deleteMenu
@@ -446,8 +451,7 @@ class NCContextMenuMain: NSObject {
     private func makeDeleteLocalAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_remove_local_file_", comment: ""),
-            image: utility.loadImage(named: "trash"),
-            attributes: .destructive
+            image: utility.loadImage(named: "document.on.trash")
         ) { _ in
             Task {
                 let error = await NCNetworking.shared.deleteCache(
