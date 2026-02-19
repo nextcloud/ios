@@ -38,14 +38,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let menuNavigation = NCContextMenuNavigation()
     var menuPlus: NCContextMenuPlus?
 
-    let menuButtonTag = 100
+    let optionButtonTag = 100
     let assistantButtonTag = 101
     let notificationsButtonTag = 102
     let transfersButtonTag = 103
 
-    lazy var menuBarButtonItem: UIBarButtonItem = {
+    lazy var optionButtonItem: UIBarButtonItem = {
         let item = UIBarButtonItem()
-        item.tag = menuButtonTag
+        item.tag = optionButtonTag
         return item
     }()
     lazy var assistantButtonItem: UIBarButtonItem = {
@@ -74,9 +74,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         setNavigationBarHidden(false, animated: true)
 
         Task {
-            menuBarButtonItem.image = UIImage(systemName: "ellipsis")
-            menuBarButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-            menuBarButtonItem.menu = await createRightMenu()
+            optionButtonItem.image = UIImage(systemName: "ellipsis")
+            optionButtonItem.tintColor = NCBrandColor.shared.iconImageColor
+            optionButtonItem.menu = await createOptionMenu()
         }
 
         assistantButtonItem.image = UIImage(systemName: "sparkles")
@@ -184,7 +184,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     }
                     self.controller?.availableNotifications = true
                 }
-                await self.updateRightBarButtonItems()
+                await self.collectionViewCommonTrailingItemGroups()
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -209,7 +209,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
             // MENU
             setNavigationBarAppearance()
-            await updateRightBarButtonItems()
+            await collectionViewCommonTrailingItemGroups()
         }
     }
 
@@ -275,11 +275,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         collectionViewCommon?.tabBarSelect?.hide()
         // SEARCH (ON)
         collectionViewCommon?.navigationItem.searchController = collectionViewCommon?.searchController
-        await updateRightBarButtonItems()
+        await collectionViewCommonTrailingItemGroups()
     }
 
     @MainActor
-    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async {
+    private func collectionViewCommonTrailingItemGroups() async {
         guard let topViewController else {
             return
         }
@@ -296,7 +296,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-        let rightMenu = await createRightMenu()
 
         // ---------------------------------------------------------
         // Build desired items
@@ -314,28 +313,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         desiredItems.append(transfersButtonItem)
 
-        if let rightMenu {
-            menuBarButtonItem.menu = rightMenu
-            desiredItems.append(menuBarButtonItem)
+        if let optionMenu = await createOptionMenu() {
+            optionButtonItem.menu = optionMenu
+            desiredItems.append(optionButtonItem)
         }
-
-        // ---------------------------------------------------------
-        // Read current items from trailingItemGroups
-        // ---------------------------------------------------------
-
-        let currentItems: [UIBarButtonItem] = topViewController.navigationItem.trailingItemGroups.flatMap { $0.barButtonItems }
-
-        let currentTags = currentItems.map { $0.tag }
-        let desiredTags = desiredItems.map { $0.tag }
-
-        // If nothing changed → exit
-        guard currentTags != desiredTags else {
-            return
-        }
-
-        // ---------------------------------------------------------
-        // Apply new group
-        // ---------------------------------------------------------
 
         let group = UIBarButtonItemGroup(
             barButtonItems: desiredItems,
@@ -345,11 +326,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         topViewController.navigationItem.trailingItemGroups = [group]
     }
 
-    func createRightMenu() async -> UIMenu? { return nil }
+    func createOptionMenu() async -> UIMenu? { return nil }
 
-    func updateRightMenu() async {
-        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == menuButtonTag }) != nil {
-            menuBarButtonItem.menu = await createRightMenu()
+    func updateMenuOption() async {
+        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == optionButtonTag }) != nil {
+           optionButtonItem.menu = await createOptionMenu()
         }
     }
 
@@ -417,7 +398,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     @MainActor
     func updateRightBarButtonsTint(to color: UIColor) {
         let rightItems: [UIBarButtonItem] = [
-            menuBarButtonItem,
+            optionButtonItem,
             assistantButtonItem,
             notificationsButtonItem,
             transfersButtonItem

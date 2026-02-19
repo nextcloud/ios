@@ -5,7 +5,7 @@
 import UIKit
 
 class NCActivityNavigationController: NCMainNavigationController {
-    override func createRightMenu() async -> UIMenu? {
+    override func createOptionMenu() async -> UIMenu? {
         return nil
     }
 }

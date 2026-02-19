@@ -46,7 +46,7 @@ class NCContextMenuNavigation: NSObject {
             Task {
                 layoutForView.layout = global.layoutList
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -56,7 +56,7 @@ class NCContextMenuNavigation: NSObject {
             Task {
                 layoutForView.layout = global.layoutGrid
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -66,7 +66,7 @@ class NCContextMenuNavigation: NSObject {
             Task {
                 layoutForView.layout = global.layoutPhotoSquare
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -76,7 +76,7 @@ class NCContextMenuNavigation: NSObject {
             Task {
                 layoutForView.layout = global.layoutPhotoRatio
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -97,7 +97,7 @@ class NCContextMenuNavigation: NSObject {
                 }
                 layoutForView.sort = "fileName"
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -110,7 +110,7 @@ class NCContextMenuNavigation: NSObject {
                 }
                 layoutForView.sort = "date"
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -123,7 +123,7 @@ class NCContextMenuNavigation: NSObject {
                 }
                 layoutForView.sort = "size"
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -139,7 +139,7 @@ class NCContextMenuNavigation: NSObject {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -151,7 +151,7 @@ class NCContextMenuNavigation: NSObject {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -161,7 +161,7 @@ class NCContextMenuNavigation: NSObject {
             Task {
                 NCPreferences().setShowHiddenFiles(account: session.account, value: !hiddenFiles)
                 await collectionViewCommon.getServerData(forced: true)
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -174,7 +174,7 @@ class NCContextMenuNavigation: NSObject {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -186,7 +186,7 @@ class NCContextMenuNavigation: NSObject {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadDataSource(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
@@ -200,7 +200,7 @@ class NCContextMenuNavigation: NSObject {
                 Task {
                     NCPreferences().showRecommendedFiles = !showRecommendedFilesKeychain
                     collectionViewCommon.collectionView.reloadData()
-                    await mainNavigationController.updateRightMenu()
+                    await mainNavigationController.updateMenuOption()
                 }
             }
         }
@@ -234,7 +234,7 @@ class NCContextMenuNavigation: NSObject {
                             state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
             Task {
                 trashViewController.onListSelected()
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""),
@@ -242,7 +242,7 @@ class NCContextMenuNavigation: NSObject {
                             state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
             Task {
                 trashViewController.onGridSelected()
-                await mainNavigationController.updateRightMenu()
+                await mainNavigationController.updateMenuOption()
             }
         }
 
