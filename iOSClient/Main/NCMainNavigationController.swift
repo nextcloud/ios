@@ -158,6 +158,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         menuPlus = NCContextMenuPlus(menuToolbar: menuToolbar, controller: controller)
 
+        // CAPABILITIES UPDATE
+        //
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { notification in
             guard let userInfo = notification.userInfo,
                   let account = userInfo["account"] as? String else {
@@ -189,6 +191,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
+        // REACHABILITY
+        //
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterNetworkReachability), object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
@@ -316,6 +320,20 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if let optionMenu = await createOptionMenu() {
             optionButtonItem.menu = optionMenu
             desiredItems.append(optionButtonItem)
+        }
+
+        // ---------------------------------------------------------
+        // Read current items from trailingItemGroups
+        // ---------------------------------------------------------
+
+        let currentItems: [UIBarButtonItem] = topViewController.navigationItem.trailingItemGroups.flatMap { $0.barButtonItems }
+
+        let currentTags = currentItems.map { $0.tag }
+        let desiredTags = desiredItems.map { $0.tag }
+
+        // If nothing changed → exit
+        guard currentTags != desiredTags else {
+            return
         }
 
         let group = UIBarButtonItemGroup(
