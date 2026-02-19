@@ -21,7 +21,7 @@ class NCMoreNavigationController: NCMainNavigationController {
         // TRASH MENU
         //
         if trashViewController != nil {
-            if let items = await NCContextMenuNavigation().createTrashRightMenuActions(
+            if let items = await NCContextMenuNavigation().viewMenuOption(
                 trashViewController: trashViewController,
                 mainNavigationController: self,
                 session: self.session
@@ -34,7 +34,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
         // COLLECTION VIEW COMMON MENU
         //
-        let items = await NCContextMenuNavigation().createRightMenuActions(
+        let items = await NCContextMenuNavigation().viewMenuOption(
             collectionViewCommon: collectionViewCommon,
             mainNavigationController: self,
             session: self.session

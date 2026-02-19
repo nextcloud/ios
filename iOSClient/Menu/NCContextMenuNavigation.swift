@@ -7,12 +7,12 @@ import UIKit
 import NextcloudKit
 
 class NCContextMenuNavigation: NSObject {
-    // MARK: - RIGHT MENU ACTION
+    // MARK: - collectionViewCommon MENU OPTION ACTION
     //
     @MainActor
-    func createRightMenuActions(collectionViewCommon: NCCollectionViewCommon?,
-                                mainNavigationController: NCMainNavigationController,
-                                session: NCSession.Session)
+    func viewMenuOption(collectionViewCommon: NCCollectionViewCommon?,
+                        mainNavigationController: NCMainNavigationController,
+                        session: NCSession.Session)
     async -> (select: UIAction,
               viewStyleSubmenu: UIMenu,
               sortSubmenu: UIMenu,
@@ -208,12 +208,12 @@ class NCContextMenuNavigation: NSObject {
         return (select, viewStyleSubmenu, sortSubmenu, favoriteOnTopAction, directoryOnTopAction, hiddenFilesAction, personalFilesOnlyAction, showDescription, showRecommendedFiles)
     }
 
-    // MARK: - TRASH RIGHT MENU ACTION
+    // MARK: - TRASH MENU OPTION ACTION
     //
     @MainActor
-    func createTrashRightMenuActions(trashViewController: NCTrash?,
-                                     mainNavigationController: NCMainNavigationController,
-                                     session: NCSession.Session) async -> [UIMenuElement]? {
+    func viewMenuOption(trashViewController: NCTrash?,
+                        mainNavigationController: NCMainNavigationController,
+                        session: NCSession.Session) async -> [UIMenuElement]? {
         guard let trashViewController else {
             return nil
         }
