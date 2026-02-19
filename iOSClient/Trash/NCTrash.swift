@@ -162,7 +162,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     func reloadDataSource(withQueryDB: Bool = true) async {
         let results = await self.database.getTableTrashAsync(filePath: getFilePath(), account: session.account)
 
-        await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
 
         await MainActor.run {
             self.datasource = results

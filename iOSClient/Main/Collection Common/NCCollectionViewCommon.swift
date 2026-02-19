@@ -225,7 +225,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
                 // Wait 1.5 seconds before resetting the button alpha
                 try? await Task.sleep(for: .seconds(1.5))
-                self.mainNavigationController?.resetPlusButtonAlpha()
+                self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
             }
         }
 
@@ -384,7 +384,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
-        mainNavigationController?.resetPlusButtonAlpha()
+        self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -428,7 +428,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             self.collectionView.collectionViewLayout.invalidateLayout()
 
             Task {
-                await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+                await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
             }
         }
 
@@ -512,9 +512,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         // TIP
         dismissTip()
-        //
-        mainNavigationController?.hiddenPlusButton(true)
-        //
+
+        // (+)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(true)
+
         if !isSearchingMode {
             self.isSearchingMode = true
             self.dataSource.removeAll()
@@ -533,7 +534,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         // (+)
-        mainNavigationController?.hiddenPlusButton(false)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(false)
 
         self.isSearchingMode = false
         self.networkSearchInProgress = false
@@ -709,7 +710,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             delegate.transferReloadData(serverUrl: self.serverUrl)
         }
 
-        await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
     }
 
     func getServerData(forced: Bool = false) async { }
@@ -880,7 +881,8 @@ extension NCCollectionViewCommon: NCTransferDelegate {
             }
 
             if status == self.global.networkingStatusCreateFolder {
-                if serverUrl == self.serverUrl,
+                if error == .success,
+                   serverUrl == self.serverUrl,
                    selector != self.global.selectorUploadAutoUpload,
                    let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
                     self.pushMetadata(metadata)
