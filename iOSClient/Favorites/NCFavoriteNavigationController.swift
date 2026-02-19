@@ -8,7 +8,7 @@ class NCFavoriteNavigationController: NCMainNavigationController {
 
     // MARK: - Right
 
-    override func createRightMenu() async -> UIMenu? {
+    override func createOptionMenu() async -> UIMenu? {
         guard let collectionViewCommon,
               let items = await NCContextMenuNavigation().viewMenuOption(
                 collectionViewCommon: collectionViewCommon,

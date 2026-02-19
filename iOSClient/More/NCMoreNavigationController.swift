@@ -17,7 +17,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
     // MARK: - Right
 
-    override func createRightMenu() async -> UIMenu? {
+    override func createOptionMenu() async -> UIMenu? {
         // TRASH MENU
         //
         if trashViewController != nil {

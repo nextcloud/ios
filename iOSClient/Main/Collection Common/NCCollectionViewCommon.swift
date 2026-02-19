@@ -428,7 +428,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             self.collectionView.collectionViewLayout.invalidateLayout()
 
             Task {
-                await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+                await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
             }
         }
 
@@ -710,7 +710,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             delegate.transferReloadData(serverUrl: self.serverUrl)
         }
 
-        await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
     }
 
     func getServerData(forced: Bool = false) async { }

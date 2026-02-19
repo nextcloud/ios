@@ -35,7 +35,6 @@ class NCMediaNavigationController: NCMainNavigationController {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var desiredItems: [UIBarButtonItem] = []
 
-        let rightMenu = await self.createRightMenu()
         if controller?.availableNotifications ?? false {
             desiredItems.append(notificationsButtonItem)
         }
@@ -46,9 +45,9 @@ class NCMediaNavigationController: NCMainNavigationController {
 
         desiredItems.append(transfersButtonItem)
 
-        if let rightMenu {
-            menuBarButtonItem.menu = rightMenu
-            desiredItems.append(menuBarButtonItem)
+        if let optionMenu = await self.createOptionMenu() {
+            optionButtonItem.menu = optionMenu
+            desiredItems.append(optionButtonItem)
         }
 
         let group = UIBarButtonItemGroup(
@@ -59,7 +58,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         topViewController?.navigationItem.trailingItemGroups = [group]
     }
 
-    override func createRightMenu() async -> UIMenu? {
+    override func createOptionMenu() async -> UIMenu? {
         guard let media = topViewController as? NCMedia else {
             return nil
         }
@@ -115,7 +114,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                         self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
                         media.layoutType = self.global.mediaLayoutRatio
                     }
-                    await self.updateRightMenu()
+                    await self.updateMenuOption()
                     media.collectionViewReloadData()
                 }
             }
