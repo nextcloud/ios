@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import NextcloudKit
 
 class NCMediaNavigationController: NCMainNavigationController {
-
-    // MARK: - Right
-
     override func setNavigationRightItems() async {
         guard let media = topViewController as? NCMedia else {
             return
@@ -29,8 +27,36 @@ class NCMediaNavigationController: NCMainNavigationController {
             media.tabBarSelect.show()
         } else {
             media.tabBarSelect.hide()
-            await self.updateRightBarButtonItems()
+            await mediaTrailingItemGroups()
         }
+    }
+
+    private func mediaTrailingItemGroups() async {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        var desiredItems: [UIBarButtonItem] = []
+
+        let rightMenu = await self.createRightMenu()
+        if controller?.availableNotifications ?? false {
+            desiredItems.append(notificationsButtonItem)
+        }
+
+        if capabilities.assistantEnabled {
+            desiredItems.append(assistantButtonItem)
+        }
+
+        desiredItems.append(transfersButtonItem)
+
+        if let rightMenu {
+            menuBarButtonItem.menu = rightMenu
+            desiredItems.append(menuBarButtonItem)
+        }
+
+        let group = UIBarButtonItemGroup(
+            barButtonItems: desiredItems,
+            representativeItem: nil
+        )
+
+        topViewController?.navigationItem.trailingItemGroups = [group]
     }
 
     override func createRightMenu() async -> UIMenu? {
