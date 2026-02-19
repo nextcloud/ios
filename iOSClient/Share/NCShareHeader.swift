@@ -85,7 +85,8 @@ class NCShareAdvancePermissionHeader: UITableViewHeaderFooterView {
     var ocId = ""
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
-    
+    var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
+
     func setupUI(with metadata: tableMetadata) {
         fileName.textColor = NCBrandColor.shared.label
         info.textColor = NCBrandColor.shared.textInfo
@@ -138,28 +139,27 @@ class NCShareAdvancePermissionHeader: UITableViewHeaderFooterView {
             imageView.isHidden = true
         } else {
             imageView.isHidden = false
-            if metadata.e2eEncrypted {
-                imageView.image = NCImageCache.shared.getFolderEncrypted()
-            } else if metadata.permissions.contains("S"), (metadata.permissions.range(of: "S") != nil) {
-                imageView.image = NCImageCache.shared.getFolderSharedWithMe()
-            } else if isShare || !metadata.shareType.isEmpty || hasEmailAndLinkShares {
-                imageView.image = NCImageCache.shared.getFolderPublic()
-            } else if !metadata.shareType.isEmpty {
-                metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-                (imageView.image = NCImageCache.shared.getFolderPublic()) :
-                (imageView.image = NCImageCache.shared.getFolderSharedWithMe())
-            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) {
-                imageView.image = NCImageCache.shared.getFolderPublic()
-            } else if metadata.mountType == "group" {
-                imageView.image = NCImageCache.shared.getFolderGroup()
-            } else if isMounted {
-                imageView.image = NCImageCache.shared.getFolderExternal()
-            } else if metadata.directory {
-                imageView.image = NCImageCache.shared.getFolder()
-            } else if !metadata.iconName.isEmpty {
-                imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            if metadata.directory {
+                
+                if metadata.e2eEncrypted {
+                    imageView.image = NCImageCache.shared.getFolderEncrypted()
+                } else if metadata.permissions.contains("S"), (metadata.permissions.range(of: "S") != nil) {
+                    imageView.image = NCImageCache.shared.getFolderSharedWithMe()
+                } else if (!metadata.shareType.isEmpty || !(shares.share?.isEmpty ?? true) || (shares.firstShareLink != nil)) || isShare || hasEmailAndLinkShares {
+                    imageView.image = NCImageCache.shared.getFolderPublic()
+                } else if metadata.mountType == "group" {
+                    imageView.image = NCImageCache.shared.getFolderGroup()
+                } else if isMounted {
+                    imageView.image = NCImageCache.shared.getFolderExternal()
+                } else {
+                    imageView.image = NCImageCache.shared.getFolder()
+                }
             } else {
-                imageView.image = NCImageCache.shared.getImageFile()
+                if metadata.iconName.isEmpty {
+                    imageView.image = NCImageCache.shared.getImageFile()
+                } else {
+                    imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                }
             }
         }
 
@@ -179,7 +179,6 @@ class NCShareAdvancePermissionHeader: UITableViewHeaderFooterView {
         NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
             if error == .success {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-//                self.favorite.setImage(NCUtility().loadImage(named: metadata.favorite ? "star" : "star.fill", colors: [NCBrandColor.shared.yellowFavorite], size: 20), for: .normal)
                 self.updateFavoriteIcon(isFavorite: metadata.favorite)
             } else {
                 NCContentPresenter().showError(error: error)

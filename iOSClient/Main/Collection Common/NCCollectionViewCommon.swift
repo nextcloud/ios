@@ -365,7 +365,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
     
     @objc func updateIcons() {
-        collectionView.reloadData()
+//        collectionView.reloadData()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     func isApplicationUpdated() -> Bool {
@@ -499,7 +502,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             searchController?.searchBar.alpha = 1
         } else {
             searchController?.searchBar.alpha = 0.3
-
         }
     }
 

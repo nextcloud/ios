@@ -167,7 +167,6 @@ enum ContextMenuActions {
         }
      }
     
-    /*
     /// Save selected files to user's photo library
     static func saveMediaAction(selectedMediaMetadatas: [tableMetadata], controller: NCMainTabBarController?, completion: (() -> Void)? = nil) -> UIAction {
         var title: String = NSLocalizedString("_save_selected_files_", comment: "")
@@ -181,15 +180,26 @@ enum ContextMenuActions {
             title: title,
             image: icon,
         ) { _ in
+            
             for metadata in selectedMediaMetadatas {
-                if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                    NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: controller?.view ?? UIView()))
-                } else {
+                Task {
                     if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                        NCDownloadAction.shared.saveAlbum(metadata: metadata, controller: controller)
+                        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                    account: metadata.account,
+                                                    fileName: metadata.fileName,
+                                                    serverUrl: metadata.serverUrl,
+                                                    selector: NCGlobal.shared.selectorSaveAlbum,
+                                                    ocId: metadata.ocId,
+                                                    destination: nil,
+                                                    error: .success)
+                        }
                     } else {
-                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum))
+                        if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                                    selector: NCGlobal.shared.selectorSaveAlbum,
+                                                                                                              sceneIdentifier: controller?.sceneIdentifier) {
+                            await NCNetworking.shared.downloadFile(metadata: metadata)
                         }
                     }
                 }
@@ -197,7 +207,7 @@ enum ContextMenuActions {
             completion?()
         }
     }
-    
+    /*
     /// Copy files to pasteboard
     static func copyAction(fileSelect: [String], controller: NCMainTabBarController?, completion: (() -> Void)? = nil) -> UIAction {
         UIAction(

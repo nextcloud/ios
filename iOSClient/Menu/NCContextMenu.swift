@@ -170,6 +170,14 @@ class NCContextMenu: NSObject {
            metadata.isSavebleAsImage {
             mainActionsMenu.append(makeSaveAsScanAction(metadata: metadata))
         }
+        
+        //
+        // SAVE CAMERA ROLL
+        //
+        if metadata.isSavebleInCameraRoll {
+            let controller = self.viewController.tabBarController as? NCMainTabBarController
+            mainActionsMenu.append(ContextMenuActions.saveMediaAction(selectedMediaMetadatas: [metadata], controller: controller))
+        }
 
         // Rename
         if metadata.isRenameable {

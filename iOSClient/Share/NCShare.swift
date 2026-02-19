@@ -155,7 +155,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     }
     
     @objc func exitTapped() {
-//        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateIcons)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateIcons)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -436,11 +436,6 @@ extension NCShare: NCShareNetworkingDelegate {
                 let navigationController = self.navigationController else { return }
             self.checkEnforcedPassword(shareType: sharee.shareType) { password in
                 let shareOptions = TransientShare(sharee: sharee, metadata: self.metadata, password: password)
-                if !shareOptions.shareWithDisplayname.isEmpty {
-                    shareOptions.shareWithDisplayname = shareOptions.shareWithDisplayname
-                } else {
-                    shareOptions.shareWithDisplayname = sharee.label
-                }
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
                 advancePermission.metadata = self.metadata
@@ -561,6 +556,7 @@ extension NCShare: UITableViewDataSource {
         case .header:
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: NCShareAdvancePermissionHeader.reuseIdentifier) as? NCShareAdvancePermissionHeader
             headerView?.ocId = metadata.ocId
+            headerView?.shares = self.shares
             headerView?.setupUI(with: metadata, linkCount: shareLinks.count, emailCount: shareEmails.count)
             return headerView
 

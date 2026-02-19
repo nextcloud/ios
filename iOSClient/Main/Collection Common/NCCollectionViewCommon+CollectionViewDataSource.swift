@@ -220,13 +220,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.previewImageView?.image = imageCache.getFolderEncrypted()
             } else if metadata.permissions.contains("S"), (metadata.permissions.range(of: "S") != nil) {
                 cell.previewImageView?.image = imageCache.getFolderSharedWithMe()
-            } else if isShare || !metadata.shareType.isEmpty || hasEmailAndLinkShares {
-                cell.previewImageView?.image = imageCache.getFolderPublic()
-            } else if !metadata.shareType.isEmpty {
-                metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-                (cell.previewImageView?.image = imageCache.getFolderPublic()) :
-                (cell.previewImageView?.image = imageCache.getFolderSharedWithMe())
-            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) {
+            } else if (!metadata.shareType.isEmpty || !(shares.share?.isEmpty ?? true) || (shares.firstShareLink != nil)) || isShare || hasEmailAndLinkShares {
                 cell.previewImageView?.image = imageCache.getFolderPublic()
             } else if metadata.mountType == "group" {
                 cell.previewImageView?.image = imageCache.getFolderGroup()
@@ -237,7 +231,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.previewImageView?.image = imageCache.getFolder()
             }
-
+            
             // Local image: offline
             metadata.isOffline = tblDirectory?.offline ?? false
 
@@ -332,17 +326,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.favoriteImageView?.image = imageCache.getImageFavorite()
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
-
-//        // Share image
-//        if isShare {
-//            cell.fileSharedImage?.image = imageCache.getImageShared()
-//        } else if !metadata.shareType.isEmpty {
-//            metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-//            (cell.fileSharedImage?.image = imageCache.getImageShareByLink()) :
-//            (cell.fileSharedImage?.image = imageCache.getImageShared())
-//        } else {
-//            cell.fileSharedImage?.image = imageCache.getImageCanShare()
-//        }
         
         // Share image
         if isShare || !metadata.shareType.isEmpty {
@@ -362,15 +345,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if metadata.permissions.contains("S"), (metadata.permissions.range(of: "S") != nil) {
             cell.shareImageView?.image = NCImageCache.shared.getImageSharedWithMe()
         }
-//        if isShare {
-//            cell.shareImageView?.image = imageCache.getImageShared()
-//        } else if !metadata.shareType.isEmpty {
-//            metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-//            (cell.shareImageView?.image = imageCache.getImageShareByLink()) :
-//            (cell.shareImageView?.image = imageCache.getImageShared())
-//        } else {
-//            cell.shareImageView?.image = imageCache.getImageCanShare()
-//        }
 
         // Button More
         if metadata.lock == true {
@@ -414,33 +388,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         default:
             break
         }
-
-        // AVATAR
-        /*
-        if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
-            let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
-            if let image = NCImageCache.shared.getImageCache(key: fileName) {
-                cell.avatarImageView?.contentMode = .scaleAspectFill
-                cell.avatarImageView?.image = image
-            } else {
-                self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                    if let image {
-                        cell.avatarImageView?.contentMode = .scaleAspectFill
-                        cell.avatarImageView?.image = image
-                        NCImageCache.shared.addImageCache(image: image, key: fileName)
-                    } else {
-                        cell.avatarImageView?.contentMode = .scaleAspectFill
-                        cell.avatarImageView?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
-                    }
-
-                    if !(tblAvatar?.loaded ?? false),
-                       self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                        self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
-                    }
-                }
-            }
-        }
-        */
         
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
@@ -722,3 +669,4 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 }
+

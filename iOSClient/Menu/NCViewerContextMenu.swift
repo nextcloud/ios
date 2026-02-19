@@ -113,7 +113,7 @@ enum NCViewerContextMenu {
             // SAVE CAMERA ROLL
             //
             if !webView, metadata.isSavebleInCameraRoll {
-//                menuElements.append(ContextMenuActions.saveMediaAction(selectedMediaMetadatas: [metadata], controller: controller))
+                menuElements.append(ContextMenuActions.saveMediaAction(selectedMediaMetadatas: [metadata], controller: controller))
             }
 
 
