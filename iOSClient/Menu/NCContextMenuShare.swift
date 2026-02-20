@@ -1,0 +1,164 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import Foundation
+import UIKit
+import NextcloudKit
+
+/// A context menu for share actions (details, unshare, permissions).
+/// See ``NCShare`` for usage details.
+class NCContextMenuShare: NSObject {
+    let share: tableShare
+    let isDirectory: Bool
+    let canReshare: Bool
+    let utility = NCUtility()
+    let database = NCManageDatabase.shared
+    let shareController: NCShare
+
+    init(share: tableShare, isDirectory: Bool, canReshare: Bool, shareController: NCShare) {
+        self.share = share
+        self.isDirectory = isDirectory
+        self.canReshare = canReshare
+        self.shareController = shareController
+    }
+
+    func viewMenu() -> UIMenu {
+        var actions: [UIMenuElement] = []
+
+        // Add share link (only for public links with reshare permission)
+        if share.shareType == NKShare.ShareType.publicLink.rawValue, canReshare {
+            let addLinkAction = UIAction(
+                title: NSLocalizedString("_share_add_sharelink_", comment: ""),
+                image: utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor])
+            ) { [self] _ in
+                shareController.makeNewLinkShare()
+            }
+            actions.append(addLinkAction)
+        }
+
+        // Details action
+        let detailsAction = UIAction(
+            title: NSLocalizedString("_details_", comment: ""),
+            image: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor])
+        ) { [self] _ in
+            openAdvancePermission(shareController: shareController)
+        }
+        actions.append(detailsAction)
+
+        // Unshare action (destructive)
+        let unshareAction = UIAction(
+            title: NSLocalizedString("_share_unshare_", comment: ""),
+            image: utility.loadImage(named: "person.2.slash"),
+            attributes: .destructive
+        ) { [self] _ in
+            Task {
+                await performUnshare(shareController: shareController)
+            }
+        }
+        actions.append(unshareAction)
+
+        return UIMenu(title: "", children: actions)
+    }
+
+    func quickPermissionsMenu() -> UIMenu {
+        var actions: [UIMenuElement] = []
+
+        let isReadOnly = share.permissions == (NKShare.Permission.read.rawValue + NKShare.Permission.share.rawValue) || share.permissions == NKShare.Permission.read.rawValue
+        let isEditing = hasUploadPermission()
+        let isFileDrop = share.permissions == NKShare.Permission.create.rawValue
+
+        // Read Only
+        let readOnlyAction = UIAction(
+            title: NSLocalizedString("_share_read_only_", comment: ""),
+            image: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
+            state: isReadOnly ? .on : .off
+        ) { [self] _ in
+            let permissions = NCSharePermissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: false, isDirectory: self.isDirectory)
+            shareController.updateSharePermissions(share: share, permissions: permissions)
+        }
+        actions.append(readOnlyAction)
+
+        // Editing
+        let editingAction = UIAction(
+            title: NSLocalizedString("_share_editing_", comment: ""),
+            image: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
+            state: isEditing ? .on : .off
+        ) { [self] _ in
+            let permissions = NCSharePermissions.getPermissionValue(canCreate: true, canEdit: true, canDelete: true, canShare: true, isDirectory: self.isDirectory)
+            shareController.updateSharePermissions(share: share, permissions: permissions)
+        }
+        actions.append(editingAction)
+
+        // File Drop (only for directories with public link or email share)
+        if isDirectory && (share.shareType == NKShare.ShareType.publicLink.rawValue || share.shareType == NKShare.ShareType.email.rawValue) {
+            let fileDropAction = UIAction(
+                title: NSLocalizedString("_share_file_drop_", comment: ""),
+                image: utility.loadImage(named: "arrow.up.document", colors: [NCBrandColor.shared.iconImageColor]),
+                state: isFileDrop ? .on : .off
+            ) { [self] _ in
+                let permissions = NCSharePermissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: self.isDirectory)
+                shareController.updateSharePermissions(share: share, permissions: permissions)
+            }
+            actions.append(fileDropAction)
+        }
+
+        // Custom Permissions
+        let customAction = UIAction(
+            title: NSLocalizedString("_custom_permissions_", comment: ""),
+            image: utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
+        ) { [self] _ in
+            openAdvancePermission(shareController: shareController)
+        }
+        actions.append(customAction)
+
+        return UIMenu(title: "", children: actions)
+    }
+
+    private func hasUploadPermission() -> Bool {
+        let uploadPermissions = [
+            NCSharePermissions.permissionMaxFileShare,
+            NCSharePermissions.permissionMaxFolderShare,
+            NCSharePermissions.permissionDefaultFileRemoteShareNoSupportShareOption,
+            NCSharePermissions.permissionDefaultFolderRemoteShareNoSupportShareOption
+        ]
+        return uploadPermissions.contains(share.permissions)
+    }
+
+    private func openAdvancePermission(shareController: NCShare) {
+        guard let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
+              let navigationController = shareController.navigationController,
+              !share.isInvalidated,
+              let metadata = shareController.metadata else { return }
+
+        advancePermission.networking = shareController.networking
+        advancePermission.share = tableShare(value: share)
+        advancePermission.oldTableShare = tableShare(value: share)
+        advancePermission.metadata = metadata
+
+        if let downloadLimit = try? database.getDownloadLimit(byAccount: metadata.account, shareToken: share.token) {
+            advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
+        }
+
+        navigationController.pushViewController(advancePermission, animated: true)
+    }
+
+    @MainActor
+    private func performUnshare(shareController: NCShare) async {
+        let capabilities = NCNetworking.shared.capabilities[share.account] ?? NKCapabilities.Capabilities()
+
+        if share.shareType != NKShare.ShareType.publicLink.rawValue,
+           let metadata = shareController.metadata,
+           metadata.e2eEncrypted && NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
+            if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
+                let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+                return NCContentPresenter().showInfo(error: error)
+            }
+            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: metadata.serverUrlFileName, addUserId: nil, removeUserId: share.shareWith, account: metadata.account)
+            if error != .success {
+                return NCContentPresenter().showError(error: error)
+            }
+        }
+        shareController.networking?.unShare(idShare: share.idShare)
+    }
+}

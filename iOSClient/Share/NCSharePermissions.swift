@@ -3,36 +3,15 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 05/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import Foundation
+import NextcloudKit
 
 enum NCSharePermissions {
-    // Share permission
-    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = Reshare; 31 = all
-    //
-    static let permissionReadShare: Int = 1
-    static let permissionEditShare: Int = 2
-    static let permissionCreateShare: Int = 4
-    static let permissionDeleteShare: Int = 8
-    static let permissionReshareShare: Int = 16
 
     static let permissionMinFileShare: Int = 1
     static let permissionMaxFileShare: Int = 19
@@ -46,23 +25,23 @@ enum NCSharePermissions {
     static let permissionDownloadShare: Int = 0
 
     static func hasPermissionToRead(_ permission: Int) -> Bool {
-        return ((permission & permissionReadShare) > 0)
+        return ((permission & NKShare.Permission.read.rawValue) > 0)
     }
 
     static func hasPermissionToDelete(_ permission: Int) -> Bool {
-        return ((permission & permissionDeleteShare) > 0)
+        return ((permission & NKShare.Permission.delete.rawValue) > 0)
     }
 
     static func hasPermissionToCreate(_ permission: Int) -> Bool {
-        return ((permission & permissionCreateShare) > 0)
+        return ((permission & NKShare.Permission.create.rawValue) > 0)
     }
 
     static func hasPermissionToEdit(_ permission: Int) -> Bool {
-        return ((permission & permissionEditShare) > 0)
+        return ((permission & NKShare.Permission.update.rawValue) > 0)
     }
 
     static func hasPermissionToShare(_ permission: Int) -> Bool {
-        return ((permission & permissionReshareShare) > 0)
+        return ((permission & NKShare.Permission.share.rawValue) > 0)
     }
 
     static func isAnyPermissionToEdit(_ permission: Int) -> Bool {
@@ -86,20 +65,20 @@ enum NCSharePermissions {
         var permission = 0
 
         if canRead {
-            permission = permission + permissionReadShare
+            permission = permission + NKShare.Permission.read.rawValue
         }
 
         if canCreate && isDirectory {
-            permission = permission + permissionCreateShare
+            permission = permission + NKShare.Permission.create.rawValue
         }
         if canEdit {
-            permission = permission + permissionEditShare
+            permission = permission + NKShare.Permission.update.rawValue
         }
         if canDelete && isDirectory {
-            permission = permission + permissionDeleteShare
+            permission = permission + NKShare.Permission.delete.rawValue
         }
         if canShare {
-            permission = permission + permissionReshareShare
+            permission = permission + NKShare.Permission.share.rawValue
         }
 
         return permission

@@ -81,14 +81,12 @@ extension NCShareExtension: UICollectionViewDataSource {
             return cell
         }
 
-        cell.fileOcId = metadata.ocId
-        cell.fileOcIdTransfer = metadata.ocIdTransfer
-        cell.fileUser = metadata.ownerId
+        cell.metadata = metadata
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
+        cell.imageLocal?.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
         cell.imageMore.image = nil
@@ -155,7 +153,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
+            cell.imageLocal?.image = NCImageCache.shared.getImageOfflineFlag()
         }
     }
 }

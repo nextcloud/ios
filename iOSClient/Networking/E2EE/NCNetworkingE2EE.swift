@@ -29,7 +29,10 @@ class NCNetworkingE2EE: NSObject {
     }
 
     func getOptions(account: String, capabilities: NKCapabilities.Capabilities) -> NKRequestOptions {
-        let version = capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 ? e2EEApiVersion2 : e2EEApiVersion1
+        var version = e2EEApiVersion1
+        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
+            version = e2EEApiVersion2
+        }
         return NKRequestOptions(version: version)
     }
 
@@ -44,7 +47,7 @@ class NCNetworkingE2EE: NSObject {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
 
         switch capabilities.e2EEApiVersion {
-        case NCGlobal.shared.e2eeVersionV11, NCGlobal.shared.e2eeVersionV12:
+        case "1.1", "1.2":
             let options = NKRequestOptions(version: e2EEApiVersion1)
             let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                 Task {
@@ -55,7 +58,7 @@ class NCNetworkingE2EE: NSObject {
                 }
             }
             return (results.account, self.e2EEApiVersion1, results.e2eMetadata, results.signature, results.responseData, results.error)
-        case NCGlobal.shared.e2eeVersionV20:
+        case "2.0", "2.1":
             var options = NKRequestOptions(version: e2EEApiVersion2)
             let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                 Task {
@@ -204,7 +207,7 @@ class NCNetworkingE2EE: NSObject {
 
         // COUNTER
         //
-        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
             await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
         }
 
@@ -247,7 +250,7 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20,
+        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion),
            var counter = await self.database.getCounterE2eMetadataAsync(account: account, ocIdServerUrl: directory.ocId) {
             counter += 1
             e2eCounter = "\(counter)"

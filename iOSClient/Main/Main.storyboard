@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24123.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24127" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24062"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -159,8 +159,6 @@
                     <connections>
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
                         <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
-                        <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
-                        <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
                         <segue destination="zzk-gS-FKl" kind="show" identifier="segueRecent" id="Snj-Bw-Ce2"/>
                         <segue destination="z7i-Sl-6Di" kind="show" identifier="segueShares" id="c59-fC-R3W"/>
                         <segue destination="3YH-o1-17m" kind="relationship" relationship="rootViewController" id="les-zO-92u"/>
@@ -200,26 +198,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10182" y="125"/>
-        </scene>
-        <!--NCActivity.storyboard-->
-        <scene sceneID="NqQ-oK-JeC">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCActivity" referencedIdentifier="NCActivity.storyboard" id="2JP-H5-EI3" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="2tm-Tj-UzB"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10185" y="168"/>
-        </scene>
-        <!--NCTransfers.storyboard-->
-        <scene sceneID="IDy-4E-Qqv">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCTransfers" referencedIdentifier="NCTransfers.storyboard" id="2L6-L3-iRl" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="rgn-gS-Fb2"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10193" y="217"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">

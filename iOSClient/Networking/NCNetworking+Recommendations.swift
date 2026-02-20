@@ -38,8 +38,8 @@ extension NCNetworking {
                 }
 
                 if results.error == .success, let file = results.files?.first {
-                    let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
-                    NCManageDatabase.shared.addMetadataIfNeededAsync(metadata, sync: false)
+                    let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+                    await NCManageDatabase.shared.addMetadataIfNotExistsAsync(metadata)
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue
@@ -50,7 +50,10 @@ extension NCNetworking {
             }
 
             await NCManageDatabase.shared.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
-            await collectionView.reloadData()
+
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: serverUrl)
+            }
         }
     }
 }

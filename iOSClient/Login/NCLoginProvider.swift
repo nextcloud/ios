@@ -6,7 +6,6 @@
 import UIKit
 @preconcurrency import WebKit
 import NextcloudKit
-import FloatingPanel
 
 protocol NCLoginProviderDelegate: AnyObject {
     ///
@@ -63,8 +62,9 @@ class NCLoginProvider: UIViewController {
         nkLog(debug: "Login provider appeared.")
 
         guard let url = URL(string: initialURLString) else {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
-            NCContentPresenter().showError(error: error, priority: .max)
+            Task {
+                await showErrorBanner(controller: self.controller, text: "_login_url_error_", errorCode: 0)
+            }
             return
         }
 
@@ -176,7 +176,7 @@ class NCLoginProvider: UIViewController {
 
         if controller == nil {
             nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
-            controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         }
 
         await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller)
@@ -195,7 +195,7 @@ class NCLoginProvider: UIViewController {
                 try Task.checkCancellation()
 
                 grantValues = await poll(token: token, endpoint: endpoint, options: options)
-                try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
+                try await Task.sleep(for: .seconds(1))
             } while grantValues == nil
 
             guard let grantValues else {
@@ -257,7 +257,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
 
                 if self.controller == nil {
-                    self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                    self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
                 }
 
                 Task { @MainActor in

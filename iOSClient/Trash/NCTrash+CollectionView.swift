@@ -69,7 +69,17 @@ extension NCTrash: UICollectionViewDataSource {
             gridCell.delegate = self
             cell = gridCell
         }
+
         guard let resultTableTrash = datasource?[indexPath.item] else { return cell }
+
+        let contextMenu = NCContextMenuTrash(objectId: resultTableTrash.fileId, trashController: self)
+        if let listCell = cell as? NCTrashListCell {
+            listCell.buttonMore.menu = contextMenu.viewMenu()
+            listCell.buttonMore.showsMenuAsPrimaryAction = true
+        } else if let gridCell = cell as? NCTrashGridCell {
+            gridCell.buttonMore.menu = contextMenu.viewMenu()
+            gridCell.buttonMore.showsMenuAsPrimaryAction = true
+        }
 
         cell.imageItem.contentMode = .scaleAspectFit
 

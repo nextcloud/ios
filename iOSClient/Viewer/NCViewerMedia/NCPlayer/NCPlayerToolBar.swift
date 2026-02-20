@@ -9,6 +9,7 @@ import UIKit
 import AVKit
 import FloatingPanel
 import Alamofire
+import LucidBanner
 
 class NCPlayerToolBar: UIView {
     @IBOutlet weak var utilityView: UIView!
@@ -30,11 +31,13 @@ class NCPlayerToolBar: UIView {
     private var mediaCoordinator = NCMediaCoordinator.shared
 
     enum sliderEventType {
+        case none
         case began
         case ended
         case moved
     }
-    var playbackSliderEvent: sliderEventType = .ended
+
+    var playbackSliderEvent: sliderEventType = .none
     var isFullscreen: Bool = false
     var playRepeat: Bool {
         get {
@@ -45,7 +48,6 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    private let hud = NCHud()
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
@@ -68,9 +70,11 @@ class NCPlayerToolBar: UIView {
 
         subtitleButton.setImage(utility.loadImage(named: "captions.bubble", colors: [.white]), for: .normal)
         subtitleButton.isEnabled = false
+        subtitleButton.showsMenuAsPrimaryAction = true
 
         audioButton.setImage(utility.loadImage(named: "speaker.zzz", colors: [.white]), for: .normal)
         audioButton.isEnabled = false
+        audioButton.showsMenuAsPrimaryAction = true
 
         if UIDevice.current.userInterfaceIdiom == .pad {
             pointSize = 60
@@ -182,12 +186,12 @@ class NCPlayerToolBar: UIView {
         })
     }
 
-    func playButtonPause() {
+    func showPauseButton() {
         buttonImage = UIImage(systemName: "pause.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
         playButton.setImage(buttonImage, for: .normal)
     }
 
-    func playButtonPlay() {
+    func showPlayButton() {
         buttonImage = UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
         playButton.setImage(buttonImage, for: .normal)
     }
@@ -430,12 +434,15 @@ extension NCPlayerToolBar: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+            let scene = SceneManager.shared.getWindow(controller: viewerMediaPage.tabBarController)?.windowScene
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                hud.ringProgress(view: viewerMediaPage.view, text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                let token = showHudBanner(scene: scene,
+                                          title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                          stage: .button) {
                     if let request = downloadRequest {
                         request.cancel()
                     }
@@ -456,10 +463,15 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                                     status: self.global.metadataStatusDownloading)
                     }
                 }, progressHandler: { progress in
-                    self.hud.progress(progress.fractionCompleted)
+                    Task {@MainActor in
+                        LucidBanner.shared.update(
+                            payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                            for: token)
+                    }
                 }) { _, etag, _, _, _, _, error in
-                    self.hud.dismiss()
                     Task {
+                        LucidBanner.shared.dismiss()
+
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     session: "",
@@ -467,12 +479,12 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                                     sessionError: "",
                                                                     status: self.global.metadataStatusNormal,
                                                                     etag: etag)
-                    }
-                    if error == .success {
-                        self.hud.success()
-                        self.addPlaybackSlave(type: type, metadata: metadata)
-                    } else if error.errorCode != 200 {
-                        self.hud.error(text: error.errorDescription)
+
+                        if error == .success {
+                            self.addPlaybackSlave(type: type, metadata: metadata)
+                        } else if error.errorCode != 200 {
+                            await showErrorBanner(scene: scene, text: error.errorDescription, errorCode: error.errorCode)
+                        }
                     }
                 }
             }
@@ -481,7 +493,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
 
     // swiftlint:disable inclusive_language
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
-    // swiftlint:enable inclusive_language
+        // swiftlint:enable inclusive_language
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if type == "subtitle" {

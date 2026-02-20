@@ -29,7 +29,7 @@ protocol NCSelectDelegate: AnyObject {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionFirstHeaderDelegate, NCTransferDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCSectionFirstHeaderDelegate, NCTransferDelegate {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
     @IBOutlet private var bottomContraint: NSLayoutConstraint?
@@ -61,6 +61,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
     var session: NCSession.Session!
+    var controller: NCMainTabBarController?
     // -------------------------------------------------------------
 
     private var dataSourceTask: URLSessionTask?
@@ -98,7 +99,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.backgroundColor = .systemBackground
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
-        bottomContraint?.constant = UIApplication.shared.firstWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
+        bottomContraint?.constant = UIApplication.shared.mainAppWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -145,7 +146,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         super.viewWillAppear(animated)
 
         Task { @MainActor in
-            let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
+            let folderPath = utilityFileSystem.getRelativeFilePath("", serverUrl: serverUrl, session: session)
             let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
             if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account, capabilities: capabilities) {
@@ -202,24 +203,38 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Dismission
     }
 
-    // MARK: - NotificationCenter
+    // MARK: -
 
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        guard session.account == metadata.account else { return }
+    func transferReloadData(serverUrl: String?) { }
 
+    func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }
+
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+
+    func transferChange(status: String,
+                        account: String,
+                        fileName: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {
         if error != .success {
-            NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(sceneIdentifier: sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+            }
         }
 
-        DispatchQueue.main.async {
-            switch status {
-            case self.global.networkingStatusCreateFolder:
-                if metadata.serverUrl == self.serverUrl {
-                    self.pushMetadata(metadata)
-                }
-            default:
-                break
+        Task { @MainActor in
+            guard session.account == account,
+                  status == self.global.networkingStatusCreateFolder,
+                  self.serverUrl == serverUrl,
+                  let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName))
+            else {
+                return
             }
+
+            self.pushMetadata(metadata)
         }
     }
 
@@ -256,16 +271,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         overwrite = sender.isOn
     }
 
-    func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) { }
-
-    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) { }
-
-    func longPressListItem(with odId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
-
     func tapRichWorkspace(_ sender: Any) { }
-
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) { }
-
     func tapRecommendations(with metadata: tableMetadata) { }
 
     // MARK: - Push metadata
@@ -331,12 +337,12 @@ extension NCSelect: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
+                (cell as? NCListCell)?.previewImg?.image = image
             } else {
                 if metadata.iconName.isEmpty {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
+                    (cell as? NCListCell)?.previewImg?.image = NCImageCache.shared.getImageFile()
                 } else {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                    (cell as? NCListCell)?.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 }
                 if metadata.hasPreview,
                    metadata.status == NCGlobal.shared.metadataStatusNormal {
@@ -370,17 +376,15 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionShared)
         isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionMounted)
 
-        cell.listCellDelegate = self
+//        cell.listCellDelegate = self
 
-        cell.fileOcId = metadata.ocId
-        cell.fileOcIdTransfer = metadata.ocIdTransfer
-        cell.fileUser = metadata.ownerId
+        cell.metadata = metadata
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
+        cell.imageLocal?.image = nil
         cell.imageFavorite.image = nil
         cell.imageShared.image = nil
         cell.imageMore.image = nil
@@ -415,9 +419,9 @@ extension NCSelect: UICollectionViewDataSource {
 
             self.database.getTableLocal(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) { tblLocalFile in
                 if let tblLocalFile, tblLocalFile.offline {
-                    cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
+                    cell.imageLocal?.image = NCImageCache.shared.getImageOfflineFlag()
                 } else if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                    cell.imageLocal.image = NCImageCache.shared.getImageLocal()
+                    cell.imageLocal?.image = NCImageCache.shared.getImageLocal()
                 }
             }
         }

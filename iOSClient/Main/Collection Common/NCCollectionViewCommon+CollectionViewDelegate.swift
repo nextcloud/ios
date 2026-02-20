@@ -7,10 +7,12 @@ import Foundation
 import UIKit
 import NextcloudKit
 import Alamofire
+import LucidBanner
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
-    func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+    @MainActor
+    func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) async {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
                 if !NCPreferences().isEndToEndEnabled(account: metadata.account) {
@@ -20,14 +22,26 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     return
                 }
             } else {
-                NCContentPresenter().showInfo(error: NKError(errorCode: global.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
+                await showInfoBanner(controller: self.controller, text: "_e2e_server_disabled_")
                 return
             }
         }
 
         func downloadFile() async {
-            let hud = NCHud(self.tabBarController?.view)
             var downloadRequest: DownloadRequest?
+            let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
+            var tokenBanner: Int?
+            await MainActor.run {
+                tokenBanner = showHudBanner(scene: scene,
+                                            title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                            stage: .button,
+                                            onButtonTap: {
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                })
+            }
+
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                        session: self.networking.sessionDownload,
                                                                                        selector: global.selectorLoadFileView,
@@ -35,21 +49,23 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
 
-            hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                if let request = downloadRequest {
-                    request.cancel()
-                }
-            }
-
             let results = await self.networking.downloadFile(metadata: metadata) { request in
                 downloadRequest = request
             } progressHandler: { progress in
-                hud.progress(progress.fractionCompleted)
+                Task {@MainActor in
+                    LucidBanner.shared.update(
+                        payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                        for: tokenBanner)
+                }
             }
+            await MainActor.run {
+                LucidBanner.shared.dismiss()
+            }
+
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                hud.dismiss()
+                print("ok")
             } else {
-                hud.error(text: results.nkError.errorDescription)
+                await showErrorBanner(scene: scene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
             }
         }
 
@@ -110,8 +126,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 } else {
-                    let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
-                    NCContentPresenter().showInfo(error: error)
+                    await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
                 }
             }
         }
@@ -130,13 +145,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             self.collectionView.reloadItems(at: [indexPath])
             self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
-            // self.collectionView.reloadSections(IndexSet(integer: indexPath.section))
-
             self.collectionView.collectionViewLayout.invalidateLayout()
             return
         }
 
-        self.didSelectMetadata(metadata, withOcIds: true)
+        Task {
+            await didSelectMetadata(metadata, withOcIds: true)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -148,9 +163,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
         let identifier = indexPath as NSCopying
         var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+        let cell = collectionView.cellForItem(at: indexPath)
 
         if image == nil {
-            let cell = collectionView.cellForItem(at: indexPath)
             if cell is NCListCell {
                 image = (cell as? NCListCell)?.imageItem.image
             } else if cell is NCGridCell {
@@ -161,9 +176,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
+            return nil
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
+            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, sender: cell)
             return contextMenu.viewMenu()
         })
     }

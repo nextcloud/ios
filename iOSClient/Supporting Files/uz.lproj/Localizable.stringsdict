@@ -6,6 +6,15 @@
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@downloads@</string>
+		<key>downloads</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Qolgan %d ta yuklab olishga ruxsat berilgan</string>
+		</dict>
 	</dict>
 </dict>
 </plist>

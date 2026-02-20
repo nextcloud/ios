@@ -2,7 +2,7 @@
 [![Releases](https://img.shields.io/github/release/nextcloud/ios.svg)](https://github.com/nextcloud/ios/releases/latest) [![Build](https://github.com/nextcloud/ios/actions/workflows/xcode.yml/badge.svg)](https://github.com/nextcloud/ios/actions/workflows/xcode.yml) [![SwiftLint](https://github.com/nextcloud/ios/actions/workflows/lint.yml/badge.svg)](https://github.com/nextcloud/ios/actions/workflows/lint.yml)
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud--mobile%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-mobile)
 
-<img src="Animation.gif" alt="Demo of the Nextcloud iOS files app" width="277" height="600"><img src="widget.png" alt="Widget of the Nextcloud iOS files app" width="277" height="600">
+<img src="Animation.gif" alt="Demo of the Nextcloud iOS files app" width="277" height="600">
 
 [<img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
 alt="Demo of the Nextcloud iOS files app"
@@ -38,7 +38,7 @@ branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios
 
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
 
-### Xcode 16 Project Setup
+### Xcode 26.1 Project Setup
 
 #### Dependencies
 

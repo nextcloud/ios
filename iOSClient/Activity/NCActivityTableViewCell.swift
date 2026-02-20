@@ -5,24 +5,24 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import FloatingPanel
 import Queuer
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
 
-    var fileId = ""
+    var fileId: Int = 0
     var indexPath = IndexPath()
 }
 
-class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
+class NCActivityTableViewCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var subjectLeadingConstraint: NSLayoutConstraint!
 
-    private var user: String = ""
-    private var index = IndexPath()
+    var user: String = ""
+    var index = IndexPath()
+    var avatarButton: UIButton!
 
     var idActivity: Int = 0
     var activityPreviews: [tableActivityPreview] = []
@@ -30,31 +30,28 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var viewController = NCActivity()
     let utilityFileSystem = NCUtilityFileSystem()
     var account: String!
-
     let utility = NCUtility()
-
-    var indexPath: IndexPath {
-        get { return index }
-        set { index = newValue }
-    }
-    var fileAvatarImageView: UIImageView? {
-        return avatar
-    }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
-        avatar.addGestureRecognizer(avatarRecognizer)
+        avatarButton = UIButton(type: .system)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        avatarButton.backgroundColor = .clear
+        contentView.addSubview(avatarButton)
+        NSLayoutConstraint.activate([
+            avatarButton.topAnchor.constraint(equalTo: avatar.topAnchor),
+            avatarButton.bottomAnchor.constraint(equalTo: avatar.bottomAnchor),
+            avatarButton.leadingAnchor.constraint(equalTo: avatar.leadingAnchor),
+            avatarButton.trailingAnchor.constraint(equalTo: avatar.trailingAnchor)
+        ])
+        avatarButton.showsMenuAsPrimaryAction = true
     }
 
-    @objc func tapAvatarImage(_ sender: Any?) {
-        guard let fileUser = fileUser else { return }
-        viewController.showProfileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account), sender: sender)
+    func configureAvatarMenu() {
+        let session = NCSession.shared.getSession(account: account)
+
+        avatarButton.menu = NCContextMenuProfile(userId: user, session: session, viewController: viewController).viewMenu()
     }
 }
 
@@ -84,8 +81,9 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                         viewController.filePath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
-                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_trash_file_not_found_")
-                        NCContentPresenter().showError(error: error)
+                        Task {
+                            await showErrorBanner(controller: viewController.controller, text: "_trash_file_not_found_", errorCode: 0)
+                        }
                     }
                 }
             }
@@ -97,7 +95,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 return
             }
             Task {
-                await NCDownloadAction.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
+                await NCNetworking.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
             }
         }
     }
@@ -115,37 +113,35 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: NCActivityCollectionViewCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell)!
+        let activityPreview = activityPreviews[indexPath.row]
 
         cell.imageView.image = nil
         cell.indexPath = indexPath
-
-        let activityPreview = activityPreviews[indexPath.row]
-        let fileId = String(activityPreview.fileId)
+        cell.imageView.image = NCImageCache.shared.getImageFile()
+        cell.fileId = activityPreview.fileId
 
         // Trashbin
         if activityPreview.view == "trashbin" {
             let source = activityPreview.source
-
-            utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: account, id: idActivity) { imageNamePath, id in
-                if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
+            Task {
+                let results = await utility.convertSVGtoPNGWriteToUserData(serverUrl: source, rewrite: false, account: account, id: idActivity)
+                if let image = results.image,
+                   cell.fileId == results.id {
                     cell.imageView.image = image
-                } else {
-                    cell.imageView.image = NCImageCache.shared.getImageFile()
                 }
             }
         } else {
             if activityPreview.isMimeTypeIcon {
                 let source = activityPreview.source
-
-                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 150, rewrite: false, account: account, id: idActivity) { imageNamePath, id in
-                    if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
+                Task {
+                    let results = await utility.convertSVGtoPNGWriteToUserData(serverUrl: source, rewrite: false, account: account, id: idActivity)
+                    if let image = results.image,
+                       cell.fileId == results.id {
                         cell.imageView.image = image
-                    } else {
-                        cell.imageView.image = NCImageCache.shared.getImageFile()
                     }
                 }
             } else {
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: String(activityPreview.fileId)) {
                     let fileNamePath = NCUtilityFileSystem().createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: activitySubjectRich.name)
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
@@ -154,10 +150,10 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                     } else {
                         cell.imageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
                         cell.imageView?.contentMode = .scaleAspectFit
-                        cell.fileId = fileId
+                        cell.fileId = activityPreview.fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
-                            if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, etag: "", fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
+                            if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == activityPreview.fileId }).isEmpty {
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: activityPreview.fileId, etag: "", fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
                             }
                         }
                     }
@@ -185,11 +181,11 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Sendable {
     var collectionView: UICollectionView?
     var fileNamePreviewLocalPath: String
-    var fileId: String
+    var fileId: Int
     var account: String
     var etag: String
 
-    init(fileId: String, etag: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
+    init(fileId: Int, etag: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
         self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
         self.fileId = fileId
         self.account = account
@@ -199,10 +195,10 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-        NextcloudKit.shared.downloadPreview(fileId: fileId, etag: etag, account: account) { task in
+        NextcloudKit.shared.downloadPreview(fileId: String(fileId), etag: etag, account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                            path: self.fileId,
+                                                                                            path: String(self.fileId),
                                                                                             name: "DownloadPreview")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }

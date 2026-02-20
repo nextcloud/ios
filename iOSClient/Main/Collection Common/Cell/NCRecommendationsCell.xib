@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -43,9 +42,6 @@
                         <buttonConfiguration key="configuration" style="plain">
                             <imageReference key="image" image="ellipsis.circle.fill" catalog="system" symbolScale="medium"/>
                         </buttonConfiguration>
-                        <connections>
-                            <action selector="touchUpInsideButtonMenu:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="3fA-II-5LZ"/>
-                        </connections>
                     </button>
                 </subviews>
             </view>
@@ -65,7 +61,7 @@
             </constraints>
             <size key="customSize" width="436" height="305"/>
             <connections>
-                <outlet property="buttonMenu" destination="O9D-jq-8Iz" id="FSF-c5-a5a"/>
+                <outlet property="buttonMore" destination="O9D-jq-8Iz" id="LSA-3R-d4x"/>
                 <outlet property="image" destination="5Ci-V1-hf5" id="9fB-pr-AEY"/>
                 <outlet property="labelFilename" destination="ixP-qo-bb5" id="pE6-wq-gyk"/>
                 <outlet property="labelInfo" destination="0pg-4i-UyV" id="m3d-P8-Yhf"/>
@@ -76,7 +72,7 @@
     <resources>
         <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

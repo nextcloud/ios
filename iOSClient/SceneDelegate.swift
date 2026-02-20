@@ -83,7 +83,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Activation singleton
         _ = NCAppStateManager.shared
         _ = NCNetworking.shared
-        _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
 
         if let activeTblAccount, !alreadyMigratedMultiDomains {
@@ -222,8 +221,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        WidgetCenter.shared.reloadAllTimelines()
-
         if NCPreferences().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
                 SwiftEntryKit.dismiss {
@@ -236,36 +233,60 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Must be outside the Task otherwise isSuspendingDatabaseOperation suspends it
+        let app = UIApplication.shared
+        var bgID: UIBackgroundTaskIdentifier = .invalid
+        let isBackgroundRefreshStatus = (UIApplication.shared.backgroundRefreshStatus == .available)
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
-        Task { @MainActor in
-            await NCManageDatabase.shared.backupTableAccountToFileAsync()
+        bgID = app.beginBackgroundTask(withName: "FlushBeforeSuspend") {
+            app.endBackgroundTask(bgID); bgID = .invalid
+        }
 
-            nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
-            nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
-
-            if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
-                NCBackgroundLocationUploadManager.shared.start()
-            } else {
-                NCBackgroundLocationUploadManager.shared.stop()
+        Task {
+            Task { @MainActor in
+                if NCPreferences().presentPasscode {
+                    showPrivacyProtectionWindow()
+                }
+            }
+            defer {
+                app.endBackgroundTask(bgID); bgID = .invalid
+            }
+            // Timeout auto
+            let didFinish = await withTaskGroup(of: Bool.self) { group -> Bool in
+                group.addTask {
+                    // QUEUE
+                    NCNetworking.shared.cancelAllQueue()
+                    // FLUSH TRANSFERS SUCCESS
+                    await NCNetworking.shared.metadataTranfersSuccess.flush()
+                    // BACKUP
+                    await NCManageDatabase.shared.backupTableAccountToFileAsync()
+                    // LOG
+                    nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
+                    nkLog(info: "Update in background: \(isBackgroundRefreshStatus)")
+                    // LOCATION MANAGER
+                    if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
+                        NCBackgroundLocationUploadManager.shared.start()
+                    } else {
+                        NCBackgroundLocationUploadManager.shared.stop()
+                    }
+                    // UPDATE SHARE GROUP ACCOUNTS
+                    if let error = await NCAccount().updateAppsShareAccounts() {
+                        nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
+                    }
+                    return true
+                }
+                group.addTask {
+                    try? await Task.sleep(for: .seconds(25))
+                    return false
+                }
+                return await group.next() ?? false
             }
 
-            if let error = await NCAccount().updateAppsShareAccounts() {
-                nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
+            if !didFinish {
+                nkLog(debug: "Flush timed out, will continue next launch")
             }
-
-            NCNetworking.shared.cancelAllQueue()
-
-            if NCPreferences().presentPasscode {
-                showPrivacyProtectionWindow()
-            }
-
-            // Clear older files
-            await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
-            await NCUtilityFileSystem().cleanUpAsync()
         }
     }
 
@@ -283,15 +304,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        func getMatchedAccount(userId: String, url: String) async -> tableAccount? {
+        func getMatchedAccount(user: String, url: String, account: String? = nil) async -> tableAccount? {
             let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
 
             for tblAccount in tblAccounts {
-                let urlBase = URL(string: tblAccount.urlBase)
-                if url.contains(urlBase?.host ?? "") && userId == tblAccount.userId {
+                let host = URL(string: tblAccount.urlBase)?.host() ?? ""
+
+                if (account == tblAccount.account) || (url.contains(host) && user == tblAccount.userId) {
                     await NCAccount().changeAccount(tblAccount.account, userProfile: nil, controller: controller)
                     // wait switch account
-                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    try? await Task.sleep(for: .seconds(1))
                     return tblAccount
                 }
             }
@@ -312,7 +334,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
 
                 Task {
-                    if await getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
+                    if await getMatchedAccount(user: userScheme, url: urlScheme) == nil {
                         let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -338,9 +360,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         }
                         let serverUrl = controller.currentServerUrl()
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+                        let fileNamePath = NCUtilityFileSystem().getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        await NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
+                        await NCCreate().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
                     case self.global.actionVoiceMemo:
                         NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                             if hasPermission {
@@ -365,36 +387,42 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         else if scheme == self.global.appScheme && action == "open-file" {
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-                var serverUrl: String = ""
-                var fileName: String = ""
                 let queryItems = urlComponents.queryItems
                 guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
-                      let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
-                      let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else { return}
+                      // let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
+                      let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else {
+                    return
+                }
+                let domain = URL(string: linkScheme)?.host ?? ""
+                let accountScheme = queryItems?.filter({ $0.name == "account" }).first?.value
 
                 Task {
-                    guard let tblAccount = await getMatchedAccount(userId: userScheme, url: linkScheme) else {
-                        guard let domain = URL(string: linkScheme)?.host else { return }
+                    guard let tblAccount = await getMatchedAccount(user: userScheme, url: linkScheme, account: accountScheme) else {
 
-                        fileName = (pathScheme as NSString).lastPathComponent
-                        let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
+                        let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain)
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
                         controller.present(alertController, animated: true)
                         return
                     }
-                    let davFiles = "remote.php/dav/files/" + tblAccount.userId
 
-                    if pathScheme.contains("/") {
-                        fileName = (pathScheme as NSString).lastPathComponent
-                        serverUrl = tblAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
-                    } else {
-                        fileName = pathScheme
-                        serverUrl = tblAccount.urlBase + "/" + davFiles
+                    let results = await NextcloudKit.shared.getFileFromFileIdAsync(link: linkScheme,
+                                                                                   account: tblAccount.account)
+                    if results.error == .success, let file = results.file {
+                        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+                        await NCManageDatabase.shared.addMetadataAsync(metadata)
+                        if metadata.hasPreview {
+                            let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
+                            if results.error == .success,
+                               let data = results.responseData?.data {
+                                NCUtility().createImageFileFrom(data: data, metadata: metadata)
+                            }
+                        }
+                        await NCNetworking.shared.openFileView(serverUrl: metadata.serverUrl,
+                                                               metadata: metadata,
+                                                               sceneIdentifier: controller.sceneIdentifier)
                     }
-
-                    NCDownloadAction.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
                 }
             }
 
@@ -413,7 +441,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             Task {
-                _ = await getMatchedAccount(userId: userScheme, url: urlScheme)
+                _ = await getMatchedAccount(user: userScheme, url: urlScheme)
             }
         } else if let action {
             if DeepLink(rawValue: action) != nil {
@@ -466,16 +494,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         Task {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
-                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-                nkLog(start: "Auto upload with \(num) photo")
-            }
+            try? await Task.sleep(for: .seconds(1))
 
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            let num = await NCAutoUpload.shared.initAutoUpload()
+            nkLog(start: "Auto upload with \(num) photo")
+
+            try? await Task.sleep(for: .seconds(1.5))
             await NCService().startRequestServicesServer(account: account, controller: controller)
 
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            try? await Task.sleep(for: .seconds(2))
             await NCNetworking.shared.verifyZombie()
         }
 
@@ -562,9 +589,26 @@ final class SceneManager: @unchecked Sendable {
         return (scene as? UIWindowScene)?.keyWindow
     }
 
-    func getWindow(controller: NCMainTabBarController?) -> UIWindow? {
-        guard let controller,
+    func getWindow(controller: UITabBarController?) -> UIWindow? {
+        guard let controller = controller as? NCMainTabBarController,
               let scene = sceneController[controller] else { return nil }
+        return getWindow(scene: scene)
+    }
+
+    func getWindow(sceneIdentifier: String?) -> UIWindow? {
+        var mainTabBarController: NCMainTabBarController?
+
+        if let sceneIdentifier {
+            for controller in sceneController.keys {
+                if sceneIdentifier == controller.sceneIdentifier {
+                    mainTabBarController = controller
+                }
+            }
+        }
+        guard let mainTabBarController,
+              let scene = sceneController[mainTabBarController] else {
+            return UIApplication.shared.mainAppWindow
+        }
         return getWindow(scene: scene)
     }
 

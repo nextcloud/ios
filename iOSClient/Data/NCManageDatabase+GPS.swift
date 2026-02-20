@@ -19,7 +19,7 @@ extension NCManageDatabase {
     // MARK: - Realm write
 
     func addGeocoderLocation(_ location: String, latitude: Double, longitude: Double) {
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             guard realm.objects(tableGPS.self)
                 .filter("latitude == %@ AND longitude == %@", latitude, longitude)
                 .first == nil
@@ -38,7 +38,7 @@ extension NCManageDatabase {
     // MARK: - Realm read
 
     func getLocationFromLatAndLong(latitude: Double, longitude: Double) -> String? {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableGPS.self)
                 .filter("latitude == %@ AND longitude == %@", latitude, longitude)
                 .first?.location

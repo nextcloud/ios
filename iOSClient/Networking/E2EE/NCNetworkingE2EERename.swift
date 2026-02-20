@@ -42,7 +42,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DB RENAME
         //
-        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, session: session)
+        let newFileNamePath = utilityFileSystem.getRelativeFilePath(fileNameNew, serverUrl: metadata.serverUrl, session: session)
         await self.database.renameFileE2eEncryptionAsync(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: newFileNamePath)
 
         // UPLOAD METADATA
@@ -76,7 +76,12 @@ class NCNetworkingE2EERename: NSObject {
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
-                                    metadata: metadata,
+                                    account: metadata.account,
+                                    fileName: metadata.fileName,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
+                                    destination: nil,
                                     error: uploadMetadataError)
         }
 

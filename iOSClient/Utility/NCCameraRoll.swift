@@ -392,11 +392,12 @@ final class NCCameraRoll: CameraRollExtractor {
                     continuation.resume(returning: nil)
                     return
                 }
-                NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                             ocId: ocId,
-                                             serverUrl: capturedServerUrl,
-                                             session: session,
-                                             sceneIdentifier: capturedSceneIdentifier) { metadataLivePhoto in
+                NCManageDatabaseCreateMetadata().createMetadata(
+                    fileName: fileName,
+                    ocId: ocId,
+                    serverUrl: capturedServerUrl,
+                    session: session,
+                    sceneIdentifier: capturedSceneIdentifier) { metadataLivePhoto in
                     metadataLivePhoto.livePhotoFile = capturedLivePhotoFile
                     metadataLivePhoto.isExtractFile = true
                     metadataLivePhoto.session = capturedSession

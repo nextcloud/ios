@@ -37,7 +37,7 @@ extension NCMedia {
             let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
 
             if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
-                titleDate?.text = utility.getTitleFromDate(metadata.datePhotosOriginal as Date)
+                titleDate?.text = utility.getTitleFromDate(metadata.date)
                 return
             }
         }
@@ -46,7 +46,8 @@ extension NCMedia {
     }
 
     func setElements() {
-        let isOver = self.collectionView.contentOffset.y <= -view.safeAreaInsets.top - titleConstraint.constant
+        let highTextTitle = titleDate.frame.height
+        let isOver = self.collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top && self.collectionView.contentOffset.y != -view.safeAreaInsets.top
 
         if isOver || dataSource.metadatas.isEmpty {
             UIView.animate(withDuration: 0.3) { [self] in

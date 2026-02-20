@@ -9,7 +9,6 @@ import NextcloudKit
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -124,7 +123,16 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewSection.isHidden = false
         }
 
+#if EXTENSION
         self.collectionViewRecommendations.reloadData()
+#else
+        Task {
+            let isPause = await (viewController as? NCCollectionViewCommon)?.debouncerReloadDataSource.isPausedNow() ?? false
+            if !isPause {
+                self.collectionViewRecommendations.reloadData()
+            }
+        }
+#endif
     }
 
     // MARK: - RichWorkspace
@@ -178,7 +186,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
                                 Task { @MainActor in
                                     for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
-                                        if cell.id == recommendedFiles.id {
+                                        if cell.metadata?.fileId == recommendedFiles.id {
                                             cell.image.contentMode = .scaleAspectFill
                                             if metadata.classFile == NKTypeClassFile.document.rawValue {
                                                 cell.setImageCorner(withBorder: true)
@@ -208,7 +216,6 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             cell.delegate = self
             cell.metadata = metadata
             cell.recommendedFiles = recommendedFiles
-            cell.id = recommendedFiles.id
         }
 
         return cell
@@ -241,7 +248,8 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, image: image)
+            let cell = collectionView.cellForItem(at: indexPath)
+            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: cell)
             return contextMenu.viewMenu()
         })
 #endif
@@ -257,7 +265,23 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
-        self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image, sender: sender)
+    func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
+#if !EXTENSION
+        Task {
+            guard let viewController = self.viewController, let metadata else {
+                return
+            }
+            button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
+        }
+#endif
+    }
+
+    func onMenuIntent(with metadata: tableMetadata?) {
+#if !EXTENSION
+        Task {
+            let collectionViewCommon = (self.viewController as? NCCollectionViewCommon)
+            await collectionViewCommon?.debouncerReloadData.pause()
+        }
+#endif
     }
 }

@@ -1,28 +1,6 @@
-//
-//  NCViewerQuickLook.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 03/05/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//  Copyright © 2022 Henrik Storch. All rights reserved.
-//  Copyright © 2023 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//  Author Henrik Storch <henrik.storch@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2020 Marino Faggiana, 2022 Henrik Storch, 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import QuickLook
@@ -34,12 +12,12 @@ public protocol NCViewerQuickLookDelegate: AnyObject {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool)
 }
 
-// optional func
+/// Optional implementation
 public extension NCViewerQuickLookDelegate {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {}
 }
 
-// if the document has any changes
+/// Flag indicating If the document has any changes
 private var hasChangesQuickLook: Bool = false
 
 @objc class NCViewerQuickLook: QLPreviewController {
@@ -49,7 +27,7 @@ private var hasChangesQuickLook: Bool = false
     private var isEditingEnabled: Bool
     private var metadata: tableMetadata?
     private var timer: Timer?
-    // used to display the save alert
+    /// Used to display the save alert
     private var parentVC: UIViewController?
     private let utilityFileSystem = NCUtilityFileSystem()
     private let database = NCManageDatabase.shared
@@ -129,12 +107,10 @@ private var hasChangesQuickLook: Bool = false
         })
     }
 
-    @objc private func dismissView(_ sender: Any?) {
-        guard isEditingEnabled, hasChangesQuickLook, let metadata = metadata else {
-            dismiss(animated: true)
-            return
-        }
-        let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
+    private func showSaveAlert() {
+        guard let metadata = metadata else { return }
+
+        let alertController = UIAlertController(title: NSLocalizedString("_save_changes_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
 
         if metadata.isLivePhoto {
@@ -162,10 +138,14 @@ private var hasChangesQuickLook: Bool = false
             self.dismiss(animated: true)
         })
 
-        if metadata.isImage {
-            present(alertController, animated: true)
-        } else {
-            parentVC?.present(alertController, animated: true)
+        parentVC?.present(alertController, animated: true)
+    }
+
+    @objc private func dismissView(_ sender: Any?) {
+        dismiss(animated: true) {
+            if hasChangesQuickLook {
+                self.showSaveAlert()
+            }
         }
     }
 
@@ -215,7 +195,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
-        return isEditingEnabled ? .createCopy : .disabled
+        return isEditingEnabled ? .createCopy : .disabled // File is in private storage, so .updateContents is not possible and will still act as .createCopy.
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
@@ -234,18 +214,16 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         }
 
         Task { @MainActor in
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
-                                                                                 fileName: metadata.fileNameView,
-                                                                                 userId: metadata.userId,
-                                                                                 urlBase: metadata.urlBase)
+            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
-            let metadataForUpload = await NCManageDatabase.shared.createMetadataAsync(fileName: metadata.fileName,
-                                                                                      ocId: ocId,
-                                                                                      serverUrl: metadata.serverUrl,
-                                                                                      url: url.path,
-                                                                                      session: session,
-                                                                                      sceneIdentifier: nil)
+            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: metadata.fileName,
+                ocId: ocId,
+                serverUrl: metadata.serverUrl,
+                url: url.path,
+                session: session,
+                sceneIdentifier: nil)
 
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
             if override {
@@ -263,9 +241,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
-        // easier to handle that way than to use `.updateContents`
-        // needs to be moved otherwise it will only be called once!
-        guard utilityFileSystem.moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
+        guard utilityFileSystem.copyFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChangesQuickLook = true
     }
 }

@@ -8,10 +8,11 @@ import NextcloudKit
 class NCRichWorkspaceCommon: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, session: NCSession.Session) {
+    func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
+            }
             return
         }
 
@@ -22,7 +23,7 @@ class NCRichWorkspaceCommon: NSObject {
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-        let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
+        let fileNamePath = utilityFileSystem.getRelativeFilePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
         NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: textCreators.editor, creatorId: textCreators.identifier, templateId: "", account: session.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
@@ -39,15 +40,19 @@ class NCRichWorkspaceCommon: NSObject {
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
             } else if error != .success {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
+                }
             }
         }
     }
 
-    func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, session: NCSession.Session) {
+    func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            return NCContentPresenter().showError(error: error)
+            Task {
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
+            }
+            return
         }
 
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
@@ -58,7 +63,7 @@ class NCRichWorkspaceCommon: NSObject {
             if metadata.url.isEmpty {
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+                let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                 NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
@@ -76,7 +81,9 @@ class NCRichWorkspaceCommon: NSObject {
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
                     } else if error != .success {
-                        NCContentPresenter().showError(error: error)
+                        Task {
+                            await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
+                        }
                     }
                 }
             } else {

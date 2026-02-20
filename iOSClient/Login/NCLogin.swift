@@ -43,6 +43,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var p12Data: Data?
     private var p12Password: String?
+    private var QRCodeCheck: Bool = false
 
     // MARK: - View Life Cycle
 
@@ -189,6 +190,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.customer.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
+
             NCContentPresenter().alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     self.openShareAccountsViewController(nil)
@@ -220,12 +222,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         // AppConfig
         if let url = configServerUrl {
-            if let user = self.configUsername, let password = configAppPassword {
-                return createAccount(urlBase: url, user: user, password: password)
-            } else if let user = self.configUsername, let password = configPassword {
-                return getAppPassword(urlBase: url, user: user, password: password)
-            } else {
-                urlBase = url
+            Task {
+                if let user = self.configUsername, let password = configAppPassword {
+                    await createAccount(urlBase: url, user: user, password: password)
+                    return
+                } else if let user = self.configUsername, let password = configPassword {
+                    await getAppPassword(urlBase: url, user: user, password: password)
+                    return
+                } else {
+                    urlBase = url
+                }
             }
         }
     }
@@ -374,54 +380,72 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - QRCode
 
     func dismissQRCode(_ value: String?, metadataType: String?) {
-        guard var value = value else { return }
-        let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
-        if value.hasPrefix(protocolLogin) && value.contains("user:") && value.contains("password:") && value.contains("server:") {
-            value = value.replacingOccurrences(of: protocolLogin, with: "")
-            let valueArray = value.components(separatedBy: "&")
-            if valueArray.count == 3 {
-                let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
-                let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
-                let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/remote.php/dav"
-                loginButton.isEnabled = false
-                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
-                    self.loginButton.isEnabled = true
-                    if error == .success {
-                        self.createAccount(urlBase: urlBase, user: user, password: password)
-                    } else {
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.present(alertController, animated: true)
-                    }
-                }
-            }
+        guard let value, !QRCodeCheck else {
+            return
         }
-    }
+        QRCodeCheck = true
 
-    private func getAppPassword(urlBase: String, user: String, password: String) {
-        NextcloudKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
-            if error == .success, let password = token {
-                self.createAccount(urlBase: urlBase, user: user, password: password)
+        Task { @MainActor in
+            let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
+            let protocolLoginOneTime = NCBrandOptions.shared.webLoginAutenticationProtocol + "onetime-login/"
+            var parameters: String = ""
+
+            if value.hasPrefix(protocolLoginOneTime) {
+                parameters = value.replacingOccurrences(of: protocolLoginOneTime, with: "")
+            } else if value.hasPrefix(protocolLogin) {
+                parameters = value.replacingOccurrences(of: protocolLogin, with: "")
             } else {
-                NCContentPresenter().showError(error: error)
-                self.dismiss(animated: true, completion: nil)
+                QRCodeCheck = false
+                return
+            }
+
+            guard parameters.contains("user:"),
+                  parameters.contains("password:"),
+                  parameters.contains("server:") else {
+                QRCodeCheck = false
+                return
+            }
+            let parametersArray = parameters.components(separatedBy: "&")
+            let user = parametersArray[0].replacingOccurrences(of: "user:", with: "")
+            let password = parametersArray[1].replacingOccurrences(of: "password:", with: "")
+            let server = parametersArray[2].replacingOccurrences(of: "server:", with: "")
+
+            if value.hasPrefix(protocolLoginOneTime) {
+                let results = await NextcloudKit.shared.getAppPasswordOnetimeAsync(url: server, user: user, onetimeToken: password)
+                if results.error == .success, let token = results.token {
+                    await createAccount(urlBase: server, user: user, password: token)
+                } else {
+                    await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                    dismiss(animated: true, completion: nil)
+                }
+            } else if value.hasPrefix(protocolLogin) {
+                await self.createAccount(urlBase: server, user: user, password: password)
             }
         }
     }
 
-    private func createAccount(urlBase: String, user: String, password: String) {
+    private func getAppPassword(urlBase: String, user: String, password: String) async {
+        let results = await NextcloudKit.shared.getAppPasswordAsync(url: urlBase, user: user, password: password)
+
+        if results.error == .success, let password = results.token {
+            await self.createAccount(urlBase: urlBase, user: user, password: password)
+        } else {
+            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            dismiss(animated: true, completion: nil)
+        }
+    }
+
+    @MainActor
+    private func createAccount(urlBase: String, user: String, password: String) async {
         if self.controller == nil {
-            self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         }
 
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
 
-        Task {
-            await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
-        }
+        await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
     }
 }
 

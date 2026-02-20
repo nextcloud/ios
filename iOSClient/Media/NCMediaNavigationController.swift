@@ -14,10 +14,18 @@ class NCMediaNavigationController: NCMainNavigationController {
         }
 
         if media.isEditMode {
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
+            let cancel = UIBarButtonItem(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                style: .plain
+            ) {
                 media.setEditMode(false)
             }
-            media.navigationItem.rightBarButtonItems = [select]
+
+            let group = UIBarButtonItemGroup(
+                barButtonItems: [cancel],
+                representativeItem: nil
+            )
+            media.navigationItem.trailingItemGroups = [group]
             media.tabBarSelect.show()
         } else {
             media.tabBarSelect.hide()
@@ -95,6 +103,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                 viewController.typeOfCommandView = .select
                 viewController.type = "mediaFolder"
                 viewController.session = self.session
+                viewController.controller = self.controller
                 self.present(navigationController, animated: true)
             })
         ])
@@ -116,12 +125,13 @@ class NCMediaNavigationController: NCMainNavigationController {
                 }
                 let fileName = url.lastPathComponent
                 Task {
-                    let metadata = await self.database.createMetadataAsync(fileName: fileName,
-                                                                           ocId: NSUUID().uuidString,
-                                                                           serverUrl: "",
-                                                                           url: stringUrl,
-                                                                           session: self.session,
-                                                                           sceneIdentifier: self.controller?.sceneIdentifier)
+                    let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                        fileName: fileName,
+                        ocId: NSUUID().uuidString,
+                        serverUrl: "",
+                        url: stringUrl,
+                        session: self.session,
+                        sceneIdentifier: self.controller?.sceneIdentifier)
                     await self.database.addMetadataAsync(metadata)
 
                     if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {

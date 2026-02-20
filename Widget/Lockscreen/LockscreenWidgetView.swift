@@ -1,31 +1,11 @@
-//
-//  LockscreenWidgetView.swift
-//  Widget
-//
-//  Created by Marino Faggiana on 13/10/22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2022 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import WidgetKit
 
 struct LockscreenWidgetView: View {
-
     let entry: LockscreenData
     @Environment(\.widgetFamily) private var family
 
@@ -42,7 +22,7 @@ struct LockscreenWidgetView: View {
                     }
                 )
                 .gaugeStyle(.accessoryCircularCapacity)
-                .widgetBackground(Color.clear)
+                .containerBackground(.clear, for: .widget)
             } else {
                 Gauge(
                     value: entry.quotaRelative,
@@ -56,21 +36,19 @@ struct LockscreenWidgetView: View {
                 )
                 .gaugeStyle(.accessoryCircular)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-                .widgetBackground(Color.clear)
+                .containerBackground(.clear, for: .widget)
             }
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 1) {
-                    Image("activity")
+                    Image(systemName: "bolt.fill")
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
-                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                         .frame(width: 11, height: 11)
                     Text(NSLocalizedString("_recent_activity_", comment: ""))
                         .font(.system(size: 11))
                         .fontWeight(.heavy)
-                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 if entry.error {
                     VStack(spacing: 1) {
@@ -85,7 +63,7 @@ struct LockscreenWidgetView: View {
             }
             .widgetURL(entry.link)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-            .widgetBackground(Color.clear)
+            .containerBackground(.clear, for: .widget)
         default:
             Text("Not implemented")
         }

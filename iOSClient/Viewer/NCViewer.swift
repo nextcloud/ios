@@ -91,7 +91,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
-                        NCContentPresenter().showError(error: results.error)
+                        await showErrorBanner(controller: delegate?.tabBarController as? NCMainTabBarController, text: results.error.errorDescription, errorCode: results.error.errorCode)
                         return nil
                     }
 
@@ -131,7 +131,7 @@ class NCViewer: NSObject {
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                 }
                 if metadata.url.isEmpty {
-                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+                    let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in
@@ -145,7 +145,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
-                        NCContentPresenter().showError(error: results.error)
+                        await showErrorBanner(controller: delegate?.tabBarController as? NCMainTabBarController, text: results.error.errorDescription, errorCode: results.error.errorCode)
                         return nil
                     }
 
@@ -195,7 +195,9 @@ class NCViewer: NSObject {
         } else {
             // Document Interaction Controller
             if let controller = delegate?.tabBarController as? NCMainTabBarController {
-                NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                Task {
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                }
             }
         }
     }

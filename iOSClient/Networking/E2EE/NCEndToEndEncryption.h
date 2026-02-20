@@ -20,6 +20,9 @@
 - (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
 - (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase;
 
+// Verify X.509 certificate
+- (BOOL)verifyCertificate:(NSString *)certificate PublicKey:(NSString *)publicKey;
+
 // Encrypt / Decrypt file material
 
 - (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key;

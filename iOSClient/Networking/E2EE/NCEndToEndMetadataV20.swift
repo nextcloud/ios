@@ -186,12 +186,12 @@ extension NCEndToEndMetadata {
             ciphertextMetadata = ciphertextMetadata + "|" + initializationVector
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
-            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: NCGlobal.shared.e2eeVersionV20)
+            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: "2.0")
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
-            let signature = createSignature(metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: certificate, session: session)
+            let signature = createSignature(metadata: metadataCodable, users: usersCodable, version: "2.0", certificate: certificate, session: session)
 
             return (e2eeJson, signature, counter, NKError())
 
@@ -226,7 +226,7 @@ extension NCEndToEndMetadata {
                 object.metadataKey = metadataKey
                 object.mimeType = mimetype
                 object.serverUrl = serverUrl
-                object.version = NCGlobal.shared.e2eeVersionV20
+                object.version = "2.0"
 
                 // Write file parameter for decrypted on DB
                 await self.database.addE2eEncryptionAsync(object)
@@ -250,7 +250,7 @@ extension NCEndToEndMetadata {
             let metadata = json.metadata
             let users = json.users
             let filesdrop = json.filedrop
-            let version = json.version as String? ?? NCGlobal.shared.e2eeVersionV20
+            let version = json.version as String? ?? "2.0"
 
             if isDirectoryTop {
 

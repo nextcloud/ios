@@ -22,19 +22,9 @@
 
 import UIKit
 import DropDown
+import NextcloudKit
 
 enum NCShareCommon {
-    static let shareTypeUser = 0
-    static let shareTypeGroup = 1
-    static let shareTypeLink = 3
-    static let shareTypeEmail = 4
-    static let shareTypeContact = 5
-    static let shareTypeFederated = 6
-    static let shareTypeTeam = 7
-    static let shareTypeGuest = 8
-    static let shareTypeFederatedGroup = 9
-    static let shareTypeRoom = 10
-
     static let itemTypeFile = "file"
     static let itemTypeFolder = "folder"
 
@@ -69,27 +59,20 @@ enum NCShareCommon {
     }
 
     static func getImageShareType(shareType: Int) -> UIImage? {
+        typealias type = NKShare.ShareType
 
         switch shareType {
-        case NCShareCommon.shareTypeUser:
-            return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeGroup:
+        case type.group.rawValue:
             return UIImage(named: "shareTypeGroup")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeLink:
+        case type.publicLink.rawValue:
             return UIImage(named: "shareTypeLink")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeEmail:
+        case type.email.rawValue:
             return UIImage(named: "shareTypeEmail")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeContact:
-            return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeFederated:
-            return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeTeam:
+        case type.team.rawValue:
             return UIImage(named: "shareTypeTeam")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeGuest:
-            return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeFederatedGroup:
+        case type.federatedGroup.rawValue:
             return UIImage(named: "shareTypeGroup")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
-        case NCShareCommon.shareTypeRoom:
+        case type.talkConversation.rawValue:
             return UIImage(named: "shareTypeRoom")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
         default:
             return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)

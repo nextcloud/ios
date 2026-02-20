@@ -64,7 +64,7 @@ struct MigrationMultiDomains: View {
             await performMigrationLogic(ocIds: ocIds)
 
             progressText = NSLocalizedString("_finishing_up_", comment: "")
-            try await Task.sleep(nanoseconds: 500_000_000)
+            try await Task.sleep(for: .seconds(0.5))
         } catch {
             print("Migration failed: \(error.localizedDescription)")
         }

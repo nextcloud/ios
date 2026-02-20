@@ -86,7 +86,9 @@ class NCShareDownloadLimitTableViewController: UITableViewController {
             return
         }
 
-        if let enteredValue = Int(text) {
+        let maxLimit = 1_000_000_000
+
+        if let enteredValue = Int(text), enteredValue > 0, enteredValue <= maxLimit {
             downloadLimit = .limited(limit: enteredValue, count: 0)
         } else {
             downloadLimit = .limited(limit: defaultLimit, count: 0)

@@ -92,7 +92,7 @@ struct NCSettingsAdvancedView: View {
                     Text(NSLocalizedString("_privacy_footer_", comment: ""))
                 })
             }
-            // Section: Diagnostic LOG
+            // Section: Diagnostic
             if !NCBrandOptions.shared.disable_log {
                 Section(content: {
                     /// View Log File
@@ -118,6 +118,20 @@ struct NCSettingsAdvancedView: View {
                     .onChange(of: model.selectedLogLevel) {
                         model.updateSelectedLogLevel()
                     }
+                    // Clear Log File
+                    Button(action: {
+                        model.clearLogFile()
+                    }, label: {
+                        HStack {
+                            Image(systemName: "xmark")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 15)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_clear_log_", comment: ""))
+                        }
+                    })
+                    .tint(Color(UIColor.label))
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
                 }, footer: {
@@ -178,7 +192,7 @@ struct NCSettingsAdvancedView: View {
             }, header: {
                 Text(NSLocalizedString("_delete_files_desc_", comment: ""))
             }, footer: {
-                Text(model.footerTitle)
+                Text("_clear_cache_footer_")
                     .multilineTextAlignment(.leading)
             })
             // Reset Application

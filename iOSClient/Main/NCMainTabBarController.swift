@@ -31,14 +31,19 @@ class NCMainTabBarController: UITabBarController {
         return SceneManager.shared.getWindow(controller: self)
     }
 
+    var barHeightBottom: CGFloat {
+        return tabBar.frame.height - tabBar.safeAreaInsets.bottom
+    }
+
+    var barHeightTop: CGFloat {
+        return tabBar.frame.height - tabBar.safeAreaInsets.top
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
 
-        NCNetworking.shared.controller = self
-        NCImageCache.shared.controller = self
-
-        NCDownloadAction.shared.setup(sceneIdentifier: sceneIdentifier)
+        NCNetworking.shared.setupScene(sceneIdentifier: sceneIdentifier, controller: self)
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
@@ -61,7 +66,7 @@ class NCMainTabBarController: UITabBarController {
         // Media
         if let item = tabBar.items?[2] {
             item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(systemName: "photo")
+            item.image = UIImage(systemName: "photo.fill")
             item.selectedImage = item.image
             item.tag = 102
         }
@@ -69,7 +74,7 @@ class NCMainTabBarController: UITabBarController {
         // Activity
         if let item = tabBar.items?[3] {
             item.title = NSLocalizedString("_activity_", comment: "")
-            item.image = UIImage(systemName: "bolt")
+            item.image = UIImage(systemName: "bolt.fill")
             item.selectedImage = item.image
             item.tag = 103
         }
@@ -77,7 +82,7 @@ class NCMainTabBarController: UITabBarController {
         // More
         if let item = tabBar.items?[4] {
             item.title = NSLocalizedString("_more_", comment: "")
-            item.image = UIImage(systemName: "ellipsis")
+            item.image = UIImage(systemName: "ellipsis.circle.fill")
             item.selectedImage = item.image
             item.tag = 104
         }
@@ -127,10 +132,8 @@ class NCMainTabBarController: UITabBarController {
 
     @MainActor
     private func timerCheck() async {
-        var nanoseconds: UInt64 = 3_000_000_000
-
         while !Task.isCancelled {
-            try? await Task.sleep(nanoseconds: nanoseconds)
+            try? await Task.sleep(for: .seconds(3))
 
             guard isViewLoaded, view.window != nil else {
                 continue
@@ -143,8 +146,7 @@ class NCMainTabBarController: UITabBarController {
 
             // Update right bar button item
             if let navigationController = self.selectedViewController as? NCMainNavigationController {
-                let transferCount = await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
-                nanoseconds = transferCount == 0 ? 3_000_000_000 : 1_500_000_000
+                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
             }
             // Update Activity tab bar
             if let item = self.tabBar.items?[3] {
@@ -155,6 +157,10 @@ class NCMainTabBarController: UITabBarController {
 
     func currentViewController() -> UIViewController? {
         return (selectedViewController as? UINavigationController)?.topViewController
+    }
+
+    func currentNavigationController() -> UINavigationController? {
+        return selectedViewController as? UINavigationController
     }
 
     func currentServerUrl() -> String {

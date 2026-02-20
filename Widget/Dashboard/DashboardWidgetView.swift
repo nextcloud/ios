@@ -1,25 +1,6 @@
-//
-//  DashboardWidgetView.swift
-//  Widget
-//
-//  Created by Marino Faggiana on 20/08/22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2022 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import WidgetKit
@@ -61,21 +42,13 @@ struct DashboardWidgetView: View {
                 }
                 .frame(width: geo.size.width - 20)
                 .padding([.top, .leading, .trailing], 10)
-
                 if !entry.isEmpty {
-
                     VStack(alignment: .leading) {
-
                         VStack(spacing: 0) {
-
                             ForEach(entry.datas, id: \.id) { element in
-
                                 Link(destination: element.link) {
-
                                     HStack {
-
                                         let subTitleColor = Color(white: 0.5)
-
                                         if entry.isPlaceholder {
                                             Circle()
                                                 .fill(Color(.systemGray4))
@@ -84,30 +57,17 @@ struct DashboardWidgetView: View {
                                             Image(uiImage: element.icon)
                                                 .renderingMode(.template)
                                                 .resizable()
-                                                .frame(width: 20, height: 20)
+                                                .frame(width: 35, height: 35)
                                                 .foregroundColor(Color(color))
-                                        } else if element.template {
-                                            if entry.dashboard?.itemIconsRound ?? false {
-                                                Image(uiImage: element.icon)
-                                                    .renderingMode(.template)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 20, height: 20)
-                                                    .foregroundColor(.white)
-                                                    .padding(8)
-                                                    .background(Color(.systemGray4))
-                                                    .clipShape(Circle())
-                                            } else {
-                                                Image(uiImage: element.icon)
-                                                    .renderingMode(.template)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 25, height: 25)
-                                                    .clipped()
-                                                    .cornerRadius(5)
-                                            }
+                                                .scaleEffect(0.8)
+                                        } else if element.imageSystem {
+                                            Image(uiImage: element.icon)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 35, height: 35)
+                                                .scaleEffect(0.8)
                                         } else {
-                                            if entry.dashboard?.itemIconsRound ?? false || element.avatar {
+                                            if entry.dashboard?.itemIconsRound ?? false || element.circle {
                                                 Image(uiImage: element.icon)
                                                     .resizable()
                                                     .scaledToFill()
@@ -150,7 +110,6 @@ struct DashboardWidgetView: View {
                 }
 
                 if let buttons = entry.buttons, !buttons.isEmpty, !entry.isPlaceholder {
-
                     HStack(spacing: 10) {
                         let brandColor = Color(NCBrandColor.shared.getElement(account: entry.account))
                         let brandTextColor = Color(NCBrandColor.shared.getText(account: entry.account))
@@ -172,7 +131,6 @@ struct DashboardWidgetView: View {
                 }
 
                 HStack {
-
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
@@ -186,10 +144,10 @@ struct DashboardWidgetView: View {
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                 }
                 .padding(.horizontal, 15.0)
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
-        .widgetBackground(Color(UIColor.systemBackground))
+        .containerBackground(.background, for: .widget)
     }
 }
 
@@ -197,8 +155,8 @@ struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
-        let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget", account: "")
+        let titleImage = UIImage(systemName: "circle.fill")!
+        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget", account: "")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

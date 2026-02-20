@@ -37,11 +37,11 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         file.e2eEncrypted = true
 
-        let metadata = await self.database.convertFileToMetadataAsync(file)
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
         await self.database.createDirectory(metadata: metadata)
 
         await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
-        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
             await self.database.updateCounterE2eMetadataAsync(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
 
@@ -53,7 +53,12 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
-                                    metadata: metadata.detachedCopy(),
+                                    account: metadata.account,
+                                    fileName: metadata.fileName,
+                                    serverUrl: metadata.serverUrl,
+                                    selector: metadata.sessionSelector,
+                                    ocId: metadata.ocId,
+                                    destination: nil,
                                     error: .success)
         }
 

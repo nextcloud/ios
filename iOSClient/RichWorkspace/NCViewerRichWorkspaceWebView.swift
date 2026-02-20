@@ -69,10 +69,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
                 }
             }
 
-            if message.body as? String == "share" {
-                if metadata != nil {
-                    NCDownloadAction.shared.openShare(viewController: self, metadata: metadata!, page: .sharing)
-                }
+            if message.body as? String == "share", metadata != nil {
+                NCCreate().createShare(viewController: self, metadata: metadata!, page: .sharing)
             }
 
             if message.body as? String == "loading" {

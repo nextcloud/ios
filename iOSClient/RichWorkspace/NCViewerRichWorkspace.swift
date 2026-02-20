@@ -47,7 +47,7 @@ import MarkdownKit
         super.viewDidAppear(animated)
 
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            try? await Task.sleep(for: .seconds(1.5))
 
             let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: self.serverUrl, account: session.account)
             guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
@@ -73,6 +73,9 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self, session: session)
+        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl,
+                                                    viewController: self,
+                                                    controller: delegate?.tabBarController as? NCMainTabBarController,
+                                                    session: session)
     }
 }

@@ -6,15 +6,10 @@ import UIKit
 import MarkdownKit
 import RealmSwift
 
-protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
-}
-
 class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
     @IBOutlet weak var emptyImage: UIImageView!
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
-
-    weak var delegate: NCSectionFirstHeaderEmptyDataDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -36,9 +31,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     func setContent(emptyImage: UIImage?,
                     emptyTitle: String?,
-                    emptyDescription: String?,
-                    delegate: NCSectionFirstHeaderEmptyDataDelegate?) {
-        self.delegate = delegate
+                    emptyDescription: String?) {
         self.emptyImage.image = emptyImage
         self.emptyTitle.text = emptyTitle
         self.emptyDescription.text = emptyDescription

@@ -32,7 +32,6 @@ extension UIColor {
     }
 
     var hexString: String {
-
         let cgColorInRGB = cgColor.converted(to: CGColorSpace(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil)!
         let colorRef = cgColorInRGB.components
         let r = colorRef?[0] ?? 0
@@ -54,8 +53,7 @@ extension UIColor {
         return color
     }
 
-    @objc convenience init?(hex: String) {
-
+    convenience init?(hex: String) {
         let r, g, b, a: CGFloat
 
         if hex.hasPrefix("#") {
@@ -89,11 +87,11 @@ extension UIColor {
         return nil
     }
 
-    @objc func lighter(by percentage: CGFloat = 30.0) -> UIColor? {
+    func lighter(by percentage: CGFloat = 30.0) -> UIColor? {
         return self.adjust(by: abs(percentage) )
     }
 
-    @objc func darker(by percentage: CGFloat = 30.0) -> UIColor? {
+    func darker(by percentage: CGFloat = 30.0) -> UIColor? {
         return self.adjust(by: -1 * abs(percentage) )
     }
 
@@ -109,8 +107,7 @@ extension UIColor {
         }
     }
 
-    @objc func isTooLight() -> Bool {
-
+    func isTooLight() -> Bool {
         var white: CGFloat = 0.0
         self.getWhite(&white, alpha: nil)
         if white == 1 { return true }
@@ -120,8 +117,7 @@ extension UIColor {
         return (brightness > 0.90)
     }
 
-    @objc func isTooDark() -> Bool {
-
+    func isTooDark() -> Bool {
         var white: CGFloat = 0.0
         self.getWhite(&white, alpha: nil)
         if white == 0 { return true }
@@ -148,6 +144,21 @@ extension UIColor {
         return UIGraphicsImageRenderer(size: size).image { rendererContext in
             self.setFill()
             rendererContext.fill(CGRect(origin: .zero, size: size))
+        }
+    }
+
+    func toCSSColor() -> String {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+
+        if a < 1 {
+            return "rgba(\(Int(r * 255)),\(Int(g * 255)),\(Int(b * 255)),\(a))"
+        } else {
+            return "rgb(\(Int(r * 255)),\(Int(g * 255)),\(Int(b * 255)))"
         }
     }
 }

@@ -33,7 +33,7 @@ extension NCManageDatabase {
     // MARK: - Realm Write
 
     func addDashboardWidgetAsync(account: String, dashboardWidgets: [NCCDashboardWidget]) async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             // Remove existing widgets for the account
             realm.delete(realm.objects(tableDashboardWidget.self).filter("account == %@", account))
             realm.delete(realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account))
@@ -75,7 +75,7 @@ extension NCManageDatabase {
         var widget: tableDashboardWidget?
         var buttons: [tableDashboardWidgetButton]?
 
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             if let result = realm.objects(tableDashboardWidget.self)
                 .filter("account == %@ AND id == %@", account, id)
                 .first {
@@ -95,7 +95,7 @@ extension NCManageDatabase {
     }
 
     func getDashboardWidgetApplications(account: String) -> [tableDashboardWidget] {
-        performRealmRead { realm in
+        core.performRealmRead { realm in
             realm.objects(tableDashboardWidget.self)
                 .filter("account == %@", account)
                 .sorted(by: [
@@ -107,7 +107,7 @@ extension NCManageDatabase {
     }
 
     func getDashboardWidgetApplicationsAsync(account: String) async -> [tableDashboardWidget] {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             realm.objects(tableDashboardWidget.self)
                 .filter("account == %@", account)
                 .sorted(by: [

@@ -31,7 +31,7 @@ extension NCManageDatabase {
         let indexKey = account + " " + keyStore
         var finalObject = NCDBLayoutForView()
 
-        performRealmWrite { realm in
+        core.performRealmWrite { realm in
             if let existing = realm.objects(NCDBLayoutForView.self).filter("index == %@", indexKey).first {
                 finalObject = existing
             } else {
@@ -53,7 +53,7 @@ extension NCManageDatabase {
 
         if subFolders {
             let keyStore = layoutForView.keyStore
-            if let layouts = performRealmRead({
+            if let layouts = core.performRealmRead({
                 $0.objects(NCDBLayoutForView.self)
                     .filter("keyStore BEGINSWITH %@", keyStore)
                     .map { NCDBLayoutForView(value: $0) }
@@ -66,13 +66,13 @@ extension NCManageDatabase {
                     layout.columnGrid = layoutForView.columnGrid
                     layout.columnPhoto = layoutForView.columnPhoto
 
-                    performRealmWrite { realm in
+                    core.performRealmWrite { realm in
                         realm.add(layout, update: .all)
                     }
                 }
             }
         } else {
-            performRealmWrite { realm in
+            core.performRealmWrite { realm in
                 realm.add(object, update: .all)
             }
         }
@@ -83,7 +83,7 @@ extension NCManageDatabase {
     // MARK: - Realm read
 
     func getLayoutsForView(keyStore: String) -> Results<NCDBLayoutForView>? {
-        return performRealmRead({
+        return core.performRealmRead({
             $0.objects(NCDBLayoutForView.self)
                 .filter("keyStore BEGINSWITH %@", keyStore)
         })
@@ -93,7 +93,7 @@ extension NCManageDatabase {
         let keyStore = serverUrl.isEmpty ? key : serverUrl
         let index = account + " " + keyStore
 
-        if let layout = performRealmRead({
+        if let layout = core.performRealmRead({
             $0.objects(NCDBLayoutForView.self)
                 .filter("index == %@", index)
                 .first
@@ -102,7 +102,7 @@ extension NCManageDatabase {
             return layout
         }
 
-        let tblAccount = performRealmRead { realm in
+        let tblAccount = core.performRealmRead { realm in
             realm.objects(tableAccount.self)
                 .filter("account == %@", account)
                 .first
@@ -141,7 +141,7 @@ extension NCManageDatabase {
 
                 // Get previus serverUrl
                 let index = account + " " + serverDirectoryUp
-                if let previusLayoutForView = performRealmRead({
+                if let previusLayoutForView = core.performRealmRead({
                     $0.objects(NCDBLayoutForView.self)
                         .filter("index == %@", index)
                         .first
@@ -184,7 +184,7 @@ extension NCManageDatabase {
 
             var layout: NCDBLayoutForView
 
-            if let existing = self.performRealmRead({
+            if let existing = self.core.performRealmRead({
                 $0.objects(NCDBLayoutForView.self)
                     .filter("index == %@", index)
                     .first
@@ -197,7 +197,7 @@ extension NCManageDatabase {
                 layout.keyStore = keyStore
             }
 
-            self.performRealmWrite { realm in
+            self.core.performRealmWrite { realm in
                 updateBlock(&layout)
                 realm.add(layout, update: .all)
             }

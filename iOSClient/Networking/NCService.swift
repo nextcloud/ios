@@ -1,30 +1,10 @@
-//
-//  NCService.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 14/03/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 @preconcurrency import NextcloudKit
 import RealmSwift
-import SVGKit
 
 class NCService: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -83,12 +63,14 @@ class NCService: NSObject {
             if serverInfo.maintenance {
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-                NCContentPresenter().showWarning(error: error, priority: .max)
+                await showInfoBanner(controller: controller,
+                                     title: "_warning_",
+                                     text: "_warning_owncloud_")
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-                NCContentPresenter().showWarning(error: error, priority: .max)
+                await showInfoBanner(controller: controller,
+                                     title: "_warning_",
+                                     text: "_warning_unsupported_")
             }
         case .failure:
             return false
@@ -137,6 +119,40 @@ class NCService: NSObject {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": resultsDownload.error])
         } else {
             await self.database.setAvatarLoadedAsync(fileName: fileName)
+        }
+    }
+
+    private func requestDashboardWidget(account: String) async {
+        let resultsDashboardWidget = await NextcloudKit.shared.getDashboardWidgetAsync(account: account)
+        if resultsDashboardWidget.error == .success,
+           let dashboardWidgets = resultsDashboardWidget.dashboardWidgets {
+            await NCManageDatabase.shared.addDashboardWidgetAsync(account: account, dashboardWidgets: dashboardWidgets)
+            for widget in dashboardWidgets {
+                if let url = URL(string: widget.iconUrl),
+                   let fileName = widget.iconClass {
+                    let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account)
+                    if resultsDownloadPreview.error == .success,
+                       let data = resultsDownloadPreview.responseData?.data {
+                        var image: UIImage?
+                        let size = CGSize(width: 256, height: 256)
+
+                        if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
+                            image = uiImage
+                        } else if let svgImage = try? await NCSVGRenderer().renderSVGToUIImage(svgData: data, size: size) {
+                            image = svgImage
+                        }
+
+                        if let image {
+                            let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
+                            do {
+                                try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+                            } catch {
+                                print("Failed to write image to disk: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -235,8 +251,6 @@ class NCService: NSObject {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
-        await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
-
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
@@ -245,7 +259,7 @@ class NCService: NSObject {
             }
         }
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
+            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
             await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: metadatas)
         }
 
@@ -257,11 +271,11 @@ class NCService: NSObject {
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
         for directory in directories {
-            await NCNetworking.shared.synchronization(account: account,
-                                                      serverUrl: directory.serverUrl,
-                                                      userId: tblAccount.userId,
-                                                      urlBase: tblAccount.urlBase,
-                                                      metadatasInDownload: metadatasInDownload)
+            await NCNetworking.shared.synchronizationDownload(account: account,
+                                                              serverUrl: directory.serverUrl,
+                                                              userId: tblAccount.userId,
+                                                              urlBase: tblAccount.urlBase,
+                                                              metadatasInDownload: metadatasInDownload)
         }
 
         // Synchronize Files
@@ -278,59 +292,6 @@ class NCService: NSObject {
                 await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
-            }
-        }
-    }
-
-    // MARK: -
-
-    private func requestDashboardWidget(account: String) async {
-        let results = await NextcloudKit.shared.getDashboardWidgetAsync(account: account, taskHandler: { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "getDashboardWidget")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        })
-        if results.error == .success,
-           let dashboardWidgets = results.dashboardWidgets {
-            await NCManageDatabase.shared.addDashboardWidgetAsync(account: account, dashboardWidgets: dashboardWidgets)
-            for widget in dashboardWidgets {
-                if let url = URL(string: widget.iconUrl),
-                   let fileName = widget.iconClass {
-                    let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                        path: url.absoluteString,
-                                                                                                        name: "DownloadPreview")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    if results.error == .success,
-                       let data = results.responseData?.data {
-                        await MainActor.run {
-                            let size = CGSize(width: 256, height: 256)
-                            let finalImage: UIImage?
-                            if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
-                                finalImage = uiImage
-                            } else if let svgImage = SVGKImage(data: data) {
-                                svgImage.size = size
-                                finalImage = svgImage.uiImage
-                            } else {
-                                print("Unsupported image format")
-                                finalImage = nil
-                            }
-                            if let image = finalImage {
-                                let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
-                                do {
-                                    try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
-                                } catch {
-                                    print("Failed to write image to disk: \(error.localizedDescription)")
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }

@@ -12,9 +12,10 @@ extension FileProviderExtension {
 
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
+        let fileProviderUtility = fileProviderUtility()
 
         for itemIdentifier in itemIdentifiers {
-            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
+            guard let metadata = fileProviderUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
                   metadata.hasPreview
             else {
                 counterProgress += 1

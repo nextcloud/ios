@@ -315,6 +315,59 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
 }
 
 #
+#pragma mark - Verify X.509 certificate
+#
+
+//  This method verifies that the provided X.509 certificate (issued by the server)
+//  was actually signed using the server's own public key.
+- (BOOL)verifyCertificate:(NSString *)certificate PublicKey:(NSString *)publicKey
+{
+    BOOL success = NO;
+    BIO *certBio = NULL;
+    BIO *pubBio = NULL;
+    X509 *cert = NULL;
+    EVP_PKEY *serverPubKey = NULL;
+
+    // Convert NSStrings to UTF-8 data buffers
+    NSData *certData = [certificate dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *pubData  = [publicKey dataUsingEncoding:NSUTF8StringEncoding];
+    if (certData.length == 0 || pubData.length == 0) {
+        return NO;
+    }
+
+    // Create BIOs from memory buffers
+    certBio = BIO_new_mem_buf((void *)certData.bytes, (int)certData.length);
+    pubBio  = BIO_new_mem_buf((void *)pubData.bytes, (int)pubData.length);
+    if (!certBio || !pubBio) {
+        goto cleanup;
+    }
+
+    // Read X.509 certificate from PEM text
+    cert = PEM_read_bio_X509(certBio, NULL, NULL, NULL);
+    if (!cert) {
+        goto cleanup;
+    }
+
+    // Read public key from PEM text
+    serverPubKey = PEM_read_bio_PUBKEY(pubBio, NULL, NULL, NULL);
+    if (!serverPubKey) {
+        goto cleanup;
+    }
+
+    // Verify that the certificate was signed using this public key
+    int verifyResult = X509_verify(cert, serverPubKey);
+    success = (verifyResult == 1);
+
+cleanup:
+    if (serverPubKey) EVP_PKEY_free(serverPubKey);
+    if (cert) X509_free(cert);
+    if (certBio) BIO_free(certBio);
+    if (pubBio) BIO_free(pubBio);
+
+    return success;
+}
+
+#
 #pragma mark - Create CSR & Encrypt/Decrypt Private Key
 #
 

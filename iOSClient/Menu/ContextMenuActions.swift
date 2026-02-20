@@ -56,12 +56,14 @@ enum ContextMenuActions {
              title: NSLocalizedString("_share_", comment: ""),
              image: UIImage(systemName: "square.and.arrow.up")
          ) { _ in
-             NCDownloadAction.shared.openActivityViewController(
-                 selectedMetadata: selectedMetadatas,
-                 controller: controller,
-                 sender: sender
-             )
-             completion?()
+             Task {
+                 await NCCreate().createActivityViewController(
+                    selectedMetadata: selectedMetadatas,
+                    controller: controller,
+                    sender: sender
+                 )
+                 completion?()
+             }
          }
      }
 
@@ -84,7 +86,7 @@ enum ContextMenuActions {
                  alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default) { _ in
                      Task {
                          for metadata in selectedMetadatas {
-                             await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                             await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                          }
                          completion?()
                      }
@@ -94,7 +96,7 @@ enum ContextMenuActions {
              } else {
                  Task {
                      for metadata in selectedMetadatas {
-                         await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                         await NCNetworking.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
                      }
                      completion?()
                  }
@@ -130,31 +132,36 @@ enum ContextMenuActions {
                      await UIAlertController.warningAsync(message: message, presenter: viewController)
                  } else {
                      let controller = viewController.tabBarController as? NCMainTabBarController
-                     NCDownloadAction.shared.openSelectView(items: selectedMetadatas, controller: controller)
+                     NCSelectOpen.shared.openView(items: selectedMetadatas, controller: controller)
                  }
                  completion?()
              }
          }
      }
 
-     static func lockUnlock(shouldLock: Bool,
-                            metadatas: [tableMetadata],
-                            completion: (() -> Void)? = nil) -> UIAction {
-         let titleKey: String
-         if metadatas.count == 1 {
-             titleKey = shouldLock ? "_lock_file_" : "_unlock_file_"
-         } else {
-             titleKey = shouldLock ? "_lock_selected_files_" : "_unlock_selected_files_"
-         }
+    static func lockUnlock(isLocked: Bool,
+                           metadata: tableMetadata,
+                           completion: (() -> Void)? = nil) -> UIAction {
+        let titleKey: String
+        var subtitleKey: String = ""
+        let image: UIImage?
+        if !metadata.canUnlock(as: metadata.userId), isLocked {
+            titleKey = String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName)
+            image = UIImage(systemName: "lock")
+        } else {
+            titleKey = isLocked ? "_unlock_file_" : "_lock_file_"
+            image = UIImage(systemName: isLocked ? "lock.open" : "lock")
+            subtitleKey = !metadata.lockOwnerDisplayName.isEmpty ? String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName) : ""
+        }
 
-         return UIAction(
-             title: NSLocalizedString(titleKey, comment: ""),
-             image: UIImage(systemName: shouldLock ? "lock" : "lock.open")
-         ) { _ in
-             for metadata in metadatas where metadata.lock != shouldLock {
-                 NCNetworking.shared.lockUnlockFile(metadata, shoulLock: shouldLock)
-             }
-             completion?()
-         }
-     }
+        return UIAction(
+            title: NSLocalizedString(titleKey, comment: ""),
+            subtitle: subtitleKey,
+            image: image,
+            attributes: metadata.canUnlock(as: metadata.userId) ? [] : [.disabled]
+        ) { _ in
+            NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)
+            completion?()
+        }
+    }
 }

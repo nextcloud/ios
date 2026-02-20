@@ -52,10 +52,14 @@ final class NCGlobal: Sendable {
     let nextcloudVersion28: Int                     = 28
     let nextcloudVersion30: Int                     = 30
     let nextcloudVersion31: Int                     = 31
+    let nextcloudVersion32: Int                     = 32
+    let nextcloudVersion33: Int                     = 33
+    let nextcloudVersionFuture: Int                 = 99999
+
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int = 17
+    let nextcloud_unsupported_version: Int          = 20
 
     // Intro selector
     //
@@ -94,10 +98,14 @@ final class NCGlobal: Sendable {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    let e2eeVersions                                = ["1.1", "1.2", "2.0"]
-    let e2eeVersionV11                              = "1.1"
-    let e2eeVersionV12                              = "1.2"
-    let e2eeVersionV20                              = "2.0"
+    let e2eeCompatibleVersions                      = ["1.1", "1.2", "2.0", "2.1"]
+
+    func isE2eeVersion2(_ version: String) -> Bool {
+        if version == "2.0" || version == "2.1" {
+            return true
+        }
+        return false
+    }
 
     // CHUNK
     let chunkSizeMBCellular                         = 10000000
@@ -124,7 +132,6 @@ final class NCGlobal: Sendable {
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
@@ -142,8 +149,8 @@ final class NCGlobal: Sendable {
 
     // ContentPresenter
     //
-    let dismissAfterSecond: TimeInterval        = 4
-    let dismissAfterSecondLong: TimeInterval    = 7
+    let dismissAfterSecond: TimeInterval        = 5
+    let dismissAfterSecondLong: TimeInterval    = 8
 
     // Error
     //
@@ -201,16 +208,19 @@ final class NCGlobal: Sendable {
 
     // Selector
     //
-    let selectorDownloadFile                    = "downloadFile"
     let selectorReadFile                        = "readFile"
     let selectorListingFavorite                 = "listingFavorite"
     let selectorLoadFileView                    = "loadFileView"
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
+
+    let selectorDownloadFile                    = "downloadFile"
+
     let selectorUploadAutoUpload                = "uploadAutoUpload"
     let selectorUploadFile                      = "uploadFile"
     let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"
+
     let selectorSaveAlbum                       = "saveAlbum"
     let selectorSaveAsScan                      = "saveAsScan"
     let selectorOpenDetail                      = "openDetail"
@@ -245,6 +255,10 @@ final class NCGlobal: Sendable {
     let metadataStatusForScreenAwake            = [-1, -2, 1, 2]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
+    let metadataStatusTransfers                 = [-2, -3, 2, 3, 10, 11, 12, 13, 14, 15]
+
+    let metadatasStatusInWaiting                = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadatasStatusInProgress               = [-2, 2]
 
     // Auto upload subfolder granularity
     //
@@ -263,6 +277,7 @@ final class NCGlobal: Sendable {
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
     let notificationCenterServerDidUpdate                       = "serverDidUpdate"                 // userInfo: account
+    let notificationCenterNetworkReachability                   = "networkReachability"
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
@@ -270,7 +285,6 @@ final class NCGlobal: Sendable {
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
 
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
-    let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
     let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
     let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
@@ -278,10 +292,13 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
+    let notificationCenterUserInteractionMonitor                = "serInteractionMonitor"
+
     // Networking Status
     let networkingStatusCreateFolder                            = "statusCreateFolder"
     let networkingStatusDelete                                  = "statusDelete"
     let networkingStatusRename                                  = "statusRename"
+    let networkingStatusCopyMove                                = "statusCopyMove"
     let networkingStatusFavorite                                = "statusFavorite"
 
     let networkingStatusDownloading                             = "statusDownloading"
@@ -290,9 +307,6 @@ final class NCGlobal: Sendable {
 
     let networkingStatusUploading                               = "statusUploading"
     let networkingStatusUploaded                                = "statusUploaded"
-    let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
-    let networkingStatusUploadCancel                            = "statusUploadCancel"
-
 
     let networkingStatusReloadAvatar                            = "statusReloadAvatar"
 
@@ -389,11 +403,19 @@ final class NCGlobal: Sendable {
     let logTagSync                          = "SYNC"
     let logTagServiceProficer               = "SERVICE PROVIDER"
     let logTagDatabase                      = "DB"
-    let logSpeedUpSyncMetadata              = "SYNC METADATA"
-    let logNetworkingTasks                  = "NETWORKING TASKS"
+    let logTagSpeedUpSyncMetadata           = "SYNC METADATA"
+    let logTagNetworkingTasks               = "NETWORKING TASKS"
+    let logTagMetadataTransfers             = "METADATA TRANSFERS"
 
     // USER DEFAULTS
     //
     let udMigrationMultiDomains             = "migrationMultiDomains"
     let udLastVersion                       = "lastVersion"
+}
+
+/**
+ Indicates whether Xcode is running SwiftUI previews.
+ */
+var isXcodeRunningForPreviews: Bool {
+    return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
 }
