@@ -47,7 +47,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
 
     ///
     /// Start the authentication flow using ASWebAuthenticationSession.
-    /// Falls back to WKWebView if authentication fails (e.g., certificate issues).
+    /// Falls back to WKWebView if authentication fails (e.g., asked for mTLS cert etc).
     ///
     func startAuthentication() {
         guard let url = URL(string: initialURLString) else {
@@ -227,7 +227,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
     }
 
     ///
-    /// Handle the values acquired by polling successfully.
+    /// Handle login when polling is successful and access is granted.
     ///
     func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         nkLog(debug: "Handling login grant values for \(loginName) on \(urlBase)")
