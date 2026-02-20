@@ -44,6 +44,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var p12Data: Data?
     private var p12Password: String?
     private var QRCodeCheck: Bool = false
+    private var activeLoginProvider: NCLoginProvider?
 
     // MARK: - View Life Cycle
 
@@ -338,13 +339,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
                         nkLog(debug: "Successfully received login flow information.")
-                        let loginProviderVC = NCLoginProvider()
-                        loginProviderVC.initialURLString = login
-                        loginProviderVC.uiColor = textColor
-                        loginProviderVC.delegate = self
-                        loginProviderVC.controller = self.controller
-                        loginProviderVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
-                        navigationController?.pushViewController(loginProviderVC, animated: true)
+                        let loginProvider = NCLoginProvider()
+                        loginProvider.initialURLString = login
+                        loginProvider.delegate = self
+                        loginProvider.controller = self.controller
+                        loginProvider.presentingViewController = self
+                        loginProvider.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+                        loginProvider.startAuthentication()
+                        self.activeLoginProvider = loginProvider
                     }
                 }
             case .failure(let error):
@@ -507,5 +509,7 @@ extension NCLogin: NCLoginProviderDelegate {
     func onBack() {
         loginButton.isEnabled = true
         loginButton.hideSpinnerAndShowButton()
+        activeLoginProvider?.cancel()
+        activeLoginProvider = nil
     }
 }

@@ -10,53 +10,46 @@ import NextcloudKit
 
 protocol NCLoginProviderDelegate: AnyObject {
     ///
-    /// Called when the back button is tapped in the login provider view.
+    /// Called when the authentication is cancelled or fails.
     ///
     func onBack()
 }
 
 ///
-/// Handles login authentication.
-/// Uses ASWebAuthenticationSession for passkey support, with WKWebView fallback for certificate handling.
+/// Handles login authentication using ASWebAuthenticationSession with WKWebView fallback for mTLS.
 ///
-class NCLoginProvider: UIViewController, ASWebAuthenticationPresentationContextProviding {
-    var titleView: String = ""
+class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
     var initialURLString = ""
-    var uiColor: UIColor = .white
     weak var delegate: NCLoginProviderDelegate?
     var controller: NCMainTabBarController?
+
+    /// The presenting view controller for the authentication session.
+    weak var presentingViewController: UIViewController?
 
     /// The active authentication session.
     private var authSession: ASWebAuthenticationSession?
 
-    /// Fallback web view for certificate handling.
-    private var webView: WKWebView?
-
-    /// Whether we're using the WKWebView fallback.
-    private var isUsingWebViewFallback = false
+    /// Fallback web view controller for mTLS/certificate handling.
+    private var webViewFallbackVC: NCLoginProviderWebViewFallback?
 
     ///
     /// A polling loop active in the background to check for the current status of the login flow.
     ///
     var pollingTask: Task<Void, any Error>?
 
-    // MARK: - View Life Cycle
+    // MARK: - ASWebAuthenticationPresentationContextProviding
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        nkLog(debug: "Login provider view did load.")
-
-        view.backgroundColor = NCBrandColor.shared.customer
-
-        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .plain, target: self, action: #selector(goBack(_:)))
-        navigationItemBack.tintColor = uiColor
-        navigationItem.leftBarButtonItem = navigationItemBack
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        return presentingViewController?.view.window ?? UIApplication.shared.mainAppWindow ?? ASPresentationAnchor()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        nkLog(debug: "Login provider appeared.")
+    // MARK: - Authentication
 
+    ///
+    /// Start the authentication flow using ASWebAuthenticationSession.
+    /// Falls back to WKWebView if authentication fails (e.g., certificate issues).
+    ///
+    func startAuthentication() {
         guard let url = URL(string: initialURLString) else {
             Task {
                 await showErrorBanner(controller: self.controller, text: "_login_url_error_", errorCode: 0)
@@ -64,83 +57,22 @@ class NCLoginProvider: UIViewController, ASWebAuthenticationPresentationContextP
             return
         }
 
-        if let host = url.host {
-            titleView = host
-
-            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(), NCPreferences().getPassword(account: activeTableAccount.account).isEmpty {
-                titleView = NSLocalizedString("_user_", comment: "") + " " + activeTableAccount.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
-            }
-        }
-
-        self.title = titleView
-        startAuthentication(url: url)
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        nkLog(debug: "Login provider view did disappear.")
-
-        authSession?.cancel()
-        authSession = nil
-
-        NCActivityIndicator.shared.stop()
-
-        guard pollingTask != nil else {
-            return
-        }
-
-        nkLog(debug: "Cancelling existing polling task because view did disappear...")
-        pollingTask?.cancel()
-        pollingTask = nil
-    }
-
-    // MARK: - ASWebAuthenticationPresentationContextProviding
-
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return view.window ?? ASPresentationAnchor()
-    }
-
-    // MARK: - Navigation
-
-    ///
-    /// Dismiss the login view from the hierarchy.
-    ///
-    @objc func goBack(_ sender: Any?) {
-        delegate?.onBack()
-
-        if isModal {
-            dismiss(animated: true)
-        } else {
-            navigationController?.popViewController(animated: true)
-        }
-    }
-
-    // MARK: - Authentication
-
-    ///
-    /// Start the authentication flow using ASWebAuthenticationSession.
-    /// Falls back to WKWebView if authentication fails (e.g., for importing mTLS cert).
-    ///
-    private func startAuthentication(url: URL) {
-        // Use custom URL scheme to handle login callbacks (e.g., nc://login/...)
+        // Use the app's custom URL scheme to handle login callbacks (e.g., nc://login/...)
         let callbackScheme = NCBrandOptions.shared.webLoginAutenticationProtocol.replacingOccurrences(of: "://", with: "")
 
         authSession = ASWebAuthenticationSession(url: url, callbackURLScheme: callbackScheme) { [weak self] callbackURL, error in
             guard let self else { return }
 
             if let error = error {
-                let nsError = error as NSError
-
                 if let asError = error as? ASWebAuthenticationSessionError, asError.code == .canceledLogin {
                     // Only treat as user cancellation if polling hasn't succeeded yet
                     if self.pollingTask != nil {
                         Task { @MainActor in
-                            self.goBack(nil)
+                            self.delegate?.onBack()
                         }
                     }
                 } else {
                     // Fall back to WKWebView for other errors (e.g., certificate issues)
-                    nkLog(debug: "ASWebAuthenticationSession failed with error: \(nsError.localizedDescription). Falling back to WKWebView.")
                     Task { @MainActor in
                         self.fallbackToWebView(url: url)
                     }
@@ -159,62 +91,52 @@ class NCLoginProvider: UIViewController, ASWebAuthenticationPresentationContextP
 
         if authSession?.start() != true {
             // Fall back to WKWebView if ASWebAuthenticationSession fails to start
-            nkLog(debug: "ASWebAuthenticationSession failed to start. Falling back to WKWebView.")
             fallbackToWebView(url: url)
         }
+    }
+
+    ///
+    /// Cancel the authentication session and clean up.
+    ///
+    func cancel() {
+        authSession?.cancel()
+        authSession = nil
+
+        webViewFallbackVC?.dismiss(animated: true)
+        webViewFallbackVC = nil
+
+        pollingTask?.cancel()
+        pollingTask = nil
     }
 
     // MARK: - WKWebView Fallback
 
     ///
-    /// Set up and display WKWebView as a fallback for certificate handling.
+    /// Present WKWebView as a fallback for mTLS/certificate handling.
     ///
     private func fallbackToWebView(url: URL) {
-        guard !isUsingWebViewFallback else { return }
-        isUsingWebViewFallback = true
-
         authSession?.cancel()
         authSession = nil
 
-        nkLog(debug: "Setting up WKWebView fallback for URL: \(url.absoluteString)")
+        guard let presentingVC = presentingViewController else { return }
 
-        let configuration = WKWebViewConfiguration()
-        configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+        let fallbackVC = NCLoginProviderWebViewFallback()
+        fallbackVC.initialURL = url
+        fallbackVC.initialURLString = initialURLString
+        fallbackVC.controller = controller
+        fallbackVC.loginProvider = self
 
-        let webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.customUserAgent = userAgent
-        webView.navigationDelegate = self
-        view.addSubview(webView)
+        let navController = UINavigationController(rootViewController: fallbackVC)
+        navController.modalPresentationStyle = .fullScreen
 
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            webView.topAnchor.constraint(equalTo: view.topAnchor),
-            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-
-        self.webView = webView
-        loadWebPage(url: url)
-    }
-
-    ///
-    /// Load a web page in the fallback WKWebView.
-    ///
-    private func loadWebPage(url: URL) {
-        let language = NSLocale.preferredLanguages[0] as String
-        var request = URLRequest(url: url)
-
-        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
-        request.addValue(language, forHTTPHeaderField: "Accept-Language")
-
-        webView?.load(request)
+        presentingVC.present(navController, animated: true)
+        self.webViewFallbackVC = fallbackVC
     }
 
     ///
     /// Handle the login callback URL from the authentication session.
     ///
-    private func handleLoginCallback(url: URL) {
+    func handleLoginCallback(url: URL) {
         let urlString = url.absoluteString.lowercased()
 
         // Check if this is a login callback
@@ -242,12 +164,17 @@ class NCLoginProvider: UIViewController, ASWebAuthenticationPresentationContextP
             pollingTask?.cancel()
             pollingTask = nil
 
+            // Dismiss fallback web view if present
+            webViewFallbackVC?.dismiss(animated: true)
+            webViewFallbackVC = nil
+
             if self.controller == nil {
                 self.controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
             }
 
             Task { @MainActor in
-                await NCAccount().createAccount(viewController: self, urlBase: server, user: username, password: password, controller: self.controller)
+                guard let viewController = self.presentingViewController else { return }
+                await NCAccount().createAccount(viewController: viewController, urlBase: server, user: username, password: password, controller: self.controller)
             }
         }
     }
@@ -302,19 +229,28 @@ class NCLoginProvider: UIViewController, ASWebAuthenticationPresentationContextP
     ///
     /// Handle the values acquired by polling successfully.
     ///
-    private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
+    func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         nkLog(debug: "Handling login grant values for \(loginName) on \(urlBase)")
 
         // Cancel the auth session since login was successful
         authSession?.cancel()
         authSession = nil
 
+        // Dismiss fallback web view if present
+        webViewFallbackVC?.dismiss(animated: true)
+        webViewFallbackVC = nil
+
         if controller == nil {
             nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
             controller = UIApplication.shared.mainAppWindow?.rootViewController as? NCMainTabBarController
         }
 
-        await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller)
+        guard let viewController = presentingViewController else {
+            nkLog(error: "No presenting view controller available for account creation.")
+            return
+        }
+
+        await NCAccount().createAccount(viewController: viewController, urlBase: urlBase, user: loginName, password: appPassword, controller: controller)
         nkLog(debug: "Account creation for \(loginName) on \(urlBase) completed based on login grant values.")
     }
 
@@ -346,40 +282,103 @@ class NCLoginProvider: UIViewController, ASWebAuthenticationPresentationContextP
     }
 }
 
-// MARK: - WKNavigationDelegate
+// MARK: - WKWebView Fallback View Controller
 
-extension NCLoginProvider: WKNavigationDelegate {
+///
+/// Fallback view controller using WKWebView for mTLS/certificate handling.
+///
+class NCLoginProviderWebViewFallback: UIViewController, WKNavigationDelegate {
+    var initialURL: URL?
+    var initialURLString = ""
+    var controller: NCMainTabBarController?
+    weak var loginProvider: NCLoginProvider?
+
+    private var webView: WKWebView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = NCBrandColor.shared.customer
+
+        // Navigation bar
+        let closeButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeTapped))
+        closeButton.tintColor = .white
+        navigationItem.leftBarButtonItem = closeButton
+
+        if let host = initialURL?.host {
+            title = host
+        }
+
+        // Web view setup
+        let configuration = WKWebViewConfiguration()
+        configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+
+        webView = WKWebView(frame: .zero, configuration: configuration)
+        webView.customUserAgent = userAgent
+        webView.navigationDelegate = self
+        view.addSubview(webView)
+
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.topAnchor.constraint(equalTo: view.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        if let url = initialURL {
+            loadWebPage(url: url)
+        }
+    }
+
+    @objc private func closeTapped() {
+        loginProvider?.delegate?.onBack()
+        dismiss(animated: true)
+    }
+
+    private func loadWebPage(url: URL) {
+        let language = NSLocale.preferredLanguages[0] as String
+        var request = URLRequest(url: url)
+
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
+
+        webView.load(request)
+    }
+
+    // MARK: - WKNavigationDelegate
+
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        guard let currentWebViewURL = webView.url else {
-            return
-        }
+        guard let currentWebViewURL = webView.url else { return }
 
-        let currentWebViewURLString: String = currentWebViewURL.absoluteString.lowercased()
+        let currentWebViewURLString = currentWebViewURL.absoluteString.lowercased()
 
-        // Prevent HTTP redirects.
+        // Prevent HTTP redirects
         if initialURLString.lowercased().hasPrefix("https://") && currentWebViewURLString.hasPrefix("http://") {
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_prevent_http_redirection_", comment: ""), preferredStyle: .alert)
-
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                _ = self.navigationController?.popViewController(animated: true)
-            }))
-
-            self.present(alertController, animated: true)
+            let alertController = UIAlertController(
+                title: NSLocalizedString("_error_", comment: ""),
+                message: NSLocalizedString("_prevent_http_redirection_", comment: ""),
+                preferredStyle: .alert
+            )
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
+                self.dismiss(animated: true)
+            })
+            present(alertController, animated: true)
             return
         }
 
-        // Login via provider.
+        // Login via provider
         if currentWebViewURLString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) && currentWebViewURLString.contains("login") {
-            handleLoginCallback(url: currentWebViewURL)
+            loginProvider?.handleLoginCallback(url: currentWebViewURL)
         }
     }
 
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         DispatchQueue.global().async {
             if let serverTrust = challenge.protectionSpace.serverTrust {
-                completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
+                completionHandler(.useCredential, URLCredential(trust: serverTrust))
             } else {
-                completionHandler(URLSession.AuthChallengeDisposition.useCredential, nil)
+                completionHandler(.useCredential, nil)
             }
         }
     }
@@ -389,11 +388,10 @@ extension NCLoginProvider: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium, blurEffect: false)
+        NCActivityIndicator.shared.startActivity(backgroundView: view, style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
     }
 }
-
