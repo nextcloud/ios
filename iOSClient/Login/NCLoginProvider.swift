@@ -57,7 +57,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
             return
         }
 
-        // Use the app's custom URL scheme to handle login callbacks (e.g., nc://login/...)
+        // Use custom URL scheme to handle login callbacks (e.g., nc://login/...)
         let callbackScheme = NCBrandOptions.shared.webLoginAutenticationProtocol.replacingOccurrences(of: "://", with: "")
 
         authSession = ASWebAuthenticationSession(url: url, callbackURLScheme: callbackScheme) { [weak self] callbackURL, error in
@@ -229,7 +229,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
     ///
     /// Handle login when polling is successful and access is granted.
     ///
-    func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
+    private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         nkLog(debug: "Handling login grant values for \(loginName) on \(urlBase)")
 
         // Cancel the auth session since login was successful
@@ -255,7 +255,7 @@ class NCLoginProvider: NSObject, ASWebAuthenticationPresentationContextProviding
     }
 
     ///
-    /// Set up the `Task` which frequently checks the server.
+    /// Sets up polling.
     ///
     private func createPollingTask(token: String, endpoint: String) -> Task<Void, any Error> {
         let options = NKRequestOptions(customUserAgent: userAgent)
@@ -384,14 +384,17 @@ class NCLoginProviderWebViewFallback: UIViewController, WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        nkLog(debug: "Web view will allow navigation to \(navigationAction.request.url?.absoluteString ?? "nil")")
         decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        nkLog(debug: "Web view did start provisional navigation.")
         NCActivityIndicator.shared.startActivity(backgroundView: view, style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        nkLog(debug: "Web view did finish navigation to \(webView.url?.absoluteString ?? "nil")")
         NCActivityIndicator.shared.stop()
     }
 }
