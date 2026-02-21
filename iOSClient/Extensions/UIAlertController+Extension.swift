@@ -32,13 +32,12 @@ extension UIAlertController {
     ///   - urlBase: UrlBase object
     ///   - completion: If not` nil` it overrides the default behavior which shows an error
     /// - Returns: The presentable alert controller
-    static func createFolder(serverUrl: String,
-                             session: NCSession.Session,
-                             markE2ee: Bool = false,
-                             sceneIdentifier: String? = nil,
-                             capabilities: NKCapabilities.Capabilities,
-                             scene: UIWindowScene? = nil,
-                             completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func createFolderWith(serverUrl: String,
+                                 session: NCSession.Session,
+                                 markE2ee: Bool = false,
+                                 sceneIdentifier: String? = nil,
+                                 capabilities: NKCapabilities.Capabilities,
+                                 completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
@@ -47,38 +46,37 @@ extension UIAlertController {
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
-                    Task {
-                        await showErrorBanner(scene: scene, text: "_offline_not_allowed_", errorCode: NCGlobal.shared.errorOffline)
-                    }
+                    completion?(NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_offline_not_allowed_"))
                     return
                 }
                 Task {
                     let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
                     let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                         Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                                        path: serverUrlFileName,
-                                                                                                        name: "createFolder")
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                                account: session.account,
+                                path: serverUrlFileName,
+                                name: "createFolder"
+                            )
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId)
-                        if error != .success {
-                            await showErrorBanner(scene: scene, text: error.errorDescription, errorCode: error.errorCode)
-                        }
+                        completion?(error)
                     } else {
-                        await showErrorBanner(scene: scene, text: createFolderResults.error.errorDescription, errorCode: createFolderResults.error.errorCode)
+                        completion?(NKError(errorCode: createFolderResults.error.errorCode, errorDescription: createFolderResults.error.errorDescription))
                     }
                 }
             } else if isDirectoryEncrypted {
                 Task {
                     if NCNetworking.shared.isOffline {
-                        await showErrorBanner(scene: scene, text: "_offline_not_allowed_", errorCode: NCGlobal.shared.errorOffline)
+                        completion?(NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_offline_not_allowed_"))
                         return
                     }
 
                     let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
+
                     completion?(error)
                 }
             } else {
@@ -163,6 +161,7 @@ extension UIAlertController {
 
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
+
         return alertController
     }
 

@@ -83,12 +83,19 @@ class NCContextMenuPlus: NSObject {
         menuActionElement.append(UIAction(title: titleCreateFolder,
                                           image: imageCreateFolder) { _ in
             DispatchQueue.main.async {
-                let alertController = UIAlertController.createFolder(
+                let alertController = UIAlertController.createFolderWith(
                     serverUrl: serverUrl,
                     session: session,
                     sceneIdentifier: controller.sceneIdentifier,
-                    capabilities: capabilities,
-                    scene: SceneManager.shared.getWindow(controller: controller)?.windowScene)
+                    capabilities: capabilities) { error in
+                        if error != .success {
+                            Task {
+                                await showErrorBanner(controller: controller,
+                                                      text: error.errorDescription,
+                                                      errorCode: error.errorCode)
+                            }
+                        }
+                    }
                 controller.present(alertController, animated: true, completion: nil)
             }
         })
@@ -101,13 +108,20 @@ class NCContextMenuPlus: NSObject {
             menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                                             image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 DispatchQueue.main.async {
-                    let alertController = UIAlertController.createFolder(
+                    let alertController = UIAlertController.createFolderWith(
                         serverUrl: serverUrl,
                         session: session,
                         markE2ee: true,
                         sceneIdentifier: controller.sceneIdentifier,
-                        capabilities: capabilities,
-                        scene: SceneManager.shared.getWindow(controller: controller)?.windowScene)
+                        capabilities: capabilities) { error in
+                            if error != .success {
+                                Task {
+                                    await showErrorBanner(controller: controller,
+                                                          text: error.errorDescription,
+                                                          errorCode: error.errorCode)
+                                }
+                            }
+                        }
                     controller.present(alertController, animated: true, completion: nil)
                 }
             })
