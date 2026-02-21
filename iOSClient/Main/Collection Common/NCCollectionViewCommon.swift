@@ -399,52 +399,45 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         let homeServer = utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
         let numFoldersLayoutsForView = self.database.getLayoutsForView(keyStore: layoutForView.keyStore)?.count ?? 1
 
-        func changeLayout(withSubFolders: Bool) {
-            if self.layoutForView?.layout == layoutForView.layout {
-                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, withSubFolders: withSubFolders)
-                Task {
-                    await self.reloadDataSource()
-                }
-                return
-            }
-
-            self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, withSubFolders: withSubFolders)
-            layoutForView.layout = layoutForView.layout
-            self.layoutType = layoutForView.layout
-
-            collectionView.reloadData()
-
-            switch layoutForView.layout {
-            case global.layoutList:
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-            case global.layoutGrid:
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
-            case global.layoutPhotoSquare, global.layoutPhotoRatio:
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
-            default:
-                break
-            }
-
-            self.collectionView.collectionViewLayout.invalidateLayout()
-
-            Task {
-                await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
-            }
-        }
-
-        if serverUrl == homeServer || numFoldersLayoutsForView == 1 {
-            changeLayout(withSubFolders: false)
+        if serverUrl == homeServer || numFoldersLayoutsForView == 1 || isSearchingMode {
+            setLayout(layoutForView: layoutForView)
         } else {
             let alertController = UIAlertController(title: NSLocalizedString("_propagate_layout_", comment: ""), message: nil, preferredStyle: .alert)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-                changeLayout(withSubFolders: true)
+                self.setLayout(layoutForView: layoutForView, withSubFolders: true)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
-                changeLayout(withSubFolders: false)
+                self.setLayout(layoutForView: layoutForView)
             }))
 
             self.present(alertController, animated: true)
+        }
+    }
+
+    private func setLayout(layoutForView: NCDBLayoutForView, withSubFolders: Bool = false) {
+        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, withSubFolders: withSubFolders)
+        layoutForView.layout = layoutForView.layout
+        self.layoutType = layoutForView.layout
+
+        collectionView.reloadData()
+
+        switch layoutForView.layout {
+        case global.layoutList:
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+        case global.layoutGrid:
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+        case global.layoutPhotoSquare, global.layoutPhotoRatio:
+            self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
+        default:
+            break
+        }
+
+        self.collectionView.collectionViewLayout.invalidateLayout()
+
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
+            await self.reloadDataSource()
         }
     }
 
@@ -544,13 +537,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         Task {
             await searchOperationHandle.cancel()
             self.dataSource.removeAll()
-            await self.reloadDataSource()
 
             // Restore Layout
             if let layoutForViewLayoutStore {
                 let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
                 layoutForView.layout = layoutForViewLayoutStore
-                changeLayout(layoutForView: layoutForView)
+                setLayout(layoutForView: layoutForView)
+            } else {
+                await self.reloadDataSource()
             }
         }
     }
