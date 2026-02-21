@@ -49,9 +49,11 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     }
 
     override func setupCell(account: String, controller: NCMainTabBarController?) {
+        /*
         guard let capabilities = NCNetworking.shared.capabilities[account] else {
             return
         }
+        */
 
         self.controller = controller
     }
