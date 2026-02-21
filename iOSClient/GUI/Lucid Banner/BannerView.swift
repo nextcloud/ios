@@ -308,10 +308,12 @@ func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
         // Coalesce user-facing errors across the current foreground session.
         // The same error code is shown to the user only once.
         // Error 401 (maintenance mode)
+        // Error 423 (locked)
         // Error 507 (insufficient storage)
         // Error -1009 (NSURLErrorNotConnectedToInternet)
         // Error -1003 (NSURLError​Cannot​Find​Host)
         if errorCode == 401 ||
+            errorCode == 423 ||
             errorCode == 507 ||
             errorCode == NSURLErrorNotConnectedToInternet ||
             errorCode == NSURLErrorCannotFindHost {

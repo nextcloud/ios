@@ -172,6 +172,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             self.uploadInProgress.toggle()
             return
         }
+        let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
 
         func createProcessUploads() {
             if !self.dismissView {
@@ -180,7 +181,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             }
         }
 
-        if useAutoUploadFolder {
+        if !autoMkcol,
+           useAutoUploadFolder {
             let assets = self.assets.compactMap { $0.phAsset }
             NCManageDatabaseCreateMetadata().createMetadatasFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session) { metadatasFolder in
                 self.database.addMetadatas(metadatasFolder)

@@ -27,8 +27,6 @@ extension NCNetworking {
               size: Int64,
               response: AFDataResponse<Data>?,
               error: NKError) {
-        // let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-        // let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
                                                             fileNameLocalPath: fileNameLocalPath,
@@ -183,8 +181,6 @@ extension NCNetworking {
                                 taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
                                 start: @escaping () -> Void = { })
     async -> NKError {
-        // let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-        // let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                   fileName: metadata.fileName,
                                                                                   userId: metadata.userId,

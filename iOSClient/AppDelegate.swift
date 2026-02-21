@@ -276,9 +276,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             $0.sessionSelector == self.global.selectorUploadAutoUpload
         }
 
+        // Get accounts -> Capabilities
+        let accounts = Array(Set(pendingCreateFolders.map { $0.account }))
+        var capabilitiesByAccount: [String: NKCapabilities.Capabilities] = [:]
+        for account in accounts {
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+            capabilitiesByAccount[account] = capabilities
+        }
+
         for metadata in pendingCreateFolders {
             guard !expired else { return }
 
+            // If server supports auto MKCOL (Nextcloud >= 33), skip manual folder creation.
+            if let capabilities = capabilitiesByAccount[metadata.account] {
+                let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
+                if autoMkcol {
+                    continue
+                }
+            }
+            // Create folder
             let err = await NCNetworking.shared.createFolderForAutoUpload(
                 serverUrlFileName: metadata.serverUrlFileName,
                 account: metadata.account
