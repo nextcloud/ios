@@ -22,6 +22,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     private var timer: Timer?
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
+    private var activeLoginProvider: NCLoginProvider?
 
     // MARK: - View Life Cycle
 
@@ -164,11 +165,12 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func signupWithProvider(_ sender: Any) {
-        if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider {
-            viewController.controller = self.controller
-            viewController.initialURLString = NCBrandOptions.shared.linkloginPreferredProviders
-            self.navigationController?.pushViewController(viewController, animated: true)
-        }
+        let loginProvider = NCLoginProvider()
+        loginProvider.controller = self.controller
+        loginProvider.initialURLString = NCBrandOptions.shared.linkloginPreferredProviders
+        loginProvider.presentingViewController = self
+        loginProvider.startAuthentication()
+        self.activeLoginProvider = loginProvider
     }
 
     @IBAction func host(_ sender: Any) {
