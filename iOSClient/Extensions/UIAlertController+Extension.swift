@@ -30,7 +30,7 @@ extension UIAlertController {
     /// - Parameters:
     ///   - serverUrl: Server url of the location where the folder should be created
     ///   - urlBase: UrlBase object
-    ///   - completion: If not` nil` it overrides the default behavior which shows an error using `NCContentPresenter`
+    ///   - completion: If not` nil` it overrides the default behavior which shows an error
     /// - Returns: The presentable alert controller
     static func createFolder(serverUrl: String,
                              session: NCSession.Session,
@@ -47,7 +47,10 @@ extension UIAlertController {
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
-                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                    Task {
+                        await showErrorBanner(scene: scene, text: "_offline_not_allowed_", errorCode: NCGlobal.shared.errorOffline)
+                    }
+                    return
                 }
                 Task {
                     let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
@@ -69,11 +72,14 @@ extension UIAlertController {
                     }
                 }
             } else if isDirectoryEncrypted {
-                if NCNetworking.shared.isOffline {
-                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
-                }
                 Task {
-                    await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
+                    if NCNetworking.shared.isOffline {
+                        await showErrorBanner(scene: scene, text: "_offline_not_allowed_", errorCode: NCGlobal.shared.errorOffline)
+                        return
+                    }
+
+                    let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
+                    completion?(error)
                 }
             } else {
 #if EXTENSION

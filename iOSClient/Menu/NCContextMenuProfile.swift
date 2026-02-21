@@ -143,8 +143,7 @@ class NCContextMenuProfile: NSObject {
         }
 
         guard MFMailComposeViewController.canSendMail() else {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_cannot_send_mail_error_")
-            NCContentPresenter().showError(error: error)
+            showError("_cannot_send_mail_error_")
             return
         }
 
@@ -176,10 +175,11 @@ class NCContextMenuProfile: NSObject {
     }
 
     private func showError(_ errorKey: String) {
-        let error = NKError(
-            errorCode: NCGlobal.shared.errorInternalError,
-            errorDescription: errorKey
-        )
-        NCContentPresenter().showError(error: error)
+        let controller = self.viewController.tabBarController as? NCMainTabBarController
+        Task {
+            await showErrorBanner(controller: controller,
+                                  text: errorKey,
+                                  errorCode: NCGlobal.shared.errorInternalError)
+        }
     }
 }

@@ -531,10 +531,13 @@ class NCContextMenuMain: NSObject {
                                         params: item.params
                                     )
                                     if results.error != .success {
-                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier,
+                                                              text: results.error.errorDescription,
+                                                              errorCode: results.error.errorCode)
                                     } else {
                                         if let tooltip = results.uiResponse?.ocs.data.tooltip {
-                                            NCContentPresenter().showCustomMessage(message: tooltip, type: .success)
+                                            await showInfoBanner(sceneIdentifier: self.sceneIdentifier,
+                                                                 text: tooltip)
                                         } else {
                                             let baseURL = metadata.urlBase
 

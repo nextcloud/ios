@@ -347,8 +347,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func createOptionMenu() async -> UIMenu? { return nil }
 
     func updateMenuOption() async {
-        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == optionButtonTag }) != nil {
-           optionButtonItem.menu = await createOptionMenu()
+        guard let topViewController else {
+            return
+        }
+        let hasOptionButton = topViewController.navigationItem.trailingItemGroups
+            .flatMap { $0.barButtonItems }
+            .contains(where: { $0.tag == optionButtonTag })
+
+        guard hasOptionButton else {
+            return
+        }
+
+        optionButtonItem.menu = await createOptionMenu()
+
+        // Force refresh of the bar button group if the menu instance changed.
+        let currentGroups = topViewController.navigationItem.trailingItemGroups
+        if !currentGroups.isEmpty {
+            topViewController.navigationItem.trailingItemGroups = currentGroups
         }
     }
 
