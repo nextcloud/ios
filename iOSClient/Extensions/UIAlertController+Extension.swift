@@ -46,7 +46,7 @@ extension UIAlertController {
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
-                    completion?(NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_offline_not_allowed_"))
+                    completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
                     return
                 }
                 Task {
@@ -71,7 +71,7 @@ extension UIAlertController {
             } else if isDirectoryEncrypted {
                 Task {
                     if NCNetworking.shared.isOffline {
-                        completion?(NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_offline_not_allowed_"))
+                        completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
                         return
                     }
 

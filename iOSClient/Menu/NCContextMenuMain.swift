@@ -338,7 +338,7 @@ class NCContextMenuMain: NSObject {
                     return
                 }
 
-                NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
+                await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
             }
         }
     }

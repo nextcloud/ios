@@ -380,11 +380,12 @@ extension NCNetworking {
 
         if !metadatasE2EE.isEmpty {
 #if !EXTENSION
-            if isOffline {
-                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
-            }
-
             Task { @MainActor in
+                if isOffline {
+                    await showErrorBanner(sceneIdentifier: sceneIdentifier, text: "_offline_not_allowed_", errorCode: global.errorOfflineNotAllowed)
+                    return
+                }
+
                 var num: Float = 0
                 let total = Float(metadatasE2EE.count)
                 var cancelOnTap = false
@@ -443,7 +444,8 @@ extension NCNetworking {
 
                 let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
                 if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
-                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+                    await showErrorBanner(sceneIdentifier: sceneIdentifier, text: "_no_permission_delete_file_", errorCode: global.errorNotPermission)
+                    return
                 }
 
                 ocIds.insert(metadata.ocId)
@@ -519,33 +521,32 @@ extension NCNetworking {
 
     // MARK: - Rename
 
-    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String) {
+    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String) async {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
         if (!metadata.permissions.isEmpty && permission == false) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
-            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: "_no_permission_modify_file_", errorCode: global.errorNotPermission)
+            return
         }
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
             if isOffline {
-                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: "_offline_not_allowed_", errorCode: global.errorOfflineNotAllowed)
+                return
             }
-            Task {
-                let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
-                if error != .success {
-                    await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
-                }
+
+            let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
+            if error != .success {
+                await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
             }
 #endif
         } else {
-            Task {
-                let ocId = metadata.ocId
-                let serverUrl = metadata.serverUrl
-                await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                    await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: ocId, status: self.global.metadataStatusWaitRename)
-                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
-                }
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
+            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: ocId, status: self.global.metadataStatusWaitRename)
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
             }
         }
     }
