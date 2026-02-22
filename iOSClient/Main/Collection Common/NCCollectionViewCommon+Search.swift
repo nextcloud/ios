@@ -21,13 +21,10 @@ extension NCCollectionViewCommon {
         let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         layoutForViewLayoutStore = layoutForView.layout
         layoutForView.layout = self.global.layoutList
-        changeLayout(layoutForView: layoutForView)
+        setLayout(layoutForView: layoutForView)
 
         // STOP PREEMPTIVE SYNC METADATA
         await self.stopSyncMetadata()
-        // Clear datasotce
-        dataSource.removeAll()
-        collectionView.reloadData()
         // Start spinner
         setSearchBarLoading(true)
         networkSearchInProgress = true
@@ -178,9 +175,11 @@ extension NCCollectionViewCommon {
                 searchResult: searchResult
             ) {
                 self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
-                self.collectionView.reloadData()
             }
         }
+
+        // end
+        self.collectionView.reloadData()
     }
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) async {
@@ -306,8 +305,8 @@ extension NCCollectionViewCommon {
                 metadata.section = provider.name
                 metadatas.append(metadata)
             }
-            return(metadatas)
 
+            return(metadatas)
         }
     }
 

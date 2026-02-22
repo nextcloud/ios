@@ -399,7 +399,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         let homeServer = utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
         let numFoldersLayoutsForView = self.database.getLayoutsForView(keyStore: layoutForView.keyStore)?.count ?? 1
 
-        if serverUrl == homeServer || numFoldersLayoutsForView == 1 || isSearchingMode {
+        if serverUrl == homeServer || numFoldersLayoutsForView == 1 {
             setLayout(layoutForView: layoutForView)
         } else {
             let alertController = UIAlertController(title: NSLocalizedString("_propagate_layout_", comment: ""), message: nil, preferredStyle: .alert)
@@ -415,7 +415,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
     }
 
-    private func setLayout(layoutForView: NCDBLayoutForView, withSubFolders: Bool = false) {
+    internal func setLayout(layoutForView: NCDBLayoutForView, withSubFolders: Bool = false) {
         self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, withSubFolders: withSubFolders)
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
