@@ -43,7 +43,10 @@ func showBanner(scene: UIWindowScene?,
                 imageAnimation: LucidBanner.LucidBannerAnimationStyle,
                 imageColor: UIColor,
                 vPosition: LucidBanner.VerticalPosition = .top,
-                backgroundColor: UIColor) async {
+                backgroundColor: UIColor,
+                autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
+                swipeToDismiss: Bool = true,
+                policy: LucidBanner.ShowPolicy = .enqueue) async {
 #if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
@@ -57,13 +60,14 @@ func showBanner(scene: UIWindowScene?,
         textColor: Color(uiColor: textColor),
         imageColor: Color(uiColor: imageColor),
         vPosition: vPosition,
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true
+        autoDismissAfter: autoDismissAfter,
+        swipeToDismiss: swipeToDismiss
     )
 
     LucidBanner.shared.show(
         scene: scene,
-        payload: payload) { state in
+        payload: payload,
+        policy: policy) { state in
         MessageBannerView(state: state)
     }
 }

@@ -17,12 +17,12 @@ extension NCNetworking {
             if lastReachability {
                 Task {
                     await showBannerActiveScenes(
-                        title: NSLocalizedString("_info_", comment: ""),
-                        subtitle: NSLocalizedString("_network_not_available_", comment: ""),
-                        textColor: .white,
+                        title: "_info_",
+                        subtitle: "_network_not_available_",
+                        textColor: .label,
                         image: "wifi.exclamationmark.circle",
                         imageAnimation: .bounce,
-                        imageColor: .white,
+                        imageColor: .label,
                         backgroundColor: UIColor.lightGray.withAlphaComponent(0.75)
                     )
                 }
