@@ -433,7 +433,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             break
         }
 
-        self.collectionView.collectionViewLayout.invalidateLayout()
+        collectionView.collectionViewLayout.invalidateLayout()
 
         Task {
             await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
