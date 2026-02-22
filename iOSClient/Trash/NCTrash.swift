@@ -56,6 +56,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         self.tabBarController as? NCMainTabBarController
     }
 
+    var mainNavigationController: NCMainNavigationController? {
+        self.navigationController as? NCMainNavigationController
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -162,7 +166,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     func reloadDataSource(withQueryDB: Bool = true) async {
         let results = await self.database.getTableTrashAsync(filePath: getFilePath(), account: session.account)
 
-        await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
+        await mainNavigationController?.updateMenuOption()
 
         await MainActor.run {
             self.datasource = results

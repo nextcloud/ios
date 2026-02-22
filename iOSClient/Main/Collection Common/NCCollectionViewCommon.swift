@@ -540,7 +540,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         Task {
             await searchOperationHandle.cancel()
-            self.dataSource.removeAll()
+            await reloadDataSource()
 
             // Restore Layout
             if let layoutForViewLayoutStore {
@@ -550,7 +550,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             }
             layoutForViewLayoutStore = nil
 
-            await self.reloadDataSource()
+            // update Option menu
+            await mainNavigationController?.updateMenuOption()
         }
     }
 
@@ -709,7 +710,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             delegate.transferReloadData(serverUrl: self.serverUrl)
         }
 
-        await (self.navigationController as? NCMainNavigationController)?.updateMenuOption()
+        await mainNavigationController?.updateMenuOption()
     }
 
     func getServerData(forced: Bool = false) async { }
