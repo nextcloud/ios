@@ -21,7 +21,7 @@ extension NCCollectionViewCommon {
         let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         layoutForViewLayoutStore = layoutForView.layout
         layoutForView.layout = self.global.layoutList
-        setLayout(layoutForView: layoutForView)
+        await setLayout(layoutForView: layoutForView)
 
         // STOP PREEMPTIVE SYNC METADATA
         await self.stopSyncMetadata()
@@ -89,12 +89,6 @@ extension NCCollectionViewCommon {
         defer {
             networkSearchInProgress = false
             setSearchBarLoading(false)
-            Task {
-                if !isSearchingMode {
-                    self.dataSource.removeAll()
-                    await self.reloadDataSource()
-                }
-            }
         }
 
         // Store the search
