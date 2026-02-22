@@ -548,6 +548,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 layoutForView.layout = layoutForViewLayoutStore
                 await setLayout(layoutForView: layoutForView)
             }
+            layoutForViewLayoutStore = nil
 
             await self.reloadDataSource()
         }
