@@ -134,7 +134,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             destination = utilityFileSystem.createServerUrl(serverUrl: destinationMetadata.serverUrl, fileName: destinationMetadata.fileName)
         }
         Task {
-            await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination)
+            await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
         }
     }
 
@@ -146,7 +146,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             destination = utilityFileSystem.createServerUrl(serverUrl: destinationMetadata.serverUrl, fileName: destinationMetadata.fileName)
         }
         Task {
-            await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination)
+            await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
         }
     }
 }

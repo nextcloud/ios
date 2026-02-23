@@ -105,12 +105,8 @@ class NCViewerContextMenu: NSObject {
                 : NSLocalizedString("_add_favorites_", comment: ""),
             image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
         ) { _ in
-            NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
-                if error != .success {
-                    Task {
-                        await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
-                    }
-                }
+            Task {
+                await NCNetworking.shared.setStatusWaitFavorite(metadata)
             }
         }
     }

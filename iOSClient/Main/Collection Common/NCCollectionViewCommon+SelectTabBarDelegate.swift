@@ -103,7 +103,10 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         Task {
             let metadatas = getSelectedMetadatas()
             for metadata in metadatas where metadata.lock == isAnyLocked {
-                self.networking.lockUnlockFile(metadata, shouldLock: !isAnyLocked)
+                let error = await self.networking.lockUnlockFile(metadata, shouldLock: !isAnyLocked)
+                if error != .success {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
             }
             await setEditMode(false)
         }

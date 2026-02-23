@@ -160,8 +160,10 @@ enum ContextMenuActions {
             image: image,
             attributes: metadata.canUnlock(as: metadata.userId) ? [] : [.disabled]
         ) { _ in
-            NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)
-            completion?()
+            Task {
+                await NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)
+                completion?()
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
 
 import SwiftUI
 import LucidBanner
+import NextcloudKit
 import Alamofire
 
 // MARK: - Show Banner
@@ -194,6 +195,16 @@ func showErrorBannerActiveScenes(title: String = "_error_",
                               errorCode: errorCode,
                               afError: afError)
     }
+}
+
+@MainActor
+func showErrorBanner(controller: UITabBarController?,
+                     error: NKError) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showErrorBanner(scene: scene,
+                          title: "_error_",
+                          text: error.errorDescription,
+                          errorCode: error.errorCode)
 }
 
 @MainActor

@@ -17,14 +17,18 @@ class NCContextMenuMain: NSObject {
     let utility = NCUtility()
 
     let metadata: tableMetadata
-    let sceneIdentifier: String
     let viewController: UIViewController
+    let controller: NCMainTabBarController?
     let sender: Any?
 
-    init(metadata: tableMetadata, viewController: UIViewController, sceneIdentifier: String, sender: Any?) {
+    internal var sceneIdentifier: String {
+        controller?.sceneIdentifier ?? ""
+    }
+
+    init(metadata: tableMetadata, viewController: UIViewController, controller: NCMainTabBarController?, sender: Any?) {
         self.metadata = metadata
         self.viewController = viewController
-        self.sceneIdentifier = sceneIdentifier
+        self.controller = controller
         self.sender = sender
     }
 
@@ -99,12 +103,8 @@ class NCContextMenuMain: NSObject {
                 colors: [NCBrandColor.shared.yellowFavorite]
             )
         ) { _ in
-            NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
-                if error != .success {
-                    Task {
-                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
-                    }
-                }
+            Task {
+                await NCNetworking.shared.setStatusWaitFavorite(metadata)
             }
         }
     }
@@ -229,7 +229,7 @@ class NCContextMenuMain: NSObject {
                     userId: metadata.userId
                 )
                 if error != .success {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }
@@ -267,7 +267,7 @@ class NCContextMenuMain: NSObject {
                     await NCManageDatabase.shared.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier,
+                    await showErrorBanner(controller: self.controller,
                                           title: "_e2e_error_",
                                           text: results.error.errorDescription,
                                           errorCode: results.error.errorCode)
@@ -334,11 +334,17 @@ class NCContextMenuMain: NSObject {
                         fileNameNew
                     )
                 ) != nil {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: "_rename_already_exists_", errorCode: 0)
+                    await showErrorBanner(controller: self.controller,
+                                          text: "_rename_already_exists_",
+                                          errorCode: 0)
                     return
                 }
 
-                await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
+                let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
+                if error != .success {
+                    let controller = self.viewController.tabBarController as? NCMainTabBarController
+                    await showErrorBanner(controller: controller, error: error)
+                }
             }
         }
     }
@@ -454,10 +460,7 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "document.on.trash")
         ) { _ in
             Task {
-                let error = await NCNetworking.shared.deleteCache(
-                    metadata,
-                    sceneIdentifier: self.sceneIdentifier
-                )
+                let error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.sceneIdentifier)
 
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(
@@ -531,7 +534,7 @@ class NCContextMenuMain: NSObject {
                                         params: item.params
                                     )
                                     if results.error != .success {
-                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier,
+                                        await showErrorBanner(controller: self.controller,
                                                               text: results.error.errorDescription,
                                                               errorCode: results.error.errorCode)
                                     } else {
