@@ -461,26 +461,29 @@ class NCContextMenuMain: NSObject {
             title: NSLocalizedString("_remove_local_file_", comment: ""),
             image: utility.loadImage(named: "document.on.trash")
         ) { _ in
-            Task {
-
-
-
-                let error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
-
-                /*
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(
-                        status: NCGlobal.shared.networkingStatusDelete,
-                        account: metadata.account,
-                        fileName: metadata.fileName,
-                        serverUrl: metadata.serverUrl,
-                        selector: metadata.sessionSelector,
-                        ocId: metadata.ocId,
-                        destination: nil,
-                        error: error
+            Task { @MainActor in
+                var token: Int?
+                if metadata.isDirectory {
+                    let scene = SceneManager.shared.getWindow(
+                        sceneIdentifier: self.sceneIdentifier)?.windowScene
+                    token = showHudBanner(
+                        scene: scene,
+                        title: NSLocalizedString("_delete_in_progress_", comment: "")
                     )
                 }
-                */
+
+                await NCNetworking.shared.deleteCache(metadata, progress: { progress in
+                    Task {
+                        if let token {
+                            LucidBanner.shared.update(
+                                payload: LucidBannerPayload.Update(progress: progress),
+                                for: token
+                            )
+                        }
+                    }
+
+                })
+                LucidBanner.shared.dismiss()
             }
         }
     }
