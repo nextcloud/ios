@@ -44,7 +44,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
 
             guard resultsMetadata.nkError == .success else {
                 Task {@MainActor in
-                    completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
                 }
                 return self.finish()
             }
@@ -60,7 +60,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
 
             guard resultsMetadataLive.nkError == .success else {
                 Task {@MainActor in
-                    completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
                 }
                 return self.finish()
             }
@@ -97,7 +97,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                 NCLivePhoto.saveToLibrary(resources) { result in
                     Task {@MainActor in
                         if !result {
-                            completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                            completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
                         } else {
                             completeHudBannerSuccess(token: self.tokenBanner)
                         }
@@ -106,7 +106,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                 }
             } else {
                 Task {@MainActor in
-                    completeHudBannerError(subtitle: NSLocalizedString("_livephoto_save_error_", comment: ""), token: self.tokenBanner)
+                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
                     return self.finish()
                 }
             }

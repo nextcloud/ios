@@ -25,6 +25,10 @@ class NCContextMenuMain: NSObject {
         controller?.sceneIdentifier ?? ""
     }
 
+    internal var scene: UIWindowScene? {
+       SceneManager.shared.getWindow(sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
+    }
+
     init(metadata: tableMetadata, viewController: UIViewController, controller: NCMainTabBarController?, sender: Any?) {
         self.metadata = metadata
         self.viewController = viewController
@@ -448,9 +452,19 @@ class NCContextMenuMain: NSObject {
                                                   text: "_offline_not_allowed_",
                                                   errorCode: NCGlobal.shared.errorOfflineNotAllowed)
                         } else {
+                            let token = await showHudBanner(scene: self.scene,
+                                                            title: "_delete_in_progress_")
+
                             let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                            if error != .success {
-                                await showErrorBanner(controller: self.controller, error: error)
+
+                            if error == .success {
+                                await completeHudBannerSuccess(token: token)
+                            } else {
+                                await completeHudBannerError(description: error.errorDescription, token: token)
+                            }
+
+                            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
                             }
                         }
                     } else {
