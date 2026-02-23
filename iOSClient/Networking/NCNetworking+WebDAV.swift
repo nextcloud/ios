@@ -352,109 +352,50 @@ extension NCNetworking {
         }
     }
 
-#if !EXTENSION
-    @MainActor
-    func setStatusWaitDelete(metadatas: [tableMetadata],
-                             sceneIdentifier: String?) async -> (errorText: String?, errorCode: Int?) {
-        var metadatasPlain: [tableMetadata] = []
-        var metadatasE2EE: [tableMetadata] = []
+    func setStatusWaitDelete(metadatas: [tableMetadata]) async -> NKError {
+        var ocIds = Set<String>()
+        var serverUrls = Set<String>()
 
         for metadata in metadatas {
-            if metadata.isDirectoryE2EE {
-                metadatasE2EE.append(metadata)
-            } else {
-                metadatasPlain.append(metadata)
-            }
-        }
-        if !metadatasE2EE.isEmpty {
-                if isOffline {
-                    return ("_offline_not_allowed_", global.errorOfflineNotAllowed)
-                }
-
-                var num: Float = 0
-                let total = Float(metadatasE2EE.count)
-                var cancelOnTap = false
-                let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
-
-                let token = showHudBanner(scene: scene,
-                                          title: NSLocalizedString("_delete_in_progress_", comment: ""),
-                                          stage: .button) {
-                    cancelOnTap = true
-                }
-
-                for metadata in metadatasE2EE {
-                    let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-
-                    Task {@MainActor in
-                        num += 1
-                        LucidBanner.shared.update(
-                            payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
-                            for: token
-                        )
-                    }
-
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                                account: metadata.account,
-                                                fileName: metadata.fileName,
-                                                serverUrl: metadata.serverUrl,
-                                                selector: metadata.sessionSelector,
-                                                ocId: metadata.ocId,
-                                                destination: nil,
-                                                error: error)
-                    }
-
-                    if cancelOnTap {
-                        break
-                    }
-                }
-
-                LucidBanner.shared.dismiss()
-        } else {
-            var ocIds = Set<String>()
-            var serverUrls = Set<String>()
-
-            for metadata in metadatasPlain {
-                if metadata.status == global.metadataStatusWaitCreateFolder {
+            if metadata.status == global.metadataStatusWaitCreateFolder {
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrlFileName))
+                for metadata in metadatas {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-                    let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrlFileName))
-                    for metadata in metadatas {
-                        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                    }
-                    return (nil, nil)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 }
-
-                let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
-                if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
-                    return ("_no_permission_delete_file_", global.errorNotPermission)
-                }
-
-                ocIds.insert(metadata.ocId)
-                if metadata.livePhotoFile.isEmpty == false {
-                    if let ocId = NCUtility().getLivePhotoOcId(metadata: metadata) {
-                        ocIds.insert(ocId)
-                    }
-                }
-                serverUrls.insert(metadata.serverUrl)
+                return .success
             }
 
-            let ocIdss = ocIds
-            let serverUrlss = serverUrls
-            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                for ocId in ocIdss {
-                    await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                                          status: self.global.metadataStatusWaitDelete)
-                }
-                serverUrlss.forEach { serverUrl in
-                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
+            let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
+            if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
+                return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_delete_file_")
+            }
+
+            ocIds.insert(metadata.ocId)
+            if metadata.livePhotoFile.isEmpty == false {
+                if let ocId = NCUtility().getLivePhotoOcId(metadata: metadata) {
+                    ocIds.insert(ocId)
                 }
             }
+            serverUrls.insert(metadata.serverUrl)
         }
 
-        return (nil, nil)
+        let ocIdss = ocIds
+        let serverUrlss = serverUrls
+        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            for ocId in ocIdss {
+                await NCManageDatabase.shared.setMetadataSessionAsync(
+                    ocId: ocId,
+                    status: self.global.metadataStatusWaitDelete
+                )
+            }
+            serverUrlss.forEach { serverUrl in
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
+            }
+        }
+        return .success
     }
-#endif
 
     func deleteFileOrFolder(metadata: tableMetadata) async -> NKError {
         var results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in

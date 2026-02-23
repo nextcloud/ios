@@ -440,13 +440,25 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "trash"),
             attributes: .destructive
         ) { _ in
-            if let viewController = self.viewController as? NCCollectionViewCommon {
+            if self.viewController is NCCollectionViewCommon {
                 Task {
-                    await NCNetworking.shared.setStatusWaitDelete(
-                        metadatas: [metadata],
-                        sceneIdentifier: self.sceneIdentifier
-                    )
-                    await viewController.reloadDataSource()
+                    if metadata.isDirectoryE2EE {
+                        if NCNetworking.shared.isOffline {
+                            await showErrorBanner(controller: self.controller,
+                                                  text: "_offline_not_allowed_",
+                                                  errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                        } else {
+                            let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                            if error != .success {
+                                await showErrorBanner(controller: self.controller, error: error)
+                            }
+                        }
+                    } else {
+                        let error = await NCNetworking.shared.setStatusWaitDelete(metadatas: [metadata])
+                        if error != .success {
+                            await showErrorBanner(controller: self.controller, error: error)
+                        }
+                    }
                 }
             } else if let viewController = self.viewController as? NCMedia {
                 Task {

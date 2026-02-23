@@ -137,6 +137,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
+    internal var scene: UIWindowScene? {
+       SceneManager.shared.getWindow(sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
+    }
+
     internal var isNumberOfItemsInAllSectionsNull: Bool {
         var totalItems = 0
         for section in 0..<self.collectionView.numberOfSections {

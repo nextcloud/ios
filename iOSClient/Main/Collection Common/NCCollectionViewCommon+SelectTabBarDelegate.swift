@@ -29,7 +29,54 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
                 Task {
                     await self.setEditMode(false)
-                    await self.networking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
+                    var metadatasPlain: [tableMetadata] = []
+                    var metadatasE2EE: [tableMetadata] = []
+
+                    for metadata in metadatas {
+                        if metadata.isDirectoryE2EE {
+                            metadatasE2EE.append(metadata)
+                        } else {
+                            metadatasPlain.append(metadata)
+                        }
+                    }
+
+                    if !metadatasPlain.isEmpty {
+                        let error = await self.networking.setStatusWaitDelete(metadatas: metadatasPlain)
+                        if error != .success {
+                            await showErrorBanner(controller: self.controller, error: error)
+                        }
+                    }
+
+                    if !metadatasE2EE.isEmpty {
+                        if self.networking.isOffline {
+                            await showErrorBanner(controller: self.controller,
+                                                  text: "_offline_not_allowed_",
+                                                  errorCode: self.global.errorOfflineNotAllowed)
+                        } else {
+                            var cancelOnTap = false
+                            var num: Float = 0
+                            let total = Float(metadatasE2EE.count)
+
+                            let token = showHudBanner(
+                                scene: self.scene,
+                                title: NSLocalizedString("_delete_in_progress_", comment: ""),
+                                stage: .button) {
+                                    cancelOnTap = true
+                                }
+                            for metadata in metadatasE2EE {
+                                let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                                num += 1
+                                LucidBanner.shared.update(
+                                    payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
+                                    for: token
+                                )
+                                if cancelOnTap || error != .success {
+                                    break
+                                }
+                            }
+                            LucidBanner.shared.dismiss()
+                        }
+                    }
                     await self.reloadDataSource()
                 }
             })
@@ -42,10 +89,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 for metadata in copyMetadatas {
                     var token: Int?
                     if metadata.isDirectory {
-                        let scene = SceneManager.shared.getWindow(
-                            sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
                         token = showHudBanner(
-                            scene: scene,
+                            scene: self.scene,
                             title: NSLocalizedString("_delete_in_progress_", comment: "")
                         )
                     }
