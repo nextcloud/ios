@@ -91,7 +91,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                     if metadata.isDirectory {
                         token = showHudBanner(
                             scene: self.scene,
-                            title: NSLocalizedString("_delete_in_progress_", comment: "")
+                            title: "_delete_in_progress_"
                         )
                     }
 
