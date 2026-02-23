@@ -42,17 +42,17 @@ class NCContextMenuPlayerTracks: NSObject {
         switch self.trackType {
         case .subtitle:
             let deferredElement = UIDeferredMenuElement.uncached { [self] completion in
-                guard let player = ncplayer?.player else { return completion([]) }
+                guard let player = ncplayer else { return completion([]) }
                 let spuTracks = player.videoSubTitlesNames
                 let spuTrackIndexes = player.videoSubTitlesIndexes
 
                 var actions = [UIAction]()
                 var subTitleIndex: Int?
 
-                if let data = self.database.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
+                if let data = self.database.getVideoOrAudio(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
                     subTitleIndex = idx
-                } else if let idx = ncplayer?.player.currentVideoSubTitleIndex {
-                    subTitleIndex = Int(idx)
+                } else {
+                    subTitleIndex = Int(player.currentVideoSubTitleIndex)
                 }
 
                 if !spuTracks.isEmpty {
@@ -70,17 +70,17 @@ class NCContextMenuPlayerTracks: NSObject {
             children.append(deferredElement)
         case .audio:
             let deferredElement = UIDeferredMenuElement.uncached { [self] completion in
-                guard let player = ncplayer?.player else { return completion([]) }
+                guard let player = ncplayer else { return completion([]) }
                 let audioTracks = player.audioTrackNames
                 let audioTrackIndexes = player.audioTrackIndexes
 
                 var actions = [UIAction]()
                 var audioIndex: Int?
 
-                if let data = self.database.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
+                if let data = self.database.getVideoOrAudio(metadata: metadata), let idx = data.currentAudioTrackIndex {
                     audioIndex = idx
-                } else if let idx = ncplayer?.player.currentAudioTrackIndex {
-                    audioIndex = Int(idx)
+                } else {
+                    audioIndex = Int(player.currentAudioTrackIndex)
                 }
 
                 if !audioTracks.isEmpty {
@@ -112,11 +112,11 @@ class NCContextMenuPlayerTracks: NSObject {
 
             switch self.trackType {
             case .subtitle:
-                self.ncplayer?.player.currentVideoSubTitleIndex = index
-                self.database.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(index))
+                self.ncplayer?.currentVideoSubTitleIndex = index
+                self.database.addVideoOrAudio(metadata: metadata, currentVideoSubTitleIndex: Int(index))
             case .audio:
-                self.ncplayer?.player.currentAudioTrackIndex = index
-                self.database.addVideo(metadata: metadata, currentAudioTrackIndex: Int(index))
+                self.ncplayer?.currentAudioTrackIndex = index
+                self.database.addVideoOrAudio(metadata: metadata, currentAudioTrackIndex: Int(index))
             }
         }
     }

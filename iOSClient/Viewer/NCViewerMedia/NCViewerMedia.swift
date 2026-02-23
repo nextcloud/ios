@@ -52,7 +52,7 @@ class NCViewerMedia: UIViewController {
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
     weak var delegate: NCViewerMediaViewDelegate?
-    private var hud: NCHud?
+    private var hudToken: Int?
 
     private var allowOpeningDetails = true
     private var tipView: EasyTipView?
@@ -548,7 +548,7 @@ extension NCViewerMedia {
 
         switch state {
         case .stopped:
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
             #if DEBUG
             print("Played mode: STOPPED")
@@ -563,31 +563,34 @@ extension NCViewerMedia {
             #endif
         case .ended:
             database.addVideoOrAudio(metadata: metadata, position: 0)
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
             #if DEBUG
             print("Played mode: ENDED")
             #endif
         case .downloading(let progress):
             addDownloadHudIfNeeded()
-            hud?.progress(progress)
+            LucidBanner.shared.update(
+                payload: LucidBannerPayload.Update(progress: progress),
+                for: hudToken
+            )
             #if DEBUG
             print("Played mode: DOWNLOADING")
             #endif
         case .error(let error):
             addDownloadHudIfNeeded()
             if let nkError = error {
-                hud?.error(text: nkError.errorDescription)
+                completeHudBannerError(subtitle: nkError.errorDescription, token: hudToken)
             } else {
-                hud?.dismiss()
+                completeHudBannerError(token: hudToken)
             }
-            hud = nil
+            hudToken = nil
             #if DEBUG
             print("Played mode: ERROR")
             #endif
         case .downloaded:
             addDownloadHudIfNeeded()
-            hud?.success()
-            hud = nil
+            completeHudBannerSuccess(token: hudToken)
+            hudToken = nil
             #if DEBUG
             print("Played mode: DOWNLOADED")
             #endif
@@ -597,7 +600,7 @@ extension NCViewerMedia {
                 playerToolBar.playerButtonView.isHidden = false
                 viewerMediaPage?.changeScreenMode(mode: .normal)
             }
-            playerToolBar.playButtonPause()
+            playerToolBar.showPauseButton()
             // Set track audio/subtitle
             let data = database.getVideoOrAudio(metadata: metadata)
             if let currentAudioTrackIndex = data?.currentAudioTrackIndex {
@@ -620,7 +623,7 @@ extension NCViewerMedia {
             #endif
         case .paused:
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
             #if DEBUG
             print("Played mode: PAUSED")
             #endif
@@ -638,12 +641,14 @@ extension NCViewerMedia {
     }
 
     private func addDownloadHudIfNeeded() {
-        if hud == nil {
-            hud = NCHud(self.tabBarController?.view)
-            hud?.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) { [weak self] in
+        if hudToken != nil { return }
+
+        let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
+        let hudToken = showHudBanner(
+            scene: scene,
+            title: NSLocalizedString("_downloading_", comment: "")) { [weak self] in
                 self?.mediaCoordinator.cancelDownload()
             }
-        }
     }
 }
 

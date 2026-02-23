@@ -56,9 +56,9 @@ class NCPlayer: NSObject {
         playerToolBar?.setBarPlayer(position: 0, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
         playerToolBar?.playerButtonView?.isHidden = false
         if mediaCoordinator.isPlaying {
-            playerToolBar?.playButtonPause()
+            playerToolBar?.showPauseButton()
         } else {
-            playerToolBar?.playButtonPlay()
+            playerToolBar?.showPlayButton()
         }
     }
 

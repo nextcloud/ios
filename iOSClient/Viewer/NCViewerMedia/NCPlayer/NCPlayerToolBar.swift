@@ -7,7 +7,6 @@ import Foundation
 import NextcloudKit
 import UIKit
 import AVKit
-import FloatingPanel
 import Alamofire
 import LucidBanner
 
@@ -150,6 +149,9 @@ class NCPlayerToolBar: UIView {
         } else {
             hide()
         }
+
+        setupSubtitleButton()
+        setupAudioButton()
     }
 
     public func update(position: Float, length: Float, playedTime: String, remainingTime: String?) {
@@ -239,21 +241,47 @@ class NCPlayerToolBar: UIView {
         viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
 
-    @IBAction func tapSubTitle(_ sender: Any) {
-        guard let player = ncplayer else { return }
-        let spuTracks = player.videoSubTitlesNames
-        let spuTrackIndexes = player.videoSubTitlesIndexes
+    private func setupSubtitleButton() {
+          guard let player = ncplayer else { return }
 
-        toggleMenuSubTitle(spuTracks: spuTracks, spuTrackIndexes: spuTrackIndexes, sender: sender)
-    }
+          var currentIndex: Int?
+          if let data = database.getVideoOrAudio(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
+              currentIndex = idx
+          } else {
+              currentIndex = Int(player.currentVideoSubTitleIndex)
+          }
 
-    @IBAction func tapAudio(_ sender: Any) {
-        guard let player = ncplayer else { return }
-        let audioTracks = player.audioTrackNames
-        let audioTrackIndexes = player.audioTrackIndexes
+          subtitleButton.menu = NCContextMenuPlayerTracks(
+              trackType: .subtitle,
+              tracks: player.videoSubTitlesNames,
+              trackIndexes: player.videoSubTitlesIndexes,
+              currentIndex: currentIndex,
+              ncplayer: ncplayer,
+              metadata: metadata,
+              viewerMediaPage: viewerMediaPage
+          ).viewMenu()
+      }
 
-        toggleMenuAudio(audioTracks: audioTracks, audioTrackIndexes: audioTrackIndexes, sender: sender)
-    }
+      private func setupAudioButton() {
+          guard let player = ncplayer else { return }
+
+          var currentIndex: Int?
+          if let data = database.getVideoOrAudio(metadata: metadata), let idx = data.currentAudioTrackIndex {
+              currentIndex = idx
+          } else {
+              currentIndex = Int(player.currentAudioTrackIndex)
+          }
+
+          audioButton.menu = NCContextMenuPlayerTracks(
+              trackType: .audio,
+              tracks: player.audioTrackNames,
+              trackIndexes: player.audioTrackIndexes,
+              currentIndex: currentIndex,
+              ncplayer: ncplayer,
+              metadata: metadata,
+              viewerMediaPage: viewerMediaPage
+          ).viewMenu()
+      }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
@@ -292,141 +320,6 @@ class NCPlayerToolBar: UIView {
         } else {
             repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
         }
-    }
-}
-
-extension NCPlayerToolBar {
-    func toggleMenuSubTitle(spuTracks: [Any], spuTrackIndexes: [Any], sender: Any?) {
-        var actions = [NCMenuAction]()
-        var subTitleIndex: Int?
-
-        if let data = self.database.getVideoOrAudio(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
-            subTitleIndex = idx
-        } else if let idx = ncplayer?.currentVideoSubTitleIndex {
-            subTitleIndex = Int(idx)
-        }
-
-        if !spuTracks.isEmpty {
-            for index in 0...spuTracks.count - 1 {
-
-                guard let title = spuTracks[index] as? String, let idx = spuTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
-
-                actions.append(
-                    NCMenuAction(
-                        title: title,
-                        icon: UIImage(),
-                        onTitle: title,
-                        onIcon: UIImage(),
-                        selected: (subTitleIndex ?? -9999) == idx,
-                        on: (subTitleIndex ?? -9999) == idx,
-                        sender: sender,
-                        action: { _ in
-                            self.ncplayer?.currentVideoSubTitleIndex = idx
-                            self.database.addVideoOrAudio(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
-                        }
-                    )
-                )
-            }
-
-            actions.append(.seperator(order: 0, sender: sender))
-        }
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_add_subtitle_", comment: ""),
-                icon: UIImage(),
-                onTitle: NSLocalizedString("_add_subtitle_", comment: ""),
-                onIcon: UIImage(),
-                selected: false,
-                on: false,
-                sender: sender,
-                action: { _ in
-
-                    guard let metadata = self.metadata else { return }
-                    let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                    if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
-                       let viewController = navigationController.topViewController as? NCSelect {
-
-                        viewController.delegate = self
-                        viewController.typeOfCommandView = .nothing
-                        viewController.includeDirectoryE2EEncryption = false
-                        viewController.enableSelectFile = true
-                        viewController.type = "subtitle"
-                        viewController.serverUrl = metadata.serverUrl
-                        viewController.session = NCSession.shared.getSession(account: metadata.account)
-
-                        self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
-                    }
-                }
-            )
-        )
-
-        viewerMediaPage?.presentMenu(with: actions, menuColor: UIColor(hexString: "#1C1C1EFF"), textColor: .white, sender: sender)
-    }
-
-    func toggleMenuAudio(audioTracks: [Any], audioTrackIndexes: [Any], sender: Any?) {
-        var actions = [NCMenuAction]()
-        var audioIndex: Int?
-
-        if let data = self.database.getVideoOrAudio(metadata: metadata), let idx = data.currentAudioTrackIndex {
-            audioIndex = idx
-        } else if let idx = ncplayer?.currentAudioTrackIndex {
-            audioIndex = Int(idx)
-        }
-
-        if !audioTracks.isEmpty {
-            for index in 0...audioTracks.count - 1 {
-                guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
-                actions.append(
-                    NCMenuAction(
-                        title: title,
-                        icon: UIImage(),
-                        onTitle: title,
-                        onIcon: UIImage(),
-                        selected: (audioIndex ?? -9999) == idx,
-                        on: (audioIndex ?? -9999) == idx,
-                        sender: sender,
-                        action: { _ in
-                            self.ncplayer?.currentAudioTrackIndex = idx
-                            self.database.addVideoOrAudio(metadata: metadata, currentAudioTrackIndex: Int(idx))
-                        }
-                    )
-                )
-            }
-
-            actions.append(.seperator(order: 0, sender: sender))
-        }
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_add_audio_", comment: ""),
-                icon: UIImage(),
-                onTitle: NSLocalizedString("_add_audio_", comment: ""),
-                onIcon: UIImage(),
-                selected: false,
-                on: false,
-                sender: sender,
-                action: { _ in
-                    guard let metadata = self.metadata else { return }
-                    let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                    if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
-                        let viewController = navigationController.topViewController as? NCSelect {
-
-                        viewController.delegate = self
-                        viewController.typeOfCommandView = .nothing
-                        viewController.includeDirectoryE2EEncryption = false
-                        viewController.enableSelectFile = true
-                        viewController.type = "audio"
-                        viewController.serverUrl = metadata.serverUrl
-                        viewController.session = NCSession.shared.getSession(account: metadata.account)
-
-                        self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
-                    }
-                }
-            )
-        )
-
-        viewerMediaPage?.presentMenu(with: actions, menuColor: UIColor(hexString: "#1C1C1EFF"), textColor: .white, sender: sender)
     }
 }
 

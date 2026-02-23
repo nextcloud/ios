@@ -516,11 +516,10 @@ extension NCViewerMediaPage: NCTransferDelegate {
                     if ncplayer.isPlaying() {
                         ncplayer.playerPause()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            ncplayer.openAVPlayer(url: url)
                             ncplayer.playerPlay()
                         }
                     } else {
-                        ncplayer.openAVPlayer(url: url)
+                        ncplayer.playerPlay()
                     }
                 } else if metadata.isImage {
                     await self.currentViewController.loadImage()
