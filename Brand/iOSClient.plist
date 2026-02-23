@@ -12,7 +12,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Nextcloud</string>
+	<string>HPA Cloud</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -33,10 +33,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>it.twsweb.Nextcloud</string>
+			<string>com.hpa.cloud</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>nextcloud</string>
+				<string>hpacloud</string>
 			</array>
 		</dict>
 	</array>
@@ -48,8 +48,8 @@
 	<string>8e9f9874-938e-460b-a9be-f82cb3393971</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>nextcloudtalk</string>
-		<string>nextcloudnotes</string>
+		<string>hpacloudtalk</string>
+		<string>hpacloudnotes</string>
 	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>12.3</string>

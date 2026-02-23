@@ -23,26 +23,26 @@ let userAgent: String = {
 final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
-    var brand: String = "Nextcloud"
+    var brand: String = "HPA Cloud"
     var brandUserAgent: String = ""
-    var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2026"
-    var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
-    var loginBaseUrl: String = "https://cloud.nextcloud.com"
+    var textCopyrightNextcloudiOS: String = "HPA Cloud for iOS %@ © 2026"
+    var textCopyrightNextcloudServer: String = "HPA Cloud Server %@"
+    var loginBaseUrl: String = "https://cloud.apps.vn"
     var pushNotificationServerProxy: String = ""
-    var linkLoginHost: String = "https://nextcloud.com/install"
-    var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
-    var webLoginAutenticationProtocol: String = "nc://"                                        // example "abc://"
-    var privacy: String = "https://nextcloud.com/privacy"
-    var sourceCode: String = "https://github.com/nextcloud/ios"
+    var linkLoginHost: String = "https://cloud.apps.vn"
+    var linkloginPreferredProviders: String = "https://cloud.apps.vn"
+    var webLoginAutenticationProtocol: String = "hpacloud://"                                        // example "abc://"
+    var privacy: String = "https://cloud.apps.vn/privacy"
+    var sourceCode: String = "https://github.com/hpa/cloud"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
-    var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
+    var appStoreUrl: String = "https://apps.apple.com/app/hpa-cloud/idYOURID"
 
     // Auto Upload default folder
     var folderDefaultAutoUpload: String = "Photos"
 
     // Capabilities Group
-    var capabilitiesGroup: String = "group.it.twsweb.Crypto-Cloud"
-    var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
+    var capabilitiesGroup: String = "group.com.hpa.cloud"
+    var capabilitiesGroupApps: String = "group.com.hpa.apps"
 
     // BRAND ONLY
     var use_AppConfig: Bool = false                                                         // Don't touch me !!
@@ -51,8 +51,8 @@ final class NCBrandOptions: @unchecked Sendable {
     var use_themingColor: Bool = true
 
     var disable_intro: Bool = false
-    var disable_request_login_url: Bool = false
-    var disable_multiaccount: Bool = false
+    var disable_request_login_url: Bool = true
+    var disable_multiaccount: Bool = true
     var disable_more_external_site: Bool = false
     var disable_openin_file: Bool = false                                                       // Don't touch me !!
     var disable_crash_service: Bool = false
@@ -64,8 +64,8 @@ final class NCBrandOptions: @unchecked Sendable {
     var enforce_passcode_lock = false
     var enforce_privacyScreenEnabled = false
 
-    // Example: (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
-    var enforce_servers: [(name: String, url: String)] = []
+    // Only allow HPA Cloud server
+    var enforce_servers: [(name: String, url: String)] = [(name: "HPA Cloud", url: "https://cloud.apps.vn")]
 
     // Internal option behaviour
     var cleanUpDay: Int = 0                                                                     // Set default "Delete all cached files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
