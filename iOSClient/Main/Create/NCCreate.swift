@@ -270,7 +270,7 @@ class NCCreate: NSObject {
 
         if !downloadMetadata.isEmpty {
             let token = showHudBanner(scene: scene,
-                                      title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                      title: "_download_in_progress_",
                                       stage: .button) {
                 if let downloadRequest {
                     downloadRequest.cancel()

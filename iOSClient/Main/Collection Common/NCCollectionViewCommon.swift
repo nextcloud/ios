@@ -630,7 +630,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
             let token = showHudBanner(
                 scene: scene,
-                title: NSLocalizedString("_upload_in_progress_", comment: ""))
+                title: "_upload_in_progress_")
 
             for (index, items) in UIPasteboard.general.items.enumerated() {
                 for item in items {

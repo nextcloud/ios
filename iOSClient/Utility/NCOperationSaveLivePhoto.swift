@@ -31,7 +31,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                                                                                                          selector: "") else {
                 return self.finish()
             }
-            tokenBanner = showHudBanner(scene: scene, title: NSLocalizedString("_download_image_", comment: ""))
+            tokenBanner = showHudBanner(scene: scene, title: "_download_image_")
 
             let resultsMetadata = await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
             } progressHandler: { progress in

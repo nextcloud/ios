@@ -15,9 +15,15 @@ func showHudBanner(scene: UIWindowScene?,
     if scene == nil {
         scene = UIApplication.shared.mainAppWindow?.windowScene
     }
+    if var title {
+        title = NSLocalizedString(title, comment: "")
+    }
+    if var subtitle {
+        subtitle = NSLocalizedString(subtitle, comment: "")
+    }
 
     let payload = LucidBannerPayload(
-        title: NSLocalizedString(title ?? "", comment: ""),
+        title: title,
         subtitle: subtitle,
         stage: stage,
         vPosition: .center,
@@ -42,9 +48,9 @@ func completeHudBannerSuccess(token: Int?) {
 }
 
 @MainActor
-func completeHudBannerError(description: String? = nil, token: Int?) {
+func completeHudBannerError(description: String, token: Int?) {
     let payload = LucidBannerPayload.Update(
-        subtitle: NSLocalizedString(description ?? "", comment: ""),
+        subtitle: NSLocalizedString(description, comment: ""),
         stage: .error,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond
     )

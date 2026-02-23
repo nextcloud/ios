@@ -213,7 +213,7 @@ extension UIAlertController {
                             sceneIdentifier: sceneIdentifier)?.windowScene
                         token = showHudBanner(
                             scene: scene,
-                            title: NSLocalizedString("_delete_in_progress_", comment: "")
+                            title: "_delete_in_progress_"
                         )
                     }
 

@@ -59,7 +59,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
                             let token = showHudBanner(
                                 scene: self.scene,
-                                title: NSLocalizedString("_delete_in_progress_", comment: ""),
+                                title: "_delete_in_progress_",
                                 stage: .button) {
                                     cancelOnTap = true
                                 }
