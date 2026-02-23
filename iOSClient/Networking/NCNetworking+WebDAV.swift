@@ -769,49 +769,26 @@ extension NCNetworking {
 
     func lockUnlockFile(_ metadata: tableMetadata, shouldLock: Bool) async -> NKError {
         do {
-            if let lock = try await NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shouldLock, account: metadata.account) {
+            _ = try await NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shouldLock, account: metadata.account)
 
+            let results = await readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+
+            guard results.error == .success,
+                    let metadata = results.metadata else {
+                return results.error
             }
+            NCManageDatabase.shared.addMetadata(metadata)
 
-        } catch let nkError {
-           // return nkError
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+            }
+        } catch let nkError as NKError {
+            return nkError
+        } catch {
+            print(error)
         }
 
         return .success
-
-        /*
-        let results = try? await NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shouldLock, account: metadata.account)
-        guard results.error == .success || results.error.errorCode == self.global.errorPreconditionFailed else {
-        }
-
-
-
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shouldLock, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.serverUrlFileName,
-                                                                                            name: "lockUnlockFile")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { _, _, error in
-            // 0: lock was successful; 412: lock did not change, no error, refresh
-            guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
-                let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
-                NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: self.global.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                return
-            }
-            self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, _, error in
-                guard error == .success, let metadata = metadata else { return }
-                NCManageDatabase.shared.addMetadata(metadata)
-
-                Task {
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
-                    }
-                }
-            }
-        }
-        */
     }
 
     // MARK: - Direct Download

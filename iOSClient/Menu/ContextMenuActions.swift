@@ -141,6 +141,7 @@ enum ContextMenuActions {
 
     static func lockUnlock(isLocked: Bool,
                            metadata: tableMetadata,
+                           controller: NCMainTabBarController?,
                            completion: (() -> Void)? = nil) -> UIAction {
         let titleKey: String
         var subtitleKey: String = ""
@@ -161,7 +162,10 @@ enum ContextMenuActions {
             attributes: metadata.canUnlock(as: metadata.userId) ? [] : [.disabled]
         ) { _ in
             Task {
-                await NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)
+                let error = await NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)
+                if error != .success {
+                    await showErrorBanner(controller: controller, error: error)
+                }
                 completion?()
             }
         }

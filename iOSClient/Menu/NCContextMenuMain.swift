@@ -137,7 +137,9 @@ class NCContextMenuMain: NSObject {
            !metadata.directory,
            !capabilities.filesLockVersion.isEmpty {
             mainActionsMenu.append(
-                ContextMenuActions.lockUnlock(isLocked: metadata.lock, metadata: metadata)
+                ContextMenuActions.lockUnlock(isLocked: metadata.lock,
+                                              metadata: metadata,
+                                              controller: controller)
             )
         }
 
