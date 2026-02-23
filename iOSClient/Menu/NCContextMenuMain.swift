@@ -462,8 +462,12 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "document.on.trash")
         ) { _ in
             Task {
-                let error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.sceneIdentifier)
 
+
+
+                let error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
+
+                /*
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(
                         status: NCGlobal.shared.networkingStatusDelete,
@@ -476,6 +480,7 @@ class NCContextMenuMain: NSObject {
                         error: error
                     )
                 }
+                */
             }
         }
     }

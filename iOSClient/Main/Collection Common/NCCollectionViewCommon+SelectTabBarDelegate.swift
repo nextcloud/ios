@@ -5,6 +5,7 @@
 import UIKit
 import Foundation
 import NextcloudKit
+import LucidBanner
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func selectAll() {
@@ -38,9 +39,29 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             let copyMetadatas = metadatas
 
             Task {
-                var error = NKError()
-                for metadata in copyMetadatas where error == .success {
-                    error = await self.networking.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
+                for metadata in copyMetadatas {
+                    var token: Int?
+                    if metadata.isDirectory {
+                        let scene = SceneManager.shared.getWindow(
+                            sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
+                        token = showHudBanner(
+                            scene: scene,
+                            title: NSLocalizedString("_delete_in_progress_", comment: "")
+                        )
+                    }
+
+                    await self.networking.deleteCache(metadata, progress: { progress in
+                        Task {
+                            if let token {
+                                LucidBanner.shared.update(
+                                    payload: LucidBannerPayload.Update(progress: progress),
+                                    for: token
+                                )
+                            }
+                        }
+
+                    })
+                    LucidBanner.shared.dismiss()
                 }
                 await self.setEditMode(false)
             }

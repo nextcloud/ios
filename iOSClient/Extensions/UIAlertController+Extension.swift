@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import LucidBanner
 
 extension UIAlertController {
     /// Creates a alert controller with a textfield, asking to create a new folder
@@ -203,9 +204,29 @@ extension UIAlertController {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
-                var error = NKError()
-                for metadata in selectedMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
+                for metadata in selectedMetadatas {
+                    var token: Int?
+                    if metadata.isDirectory {
+                        let scene = SceneManager.shared.getWindow(
+                            sceneIdentifier: sceneIdentifier)?.windowScene
+                        token = showHudBanner(
+                            scene: scene,
+                            title: NSLocalizedString("_delete_in_progress_", comment: "")
+                        )
+                    }
+
+                    await NCNetworking.shared.deleteCache(metadata, progress: { progress in
+                        Task {
+                            if let token {
+                                LucidBanner.shared.update(
+                                    payload: LucidBannerPayload.Update(progress: progress),
+                                    for: token
+                                )
+                            }
+                        }
+
+                    })
+                    LucidBanner.shared.dismiss()
                 }
             }
             completion(false)

@@ -312,9 +312,8 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-#if !EXTENSION
-    @MainActor
-    func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> NKError {
+    func deleteCache(_ metadata: tableMetadata,
+                     progress: @escaping (_ progress: Double) -> Void = { _ in }) async {
         var num: Float = 0
         func numIncrement() -> Float {
             num += 1
@@ -336,24 +335,14 @@ extension NCNetworking {
         await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.directory {
-            let token = showHudBanner(
-                scene: SceneManager.shared.getWindow(
-                sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-                title: NSLocalizedString("_delete_in_progress_", comment: "")
-            )
-
             if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
                     let num = numIncrement()
-                    LucidBanner.shared.update(
-                        payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
-                        for: token
-                    )
+                    progress(Double(num) / Double(total))
                 }
             }
-            LucidBanner.shared.dismiss()
         } else {
             await deleteLocalFile(metadata: metadata)
 
@@ -361,12 +350,12 @@ extension NCNetworking {
                 delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
             }
         }
-
-        return .success
     }
 
+#if !EXTENSION
     @MainActor
-    func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) async -> (errorText: String?, errorCode: Int?) {
+    func setStatusWaitDelete(metadatas: [tableMetadata],
+                             sceneIdentifier: String?) async -> (errorText: String?, errorCode: Int?) {
         var metadatasPlain: [tableMetadata] = []
         var metadatasE2EE: [tableMetadata] = []
 
