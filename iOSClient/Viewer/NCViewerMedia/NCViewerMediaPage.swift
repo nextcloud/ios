@@ -156,6 +156,8 @@ class NCViewerMediaPage: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        changeScreenMode(mode: viewerMediaScreenMode)
         startTimerAutoHide()
     }
 
