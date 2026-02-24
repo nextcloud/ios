@@ -169,7 +169,9 @@ class NCViewerMedia: UIViewController {
                 self?.playerMovedToAnotherItem(oldItem: old, newItem: new)
             }.store(in: &cancellables)
             mediaCoordinator.statePublisher.sink { [weak self] state in
-                self?.mediaCoordinator(changedPlaybackState: state)
+                DispatchQueue.main.async {
+                    self?.mediaCoordinator(changedPlaybackState: state)
+                }
             }.store(in: &cancellables)
             mediaCoordinator.positionPublisher.sink { [weak self] position in
                 self?.mediaCoordinator(didChangePosition: position)
@@ -644,9 +646,10 @@ extension NCViewerMedia {
         if hudToken != nil { return }
 
         let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
-        let hudToken = showHudBanner(
+        hudToken = showHudBanner(
             scene: scene,
-            title: NSLocalizedString("_downloading_", comment: "")) { [weak self] in
+            title: NSLocalizedString("_downloading_", comment: ""),
+            stage: .button) { [weak self] in
                 self?.mediaCoordinator.cancelDownload()
             }
     }
