@@ -35,7 +35,7 @@ enum ContextMenuActions {
              image: UIImage(systemName: icon),
              attributes: destructive ? [.destructive] : []
          ) { _ in
-             let alert = UIAlertController.deleteFileOrFolder(
+             let alert = UIAlertController.alertDeleteFileOrFolder(
                  titleString: titleDelete + "?",
                  message: message,
                  canDeleteServer: selectedMetadatas.allSatisfy { !$0.lock },
