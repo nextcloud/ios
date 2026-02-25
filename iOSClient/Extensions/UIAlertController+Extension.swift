@@ -187,8 +187,7 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-#if !EXTENSION
-    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], sceneIdentifier: String?, completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, metadatas: [tableMetadata], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
             title: titleString,
             message: message,
@@ -196,9 +195,7 @@ extension UIAlertController {
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
-                    /*
-                  await NCNetworking.shared.setStatusWaitDelete(metadatas: selectedMetadatas, sceneIdentifier: sceneIdentifier)
-                     */
+                    await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
                 }
                 completion(false)
             })
@@ -206,29 +203,8 @@ extension UIAlertController {
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
-                for metadata in selectedMetadatas {
-                    var token: Int?
-                    if metadata.isDirectory {
-                        let scene = SceneManager.shared.getWindow(
-                            sceneIdentifier: sceneIdentifier)?.windowScene
-                        token = showHudBanner(
-                            scene: scene,
-                            title: "_delete_in_progress_"
-                        )
-                    }
-
-                    await NCNetworking.shared.deleteCache(metadata, progress: { progress in
-                        Task {
-                            if let token {
-                                LucidBanner.shared.update(
-                                    payload: LucidBannerPayload.Update(progress: progress),
-                                    for: token
-                                )
-                            }
-                        }
-
-                    })
-                    LucidBanner.shared.dismiss()
+                for metadata in metadatas {
+                    await NCNetworking.shared.deleteCache(metadata)
                 }
             }
             completion(false)
@@ -239,7 +215,6 @@ extension UIAlertController {
         })
         return alertController
     }
-#endif
 
     static func renameFile(fileName: String,
                            isDirectory: Bool = false,

@@ -50,12 +50,12 @@ class NCViewerContextMenu: NSObject {
 
         // OFFLINE
         if !webView, metadata.canSetAsAvailableOffline {
-            menuElements.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller))
+            menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, viewController: controller))
         }
 
         // SHARE
         if !webView, metadata.canShare {
-            menuElements.append(ContextMenuActions.share(selectedMetadatas: [metadata], controller: controller, sender: sender))
+            menuElements.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, sender: sender))
         }
 
         // PDF ACTIONS
@@ -65,7 +65,7 @@ class NCViewerContextMenu: NSObject {
 
         // DELETE
         if !webView, metadata.isDeletable {
-            menuElements.append(ContextMenuActions.deleteOrUnshare(selectedMetadatas: [metadata], controller: controller))
+            menuElements.append(ContextMenuActions.delete(metadatas: [metadata], controller: controller))
         }
 
         return UIMenu(title: "", children: menuElements)

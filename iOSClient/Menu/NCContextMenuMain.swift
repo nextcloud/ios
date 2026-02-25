@@ -155,7 +155,7 @@ class NCContextMenuMain: NSObject {
            metadata.canSetAsAvailableOffline {
             mainActionsMenu.append(
                 ContextMenuActions.setAvailableOffline(
-                    selectedMetadatas: [metadata],
+                    metadatas: [metadata],
                     isAnyOffline: metadata.isOffline,
                     viewController: viewController
                 )
@@ -177,7 +177,7 @@ class NCContextMenuMain: NSObject {
         if metadata.isCopyableMovable {
             mainActionsMenu.append(
                 ContextMenuActions.moveOrCopy(
-                    selectedMetadatas: [metadata],
+                    metadatas: [metadata],
                     account: metadata.account,
                     viewController: viewController
                 )
