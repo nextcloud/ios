@@ -86,31 +86,35 @@ class NCEndToEndInitialize: NSObject {
                             // TEST publicKey
                             let extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
                             if extractedPublicKey != NCEndToEndEncryption.shared().generatedPublicKey {
-                                let error = NKError(errorCode: error.errorCode, errorDescription: "error: the public key is incorrect")
-                                NCContentPresenter().messageNotification("E2E sign publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                                Task {
+                                    await showErrorBanner(controller: self.controller, text: "E2E sign publicKey: the public key is incorrect", errorCode: error.errorCode)
+                                }
                             } else {
                                 NCPreferences().setEndToEndCertificate(account: account, certificate: certificate)
                                 // Request PrivateKey chiper to Server
                                 self.getPrivateKeyCipher()
                             }
                         } else if error != .success {
-                            switch error.errorCode {
-                            case NCGlobal.shared.errorBadRequest:
-                                let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
-                                NCContentPresenter().messageNotification("E2E sign publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                            case NCGlobal.shared.errorConflict:
-                                let error = NKError(errorCode: error.errorCode, errorDescription: "Conflict: a public key for the user already exists")
-                                NCContentPresenter().messageNotification("E2E sign publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                            default:
-                                NCContentPresenter().messageNotification("E2E sign publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                            Task {
+                                switch error.errorCode {
+                                case NCGlobal.shared.errorBadRequest:
+                                    await showErrorBanner(controller: self.controller, text: "E2E sign publicKey: bad request: internal error", errorCode: error.errorCode)
+                                case NCGlobal.shared.errorConflict:
+                                    await showErrorBanner(controller: self.controller, text: "E2E sign publicKey: conflict, a public key for the user already exists", errorCode: error.errorCode)
+                                default:
+                                    await showErrorBanner(controller: self.controller, text: "E2E sign publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                                }
                             }
                         }
                     }
                 case NCGlobal.shared.errorConflict:
-                    let error = NKError(errorCode: error.errorCode, errorDescription: "Forbidden: the user can't access the public keys")
-                    NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    Task {
+                        await showErrorBanner(controller: self.controller, text: "E2E get publicKey: forbidden, the user can't access the public keys", errorCode: error.errorCode)
+                    }
                 default:
-                    NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    Task {
+                        await showErrorBanner(controller: self.controller, text: "E2E get publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                    }
                 }
             }
         }
@@ -154,9 +158,9 @@ class NCEndToEndInitialize: NSObject {
                        let privateKey = String(data: keyData, encoding: .utf8) {
                         NCPreferences().setEndToEndPrivateKey(account: account, privateKey: privateKey)
                     } else {
-                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to decrypt Private Key")
-                        NCContentPresenter().messageNotification("E2E decrypt privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-
+                        Task {
+                            await showErrorBanner(controller: self.controller, text: "E2E decrypt privateKey: serious internal error to decrypt Private Key", errorCode: error.errorCode)
+                        }
                         return
                     }
                     // Save to keychain
@@ -177,8 +181,9 @@ class NCEndToEndInitialize: NSObject {
                                 verifyCertificate = NCEndToEndEncryption.shared().verifyCertificate(certificate, publicKey: publicKey)
                             }
                             if verifyCertificate == false {
-                                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to verify certificate")
-                                NCContentPresenter().messageNotification("E2E verify certificate server", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                                Task {
+                                    await showErrorBanner(controller: self.controller, text: "E2E verify certificate server: serious internal error to verify certificate", errorCode: error.errorCode)
+                                }
                                 return
                             }
 
@@ -188,18 +193,17 @@ class NCEndToEndInitialize: NSObject {
                             self.delegate?.endToEndInitializeSuccess(metadata: self.metadata)
 
                         } else if error != .success {
-                            switch error.errorCode {
-                            case NCGlobal.shared.errorBadRequest:
-                                let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
-                                NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                            case NCGlobal.shared.errorResourceNotFound:
-                                let error = NKError(errorCode: error.errorCode, errorDescription: "Server public key doesn't exist")
-                                NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                            case NCGlobal.shared.errorConflict:
-                                let error = NKError(errorCode: error.errorCode, errorDescription: "Forbidden: the user can't access the Server public key")
-                                NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                            default:
-                                NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                            Task {
+                                switch error.errorCode {
+                                case NCGlobal.shared.errorBadRequest:
+                                    await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: bad request: internal error", errorCode: error.errorCode)
+                                case NCGlobal.shared.errorResourceNotFound:
+                                    await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: server public key doesn't exist", errorCode: error.errorCode)
+                                case NCGlobal.shared.errorConflict:
+                                    await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: forbidden, the user can't access the Server public key", errorCode: error.errorCode)
+                                default:
+                                    await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                                }
                             }
                         }
                     }
@@ -217,8 +221,9 @@ class NCEndToEndInitialize: NSObject {
             } else if error != .success {
                 switch error.errorCode {
                 case NCGlobal.shared.errorBadRequest:
-                    let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
-                    NCContentPresenter().messageNotification("E2E get privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    Task {
+                        await showErrorBanner(controller: self.controller, text: "E2E get privateKey: bad request, internal error", errorCode: error.errorCode)
+                    }
                 case NCGlobal.shared.errorResourceNotFound:
                     // message
                     guard let e2ePassphrase = NYMnemonic.generateString(128, language: "english") else { return }
@@ -236,10 +241,13 @@ class NCEndToEndInitialize: NSObject {
 
                     self.controller?.present(alertController, animated: true)
                 case NCGlobal.shared.errorConflict:
-                    let error = NKError(errorCode: error.errorCode, errorDescription: "Forbidden: the user can't access the private key")
-                    NCContentPresenter().messageNotification("E2E get privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    Task {
+                        await showErrorBanner(controller: self.controller, text: "E2E get privateKey: forbidden, the user can't access the private key", errorCode: error.errorCode)
+                    }
                 default:
-                    NCContentPresenter().messageNotification("E2E get privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    Task {
+                        await showErrorBanner(controller: self.controller, text: "E2E get privateKey: \(error.errorDescription)", errorCode: error.errorCode)
+                    }
                 }
             }
         }
@@ -248,8 +256,9 @@ class NCEndToEndInitialize: NSObject {
     private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
         guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
-            let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
-            NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+            Task {
+                await showErrorBanner(controller: self.controller, text: "E2E privateKey: error creating private key cipher", errorCode: error.errorCode)
+            }
             return
         }
 
@@ -283,8 +292,9 @@ class NCEndToEndInitialize: NSObject {
                             verifyCertificate = NCEndToEndEncryption.shared().verifyCertificate(certificate, publicKey: publicKey)
                         }
                         if verifyCertificate == false {
-                            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to verify certificate")
-                            NCContentPresenter().messageNotification("E2E verify certificate server", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                            Task {
+                                await showErrorBanner(controller: self.controller, text: "E2E verify certificate server: serious internal error to verify certificate", errorCode: error.errorCode)
+                            }
                             return
                         }
 
@@ -296,31 +306,30 @@ class NCEndToEndInitialize: NSObject {
                         }
                         self.delegate?.endToEndInitializeSuccess(metadata: self.metadata)
                     } else if error != .success {
-                        switch error.errorCode {
-                        case NCGlobal.shared.errorBadRequest:
-                            let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
-                            NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                        case NCGlobal.shared.errorResourceNotFound:
-                            let error = NKError(errorCode: error.errorCode, errorDescription: "Server public key doesn't exist")
-                            NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                        case NCGlobal.shared.errorConflict:
-                            let error = NKError(errorCode: error.errorCode, errorDescription: "Forbidden: the user can't access the Server public key")
-                            NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                        default:
-                            NCContentPresenter().messageNotification("E2E Server publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                        Task {
+                            switch error.errorCode {
+                            case NCGlobal.shared.errorBadRequest:
+                                await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: bad request, internal error", errorCode: error.errorCode)
+                            case NCGlobal.shared.errorResourceNotFound:
+                                await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: server public key doesn't exist", errorCode: error.errorCode)
+                            case NCGlobal.shared.errorConflict:
+                                await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: forbidden, the user can't access the Server public key", errorCode: error.errorCode)
+                            default:
+                                await showErrorBanner(controller: self.controller, text: "E2E Server publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                            }
                         }
                     }
                 }
             } else if error != .success {
-                switch error.errorCode {
-                case NCGlobal.shared.errorBadRequest:
-                    let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
-                    NCContentPresenter().messageNotification("E2E store privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                case NCGlobal.shared.errorConflict:
-                    let error = NKError(errorCode: error.errorCode, errorDescription: "Conflict: a private key for the user already exists")
-                    NCContentPresenter().messageNotification("E2E store privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                default:
-                    NCContentPresenter().messageNotification("E2E store privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                Task {
+                    switch error.errorCode {
+                    case NCGlobal.shared.errorBadRequest:
+                        await showErrorBanner(controller: self.controller, text: "E2E store privateKey: bad request, internal error", errorCode: error.errorCode)
+                    case NCGlobal.shared.errorConflict:
+                        await showErrorBanner(controller: self.controller, text: "E2E store privateKey: conflict, a private key for the user already exists", errorCode: error.errorCode)
+                    default:
+                        await showErrorBanner(controller: self.controller, text: "E2E store privateKey: \(error.errorDescription)", errorCode: error.errorCode)
+                    }
                 }
             }
         }
