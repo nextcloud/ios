@@ -488,10 +488,8 @@ class NCContextMenuMain: NSObject {
             Task { @MainActor in
                 var token: Int?
                 if metadata.isDirectory {
-                    let scene = SceneManager.shared.getWindow(
-                        sceneIdentifier: self.sceneIdentifier)?.windowScene
                     token = showHudBanner(
-                        scene: scene,
+                        scene: self.scene,
                         title: "_delete_in_progress_"
                     )
                 }
@@ -573,8 +571,7 @@ class NCContextMenuMain: NSObject {
                                                               errorCode: results.error.errorCode)
                                     } else {
                                         if let tooltip = results.uiResponse?.ocs.data.tooltip {
-                                            await showInfoBanner(sceneIdentifier: self.sceneIdentifier,
-                                                                 text: tooltip)
+                                            await showInfoBanner(controller: self.controller, text: tooltip)
                                         } else {
                                             let baseURL = metadata.urlBase
 
