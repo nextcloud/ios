@@ -137,6 +137,7 @@ class NCContextMenuShare: NSObject {
         advancePermission.share = tableShare(value: share)
         advancePermission.oldTableShare = tableShare(value: share)
         advancePermission.metadata = metadata
+        advancePermission.controller = controller
 
         if let downloadLimit = try? database.getDownloadLimit(byAccount: metadata.account, shareToken: share.token) {
             advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)

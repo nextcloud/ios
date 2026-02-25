@@ -110,7 +110,7 @@ class NCShare: UIViewController, NCSharePagingContent {
 
             reloadData()
 
-            networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
+            networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session, controller: controller)
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
             searchField.searchTextField.font = .systemFont(ofSize: 14)
@@ -126,6 +126,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             advancePermission.networking = self.networking
             advancePermission.share = TransientShare.shareLink(metadata: self.metadata, password: password)
             advancePermission.metadata = self.metadata
+            advancePermission.controller = self.controller
             navigationController.pushViewController(advancePermission, animated: true)
         }
     }
@@ -285,6 +286,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         advancePermission.share = tableShare(value: share)
         advancePermission.oldTableShare = tableShare(value: share)
         advancePermission.metadata = metadata
+        advancePermission.controller = self.controller
 
         if let downloadLimit = try? NCManageDatabase.shared.getDownloadLimit(byAccount: metadata.account, shareToken: share.token) {
             advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
@@ -394,6 +396,7 @@ extension NCShare: NCShareNetworkingDelegate {
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
                 advancePermission.metadata = self.metadata
+                advancePermission.controller = self.controller
                 navigationController.pushViewController(advancePermission, animated: true)
             }
         }
