@@ -22,6 +22,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonMore: UIButton!
 
@@ -86,6 +87,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageLocal.image = nil
 
         labelTitle.text = ""
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
 
@@ -103,6 +106,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         contentView.bringSubviewToFront(buttonMore)
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        labelTitle.preferredMaxLayoutWidth = contentView.bounds.width - 10
+    }
+
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
     }
@@ -112,6 +120,26 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
         if buttonMore.frame.contains(location) {
             delegate?.onMenuIntent(with: metadata)
+        }
+    }
+
+    func setFilename(_ filename: String, isDirectory: Bool) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if isDirectory || ext.isEmpty || base.isEmpty {
+            labelTitle.text = filename
+            labelTitle.numberOfLines = 2
+            labelTitle.lineBreakMode = .byWordWrapping
+            labelExtension?.text = ""
+            labelExtension?.isHidden = true
+        } else {
+            labelTitle.text = base
+            labelTitle.numberOfLines = 1
+            labelTitle.lineBreakMode = .byTruncatingTail
+            labelExtension?.text = "." + ext
+            labelExtension?.isHidden = false
         }
     }
 
@@ -237,7 +265,7 @@ extension NCCollectionViewCommon {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.labelTitle.text = metadata.fileNameView
+        cell.setFilename(metadata.fileNameView, isDirectory: metadata.directory)
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
@@ -286,6 +314,8 @@ extension NCCollectionViewCommon {
         // Color string find in search
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.labelTitle.font = .systemFont(ofSize: 15)
+        cell.labelExtension?.textColor = NCBrandColor.shared.textColor
+        cell.labelExtension?.font = .systemFont(ofSize: 15)
 
         // Obligatory here, at the end !!
         cell.metadata = metadata
