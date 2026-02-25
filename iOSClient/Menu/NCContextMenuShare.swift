@@ -156,7 +156,7 @@ class NCContextMenuShare: NSObject {
             if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
                 Task {
                     await showErrorBanner(controller: controller,
-                                          text: NSLocalizedString("_e2e_in_upload_", comment: ""),
+                                          text: "_e2e_in_upload_",
                                           errorCode: NCGlobal.shared.errorE2EEUploadInProgress)
                 }
                 return

@@ -89,7 +89,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
                 Task {
                     await showErrorBanner(
                         controller: parent.controller,
-                        text: NSLocalizedString("_too_many_failed_passcode_attempts_error_", comment: ""),
+                        text: "_too_many_failed_passcode_attempts_error_",
                         errorCode: NCGlobal.shared.errorInternalError
                     )
                 }

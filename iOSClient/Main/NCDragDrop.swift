@@ -145,7 +145,7 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: 0)
+                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: NCGlobal.shared.errorInternalError)
             }
             return
         }
