@@ -9,6 +9,13 @@ import MediaPlayer
 import NextcloudKit
 import Alamofire
 
+private class PassThroughVLCVideoView: UIView {
+    override func addSubview(_ view: UIView) {
+        super.addSubview(view)
+        view.isUserInteractionEnabled = false
+    }
+}
+
 protocol NCMediaCoordinatorDelegate: AnyObject {
     func showError(withTitle title: String, message: String)
     func showAlert(alert: UIAlertController)
@@ -45,6 +52,7 @@ enum NCPlayerState: Equatable {
     case gettingURL
     case downloading(progress: Double)
     case downloaded
+    case streamAdded
 
     init(vlcState: VLCMediaPlayerState) {
         switch vlcState {
@@ -55,6 +63,7 @@ enum NCPlayerState: Equatable {
         case .error: self = .error(error: nil)
         case .playing: self = .playing
         case .paused: self = .paused
+        case .esAdded: self = .streamAdded
         default: self = .stopped
         }
     }
@@ -141,9 +150,6 @@ class NCMediaCoordinator: NSObject {
     }
     private var coverImage: UIImage? {
         didSet {
-            guard let coverImage else {
-                return
-            }
             updateNowPlayingImage(coverImage)
         }
     }
@@ -154,10 +160,20 @@ class NCMediaCoordinator: NSObject {
         item?.fileName ?? ""
     }
 
-    weak var videoOutputView: UIView? {
-        didSet {
-            player?.drawable = videoOutputView
-        }
+    private let videoOutputView = PassThroughVLCVideoView()
+
+    func putVideoOutputView(in view: UIView) {
+        guard videoOutputView.superview != view else { return }
+        videoOutputView.removeFromSuperview()
+        videoOutputView.translatesAutoresizingMaskIntoConstraints = false
+        videoOutputView.isUserInteractionEnabled = false
+        view.addSubview(videoOutputView)
+        NSLayoutConstraint.activate([
+            videoOutputView.topAnchor.constraint(equalTo: view.topAnchor),
+            videoOutputView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            videoOutputView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            videoOutputView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
 
     var position: Float {
@@ -299,7 +315,7 @@ class NCMediaCoordinator: NSObject {
         player?.jumpBackward(seconds)
     }
 
-    func savePosition() {
+    private func savePosition() {
         guard let metadata = self.item, let media = self.media else { return }
         guard currentMediaIsInPlayer() else { return }
         guard media.lengthInSeconds > Self.secondsIn5Minutes else { return }
@@ -318,7 +334,7 @@ class NCMediaCoordinator: NSObject {
 
     private var downloadRequest: DownloadRequest?
     private func prepareAndStartPlayback(for metadata: tableMetadata) {
-        stateSubject.send(.gettingURL)
+        self.state = .gettingURL
         networking.getVideoUrl(metadata: metadata) { url, error in
             if error == .success, let url = url {
                 self.onReceived(playbackURL: url, metadata: metadata)
@@ -367,6 +383,7 @@ class NCMediaCoordinator: NSObject {
         }
         let nextItemIndex = items.index(after: index)
         let nextMetadata = items[nextItemIndex]
+        pause()
         play(item: nextMetadata)
     }
 
@@ -386,6 +403,7 @@ class NCMediaCoordinator: NSObject {
         }
         let prevItemIndex = items.index(before: index)
         let prevMetadata = items[prevItemIndex]
+        pause()
         play(item: prevMetadata)
     }
 
@@ -396,7 +414,6 @@ class NCMediaCoordinator: NSObject {
         player = nil
         item = nil
         url = nil
-        videoOutputView = nil
         playRepeat = false
         if clearQueue {
             items.removeAll()
@@ -482,10 +499,14 @@ class NCMediaCoordinator: NSObject {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
 
-    private func updateNowPlayingImage(_ image: UIImage) {
+    private func updateNowPlayingImage(_ image: UIImage?) {
         var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-        nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
-            return image
+        if let image = image {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+                return image
+            }
+        } else {
+            nowPlayingInfo.removeValue(forKey: MPMediaItemPropertyArtwork)
         }
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
@@ -520,6 +541,8 @@ class NCMediaCoordinator: NSObject {
     private func updateCoverImage() {
         guard let item else { return }
 
+        self.coverImage = nil
+
         if item.isVideo && !item.hasPreview {
             utility.createImageFileFrom(metadata: item)
             self.coverImage = utility.getImage(ocId: item.ocId,
@@ -527,14 +550,14 @@ class NCMediaCoordinator: NSObject {
                                                ext: global.previewExt1024,
                                                userId: item.userId,
                                                urlBase: item.urlBase)
-        } else if item.isAudio {
-            self.coverImage = utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
         } else if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(item.ocId,
                                                                                                              etag: item.etag,
                                                                                                              ext: global.previewExt1024,
                                                                                                              userId: item.userId,
                                                                                                              urlBase: item.urlBase)) {
             self.coverImage = image
+        } else if item.isAudio {
+            self.coverImage = utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
         }
     }
 

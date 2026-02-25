@@ -121,7 +121,7 @@ class NCViewerMedia: UIViewController {
 
             mediaCoordinator.delegate = self
 
-            self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
+            self.ncplayer = NCPlayer(playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
         }
 
         detailViewTopConstraint.constant = 0
@@ -176,6 +176,7 @@ class NCViewerMedia: UIViewController {
             mediaCoordinator.positionPublisher.sink { [weak self] position in
                 self?.mediaCoordinator(didChangePosition: position)
             }.store(in: &cancellables)
+            mediaCoordinator.putVideoOutputView(in: self.imageVideoContainer)
         } else if metadata.isImage {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.showTip()
