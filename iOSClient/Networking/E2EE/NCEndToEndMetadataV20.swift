@@ -350,7 +350,7 @@ extension NCEndToEndMetadata {
                 // TODO: whats happen with < ?
                 /*
                 if jsonCiphertextMetadata.counter < resultCounter {
-                    //NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                    //showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
                 } else if jsonCiphertextMetadata.counter > resultCounter {
                     print("Counter UPDATED: \(jsonCiphertextMetadata.counter)")
                     await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)

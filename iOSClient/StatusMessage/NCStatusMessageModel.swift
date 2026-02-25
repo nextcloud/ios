@@ -18,11 +18,15 @@ import NextcloudKit
         var id: String { rawValue }
     }
 
+    let controller: NCMainTabBarController?
     var predefinedStatuses: [NKUserStatus] = []
-
     var emojiText: String = ""
     var statusText: String = ""
     var clearAfterString = "_dont_clear_"
+
+    init(controller: NCMainTabBarController?) {
+        self.controller = controller
+    }
 
     func chooseStatusPreset(preset: NKUserStatus, clearAtText: String) {
         emojiText = preset.icon ?? ""
@@ -57,7 +61,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
         }
     }
@@ -74,7 +78,7 @@ import NextcloudKit
             if result.error == .success {
                 predefinedStatuses = isXcodeRunningForPreviews ? createStatusesForPreview() : result.userStatuses ?? []
             } else {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
         }
     }
@@ -89,7 +93,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
         }
     }
@@ -114,7 +118,7 @@ import NextcloudKit
                                                                         userStatusStatusIsUserDefined: result.statusIsUserDefined,
                                                                         account: result.account)
             } else {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
         }
     }
