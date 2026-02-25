@@ -83,18 +83,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         }
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-            let copyMetadatas = metadatas
-
             Task {
-                for metadata in copyMetadatas {
-                    var token: Int?
-                    if metadata.isDirectory {
-                        token = showHudBanner(
-                            scene: self.scene,
-                            title: "_delete_in_progress_"
-                        )
-                    }
+                var token: Int?
+                let containsDirectory = metadatas.contains { $0.isDirectory }
+                if containsDirectory {
+                    token = showHudBanner(scene: self.scene, title: "_delete_in_progress_")
+                }
 
+                for metadata in metadatas {
                     await self.networking.deleteCache(metadata, progress: { progress in
                         Task {
                             if let token {
