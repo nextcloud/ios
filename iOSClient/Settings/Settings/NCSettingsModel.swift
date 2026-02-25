@@ -85,7 +85,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     func getConfigFiles() {
         let session = NCSession.shared.getSession(controller: controller)
         let configLink = session.urlBase + NCBrandOptions.shared.mobileconfig
-        let configServer = NCConfigServer()
+        let configServer = NCConfigServer(controller: self.controller)
         if let url = URL(string: configLink) {
             configServer.startService(url: url, account: session.account)
         }

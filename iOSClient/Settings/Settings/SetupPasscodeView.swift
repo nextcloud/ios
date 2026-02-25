@@ -11,6 +11,7 @@ import PopupView
 
 struct SetupPasscodeView: UIViewControllerRepresentable {
     @Binding var isLockActive: Bool
+    weak var controller: NCMainTabBarController?
     var changePasscode: Bool = false
     let maxFailedAttempts = 2 // + 1 = 3... The lib's failed attempt counter starts at 0. Why? Who knows.
 
@@ -85,7 +86,13 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
                 return true
             } else if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts {
                 passcodeSettingsViewController.dismiss(animated: true)
-                NCContentPresenter().showCustomMessage(message: NSLocalizedString("_too_many_failed_passcode_attempts_error_", comment: ""), type: .error)
+                Task {
+                    await showErrorBanner(
+                        controller: parent.controller,
+                        text: NSLocalizedString("_too_many_failed_passcode_attempts_error_", comment: ""),
+                        errorCode: NCGlobal.shared.errorInternalError
+                    )
+                }
             }
 
             return false
