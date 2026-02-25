@@ -119,10 +119,9 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "square.and.arrow.up.fill")
         ) { _ in
             Task { @MainActor in
-                let controller = self.viewController.tabBarController as? NCMainTabBarController
                 await NCCreate().createActivityViewController(
                     selectedMetadata: [self.metadata],
-                    controller: controller,
+                    controller: self.controller,
                     sender: self.sender
                 )
             }
@@ -157,7 +156,7 @@ class NCContextMenuMain: NSObject {
                 ContextMenuActions.setAvailableOffline(
                     metadatas: [metadata],
                     isAnyOffline: metadata.isOffline,
-                    viewController: viewController
+                    controller: controller
                 )
             )
         }
@@ -179,7 +178,7 @@ class NCContextMenuMain: NSObject {
                 ContextMenuActions.moveOrCopy(
                     metadatas: [metadata],
                     account: metadata.account,
-                    viewController: viewController
+                    controller: controller
                 )
             )
         }
@@ -348,8 +347,7 @@ class NCContextMenuMain: NSObject {
 
                 let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                 if error != .success {
-                    let controller = self.viewController.tabBarController as? NCMainTabBarController
-                    await showErrorBanner(controller: controller, error: error)
+                    await showErrorBanner(controller: self.controller, error: error)
                 }
             }
         }

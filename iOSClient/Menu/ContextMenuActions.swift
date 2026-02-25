@@ -47,7 +47,7 @@ enum ContextMenuActions {
 
      static func setAvailableOffline(metadatas: [tableMetadata],
                                      isAnyOffline: Bool,
-                                     viewController: UIViewController,
+                                     controller: NCMainTabBarController?,
                                      completion: (() -> Void)? = nil) -> UIAction {
          UIAction(
              title: isAnyOffline
@@ -70,7 +70,7 @@ enum ContextMenuActions {
                      }
                  })
                  alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-                 viewController.present(alert, animated: true)
+                 controller?.present(alert, animated: true)
              } else {
                  Task {
                      for metadata in metadatas {
@@ -84,13 +84,17 @@ enum ContextMenuActions {
 
      static func moveOrCopy(metadatas: [tableMetadata],
                             account: String,
-                            viewController: UIViewController,
+                            controller: NCMainTabBarController?,
                             completion: (() -> Void)? = nil) -> UIAction {
          UIAction(
              title: NSLocalizedString("_move_or_copy_", comment: ""),
              image: UIImage(systemName: "rectangle.portrait.and.arrow.right")
          ) { _ in
              Task { @MainActor in
+                 guard let controller else {
+                     completion?()
+                     return
+                 }
                  var fileNameError: NKError?
                  let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
 
@@ -107,9 +111,8 @@ enum ContextMenuActions {
 
                  if let fileNameError {
                      let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
-                     await UIAlertController.warningAsync(message: message, presenter: viewController)
+                     await UIAlertController.warningAsync(message: message, presenter: controller)
                  } else {
-                     let controller = viewController.tabBarController as? NCMainTabBarController
                      NCSelectOpen.shared.openView(items: metadatas, controller: controller)
                  }
                  completion?()

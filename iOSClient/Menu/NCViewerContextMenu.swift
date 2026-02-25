@@ -50,7 +50,7 @@ class NCViewerContextMenu: NSObject {
 
         // OFFLINE
         if !webView, metadata.canSetAsAvailableOffline {
-            menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, viewController: controller))
+            menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
         }
 
         // SHARE
