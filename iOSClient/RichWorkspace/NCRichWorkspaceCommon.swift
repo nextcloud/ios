@@ -36,6 +36,7 @@ class NCRichWorkspaceCommon: NSObject {
             if error == .success {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     viewerRichWorkspaceWebView.url = url!
+                    viewerRichWorkspaceWebView.controller = controller
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
@@ -76,6 +77,7 @@ class NCRichWorkspaceCommon: NSObject {
                     if error == .success {
                         if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                             viewerRichWorkspaceWebView.url = url!
+                            viewerRichWorkspaceWebView.controller = controller
                             viewerRichWorkspaceWebView.metadata = metadata
                             viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
@@ -89,6 +91,7 @@ class NCRichWorkspaceCommon: NSObject {
             } else {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     viewerRichWorkspaceWebView.url = metadata.url
+                    viewerRichWorkspaceWebView.controller = controller
                     viewerRichWorkspaceWebView.metadata = metadata
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)

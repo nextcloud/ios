@@ -80,6 +80,7 @@ class NCViewerContextMenu: NSObject {
         ) { [weak self] _ in
             guard let controller = self?.controller else { return }
             NCCreate().createShare(viewController: controller,
+                                   controller: self?.controller,
                                    metadata: metadata,
                                    page: .activity)
         }

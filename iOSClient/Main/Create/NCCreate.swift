@@ -172,7 +172,7 @@ class NCCreate: NSObject {
         return (templates, selectedTemplate, ext)
     }
 
-    func createShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
+    func createShare(viewController: UIViewController, controller: NCMainTabBarController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         var page = page
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
@@ -217,6 +217,7 @@ class NCCreate: NSObject {
 
                     shareViewController?.pages = pages
                     shareViewController?.metadata = metadata
+                    shareViewController?.controller = controller
 
                     if pages.contains(page) {
                         shareViewController?.page = page

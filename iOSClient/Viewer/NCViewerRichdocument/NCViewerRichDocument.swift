@@ -21,6 +21,10 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NCSession.shared.getSession(account: metadata.account)
     }
 
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
+
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
@@ -176,7 +180,10 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
 
             if message.body as? String == "share" {
-                NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
+                NCCreate().createShare(viewController: self,
+                                       controller: self.controller,
+                                       metadata: metadata,
+                                       page: .sharing)
             }
 
             if let param = message.body as? [AnyHashable: Any] {

@@ -39,6 +39,7 @@ class NCSharePaging: UIViewController {
     private let applicationHandle = NCApplicationHandle()
 
     var metadata = tableMetadata()
+    var controller: NCMainTabBarController?
     var pages: [NCBrandOptions.NCInfoPagingTab] = []
     var page: NCBrandOptions.NCInfoPagingTab = .activity
 

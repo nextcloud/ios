@@ -11,6 +11,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     @IBOutlet weak var webViewBottomConstraint: NSLayoutConstraint!
 
     var metadata: tableMetadata?
+    var controller: NCMainTabBarController?
     var url: String = ""
 
     // MARK: - View Life Cycle
@@ -70,7 +71,10 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
             }
 
             if message.body as? String == "share", metadata != nil {
-                NCCreate().createShare(viewController: self, metadata: metadata!, page: .sharing)
+                NCCreate().createShare(viewController: self,
+                                       controller: self.controller,
+                                       metadata: metadata!,
+                                       page: .sharing)
             }
 
             if message.body as? String == "loading" {

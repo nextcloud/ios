@@ -16,6 +16,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     let utility = NCUtility()
     var items: [UIBarButtonItem] = []
 
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
+
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
@@ -166,7 +170,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             }
 
             if message.body as? String == "share" {
-                NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
+                NCCreate().createShare(viewController: self,
+                                       controller: self.controller,
+                                       metadata: metadata, page: .sharing)
             }
 
             if message.body as? String == "loading" {
