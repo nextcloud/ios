@@ -156,7 +156,7 @@ class NCPlayerToolBar: UIView {
 
     public func update(position: Float, length: Float, playedTime: String, remainingTime: String?) {
         // SLIDER & TIME
-        if playbackSliderEvent == .ended {
+        if playbackSliderEvent != .began && playbackSliderEvent != .moved {
             playbackSlider.value = position
         }
         labelCurrentTime.text = playedTime
