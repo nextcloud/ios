@@ -6,7 +6,6 @@ import Foundation
 import UIKit
 import NextcloudKit
 import WidgetKit
-import SwiftEntryKit
 import SwiftUI
 import CoreLocation
 
@@ -222,13 +221,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         if NCPreferences().privacyScreenEnabled {
-            if SwiftEntryKit.isCurrentlyDisplaying {
-                SwiftEntryKit.dismiss {
-                    self.showPrivacyProtectionWindow()
-                }
-            } else {
-                showPrivacyProtectionWindow()
-            }
+            showPrivacyProtectionWindow()
         }
     }
 
