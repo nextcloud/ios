@@ -186,7 +186,7 @@ class NCMediaCoordinator: NSObject {
 
     var currentAudioTrackIndex: Int32 {
         get { return player?.currentAudioTrackIndex ?? 0 }
-        set { player?.currentTitleIndex = newValue }
+        set { player?.currentAudioTrackIndex = newValue }
     }
 
     var currentVideoSubTitleIndex: Int32 {
