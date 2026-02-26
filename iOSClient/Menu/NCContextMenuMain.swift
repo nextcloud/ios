@@ -164,6 +164,12 @@ class NCContextMenuMain: NSObject {
             )
         }
 
+        // Save Live Photo
+        if NCNetworking.shared.isOnline,
+           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            mainActionsMenu.append(makeSaveLivePhotoAction(metadata: metadata, metadataMOV: metadataMOV))
+        }
+
         // Save as scan
         if NCNetworking.shared.isOnline,
            metadata.isSavebleAsImage {
@@ -285,6 +291,15 @@ class NCContextMenuMain: NSObject {
     }
 
     // MARK: File Actions
+
+    private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("_livephoto_save_", comment: ""),
+            image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+        ) { _ in
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.controller))
+        }
+    }
 
     private func makeSaveAsScanAction(metadata: tableMetadata) -> UIAction {
         return UIAction(

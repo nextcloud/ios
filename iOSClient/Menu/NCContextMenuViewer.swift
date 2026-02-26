@@ -53,6 +53,13 @@ class NCContextMenuViewer: NSObject {
             menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
         }
 
+        // LIVE PHOTO
+        if !webView,
+           NCNetworking.shared.isOnline,
+           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            menuElements.append(makeSaveLivePhotoAction(metadata: metadata, metadataMOV: metadataMOV))
+        }
+
         // SHARE
         if !webView, metadata.canShare {
             menuElements.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, sender: sender))
@@ -131,5 +138,14 @@ class NCContextMenuViewer: NSObject {
                 )
             }
         ]
+    }
+
+    private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("_livephoto_save_", comment: ""),
+            image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+        ) { _ in
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.controller))
+        }
     }
 }
