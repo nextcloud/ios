@@ -19,6 +19,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 
             if metadata.e2eEncrypted && !NCPreferences().isEndToEndEnabled(account: tblAccount.account) {
                 self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
+                return
             }
             let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
 
@@ -106,6 +107,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
         cell.selected(false, isEditMode: false)
+        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.isLivePhoto {
             cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])

@@ -7,7 +7,7 @@ import NextcloudKit
 
 /// A context menu created to be used universally with the different `NCViewer`s.
 /// See ``NCViewerImage``, ``NCViewerMedia``, ``NCViewerPDF`` for usage details.
-class NCViewerContextMenu: NSObject {
+class NCContextMenuViewer: NSObject {
     let metadata: tableMetadata
     let controller: NCMainTabBarController?
     let webView: Bool
@@ -51,6 +51,13 @@ class NCViewerContextMenu: NSObject {
         // OFFLINE
         if !webView, metadata.canSetAsAvailableOffline {
             menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
+        }
+
+        // LIVE PHOTO
+        if !webView,
+           NCNetworking.shared.isOnline,
+           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            menuElements.append(makeSaveLivePhotoAction(metadata: metadata, metadataMOV: metadataMOV))
         }
 
         // SHARE
@@ -131,5 +138,14 @@ class NCViewerContextMenu: NSObject {
                 )
             }
         ]
+    }
+
+    private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("_livephoto_save_", comment: ""),
+            image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+        ) { _ in
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.controller))
+        }
     }
 }
