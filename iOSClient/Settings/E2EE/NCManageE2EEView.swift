@@ -144,10 +144,12 @@ struct NCManageE2EEView: View {
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, _, error in
-                    if error == .success {
-                        NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
-                    } else {
-                        NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                    Task {
+                        if error == .success {
+                            await showInfoBanner(controller: model.controller, text: "E2E delete certificate")
+                        } else {
+                            await showErrorBanner(controller: model.controller, text: error.errorDescription, errorCode: error.errorCode)
+                        }
                     }
                 }
             }
@@ -173,10 +175,12 @@ struct NCManageE2EEView: View {
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, _, error in
-                    if error == .success {
-                        NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
-                    } else {
-                        NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                    Task {
+                        if error == .success {
+                            await showInfoBanner(controller: model.controller, text: "E2E delete privateKey")
+                        } else {
+                            await showErrorBanner(controller: model.controller, text: error.errorDescription, errorCode: error.errorCode)
+                        }
                     }
                 }
             }

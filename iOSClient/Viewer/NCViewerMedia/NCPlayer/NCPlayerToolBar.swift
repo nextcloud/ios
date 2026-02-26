@@ -337,7 +337,7 @@ class NCPlayerToolBar: UIView {
 }
 
 extension NCPlayerToolBar: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session, controller: NCMainTabBarController?) {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             let scene = SceneManager.shared.getWindow(controller: viewerMediaPage.tabBarController)?.windowScene
@@ -347,7 +347,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
             } else {
                 var downloadRequest: DownloadRequest?
                 let token = showHudBanner(scene: scene,
-                                          title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                          title: "_download_in_progress_",
                                           stage: .button) {
                     if let request = downloadRequest {
                         request.cancel()

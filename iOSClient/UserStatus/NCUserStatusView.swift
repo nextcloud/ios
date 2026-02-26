@@ -10,9 +10,9 @@ struct NCUserStatusView: View {
     @State private var model: NCUserStatusModel
     @Environment(\.dismiss) private var dismiss
 
-    init(account: String) {
+    init(account: String, controller: NCMainTabBarController?) {
         self.account = account
-        model = NCUserStatusModel(account: account)
+        model = NCUserStatusModel(account: account, controller: controller)
     }
 
     var body: some View {
@@ -62,6 +62,6 @@ struct NCUserStatusView: View {
 
 #Preview {
     NavigationStack {
-        NCUserStatusView(account: "demo@example.com")
+        NCUserStatusView(account: "demo@example.com", controller: nil)
     }
 }

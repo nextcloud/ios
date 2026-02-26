@@ -137,6 +137,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
+    internal var scene: UIWindowScene? {
+       SceneManager.shared.getWindow(sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
+    }
+
     internal var isNumberOfItemsInAllSectionsNull: Bool {
         var totalItems = 0
         for section in 0..<self.collectionView.numberOfSections {
@@ -626,7 +630,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
             let token = showHudBanner(
                 scene: scene,
-                title: NSLocalizedString("_upload_in_progress_", comment: ""))
+                title: "_upload_in_progress_")
 
             for (index, items) in UIPasteboard.general.items.enumerated() {
                 for item in items {

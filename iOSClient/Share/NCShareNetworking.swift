@@ -28,14 +28,20 @@ class NCShareNetworking: NSObject {
     let database = NCManageDatabase.shared
     weak var delegate: NCShareNetworkingDelegate?
     var view: UIView
-    var metadata: tableMetadata
-    var session: NCSession.Session
+    let metadata: tableMetadata
+    let session: NCSession.Session
+    let controller: NCMainTabBarController?
 
-    init(metadata: tableMetadata, view: UIView, delegate: NCShareNetworkingDelegate?, session: NCSession.Session) {
+    init(metadata: tableMetadata,
+         view: UIView,
+         delegate: NCShareNetworkingDelegate?,
+         session: NCSession.Session,
+         controller: NCMainTabBarController?) {
         self.metadata = metadata
         self.view = view
         self.delegate = delegate
         self.session = session
+        self.controller = controller
 
         super.init()
     }
@@ -108,7 +114,9 @@ class NCShareNetworking: NSObject {
                 if showLoadingIndicator {
                     NCActivityIndicator.shared.stop()
                 }
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
                 self.delegate?.readShareCompleted()
             }
         }
@@ -161,7 +169,9 @@ class NCShareNetworking: NSObject {
                     }
                 }
             } else {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
             }
 
             self.delegate?.shareCompleted()
@@ -190,7 +200,9 @@ class NCShareNetworking: NSObject {
                     }
                 }
             } else {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
             }
         }
     }
@@ -231,7 +243,9 @@ class NCShareNetworking: NSObject {
                     }
                 }
             } else {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
                 self.delegate?.updateShareWithError(idShare: shareable.idShare)
             }
         }
@@ -252,7 +266,9 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
                 self.delegate?.getSharees(sharees: nil)
             }
         }
@@ -278,7 +294,9 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.delegate?.downloadLimitRemoved(by: token)
             } else {
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
             }
         }
     }
@@ -304,7 +322,9 @@ class NCShareNetworking: NSObject {
                 self.delegate?.downloadLimitSet(to: limit, by: token)
             } else {
                 self.delegate?.downloadLimitRemoved(by: token)
-                NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: self.controller, error: error)
+                }
             }
         }
     }

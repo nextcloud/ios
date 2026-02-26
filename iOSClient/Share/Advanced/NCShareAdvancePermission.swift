@@ -56,6 +56,8 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     var shareConfig: NCShareConfig!
     var networking: NCShareNetworking?
 
+    var controller: NCMainTabBarController?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
@@ -247,14 +249,16 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                    NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
 
                     if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
-                        let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
-                        return NCContentPresenter().showInfo(error: error)
+                        await showErrorBanner(controller: controller,
+                                              text: "_e2e_in_upload_",
+                                              errorCode: NCGlobal.shared.errorE2EEUploadInProgress)
+                        return
                     }
 
                     let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: metadata.serverUrlFileName, addUserId: share.shareWith, removeUserId: nil, account: metadata.account)
 
                     if error != .success {
-                        return NCContentPresenter().showError(error: error)
+                        await showErrorBanner(controller: controller, error: error)
                     }
                 }
 

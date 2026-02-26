@@ -323,7 +323,6 @@ class NCFiles: NCCollectionViewCommon {
                     await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                 }
             } else {
-                // show error
                 await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
             }
 

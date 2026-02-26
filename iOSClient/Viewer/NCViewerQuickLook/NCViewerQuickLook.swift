@@ -64,8 +64,9 @@ private var hasChangesQuickLook: Bool = false
         guard isEditingEnabled else { return }
 
         if metadata?.isLivePhoto == true {
-            let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
-            NCContentPresenter().showInfo(error: error)
+            Task {
+                await showErrorBannerActiveScenes(text: "_message_disable_overwrite_livephoto_", errorCode: NCGlobal.shared.errorInternalError)
+            }
         }
 
         if let metadata = metadata, metadata.isImage {

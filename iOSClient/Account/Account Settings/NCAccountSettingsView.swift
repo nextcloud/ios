@@ -141,7 +141,7 @@ struct NCAccountSettingsView: View {
                     // User Status
                     if capabilities.userStatusEnabled {
                         if let account = model.tblAccount?.account {
-                            NavigationLink(destination: NCUserStatusView(account: account)) {
+                            NavigationLink(destination: NCUserStatusView(account: account, controller: model.controller)) {
                                 HStack {
                                     Image(systemName: "moon.fill")
                                         .resizable()
@@ -160,7 +160,7 @@ struct NCAccountSettingsView: View {
                         }
 
                         if let account = model.tblAccount?.account {
-                            NavigationLink(destination: NCStatusMessageView(account: account)) {
+                            NavigationLink(destination: NCStatusMessageView(account: account, controller: model.controller)) {
                                 HStack {
                                     Image(systemName: "message.fill")
                                         .resizable()

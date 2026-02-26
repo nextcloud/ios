@@ -11,7 +11,7 @@ class NCRichWorkspaceCommon: NSObject {
     func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
         }
@@ -36,6 +36,7 @@ class NCRichWorkspaceCommon: NSObject {
             if error == .success {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     viewerRichWorkspaceWebView.url = url!
+                    viewerRichWorkspaceWebView.controller = controller
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
@@ -50,7 +51,7 @@ class NCRichWorkspaceCommon: NSObject {
     func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
         }
@@ -76,6 +77,7 @@ class NCRichWorkspaceCommon: NSObject {
                     if error == .success {
                         if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                             viewerRichWorkspaceWebView.url = url!
+                            viewerRichWorkspaceWebView.controller = controller
                             viewerRichWorkspaceWebView.metadata = metadata
                             viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
@@ -89,6 +91,7 @@ class NCRichWorkspaceCommon: NSObject {
             } else {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     viewerRichWorkspaceWebView.url = metadata.url
+                    viewerRichWorkspaceWebView.controller = controller
                     viewerRichWorkspaceWebView.metadata = metadata
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)

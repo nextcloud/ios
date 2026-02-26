@@ -4,6 +4,7 @@
 
 import SwiftUI
 import LucidBanner
+import NextcloudKit
 import Alamofire
 
 // MARK: - Show Banner
@@ -43,7 +44,10 @@ func showBanner(scene: UIWindowScene?,
                 imageAnimation: LucidBanner.LucidBannerAnimationStyle,
                 imageColor: UIColor,
                 vPosition: LucidBanner.VerticalPosition = .top,
-                backgroundColor: UIColor) async {
+                backgroundColor: UIColor,
+                autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
+                swipeToDismiss: Bool = true,
+                policy: LucidBanner.ShowPolicy = .enqueue) async {
 #if !EXTENSION
     let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
 #endif
@@ -57,13 +61,14 @@ func showBanner(scene: UIWindowScene?,
         textColor: Color(uiColor: textColor),
         imageColor: Color(uiColor: imageColor),
         vPosition: vPosition,
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true
+        autoDismissAfter: autoDismissAfter,
+        swipeToDismiss: swipeToDismiss
     )
 
     LucidBanner.shared.show(
         scene: scene,
-        payload: payload) { state in
+        payload: payload,
+        policy: policy) { state in
         MessageBannerView(state: state)
     }
 }
@@ -194,6 +199,16 @@ func showErrorBannerActiveScenes(title: String = "_error_",
 
 @MainActor
 func showErrorBanner(controller: UITabBarController?,
+                     error: NKError) async {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+    await showErrorBanner(scene: scene,
+                          title: "_error_",
+                          text: error.errorDescription,
+                          errorCode: error.errorCode)
+}
+
+@MainActor
+func showErrorBanner(controller: UITabBarController?,
                      title: String = "_error_",
                      text: String,
                      footnote: String? = nil,
@@ -287,13 +302,21 @@ func showErrorBanner(scene: UIWindowScene?,
 }
 
 // MARK: - Helper
+
 #if !EXTENSION
+
+// Error 401 (maintenance mode)
+// Error 423 (locked)
+// Error 507 (insufficient storage)
+// Error -1009 (NSURLErrorNotConnectedToInternet)
+// Error -1003 (NSURLError​Cannot​Find​Host)
+
 func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
     guard let errorCode else {
         return false
     }
     // List of errors not to be displayed
-    if errorCode == -999 {
+    if errorCode == -999 || errorCode == 423 {
         return true
     }
     if let afError, case .explicitlyCancelled = afError {
@@ -307,11 +330,6 @@ func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
     } else {
         // Coalesce user-facing errors across the current foreground session.
         // The same error code is shown to the user only once.
-        // Error 401 (maintenance mode)
-        // Error 423 (locked)
-        // Error 507 (insufficient storage)
-        // Error -1009 (NSURLErrorNotConnectedToInternet)
-        // Error -1003 (NSURLError​Cannot​Find​Host)
         if errorCode == 401 ||
             errorCode == 423 ||
             errorCode == 507 ||

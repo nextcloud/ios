@@ -256,10 +256,10 @@ struct NCSettingsView: View {
             })
         }
         .sheet(isPresented: $showPasscode) {
-            SetupPasscodeView(isLockActive: $model.isLockActive)
+            SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller)
         }
         .sheet(isPresented: $showChangePasscode) {
-            SetupPasscodeView(isLockActive: $model.isLockActive, changePasscode: true)
+            SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller, changePasscode: true)
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)

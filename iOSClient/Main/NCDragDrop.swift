@@ -145,40 +145,48 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: 0)
+                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: NCGlobal.shared.errorInternalError)
             }
             return
         }
     }
 
-    func copyFile(metadatas: [tableMetadata], destination: String) async {
+    func copyFile(metadatas: [tableMetadata], destination: String, controller: NCMainTabBarController?) async {
         for metadata in metadatas {
-            NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusCopyMove,
-                                        account: metadata.account,
-                                        fileName: metadata.fileName,
-                                        serverUrl: metadata.serverUrl,
-                                        selector: metadata.sessionSelector,
-                                        ocId: metadata.ocId,
-                                        destination: destination,
-                                        error: .success)
+            let error = await NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
+            if error == .success {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                            account: metadata.account,
+                                            fileName: metadata.fileName,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
+                                            destination: destination,
+                                            error: .success)
+                }
+            } else {
+                await showErrorBanner(controller: controller, error: error)
             }
         }
     }
 
-    func moveFile(metadatas: [tableMetadata], destination: String) async {
+    func moveFile(metadatas: [tableMetadata], destination: String, controller: NCMainTabBarController?) async {
         for metadata in metadatas {
-            NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusCopyMove,
-                                        account: metadata.account,
-                                        fileName: metadata.fileName,
-                                        serverUrl: metadata.serverUrl,
-                                        selector: metadata.sessionSelector,
-                                        ocId: metadata.ocId,
-                                        destination: destination,
-                                        error: .success)
+            let error = await NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
+            if error == .success {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                                            account: metadata.account,
+                                            fileName: metadata.fileName,
+                                            serverUrl: metadata.serverUrl,
+                                            selector: metadata.sessionSelector,
+                                            ocId: metadata.ocId,
+                                            destination: destination,
+                                            error: .success)
+                }
+            } else {
+                await showErrorBanner(controller: controller, error: error)
             }
         }
     }

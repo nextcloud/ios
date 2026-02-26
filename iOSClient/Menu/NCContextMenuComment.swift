@@ -13,6 +13,10 @@ class NCContextMenuComment: NSObject {
     let viewController: UIViewController?
     private let utility = NCUtility()
 
+    internal var controller: NCMainTabBarController? {
+        self.viewController?.tabBarController as? NCMainTabBarController
+    }
+
     init(tableComments: tableComments, metadata: tableMetadata, viewController: UIViewController?) {
         self.tableComments = tableComments
         self.metadata = metadata
@@ -92,7 +96,7 @@ class NCContextMenuComment: NSObject {
                     (self.viewController as? NCActivity)?.loadComments()
                 } else {
                     Task { @MainActor in
-                        await showErrorBanner(controller: self.viewController?.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
+                        await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
             }
