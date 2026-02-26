@@ -19,6 +19,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 
             if metadata.e2eEncrypted && !NCPreferences().isEndToEndEnabled(account: tblAccount.account) {
                 self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
+                return
             }
             let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
 
