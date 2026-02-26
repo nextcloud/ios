@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2020 Marino Faggiana
+// SPDX-FileCopyrightText: 2025 Serhii Kaliberda
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
@@ -13,7 +14,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
 
     @MainActor
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, siblingMedia: [tableMetadata] = [], image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
         await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
@@ -40,19 +41,25 @@ class NCViewer: NSObject {
         }
 
         // IMAGE AUDIO VIDEO
-        else if metadata.isImage || metadata.isAudioOrVideo {
-            let viewerMediaPageContainer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage
+        else if metadata.isImage || metadata.isAudioOrVideo,
+            let viewerMediaPageContainer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+                if metadata.isAudioOrVideo {
+                    let mediaCoordinator = NCMediaCoordinator.shared
+                    mediaCoordinator.finishMediaSession()
+                    mediaCoordinator.items = siblingMedia
+                }
 
-            viewerMediaPageContainer?.delegateViewController = delegate
-            if let ocIds {
-                viewerMediaPageContainer?.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
-                viewerMediaPageContainer?.ocIds = ocIds
-            } else {
-                viewerMediaPageContainer?.currentIndex = 0
-                viewerMediaPageContainer?.ocIds = [metadata.ocId]
-            }
+                viewerMediaPageContainer.delegateViewController = delegate
 
-            return viewerMediaPageContainer
+                if let ocIds {
+                    viewerMediaPageContainer.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
+                    viewerMediaPageContainer.ocIds = ocIds
+                } else {
+                    viewerMediaPageContainer.currentIndex = 0
+                    viewerMediaPageContainer.ocIds = [metadata.ocId]
+                }
+
+                return viewerMediaPageContainer
         }
 
         // DOCUMENTS

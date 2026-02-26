@@ -47,7 +47,7 @@ class NCNetworkingE2EEDelete: NSObject {
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
                 try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                await database.deleteVideoAsync(metadata.ocId)
+                await database.deleteVideoOrAudioAsync(metadata.ocId)
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 await database.deleteLocalFileAsync(id: metadata.ocId)
                 // LIVE PHOTO SERVER
@@ -56,7 +56,7 @@ class NCNetworkingE2EEDelete: NSObject {
                     do {
                         try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadataLive.userId, urlBase: metadataLive.urlBase))
                     } catch { }
-                    await self.database.deleteVideoAsync(metadataLive.ocId)
+                    await self.database.deleteVideoOrAudioAsync(metadataLive.ocId)
                     await self.database.deleteMetadataAsync(id: metadataLive.ocId)
                     await self.database.deleteLocalFileAsync(id: metadataLive.ocId)
                 }
