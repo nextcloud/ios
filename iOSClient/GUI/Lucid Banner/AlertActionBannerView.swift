@@ -6,16 +6,16 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showAlertActionBannerView(controller: UITabBarController?,
+func showAlertActionBannerView(scene: UIWindowScene?,
                                title: String? = nil,
                                subtitle: String? = nil,
                                onConfirm: (() -> Void)? = nil) {
-    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
-
     let payload = LucidBannerPayload(
         title: title,
         subtitle: subtitle,
         vPosition: .top,
+        horizontalLayout: .stretch(margins: 100),
+        swipeToDismiss: true
     )
 
     LucidBanner.shared.show(
