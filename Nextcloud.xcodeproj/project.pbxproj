@@ -704,9 +704,6 @@
 		F7B769AE2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
 		F7B82F182EBFA3B700F5F242 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
-		F7B8F6142EAB64AD006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */; };
-		F7B8F6162EAB7503006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */; };
-		F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */; };
 		F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1888,7 +1885,6 @@
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
 				F70557B92ED44E4700135623 /* LucidBanner in Frameworks */,
-				F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
 				F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */,
@@ -1909,7 +1905,6 @@
 				F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
-				F7B8F6162EAB7503006A70D6 /* JDStatusBarNotification in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1933,7 +1928,6 @@
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
-				F7B8F6142EAB64AD006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
@@ -3529,7 +3523,6 @@
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
-				F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */,
 				F70557B82ED44E4700135623 /* LucidBanner */,
 			);
 			productName = "Share Ext";
@@ -3556,7 +3549,6 @@
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
 				F7160A7C2BE931DE0034DCB3 /* RealmSwift */,
 				F33EE6E22BF4C00700CA1A51 /* NIOSSL */,
-				F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -3636,7 +3628,6 @@
 				F3374AF32D78B01B002A38F9 /* DequeModule */,
 				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
 				F3374AF72D78B01B002A38F9 /* HeapModule */,
-				F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */,
 				F70557B62ED44E2700135623 /* LucidBanner */,
 			);
 			productName = "Crypto Cloud";
@@ -3816,7 +3807,6 @@
 				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
-				F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */,
 				F70557B52ED44E2700135623 /* XCRemoteSwiftPackageReference "LucidBanner" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -5729,7 +5719,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5795,7 +5785,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6094,14 +6084,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
-			};
-		};
-		F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/calimarkus/JDStatusBarNotification";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.4;
 			};
 		};
 		F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */ = {
@@ -6521,21 +6503,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
-		};
-		F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
-		};
-		F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
 		};
 		F7BB7E4627A18C56009B9F29 /* Parchment */ = {
 			isa = XCSwiftPackageProductDependency;
