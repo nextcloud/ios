@@ -10,11 +10,17 @@ func showAlertActionBannerView(scene: UIWindowScene?,
                                title: String? = nil,
                                subtitle: String? = nil,
                                onConfirm: (() -> Void)? = nil) {
+    let isPad = scene?.traitCollection.userInterfaceIdiom == .pad
+    let horizontalLayout: LucidBanner.HorizontalLayout =
+        isPad
+        ? .centered(width: 450)
+        : .stretch(margins: 20)
+
     let payload = LucidBannerPayload(
         title: title,
         subtitle: subtitle,
         vPosition: .top,
-        horizontalLayout: .stretch(margins: 50),
+        horizontalLayout: horizontalLayout,
         swipeToDismiss: true
     )
 
