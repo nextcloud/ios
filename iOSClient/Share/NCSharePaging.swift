@@ -39,6 +39,7 @@ class NCSharePaging: UIViewController {
     private let applicationHandle = NCApplicationHandle()
 
     var metadata = tableMetadata()
+    var controller: NCMainTabBarController?
     var pages: [NCBrandOptions.NCInfoPagingTab] = []
     var page: NCBrandOptions.NCInfoPagingTab = .activity
 
@@ -205,6 +206,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             }
             viewController.metadata = metadata
             viewController.height = height
+            viewController.controller = controller
             return viewController
         } else {
             return applicationHandle.pagingViewController(pagingViewController, viewControllerAt: index, metadata: metadata, topHeight: height)
@@ -295,51 +297,5 @@ class NCSharePagingView: PagingView {
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             pageView.topAnchor.constraint(equalTo: headerView.bottomAnchor)
         ])
-    }
-}
-
-class NCShareHeaderView: UIView {
-
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var path: MarqueeLabel!
-    @IBOutlet weak var info: UILabel!
-    @IBOutlet weak var creation: UILabel!
-    @IBOutlet weak var upload: UILabel!
-    @IBOutlet weak var favorite: UIButton!
-    @IBOutlet weak var details: UIButton!
-    @IBOutlet weak var tagListView: TagListView!
-
-    var ocId = ""
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(longTap(_:)))
-        path.addGestureRecognizer(longGesture)
-    }
-
-    @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-        NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
-            if error == .success {
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-                self.favorite.setImage(NCUtility().loadImage(
-                    named: "star.fill",
-                    colors: metadata.favorite ? [NCBrandColor.shared.yellowFavorite] : [NCBrandColor.shared.iconImageColor2],
-                    size: 20), for: .normal)
-            } else {
-                NCContentPresenter().showError(error: error)
-            }
-        }
-    }
-
-    @IBAction func touchUpInsideDetails(_ sender: UIButton) {
-        creation.isHidden = !creation.isHidden
-        upload.isHidden = !upload.isHidden
-    }
-
-    @objc func longTap(_ sender: UIGestureRecognizer) {
-        UIPasteboard.general.string = path.text
-        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
-        NCContentPresenter().showInfo(error: error)
     }
 }

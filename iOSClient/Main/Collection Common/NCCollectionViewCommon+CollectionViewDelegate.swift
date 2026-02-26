@@ -32,7 +32,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             var tokenBanner: Int?
             await MainActor.run {
                 tokenBanner = showHudBanner(scene: scene,
-                                            title: NSLocalizedString("_download_in_progress_", comment: ""),
+                                            title: "_download_in_progress_",
                                             stage: .button,
                                             onButtonTap: {
                     if let request = downloadRequest {
@@ -115,7 +115,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
+                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
         }
     }
@@ -166,7 +166,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return nil
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, sender: cell)
+            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: self, controller: self.controller, sender: cell)
             return contextMenu.viewMenu()
         })
     }

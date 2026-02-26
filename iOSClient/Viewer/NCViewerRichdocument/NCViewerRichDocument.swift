@@ -21,6 +21,10 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NCSession.shared.getSession(account: metadata.account)
     }
 
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
+
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
@@ -176,7 +180,10 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
 
             if message.body as? String == "share" {
-                NCCreate().createShare(viewController: self, metadata: metadata, page: .sharing)
+                NCCreate().createShare(viewController: self,
+                                       controller: self.controller,
+                                       metadata: metadata,
+                                       page: .sharing)
             }
 
             if let param = message.body as? [AnyHashable: Any] {
@@ -297,7 +304,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     // MARK: -
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session, controller: NCMainTabBarController?) {
         if let serverUrl, let metadata {
             let path = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
 

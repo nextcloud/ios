@@ -11,14 +11,13 @@ func showHudBanner(scene: UIWindowScene?,
                    subtitle: String? = nil,
                    stage: LucidBanner.Stage? = nil,
                    onButtonTap: (() -> Void)? = nil) -> Int? {
-    var scene = scene
-    if scene == nil {
-        scene = UIApplication.shared.mainAppWindow?.windowScene
-    }
+    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
+    let localizedTitle = title.map { NSLocalizedString($0, comment: "") }
+    let localizedSubTitle = subtitle.map { NSLocalizedString($0, comment: "") }
 
     let payload = LucidBannerPayload(
-        title: title,
-        subtitle: subtitle,
+        title: localizedTitle,
+        subtitle: localizedSubTitle,
         stage: stage,
         vPosition: .center,
         blocksTouches: true,
@@ -42,9 +41,9 @@ func completeHudBannerSuccess(token: Int?) {
 }
 
 @MainActor
-func completeHudBannerError(subtitle: String? = nil, token: Int?) {
+func completeHudBannerError(description: String, token: Int?) {
     let payload = LucidBannerPayload.Update(
-        subtitle: subtitle,
+        subtitle: NSLocalizedString(description, comment: ""),
         stage: .error,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond
     )

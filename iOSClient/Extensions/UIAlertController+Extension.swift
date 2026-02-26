@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import LucidBanner
 
 extension UIAlertController {
     /// Creates a alert controller with a textfield, asking to create a new folder
@@ -46,7 +47,7 @@ extension UIAlertController {
 
             if markE2ee {
                 if NCNetworking.shared.isOffline {
-                    completion?(NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_offline_not_allowed_"))
+                    completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
                     return
                 }
                 Task {
@@ -71,7 +72,7 @@ extension UIAlertController {
             } else if isDirectoryEncrypted {
                 Task {
                     if NCNetworking.shared.isOffline {
-                        completion?(NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_offline_not_allowed_"))
+                        completion?(NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
                         return
                     }
 
@@ -186,7 +187,7 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-    static func deleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], sceneIdentifier: String?, completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, metadatas: [tableMetadata], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
             title: titleString,
             message: message,
@@ -194,23 +195,20 @@ extension UIAlertController {
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
-                    await NCNetworking.shared.setStatusWaitDelete(metadatas: selectedMetadatas, sceneIdentifier: sceneIdentifier)
+                    await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
                 }
                 completion(false)
             })
         }
 
-        #if !EXTENSION
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
-                var error = NKError()
-                for metadata in selectedMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
+                for metadata in metadatas {
+                    await NCNetworking.shared.deleteCache(metadata)
                 }
             }
             completion(false)
         })
-        #endif
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
             completion(true)

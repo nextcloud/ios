@@ -7,6 +7,7 @@ import CoreLocation
 import NextcloudKit
 import Photos
 import OrderedCollections
+import LucidBanner
 
 class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
@@ -42,18 +43,26 @@ class NCAutoUpload: NSObject {
                                         assetCollections: [PHAssetCollection],
                                         account: String) async {
         defer {
-            NCContentPresenter().dismiss(after: 1)
+            LucidBanner.shared.dismiss(after: 1)
         }
 
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
-        NCContentPresenter().noteTop(text: NSLocalizedString("_creating_db_photo_progress_", comment: ""),
-                                     image: UIImage(systemName: "photo.on.rectangle.angled")?.image(color: .white, size: 20),
-                                     color: .lightGray,
-                                     delay: .infinity,
-                                     priority: .max)
+        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        await showBanner(scene: scene,
+                         title: "_info_",
+                         subtitle: "_creating_db_photo_progress_",
+                         textColor: .label,
+                         image: "photo.on.rectangle.angled",
+                         imageAnimation: .bounce,
+                         imageColor: .label,
+                         backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
+                         autoDismissAfter: 0,
+                         swipeToDismiss: false,
+                         policy: .drop
+        )
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
 

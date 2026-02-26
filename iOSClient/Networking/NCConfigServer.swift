@@ -11,6 +11,12 @@ import NextcloudKit
 // https://stackoverflow.com/questions/2338035/installing-a-configuration-profile-on-iphone-programmatically
 
 final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate {
+    let controller: NCMainTabBarController?
+
+    init(controller: NCMainTabBarController?) {
+        self.controller = controller
+    }
+
     // Start service
     func startService(url: URL, account: String) {
         let defaultSessionConfiguration = URLSessionConfiguration.default
@@ -21,8 +27,10 @@ final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate 
         }
 
         let dataTask = defaultSession.dataTask(with: urlRequest) { data, _, error in
-            if let error = error {
-                NCContentPresenter().showInfo(error: NKError(error: error))
+            if let error {
+                Task {
+                    await showErrorBanner(controller: self.controller, error: NKError(error: error))
+                }
             } else if let data = data {
                 self.start(data: data)
             }
@@ -70,7 +78,9 @@ final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate 
                 registerForNotifications()
                 UIApplication.shared.open(url)
             } catch {
-                NCContentPresenter().showInfo(error: NKError(error: error))
+                Task {
+                    await showErrorBanner(controller: self.controller, error: NKError(error: error))
+                }
                 self.stop()
             }
         }

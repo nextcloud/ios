@@ -44,8 +44,10 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-    public var metadata: tableMetadata!
-    public var height: CGFloat = 0
+    var metadata: tableMetadata!
+    var height: CGFloat = 0
+    var controller: NCMainTabBarController?
+
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
@@ -108,7 +110,7 @@ class NCShare: UIViewController, NCSharePagingContent {
 
             reloadData()
 
-            networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
+            networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session, controller: controller)
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
             searchField.searchTextField.font = .systemFont(ofSize: 14)
@@ -124,6 +126,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             advancePermission.networking = self.networking
             advancePermission.share = TransientShare.shareLink(metadata: self.metadata, password: password)
             advancePermission.metadata = self.metadata
+            advancePermission.controller = self.controller
             navigationController.pushViewController(advancePermission, animated: true)
         }
     }
@@ -283,6 +286,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         advancePermission.share = tableShare(value: share)
         advancePermission.oldTableShare = tableShare(value: share)
         advancePermission.metadata = metadata
+        advancePermission.controller = self.controller
 
         if let downloadLimit = try? NCManageDatabase.shared.getDownloadLimit(byAccount: metadata.account, shareToken: share.token) {
             advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
@@ -392,6 +396,7 @@ extension NCShare: NCShareNetworkingDelegate {
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
                 advancePermission.metadata = self.metadata
+                advancePermission.controller = self.controller
                 navigationController.pushViewController(advancePermission, animated: true)
             }
         }
@@ -457,7 +462,7 @@ extension NCShare: UITableViewDataSource {
             cell.setupCellUI()
 
             if cell.tableShare != nil, let tableShare = shares.firstShareLink {
-                cell.menuButton.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self).viewMenu()
+                cell.menuButton.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self, controller: controller).viewMenu()
                 cell.menuButton.showsMenuAsPrimaryAction = true
             }
 
@@ -476,7 +481,7 @@ extension NCShare: UITableViewDataSource {
                 cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI(titleAppendString: String(shareLinksCount))
-                cell.menuButton.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self).viewMenu()
+                cell.menuButton.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self, controller: controller).viewMenu()
                 cell.menuButton.showsMenuAsPrimaryAction = true
                 if tableShare.shareType == NKShare.ShareType.publicLink.rawValue { shareLinksCount += 1 }
                 return cell
@@ -490,7 +495,7 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.setupCellUI(userId: session.userId, session: session, metadata: metadata)
 
-                cell.buttonMenu.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self).viewMenu()
+                cell.buttonMenu.menu = NCContextMenuShare(share: tableShare, isDirectory: metadata.isDirectory, canReshare: canReshare, shareController: self, controller: controller).viewMenu()
                 cell.buttonMenu.showsMenuAsPrimaryAction = true
 
                 return cell

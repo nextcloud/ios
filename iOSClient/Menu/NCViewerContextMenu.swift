@@ -50,12 +50,12 @@ class NCViewerContextMenu: NSObject {
 
         // OFFLINE
         if !webView, metadata.canSetAsAvailableOffline {
-            menuElements.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller))
+            menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
         }
 
         // SHARE
         if !webView, metadata.canShare {
-            menuElements.append(ContextMenuActions.share(selectedMetadatas: [metadata], controller: controller, sender: sender))
+            menuElements.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, sender: sender))
         }
 
         // PDF ACTIONS
@@ -65,7 +65,7 @@ class NCViewerContextMenu: NSObject {
 
         // DELETE
         if !webView, metadata.isDeletable {
-            menuElements.append(ContextMenuActions.deleteOrUnshare(selectedMetadatas: [metadata], controller: controller))
+            menuElements.append(ContextMenuActions.delete(metadatas: [metadata], controller: controller))
         }
 
         return UIMenu(title: "", children: menuElements)
@@ -80,6 +80,7 @@ class NCViewerContextMenu: NSObject {
         ) { [weak self] _ in
             guard let controller = self?.controller else { return }
             NCCreate().createShare(viewController: controller,
+                                   controller: self?.controller,
                                    metadata: metadata,
                                    page: .activity)
         }
@@ -105,12 +106,8 @@ class NCViewerContextMenu: NSObject {
                 : NSLocalizedString("_add_favorites_", comment: ""),
             image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
         ) { _ in
-            NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
-                if error != .success {
-                    Task {
-                        await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
-                    }
-                }
+            Task {
+                await NCNetworking.shared.setStatusWaitFavorite(metadata)
             }
         }
     }

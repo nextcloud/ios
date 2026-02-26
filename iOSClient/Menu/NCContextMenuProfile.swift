@@ -15,6 +15,10 @@ class NCContextMenuProfile: NSObject {
     let viewController: UIViewController
     let utility = NCUtility()
 
+    internal var controller: NCMainTabBarController? {
+        self.viewController.tabBarController as? NCMainTabBarController
+    }
+
     init(userId: String, session: NCSession.Session, viewController: UIViewController) {
         self.userId = userId
         self.session = session
@@ -175,7 +179,6 @@ class NCContextMenuProfile: NSObject {
     }
 
     private func showError(_ errorKey: String) {
-        let controller = self.viewController.tabBarController as? NCMainTabBarController
         Task {
             await showErrorBanner(controller: controller,
                                   text: errorKey,

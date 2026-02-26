@@ -312,9 +312,8 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    #if !EXTENSION
-    @MainActor
-    func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
+    func deleteCache(_ metadata: tableMetadata,
+                     progress: @escaping (_ progress: Double) -> Void = { _ in }) async {
         var num: Float = 0
         func numIncrement() -> Float {
             num += 1
@@ -336,24 +335,14 @@ extension NCNetworking {
         await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.directory {
-            let token = showHudBanner(
-                scene: SceneManager.shared.getWindow(
-                sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-                title: NSLocalizedString("_delete_in_progress_", comment: "")
-            )
-
             if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
                     let num = numIncrement()
-                    LucidBanner.shared.update(
-                        payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
-                        for: token
-                    )
+                    progress(Double(num) / Double(total))
                 }
             }
-            LucidBanner.shared.dismiss()
         } else {
             await deleteLocalFile(metadata: metadata)
 
@@ -361,112 +350,51 @@ extension NCNetworking {
                 delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
             }
         }
-
-        return .success
     }
-    #endif
 
-    func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) async {
-        var metadatasPlain: [tableMetadata] = []
-        var metadatasE2EE: [tableMetadata] = []
+    func setStatusWaitDelete(metadatas: [tableMetadata]) async -> NKError {
+        var ocIds = Set<String>()
+        var serverUrls = Set<String>()
 
         for metadata in metadatas {
-            if metadata.isDirectoryE2EE {
-                metadatasE2EE.append(metadata)
-            } else {
-                metadatasPlain.append(metadata)
-            }
-        }
-
-        if !metadatasE2EE.isEmpty {
-#if !EXTENSION
-            if isOffline {
-                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
-            }
-
-            Task { @MainActor in
-                var num: Float = 0
-                let total = Float(metadatasE2EE.count)
-                var cancelOnTap = false
-                let scene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
-
-                let token = showHudBanner(scene: scene,
-                                          title: NSLocalizedString("_delete_in_progress_", comment: ""),
-                                          stage: .button) {
-                    cancelOnTap = true
-                }
-
-                for metadata in metadatasE2EE {
-                    let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-
-                    Task {@MainActor in
-                        num += 1
-                        LucidBanner.shared.update(
-                            payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
-                            for: token
-                        )
-                    }
-
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                                account: metadata.account,
-                                                fileName: metadata.fileName,
-                                                serverUrl: metadata.serverUrl,
-                                                selector: metadata.sessionSelector,
-                                                ocId: metadata.ocId,
-                                                destination: nil,
-                                                error: error)
-                    }
-
-                    if cancelOnTap {
-                        break
-                    }
-                }
-
-                LucidBanner.shared.dismiss()
-            }
-#endif
-        } else {
-            var ocIds = Set<String>()
-            var serverUrls = Set<String>()
-
-            for metadata in metadatasPlain {
-                if metadata.status == global.metadataStatusWaitCreateFolder {
+            if metadata.status == global.metadataStatusWaitCreateFolder {
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrlFileName))
+                for metadata in metadatas {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-                    let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrlFileName))
-                    for metadata in metadatas {
-                        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                    }
-                    return
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 }
-
-                let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
-                if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
-                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
-                }
-
-                ocIds.insert(metadata.ocId)
-                if metadata.livePhotoFile.isEmpty == false {
-                    if let ocId = NCUtility().getLivePhotoOcId(metadata: metadata) {
-                        ocIds.insert(ocId)
-                    }
-                }
-                serverUrls.insert(metadata.serverUrl)
+                return .success
             }
 
-            let ocIdss = ocIds
-            let serverUrlss = serverUrls
-            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                for ocId in ocIdss {
-                    await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                                          status: self.global.metadataStatusWaitDelete)
+            let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDeleteOrUnshare)
+            if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
+                return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_delete_file_")
+            }
+
+            ocIds.insert(metadata.ocId)
+            if metadata.livePhotoFile.isEmpty == false {
+                if let ocId = NCUtility().getLivePhotoOcId(metadata: metadata) {
+                    ocIds.insert(ocId)
                 }
-                serverUrlss.forEach { serverUrl in
-                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
-                }
+            }
+            serverUrls.insert(metadata.serverUrl)
+        }
+
+        let ocIdss = ocIds
+        let serverUrlss = serverUrls
+        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            for ocId in ocIdss {
+                await NCManageDatabase.shared.setMetadataSessionAsync(
+                    ocId: ocId,
+                    status: self.global.metadataStatusWaitDelete
+                )
+            }
+            serverUrlss.forEach { serverUrl in
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitDelete)
             }
         }
+        return .success
     }
 
     func deleteFileOrFolder(metadata: tableMetadata) async -> NKError {
@@ -519,35 +447,32 @@ extension NCNetworking {
 
     // MARK: - Rename
 
-    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String) {
+    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
         if (!metadata.permissions.isEmpty && permission == false) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
-            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
         }
 
         if metadata.isDirectoryE2EE {
-#if !EXTENSION
             if isOffline {
-                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                return NKError(errorCode: global.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_")
             }
-            Task {
-                let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
-                if error != .success {
-                    await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
-                }
+
+            let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
+            if error != .success {
+                return NKError(errorCode: error.errorCode, errorDescription: error.errorDescription)
             }
-#endif
         } else {
-            Task {
-                let ocId = metadata.ocId
-                let serverUrl = metadata.serverUrl
-                await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                    await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: ocId, status: self.global.metadataStatusWaitRename)
-                    delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
-                }
+            let ocId = metadata.ocId
+            let serverUrl = metadata.serverUrl
+            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: ocId, status: self.global.metadataStatusWaitRename)
+                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitRename)
             }
         }
+
+        return .success
     }
 
     func renameFileOrFolder(metadata: tableMetadata) async -> NKError {
@@ -585,22 +510,22 @@ extension NCNetworking {
 
     // MARK: - Move
 
-    func setStatusWaitMove(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
+    func setStatusWaitMove(_ metadata: tableMetadata, destination: String, overwrite: Bool) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove) {
-            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
         }
 
-        Task {
-            let ocId = metadata.ocId
-            let serverUrl = metadata.serverUrl
-            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitMove)
-                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitMove)
-            }
+        let ocId = metadata.ocId
+        let serverUrl = metadata.serverUrl
+        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitMove)
+            delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitMove)
         }
+
+        return .success
     }
 
     func moveFileOrFolder(metadata: tableMetadata) async -> NKError {
@@ -649,22 +574,22 @@ extension NCNetworking {
 
     // MARK: - Copy
 
-    func setStatusWaitCopy(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
+    func setStatusWaitCopy(_ metadata: tableMetadata, destination: String, overwrite: Bool) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy) {
-            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_modify_file_")
         }
 
-        Task {
-            let ocId = metadata.ocId
-            let serverUrl = metadata.serverUrl
-            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitCopy)
-                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitCopy)
-            }
+        let ocId = metadata.ocId
+        let serverUrl = metadata.serverUrl
+        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: ocId, destination: destination, overwrite: overwrite.description, status: self.global.metadataStatusWaitCopy)
+            delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitCopy)
         }
+
+        return .success
     }
 
     func copyFileOrFolder(metadata: tableMetadata) async -> NKError {
@@ -713,21 +638,21 @@ extension NCNetworking {
 
     // MARK: - Favorite
 
-    func setStatusWaitFavorite(_ metadata: tableMetadata,
-                               completion: @escaping (_ error: NKError) -> Void) {
-        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitFavorite {
-            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_favorite_file_"))
+    func setStatusWaitFavorite(_ metadata: tableMetadata) async -> NKError {
+        if metadata.status != global.metadataStatusNormal,
+           metadata.status != global.metadataStatusWaitFavorite {
+            return NKError(errorCode: global.errorNotPermission, errorDescription: "_no_permission_favorite_file_")
         }
 
-        Task {
-            let ocId = metadata.ocId
-            let serverUrl = metadata.serverUrl
-            let favorite = metadata.favorite
-            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                await NCManageDatabase.shared.setMetadataFavoriteAsync(ocId: ocId, favorite: !favorite, saveOldFavorite: favorite.description, status: self.global.metadataStatusWaitFavorite)
-                delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitFavorite)
-            }
+        let ocId = metadata.ocId
+        let serverUrl = metadata.serverUrl
+        let favorite = metadata.favorite
+        await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+            await NCManageDatabase.shared.setMetadataFavoriteAsync(ocId: ocId, favorite: !favorite, saveOldFavorite: favorite.description, status: self.global.metadataStatusWaitFavorite)
+            delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: self.global.metadataStatusWaitFavorite)
         }
+
+        return .success
     }
 
     func setFavorite(metadata: tableMetadata) async -> NKError {
@@ -772,32 +697,28 @@ extension NCNetworking {
 
     // MARK: - Lock Files
 
-    func lockUnlockFile(_ metadata: tableMetadata, shouldLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shouldLock, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.serverUrlFileName,
-                                                                                            name: "lockUnlockFile")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { _, _, error in
-            // 0: lock was successful; 412: lock did not change, no error, refresh
-            guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
-                let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
-                NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: self.global.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                return
-            }
-            self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, _, error in
-                guard error == .success, let metadata = metadata else { return }
-                NCManageDatabase.shared.addMetadata(metadata)
+    func lockUnlockFile(_ metadata: tableMetadata, shouldLock: Bool) async -> NKError {
+        do {
+            _ = try await NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shouldLock, account: metadata.account)
 
-                Task {
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
-                    }
-                }
+            let results = await readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+
+            guard results.error == .success,
+                    let metadata = results.metadata else {
+                return results.error
             }
+            NCManageDatabase.shared.addMetadata(metadata)
+
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+            }
+        } catch let nkError as NKError {
+            return nkError
+        } catch {
+            print(error)
         }
+
+        return .success
     }
 
     // MARK: - Direct Download

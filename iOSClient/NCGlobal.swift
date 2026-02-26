@@ -174,7 +174,7 @@ final class NCGlobal: Sendable {
     let errorBadServerResponse: Int             = -1011
     let errorInternalError: Int                 = -99999
     let errorFileNotSaved: Int                  = -99998
-    let errorOffline: Int                       = -99997
+    let errorOfflineNotAllowed: Int             = -99997
     let errorCharactersForbidden: Int           = -99996
     let errorCreationFile: Int                  = -99995
     let errorReadFile: Int                      = -99994
@@ -184,6 +184,8 @@ final class NCGlobal: Sendable {
     let errorIncorrectFileName: Int             = -99990
     let errorVersionMismatch: Int               = -99989
     let errorNCSessionNotFound: Int             = -99988
+    let errorNotPermission: Int                 = -99987
+
 
     // E2EE
     let errorE2EENotEnabled: Int                = -98000

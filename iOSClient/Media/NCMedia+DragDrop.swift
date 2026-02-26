@@ -64,7 +64,7 @@ extension NCMedia: UICollectionViewDropDelegate {
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             let destination = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
             Task {
-                await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination)
+                await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
             }
         }
     }
@@ -75,7 +75,7 @@ extension NCMedia: UICollectionViewDropDelegate {
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             let destination = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
             Task {
-                await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination)
+                await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
             }
         }
     }

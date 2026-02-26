@@ -15,12 +15,14 @@ class NCContextMenuShare: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let shareController: NCShare
+    let controller: NCMainTabBarController?
 
-    init(share: tableShare, isDirectory: Bool, canReshare: Bool, shareController: NCShare) {
+    init(share: tableShare, isDirectory: Bool, canReshare: Bool, shareController: NCShare, controller: NCMainTabBarController?) {
         self.share = share
         self.isDirectory = isDirectory
         self.canReshare = canReshare
         self.shareController = shareController
+        self.controller = controller
     }
 
     func viewMenu() -> UIMenu {
@@ -135,6 +137,7 @@ class NCContextMenuShare: NSObject {
         advancePermission.share = tableShare(value: share)
         advancePermission.oldTableShare = tableShare(value: share)
         advancePermission.metadata = metadata
+        advancePermission.controller = controller
 
         if let downloadLimit = try? database.getDownloadLimit(byAccount: metadata.account, shareToken: share.token) {
             advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
@@ -151,12 +154,19 @@ class NCContextMenuShare: NSObject {
            let metadata = shareController.metadata,
            metadata.e2eEncrypted && NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
             if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
-                let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
-                return NCContentPresenter().showInfo(error: error)
+                Task {
+                    await showErrorBanner(controller: controller,
+                                          text: "_e2e_in_upload_",
+                                          errorCode: NCGlobal.shared.errorE2EEUploadInProgress)
+                }
+                return
             }
             let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: metadata.serverUrlFileName, addUserId: nil, removeUserId: share.shareWith, account: metadata.account)
             if error != .success {
-                return NCContentPresenter().showError(error: error)
+                Task {
+                    await showErrorBanner(controller: controller, error: error)
+                }
+                return
             }
         }
         shareController.networking?.unShare(idShare: share.idShare)

@@ -35,6 +35,12 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private var viewController: UIViewController?
     private var sceneIdentifier: String = ""
 
+#if !EXTENSION
+    internal var controller: NCMainTabBarController? {
+        viewController?.tabBarController as? NCMainTabBarController
+    }
+#endif
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -249,7 +255,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
             let cell = collectionView.cellForItem(at: indexPath)
-            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: cell)
+            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: viewController, controller: self.controller, sender: cell)
             return contextMenu.viewMenu()
         })
 #endif
@@ -271,7 +277,7 @@ extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
             guard let viewController = self.viewController, let metadata else {
                 return
             }
-            button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, sceneIdentifier: self.sceneIdentifier, sender: sender).viewMenu()
+            button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, controller: self.controller, sender: sender).viewMenu()
         }
 #endif
     }

@@ -8,10 +8,17 @@ import NextcloudKit
 
 struct NCStatusMessageView: View {
     let account: String
+    let controller: NCMainTabBarController?
 
-    @State private var model = NCStatusMessageModel()
+    @State private var model: NCStatusMessageModel
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isTextFieldFocused: Bool
+
+    init(account: String, controller: NCMainTabBarController?) {
+            self.account = account
+            self.controller = controller
+            _model = State(initialValue: NCStatusMessageModel(controller: controller))
+    }
 
     var body: some View {
         ScrollView {
@@ -120,5 +127,5 @@ private struct StatusPresetRow: View {
 }
 
 #Preview() {
-    NCStatusMessageView(account: "")
+    NCStatusMessageView(account: "", controller: nil)
 }

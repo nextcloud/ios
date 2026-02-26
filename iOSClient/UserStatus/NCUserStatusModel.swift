@@ -22,9 +22,11 @@ import NextcloudKit
     var canDismiss = false
 
     @ObservationIgnored let account: String
+    @ObservationIgnored let controller: NCMainTabBarController?
 
-    init(account: String) {
+    init(account: String, controller: NCMainTabBarController?) {
         self.account = account
+        self.controller = controller
 
         if let capabilities = NCNetworking.shared.capabilities[account], capabilities.userStatusSupportsBusy {
             userStatuses.insert(.init(name: "busy", titleKey: "_busy_"), at: 2)
@@ -47,7 +49,7 @@ import NextcloudKit
             if result.error == .success {
                 selectedStatus = result.status
             } else {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
         }
     }
@@ -63,7 +65,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
         }
     }
@@ -78,7 +80,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                NCContentPresenter().showError(error: result.error)
+                await showErrorBanner(controller: self.controller, error: result.error)
             }
 
             await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: result.clearAt,
