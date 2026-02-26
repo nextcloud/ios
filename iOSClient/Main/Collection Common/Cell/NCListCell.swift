@@ -115,7 +115,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-        labelInfoSeparator.text = ""
         tag0.text = ""
         tag1.text = ""
 

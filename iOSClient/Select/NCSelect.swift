@@ -392,8 +392,6 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionShared)
         isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionMounted)
 
-//        cell.listCellDelegate = self
-
         cell.metadata = metadata
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
@@ -407,6 +405,8 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
+
+        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.directory {
             if metadata.e2eEncrypted {

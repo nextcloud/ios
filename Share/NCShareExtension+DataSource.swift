@@ -106,6 +106,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
         cell.selected(false, isEditMode: false)
+        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.isLivePhoto {
             cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
