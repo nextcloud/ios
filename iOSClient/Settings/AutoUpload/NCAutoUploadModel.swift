@@ -93,7 +93,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
                 if value, UIApplication.shared.backgroundRefreshStatus != .available {
                     Task {
-                        await showInfoBanner(controller: controller,
+                        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                        await showInfoBanner(windowScene: windowScene,
                                              text: "_access_background_app_refresh_denied_")
                     }
                 }

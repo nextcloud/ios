@@ -25,7 +25,7 @@ class NCContextMenuMain: NSObject {
         controller?.sceneIdentifier ?? ""
     }
 
-    internal var scene: UIWindowScene? {
+    internal var windowScene: UIWindowScene? {
        SceneManager.shared.getWindow(sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
     }
 
@@ -243,7 +243,8 @@ class NCContextMenuMain: NSObject {
                     userId: metadata.userId
                 )
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }
@@ -281,7 +282,8 @@ class NCContextMenuMain: NSObject {
                     await NCManageDatabase.shared.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
-                    await showErrorBanner(controller: self.controller,
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene,
                                           title: "_e2e_error_",
                                           text: results.error.errorDescription,
                                           errorCode: results.error.errorCode)
@@ -357,7 +359,8 @@ class NCContextMenuMain: NSObject {
                         fileNameNew
                     )
                 ) != nil {
-                    await showErrorBanner(controller: self.controller,
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene,
                                           text: "_rename_already_exists_",
                                           errorCode: 0)
                     return
@@ -365,7 +368,8 @@ class NCContextMenuMain: NSObject {
 
                 let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
         }
@@ -464,19 +468,20 @@ class NCContextMenuMain: NSObject {
                 Task {
                     if metadata.isDirectoryE2EE {
                         if NCNetworking.shared.isOffline {
-                            await showErrorBanner(controller: self.controller,
+                            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                            await showErrorBanner(windowScene: windowScene,
                                                   text: "_offline_not_allowed_",
                                                   errorCode: NCGlobal.shared.errorOfflineNotAllowed)
                         } else {
-                            let token = await showHudBanner(scene: self.scene,
-                                                            title: "_delete_in_progress_")
+                            let results = await showHudBanner(windowScene: self.windowScene,
+                                                              title: "_delete_in_progress_")
 
                             let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
 
                             if error == .success {
-                                await completeHudBannerSuccess(token: token)
+                                await completeHudBannerSuccess(token: results.token, banner: results.banner)
                             } else {
-                                await completeHudBannerError(description: error.errorDescription, token: token)
+                                await completeHudBannerError(description: error.errorDescription, token: results.token, banner: results.banner)
                             }
 
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -486,7 +491,8 @@ class NCContextMenuMain: NSObject {
                     } else {
                         let error = await NCNetworking.shared.setStatusWaitDelete(metadatas: [metadata])
                         if error != .success {
-                            await showErrorBanner(controller: self.controller, error: error)
+                            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                            await showErrorBanner(windowScene: windowScene, error: error)
                         }
                     }
                 }
@@ -505,9 +511,11 @@ class NCContextMenuMain: NSObject {
         ) { _ in
             Task { @MainActor in
                 var token: Int?
+                var banner: LucidBanner?
                 if metadata.isDirectory {
-                    token = showHudBanner(
-                        scene: self.scene,
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    (token, banner) = showHudBanner(
+                        windowScene: windowScene,
                         title: "_delete_in_progress_"
                     )
                 }
@@ -515,7 +523,7 @@ class NCContextMenuMain: NSObject {
                 await NCNetworking.shared.deleteCache(metadata, progress: { progress in
                     Task {
                         if let token {
-                            LucidBanner.shared.update(
+                            banner?.update(
                                 payload: LucidBannerPayload.Update(progress: progress),
                                 for: token
                             )
@@ -523,7 +531,7 @@ class NCContextMenuMain: NSObject {
                     }
 
                 })
-                LucidBanner.shared.dismiss()
+                banner?.dismiss()
             }
         }
     }
@@ -575,6 +583,7 @@ class NCContextMenuMain: NSObject {
                                 image: iconImage
                             ) { _ in
                                 Task {
+                                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
                                     let results = await NextcloudKit.shared.sendRequestAsync(
                                         account: metadata.account,
                                         fileId: metadata.fileId,
@@ -584,12 +593,12 @@ class NCContextMenuMain: NSObject {
                                         params: item.params
                                     )
                                     if results.error != .success {
-                                        await showErrorBanner(controller: self.controller,
+                                        await showErrorBanner(windowScene: windowScene,
                                                               text: results.error.errorDescription,
                                                               errorCode: results.error.errorCode)
                                     } else {
                                         if let tooltip = results.uiResponse?.ocs.data.tooltip {
-                                            await showInfoBanner(controller: self.controller, text: tooltip)
+                                            await showInfoBanner(windowScene: windowScene, text: tooltip)
                                         } else {
                                             let baseURL = metadata.urlBase
 

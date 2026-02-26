@@ -155,7 +155,8 @@ class NCContextMenuShare: NSObject {
            metadata.e2eEncrypted && NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
             if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
                 Task {
-                    await showErrorBanner(controller: controller,
+                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                    await showErrorBanner(windowScene: windowScene,
                                           text: "_e2e_in_upload_",
                                           errorCode: NCGlobal.shared.errorE2EEUploadInProgress)
                 }
@@ -164,7 +165,8 @@ class NCContextMenuShare: NSObject {
             let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: metadata.serverUrlFileName, addUserId: nil, removeUserId: share.shareWith, account: metadata.account)
             if error != .success {
                 Task {
-                    await showErrorBanner(controller: controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
                 return
             }

@@ -49,7 +49,8 @@ import NextcloudKit
             if result.error == .success {
                 selectedStatus = result.status
             } else {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
     }
@@ -65,7 +66,8 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
     }
@@ -80,7 +82,8 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                await showErrorBanner(windowScene: windowScene, error: result.error)
             }
 
             await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: result.clearAt,

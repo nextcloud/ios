@@ -11,7 +11,8 @@ class NCRichWorkspaceCommon: NSObject {
     func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
         }
@@ -42,7 +43,8 @@ class NCRichWorkspaceCommon: NSObject {
                 }
             } else if error != .success {
                 Task {
-                    await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }
@@ -51,7 +53,8 @@ class NCRichWorkspaceCommon: NSObject {
     func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
         }
@@ -84,7 +87,8 @@ class NCRichWorkspaceCommon: NSObject {
                         }
                     } else if error != .success {
                         Task {
-                            await showErrorBanner(controller: controller, text: error.errorDescription, errorCode: error.errorCode)
+                            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                         }
                     }
                 }

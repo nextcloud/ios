@@ -180,7 +180,8 @@ class NCContextMenuProfile: NSObject {
 
     private func showError(_ errorKey: String) {
         Task {
-            await showErrorBanner(controller: controller,
+            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+            await showErrorBanner(windowScene: windowScene,
                                   text: errorKey,
                                   errorCode: NCGlobal.shared.errorInternalError)
         }

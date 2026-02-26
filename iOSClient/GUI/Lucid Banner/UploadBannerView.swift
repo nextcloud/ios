@@ -6,13 +6,17 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showUploadBanner(scene: UIWindowScene?,
+func showUploadBanner(windowScene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
-                      onButtonTap: (() -> Void)? = nil) -> Int? {
-    let token = LucidBanner.shared.show(scene: scene,
-                                        payload: payload,
-                                        policy: .drop) { state in
+                      onButtonTap: (() -> Void)? = nil) -> (token: Int?, banner: LucidBanner?) {
+    guard let windowScene else {
+        return (nil, nil)
+    }
+    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+
+    let token = banner.show(payload: payload,
+                            policy: .drop) { state in
         UploadBannerView(state: state,
                          allowMinimizeOnTap: allowMinimizeOnTap,
                          onButtonTap: onButtonTap)
@@ -20,7 +24,8 @@ func showUploadBanner(scene: UIWindowScene?,
 
 #if !EXTENSION
     if allowMinimizeOnTap {
-        LucidBannerVariantCoordinator.shared.register(token: token) { _ in
+        let coordinator = LucidBannerVariantCoordinator(banner: banner)
+        coordinator.register(token: token) { _ in
             return .init(
                 payloadUpdate: .init(
                     horizontalLayout: .centered(width: 100),
@@ -31,7 +36,7 @@ func showUploadBanner(scene: UIWindowScene?,
         }
     }
 #endif
-    return token
+    return (token, banner)
 }
 
 // MARK: - SwiftUI

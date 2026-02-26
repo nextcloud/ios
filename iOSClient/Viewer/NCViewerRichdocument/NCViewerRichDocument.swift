@@ -259,7 +259,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     }
                                 } else {
                                     Task {
-                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                                        let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: self.sceneIdentifier)
+                                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                                     }
                                 }
                             })
@@ -321,7 +322,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else {
                     Task {
-                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                        let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: self.sceneIdentifier)
+                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
             }
@@ -344,7 +346,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else {
                 Task {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                    let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: self.sceneIdentifier)
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }

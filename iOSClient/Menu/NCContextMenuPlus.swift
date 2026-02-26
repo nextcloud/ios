@@ -90,7 +90,8 @@ class NCContextMenuPlus: NSObject {
                     capabilities: capabilities) { error in
                         if error != .success {
                             Task {
-                                await showErrorBanner(controller: controller,
+                                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                                await showErrorBanner(windowScene: windowScene,
                                                       text: error.errorDescription,
                                                       errorCode: error.errorCode)
                             }
@@ -116,7 +117,8 @@ class NCContextMenuPlus: NSObject {
                         capabilities: capabilities) { error in
                             if error != .success {
                                 Task {
-                                    await showErrorBanner(controller: controller,
+                                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                                    await showErrorBanner(windowScene: windowScene,
                                                           text: error.errorDescription,
                                                           errorCode: error.errorCode)
                                 }

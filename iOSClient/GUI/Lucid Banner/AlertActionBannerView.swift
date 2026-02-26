@@ -6,11 +6,14 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showAlertActionBannerView(scene: UIWindowScene?,
+func showAlertActionBannerView(lucidBanner: LucidBanner?,
                                title: String? = nil,
                                subtitle: String? = nil,
                                onConfirm: (() -> Void)? = nil) {
-    let isPad = scene?.traitCollection.userInterfaceIdiom == .pad
+    guard let lucidBanner else {
+        return
+    }
+    let isPad = lucidBanner.windowScene.traitCollection.userInterfaceIdiom == .pad
     let horizontalLayout: LucidBanner.HorizontalLayout =
         isPad
         ? .centered(width: 450)
@@ -24,19 +27,19 @@ func showAlertActionBannerView(scene: UIWindowScene?,
         swipeToDismiss: true
     )
 
-    LucidBanner.shared.show(scene: scene,
-                            payload: payload,
-                            policy: .replace) { _, _ in
-        LucidBanner.shared.dismiss()
+
+    lucidBanner.show(payload: payload,
+                     policy: .replace) { _, _ in
+        lucidBanner.dismiss()
     } content: { state in
         AlertActionBannerView(
             state: state,
             onConfirm: {
                 onConfirm?()
-                LucidBanner.shared.dismiss()
+                lucidBanner.dismiss()
             },
             onCancel: {
-                LucidBanner.shared.dismiss()
+                lucidBanner.dismiss()
             }
         )
     }

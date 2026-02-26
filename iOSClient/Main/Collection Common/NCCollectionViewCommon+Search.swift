@@ -75,7 +75,8 @@ extension NCCollectionViewCommon {
                 account: self.session.account
             )
         } else {
-            await showErrorBanner(controller: self.controller,
+            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+            await showErrorBanner(windowScene: windowScene,
                                   text: results.error.errorDescription,
                                   errorCode: results.error.errorCode)
         }
@@ -117,7 +118,8 @@ extension NCCollectionViewCommon {
         }
 
         if results.error != .success {
-            await showErrorBanner(controller: self.controller,
+            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+            await showErrorBanner(windowScene: windowScene,
                                   text: results.error.errorDescription,
                                   errorCode: results.error.errorCode,
                                   afError: results.error.error as? AFError)
@@ -150,7 +152,8 @@ extension NCCollectionViewCommon {
             )
 
             if results.error != .success {
-                await showErrorBanner(controller: self.controller,
+                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                await showErrorBanner(windowScene: windowScene,
                                       text: results.error.errorDescription,
                                       errorCode: results.error.errorCode,
                                       afError: results.error.error as? AFError)
@@ -209,7 +212,8 @@ extension NCCollectionViewCommon {
         )
 
         if results.error != .success {
-            await showErrorBanner(controller: self.controller,
+            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+            await showErrorBanner(windowScene: windowScene,
                                   text: results.error.errorDescription,
                                   errorCode: results.error.errorCode,
                                   afError: results.error.error as? AFError)

@@ -43,13 +43,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                     if !metadatasPlain.isEmpty {
                         let error = await self.networking.setStatusWaitDelete(metadatas: metadatasPlain)
                         if error != .success {
-                            await showErrorBanner(controller: self.controller, error: error)
+                            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                            await showErrorBanner(windowScene: windowScene, error: error)
                         }
                     }
 
                     if !metadatasE2EE.isEmpty {
                         if self.networking.isOffline {
-                            await showErrorBanner(controller: self.controller,
+                            await showErrorBanner(windowScene: self.windowScene,
                                                   text: "_offline_not_allowed_",
                                                   errorCode: self.global.errorOfflineNotAllowed)
                         } else {
@@ -57,8 +58,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                             var num: Float = 0
                             let total = Float(metadatasE2EE.count)
 
-                            let token = showHudBanner(
-                                scene: self.scene,
+                            let bannerResults = showHudBanner(
+                                windowScene: self.windowScene,
                                 title: "_delete_in_progress_",
                                 stage: .button) {
                                     cancelOnTap = true
@@ -66,15 +67,15 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                             for metadata in metadatasE2EE {
                                 let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
                                 num += 1
-                                LucidBanner.shared.update(
+                                bannerResults.banner?.update(
                                     payload: LucidBannerPayload.Update(progress: Double(num) / Double(total)),
-                                    for: token
+                                    for: bannerResults.token
                                 )
                                 if cancelOnTap || error != .success {
                                     break
                                 }
                             }
-                            LucidBanner.shared.dismiss()
+                            bannerResults.banner?.dismiss()
                         }
                     }
                     await self.reloadDataSource()
@@ -85,16 +86,17 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
                 var token: Int?
+                var banner: LucidBanner?
                 let containsDirectory = metadatas.contains { $0.isDirectory }
                 if containsDirectory {
-                    token = showHudBanner(scene: self.scene, title: "_delete_in_progress_")
+                    (token, banner) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
                 }
 
                 for metadata in metadatas {
                     await self.networking.deleteCache(metadata, progress: { progress in
                         Task {
                             if let token {
-                                LucidBanner.shared.update(
+                                banner?.update(
                                     payload: LucidBannerPayload.Update(progress: progress),
                                     for: token
                                 )
@@ -102,7 +104,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                         }
 
                     })
-                    LucidBanner.shared.dismiss()
+                    banner?.dismiss()
                 }
                 await self.setEditMode(false)
             }
@@ -167,7 +169,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             for metadata in metadatas where metadata.lock == isAnyLocked {
                 let error = await self.networking.lockUnlockFile(metadata, shouldLock: !isAnyLocked)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    await showErrorBanner(windowScene: self.windowScene, error: error)
                 }
             }
             await setEditMode(false)

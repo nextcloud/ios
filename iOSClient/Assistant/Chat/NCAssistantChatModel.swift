@@ -96,7 +96,8 @@ import NextcloudKit
         if result.error == .success {
             messages = result.chatMessages ?? []
         } else {
-            await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_load_messages_", errorCode: result.error.errorCode)
+            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+            await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_load_messages_", errorCode: result.error.errorCode)
         }
     }
 
@@ -107,7 +108,8 @@ import NextcloudKit
 
         if result.error != .success {
             stopPolling()
-            await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
+            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+            await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
             return
         }
 
@@ -134,7 +136,8 @@ import NextcloudKit
                 await generateChatSession()
                 startPollingForResponse()
             } else {
-                await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_send_message_", errorCode: 20)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_send_message_", errorCode: 20)
             }
 
             isSending = false

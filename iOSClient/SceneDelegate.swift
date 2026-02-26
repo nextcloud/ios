@@ -8,9 +8,12 @@ import NextcloudKit
 import WidgetKit
 import SwiftUI
 import CoreLocation
+import LucidBanner
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var lucidBanner: LucidBanner?
+
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private let global = NCGlobal.shared
@@ -22,6 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         let versionApp = NCUtility().getVersionMaintenance()
         var lastVersion: String?
+
+        lucidBanner = LucidBannerRegistry.shared.banner(for: windowScene)
 
         if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
             lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
@@ -191,6 +196,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        LucidBannerRegistry.shared.remove(for: windowScene)
+        lucidBanner = nil
+
         print("[DEBUG] Scene did disconnect")
     }
 
@@ -588,6 +598,12 @@ final class SceneManager: @unchecked Sendable {
         return getWindow(scene: scene)
     }
 
+    func getWindowScene(controller: UITabBarController?) -> UIWindowScene? {
+        guard let controller = controller as? NCMainTabBarController,
+              let scene = sceneController[controller] else { return nil }
+        return getWindow(scene: scene)?.windowScene
+    }
+
     func getWindow(sceneIdentifier: String?) -> UIWindow? {
         var mainTabBarController: NCMainTabBarController?
 
@@ -603,6 +619,10 @@ final class SceneManager: @unchecked Sendable {
             return UIApplication.shared.mainAppWindow
         }
         return getWindow(scene: scene)
+    }
+
+    func getWindowScene(sceneIdentifier: String?) -> UIWindowScene? {
+        return getWindowScene(sceneIdentifier: sceneIdentifier)
     }
 
     func getSceneIdentifier() -> [String] {

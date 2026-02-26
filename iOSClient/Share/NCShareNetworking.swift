@@ -115,7 +115,8 @@ class NCShareNetworking: NSObject {
                     NCActivityIndicator.shared.stop()
                 }
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
                 self.delegate?.readShareCompleted()
             }
@@ -170,7 +171,8 @@ class NCShareNetworking: NSObject {
                 }
             } else {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
 
@@ -201,7 +203,8 @@ class NCShareNetworking: NSObject {
                 }
             } else {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
         }
@@ -244,7 +247,8 @@ class NCShareNetworking: NSObject {
                 }
             } else {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
                 self.delegate?.updateShareWithError(idShare: shareable.idShare)
             }
@@ -267,7 +271,8 @@ class NCShareNetworking: NSObject {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
                 self.delegate?.getSharees(sharees: nil)
             }
@@ -295,7 +300,8 @@ class NCShareNetworking: NSObject {
                 self.delegate?.downloadLimitRemoved(by: token)
             } else {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
         }
@@ -323,7 +329,8 @@ class NCShareNetworking: NSObject {
             } else {
                 self.delegate?.downloadLimitRemoved(by: token)
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
         }

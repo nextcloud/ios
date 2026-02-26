@@ -87,8 +87,9 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             } else if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts {
                 passcodeSettingsViewController.dismiss(animated: true)
                 Task {
+                    let windowScene = SceneManager.shared.getWindowScene(controller: parent.controller)
                     await showErrorBanner(
-                        controller: parent.controller,
+                        windowScene: windowScene,
                         text: "_too_many_failed_passcode_attempts_error_",
                         errorCode: NCGlobal.shared.errorInternalError
                     )

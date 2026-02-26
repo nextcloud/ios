@@ -22,6 +22,7 @@ class NCNetworkingE2EEUpload: NSObject {
     func upload(metadata: tableMetadata,
                 session: NCSession.Session? = nil,
                 controller: UIViewController? = nil,
+                banner: LucidBanner?,
                 stageBanner: LucidBanner.Stage?,
                 tokenBanner: Int?,
                 requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
@@ -52,8 +53,8 @@ class NCNetworkingE2EEUpload: NSObject {
         payload.subtitle = NSLocalizedString("_e2ee_upload_tip_", comment: "")
         payload.systemImage = "lock.circle.fill"
 
-        LucidBanner.shared.update(payload: payload, for: tokenBanner)
-        LucidBanner.shared.requestRelayout(animated: true)
+        banner?.update(payload: payload, for: tokenBanner)
+        banner?.requestRelayout(animated: true)
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
@@ -163,6 +164,7 @@ class NCNetworkingE2EEUpload: NSObject {
         let resultsSendFile = await sendFile(metadata: metadata,
                                              e2eToken: e2eToken,
                                              controller: controller,
+                                             banner: banner,
                                              stageBanner: stageBanner,
                                              tokenBanner: tokenBanner) { request in
                 requestHandle(request)
@@ -218,6 +220,7 @@ class NCNetworkingE2EEUpload: NSObject {
     private func sendFile(metadata: tableMetadata,
                           e2eToken: String,
                           controller: UIViewController?,
+                          banner: LucidBanner?,
                           stageBanner: LucidBanner.Stage?,
                           tokenBanner: Int?,
                           requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
@@ -231,13 +234,13 @@ class NCNetworkingE2EEUpload: NSObject {
                 progress: 0,
                 stage: stageBanner
             )
-            LucidBanner.shared.update(payload: payload, for: tokenBanner)
+            banner?.update(payload: payload, for: tokenBanner)
 
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
                         let progress = Double(counter) / Double(total)
-                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: tokenBanner)
+                        banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: tokenBanner)
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
@@ -247,11 +250,11 @@ class NCNetworkingE2EEUpload: NSObject {
                             imageAnimation: .breathe,
                             progress: 0
                         )
-                        LucidBanner.shared.update(payload: payload, for: tokenBanner)
+                        banner?.update(payload: payload, for: tokenBanner)
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(
+                        banner?.update(
                             payload: LucidBannerPayload.Update(progress: progress),
                             for: tokenBanner)
                     }
@@ -264,7 +267,7 @@ class NCNetworkingE2EEUpload: NSObject {
                             progress: 0,
                             stage: .placeholder
                         )
-                        LucidBanner.shared.update(payload: payload, for: tokenBanner)
+                        banner?.update(payload: payload, for: tokenBanner)
                     }
                 }
 
@@ -282,7 +285,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 progress: 0,
                 stage: stageBanner
             )
-            LucidBanner.shared.update(payload: payload, for: tokenBanner)
+            banner?.update(payload: payload, for: tokenBanner)
 
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
@@ -298,7 +301,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 requestHandle(request)
             } progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
-                    LucidBanner.shared.update(
+                    banner?.update(
                         payload: LucidBannerPayload.Update(progress: fractionCompleted),
                         for: tokenBanner)
                 }

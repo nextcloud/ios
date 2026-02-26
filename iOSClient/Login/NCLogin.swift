@@ -192,18 +192,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let subtitle = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
 
-            showAlertActionBannerView(scene: view.window?.windowScene,
+            /*
+            showAlertActionBannerView(w: view.window?.windowScene,
                                       title: title,
                                       subtitle: subtitle) {
                 self.openShareAccountsViewController(nil)
             }
+            */
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        LucidBanner.shared.dismiss()
+        // LucidBanner.shared.dismiss()
     }
 
     private func handleLoginWithAppConfig() {
@@ -424,7 +426,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if results.error == .success, let token = results.token {
                     await createAccount(urlBase: server, user: user, password: token)
                 } else {
-                    await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                     dismiss(animated: true, completion: nil)
                 }
             } else if value.hasPrefix(protocolLogin) {
@@ -439,7 +442,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if results.error == .success, let password = results.token {
             await self.createAccount(urlBase: urlBase, user: user, password: password)
         } else {
-            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+            await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
             dismiss(animated: true, completion: nil)
         }
     }

@@ -12,6 +12,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     @MainActor
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) async {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
                 if !NCPreferences().isEndToEndEnabled(account: metadata.account) {
@@ -21,20 +23,21 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     return
                 }
             } else {
-                await showInfoBanner(controller: self.controller, text: "_e2e_server_disabled_")
+                await showInfoBanner(windowScene: windowScene, text: "_e2e_server_disabled_")
                 return
             }
         }
 
         func downloadFile() async {
             var downloadRequest: DownloadRequest?
-            let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
+            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+            var banner : LucidBanner?
             var tokenBanner: Int?
             await MainActor.run {
-                tokenBanner = showHudBanner(scene: scene,
-                                            title: "_download_in_progress_",
-                                            stage: .button,
-                                            onButtonTap: {
+                (tokenBanner, banner) = showHudBanner(windowScene: windowScene,
+                                                      title: "_download_in_progress_",
+                                                      stage: .button,
+                                                      onButtonTap: {
                     if let request = downloadRequest {
                         request.cancel()
                     }
@@ -52,19 +55,19 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 downloadRequest = request
             } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(
+                    banner?.update(
                         payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
                         for: tokenBanner)
                 }
             }
             await MainActor.run {
-                LucidBanner.shared.dismiss()
+                banner?.dismiss()
             }
 
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")
             } else {
-                await showErrorBanner(scene: scene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                await showErrorBanner(windowScene: windowScene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
             }
         }
 
@@ -115,7 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
+                await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
         }
     }

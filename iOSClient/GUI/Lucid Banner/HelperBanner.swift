@@ -20,7 +20,7 @@ public extension View {
             .contentShape(Rectangle())
             .onTapGesture {
                 guard allowMinimizeOnTap else { return }
-                LucidBannerVariantCoordinator.shared.handleTap(state)
+                //LucidBannerVariantCoordinator.shared.handleTap(state)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
