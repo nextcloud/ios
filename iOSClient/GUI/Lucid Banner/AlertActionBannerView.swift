@@ -14,15 +14,15 @@ func showAlertActionBannerView(scene: UIWindowScene?,
         title: title,
         subtitle: subtitle,
         vPosition: .top,
-        horizontalLayout: .stretch(margins: 100),
+        horizontalLayout: .stretch(margins: 50),
         swipeToDismiss: true
     )
 
-    LucidBanner.shared.show(
-        scene: scene,
-        payload: payload,
-        policy: .replace
-    ) { state in
+    LucidBanner.shared.show(scene: scene,
+                            payload: payload,
+                            policy: .replace) { _, _ in
+        LucidBanner.shared.dismiss()
+    } content: { state in
         AlertActionBannerView(
             state: state,
             onConfirm: {
@@ -34,6 +34,7 @@ func showAlertActionBannerView(scene: UIWindowScene?,
             }
         )
     }
+
 }
 
 // MARK: - SwiftUI
@@ -57,7 +58,7 @@ struct AlertActionBannerView: View {
     var body: some View {
         alertActionContainerView {
             VStack(spacing: 20) {
-                // MARK: - Title
+                // Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
                         .font(.headline.weight(.semibold))
@@ -65,7 +66,7 @@ struct AlertActionBannerView: View {
                         .multilineTextAlignment(.center)
                 }
 
-                // MARK: - Subtitle
+                // Subtitle
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.subheadline)
@@ -73,31 +74,30 @@ struct AlertActionBannerView: View {
                         .multilineTextAlignment(.center)
                 }
 
-                // MARK: - Buttons
+                // Buttons
                 HStack(spacing: 12) {
-                    // Cancel
                     Button("_cancel_") {
                         onCancel?()
                     }
-                    .padding(.horizontal, 40)
                     .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
                     .background(
                         Capsule()
                             .stroke(Color.secondary.opacity(0.5), lineWidth: 1)
                     )
                     .foregroundStyle(.primary)
 
-                    // Confirm
                     Button("_ok_") {
                         onConfirm?()
                     }
-                    .padding(.horizontal, 40)
                     .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
                     .background(
                         Capsule().fill(Color.accentColor)
                     )
                     .foregroundStyle(.white)
                 }
+                .frame(maxWidth: .infinity)
             }
             .padding(20)
         }
