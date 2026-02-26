@@ -7,7 +7,7 @@ import NextcloudKit
 
 /// A context menu created to be used universally with the different `NCViewer`s.
 /// See ``NCViewerImage``, ``NCViewerMedia``, ``NCViewerPDF`` for usage details.
-class NCViewerContextMenu: NSObject {
+class NCContextMenuViewer: NSObject {
     let metadata: tableMetadata
     let controller: NCMainTabBarController?
     let webView: Bool
