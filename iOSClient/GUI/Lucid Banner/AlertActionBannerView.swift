@@ -1,40 +1,44 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
-// SPDX-FileCopyrightText: 2025 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import LucidBanner
 
 @MainActor
-func showAlertActionBannerView(scene: UIWindowScene?,
+func showAlertActionBannerView(controller: UITabBarController?,
                                title: String? = nil,
                                subtitle: String? = nil,
-                               stage: LucidBanner.Stage? = nil,
-                               onButtonTap: (() -> Void)? = nil) -> Int? {
-    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
-    let localizedTitle = title.map { NSLocalizedString($0, comment: "") }
-    let localizedSubTitle = subtitle.map { NSLocalizedString($0, comment: "") }
+                               onConfirm: (() -> Void)? = nil) {
+    let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
 
     let payload = LucidBannerPayload(
-        title: localizedTitle,
-        subtitle: localizedSubTitle,
-        stage: stage,
-        vPosition: .center,
-        blocksTouches: true,
+        title: title,
+        subtitle: subtitle,
+        vPosition: .top,
     )
 
-    return LucidBanner.shared.show(
+    LucidBanner.shared.show(
         scene: scene,
-        payload: payload
+        payload: payload,
+        policy: .replace
     ) { state in
-        HudBannerView(state: state, onButtonTap: onButtonTap)
+        AlertActionBannerView(
+            state: state,
+            onConfirm: {
+                onConfirm?()
+                LucidBanner.shared.dismiss()
+            },
+            onCancel: {
+                LucidBanner.shared.dismiss()
+            }
+        )
     }
 }
 
 // MARK: - SwiftUI
 
 struct AlertActionBannerView: View {
-
     @ObservedObject var state: LucidBannerState
 
     let onConfirm: (() -> Void)?
@@ -53,7 +57,6 @@ struct AlertActionBannerView: View {
     var body: some View {
         alertActionContainerView {
             VStack(spacing: 20) {
-
                 // MARK: - Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
@@ -72,33 +75,33 @@ struct AlertActionBannerView: View {
 
                 // MARK: - Buttons
                 HStack(spacing: 12) {
-
                     // Cancel
-                    Button {
+                    Button("_cancel_") {
                         onCancel?()
-                        //dismiss()
-                    } label: {
-                        Text("Annulla")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
                     }
-                    .buttonStyle(.bordered)
+                    .padding(.horizontal, 40)
+                    .padding(.vertical, 8)
+                    .background(
+                        Capsule()
+                            .stroke(Color.secondary.opacity(0.5), lineWidth: 1)
+                    )
+                    .foregroundStyle(.primary)
 
                     // Confirm
-                    Button {
+                    Button("_ok_") {
                         onConfirm?()
-                      
-                    } label: {
-                        Text("OK")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .padding(.horizontal, 40)
+                    .padding(.vertical, 8)
+                    .background(
+                        Capsule().fill(Color.accentColor)
+                    )
+                    .foregroundStyle(.white)
                 }
             }
+            .padding(20)
         }
     }
-}
 
     // MARK: - Container
 
@@ -139,26 +142,31 @@ struct AlertActionBannerView: View {
 
 // MARK: - Preview
 
-#Preview {
-    ZStack {
-        Text(
-            Array(0...500)
-                .map(String.init)
-                .joined(separator: "  ")
-            )
-            .font(.system(size: 16, design: .monospaced))
-            .foregroundStyle(.primary)
-            .padding()
+#Preview("Alert - Light") {
 
-        let state = LucidBannerState(payload: LucidBannerPayload(
-            title: "Title",
-            subtitle: "Subtitle",
-            footnote: "footnote",
-            systemImage: "wifi.circle",
-            imageAnimation: .drawOn
-        ))
+    let payload = LucidBannerPayload(
+        title: "Title ?",
+        subtitle: "Subtitle.",
+        stage: .warning,
+        vPosition: .center,
+        blocksTouches: true
+    )
 
-        //MessageBannerView(state: state)
-        //.padding()
+    let state = LucidBannerState(payload: payload)
+
+    return ZStack {
+        Color.black.opacity(0.15)
+            .ignoresSafeArea()
+
+        AlertActionBannerView(
+            state: state,
+            onConfirm: {
+                print("Confirm tapped")
+            },
+            onCancel: {
+                print("Cancel tapped")
+            }
+        )
+        .padding()
     }
 }
