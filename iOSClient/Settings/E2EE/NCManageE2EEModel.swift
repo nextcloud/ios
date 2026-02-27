@@ -16,7 +16,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
     @Published var navigateBack: Bool = false
-    /// Get session
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

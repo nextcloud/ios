@@ -42,12 +42,12 @@ func showBanner(windowScene: UIWindowScene?,
     )
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-    let coordinator = LucidBannerVariantCoordinator(banner: banner)
+    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
     banner.show(
         payload: payload,
         policy: policy) { state in
-        MessageBannerView(state: state, coordinator: coordinator)
+        MessageBannerView(state: state, coordinator: bannerCoordinator)
     }
 
     return banner
@@ -74,7 +74,7 @@ func showInfoBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-    let coordinator = LucidBannerVariantCoordinator(banner: banner)
+    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
     guard let window = banner.windowScene.windows.first else {
         return
@@ -99,7 +99,7 @@ func showInfoBanner(windowScene: UIWindowScene?,
         swipeToDismiss: true,
     )
     banner.show(payload: payload) { state in
-        MessageBannerView(state: state, coordinator: coordinator)
+        MessageBannerView(state: state, coordinator: bannerCoordinator)
     }
 }
 
@@ -135,7 +135,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-    let coordinator = LucidBannerVariantCoordinator(banner: banner)
+    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
     guard let window = banner.windowScene.windows.first else {
         return
@@ -166,7 +166,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
             banner.dismiss()
         }
     ) { state in
-        MessageBannerView(state: state, coordinator: coordinator)
+        MessageBannerView(state: state, coordinator: bannerCoordinator)
     }
 }
 
