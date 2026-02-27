@@ -259,7 +259,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     }
                                 } else {
                                     Task {
-                                        let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: self.sceneIdentifier)
+                                        let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
                                         await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                                     }
                                 }
@@ -322,7 +322,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else {
                     Task {
-                        let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: self.sceneIdentifier)
+                        let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
                         await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
@@ -346,7 +346,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else {
                 Task {
-                    let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: self.sceneIdentifier)
+                    let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
                     await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }

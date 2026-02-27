@@ -5,10 +5,12 @@
 import UIKit
 import NextcloudKit
 
+@MainActor
 @objc protocol NCEndToEndInitializeDelegate {
     func endToEndInitializeSuccess(metadata: tableMetadata?)
 }
 
+@MainActor
 class NCEndToEndInitialize: NSObject {
     @objc weak var delegate: NCEndToEndInitializeDelegate?
     let utilityFileSystem = NCUtilityFileSystem()

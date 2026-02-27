@@ -7,6 +7,7 @@ import SwiftUI
 import NextcloudKit
 import LocalAuthentication
 
+@MainActor
 class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
     let endToEndInitialize = NCEndToEndInitialize()
     var passcodeType = ""

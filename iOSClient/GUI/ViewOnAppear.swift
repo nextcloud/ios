@@ -6,6 +6,7 @@ import Foundation
 import SwiftUI
 
 /// A protocol defining methods to handle view appearance events.
+@MainActor
 protocol ViewOnAppearHandling: ObservableObject {
     // Triggered when the view appears.
     func onViewAppear()

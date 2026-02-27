@@ -145,7 +145,7 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                 await showErrorBanner(windowScene: windowScene, text: error.localizedDescription, errorCode: NCGlobal.shared.errorInternalError)
             }
             return
@@ -167,7 +167,7 @@ class NCDragDrop: NSObject {
                                             error: .success)
                 }
             } else {
-                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                 await showErrorBanner(windowScene: windowScene, error: error)
             }
         }
@@ -188,7 +188,7 @@ class NCDragDrop: NSObject {
                                             error: .success)
                 }
             } else {
-                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                 await showErrorBanner(windowScene: windowScene, error: error)
             }
         }

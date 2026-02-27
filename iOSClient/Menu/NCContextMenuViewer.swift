@@ -7,6 +7,7 @@ import NextcloudKit
 
 /// A context menu created to be used universally with the different `NCViewer`s.
 /// See ``NCViewerImage``, ``NCViewerMedia``, ``NCViewerPDF`` for usage details.
+@MainActor
 class NCContextMenuViewer: NSObject {
     let metadata: tableMetadata
     let controller: NCMainTabBarController?
@@ -14,6 +15,10 @@ class NCContextMenuViewer: NSObject {
     let sender: Any?
     private let database = NCManageDatabase.shared
     private let utility = NCUtility()
+
+    internal var windowScene: UIWindowScene? {
+       SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(metadata: tableMetadata, controller: NCMainTabBarController?, webView: Bool, sender: Any?) {
         self.metadata = metadata
@@ -145,7 +150,7 @@ class NCContextMenuViewer: NSObject {
             title: NSLocalizedString("_livephoto_save_", comment: ""),
             image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
-            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.controller))
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
         }
     }
 }
