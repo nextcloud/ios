@@ -40,10 +40,12 @@ func completeHudBannerSuccess(token: Int?, banner: LucidBanner?) {
     guard let banner else {
         return
     }
+
     let payload = LucidBannerPayload.Update(
         stage: .success,
         autoDismissAfter: 2
     )
+
     banner.update(payload: payload, for: token)
 }
 
@@ -52,11 +54,13 @@ func completeHudBannerError(description: String, token: Int?, banner: LucidBanne
     guard let banner else {
         return
     }
+
     let payload = LucidBannerPayload.Update(
         subtitle: NSLocalizedString(description, comment: ""),
         stage: .error,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond
     )
+
     banner.update(payload: payload, for: token)
 }
 

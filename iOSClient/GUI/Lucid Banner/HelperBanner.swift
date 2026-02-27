@@ -4,6 +4,7 @@
 
 import SwiftUI
 import LucidBanner
+import Alamofire
 
 public extension View {
     @ViewBuilder
