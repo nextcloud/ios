@@ -65,19 +65,19 @@ class NCPhotosPickerViewController: NSObject {
 
         pickerVC?.didExceedMaximumNumberOfSelection = { _ in
             Task {
-                await showErrorBanner(windowScene: self.windowScene, text: "_limited_dimension_", errorCode: 0)
+                await showErrorBanner(windowScene: self.windowScene, text: "_limited_dimension_", errorCode: NCGlobal.shared.errorInternalError)
             }
         }
 
         pickerVC?.handleNoAlbumPermissions = { _ in
             Task {
-                await showErrorBanner(windowScene: self.windowScene, text: "_denied_album_", errorCode: 0)
+                await showErrorBanner(windowScene: self.windowScene, text: "_denied_album_", errorCode: NCGlobal.shared.errorForbidden)
             }
         }
 
         pickerVC?.handleNoCameraPermissions = { _ in
             Task {
-                await showErrorBanner(windowScene: self.windowScene, text: "_denied_camera_", errorCode: 0)
+                await showErrorBanner(windowScene: self.windowScene, text: "_denied_camera_", errorCode: NCGlobal.shared.errorForbidden)
             }
         }
 

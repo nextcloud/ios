@@ -237,7 +237,7 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
             NCActivityIndicator.shared.stop()
             Task {
                 let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
-                await showErrorBanner(windowScene: windowScene, text: "_error_something_wrong_", errorCode: 0)
+                await showErrorBanner(windowScene: windowScene, text: "_error_something_wrong_", errorCode: NCGlobal.shared.errorInternalError)
             }
             print("Played mode: ERROR")
         case .playing:

@@ -139,7 +139,7 @@ class NCAssistantChatModel {
                 await generateChatSession()
                 startPollingForResponse()
             } else {
-                await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_send_message_", errorCode: 20)
+                await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_send_message_", errorCode: NCGlobal.shared.errorInternalError)
             }
 
             isSending = false
