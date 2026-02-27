@@ -595,7 +595,6 @@ final class SceneManager {
         return windowScene.keyWindow
     }
 
-
     func getWindow(controller: UITabBarController?) -> UIWindow? {
         guard let controller = controller as? NCMainTabBarController,
               let scene = sceneController[controller] else { return nil }

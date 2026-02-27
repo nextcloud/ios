@@ -579,7 +579,7 @@ class NCContextMenuMain: NSObject {
                                 }
                             }
 
-                            let action = await UIAction(
+                            let action = UIAction(
                                 title: item.name,
                                 image: iconImage
                             ) { _ in

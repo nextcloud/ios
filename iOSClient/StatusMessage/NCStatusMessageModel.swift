@@ -5,6 +5,7 @@
 import SwiftUI
 import NextcloudKit
 
+@MainActor
 @Observable class NCStatusMessageModel {
     enum ClearAfter: String, CaseIterable, Identifiable {
         case dontClear = "_dont_clear_"

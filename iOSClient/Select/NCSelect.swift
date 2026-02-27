@@ -232,7 +232,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                         error: NKError) {
         if error != .success {
             Task {
-                let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: sceneIdentifier)
+                let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene
                 await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
         }

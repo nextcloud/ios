@@ -92,7 +92,7 @@ class NCUploadScanDocument: ObservableObject {
                 for char in self.password.unicodeScalars {
                     if !char.isASCII {
                         Task {
-                            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                            let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                             await showErrorBanner(windowScene: windowScene, text: "_password_ascii_", errorCode: 0)
                         }
                         return DispatchQueue.main.async {

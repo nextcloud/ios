@@ -31,7 +31,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         func downloadFile() async {
             var downloadRequest: DownloadRequest?
             let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-            var banner : LucidBanner?
+            var banner: LucidBanner?
             var tokenBanner: Int?
             await MainActor.run {
                 (tokenBanner, banner) = showHudBanner(windowScene: windowScene,

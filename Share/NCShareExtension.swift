@@ -52,7 +52,6 @@ class NCShareExtension: UIViewController {
     var banner: LucidBanner?
     var sceneIdentifier: String = UUID().uuidString
 
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {

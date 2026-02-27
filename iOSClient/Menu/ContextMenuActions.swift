@@ -145,7 +145,7 @@ enum ContextMenuActions {
             Task {
                 let error = await NCNetworking.shared.lockUnlockFile(metadata, shouldLock: !isLocked)
                 if error != .success {
-                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                    let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                     await showErrorBanner(windowScene: windowScene, error: error)
                 }
                 completion?()
