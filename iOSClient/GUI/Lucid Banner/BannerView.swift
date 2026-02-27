@@ -8,6 +8,7 @@ import NextcloudKit
 import Alamofire
 
 // MARK: - Show Banner
+@discardableResult
 @MainActor
 func showBanner(windowScene: UIWindowScene?,
                 title: String?,
@@ -21,9 +22,9 @@ func showBanner(windowScene: UIWindowScene?,
                 backgroundColor: UIColor,
                 autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
                 swipeToDismiss: Bool = true,
-                policy: LucidBanner.ShowPolicy = .enqueue) async {
+                policy: LucidBanner.ShowPolicy = .enqueue) async -> LucidBanner? {
     guard let windowScene else {
-        return
+        return nil
     }
 
     let payload = LucidBannerPayload(
@@ -47,6 +48,8 @@ func showBanner(windowScene: UIWindowScene?,
         policy: policy) { state in
         MessageBannerView(state: state)
     }
+
+    return banner
 }
 
 // MARK: - Show Info

@@ -157,11 +157,11 @@ class NCViewerMedia: UIViewController {
                                                                                                                selector: "") else {
                                     return
                                 }
-                                let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
+                                let windowScene = SceneManager.shared.getWindowScene(controller: self.tabBarController)
                                 var downloadRequest: DownloadRequest?
-                                let token = showHudBanner(scene: scene,
-                                                          title: "_download_in_progress_",
-                                                          stage: .button) {
+                                let (token, banner) = showHudBanner(windowScene: windowScene,
+                                                                    title: "_download_in_progress_",
+                                                                    stage: .button) {
                                     if let request = downloadRequest {
                                         request.cancel()
                                     }
@@ -171,12 +171,11 @@ class NCViewerMedia: UIViewController {
                                     downloadRequest = request
                                 } progressHandler: { progress in
                                     Task {@MainActor in
-                                        LucidBanner.shared.update(
-                                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
-                                            for: token)
+                                        banner?.update(payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                                                       for: token)
                                     }
                                 }
-                                LucidBanner.shared.dismiss()
+                                banner?.dismiss()
 
                                 if results.nkError == .success {
                                     if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {

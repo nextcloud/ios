@@ -82,6 +82,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var backgroundImageView = UIImageView()
 
     var sceneIdentifier: String = ""
+    var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     // MARK: - View Life Cycle
 
@@ -229,7 +232,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                         error: NKError) {
         if error != .success {
             Task {
-                await showErrorBanner(sceneIdentifier: sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                let windowScene = SceneManager.shared.getWindowScene(sceneIdentifier: sceneIdentifier)
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
         }
 
@@ -273,7 +277,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             let alertController = UIAlertController.createFolderWith(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
                 if error != .success {
                     Task {
-                        await showErrorBanner(controller: self.controller,
+                        await showErrorBanner(windowScene: self.windowScene,
                                               text: error.errorDescription,
                                               errorCode: error.errorCode)
                     }

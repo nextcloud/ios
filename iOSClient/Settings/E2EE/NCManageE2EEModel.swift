@@ -22,6 +22,9 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     var capabilities: NKCapabilities.Capabilities {
         NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
     }
+    var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(controller: NCMainTabBarController?) {
         super.init()

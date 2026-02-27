@@ -65,7 +65,7 @@ private var hasChangesQuickLook: Bool = false
 
         if metadata?.isLivePhoto == true {
             Task {
-                await showErrorBannerActiveScenes(text: "_message_disable_overwrite_livephoto_", errorCode: NCGlobal.shared.errorInternalError)
+           //     await showErrorBannerActiveScenes(text: "_message_disable_overwrite_livephoto_", errorCode: NCGlobal.shared.errorInternalError)
             }
         }
 

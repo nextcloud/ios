@@ -145,7 +145,8 @@ class NCDragDrop: NSObject {
             database.addMetadata(metadataForUpload)
         } catch {
             Task {
-                await showErrorBanner(controller: controller, text: error.localizedDescription, errorCode: NCGlobal.shared.errorInternalError)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, text: error.localizedDescription, errorCode: NCGlobal.shared.errorInternalError)
             }
             return
         }
@@ -166,7 +167,8 @@ class NCDragDrop: NSObject {
                                             error: .success)
                 }
             } else {
-                await showErrorBanner(controller: controller, error: error)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, error: error)
             }
         }
     }
@@ -186,19 +188,21 @@ class NCDragDrop: NSObject {
                                             error: .success)
                 }
             } else {
-                await showErrorBanner(controller: controller, error: error)
+                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                await showErrorBanner(windowScene: windowScene, error: error)
             }
         }
     }
 
     @MainActor
     func transfers(collectionViewCommon: NCCollectionViewCommon, destination: String, session: NCSession.Session) async {
+        var token: Int?
+        var banner: LucidBanner?
         defer {
-            LucidBanner.shared.dismiss()
+            banner?.dismiss()
         }
-        let scene = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier)?.windowScene
         guard let metadatas = DragDropHover.shared.sourceMetadatas,
-              let window = scene?.windows.first else {
+              let window = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier) else {
             return
         }
         var uploadRequest: UploadRequest?
@@ -212,10 +216,10 @@ class NCDragDrop: NSObject {
                                          horizontalLayout: horizontalLayout,
                                          blocksTouches: false,
                                          draggable: false)
-        let token = showUploadBanner(scene: scene,
-                                     payload: payload,
-                                     allowMinimizeOnTap: false,
-                                     onButtonTap: {
+        (token, banner) = showUploadBanner(windowScene: window.windowScene,
+                                           payload: payload,
+                                           allowMinimizeOnTap: false,
+                                           onButtonTap: {
             if let downloadRequest {
                 downloadRequest.cancel()
             } else if let uploadRequest {
@@ -229,7 +233,7 @@ class NCDragDrop: NSObject {
             systemImage: "arrow.left.arrow.right.circle",
             imageAnimation: .pulsebyLayer,
         )
-        LucidBanner.shared.update(payload: payloadUpdate)
+        banner?.update(payload: payloadUpdate)
 
         for (index, metadata) in metadatas.enumerated() {
             if metadata.directory {
@@ -245,7 +249,9 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(scene: scene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)
+                    await showErrorBanner(windowScene: window.windowScene,
+                                          text: results.nkError.errorDescription,
+                                          errorCode: results.nkError.errorCode)
                     break
                 }
             }
@@ -267,11 +273,12 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(scene: scene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(windowScene: window.windowScene,
+                                      text: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
 
-            LucidBanner.shared.update(
+            banner?.update(
                 payload: LucidBannerPayload.Update(progress: Double(index + 1) / Double(metadatas.count)),
                 for: token)
         }
