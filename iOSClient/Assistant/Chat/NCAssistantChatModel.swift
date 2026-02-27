@@ -4,7 +4,9 @@
 
 import NextcloudKit
 
-@Observable class NCAssistantChatModel {
+@MainActor
+@Observable
+class NCAssistantChatModel {
     var messages: [AssistantChatMessage] = []
     var isSending: Bool = false
     var isThinking: Bool = false
@@ -22,6 +24,9 @@ import NextcloudKit
 
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatMessageTaskId: Int?
+    @ObservationIgnored var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = []) {
         self.controller = controller

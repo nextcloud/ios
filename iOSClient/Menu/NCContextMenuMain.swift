@@ -12,6 +12,7 @@ import LucidBanner
 /// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
 /// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
 /// ``NCCollectionViewCommon/openContextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
+@MainActor
 class NCContextMenuMain: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -299,7 +300,7 @@ class NCContextMenuMain: NSObject {
             title: NSLocalizedString("_livephoto_save_", comment: ""),
             image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
-            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, controller: self.controller))
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
         }
     }
 
@@ -473,15 +474,15 @@ class NCContextMenuMain: NSObject {
                                                   text: "_offline_not_allowed_",
                                                   errorCode: NCGlobal.shared.errorOfflineNotAllowed)
                         } else {
-                            let results = await showHudBanner(windowScene: self.windowScene,
-                                                              title: "_delete_in_progress_")
+                            let results = showHudBanner(windowScene: self.windowScene,
+                                                        title: "_delete_in_progress_")
 
                             let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
 
                             if error == .success {
-                                await completeHudBannerSuccess(token: results.token, banner: results.banner)
+                                completeHudBannerSuccess(token: results.token, banner: results.banner)
                             } else {
-                                await completeHudBannerError(description: error.errorDescription, token: results.token, banner: results.banner)
+                                completeHudBannerError(description: error.errorDescription, token: results.token, banner: results.banner)
                             }
 
                             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in

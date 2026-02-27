@@ -71,7 +71,7 @@ extension NCNetworking {
 
                 if serverInfo.maintenance {
                     Task {
-                        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                        let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                         await showInfoBanner(windowScene: windowScene,
                                              title: "_warning_",
                                              text: "_maintenance_mode_",

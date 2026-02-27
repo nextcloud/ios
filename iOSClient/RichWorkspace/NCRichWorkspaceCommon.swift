@@ -11,7 +11,7 @@ class NCRichWorkspaceCommon: NSObject {
     func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                 await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
@@ -43,7 +43,7 @@ class NCRichWorkspaceCommon: NSObject {
                 }
             } else if error != .success {
                 Task {
-                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                    let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                     await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
@@ -53,7 +53,7 @@ class NCRichWorkspaceCommon: NSObject {
     func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
-                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                 await showErrorBanner(windowScene: windowScene, text: "_go_online_", errorCode: NCGlobal.shared.errorOfflineNotAllowed)
             }
             return
@@ -87,7 +87,7 @@ class NCRichWorkspaceCommon: NSObject {
                         }
                     } else if error != .success {
                         Task {
-                            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+                            let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                             await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                         }
                     }

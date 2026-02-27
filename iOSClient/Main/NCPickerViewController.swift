@@ -11,6 +11,7 @@ import SwiftUI
 
 // MARK: - Photo Picker
 
+@MainActor
 class NCPhotosPickerViewController: NSObject {
     var controller: NCMainTabBarController
     var maxSelectedAssets = 1

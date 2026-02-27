@@ -49,7 +49,7 @@ import NextcloudKit
             if result.error == .success {
                 selectedStatus = result.status
             } else {
-                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
@@ -66,7 +66,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
@@ -82,7 +82,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene, error: result.error)
             }
 

@@ -556,7 +556,8 @@ extension SceneDelegate: NCAccountRequestDelegate {
 
 // MARK: - Scene Manager
 
-final class SceneManager: @unchecked Sendable {
+@MainActor
+final class SceneManager {
     static let shared = SceneManager()
     private var sceneController: [NCMainTabBarController: UIScene] = [:]
 
@@ -589,8 +590,11 @@ final class SceneManager: @unchecked Sendable {
     }
 
     func getWindow(scene: UIScene?) -> UIWindow? {
-        return (scene as? UIWindowScene)?.keyWindow
+        guard let windowScene = scene as? UIWindowScene else { return nil }
+
+        return windowScene.keyWindow
     }
+
 
     func getWindow(controller: UITabBarController?) -> UIWindow? {
         guard let controller = controller as? NCMainTabBarController,
@@ -598,31 +602,56 @@ final class SceneManager: @unchecked Sendable {
         return getWindow(scene: scene)
     }
 
-    func getWindowScene(controller: UITabBarController?) -> UIWindowScene? {
-        guard let controller = controller as? NCMainTabBarController,
-              let scene = sceneController[controller] else { return nil }
-        return getWindow(scene: scene)?.windowScene
+    func getWindowScene(controller: UIViewController?) -> UIWindowScene? {
+        if let windowScene = controller?.viewIfLoaded?.window?.windowScene {
+            return windowScene
+        }
+
+        // Fallback: if the controller is a registered NCMainTabBarController.
+        if let mainTabBarController = controller as? NCMainTabBarController,
+           let scene = sceneController[mainTabBarController] as? UIWindowScene {
+            return scene
+        }
+
+        // Fallback: any foregroundActive scene.
+        if let active = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }) {
+            return active
+        }
+
+        // Last resort: literally the first connected window scene.
+        return UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first
     }
 
     func getWindow(sceneIdentifier: String?) -> UIWindow? {
-        var mainTabBarController: NCMainTabBarController?
-
-        if let sceneIdentifier {
-            for controller in sceneController.keys {
-                if sceneIdentifier == controller.sceneIdentifier {
-                    mainTabBarController = controller
-                }
-            }
+        // Try exact match via your registry
+        if let sceneIdentifier,
+           let controller = sceneController.keys.first(where: { $0.sceneIdentifier == sceneIdentifier }),
+           let scene = sceneController[controller] {
+            return getWindow(scene: scene)
         }
-        guard let mainTabBarController,
-              let scene = sceneController[mainTabBarController] else {
-            return UIApplication.shared.mainAppWindow
-        }
-        return getWindow(scene: scene)
-    }
 
-    func getWindowScene(sceneIdentifier: String?) -> UIWindowScene? {
-        return getWindowScene(sceneIdentifier: sceneIdentifier)
+        // Fallback: prefer a foregroundActive window scene
+        if let active = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
+           let w = active.keyWindow {
+            return w
+        }
+
+        // Last resort: first connected window scene
+        if let any = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first,
+           let w = any.keyWindow {
+            return w
+        }
+
+        // Absolute last resort (if you keep it)
+        return UIApplication.shared.mainAppWindow
     }
 
     func getSceneIdentifier() -> [String] {

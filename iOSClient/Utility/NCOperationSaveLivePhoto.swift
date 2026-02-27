@@ -15,10 +15,10 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
     var tokenBanner: Int?
     var banner: LucidBanner?
 
-    init(metadata: tableMetadata, metadataMOV: tableMetadata, controller: UITabBarController?) {
+    init(metadata: tableMetadata, metadataMOV: tableMetadata, windowScene: UIWindowScene?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.metadataMOV = tableMetadata.init(value: metadataMOV)
-        windowScene = SceneManager.shared.getWindowScene(controller: controller)
+        self.windowScene = windowScene
     }
 
     override func start() {

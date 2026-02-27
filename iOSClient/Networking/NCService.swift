@@ -60,7 +60,7 @@ class NCService: NSObject {
         }
         switch resultServerStatus.result {
         case .success(let serverInfo):
-            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+            let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
             if serverInfo.maintenance {
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
