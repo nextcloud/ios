@@ -42,12 +42,11 @@ func showBanner(windowScene: UIWindowScene?,
     )
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
     banner.show(
         payload: payload,
         policy: policy) { state in
-        MessageBannerView(state: state, coordinator: bannerCoordinator)
+        MessageBannerView(state: state)
     }
 
     return banner
@@ -74,7 +73,6 @@ func showInfoBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
     guard let window = banner.windowScene.windows.first else {
         return
@@ -99,7 +97,7 @@ func showInfoBanner(windowScene: UIWindowScene?,
         swipeToDismiss: true,
     )
     banner.show(payload: payload) { state in
-        MessageBannerView(state: state, coordinator: bannerCoordinator)
+        MessageBannerView(state: state)
     }
 }
 
@@ -135,7 +133,6 @@ func showErrorBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
     guard let window = banner.windowScene.windows.first else {
         return
@@ -166,7 +163,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
             banner.dismiss()
         }
     ) { state in
-        MessageBannerView(state: state, coordinator: bannerCoordinator)
+        MessageBannerView(state: state)
     }
 }
 
@@ -215,14 +212,13 @@ func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
 
 struct MessageBannerView: View {
     @ObservedObject var state: LucidBannerState
-    var coordinator: LucidBannerVariantCoordinator?
 
     var body: some View {
         let showTitle = !(state.payload.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showSubtitle = !(state.payload.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showFootnote = !(state.payload.footnote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
 
-        containerView(state: state, coordinator: coordinator, allowMinimizeOnTap: false) {
+        containerView(state: state, coordinator: nil, allowMinimizeOnTap: false) {
             VStack(spacing: 15) {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: state.payload.systemImage ?? "info.circle")
@@ -284,7 +280,7 @@ struct MessageBannerView: View {
             imageAnimation: .drawOn
         ))
 
-        MessageBannerView(state: state, coordinator: nil)
+        MessageBannerView(state: state)
         .padding()
     }
 }
