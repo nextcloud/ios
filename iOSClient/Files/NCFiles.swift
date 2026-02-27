@@ -347,7 +347,7 @@ class NCFiles: NCCollectionViewCommon {
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+            await showErrorBanner(windowScene: windowScene, text: errorDecodeMetadata.errorDescription, errorCode: errorDecodeMetadata.errorCode)
         }
 
         return (metadatas, error, reloadRequired)
