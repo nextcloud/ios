@@ -101,7 +101,6 @@ class NCAssistantChatModel {
         if result.error == .success {
             messages = result.chatMessages ?? []
         } else {
-            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
             await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_load_messages_", errorCode: result.error.errorCode)
         }
     }
@@ -113,7 +112,6 @@ class NCAssistantChatModel {
 
         if result.error != .success {
             stopPolling()
-            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
             await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
             return
         }
@@ -141,7 +139,6 @@ class NCAssistantChatModel {
                 await generateChatSession()
                 startPollingForResponse()
             } else {
-                let windowScene = SceneManager.shared.getWindowScene(controller: controller)
                 await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_send_message_", errorCode: 20)
             }
 

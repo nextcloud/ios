@@ -86,8 +86,7 @@ extension NCTrash {
         }
 
         if results.error != .success {
-            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-            await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            await showErrorBanner(windowScene: self.windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
         }
         await self.database.deleteTrashAsync(fileId: nil, account: session.account)
         await self.reloadDataSource()
@@ -108,8 +107,7 @@ extension NCTrash {
                 }
             }
             if results.error != .success {
-                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-                await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                await showErrorBanner(windowScene: self.windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
             }
             await self.database.deleteTrashAsync(fileId: fileId, account: session.account)
             await self.reloadDataSource()

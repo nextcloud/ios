@@ -58,6 +58,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     }
 
     @MainActor
+    internal var windowScene: UIWindowScene? {
+       SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
+    }
+
+    @MainActor
     var mainNavigationController: NCMainNavigationController? {
         self.navigationController as? NCMainNavigationController
     }

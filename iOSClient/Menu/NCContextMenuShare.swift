@@ -8,6 +8,7 @@ import NextcloudKit
 
 /// A context menu for share actions (details, unshare, permissions).
 /// See ``NCShare`` for usage details.
+@MainActor
 class NCContextMenuShare: NSObject {
     let share: tableShare
     let isDirectory: Bool
@@ -16,6 +17,10 @@ class NCContextMenuShare: NSObject {
     let database = NCManageDatabase.shared
     let shareController: NCShare
     let controller: NCMainTabBarController?
+
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(share: tableShare, isDirectory: Bool, canReshare: Bool, shareController: NCShare, controller: NCMainTabBarController?) {
         self.share = share
@@ -155,8 +160,7 @@ class NCContextMenuShare: NSObject {
            metadata.e2eEncrypted && NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
             if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
                 Task {
-                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene,
+                    await showErrorBanner(windowScene: self.windowScene,
                                           text: "_e2e_in_upload_",
                                           errorCode: NCGlobal.shared.errorE2EEUploadInProgress)
                 }
@@ -165,8 +169,7 @@ class NCContextMenuShare: NSObject {
             let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: metadata.serverUrlFileName, addUserId: nil, removeUserId: share.shareWith, account: metadata.account)
             if error != .success {
                 Task {
-                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene, error: error)
+                    await showErrorBanner(windowScene: self.windowScene, error: error)
                 }
                 return
             }

@@ -75,7 +75,6 @@ extension NCCollectionViewCommon {
                 account: self.session.account
             )
         } else {
-            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
             await showErrorBanner(windowScene: windowScene,
                                   text: results.error.errorDescription,
                                   errorCode: results.error.errorCode)
@@ -118,7 +117,6 @@ extension NCCollectionViewCommon {
         }
 
         if results.error != .success {
-            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
             await showErrorBanner(windowScene: windowScene,
                                   text: results.error.errorDescription,
                                   errorCode: results.error.errorCode,
@@ -152,7 +150,6 @@ extension NCCollectionViewCommon {
             )
 
             if results.error != .success {
-                let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene,
                                       text: results.error.errorDescription,
                                       errorCode: results.error.errorCode,
@@ -212,7 +209,6 @@ extension NCCollectionViewCommon {
         )
 
         if results.error != .success {
-            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
             await showErrorBanner(windowScene: windowScene,
                                   text: results.error.errorDescription,
                                   errorCode: results.error.errorCode,

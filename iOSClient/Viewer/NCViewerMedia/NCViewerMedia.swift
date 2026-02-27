@@ -56,6 +56,10 @@ class NCViewerMedia: UIViewController {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -157,9 +161,8 @@ class NCViewerMedia: UIViewController {
                                                                                                                selector: "") else {
                                     return
                                 }
-                                let windowScene = SceneManager.shared.getWindowScene(controller: self.tabBarController)
                                 var downloadRequest: DownloadRequest?
-                                let (token, banner) = showHudBanner(windowScene: windowScene,
+                                let (token, banner) = showHudBanner(windowScene: self.windowScene,
                                                                     title: "_download_in_progress_",
                                                                     stage: .button) {
                                     if let request = downloadRequest {

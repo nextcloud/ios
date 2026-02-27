@@ -4,6 +4,7 @@
 
 import NextcloudKit
 
+@MainActor
 @Observable class NCUserStatusModel {
     struct UserStatus: Hashable {
         let name: String
@@ -23,6 +24,9 @@ import NextcloudKit
 
     @ObservationIgnored let account: String
     @ObservationIgnored let controller: NCMainTabBarController?
+    @ObservationIgnored var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(account: String, controller: NCMainTabBarController?) {
         self.account = account
@@ -49,7 +53,6 @@ import NextcloudKit
             if result.error == .success {
                 selectedStatus = result.status
             } else {
-                let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
@@ -66,7 +69,6 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
@@ -82,7 +84,6 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                let windowScene = await SceneManager.shared.getWindowScene(controller: self.controller)
                 await showErrorBanner(windowScene: windowScene, error: result.error)
             }
 

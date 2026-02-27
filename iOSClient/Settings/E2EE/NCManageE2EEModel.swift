@@ -20,9 +20,11 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
+
     var capabilities: NKCapabilities.Capabilities {
         NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
     }
+
     var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
     }

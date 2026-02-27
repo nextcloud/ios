@@ -43,8 +43,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                     if !metadatasPlain.isEmpty {
                         let error = await self.networking.setStatusWaitDelete(metadatas: metadatasPlain)
                         if error != .success {
-                            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-                            await showErrorBanner(windowScene: windowScene, error: error)
+                            await showErrorBanner(windowScene: self.windowScene, error: error)
                         }
                     }
 

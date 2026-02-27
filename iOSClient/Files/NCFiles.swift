@@ -230,7 +230,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
-        let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
         var reloadRequired: Bool = false
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             Task {

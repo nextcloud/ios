@@ -12,7 +12,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     @MainActor
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) async {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-        let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
 
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
@@ -30,7 +29,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         func downloadFile() async {
             var downloadRequest: DownloadRequest?
-            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
             var banner: LucidBanner?
             var tokenBanner: Int?
             await MainActor.run {

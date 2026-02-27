@@ -57,6 +57,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         NCSession.shared.getSession(controller: controller)
     }
 
+    var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
+
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -93,8 +97,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
                 if value, UIApplication.shared.backgroundRefreshStatus != .available {
                     Task {
-                        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-                        await showInfoBanner(windowScene: windowScene,
+                        await showInfoBanner(windowScene: self.windowScene,
                                              text: "_access_background_app_refresh_denied_")
                     }
                 }

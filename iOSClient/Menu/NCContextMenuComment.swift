@@ -18,6 +18,10 @@ class NCContextMenuComment: NSObject {
         self.viewController?.tabBarController as? NCMainTabBarController
     }
 
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: self.viewController?.tabBarController as? NCMainTabBarController)
+    }
+
     init(tableComments: tableComments, metadata: tableMetadata, viewController: UIViewController?) {
         self.tableComments = tableComments
         self.metadata = metadata
@@ -63,8 +67,7 @@ class NCContextMenuComment: NSObject {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
                     } else {
                         Task { @MainActor in
-                            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-                            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
                         }
                     }
                 }
@@ -98,8 +101,7 @@ class NCContextMenuComment: NSObject {
                     (self.viewController as? NCActivity)?.loadComments()
                 } else {
                     Task { @MainActor in
-                        let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
-                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
             }

@@ -17,9 +17,11 @@ class NCEndToEndInitialize: NSObject {
     var extractedPublicKey: String?
     var controller: NCMainTabBarController?
     var metadata: tableMetadata?
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
+
     var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
     }

@@ -17,6 +17,7 @@ class NCPhotosPickerViewController: NSObject {
     var maxSelectedAssets = 1
     var singleSelectedMode = false
     let global = NCGlobal.shared
+
     var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
     }
