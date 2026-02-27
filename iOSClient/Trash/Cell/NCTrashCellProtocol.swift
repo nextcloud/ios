@@ -26,18 +26,21 @@ import UIKit
 protocol NCTrashCellProtocol {
     var objectId: String { get set }
     var labelTitle: UILabel! { get set }
+    var labelExtension: UILabel! { get set }
     var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
     var account: String { get set }
 
     func selected(_ status: Bool, isEditMode: Bool, account: String)
+    func setFilename(_ filename: String, isDirectory: Bool)
 }
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
-        self.labelTitle.text = tableTrash.trashbinFileName
+        self.setFilename(tableTrash.trashbinFileName, isDirectory: tableTrash.directory)
         self.labelTitle.textColor = NCBrandColor.shared.textColor
+        self.labelExtension?.textColor = NCBrandColor.shared.textColor
         if self is NCTrashListCell {
             self.labelInfo?.text = NCUtility().getRelativeDateTitle(tableTrash.trashbinDeletionTime as Date)
         } else {

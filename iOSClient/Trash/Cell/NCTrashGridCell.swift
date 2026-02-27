@@ -31,6 +31,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
@@ -66,12 +67,39 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         imageVisualEffect.alpha = 0.5
 
         labelTitle.text = ""
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        labelTitle.preferredMaxLayoutWidth = contentView.bounds.width - 10
+    }
+
+    func setFilename(_ filename: String, isDirectory: Bool) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if isDirectory || ext.isEmpty || base.isEmpty {
+            labelTitle.text = filename
+            labelTitle.numberOfLines = 2
+            labelTitle.lineBreakMode = .byWordWrapping
+            labelExtension?.text = ""
+            labelExtension?.isHidden = true
+        } else {
+            labelTitle.text = base
+            labelTitle.numberOfLines = 1
+            labelTitle.lineBreakMode = .byTruncatingTail
+            labelExtension?.text = "." + ext
+            labelExtension?.isHidden = false
+        }
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {

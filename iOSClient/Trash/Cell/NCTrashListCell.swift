@@ -35,6 +35,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
@@ -72,6 +73,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
+
         imageRestore.image = NCUtility().loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
         imageItem.layer.cornerRadius = 6
@@ -87,6 +91,22 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
     @IBAction func touchUpInsideRestore(_ sender: Any) {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
+    }
+
+    func setFilename(_ filename: String, isDirectory: Bool) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if isDirectory || ext.isEmpty || base.isEmpty {
+            labelTitle?.text = filename
+            labelExtension?.text = ""
+            labelExtension?.isHidden = true
+        } else {
+            labelTitle?.text = base
+            labelExtension?.text = "." + ext
+            labelExtension?.isHidden = false
+        }
     }
 
     func selected(_ status: Bool, isEditMode: Bool, account: String) {
