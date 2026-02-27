@@ -8,15 +8,6 @@ import MessageUI
 import LucidBanner
 
 extension UIViewController {
-    var lucidBanner: LucidBanner? {
-        guard let scene = view.window?.windowScene,
-              let delegate = scene.delegate as? SceneDelegate else {
-            return nil
-        }
-
-        return delegate.lucidBanner
-    }
-
     // https://stackoverflow.com/questions/6131205/how-to-find-topmost-view-controller-on-ios
     @objc func topMostViewController() -> UIViewController {
         // Handling Modal views

@@ -197,7 +197,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let subtitle = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
             self.banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-            showAlertActionBannerView(lucidBanner: lucidBanner,
+            showAlertActionBannerView(lucidBanner: banner,
                                       title: title,
                                       subtitle: subtitle) {
                 self.openShareAccountsViewController(nil)
