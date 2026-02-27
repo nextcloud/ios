@@ -60,15 +60,16 @@ class NCService: NSObject {
         }
         switch resultServerStatus.result {
         case .success(let serverInfo):
+            let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
             if serverInfo.maintenance {
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
-                await showInfoBanner(controller: controller,
+                await showInfoBanner(windowScene: windowScene,
                                      title: "_warning_",
                                      text: "_warning_owncloud_")
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
-                await showInfoBanner(controller: controller,
+                await showInfoBanner(windowScene: windowScene,
                                      title: "_warning_",
                                      text: "_warning_unsupported_")
             }

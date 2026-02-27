@@ -32,8 +32,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     var notifications: [NKNotifications] = []
     var session: NCSession.Session!
 
+    @MainActor
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
+    }
+
+    @MainActor
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
     }
 
     // MARK: - View Life Cycle
@@ -261,7 +267,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 self.tableView.reloadData()
             } else if error != .success {
                 Task {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             } else {
                 print("[Error] The user has been changed during networking process.")
@@ -308,7 +314,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 }
             } else if error != .success {
                 Task {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             } else {
                 print("[Error] The user has been changed during networking process.")

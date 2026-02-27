@@ -292,7 +292,8 @@ extension NCNetworking {
         } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) && error.errorDescription.localizedCaseInsensitiveContains("virus") {
             await uploadCancelFile(metadata: metadata)
             #if !EXTENSION
-            await showErrorBanner(sceneIdentifier: metadata.sceneIdentifier, text: "_virus_detect_", errorCode: self.global.errorBadRequest)
+            let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene
+            await showErrorBanner(windowScene: windowScene, text: "_virus_detect_", errorCode: self.global.errorBadRequest)
             #endif
             // Client Diagnostic
             await NCManageDatabase.shared.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)

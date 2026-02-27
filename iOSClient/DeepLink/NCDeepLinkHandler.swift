@@ -140,9 +140,11 @@ class NCDeepLinkHandler {
         controller.selectedIndex = ControllerConstants.moreIndex
         guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
 
-        let settingsView = NCSettingsView(model: NCSettingsModel(controller: controller))
-        let settingsController = UIHostingController(rootView: settingsView)
-        navigationController.pushViewController(settingsController, animated: true)
+        Task { @MainActor in
+            let settingsView = NCSettingsView(model: NCSettingsModel(controller: controller))
+            let settingsController = UIHostingController(rootView: settingsView)
+            navigationController.pushViewController(settingsController, animated: true)
+        }
     }
 
     private func navigateToAutoUpload(controller: NCMainTabBarController) {

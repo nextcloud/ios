@@ -46,6 +46,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var QRCodeCheck: Bool = false
     private var activeLoginProvider: NCLoginProvider?
 
+    // LucidBanner
+    var banner: LucidBanner?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -188,11 +191,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if self.shareAccounts != nil {
+        if self.shareAccounts != nil,
+           let windowScene = view.window?.windowScene {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let subtitle = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
+            self.banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-            showAlertActionBannerView(scene: view.window?.windowScene,
+            showAlertActionBannerView(lucidBanner: banner,
                                       title: title,
                                       subtitle: subtitle) {
                 self.openShareAccountsViewController(nil)
@@ -203,7 +208,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        LucidBanner.shared.dismiss()
+        self.banner?.dismiss()
     }
 
     private func handleLoginWithAppConfig() {
@@ -424,7 +429,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if results.error == .success, let token = results.token {
                     await createAccount(urlBase: server, user: user, password: token)
                 } else {
-                    await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                     dismiss(animated: true, completion: nil)
                 }
             } else if value.hasPrefix(protocolLogin) {
@@ -439,7 +445,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if results.error == .success, let password = results.token {
             await self.createAccount(urlBase: urlBase, user: user, password: password)
         } else {
-            await showErrorBanner(controller: self.controller, text: results.error.errorDescription, errorCode: results.error.errorCode)
+            let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+            await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
             dismiss(animated: true, completion: nil)
         }
     }

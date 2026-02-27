@@ -84,7 +84,8 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
-                        await showErrorBanner(controller: delegate?.tabBarController as? NCMainTabBarController, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                        let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
+                        await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                         return nil
                     }
 
@@ -138,7 +139,8 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
-                        await showErrorBanner(controller: delegate?.tabBarController as? NCMainTabBarController, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                        let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
+                        await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                         return nil
                     }
 

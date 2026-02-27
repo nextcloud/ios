@@ -340,15 +340,15 @@ extension NCPlayerToolBar: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session, controller: NCMainTabBarController?) {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
-            let scene = SceneManager.shared.getWindow(controller: viewerMediaPage.tabBarController)?.windowScene
+            let windowScene = SceneManager.shared.getWindowScene(controller: viewerMediaPage.tabBarController)
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                let token = showHudBanner(scene: scene,
-                                          title: "_download_in_progress_",
-                                          stage: .button) {
+                let (token, banner) = showHudBanner(windowScene: windowScene,
+                                                    title: "_download_in_progress_",
+                                                    stage: .button) {
                     if let request = downloadRequest {
                         request.cancel()
                     }
@@ -370,13 +370,12 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }, progressHandler: { progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(
-                            payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
-                            for: token)
+                        banner?.update(payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                                       for: token)
                     }
                 }) { _, etag, _, _, _, _, error in
                     Task {
-                        LucidBanner.shared.dismiss()
+                        banner?.dismiss()
 
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,
@@ -389,7 +388,9 @@ extension NCPlayerToolBar: NCSelectDelegate {
                         if error == .success {
                             self.addPlaybackSlave(type: type, metadata: metadata)
                         } else if error.errorCode != 200 {
-                            await showErrorBanner(scene: scene, text: error.errorDescription, errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: windowScene,
+                                                  text: error.errorDescription,
+                                                  errorCode: error.errorCode)
                         }
                     }
                 }

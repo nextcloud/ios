@@ -12,6 +12,9 @@ import NextcloudKit
 
 final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate {
     let controller: NCMainTabBarController?
+    var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -29,7 +32,7 @@ final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate 
         let dataTask = defaultSession.dataTask(with: urlRequest) { data, _, error in
             if let error {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: NKError(error: error))
+                    await showErrorBanner(windowScene: self.windowScene, error: NKError(error: error))
                 }
             } else if let data = data {
                 self.start(data: data)
@@ -79,7 +82,7 @@ final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate 
                 UIApplication.shared.open(url)
             } catch {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: NKError(error: error))
+                    await showErrorBanner(windowScene: self.windowScene, error: NKError(error: error))
                 }
                 self.stop()
             }

@@ -56,6 +56,10 @@ class NCViewerMedia: UIViewController {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -157,11 +161,10 @@ class NCViewerMedia: UIViewController {
                                                                                                                selector: "") else {
                                     return
                                 }
-                                let scene = SceneManager.shared.getWindow(controller: self.tabBarController)?.windowScene
                                 var downloadRequest: DownloadRequest?
-                                let token = showHudBanner(scene: scene,
-                                                          title: "_download_in_progress_",
-                                                          stage: .button) {
+                                let (token, banner) = showHudBanner(windowScene: self.windowScene,
+                                                                    title: "_download_in_progress_",
+                                                                    stage: .button) {
                                     if let request = downloadRequest {
                                         request.cancel()
                                     }
@@ -171,12 +174,11 @@ class NCViewerMedia: UIViewController {
                                     downloadRequest = request
                                 } progressHandler: { progress in
                                     Task {@MainActor in
-                                        LucidBanner.shared.update(
-                                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
-                                            for: token)
+                                        banner?.update(payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                                                       for: token)
                                     }
                                 }
-                                LucidBanner.shared.dismiss()
+                                banner?.dismiss()
 
                                 if results.nkError == .success {
                                     if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {

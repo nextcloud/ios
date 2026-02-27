@@ -4,7 +4,9 @@
 
 import NextcloudKit
 
-@Observable class NCAssistantChatModel {
+@MainActor
+@Observable
+class NCAssistantChatModel {
     var messages: [AssistantChatMessage] = []
     var isSending: Bool = false
     var isThinking: Bool = false
@@ -22,6 +24,9 @@ import NextcloudKit
 
     @ObservationIgnored var controller: NCMainTabBarController?
     @ObservationIgnored private var chatMessageTaskId: Int?
+    @ObservationIgnored var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = []) {
         self.controller = controller
@@ -96,7 +101,7 @@ import NextcloudKit
         if result.error == .success {
             messages = result.chatMessages ?? []
         } else {
-            await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_load_messages_", errorCode: result.error.errorCode)
+            await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_load_messages_", errorCode: result.error.errorCode)
         }
     }
 
@@ -107,7 +112,7 @@ import NextcloudKit
 
         if result.error != .success {
             stopPolling()
-            await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
+            await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
             return
         }
 
@@ -134,7 +139,7 @@ import NextcloudKit
                 await generateChatSession()
                 startPollingForResponse()
             } else {
-                await showErrorBanner(controller: controller, title: "_error_", text: "_assistant_error_send_message_", errorCode: 20)
+                await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_send_message_", errorCode: NCGlobal.shared.errorInternalError)
             }
 
             isSending = false

@@ -4,6 +4,7 @@
 
 import NextcloudKit
 
+@MainActor
 @Observable class NCUserStatusModel {
     struct UserStatus: Hashable {
         let name: String
@@ -23,6 +24,9 @@ import NextcloudKit
 
     @ObservationIgnored let account: String
     @ObservationIgnored let controller: NCMainTabBarController?
+    @ObservationIgnored var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(account: String, controller: NCMainTabBarController?) {
         self.account = account
@@ -49,7 +53,7 @@ import NextcloudKit
             if result.error == .success {
                 selectedStatus = result.status
             } else {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
     }
@@ -65,7 +69,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: windowScene, error: result.error)
             }
         }
     }
@@ -80,7 +84,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: windowScene, error: result.error)
             }
 
             await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: result.clearAt,

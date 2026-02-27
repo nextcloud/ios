@@ -42,26 +42,27 @@ class NCAutoUpload: NSObject {
                                         model: NCAutoUploadModel,
                                         assetCollections: [PHAssetCollection],
                                         account: String) async {
+        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+        var banner: LucidBanner?
         defer {
-            LucidBanner.shared.dismiss(after: 1)
+            banner?.dismiss(after: 1)
         }
 
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
-        let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
-        await showBanner(scene: scene,
-                         title: "_info_",
-                         subtitle: "_creating_db_photo_progress_",
-                         textColor: .label,
-                         image: "photo.on.rectangle.angled",
-                         imageAnimation: .bounce,
-                         imageColor: .label,
-                         backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
-                         autoDismissAfter: 0,
-                         swipeToDismiss: false,
-                         policy: .drop
+        banner = await showBanner(windowScene: windowScene,
+                                  title: "_info_",
+                                  subtitle: "_creating_db_photo_progress_",
+                                  textColor: .label,
+                                  image: "photo.on.rectangle.angled",
+                                  imageAnimation: .bounce,
+                                  imageColor: .label,
+                                  backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
+                                  autoDismissAfter: 0,
+                                  swipeToDismiss: false,
+                                  policy: .drop
         )
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)

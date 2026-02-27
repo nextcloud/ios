@@ -6,21 +6,27 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showUploadBanner(scene: UIWindowScene?,
+func showUploadBanner(windowScene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
-                      onButtonTap: (() -> Void)? = nil) -> Int? {
-    let token = LucidBanner.shared.show(scene: scene,
-                                        payload: payload,
-                                        policy: .drop) { state in
+                      onButtonTap: (() -> Void)? = nil) -> (token: Int?, banner: LucidBanner?) {
+    guard let windowScene else {
+        return (nil, nil)
+    }
+    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+    let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
+
+    let token = banner.show(payload: payload,
+                            policy: .drop) { state in
         UploadBannerView(state: state,
+                         coordinator: bannerCoordinator,
                          allowMinimizeOnTap: allowMinimizeOnTap,
                          onButtonTap: onButtonTap)
     }
 
 #if !EXTENSION
     if allowMinimizeOnTap {
-        LucidBannerVariantCoordinator.shared.register(token: token) { _ in
+        bannerCoordinator.register(token: token) { _ in
             return .init(
                 payloadUpdate: .init(
                     horizontalLayout: .centered(width: 100),
@@ -31,7 +37,7 @@ func showUploadBanner(scene: UIWindowScene?,
         }
     }
 #endif
-    return token
+    return (token, banner)
 }
 
 // MARK: - SwiftUI
@@ -39,12 +45,14 @@ func showUploadBanner(scene: UIWindowScene?,
 struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State var trigger = true
+    var coordinator: LucidBannerVariantCoordinator?
     let onButtonTap: (() -> Void)?
     let allowMinimizeOnTap: Bool
     let textColor = Color(.label)
 
-    init(state: LucidBannerState, allowMinimizeOnTap: Bool = false, onButtonTap: (() -> Void)? = nil) {
+    init(state: LucidBannerState, coordinator: LucidBannerVariantCoordinator?, allowMinimizeOnTap: Bool = false, onButtonTap: (() -> Void)? = nil) {
         self.state = state
+        self.coordinator = coordinator
         self.allowMinimizeOnTap = allowMinimizeOnTap
         self.onButtonTap = onButtonTap
     }
@@ -58,7 +66,7 @@ struct UploadBannerView: View {
         let isError = (state.payload.stage == .error)
         let isButton = (state.payload.stage == .button)
 
-        containerView(state: state, allowMinimizeOnTap: allowMinimizeOnTap) {
+        containerView(state: state, coordinator: coordinator, allowMinimizeOnTap: allowMinimizeOnTap) {
             if state.variant == .alternate {
                 HStack(spacing: 5) {
                     Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
@@ -214,6 +222,7 @@ struct UploadBannerView: View {
 
         UploadBannerView(
             state: state,
+            coordinator: nil,
             allowMinimizeOnTap: false
         )
         .padding()

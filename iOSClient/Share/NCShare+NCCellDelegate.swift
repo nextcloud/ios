@@ -35,7 +35,8 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
                 NCShareCommon.copyLink(link: internalLink, viewController: self, sender: sender)
             } else {
                 Task {
-                    await showErrorBanner(controller: self.controller, error: error)
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                    await showErrorBanner(windowScene: windowScene, error: error)
                 }
             }
         }

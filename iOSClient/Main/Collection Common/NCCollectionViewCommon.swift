@@ -94,11 +94,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal let heightHeaderRecommendations: CGFloat = 160
     internal let heightHeaderSection: CGFloat = 30
 
-    @MainActor
-    internal var session: NCSession.Session {
-        NCSession.shared.getSession(controller: tabBarController)
-    }
-
     internal var isLayoutPhoto: Bool {
         layoutForView?.layout == global.layoutPhotoRatio || layoutForView?.layout == global.layoutPhotoSquare
     }
@@ -125,20 +120,28 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     @MainActor
+    internal var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
+
+    @MainActor
     internal var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
 
+    @MainActor
     internal var mainNavigationController: NCMainNavigationController? {
         self.navigationController as? NCMainNavigationController
     }
 
+    @MainActor
     internal var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
-    internal var scene: UIWindowScene? {
-       SceneManager.shared.getWindow(sceneIdentifier: self.controller?.sceneIdentifier)?.windowScene
+    @MainActor
+    internal var windowScene: UIWindowScene? {
+       SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
     }
 
     internal var isNumberOfItemsInAllSectionsNull: Bool {
@@ -627,9 +630,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) else {
                 return
             }
-            let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
-            let token = showHudBanner(
-                scene: scene,
+            let bannerResults = showHudBanner(
+                windowScene: windowScene,
                 title: "_upload_in_progress_")
 
             for (index, items) in UIPasteboard.general.items.enumerated() {
@@ -661,9 +663,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                                                                              serverUrlFileName: serverUrlFileName) { _ in
                     } progressHandler: { _, _, fractionCompleted in
                         Task {@MainActor in
-                            LucidBanner.shared.update(
+                            bannerResults.banner?.update(
                                 payload: LucidBannerPayload.Update(progress: fractionCompleted),
-                                for: token
+                                for: bannerResults.token
                             )
                         }
                     }
@@ -689,12 +691,12 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                         }
                     } else {
                         Task {
-                            await showErrorBanner(scene: scene, text: resultsUpload.error.errorDescription, errorCode: resultsUpload.error.errorCode)
+                            await showErrorBanner(windowScene: windowScene, text: resultsUpload.error.errorDescription, errorCode: resultsUpload.error.errorCode)
                         }
                     }
                 }
             }
-            LucidBanner.shared.dismiss()
+            bannerResults.banner?.dismiss()
         }
     }
 
@@ -878,7 +880,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         Task {
             if error != .success,
                error.errorCode != global.errorResourceNotFound {
-                await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
             guard session.account == account else {
                 return

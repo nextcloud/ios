@@ -6,14 +6,17 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showHudBanner(scene: UIWindowScene?,
+func showHudBanner(windowScene: UIWindowScene?,
                    title: String? = nil,
                    subtitle: String? = nil,
                    stage: LucidBanner.Stage? = nil,
-                   onButtonTap: (() -> Void)? = nil) -> Int? {
-    let scene = scene ?? UIApplication.shared.mainAppWindow?.windowScene
+                   onButtonTap: (() -> Void)? = nil) -> (token: Int?, banner: LucidBanner?) {
+    guard let windowScene else {
+        return (nil, nil)
+    }
     let localizedTitle = title.map { NSLocalizedString($0, comment: "") }
     let localizedSubTitle = subtitle.map { NSLocalizedString($0, comment: "") }
+    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
     let payload = LucidBannerPayload(
         title: localizedTitle,
@@ -23,31 +26,42 @@ func showHudBanner(scene: UIWindowScene?,
         blocksTouches: true,
     )
 
-    return LucidBanner.shared.show(
-        scene: scene,
+    let token = banner.show(
         payload: payload
     ) { state in
         HudBannerView(state: state, onButtonTap: onButtonTap)
     }
+
+    return (token, banner)
 }
 
 @MainActor
-func completeHudBannerSuccess(token: Int?) {
+func completeHudBannerSuccess(token: Int?, banner: LucidBanner?) {
+    guard let banner else {
+        return
+    }
+
     let payload = LucidBannerPayload.Update(
         stage: .success,
         autoDismissAfter: 2
     )
-    LucidBanner.shared.update(payload: payload, for: token)
+
+    banner.update(payload: payload, for: token)
 }
 
 @MainActor
-func completeHudBannerError(description: String, token: Int?) {
+func completeHudBannerError(description: String, token: Int?, banner: LucidBanner?) {
+    guard let banner else {
+        return
+    }
+
     let payload = LucidBannerPayload.Update(
         subtitle: NSLocalizedString(description, comment: ""),
         stage: .error,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond
     )
-    LucidBanner.shared.update(payload: payload, for: token)
+
+    banner.update(payload: payload, for: token)
 }
 
 // MARK: - SwiftUI

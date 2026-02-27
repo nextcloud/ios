@@ -29,7 +29,8 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if model.previewStore[index].assetType == .livePhoto && model.previewStore[index].asset.type == .livePhoto && model.previewStore[index].data == nil {
                 Task {
-                    await showInfoBanner(controller: self.model.controller, text: "_message_disable_livephoto_")
+                    let windowScene = SceneManager.shared.getWindowScene(controller: self.model.controller)
+                    await showInfoBanner(windowScene: windowScene, text: "_message_disable_livephoto_")
                 }
             }
         }
@@ -55,7 +56,9 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
             super.init()
 
             NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-                parent.model.stopTimer()
+                Task {
+                    await parent.model.stopTimer()
+                }
             }
 
             NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
@@ -63,7 +66,9 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
                       let navigationItem = self.viewController?.navigationItem else {
                     return
                 }
-                parent.model.startTimer(navigationItem: navigationItem)
+                Task {
+                    await parent.model.startTimer(navigationItem: navigationItem)
+                }
             }
         }
 

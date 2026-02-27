@@ -9,6 +9,7 @@ import NextcloudKit
 
 /// A context menu for user profile actions (email, talk, etc.)
 /// See ``NCShare``, ``NCActivity``, ``NCActivityTableViewCell`` for usage details.
+@MainActor
 class NCContextMenuProfile: NSObject {
     let userId: String
     let session: NCSession.Session
@@ -17,6 +18,10 @@ class NCContextMenuProfile: NSObject {
 
     internal var controller: NCMainTabBarController? {
         self.viewController.tabBarController as? NCMainTabBarController
+    }
+
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
     }
 
     init(userId: String, session: NCSession.Session, viewController: UIViewController) {
@@ -180,7 +185,7 @@ class NCContextMenuProfile: NSObject {
 
     private func showError(_ errorKey: String) {
         Task {
-            await showErrorBanner(controller: controller,
+            await showErrorBanner(windowScene: windowScene,
                                   text: errorKey,
                                   errorCode: NCGlobal.shared.errorInternalError)
         }

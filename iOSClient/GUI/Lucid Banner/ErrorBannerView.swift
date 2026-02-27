@@ -7,52 +7,74 @@ import LucidBanner
 import NextcloudKit
 import Alamofire
 
-// MARK: - Show Banner
-@discardableResult
 @MainActor
-func showBanner(windowScene: UIWindowScene?,
-                title: String?,
-                subtitle: String? = nil,
-                footnote: String? = nil,
-                textColor: UIColor,
-                image: String?,
-                imageAnimation: LucidBanner.LucidBannerAnimationStyle,
-                imageColor: UIColor,
-                vPosition: LucidBanner.VerticalPosition = .top,
-                backgroundColor: UIColor,
-                autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
-                swipeToDismiss: Bool = true,
-                policy: LucidBanner.ShowPolicy = .enqueue) async -> LucidBanner? {
+func showErrorBanner(windowScene: UIWindowScene?,
+                     error: NKError) async {
+    await showErrorBanner(windowScene: windowScene,
+                          title: "_error_",
+                          text: error.errorDescription,
+                          errorCode: error.errorCode)
+}
+
+@MainActor
+func showErrorBanner(windowScene: UIWindowScene?,
+                     title: String = "_error_",
+                     text: String,
+                     footnote: String? = nil,
+                     foregroundColor: UIColor = .white,
+                     backgroundColor: UIColor = .red,
+                     sleepBefore: Double = 1,
+                     errorCode: Int,
+                     afError: AFError? = nil) async {
     guard let windowScene else {
-        return nil
+        return
     }
 
-    let payload = LucidBannerPayload(
-        title: NSLocalizedString(title ?? "", comment: ""),
-        subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
-        footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        systemImage: image,
-        imageAnimation: imageAnimation,
-        backgroundColor: Color(uiColor: backgroundColor),
-        textColor: Color(uiColor: textColor),
-        imageColor: Color(uiColor: imageColor),
-        vPosition: vPosition,
-        autoDismissAfter: autoDismissAfter,
-        swipeToDismiss: swipeToDismiss
-    )
+#if !EXTENSION
+    guard !bannerContainsError(errorCode: errorCode, afError: afError) else {
+        return
+    }
+#endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-    banner.show(payload: payload, policy: policy) { state in
-        BannerView(state: state)
+    guard let window = banner.windowScene.windows.first else {
+        return
     }
 
-    return banner
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
+
+    try? await Task.sleep(for: .seconds(sleepBefore))
+
+    let payload = LucidBannerPayload(
+        title: NSLocalizedString(title, comment: ""),
+        subtitle: NSLocalizedString(text, comment: ""),
+        footnote: NSLocalizedString(footnote ?? "", comment: ""),
+        systemImage: "xmark.circle.fill",
+        backgroundColor: Color(uiColor: backgroundColor),
+        textColor: Color(uiColor: foregroundColor),
+        imageColor: .white,
+        vPosition: .top,
+        verticalMargin: 10,
+        horizontalLayout: horizontalLayout,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
+    )
+    banner.show(
+        payload: payload,
+        onTap: { _, _ in
+            banner.dismiss()
+        }
+    ) { state in
+        ErrorBannerView(state: state)
+    }
 }
 
 // MARK: - SwiftUI
 
-struct BannerView: View {
+struct ErrorBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
@@ -116,14 +138,17 @@ struct BannerView: View {
 
         let state = LucidBannerState(
             payload: LucidBannerPayload(
-                title: "Title",
+                title: "Error",
                 subtitle: "Subtitle",
                 footnote: "footnote",
-                systemImage: "wifi.circle"
+                systemImage: "xmark.circle.fill",
+                backgroundColor: .red,
+                textColor: .white,
+                imageColor: .white
             )
         )
 
-        BannerView(state: state)
+        ErrorBannerView(state: state)
         .padding()
     }
 }

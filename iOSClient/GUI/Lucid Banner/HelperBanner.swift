@@ -4,10 +4,12 @@
 
 import SwiftUI
 import LucidBanner
+import Alamofire
 
 public extension View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState,
+                                      coordinator: LucidBannerVariantCoordinator?,
                                       allowMinimizeOnTap: Bool,
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
@@ -20,7 +22,7 @@ public extension View {
             .contentShape(Rectangle())
             .onTapGesture {
                 guard allowMinimizeOnTap else { return }
-                LucidBannerVariantCoordinator.shared.handleTap(state)
+                coordinator?.handleTap(state)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -121,3 +123,42 @@ func horizontalLayoutBanner(bounds: CGRect,
         return .stretch(margins: phoneSideMargin)
     }
 }
+
+#if !EXTENSION
+
+// Error 401 (maintenance mode)
+// Error 423 (locked)
+// Error 507 (insufficient storage)
+// Error -1009 (NSURLErrorNotConnectedToInternet)
+// Error -1003 (NSURLError​Cannot​Find​Host)
+
+func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
+    guard let errorCode else {
+        return false
+    }
+    // List of errors not to be displayed
+    if errorCode == -999 || errorCode == 423 {
+        return true
+    }
+    if let afError, case .explicitlyCancelled = afError {
+        return true
+    }
+    // Prevent repeated display of the same user-facing error during the current foreground session.
+    // If this error code has already been shown, do nothing.
+    // Otherwise, record it and allow the UX notification to be displayed once.
+    if shownErrors.contains(errorCode) {
+        return true
+    } else {
+        // Coalesce user-facing errors across the current foreground session.
+        // The same error code is shown to the user only once.
+        if errorCode == 401 ||
+            errorCode == 423 ||
+            errorCode == 507 ||
+            errorCode == NSURLErrorNotConnectedToInternet ||
+            errorCode == NSURLErrorCannotFindHost {
+            shownErrors.insert(errorCode)
+        }
+        return false
+    }
+}
+#endif

@@ -59,10 +59,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         NCSession.shared.getSession(controller: tabBarController)
     }
 
+    @MainActor
     private var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
 
+    @MainActor
     var mainNavigationController: NCMainNavigationController? {
         self.navigationController as? NCMainNavigationController
     }
