@@ -14,10 +14,12 @@ func showUploadBanner(windowScene: UIWindowScene?,
         return (nil, nil)
     }
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+    let coordinator = LucidBannerVariantCoordinator(banner: banner)
 
     let token = banner.show(payload: payload,
                             policy: .drop) { state in
         UploadBannerView(state: state,
+                         coordinator: coordinator,
                          allowMinimizeOnTap: allowMinimizeOnTap,
                          onButtonTap: onButtonTap)
     }
@@ -44,12 +46,14 @@ func showUploadBanner(windowScene: UIWindowScene?,
 struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
     @State var trigger = true
+    var coordinator: LucidBannerVariantCoordinator?
     let onButtonTap: (() -> Void)?
     let allowMinimizeOnTap: Bool
     let textColor = Color(.label)
 
-    init(state: LucidBannerState, allowMinimizeOnTap: Bool = false, onButtonTap: (() -> Void)? = nil) {
+    init(state: LucidBannerState, coordinator: LucidBannerVariantCoordinator?, allowMinimizeOnTap: Bool = false, onButtonTap: (() -> Void)? = nil) {
         self.state = state
+        self.coordinator = coordinator
         self.allowMinimizeOnTap = allowMinimizeOnTap
         self.onButtonTap = onButtonTap
     }
@@ -63,7 +67,7 @@ struct UploadBannerView: View {
         let isError = (state.payload.stage == .error)
         let isButton = (state.payload.stage == .button)
 
-        containerView(state: state, allowMinimizeOnTap: allowMinimizeOnTap) {
+        containerView(state: state, coordinator: coordinator, allowMinimizeOnTap: allowMinimizeOnTap) {
             if state.variant == .alternate {
                 HStack(spacing: 5) {
                     Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
@@ -219,6 +223,7 @@ struct UploadBannerView: View {
 
         UploadBannerView(
             state: state,
+            coordinator: nil,
             allowMinimizeOnTap: false
         )
         .padding()

@@ -8,6 +8,7 @@ import LucidBanner
 public extension View {
     @ViewBuilder
     func containerView<Content: View>(state: LucidBannerState,
+                                      coordinator: LucidBannerVariantCoordinator?,
                                       allowMinimizeOnTap: Bool,
                                       @ViewBuilder _ content: () -> Content) -> some View {
         let isError = state.payload.stage == .error
@@ -20,7 +21,7 @@ public extension View {
             .contentShape(Rectangle())
             .onTapGesture {
                 guard allowMinimizeOnTap else { return }
-                //LucidBannerVariantCoordinator.shared.handleTap(state)
+                coordinator?.handleTap(state)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
