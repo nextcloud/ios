@@ -46,6 +46,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var QRCodeCheck: Bool = false
     private var activeLoginProvider: NCLoginProvider?
 
+    // LucidBanner
+    var banner: LucidBanner?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -188,24 +191,24 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if self.shareAccounts != nil {
+        if self.shareAccounts != nil,
+           let windowScene = view.window?.windowScene {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let subtitle = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
+            self.banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-            /*
-            showAlertActionBannerView(w: view.window?.windowScene,
+            showAlertActionBannerView(lucidBanner: lucidBanner,
                                       title: title,
                                       subtitle: subtitle) {
                 self.openShareAccountsViewController(nil)
             }
-            */
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // LucidBanner.shared.dismiss()
+        self.banner?.dismiss()
     }
 
     private func handleLoginWithAppConfig() {
