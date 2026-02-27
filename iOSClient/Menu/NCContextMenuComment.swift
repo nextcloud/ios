@@ -7,6 +7,7 @@ import NextcloudKit
 
 /// A context menu for comment actions (edit, delete).
 /// See ``NCActivity`` for usage details.
+@MainActor
 class NCContextMenuComment: NSObject {
     let tableComments: tableComments
     let metadata: tableMetadata

@@ -17,10 +17,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(account: metadata.account)
     }
 
+    @MainActor
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }

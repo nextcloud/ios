@@ -32,6 +32,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     var notifications: [NKNotifications] = []
     var session: NCSession.Session!
 
+    @MainActor
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }

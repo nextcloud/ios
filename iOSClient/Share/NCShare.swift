@@ -58,6 +58,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         return ((metadata.sharePermissionsCollaborationServices & NKShare.Permission.share.rawValue) != 0)
     }
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(account: metadata.account)
     }

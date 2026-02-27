@@ -94,11 +94,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal let heightHeaderRecommendations: CGFloat = 160
     internal let heightHeaderSection: CGFloat = 30
 
-    @MainActor
-    internal var session: NCSession.Session {
-        NCSession.shared.getSession(controller: tabBarController)
-    }
-
     internal var isLayoutPhoto: Bool {
         layoutForView?.layout == global.layoutPhotoRatio || layoutForView?.layout == global.layoutPhotoSquare
     }
@@ -125,18 +120,26 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     @MainActor
+    internal var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
+
+    @MainActor
     internal var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
 
+    @MainActor
     internal var mainNavigationController: NCMainNavigationController? {
         self.navigationController as? NCMainNavigationController
     }
 
+    @MainActor
     internal var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
+    @MainActor
     internal var windowScene: UIWindowScene? {
        SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
     }

@@ -60,6 +60,7 @@ class NCMedia: UIViewController {
         NCSession.shared.getSession(controller: tabBarController)
     }
 
+    @MainActor
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
@@ -72,6 +73,7 @@ class NCMedia: UIViewController {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
+    @MainActor
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }

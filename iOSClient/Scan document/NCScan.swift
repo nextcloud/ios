@@ -27,7 +27,6 @@ import EasyTipView
 import SwiftUI
 
 class NCScan: UIViewController, NCScanCellCellDelegate {
-
     @IBOutlet weak var collectionViewSource: UICollectionView!
     @IBOutlet weak var collectionViewDestination: UICollectionView!
     @IBOutlet weak var cancel: UIBarButtonItem!

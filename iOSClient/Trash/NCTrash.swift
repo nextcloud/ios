@@ -52,10 +52,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         NCSession.shared.getSession(controller: tabBarController)
     }
 
+    @MainActor
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
 
+    @MainActor
     var mainNavigationController: NCMainNavigationController? {
         self.navigationController as? NCMainNavigationController
     }
