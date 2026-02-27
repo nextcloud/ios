@@ -234,6 +234,8 @@
 		F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F711A4EB2AF9327D00095DD8 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9739428F17131002C43E2 /* IntentHandler.swift */; };
+		F712217E2F51AF9500ACEB08 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F712217D2F51AF9500ACEB08 /* LucidBanner */; };
+		F71221802F51AF9F00ACEB08 /* LucidBanner in Frameworks */ = {isa = PBXBuildFile; productRef = F712217F2F51AF9F00ACEB08 /* LucidBanner */; };
 		F7132C722D085AD200B42D6A /* NCTermOfServiceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7132C6B2D085AD200B42D6A /* NCTermOfServiceModel.swift */; };
 		F7132C732D085AD200B42D6A /* NCTermOfServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7132C6C2D085AD200B42D6A /* NCTermOfServiceView.swift */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
@@ -1874,6 +1876,7 @@
 			files = (
 				F7490E8B29882CE4009DCE94 /* NextcloudKit in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
+				F71221802F51AF9F00ACEB08 /* LucidBanner in Frameworks */,
 				F760DE0D2AE66EDF0027D78A /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1914,6 +1917,7 @@
 			files = (
 				F760DE0B2AE66ED80027D78A /* KeychainAccess in Frameworks */,
 				F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */,
+				F712217E2F51AF9500ACEB08 /* LucidBanner in Frameworks */,
 				F72AD71328C24BCC006CB92D /* NextcloudKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3493,6 +3497,7 @@
 				F7490E7129882BB4009DCE94 /* RealmSwift */,
 				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
 				F760DE0C2AE66EDF0027D78A /* KeychainAccess */,
+				F712217F2F51AF9F00ACEB08 /* LucidBanner */,
 			);
 			productName = "File Provider Extension UI";
 			productReference = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */;
@@ -3572,6 +3577,7 @@
 				F710FC83277B7D3500AA9FBF /* RealmSwift */,
 				F72AD71228C24BCC006CB92D /* NextcloudKit */,
 				F760DE0A2AE66ED80027D78A /* KeychainAccess */,
+				F712217D2F51AF9500ACEB08 /* LucidBanner */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -6333,6 +6339,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		F712217D2F51AF9500ACEB08 /* LucidBanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70557B52ED44E2700135623 /* XCRemoteSwiftPackageReference "LucidBanner" */;
+			productName = LucidBanner;
+		};
+		F712217F2F51AF9F00ACEB08 /* LucidBanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70557B52ED44E2700135623 /* XCRemoteSwiftPackageReference "LucidBanner" */;
+			productName = LucidBanner;
 		};
 		F7160A7C2BE931DE0034DCB3 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
