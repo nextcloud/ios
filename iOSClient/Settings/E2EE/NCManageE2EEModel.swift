@@ -120,7 +120,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         }
     }
 
-    func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
+    nonisolated func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
         if code == NCPreferences().passcode {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.correctPasscode()
@@ -131,7 +131,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         }
     }
 
-    func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
+    nonisolated func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
             if success {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -142,7 +142,9 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         }
     }
 
-    func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
-        passcodeViewController.dismiss(animated: true)
+    nonisolated func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
+        Task {@MainActor in
+            passcodeViewController.dismiss(animated: true)
+        }
     }
 }
