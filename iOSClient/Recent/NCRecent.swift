@@ -25,6 +25,8 @@ import UIKit
 import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
+    internal var metadatas: [tableMetadata] = []
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -66,18 +68,16 @@ class NCRecent: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND fileName != %@", session.account, NextcloudKit.shared.nkCommonInstance.rootFileName), sortedByKeyPath: "date", ascending: false) {
-
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
-                                                         layoutForView: layoutForView,
-                                                         account: session.account)
-
-            cachingAsync(metadatas: metadatas)
-        }
-
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
 
+        if metadatas.isEmpty {
+            metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND fileName != %@", session.account, NextcloudKit.shared.nkCommonInstance.rootFileName), sortedByKeyPath: "date", ascending: false, limit: 100) ?? []
+        }
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     account: session.account)
         await super.reloadDataSource()
     }
 
@@ -153,11 +153,9 @@ class NCRecent: NCCollectionViewCommon {
         </d:searchrequest>
         """
 
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-        let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/" + session.userId, lessDateString)
+        let fourteenDaysAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
+        let greaterDateString = String(Int(fourteenDaysAgo.timeIntervalSince1970))
+        let requestBody = String(format: requestBodyRecent, "/files/" + session.userId, greaterDateString)
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
 
         startGUIGetServerData()
@@ -178,9 +176,16 @@ class NCRecent: NCCollectionViewCommon {
             return
         }
 
-        let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+        let results = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+        if results.metadatas.isEmpty {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: self.serverUrl)
+            }
+        } else {
+            self.metadatas = results.metadatas
+            await self.database.addMetadatasAsync(metadatas)
 
-        await self.database.addMetadatasAsync(metadatas)
-        await self.reloadDataSource()
+            await self.reloadDataSource()
+        }
     }
 }
