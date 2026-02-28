@@ -25,8 +25,6 @@ import UIKit
 import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
-    internal var metadatas: [tableMetadata] = []
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -71,9 +69,14 @@ class NCRecent: NCCollectionViewCommon {
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
 
-        if metadatas.isEmpty {
-            metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND fileName != %@", session.account, NextcloudKit.shared.nkCommonInstance.rootFileName), sortedByKeyPath: "date", ascending: false, limit: 100) ?? []
-        }
+        let fourteenDaysAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "account == %@", session.account),
+            NSPredicate(format: "fileName != %@", NextcloudKit.shared.nkCommonInstance.rootFileName),
+            NSPredicate(format: "%K > %lld", "size", 0),
+            NSPredicate(format: "date >= %@", fourteenDaysAgo as NSDate)
+        ])
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", ascending: false, limit: 100) ?? []
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,
@@ -177,14 +180,13 @@ class NCRecent: NCCollectionViewCommon {
         }
 
         let results = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+        await self.database.addMetadatasAsync(results.metadatas)
+
         if results.metadatas.isEmpty {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferReloadData(serverUrl: self.serverUrl)
             }
         } else {
-            self.metadatas = results.metadatas
-            await self.database.addMetadatasAsync(metadatas)
-
             await self.reloadDataSource()
         }
     }
