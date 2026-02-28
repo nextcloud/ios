@@ -73,7 +73,10 @@ class NCRecent: NCCollectionViewCommon {
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "account == %@", session.account),
             NSPredicate(format: "fileName != %@", NextcloudKit.shared.nkCommonInstance.rootFileName),
-            NSPredicate(format: "%K > %lld", "size", 0),
+            NSCompoundPredicate(orPredicateWithSubpredicates: [
+                NSPredicate(format: "directory == %@", NSNumber(value: false)),
+                NSPredicate(format: "%K == %lld", "size", 0)
+            ]),
             NSPredicate(format: "date >= %@", fourteenDaysAgo as NSDate)
         ])
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", ascending: false, limit: 100) ?? []
@@ -97,7 +100,7 @@ class NCRecent: NCCollectionViewCommon {
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
-        <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+        <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\" xmlns:ns=\"http://nextcloud.org/ns\">
         <d:basicsearch>
             <d:select>
                 <d:prop>
@@ -134,12 +137,30 @@ class NCRecent: NCCollectionViewCommon {
             </d:scope>
         </d:from>
         <d:where>
-            <d:lt>
-                <d:prop>
-                    <d:getlastmodified/>
-                </d:prop>
-                <d:literal>%@</d:literal>
-            </d:lt>
+            <d:and>
+                <d:or>
+                    <d:not>
+                        <d:eq>
+                            <d:prop>
+                                <d:getcontenttype/>
+                            </d:prop>
+                            <d:literal>httpd/unix-directory</d:literal>
+                        </d:eq>
+                    </d:not>
+                    <d:eq>
+                        <d:prop>
+                            <oc:size/>
+                        </d:prop>
+                        <d:literal>0</d:literal>
+                    </d:eq>
+                </d:or>
+                <d:gt>
+                    <d:prop>
+                        <d:getlastmodified/>
+                    </d:prop>
+                    <d:literal>%@</d:literal>
+                </d:gt>
+            </d:and>
         </d:where>
         <d:orderby>
             <d:order>
@@ -151,6 +172,7 @@ class NCRecent: NCCollectionViewCommon {
         </d:orderby>
         <d:limit>
             <d:nresults>100</d:nresults>
+            <ns:firstresult>0</ns:firstresult>
         </d:limit>
         </d:basicsearch>
         </d:searchrequest>
