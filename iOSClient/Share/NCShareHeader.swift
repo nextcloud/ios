@@ -72,14 +72,15 @@ class NCShareHeader: UIView {
         let ext = nsName.pathExtension
         let base = nsName.deletingPathExtension
 
+        fileName?.numberOfLines = 1
+        fileNameExtension?.numberOfLines = 1
+
         if isDirectory || ext.isEmpty || base.isEmpty {
             fileName?.text = filename
             fileNameExtension?.text = ""
-            fileNameExtension?.isHidden = true
         } else {
             fileName?.text = base
             fileNameExtension?.text = "." + ext
-            fileNameExtension?.isHidden = false
         }
     }
 
