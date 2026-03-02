@@ -23,8 +23,14 @@
                             <constraint firstAttribute="height" constant="150" id="hzO-CU-dTl"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hv8-qJ-lkR">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hv8-qJ-lkR">
                         <rect key="frame" x="10" y="5" width="621" height="19.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-cfl">
+                        <rect key="frame" x="631" y="5" width="0.0" height="19.5"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -80,7 +86,9 @@
                     <constraint firstItem="Qye-6B-5aj" firstAttribute="top" secondItem="WSQ-HI-Wkg" secondAttribute="bottom" constant="10" id="NQ3-yE-Ocl"/>
                     <constraint firstAttribute="trailing" secondItem="jBi-8r-tc5" secondAttribute="trailing" constant="5" id="Vv4-gx-2nv"/>
                     <constraint firstAttribute="trailing" secondItem="0hq-re-YVn" secondAttribute="trailing" constant="5" id="bZH-Wd-tFZ"/>
-                    <constraint firstAttribute="trailing" secondItem="Hv8-qJ-lkR" secondAttribute="trailing" constant="10" id="jEF-pw-ZsK"/>
+                    <constraint firstItem="Ext-Lb-cfl" firstAttribute="leading" secondItem="Hv8-qJ-lkR" secondAttribute="trailing" id="ext-ld-cfl"/>
+                    <constraint firstItem="Ext-Lb-cfl" firstAttribute="firstBaseline" secondItem="Hv8-qJ-lkR" secondAttribute="firstBaseline" id="ext-bl-cfl"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ext-Lb-cfl" secondAttribute="trailing" constant="10" id="jEF-pw-ZsK"/>
                     <constraint firstItem="jBi-8r-tc5" firstAttribute="centerY" secondItem="FUL-4V-OgL" secondAttribute="centerY" id="oZZ-e1-nuY"/>
                     <constraint firstItem="Qye-6B-5aj" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="wfS-9D-K5V"/>
                 </constraints>
@@ -90,6 +98,7 @@
                 <outlet property="imageNewFile" destination="Tx2-JG-GGa" id="CMr-tc-j3c"/>
                 <outlet property="labelDetailAlreadyExistingFile" destination="Qye-6B-5aj" id="vf5-T4-Qqe"/>
                 <outlet property="labelDetailNewFile" destination="0hq-re-YVn" id="Mel-BD-cS5"/>
+                <outlet property="labelExtensionFileName" destination="Ext-Lb-cfl" id="ext-out-cfl"/>
                 <outlet property="labelFileName" destination="Hv8-qJ-lkR" id="vG5-AF-PvG"/>
                 <outlet property="switchAlreadyExistingFile" destination="FUL-4V-OgL" id="yFw-66-e0V"/>
                 <outlet property="switchNewFile" destination="jBi-8r-tc5" id="5Vk-YA-HeS"/>

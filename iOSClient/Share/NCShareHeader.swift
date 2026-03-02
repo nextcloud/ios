@@ -27,6 +27,7 @@ import TagListView
 class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var fileName: UILabel!
+    @IBOutlet weak var fileNameExtension: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var fullWidthImageView: UIImageView!
     @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
@@ -54,8 +55,9 @@ class NCShareHeader: UIView {
             fileNameTopConstraint.constant -= 45
         }
 
-        fileName.text = metadata.fileNameView
+        setFilename(metadata.fileNameView, isDirectory: metadata.directory)
         fileName.textColor = NCBrandColor.shared.textColor
+        fileNameExtension?.textColor = NCBrandColor.shared.textColor
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
@@ -63,6 +65,22 @@ class NCShareHeader: UIView {
 
         setNeedsLayout()
         layoutIfNeeded()
+    }
+
+    func setFilename(_ filename: String, isDirectory: Bool) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if isDirectory || ext.isEmpty || base.isEmpty {
+            fileName?.text = filename
+            fileNameExtension?.text = ""
+            fileNameExtension?.isHidden = true
+        } else {
+            fileName?.text = base
+            fileNameExtension?.text = "." + ext
+            fileNameExtension?.isHidden = false
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

@@ -15,6 +15,7 @@ protocol NCShareCellDelegate: AnyObject {
 class NCShareCell: UITableViewCell {
     @IBOutlet weak var imageCell: UIImageView!
     @IBOutlet weak var fileNameCell: UILabel!
+    @IBOutlet weak var fileNameExtensionCell: UILabel!
     @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var sizeCell: UILabel!
     weak var delegate: (NCShareCellDelegate & UIViewController)?
@@ -41,7 +42,7 @@ class NCShareCell: UITableViewCell {
             imageCell.contentMode = .scaleAspectFit
         }
 
-        fileNameCell?.text = fileName
+        setFilename(fileName)
 
         let fileSize = utilityFileSystem.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
         sizeCell?.text = utilityFileSystem.transformedSize(fileSize)
@@ -49,8 +50,28 @@ class NCShareCell: UITableViewCell {
         moreButton?.setImage(NCImageCache.shared.getImageButtonMore(), for: .normal)
     }
 
+    func setFilename(_ filename: String) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if ext.isEmpty || base.isEmpty {
+            fileNameCell?.text = filename
+            fileNameExtensionCell?.text = ""
+            fileNameExtensionCell?.isHidden = true
+        } else {
+            fileNameCell?.text = base
+            fileNameExtensionCell?.text = "." + ext
+            fileNameExtensionCell?.isHidden = false
+        }
+    }
+
     @IBAction func buttonTapped(_ sender: Any) {
-        let alertController = UIAlertController(title: "", message: fileName, preferredStyle: .alert)
+        let nsName = fileName as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+        let displayName = ext.isEmpty || base.isEmpty ? fileName : base + "." + ext
+        let alertController = UIAlertController(title: "", message: displayName, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_file_", comment: ""), style: .default) { _ in
             self.delegate?.showRenameFileDialog(named: self.fileName, account: self.account)

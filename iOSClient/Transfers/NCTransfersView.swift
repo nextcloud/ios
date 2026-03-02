@@ -199,8 +199,8 @@ struct TransferRowView: View {
                     .font(.system(size: 30))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(item.fileName)
-                        .font(.headline)
+                    BidiSafeFilenameText(filename: item.fileName, font: .headline)
+                        .lineLimit(1)
 
                     if !status.status.isEmpty {
                         Text(status.status)
@@ -259,6 +259,35 @@ struct TransferRowView: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
+    }
+}
+
+// MARK: - Bidi-safe Filename
+
+private struct BidiSafeFilenameText: View {
+    let filename: String
+    let font: Font
+
+    var body: some View {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if ext.isEmpty || base.isEmpty {
+            Text(filename)
+                .font(font)
+        } else {
+            HStack(spacing: 0) {
+                Text(base)
+                    .font(font)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text("." + ext)
+                    .font(font)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+        }
     }
 }
 

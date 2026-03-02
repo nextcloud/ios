@@ -393,8 +393,10 @@ extension NCSelect: UICollectionViewDataSource {
         isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionMounted)
 
         cell.metadata = metadata
-        cell.labelTitle.text = metadata.fileNameView
+        cell.setFilename(metadata.fileNameView, isDirectory: metadata.directory)
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
+        cell.labelExtension?.textColor = NCBrandColor.shared.textColor
+        cell.labelExtension?.font = .systemFont(ofSize: 15)
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil

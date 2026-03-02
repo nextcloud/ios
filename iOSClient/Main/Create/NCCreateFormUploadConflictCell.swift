@@ -26,6 +26,7 @@ import UIKit
 class NCCreateFormUploadConflictCell: UITableViewCell {
 
     @IBOutlet weak var labelFileName: UILabel!
+    @IBOutlet weak var labelExtensionFileName: UILabel!
 
     @IBOutlet weak var imageAlreadyExistingFile: UIImageView!
     @IBOutlet weak var imageNewFile: UIImageView!
@@ -38,6 +39,22 @@ class NCCreateFormUploadConflictCell: UITableViewCell {
 
     weak var delegate: NCCreateFormUploadConflictCellDelegate?
     var ocId: String = ""
+
+    func setFilename(_ filename: String, isDirectory: Bool) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if isDirectory || ext.isEmpty || base.isEmpty {
+            labelFileName?.text = filename
+            labelExtensionFileName?.text = ""
+            labelExtensionFileName?.isHidden = true
+        } else {
+            labelFileName?.text = base
+            labelExtensionFileName?.text = "." + ext
+            labelExtensionFileName?.isHidden = false
+        }
+    }
 
     @IBAction func valueChangedSwitchNewFile(_ sender: Any) {
         delegate?.valueChangedSwitchNewFile(with: ocId, isOn: switchNewFile.isOn)

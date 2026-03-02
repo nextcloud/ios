@@ -6,6 +6,40 @@ import UIKit
 import NextcloudKit
 import QuickLook
 
+extension UINavigationItem {
+    func setBidiSafeTitle(_ filename: String) {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if ext.isEmpty || base.isEmpty {
+            self.titleView = nil
+            self.title = filename
+        } else {
+            let baseLabel = UILabel()
+            baseLabel.text = base
+            baseLabel.font = .systemFont(ofSize: 17, weight: .semibold)
+            baseLabel.lineBreakMode = .byTruncatingMiddle
+            baseLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            baseLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+            let extLabel = UILabel()
+            extLabel.text = "." + ext
+            extLabel.font = .systemFont(ofSize: 17, weight: .semibold)
+            extLabel.setContentHuggingPriority(.required, for: .horizontal)
+            extLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+            let stack = UIStackView(arrangedSubviews: [baseLabel, extLabel])
+            stack.axis = .horizontal
+            stack.alignment = .firstBaseline
+            stack.spacing = 0
+
+            self.titleView = stack
+            self.title = nil
+        }
+    }
+}
+
 class NCViewer: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -64,7 +98,7 @@ class NCViewer: NSObject {
 
                 vc?.metadata = metadata
                 vc?.imageIcon = image
-                vc?.navigationItem.title = metadata.fileNameView
+                vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                 return vc
             }
@@ -93,7 +127,7 @@ class NCViewer: NSObject {
                     vc?.metadata = metadata
                     vc?.link = url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
 
@@ -103,7 +137,7 @@ class NCViewer: NSObject {
                     vc?.metadata = metadata
                     vc?.link = metadata.url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
                 }
@@ -148,7 +182,7 @@ class NCViewer: NSObject {
                     vc?.editor = editorViewController
                     vc?.link = url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
                 } else {
@@ -158,7 +192,7 @@ class NCViewer: NSObject {
                     vc?.editor = editorViewController
                     vc?.link = metadata.url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
                 }

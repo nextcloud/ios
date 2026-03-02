@@ -59,8 +59,14 @@
                                                                 <constraint firstAttribute="height" constant="40" id="wvf-Ey-woY"/>
                                                             </constraints>
                                                         </imageView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="filename" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rz6-pe-DB5">
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="filename" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rz6-pe-DB5">
                                                             <rect key="frame" x="60" y="10" width="284" height="17"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-scl">
+                                                            <rect key="frame" x="344" y="10" width="0.0" height="17"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -92,13 +98,16 @@
                                                         <constraint firstItem="uvl-De-S9p" firstAttribute="leading" secondItem="WGN-Zn-lR8" secondAttribute="leading" constant="10" id="ko0-iM-oWa"/>
                                                         <constraint firstItem="rz6-pe-DB5" firstAttribute="top" secondItem="WGN-Zn-lR8" secondAttribute="top" constant="10" id="rF0-WD-Hfk"/>
                                                         <constraint firstAttribute="trailing" secondItem="OGY-95-ZYi" secondAttribute="trailing" constant="10" id="si1-LI-Ldn"/>
-                                                        <constraint firstItem="OGY-95-ZYi" firstAttribute="leading" secondItem="rz6-pe-DB5" secondAttribute="trailing" constant="10" id="vCb-2c-vWa"/>
+                                                        <constraint firstItem="Ext-Lb-scl" firstAttribute="leading" secondItem="rz6-pe-DB5" secondAttribute="trailing" id="ext-ld-scl"/>
+                                                        <constraint firstItem="Ext-Lb-scl" firstAttribute="firstBaseline" secondItem="rz6-pe-DB5" secondAttribute="firstBaseline" id="ext-bl-scl"/>
+                                                        <constraint firstItem="OGY-95-ZYi" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ext-Lb-scl" secondAttribute="trailing" constant="10" id="vCb-2c-vWa"/>
                                                         <constraint firstItem="QFh-Vy-b4Z" firstAttribute="leading" secondItem="uvl-De-S9p" secondAttribute="trailing" constant="10" id="xAp-ri-eOc"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
                                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                                 <connections>
                                                     <outlet property="fileNameCell" destination="rz6-pe-DB5" id="e8w-G7-bBe"/>
+                                                    <outlet property="fileNameExtensionCell" destination="Ext-Lb-scl" id="ext-out-scl"/>
                                                     <outlet property="imageCell" destination="uvl-De-S9p" id="S4F-TD-YGI"/>
                                                     <outlet property="moreButton" destination="OGY-95-ZYi" id="vA3-mU-S1e"/>
                                                     <outlet property="sizeCell" destination="QFh-Vy-b4Z" id="rmM-qr-QXU"/>
