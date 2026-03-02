@@ -74,7 +74,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                                     break
                                 }
                             }
-                            bannerResults.banner?.dismiss()
+                            await bannerResults.banner?.dismissAsync()
                         }
                     }
                     await self.reloadDataSource()
@@ -103,7 +103,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                         }
 
                     })
-                    banner?.dismiss()
+                    await banner?.dismissAsync()
                 }
                 await self.setEditMode(false)
             }

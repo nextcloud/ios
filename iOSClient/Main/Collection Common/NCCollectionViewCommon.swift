@@ -691,12 +691,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                         }
                     } else {
                         Task {
-                            await showErrorBanner(windowScene: windowScene, text: resultsUpload.error.errorDescription, errorCode: resultsUpload.error.errorCode)
+                            await showErrorBanner(windowScene: windowScene,
+                                                  text: resultsUpload.error.errorDescription,
+                                                  errorCode: resultsUpload.error.errorCode)
                         }
                     }
                 }
             }
-            bannerResults.banner?.dismiss()
+            await bannerResults.banner?.dismissAsync()
         }
     }
 

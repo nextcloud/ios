@@ -489,7 +489,7 @@ actor NCNetworkingProcess {
                                                  onButtonTap: {
             Task {
                 await self.cancelCurrentUpload()
-                banner?.dismiss()
+                await banner?.dismissAsync()
             }
         })
 
@@ -543,7 +543,7 @@ actor NCNetworkingProcess {
         currentUploadTask = task
         _ = await task.value
 
-        banner?.dismiss()
+        await banner?.dismissAsync()
     }
 
     // MARK: - Helper

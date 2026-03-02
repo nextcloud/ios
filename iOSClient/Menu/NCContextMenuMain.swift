@@ -522,7 +522,7 @@ class NCContextMenuMain: NSObject {
                     }
 
                 })
-                banner?.dismiss()
+                await banner?.dismissAsync()
             }
         }
     }

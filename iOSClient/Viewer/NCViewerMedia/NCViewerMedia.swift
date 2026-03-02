@@ -174,11 +174,13 @@ class NCViewerMedia: UIViewController {
                                     downloadRequest = request
                                 } progressHandler: { progress in
                                     Task {@MainActor in
-                                        banner?.update(payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
-                                                       for: token)
+                                        banner?.update(
+                                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                                            for: token
+                                        )
                                     }
                                 }
-                                banner?.dismiss()
+                                await banner?.dismissAsync()
 
                                 if results.nkError == .success {
                                     if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {

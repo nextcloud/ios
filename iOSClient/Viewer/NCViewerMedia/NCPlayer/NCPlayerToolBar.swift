@@ -375,7 +375,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }) { _, etag, _, _, _, _, error in
                     Task {
-                        banner?.dismiss()
+                        await banner?.dismissAsync()
 
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,

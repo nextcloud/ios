@@ -42,7 +42,6 @@ func showAlertActionBannerView(lucidBanner: LucidBanner?,
             }
         )
     }
-
 }
 
 // MARK: - SwiftUI
