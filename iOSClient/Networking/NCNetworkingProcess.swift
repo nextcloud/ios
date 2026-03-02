@@ -446,8 +446,8 @@ actor NCNetworkingProcess {
                     }
 
                     // wait dismiss banner before open another (loop)
-                    if let banner = bannerResults.banner, let token = bannerResults.token {
-                        await banner.dismiss(token: token)
+                    if let banner = bannerResults.banner {
+                        await banner.dismiss()
                     }
 
                 // UPLOAD CHUNK
@@ -491,8 +491,8 @@ actor NCNetworkingProcess {
                                            onButtonTap: {
             Task {
                 await self.cancelCurrentUpload()
-                if let token, let banner {
-                    banner.dismiss(token: token)
+                if let banner {
+                    banner.dismiss()
                 }
             }
         })
@@ -547,8 +547,8 @@ actor NCNetworkingProcess {
         currentUploadTask = task
         _ = await task.value
 
-        if let banner, let token {
-            banner.dismiss(token: token)
+        if let banner {
+            banner.dismiss()
         }
     }
 

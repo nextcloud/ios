@@ -181,8 +181,8 @@ class NCViewerMedia: UIViewController {
                                     }
                                 }
 
-                                if let banner, let token {
-                                    banner.dismiss(token: token)
+                                if let banner {
+                                    banner.dismiss()
                                 }
 
                                 if results.nkError == .success {

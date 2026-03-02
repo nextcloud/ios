@@ -75,8 +75,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                                 }
                             }
 
-                            if let banner = bannerResults.banner, let token = bannerResults.token {
-                                banner.dismiss(token: token)
+                            if let banner = bannerResults.banner {
+                                banner.dismiss()
                             }
                         }
                     }
@@ -107,8 +107,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
                     })
 
-                    if let banner, let token {
-                        banner.dismiss(token: token)
+                    if let banner {
+                        banner.dismiss()
                     }
                 }
                 await self.setEditMode(false)

@@ -27,7 +27,8 @@ func showHudBanner(windowScene: UIWindowScene?,
     )
 
     let token = banner.show(
-        payload: payload
+        payload: payload,
+        policy: .enqueue
     ) { state in
         HudBannerView(state: state, onButtonTap: onButtonTap)
     }

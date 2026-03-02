@@ -699,8 +699,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
                 }
             }
 
-            if let banner = bannerResults.banner, let token = bannerResults.token {
-                banner.dismiss(token: token)
+            if let banner = bannerResults.banner {
+                banner.dismiss()
             }
         }
     }

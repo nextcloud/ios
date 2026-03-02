@@ -287,8 +287,8 @@ class NCCreate: NSObject {
                     selector: "",
                     sceneIdentifier: controller.sceneIdentifier
                 ) else {
-                    if let banner = bannerResults.banner, let token = bannerResults.token {
-                        banner.dismiss(token: token)
+                    if let banner = bannerResults.banner {
+                        banner.dismiss()
                     }
                     return
                 }
@@ -312,8 +312,8 @@ class NCCreate: NSObject {
                 }
             }
 
-            if let banner = bannerResults.banner, let token = bannerResults.token {
-                banner.dismiss(token: token)
+            if let banner = bannerResults.banner {
+                banner.dismiss()
             }
         }
 

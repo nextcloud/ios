@@ -58,8 +58,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
 
-            if let banner, let token {
-                banner.dismiss(token: token)
+            if let banner {
+                await banner.dismissAsync()
             }
 
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {

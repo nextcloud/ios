@@ -22,7 +22,7 @@ func showBanner(windowScene: UIWindowScene?,
                 backgroundColor: UIColor,
                 autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
                 swipeToDismiss: Bool = true,
-                policy: LucidBanner.ShowPolicy = .enqueue) async -> (banner: LucidBanner?, token: Int?) {
+                policy: LucidBanner.ShowPolicy = .replace) async -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene else {
         return (nil, nil)
     }

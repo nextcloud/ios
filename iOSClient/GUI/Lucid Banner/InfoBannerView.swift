@@ -55,6 +55,7 @@ func showInfoBanner(windowScene: UIWindowScene?,
 
     banner.show(
         payload: payload,
+        policy: .replace,
         onTap: { _, _ in
             banner.dismiss()
         }

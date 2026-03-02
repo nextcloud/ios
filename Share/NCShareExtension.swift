@@ -419,7 +419,7 @@ extension NCShareExtension {
         if let banner, let token {
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(2))
-                banner.dismiss(token: token)
+                banner.dismiss()
             }
         }
     }

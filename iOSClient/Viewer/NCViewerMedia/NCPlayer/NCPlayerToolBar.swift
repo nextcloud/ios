@@ -375,8 +375,8 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }) { _, etag, _, _, _, _, error in
                     Task {
-                        if let banner, let token {
-                            banner.dismiss(token: token)
+                        if let banner {
+                            banner.dismiss()
                         }
 
                         let ocId = metadata.ocId

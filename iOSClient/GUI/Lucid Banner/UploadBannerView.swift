@@ -16,7 +16,9 @@ func showUploadBanner(windowScene: UIWindowScene?,
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
     let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
 
-    let token = banner.show(payload: payload) { state in
+    let token = banner.show(
+        payload: payload,
+        policy: .replace) { state in
         UploadBannerView(state: state,
                          coordinator: bannerCoordinator,
                          allowMinimizeOnTap: allowMinimizeOnTap,
