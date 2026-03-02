@@ -89,7 +89,15 @@ extension NCManageDatabase {
         })
     }
 
-    func getLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil) -> NCDBLayoutForView {
+    func getLayoutForView(account: String, key: String, serverUrl: String, layoutType: String = NCGlobal.shared.layoutList) -> NCDBLayoutForView {
+        var layoutForView = NCDBLayoutForView()
+        defer {
+            /* FORCED LAYOUT RECENT */
+            if key == NCGlobal.shared.layoutViewRecent {
+                layoutForView.sort = "date"
+                layoutForView.ascending = false
+            }
+        }
         let keyStore = serverUrl.isEmpty ? key : serverUrl
         let index = account + " " + keyStore
 
@@ -99,7 +107,8 @@ extension NCManageDatabase {
                 .first
                 .map { NCDBLayoutForView(value: $0) }
         }) {
-            return layout
+            layoutForView = layout
+            return layoutForView
         }
 
         let tblAccount = core.performRealmRead { realm in
@@ -134,7 +143,8 @@ extension NCManageDatabase {
                     self.setLayoutForView(layoutForView: photosLayoutForView)
                 }
 
-                return photosLayoutForView
+                layoutForView = photosLayoutForView
+                return layoutForView
 
             } else if !serverUrl.isEmpty,
                       let serverDirectoryUp = NCUtilityFileSystem().serverDirectoryUp(serverUrl: serverUrl, home: home) {
@@ -154,24 +164,22 @@ extension NCManageDatabase {
                         self.setLayoutForView(layoutForView: previusLayoutForView)
                     }
 
-                    return previusLayoutForView
+                    layoutForView = previusLayoutForView
+                    return layoutForView
                 }
             }
         }
 
-        // Standatd layout
-        let layout = layout ?? NCGlobal.shared.layoutList
         DispatchQueue.global(qos: .utility).async {
-            self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
+            self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layoutType)
         }
 
-        let placeholder = NCDBLayoutForView()
-        placeholder.index = index
-        placeholder.account = account
-        placeholder.keyStore = keyStore
-        placeholder.layout = layout
+        layoutForView.index = index
+        layoutForView.account = account
+        layoutForView.keyStore = keyStore
+        layoutForView.layout = layoutType
 
-        return placeholder
+        return layoutForView
     }
 
     func updatePhotoLayoutForView(account: String,

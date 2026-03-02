@@ -62,7 +62,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         guard let media = topViewController as? NCMedia else {
             return nil
         }
-        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio)
+        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layoutType: global.mediaLayoutRatio)
         var layout = layoutForView.layout
         // Overwrite default value
         if layout == global.layoutList {
