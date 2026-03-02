@@ -31,16 +31,15 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             var downloadRequest: DownloadRequest?
             var banner: LucidBanner?
             var tokenBanner: Int?
-            await MainActor.run {
-                (tokenBanner, banner) = showHudBanner(windowScene: windowScene,
-                                                      title: "_download_in_progress_",
-                                                      stage: .button,
-                                                      onButtonTap: {
-                    if let request = downloadRequest {
-                        request.cancel()
-                    }
-                })
-            }
+
+            (tokenBanner, banner) = showHudBanner(windowScene: windowScene,
+                                                  title: "_download_in_progress_",
+                                                  stage: .button,
+                                                  onButtonTap: {
+                if let request = downloadRequest {
+                    request.cancel()
+                }
+            })
 
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                        session: self.networking.sessionDownload,
