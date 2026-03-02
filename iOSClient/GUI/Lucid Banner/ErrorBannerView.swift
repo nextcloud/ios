@@ -64,7 +64,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
     )
     banner.show(
         payload: payload,
-        policy: .replace,
+        policy: .drop,
         onTap: { _, _ in
             banner.dismiss()
         }

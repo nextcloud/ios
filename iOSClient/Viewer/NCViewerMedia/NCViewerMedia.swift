@@ -162,7 +162,7 @@ class NCViewerMedia: UIViewController {
                                     return
                                 }
                                 var downloadRequest: DownloadRequest?
-                                let (token, banner) = showHudBanner(windowScene: self.windowScene,
+                                let (banner, token) = showHudBanner(windowScene: self.windowScene,
                                                                     title: "_download_in_progress_",
                                                                     stage: .button) {
                                     if let request = downloadRequest {
@@ -180,7 +180,10 @@ class NCViewerMedia: UIViewController {
                                         )
                                     }
                                 }
-                                await banner?.dismissAsync()
+
+                                if let banner, let token {
+                                    banner.dismiss(token: token)
+                                }
 
                                 if results.nkError == .success {
                                     if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {

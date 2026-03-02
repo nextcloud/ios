@@ -44,25 +44,28 @@ class NCAutoUpload: NSObject {
                                         account: String) async {
         let windowScene = SceneManager.shared.getWindowScene(controller: controller)
         var banner: LucidBanner?
+        var token: Int?
         defer {
-            banner?.dismiss(after: 1)
+            if let banner, let token {
+                banner.dismiss(token: token)
+            }
         }
 
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
-        banner = await showBanner(windowScene: windowScene,
-                                  title: "_info_",
-                                  subtitle: "_creating_db_photo_progress_",
-                                  textColor: .label,
-                                  image: "photo.on.rectangle.angled",
-                                  imageAnimation: .bounce,
-                                  imageColor: .label,
-                                  backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
-                                  autoDismissAfter: 0,
-                                  swipeToDismiss: false,
-                                  policy: .drop
+        (banner, token) = await showBanner(windowScene: windowScene,
+                                           title: "_info_",
+                                           subtitle: "_creating_db_photo_progress_",
+                                           textColor: .label,
+                                           image: "photo.on.rectangle.angled",
+                                           imageAnimation: .bounce,
+                                           imageColor: .label,
+                                           backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
+                                           autoDismissAfter: 0,
+                                           swipeToDismiss: false,
+                                           policy: .drop
         )
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)

@@ -30,12 +30,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         func downloadFile() async {
             var downloadRequest: DownloadRequest?
             var banner: LucidBanner?
-            var tokenBanner: Int?
+            var token: Int?
 
-            (tokenBanner, banner) = showHudBanner(windowScene: windowScene,
-                                                  title: "_download_in_progress_",
-                                                  stage: .button,
-                                                  onButtonTap: {
+            (banner, token) = showHudBanner(windowScene: windowScene,
+                                            title: "_download_in_progress_",
+                                            stage: .button,
+                                            onButtonTap: {
                 if let request = downloadRequest {
                     request.cancel()
                 }
@@ -54,11 +54,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 Task {@MainActor in
                     banner?.update(
                         payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
-                        for: tokenBanner)
+                        for: token)
                 }
             }
 
-            await banner?.dismissAsync()
+            if let banner, let token {
+                banner.dismiss(token: token)
+            }
 
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
                 print("ok")

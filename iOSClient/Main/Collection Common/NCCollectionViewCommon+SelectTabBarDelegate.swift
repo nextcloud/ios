@@ -74,7 +74,10 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                                     break
                                 }
                             }
-                            await bannerResults.banner?.dismissAsync()
+
+                            if let banner = bannerResults.banner, let token = bannerResults.token {
+                                banner.dismiss(token: token)
+                            }
                         }
                     }
                     await self.reloadDataSource()
@@ -88,7 +91,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 var banner: LucidBanner?
                 let containsDirectory = metadatas.contains { $0.isDirectory }
                 if containsDirectory {
-                    (token, banner) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
+                    (banner, token) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
                 }
 
                 for metadata in metadatas {
@@ -103,7 +106,10 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                         }
 
                     })
-                    await banner?.dismissAsync()
+
+                    if let banner, let token {
+                        banner.dismiss(token: token)
+                    }
                 }
                 await self.setEditMode(false)
             }

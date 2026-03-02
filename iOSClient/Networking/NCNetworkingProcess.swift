@@ -446,7 +446,9 @@ actor NCNetworkingProcess {
                     }
 
                     // wait dismiss banner before open another (loop)
-                    await bannerResults.banner?.dismissAsync()
+                    if let banner = bannerResults.banner, let token = bannerResults.token {
+                        await banner.dismiss(token: token)
+                    }
 
                 // UPLOAD CHUNK
                 //
@@ -471,25 +473,27 @@ actor NCNetworkingProcess {
               let window = windowScene.windows.first else {
             return
         }
-        var tokenBanner: Int?
+        var token: Int?
         var banner: LucidBanner?
         let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
                                                       safeAreaInsets: window.safeAreaInsets,
                                                       idiom: window.traitCollection.userInterfaceIdiom)
 
-        (tokenBanner, banner) = showUploadBanner(windowScene: windowScene,
-                                                 payload: LucidBannerPayload(stage: .button,
-                                                                             backgroundColor: Color(.systemBackground),
-                                                                             vPosition: .bottom,
-                                                                             verticalMargin: 50,
-                                                                             horizontalLayout: horizontalLayout,
-                                                                             blocksTouches: false,
-                                                                             draggable: true),
-                                                 allowMinimizeOnTap: true,
-                                                 onButtonTap: {
+        (banner, token) = showUploadBanner(windowScene: windowScene,
+                                           payload: LucidBannerPayload(stage: .button,
+                                                                       backgroundColor: Color(.systemBackground),
+                                                                       vPosition: .bottom,
+                                                                       verticalMargin: 50,
+                                                                       horizontalLayout: horizontalLayout,
+                                                                       blocksTouches: false,
+                                                                       draggable: true),
+                                           allowMinimizeOnTap: true,
+                                           onButtonTap: {
             Task {
                 await self.cancelCurrentUpload()
-                await banner?.dismissAsync()
+                if let token, let banner {
+                    banner.dismiss(token: token)
+                }
             }
         })
 
@@ -506,7 +510,7 @@ actor NCNetworkingProcess {
                 Task {
                     banner?.update(
                         payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)),
-                        for: tokenBanner
+                        for: token
                     )
                 }
             } uploadStart: { _ in
@@ -516,13 +520,13 @@ actor NCNetworkingProcess {
                         systemImage: "arrowshape.up.circle",
                         imageAnimation: .breathe,
                         progress: 0
-                    ), for: tokenBanner)
+                    ), for: token)
                 }
             } uploadProgressHandler: { _, _, progress in
                 Task {
                     banner?.update(
                         payload: LucidBannerPayload.Update(progress: progress),
-                        for: tokenBanner
+                        for: token
                     )
                 }
             } assembling: {
@@ -533,7 +537,7 @@ actor NCNetworkingProcess {
                         imageAnimation: .rotate,
                         progress: .nan,
                         stage: .placeholder
-                    ), for: tokenBanner)
+                    ), for: token)
                 }
             }
 
@@ -543,7 +547,9 @@ actor NCNetworkingProcess {
         currentUploadTask = task
         _ = await task.value
 
-        await banner?.dismissAsync()
+        if let banner, let token {
+            banner.dismiss(token: token)
+        }
     }
 
     // MARK: - Helper

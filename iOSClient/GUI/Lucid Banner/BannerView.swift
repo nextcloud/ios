@@ -22,9 +22,9 @@ func showBanner(windowScene: UIWindowScene?,
                 backgroundColor: UIColor,
                 autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
                 swipeToDismiss: Bool = true,
-                policy: LucidBanner.ShowPolicy = .enqueue) async -> LucidBanner? {
+                policy: LucidBanner.ShowPolicy = .enqueue) async -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene else {
-        return nil
+        return (nil, nil)
     }
 
     let payload = LucidBannerPayload(
@@ -43,11 +43,11 @@ func showBanner(windowScene: UIWindowScene?,
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-    banner.show(payload: payload, policy: policy) { state in
+    let token = banner.show(payload: payload, policy: policy) { state in
         BannerView(state: state)
     }
 
-    return banner
+    return(banner, token)
 }
 
 // MARK: - SwiftUI

@@ -216,7 +216,7 @@ class NCDragDrop: NSObject {
                                          horizontalLayout: horizontalLayout,
                                          blocksTouches: false,
                                          draggable: false)
-        (token, banner) = showUploadBanner(windowScene: window.windowScene,
+        (banner, token) = showUploadBanner(windowScene: window.windowScene,
                                            payload: payload,
                                            allowMinimizeOnTap: false,
                                            onButtonTap: {

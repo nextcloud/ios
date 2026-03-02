@@ -9,7 +9,7 @@ import LucidBanner
 func showUploadBanner(windowScene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
-                      onButtonTap: (() -> Void)? = nil) -> (token: Int?, banner: LucidBanner?) {
+                      onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene else {
         return (nil, nil)
     }
@@ -37,7 +37,7 @@ func showUploadBanner(windowScene: UIWindowScene?,
         }
     }
 #endif
-    return (token, banner)
+    return (banner, token)
 }
 
 // MARK: - SwiftUI

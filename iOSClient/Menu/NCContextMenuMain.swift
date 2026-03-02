@@ -508,7 +508,7 @@ class NCContextMenuMain: NSObject {
                 var token: Int?
                 var banner: LucidBanner?
                 if metadata.isDirectory {
-                    (token, banner) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
+                    (banner, token) = showHudBanner(windowScene: self.windowScene, title: "_delete_in_progress_")
                 }
 
                 await NCNetworking.shared.deleteCache(metadata, progress: { progress in
@@ -522,7 +522,10 @@ class NCContextMenuMain: NSObject {
                     }
 
                 })
-                await banner?.dismissAsync()
+
+                if let banner, let token {
+                    banner.dismiss(token: token)
+                }
             }
         }
     }
