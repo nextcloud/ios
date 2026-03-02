@@ -64,8 +64,7 @@ class NCAutoUpload: NSObject {
                                            imageColor: .label,
                                            backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
                                            autoDismissAfter: 0,
-                                           swipeToDismiss: false,
-                                           policy: .drop
+                                           swipeToDismiss: false
         )
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)

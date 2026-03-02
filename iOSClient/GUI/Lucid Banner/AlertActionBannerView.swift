@@ -27,8 +27,7 @@ func showAlertActionBannerView(lucidBanner: LucidBanner?,
         swipeToDismiss: true
     )
 
-    lucidBanner.show(payload: payload,
-                     policy: .drop) { _, _ in
+    lucidBanner.show(payload: payload) { _, _ in
         lucidBanner.dismiss()
     } content: { state in
         AlertActionBannerView(
