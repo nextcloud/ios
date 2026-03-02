@@ -287,7 +287,9 @@ class NCCreate: NSObject {
                     selector: "",
                     sceneIdentifier: controller.sceneIdentifier
                 ) else {
-                    bannerResults.banner?.dismiss()
+                    if let banner = bannerResults.banner {
+                        await banner.dismissAsync()
+                    }
                     return
                 }
 
@@ -310,7 +312,9 @@ class NCCreate: NSObject {
                 }
             }
 
-            bannerResults.banner?.dismiss()
+            if let banner = bannerResults.banner {
+                await banner.dismissAsync()
+            }
         }
 
         guard !exportURLs.isEmpty else { return }
