@@ -1,25 +1,6 @@
-//
-//  NCRecent.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 29/09/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -66,9 +47,7 @@ class NCRecent: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        layoutForView?.sort = "date"
-        layoutForView?.ascending = false
-
+        var metadatas: [tableMetadata] = []
         let fourteenDaysAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "account == %@", session.account),
@@ -79,7 +58,12 @@ class NCRecent: NCCollectionViewCommon {
             ]),
             NSPredicate(format: "date >= %@", fourteenDaysAgo as NSDate)
         ])
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", ascending: false, limit: 100) ?? []
+        if let results = await self.database.getMetadatasAsync(predicate: predicate,
+                                                               limit: 100) {
+            metadatas = await self.database.sortedMetadata(layoutForView: layoutForView,
+                                                           account: session.account,
+                                                           metadatas: results)
+        }
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,

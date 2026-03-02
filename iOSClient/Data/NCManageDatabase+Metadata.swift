@@ -914,6 +914,21 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadatasAsync(predicate: NSPredicate,
+                           limit: Int? = nil) async -> [tableMetadata]? {
+        return await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter(predicate)
+
+            if let limit {
+                let sliced = results.prefix(limit)
+                return sliced.map { $0.detachedCopy() }
+            } else {
+                return results.map { $0.detachedCopy() }
+            }
+        }
+    }
+
     func getMetadatas(predicate: NSPredicate,
                       numItems: Int,
                       sorted: String,
