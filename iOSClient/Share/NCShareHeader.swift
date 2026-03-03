@@ -55,7 +55,10 @@ class NCShareHeader: UIView {
             fileNameTopConstraint.constant -= 45
         }
 
-        setFilename(metadata.fileNameView, isDirectory: metadata.directory)
+        fileName?.numberOfLines = 1
+        fileNameExtension?.numberOfLines = 1
+        setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: fileName, extensionLabel: fileNameExtension)
+
         fileName.textColor = NCBrandColor.shared.textColor
         fileNameExtension?.textColor = NCBrandColor.shared.textColor
         info.textColor = NCBrandColor.shared.textColor2
@@ -65,12 +68,6 @@ class NCShareHeader: UIView {
 
         setNeedsLayout()
         layoutIfNeeded()
-    }
-
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        fileName?.numberOfLines = 1
-        fileNameExtension?.numberOfLines = 1
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: fileName, extensionLabel: fileNameExtension)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

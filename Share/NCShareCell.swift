@@ -42,16 +42,12 @@ class NCShareCell: UITableViewCell {
             imageCell.contentMode = .scaleAspectFit
         }
 
-        setFilename(fileName)
+        setBidiSafeFilename(fileName, isDirectory: false, titleLabel: fileNameCell, extensionLabel: fileNameExtensionCell)
 
         let fileSize = utilityFileSystem.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
         sizeCell?.text = utilityFileSystem.transformedSize(fileSize)
 
         moreButton?.setImage(NCImageCache.shared.getImageButtonMore(), for: .normal)
-    }
-
-    func setFilename(_ filename: String) {
-        setBidiSafeFilename(filename, isDirectory: false, titleLabel: fileNameCell, extensionLabel: fileNameExtensionCell)
     }
 
     @IBAction func buttonTapped(_ sender: Any) {
