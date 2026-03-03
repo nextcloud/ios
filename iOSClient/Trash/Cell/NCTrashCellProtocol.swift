@@ -57,11 +57,8 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.imageItem.image = image
             self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)
         }
-        let nsName = tableTrash.trashbinFileName as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-        let a11yName = (tableTrash.directory || ext.isEmpty || base.isEmpty) ? tableTrash.trashbinFileName : base + "." + ext
-        self.accessibilityLabel = a11yName + ", " + (self.labelInfo?.text ?? "")
+        
+        self.accessibilityLabel = tableTrash.trashbinFileName + ", " + (self.labelInfo?.text ?? "")
 
         if self is NCTrashGridCell {
             if labelExtension?.isHidden ?? true {
