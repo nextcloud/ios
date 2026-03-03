@@ -64,7 +64,7 @@ class NCViewer: NSObject {
 
                 vc?.metadata = metadata
                 vc?.imageIcon = image
-                vc?.navigationItem.title = metadata.fileNameView
+                vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                 return vc
             }
@@ -93,7 +93,7 @@ class NCViewer: NSObject {
                     vc?.metadata = metadata
                     vc?.link = url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
 
@@ -103,7 +103,7 @@ class NCViewer: NSObject {
                     vc?.metadata = metadata
                     vc?.link = metadata.url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
                 }
@@ -148,7 +148,7 @@ class NCViewer: NSObject {
                     vc?.editor = editorViewController
                     vc?.link = url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
                 } else {
@@ -158,7 +158,7 @@ class NCViewer: NSObject {
                     vc?.editor = editorViewController
                     vc?.link = metadata.url
                     vc?.imageIcon = image
-                    vc?.navigationItem.title = metadata.fileNameView
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
                     return vc
                 }

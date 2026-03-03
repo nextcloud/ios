@@ -68,20 +68,9 @@ class NCShareHeader: UIView {
     }
 
     func setFilename(_ filename: String, isDirectory: Bool) {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-
         fileName?.numberOfLines = 1
         fileNameExtension?.numberOfLines = 1
-
-        if isDirectory || ext.isEmpty || base.isEmpty {
-            fileName?.text = filename
-            fileNameExtension?.text = ""
-        } else {
-            fileName?.text = base
-            fileNameExtension?.text = "." + ext
-        }
+        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: fileName, extensionLabel: fileNameExtension)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

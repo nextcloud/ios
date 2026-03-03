@@ -153,19 +153,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     }
 
     func setFilename(_ filename: String, isDirectory: Bool) {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-
-        if isDirectory || ext.isEmpty || base.isEmpty {
-            labelTitle?.text = filename
-            labelExtension?.text = ""
-            labelExtension?.isHidden = true
-        } else {
-            labelTitle?.text = base
-            labelExtension?.text = "." + ext
-            labelExtension?.isHidden = false
-        }
+        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
     }
 
     func titleInfoTrailingFull() {

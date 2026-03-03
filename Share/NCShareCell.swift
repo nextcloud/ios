@@ -51,19 +51,7 @@ class NCShareCell: UITableViewCell {
     }
 
     func setFilename(_ filename: String) {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-
-        if ext.isEmpty || base.isEmpty {
-            fileNameCell?.text = filename
-            fileNameExtensionCell?.text = ""
-            fileNameExtensionCell?.isHidden = true
-        } else {
-            fileNameCell?.text = base
-            fileNameExtensionCell?.text = "." + ext
-            fileNameExtensionCell?.isHidden = false
-        }
+        UIView.setBidiSafeFilename(filename, isDirectory: false, titleLabel: fileNameCell, extensionLabel: fileNameExtensionCell)
     }
 
     @IBAction func buttonTapped(_ sender: Any) {

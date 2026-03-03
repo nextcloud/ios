@@ -78,22 +78,14 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     func setFilename(_ filename: String, isDirectory: Bool) {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
+        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
 
-        if isDirectory || ext.isEmpty || base.isEmpty {
-            labelTitle.text = filename
+        if labelExtension?.isHidden ?? true {
             labelTitle.numberOfLines = 2
             labelTitle.lineBreakMode = .byWordWrapping
-            labelExtension?.text = ""
-            labelExtension?.isHidden = true
         } else {
-            labelTitle.text = base
             labelTitle.numberOfLines = 1
             labelTitle.lineBreakMode = .byTruncatingTail
-            labelExtension?.text = "." + ext
-            labelExtension?.isHidden = false
         }
     }
 

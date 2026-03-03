@@ -70,19 +70,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     }
 
     func setFilename(_ filename: String, isDirectory: Bool) {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-
-        if isDirectory || ext.isEmpty || base.isEmpty {
-            labelFilename.text = filename
-            labelExtensionFilename?.text = ""
-            labelExtensionFilename?.isHidden = true
-        } else {
-            labelFilename.text = base
-            labelExtensionFilename?.text = "." + ext
-            labelExtensionFilename?.isHidden = false
-        }
+        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelFilename, extensionLabel: labelExtensionFilename)
     }
 
     func setImageCorner(withBorder: Bool) {

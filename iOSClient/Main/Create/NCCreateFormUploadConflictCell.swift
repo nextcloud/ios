@@ -41,19 +41,7 @@ class NCCreateFormUploadConflictCell: UITableViewCell {
     var ocId: String = ""
 
     func setFilename(_ filename: String, isDirectory: Bool) {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-
-        if isDirectory || ext.isEmpty || base.isEmpty {
-            labelFileName?.text = filename
-            labelExtensionFileName?.text = ""
-            labelExtensionFileName?.isHidden = true
-        } else {
-            labelFileName?.text = base
-            labelExtensionFileName?.text = "." + ext
-            labelExtensionFileName?.isHidden = false
-        }
+        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelFileName, extensionLabel: labelExtensionFileName)
     }
 
     @IBAction func valueChangedSwitchNewFile(_ sender: Any) {
