@@ -531,11 +531,7 @@ extension NCCollectionViewCommon {
         }
 
         // Accessibility
-        let nsA11yName = metadata.fileNameView as NSString
-        let a11yExt = nsA11yName.pathExtension
-        let a11yBase = nsA11yName.deletingPathExtension
-        let a11yName = (metadata.directory || a11yExt.isEmpty || a11yBase.isEmpty) ? metadata.fileNameView : a11yBase + "." + a11yExt
-        cell.setAccessibility(label: a11yName + ", " + (cell.labelInfo?.text ?? "") + (cell.labelSubinfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.labelInfo?.text ?? "") + (cell.labelSubinfo?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
