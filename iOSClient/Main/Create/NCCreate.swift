@@ -272,8 +272,6 @@ class NCCreate: NSObject {
         }
 
         if !downloadMetadata.isEmpty {
-            try? await Task.sleep(for: .seconds(1))
-
             let bannerResults = showHudBanner(windowScene: windowScene,
                                               title: "_download_in_progress_",
                                               stage: .button) {
