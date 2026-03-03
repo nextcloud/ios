@@ -77,11 +77,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         return nil
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        labelTitle.preferredMaxLayoutWidth = contentView.bounds.width - 10
-    }
-
     func setFilename(_ filename: String, isDirectory: Bool) {
         let nsName = filename as NSString
         let ext = nsName.pathExtension
