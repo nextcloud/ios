@@ -40,10 +40,6 @@ class NCCreateFormUploadConflictCell: UITableViewCell {
     weak var delegate: NCCreateFormUploadConflictCellDelegate?
     var ocId: String = ""
 
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelFileName, extensionLabel: labelExtensionFileName)
-    }
-
     @IBAction func valueChangedSwitchNewFile(_ sender: Any) {
         delegate?.valueChangedSwitchNewFile(with: ocId, isOn: switchNewFile.isOn)
     }

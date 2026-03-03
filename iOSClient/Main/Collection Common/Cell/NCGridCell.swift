@@ -118,18 +118,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         }
     }
 
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
-
-        if labelExtension?.isHidden ?? true {
-            labelTitle.numberOfLines = 2
-            labelTitle.lineBreakMode = .byWordWrapping
-        } else {
-            labelTitle.numberOfLines = 1
-            labelTitle.lineBreakMode = .byTruncatingTail
-        }
-    }
-
     func setButtonMore(image: UIImage) {
         buttonMore.setImage(image, for: .normal)
     }
@@ -252,7 +240,15 @@ extension NCCollectionViewCommon {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.setFilename(metadata.fileNameView, isDirectory: metadata.directory)
+        cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
+
+        if cell.labelExtension?.isHidden ?? true {
+            cell.labelTitle.numberOfLines = 2
+            cell.labelTitle.lineBreakMode = .byWordWrapping
+        } else {
+            cell.labelTitle.numberOfLines = 1
+            cell.labelTitle.lineBreakMode = .byTruncatingTail
+        }
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {

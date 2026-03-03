@@ -71,14 +71,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         labelExtension?.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
-    }
-
-    override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
-        return nil
-    }
-
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
 
         if labelExtension?.isHidden ?? true {
             labelTitle.numberOfLines = 2
@@ -87,6 +79,10 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
             labelTitle.numberOfLines = 1
             labelTitle.lineBreakMode = .byTruncatingTail
         }
+    }
+
+    override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
+        return nil
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {

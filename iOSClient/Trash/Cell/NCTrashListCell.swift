@@ -93,10 +93,6 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
-    }
-
     func selected(_ status: Bool, isEditMode: Bool, account: String) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45

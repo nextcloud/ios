@@ -83,7 +83,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         cell.metadata = metadata
-        cell.setFilename(metadata.fileNameView, isDirectory: metadata.directory)
+        cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.labelExtension?.textColor = NCBrandColor.shared.textColor
         cell.labelExtension?.font = .systemFont(ofSize: 15)

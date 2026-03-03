@@ -152,10 +152,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         return buttonMore.frame.contains(location)
     }
 
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
-    }
-
     func titleInfoTrailingFull() {
         titleTrailingConstraint.constant = 10
     }
@@ -442,7 +438,7 @@ extension NCCollectionViewCommon {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.setFilename(metadata.fileNameView, isDirectory: metadata.directory)
+        cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {

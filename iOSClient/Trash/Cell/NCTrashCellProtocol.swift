@@ -32,13 +32,14 @@ protocol NCTrashCellProtocol {
     var account: String { get set }
 
     func selected(_ status: Bool, isEditMode: Bool, account: String)
-    func setFilename(_ filename: String, isDirectory: Bool)
 }
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
-        self.setFilename(tableTrash.trashbinFileName, isDirectory: tableTrash.directory)
+
+        setBidiSafeFilename(tableTrash.trashbinFileName, isDirectory: tableTrash.directory, titleLabel: labelTitle, extensionLabel: labelExtension)
+
         self.labelTitle.textColor = NCBrandColor.shared.textColor
         self.labelExtension?.textColor = NCBrandColor.shared.textColor
         if self is NCTrashListCell {
@@ -61,5 +62,15 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
         let base = nsName.deletingPathExtension
         let a11yName = (tableTrash.directory || ext.isEmpty || base.isEmpty) ? tableTrash.trashbinFileName : base + "." + ext
         self.accessibilityLabel = a11yName + ", " + (self.labelInfo?.text ?? "")
+
+        if self is NCTrashGridCell {
+            if labelExtension?.isHidden ?? true {
+                labelTitle.numberOfLines = 2
+                labelTitle.lineBreakMode = .byWordWrapping
+            } else {
+                labelTitle.numberOfLines = 1
+                labelTitle.lineBreakMode = .byTruncatingTail
+            }
+        }
     }
 }

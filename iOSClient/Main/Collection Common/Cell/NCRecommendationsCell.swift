@@ -69,10 +69,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         }
     }
 
-    func setFilename(_ filename: String, isDirectory: Bool) {
-        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelFilename, extensionLabel: labelExtensionFilename)
-    }
-
     func setImageCorner(withBorder: Bool) {
         image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
