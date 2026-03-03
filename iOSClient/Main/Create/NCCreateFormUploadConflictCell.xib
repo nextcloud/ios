@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -23,18 +22,23 @@
                             <constraint firstAttribute="height" constant="150" id="hzO-CU-dTl"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hv8-qJ-lkR">
-                        <rect key="frame" x="10" y="5" width="621" height="19.5"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-cfl">
-                        <rect key="frame" x="631" y="5" width="0.0" height="19.5"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="XAc-gX-36D">
+                        <rect key="frame" x="283.5" y="4.5" width="74.5" height="19.5"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hv8-qJ-lkR">
+                                <rect key="frame" x="0.0" y="0.0" width="42.5" height="19.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text=".exe" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-cfl">
+                                <rect key="frame" x="42.5" y="0.0" width="32" height="19.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hq-re-YVn">
                         <rect key="frame" x="598.5" y="194.5" width="37.5" height="40"/>
                         <constraints>
@@ -45,13 +49,13 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FUL-4V-OgL">
-                        <rect key="frame" x="5" y="289" width="51" height="31"/>
+                        <rect key="frame" x="5" y="292" width="63" height="28"/>
                         <connections>
                             <action selector="valueChangedSwitchAlreadyExistingFile:" destination="eGO-5i-ez1" eventType="valueChanged" id="rl3-mU-JUb"/>
                         </connections>
                     </switch>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jBi-8r-tc5">
-                        <rect key="frame" x="587" y="289" width="51" height="31"/>
+                        <rect key="frame" x="575" y="292" width="63" height="28"/>
                         <connections>
                             <action selector="valueChangedSwitchNewFile:" destination="eGO-5i-ez1" eventType="valueChanged" id="c2y-L9-O5M"/>
                         </connections>
@@ -74,23 +78,22 @@
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="Hv8-qJ-lkR" firstAttribute="top" secondItem="y6Q-vz-Xda" secondAttribute="top" constant="5" id="2QQ-S7-55R"/>
                     <constraint firstItem="WSQ-HI-Wkg" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="2lG-h5-UAz"/>
                     <constraint firstItem="0hq-re-YVn" firstAttribute="top" secondItem="WSQ-HI-Wkg" secondAttribute="bottom" constant="10" id="2wz-0l-S3Y"/>
+                    <constraint firstItem="XAc-gX-36D" firstAttribute="top" secondItem="y6Q-vz-Xda" secondAttribute="top" constant="4.5" id="3Gr-Zq-pH6"/>
                     <constraint firstAttribute="bottom" secondItem="FUL-4V-OgL" secondAttribute="bottom" constant="10" id="3dN-IN-W31"/>
                     <constraint firstItem="FUL-4V-OgL" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="7rL-L6-lPT"/>
-                    <constraint firstItem="WSQ-HI-Wkg" firstAttribute="top" secondItem="Hv8-qJ-lkR" secondAttribute="bottom" constant="10" id="Eo7-0B-Hjr"/>
-                    <constraint firstItem="Hv8-qJ-lkR" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="10" id="JVe-dZ-Lqh"/>
-                    <constraint firstItem="Tx2-JG-GGa" firstAttribute="top" secondItem="Hv8-qJ-lkR" secondAttribute="bottom" constant="10" id="KkM-mL-eYz"/>
                     <constraint firstAttribute="trailing" secondItem="Tx2-JG-GGa" secondAttribute="trailing" constant="5" id="NJl-pK-vY4"/>
                     <constraint firstItem="Qye-6B-5aj" firstAttribute="top" secondItem="WSQ-HI-Wkg" secondAttribute="bottom" constant="10" id="NQ3-yE-Ocl"/>
                     <constraint firstAttribute="trailing" secondItem="jBi-8r-tc5" secondAttribute="trailing" constant="5" id="Vv4-gx-2nv"/>
                     <constraint firstAttribute="trailing" secondItem="0hq-re-YVn" secondAttribute="trailing" constant="5" id="bZH-Wd-tFZ"/>
-                    <constraint firstItem="Ext-Lb-cfl" firstAttribute="leading" secondItem="Hv8-qJ-lkR" secondAttribute="trailing" id="ext-ld-cfl"/>
-                    <constraint firstItem="Ext-Lb-cfl" firstAttribute="firstBaseline" secondItem="Hv8-qJ-lkR" secondAttribute="firstBaseline" id="ext-bl-cfl"/>
-                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ext-Lb-cfl" secondAttribute="trailing" constant="10" id="jEF-pw-ZsK"/>
+                    <constraint firstItem="Tx2-JG-GGa" firstAttribute="top" secondItem="y6Q-vz-Xda" secondAttribute="top" constant="34.5" id="eAl-HU-wIT"/>
+                    <constraint firstAttribute="trailing" secondItem="Tx2-JG-GGa" secondAttribute="trailing" constant="5" id="hxy-o2-yJu"/>
+                    <constraint firstItem="WSQ-HI-Wkg" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="n8V-hV-iZT"/>
                     <constraint firstItem="jBi-8r-tc5" firstAttribute="centerY" secondItem="FUL-4V-OgL" secondAttribute="centerY" id="oZZ-e1-nuY"/>
+                    <constraint firstItem="WSQ-HI-Wkg" firstAttribute="top" secondItem="y6Q-vz-Xda" secondAttribute="top" constant="34.5" id="pPT-50-REa"/>
                     <constraint firstItem="Qye-6B-5aj" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="wfS-9D-K5V"/>
+                    <constraint firstItem="XAc-gX-36D" firstAttribute="centerX" secondItem="y6Q-vz-Xda" secondAttribute="centerX" id="y0D-Da-Xcd"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
