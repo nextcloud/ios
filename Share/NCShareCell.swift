@@ -51,7 +51,7 @@ class NCShareCell: UITableViewCell {
     }
 
     func setFilename(_ filename: String) {
-        UIView.setBidiSafeFilename(filename, isDirectory: false, titleLabel: fileNameCell, extensionLabel: fileNameExtensionCell)
+        setBidiSafeFilename(filename, isDirectory: false, titleLabel: fileNameCell, extensionLabel: fileNameExtensionCell)
     }
 
     @IBAction func buttonTapped(_ sender: Any) {

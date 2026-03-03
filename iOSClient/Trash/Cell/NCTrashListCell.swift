@@ -94,7 +94,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     func setFilename(_ filename: String, isDirectory: Bool) {
-        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
+        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: labelTitle, extensionLabel: labelExtension)
     }
 
     func selected(_ status: Bool, isEditMode: Bool, account: String) {

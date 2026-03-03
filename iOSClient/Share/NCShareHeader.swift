@@ -70,7 +70,7 @@ class NCShareHeader: UIView {
     func setFilename(_ filename: String, isDirectory: Bool) {
         fileName?.numberOfLines = 1
         fileNameExtension?.numberOfLines = 1
-        UIView.setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: fileName, extensionLabel: fileNameExtension)
+        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: fileName, extensionLabel: fileNameExtension)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

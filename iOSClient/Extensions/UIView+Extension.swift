@@ -54,18 +54,6 @@ extension UIView {
         }
     }
 }
-
-//extension UICollectionReusableView {
-//    func setBidiSafeFilename(
-//        _ filename: String,
-//        isDirectory: Bool,
-//        titleLabel: UILabel?,
-//        extensionLabel: UILabel?
-//    ) {
-//        setBidiSafeFilename(filename, isDirectory: isDirectory, titleLabel: titleLabel, extensionLabel: extensionLabel)
-//    }
-//}
-
 extension UINavigationItem {
     /// Sets the navigation title using a custom titleView with two labels (base + extension)
     /// to prevent Unicode bidi override attacks from visually disguising the real file extension.
