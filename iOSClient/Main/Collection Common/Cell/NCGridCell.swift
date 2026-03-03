@@ -106,11 +106,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         contentView.bringSubviewToFront(buttonMore)
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        labelTitle.preferredMaxLayoutWidth = contentView.bounds.width - 10
-    }
-
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
     }

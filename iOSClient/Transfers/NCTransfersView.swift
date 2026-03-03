@@ -145,39 +145,6 @@ struct EmptyTransfersView: View {
                     flash = false
                 }
             }
-
-            /*
-            guard model.showFlushMessage else {
-                return
-            }
-
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
-                flash = true
-            }
-
-            let timeout: UInt64 = 15_000_000_000
-            let interval: UInt64 = 200_000_000
-            var elapsed: UInt64 = 0
-
-            while elapsed < timeout {
-                try? await Task.sleep(nanoseconds: interval)
-                elapsed += interval
-
-                if model.inProgressCount > 0 || model.inWaitingCount == 0 {
-                    break
-                }
-
-                if Task.isCancelled {
-                    return
-                }
-            }
-
-            withAnimation(.easeInOut(duration: 0.25)) {
-                flash = false
-            }
-
-            model.showFlushMessage = false
-            */
         }
     }
 }
@@ -199,8 +166,7 @@ struct TransferRowView: View {
                     .font(.system(size: 30))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    BidiSafeFilenameText(filename: item.fileName, font: .headline)
-                        .lineLimit(1)
+                    Text(item.fileName).font(.headline)
 
                     if !status.status.isEmpty {
                         Text(status.status)
@@ -259,35 +225,6 @@ struct TransferRowView: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
-    }
-}
-
-// MARK: - Bidi-safe Filename
-
-private struct BidiSafeFilenameText: View {
-    let filename: String
-    let font: Font
-
-    var body: some View {
-        let nsName = filename as NSString
-        let ext = nsName.pathExtension
-        let base = nsName.deletingPathExtension
-
-        if ext.isEmpty || base.isEmpty {
-            Text(filename)
-                .font(font)
-        } else {
-            HStack(spacing: 0) {
-                Text(base)
-                    .font(font)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                Text("." + ext)
-                    .font(font)
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-        }
     }
 }
 
