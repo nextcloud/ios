@@ -49,6 +49,7 @@ class NCShareExtension: UIViewController {
     let global = NCGlobal.shared
     var maintenanceMode: Bool = false
     var token: Int?
+    var banner: LucidBanner?
     var sceneIdentifier: String = UUID().uuidString
 
     // MARK: - View Life Cycle
@@ -114,6 +115,10 @@ class NCShareExtension: UIViewController {
         }
 
         NCNetworking.shared.setupScene(sceneIdentifier: sceneIdentifier, controller: self)
+
+        if let windowScene = view.window?.windowScene {
+            banner = LucidBannerRegistry.shared.banner(for: windowScene)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -383,10 +388,10 @@ extension NCShareExtension {
                                          vPosition: .center,
                                          horizontalLayout: horizontalLayout,
                                          blocksTouches: true)
-        token = showUploadBanner(scene: window.windowScene,
-                                 payload: payload,
-                                 allowMinimizeOnTap: false,
-                                 onButtonTap: {
+        (token, banner) = showUploadBanner(windowScene: window.windowScene,
+                                           payload: payload,
+                                           allowMinimizeOnTap: false,
+                                           onButtonTap: {
             self.cancel()
         })
 
@@ -397,7 +402,7 @@ extension NCShareExtension {
                 systemImage: "arrowshape.up.circle",
                 imageAnimation: .breathe,
                 progress: 0)
-            LucidBanner.shared.update(payload: payloadUpdate)
+            banner?.update(payload: payloadUpdate)
 
             error = await self.upload(metadata: metadata)
             if error != .success {
@@ -406,12 +411,12 @@ extension NCShareExtension {
         }
 
         if error == .success {
-            LucidBanner.shared.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
+            banner?.update(payload: LucidBannerPayload.Update(stage: .success, horizontalLayout: .centered(width: 100)), for: self.token)
         } else {
-            LucidBanner.shared.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
+            banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
         }
 
-        LucidBanner.shared.dismiss(after: 2) {
+        banner?.dismiss(after: 2) {
             self.cancel()
         }
     }
@@ -444,15 +449,20 @@ extension NCShareExtension {
         self.counterUploaded += 1
 
         if metadata.isDirectoryE2EE {
-            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self, stageBanner: nil, tokenBanner: self.token)
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata,
+                                                          session: session,
+                                                          controller: self,
+                                                          banner: banner,
+                                                          stageBanner: nil,
+                                                          tokenBanner: self.token)
         } else if metadata.chunk > 0 {
-            LucidBanner.shared.update(payload: LucidBannerPayload.Update(systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                                                         imageAnimation: .rotate),
+            banner?.update(payload: LucidBannerPayload.Update(systemImage: "gearshape.arrow.triangle.2.circlepath",
+                                                              imageAnimation: .rotate),
                                       for: self.token)
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
                 let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
                     Task {@MainActor in
-                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
+                        self.banner?.update(payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)), for: self.token)
                     }
                 } uploadStart: { _ in
                     Task {@MainActor in
@@ -460,11 +470,11 @@ extension NCShareExtension {
                             systemImage: "arrowshape.up.circle",
                             imageAnimation: .breathe
                         )
-                        LucidBanner.shared.update(payload: payload, for: self.token)
+                        self.banner?.update(payload: payload, for: self.token)
                     }
                 } uploadProgressHandler: { _, _, progress in
                     Task {@MainActor in
-                        LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
+                        self.banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: self.token)
                     }
                 } assembling: {
                     Task {@MainActor in
@@ -472,7 +482,7 @@ extension NCShareExtension {
                             systemImage: "gearshape.arrow.triangle.2.circlepath",
                             imageAnimation: .rotate
                         )
-                        LucidBanner.shared.update(payload: payload, for: self.token)
+                        self.banner?.update(payload: payload, for: self.token)
                     }
                 }
 
@@ -494,8 +504,8 @@ extension NCShareExtension {
                                                                dateModificationFile: metadata.date as Date) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 Task {@MainActor in
-                    LucidBanner.shared.update(payload: LucidBannerPayload.Update(progress: fractionCompleted),
-                                              for: self.token)
+                    self.banner?.update(payload: LucidBannerPayload.Update(progress: fractionCompleted),
+                                        for: self.token)
                 }
             }
             error = results.error

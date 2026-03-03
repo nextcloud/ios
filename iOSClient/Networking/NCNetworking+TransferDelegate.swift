@@ -54,7 +54,7 @@ extension NCNetworking: NCTransferDelegate {
                 }
             }
             guard let controller else { return }
-            let scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+            let windowScene = SceneManager.shared.getWindowScene(controller: controller)
 
             switch selector {
             case NCGlobal.shared.selectorLoadFileQuickLook:
@@ -121,7 +121,9 @@ extension NCNetworking: NCTransferDelegate {
                 NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                     guard hasPermission else {
                         Task {@MainActor in
-                            await showErrorBanner(scene: scene, text: "_access_photo_not_enabled_msg_", errorCode: 0)
+                            await showErrorBanner(windowScene: windowScene,
+                                                  text: "_access_photo_not_enabled_msg_",
+                                                  errorCode: NCGlobal.shared.errorInternalError)
                         }
                         return
                     }
@@ -135,7 +137,9 @@ extension NCNetworking: NCTransferDelegate {
                             }) { success, _ in
                                 if !success {
                                     Task {
-                                        await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_", errorCode: 0)
+                                        await showErrorBanner(windowScene: windowScene,
+                                                              text: "_file_not_saved_cameraroll_",
+                                                              errorCode: NCGlobal.shared.errorInternalError)
                                     }
                                 }
                             }
@@ -145,19 +149,25 @@ extension NCNetworking: NCTransferDelegate {
                             }) { success, _ in
                                 if !success {
                                     Task {
-                                        await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_", errorCode: 0)
+                                        await showErrorBanner(windowScene: windowScene,
+                                                              text: "_file_not_saved_cameraroll_",
+                                                              errorCode: NCGlobal.shared.errorInternalError)
                                     }
                                 }
                             }
                         } else {
                             Task {
-                                await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_", errorCode: 0)
+                                await showErrorBanner(windowScene: windowScene,
+                                                      text: "_file_not_saved_cameraroll_",
+                                                      errorCode: NCGlobal.shared.errorInternalError)
                             }
                             return
                         }
                     } catch {
                         Task {
-                            await showErrorBanner(scene: scene, text: "_file_not_saved_cameraroll_", errorCode: 0)
+                            await showErrorBanner(windowScene: windowScene,
+                                                  text: "_file_not_saved_cameraroll_",
+                                                  errorCode: NCGlobal.shared.errorInternalError)
                         }
                     }
                 }
@@ -195,6 +205,7 @@ extension NCNetworking: NCTransferDelegate {
 
     @MainActor
     func viewerFile(account: String, fileId: String, viewController: UIViewController) async {
+        let windowScene = SceneManager.shared.getWindowScene(controller: viewController.tabBarController)
         if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(
@@ -227,7 +238,9 @@ extension NCNetworking: NCTransferDelegate {
         }
         guard resultsFile.error == .success, let file = resultsFile.file else {
             Task {
-                await showErrorBanner(controller: viewController.tabBarController, text: resultsFile.error.errorDescription, errorCode: resultsFile.error.errorCode)
+                await showErrorBanner(windowScene: windowScene,
+                                      text: resultsFile.error.errorDescription,
+                                      errorCode: resultsFile.error.errorCode)
             }
             return
         }

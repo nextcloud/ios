@@ -5,6 +5,7 @@
 import SwiftUI
 import NextcloudKit
 
+@MainActor
 @Observable class NCStatusMessageModel {
     enum ClearAfter: String, CaseIterable, Identifiable {
         case dontClear = "_dont_clear_"
@@ -23,6 +24,10 @@ import NextcloudKit
     var emojiText: String = ""
     var statusText: String = ""
     var clearAfterString = "_dont_clear_"
+
+    var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -61,7 +66,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: self.windowScene, error: result.error)
             }
         }
     }
@@ -78,7 +83,7 @@ import NextcloudKit
             if result.error == .success {
                 predefinedStatuses = isXcodeRunningForPreviews ? createStatusesForPreview() : result.userStatuses ?? []
             } else {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: self.windowScene, error: result.error)
             }
         }
     }
@@ -93,7 +98,7 @@ import NextcloudKit
             }
 
             if result.error != .success {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: self.windowScene, error: result.error)
             }
         }
     }
@@ -118,7 +123,7 @@ import NextcloudKit
                                                                         userStatusStatusIsUserDefined: result.statusIsUserDefined,
                                                                         account: result.account)
             } else {
-                await showErrorBanner(controller: self.controller, error: result.error)
+                await showErrorBanner(windowScene: self.windowScene, error: result.error)
             }
         }
     }

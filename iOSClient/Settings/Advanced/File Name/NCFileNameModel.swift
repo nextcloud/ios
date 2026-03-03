@@ -25,6 +25,7 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     // Root View Controller
     @Published var controller: NCMainTabBarController?
     // Get session
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

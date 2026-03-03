@@ -57,6 +57,9 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFooterDeleg
     var networking: NCShareNetworking?
 
     var controller: NCMainTabBarController?
+    var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -249,7 +252,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFooterDeleg
                    NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
 
                     if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
-                        await showErrorBanner(controller: controller,
+                        await showErrorBanner(windowScene: windowScene,
                                               text: "_e2e_in_upload_",
                                               errorCode: NCGlobal.shared.errorE2EEUploadInProgress)
                         return
@@ -258,7 +261,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFooterDeleg
                     let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: metadata.serverUrlFileName, addUserId: share.shareWith, removeUserId: nil, account: metadata.account)
 
                     if error != .success {
-                        await showErrorBanner(controller: controller, error: error)
+                        await showErrorBanner(windowScene: windowScene, error: error)
                     }
                 }
 

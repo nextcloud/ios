@@ -7,52 +7,62 @@ import LucidBanner
 import NextcloudKit
 import Alamofire
 
-// MARK: - Show Banner
-@discardableResult
 @MainActor
-func showBanner(windowScene: UIWindowScene?,
-                title: String?,
-                subtitle: String? = nil,
-                footnote: String? = nil,
-                textColor: UIColor,
-                image: String?,
-                imageAnimation: LucidBanner.LucidBannerAnimationStyle,
-                imageColor: UIColor,
-                vPosition: LucidBanner.VerticalPosition = .top,
-                backgroundColor: UIColor,
-                autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
-                swipeToDismiss: Bool = true,
-                policy: LucidBanner.ShowPolicy = .enqueue) async -> LucidBanner? {
+func showInfoBanner(windowScene: UIWindowScene?,
+                    title: String = "_info_",
+                    text: String,
+                    footnote: String? = nil,
+                    foregroundColor: UIColor = .label,
+                    backgroundColor: UIColor = .systemBackground,
+                    errorCode: Int? = nil) async {
     guard let windowScene else {
-        return nil
+        return
     }
 
-    let payload = LucidBannerPayload(
-        title: NSLocalizedString(title ?? "", comment: ""),
-        subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
-        footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        systemImage: image,
-        imageAnimation: imageAnimation,
-        backgroundColor: Color(uiColor: backgroundColor),
-        textColor: Color(uiColor: textColor),
-        imageColor: Color(uiColor: imageColor),
-        vPosition: vPosition,
-        autoDismissAfter: autoDismissAfter,
-        swipeToDismiss: swipeToDismiss
-    )
+#if !EXTENSION
+    guard !bannerContainsError(errorCode: errorCode) else {
+        return
+    }
+#endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-    banner.show(payload: payload, policy: policy) { state in
-        BannerView(state: state)
+    guard let window = banner.windowScene.windows.first else {
+        return
     }
 
-    return banner
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
+
+    let payload = LucidBannerPayload(
+        title: NSLocalizedString(title, comment: ""),
+        subtitle: NSLocalizedString(text, comment: ""),
+        footnote: NSLocalizedString(footnote ?? "", comment: ""),
+        systemImage: "checkmark.circle",
+        backgroundColor: Color(uiColor: backgroundColor),
+        textColor: Color(uiColor: foregroundColor),
+        imageColor: Color(uiColor: NCBrandColor.shared.customer),
+        vPosition: .top,
+        verticalMargin: 10,
+        horizontalLayout: horizontalLayout,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
+        swipeToDismiss: true,
+    )
+
+    banner.show(
+        payload: payload,
+        onTap: { _, _ in
+            banner.dismiss()
+        }
+    ) { state in
+        InfoBannerView(state: state)
+    }
 }
 
 // MARK: - SwiftUI
 
-struct BannerView: View {
+struct InfoBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
@@ -116,14 +126,17 @@ struct BannerView: View {
 
         let state = LucidBannerState(
             payload: LucidBannerPayload(
-                title: "Title",
+                title: "Info",
                 subtitle: "Subtitle",
                 footnote: "footnote",
-                systemImage: "wifi.circle"
+                systemImage: "checkmark.circle",
+                backgroundColor: Color(uiColor: .systemBackground),
+                textColor: Color(uiColor: .label),
+                imageColor: Color(uiColor: NCBrandColor.shared.customer)
             )
         )
 
-        BannerView(state: state)
+        InfoBannerView(state: state)
         .padding()
     }
 }

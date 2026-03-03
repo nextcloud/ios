@@ -6,16 +6,20 @@ import Foundation
 import UIKit
 import NextcloudKit
 
+@MainActor
 class NCContextMenuPlus: NSObject {
     let menuToolbar: UIToolbar?
     let controller: NCMainTabBarController?
+
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: controller)
+    }
 
     init(menuToolbar: UIToolbar?, controller: NCMainTabBarController?) {
         self.menuToolbar = menuToolbar
         self.controller = controller
     }
 
-    @MainActor
     func create(session: NCSession.Session) async {
         guard let controller, let menuToolbar else {
             return
@@ -90,7 +94,7 @@ class NCContextMenuPlus: NSObject {
                     capabilities: capabilities) { error in
                         if error != .success {
                             Task {
-                                await showErrorBanner(controller: controller,
+                                await showErrorBanner(windowScene: self.windowScene,
                                                       text: error.errorDescription,
                                                       errorCode: error.errorCode)
                             }
@@ -116,7 +120,7 @@ class NCContextMenuPlus: NSObject {
                         capabilities: capabilities) { error in
                             if error != .success {
                                 Task {
-                                    await showErrorBanner(controller: controller,
+                                    await showErrorBanner(windowScene: self.windowScene,
                                                           text: error.errorDescription,
                                                           errorCode: error.errorCode)
                                 }

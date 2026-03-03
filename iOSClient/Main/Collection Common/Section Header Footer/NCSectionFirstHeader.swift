@@ -36,6 +36,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private var sceneIdentifier: String = ""
 
 #if !EXTENSION
+    @MainActor
     internal var controller: NCMainTabBarController? {
         viewController?.tabBarController as? NCMainTabBarController
     }

@@ -82,7 +82,9 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
                         Task {
-                            await showErrorBanner(controller: viewController.controller, text: "_trash_file_not_found_", errorCode: 0)
+                            await showErrorBanner(windowScene: viewController.windowScene,
+                                                  text: "_trash_file_not_found_",
+                                                  errorCode: NCGlobal.shared.errorInternalError)
                         }
                     }
                 }

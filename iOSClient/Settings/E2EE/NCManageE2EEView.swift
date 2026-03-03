@@ -44,7 +44,7 @@ struct NCManageE2EEView: View {
                             model.requestPasscodeType("readPassphrase")
                         } else {
                             Task {
-                                await showInfoBanner(controller: model.controller, text: "_e2e_settings_lock_not_active_")
+                                await showInfoBanner(windowScene: model.windowScene, text: "_e2e_settings_lock_not_active_")
                             }
                         }
                     }
@@ -67,7 +67,7 @@ struct NCManageE2EEView: View {
                             model.requestPasscodeType("removeLocallyEncryption")
                         } else {
                             Task {
-                                await showInfoBanner(controller: model.controller, text: "_e2e_settings_lock_not_active_")
+                                await showInfoBanner(windowScene: model.windowScene, text: "_e2e_settings_lock_not_active_")
                             }
                         }
                     }
@@ -97,7 +97,7 @@ struct NCManageE2EEView: View {
                                 model.requestPasscodeType("startE2E")
                             } else {
                                 Task {
-                                    await showInfoBanner(controller: model.controller, text: "_e2e_settings_lock_not_active_")
+                                    await showInfoBanner(windowScene: model.windowScene, text: "_e2e_settings_lock_not_active_")
                                 }
                             }
                         }
@@ -146,9 +146,12 @@ struct NCManageE2EEView: View {
                 } completion: { _, _, error in
                     Task {
                         if error == .success {
-                            await showInfoBanner(controller: model.controller, text: "E2E delete certificate")
+                            await showInfoBanner(windowScene: model.windowScene,
+                                                 text: "E2E delete certificate")
                         } else {
-                            await showErrorBanner(controller: model.controller, text: error.errorDescription, errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: model.windowScene,
+                                                  text: error.errorDescription,
+                                                  errorCode: error.errorCode)
                         }
                     }
                 }
@@ -177,9 +180,12 @@ struct NCManageE2EEView: View {
                 } completion: { _, _, error in
                     Task {
                         if error == .success {
-                            await showInfoBanner(controller: model.controller, text: "E2E delete privateKey")
+                            await showInfoBanner(windowScene: model.windowScene,
+                                                 text: "E2E delete privateKey")
                         } else {
-                            await showErrorBanner(controller: model.controller, text: error.errorDescription, errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: model.windowScene,
+                                                  text: error.errorDescription,
+                                                  errorCode: error.errorCode)
                         }
                     }
                 }

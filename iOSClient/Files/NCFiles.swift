@@ -314,16 +314,15 @@ class NCFiles: NCCollectionViewCommon {
         guard results.error == .success,
               let e2eMetadata = results.e2eMetadata,
               let version = results.version else {
-
             // No metadata fount, re-send it
             if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                await showInfoBanner(controller: self.controller, text: "Metadata not found")
+                await showInfoBanner(windowScene: windowScene, text: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             } else {
-                await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
 
             return(metadatas, error, reloadRequired)
@@ -335,20 +334,20 @@ class NCFiles: NCCollectionViewCommon {
         if errorDecodeMetadata == .success {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
             if version == "v1", NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
-                await showInfoBanner(controller: self.controller, text: "Conversion metadata v1 to v2 required, please wait...")
+                await showInfoBanner(windowScene: windowScene, text: "Conversion metadata v1 to v2 required, please wait...")
                 nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                 NCActivityIndicator.shared.start()
 
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
-                    await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
                 NCActivityIndicator.shared.stop()
             }
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+            await showErrorBanner(windowScene: windowScene, text: errorDecodeMetadata.errorDescription, errorCode: errorDecodeMetadata.errorCode)
         }
 
         return (metadatas, error, reloadRequired)

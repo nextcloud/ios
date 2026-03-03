@@ -17,10 +17,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(account: metadata.account)
     }
 
+    @MainActor
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
@@ -259,7 +261,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     }
                                 } else {
                                     Task {
-                                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                                        let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
+                                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                                     }
                                 }
                             })
@@ -321,7 +324,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else {
                     Task {
-                        await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                        let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
+                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
             }
@@ -344,7 +348,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else {
                 Task {
-                    await showErrorBanner(sceneIdentifier: self.sceneIdentifier, text: error.errorDescription, errorCode: error.errorCode)
+                    let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
             }
         }

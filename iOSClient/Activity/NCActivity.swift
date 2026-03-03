@@ -44,6 +44,11 @@ class NCActivity: UIViewController, NCSharePagingContent {
         }
     }
 
+    @MainActor
+    internal var windowScene: UIWindowScene? {
+       SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -83,7 +88,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.loadComments()
                 } else {
                     Task {
-                        await showErrorBanner(controller: self.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: error.errorDescription,
+                                              errorCode: error.errorCode)
                     }
                 }
             }
@@ -424,7 +431,9 @@ extension NCActivity {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 Task {
-                    await showErrorBanner(controller: self.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: self.windowScene,
+                                          text: error.errorDescription,
+                                          errorCode: error.errorCode)
                 }
             }
 

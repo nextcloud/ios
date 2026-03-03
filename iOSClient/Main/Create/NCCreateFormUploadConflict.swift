@@ -226,11 +226,11 @@ class NCCreateFormUploadConflict: UIViewController {
 
             Task {
 #if EXTENSION
-                let scene = self.view.window?.windowScene
-                await showErrorBanner(scene: scene, text: "_file_not_rewite_doc_", errorCode: NCGlobal.shared.errorInternalError)
+                let windowScene = self.view.window?.windowScene
+                await showErrorBanner(windowScene: windowScene, text: "_file_not_rewite_doc_", errorCode: NCGlobal.shared.errorInternalError)
 #else
-                let controller = self.tabBarController as? NCMainTabBarController
-                await showErrorBanner(controller: controller, text: "_file_not_rewite_doc_", errorCode: NCGlobal.shared.errorInternalError)
+                let windowScene = SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
+                await showErrorBanner(windowScene: windowScene, text: "_file_not_rewite_doc_", errorCode: NCGlobal.shared.errorInternalError)
 #endif
             }
 

@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import NextcloudKit
 import Alamofire
+import LucidBanner
 
 extension NCNetworking {
 
@@ -15,16 +16,21 @@ extension NCNetworking {
             lastReachability = true
         } else {
             if lastReachability {
+                let windowScenes = UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }
+                    .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
                 Task {
-                    await showBannerActiveScenes(
-                        title: "_info_",
-                        subtitle: "_network_not_available_",
-                        textColor: .label,
-                        image: "wifi.exclamationmark.circle",
-                        imageAnimation: .bounce,
-                        imageColor: .label,
-                        backgroundColor: UIColor.lightGray.withAlphaComponent(0.75)
-                    )
+                    for windowScene in windowScenes {
+                        await showBanner(windowScene: windowScene,
+                                         title: "_info_",
+                                         subtitle: "_network_not_available_",
+                                         textColor: .label,
+                                         image: "wifi.exclamationmark.circle",
+                                         imageAnimation: .bounce,
+                                         imageColor: .label,
+                                         backgroundColor: UIColor.lightGray.withAlphaComponent(0.75))
+
+                    }
                 }
             }
             lastReachability = false

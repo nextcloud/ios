@@ -7,6 +7,7 @@ import NextcloudKit
 
 /// A context menu for comment actions (edit, delete).
 /// See ``NCActivity`` for usage details.
+@MainActor
 class NCContextMenuComment: NSObject {
     let tableComments: tableComments
     let metadata: tableMetadata
@@ -15,6 +16,10 @@ class NCContextMenuComment: NSObject {
 
     internal var controller: NCMainTabBarController? {
         self.viewController?.tabBarController as? NCMainTabBarController
+    }
+
+    internal var windowScene: UIWindowScene? {
+        SceneManager.shared.getWindowScene(controller: self.viewController?.tabBarController as? NCMainTabBarController)
     }
 
     init(tableComments: tableComments, metadata: tableMetadata, viewController: UIViewController?) {
@@ -62,7 +67,7 @@ class NCContextMenuComment: NSObject {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
                     } else {
                         Task { @MainActor in
-                            await showErrorBanner(controller: self.viewController?.tabBarController, text: error.errorDescription, errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
                         }
                     }
                 }
@@ -96,7 +101,7 @@ class NCContextMenuComment: NSObject {
                     (self.viewController as? NCActivity)?.loadComments()
                 } else {
                     Task { @MainActor in
-                        await showErrorBanner(controller: self.controller, text: error.errorDescription, errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
                     }
                 }
             }

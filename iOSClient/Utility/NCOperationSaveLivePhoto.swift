@@ -11,13 +11,14 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
     var metadataMOV: tableMetadata
     let utilityFileSystem = NCUtilityFileSystem()
-    var scene: UIWindowScene?
+    var windowScene: UIWindowScene?
     var tokenBanner: Int?
+    var banner: LucidBanner?
 
-    init(metadata: tableMetadata, metadataMOV: tableMetadata, controller: UITabBarController?) {
+    init(metadata: tableMetadata, metadataMOV: tableMetadata, windowScene: UIWindowScene?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.metadataMOV = tableMetadata.init(value: metadataMOV)
-        scene = SceneManager.shared.getWindow(controller: controller)?.windowScene
+        self.windowScene = windowScene
     }
 
     override func start() {
@@ -31,12 +32,12 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                                                                                                          selector: "") else {
                 return self.finish()
             }
-            tokenBanner = showHudBanner(scene: scene, title: "_download_image_")
+            (tokenBanner, banner) = showHudBanner(windowScene: windowScene, title: "_download_image_")
 
             let resultsMetadata = await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
             } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(
+                    self.banner?.update(
                         payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
                         for: self.tokenBanner)
                 }
@@ -44,7 +45,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
 
             guard resultsMetadata.nkError == .success else {
                 Task {@MainActor in
-                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
+                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner, banner: self.banner)
                 }
                 return self.finish()
             }
@@ -52,7 +53,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
             let resultsMetadataLive = await NCNetworking.shared.downloadFile(metadata: metadataLive) { _ in
             } progressHandler: { progress in
                 Task {@MainActor in
-                    LucidBanner.shared.update(
+                    self.banner?.update(
                         payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
                         for: self.tokenBanner)
                 }
@@ -60,7 +61,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
 
             guard resultsMetadataLive.nkError == .success else {
                 Task {@MainActor in
-                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
+                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner, banner: self.banner)
                 }
                 return self.finish()
             }
@@ -84,11 +85,11 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
         let payload = LucidBannerPayload.Update(
             title: NSLocalizedString("_livephoto_save_", comment: ""),
         )
-        LucidBanner.shared.update(payload: payload, for: self.tokenBanner)
+        banner?.update(payload: payload, for: self.tokenBanner)
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             Task {@MainActor in
-                LucidBanner.shared.update(
+                self.banner?.update(
                     payload: LucidBannerPayload.Update(progress: progress),
                     for: self.tokenBanner)
             }
@@ -97,16 +98,16 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                 NCLivePhoto.saveToLibrary(resources) { result in
                     Task {@MainActor in
                         if !result {
-                            completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
+                            completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner, banner: self.banner)
                         } else {
-                            completeHudBannerSuccess(token: self.tokenBanner)
+                            completeHudBannerSuccess(token: self.tokenBanner, banner: self.banner)
                         }
                         return self.finish()
                     }
                 }
             } else {
                 Task {@MainActor in
-                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner)
+                    completeHudBannerError(description: "_livephoto_save_error_", token: self.tokenBanner, banner: self.banner)
                     return self.finish()
                 }
             }
