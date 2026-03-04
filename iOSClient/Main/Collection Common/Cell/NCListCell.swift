@@ -118,6 +118,22 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         tag0.text = ""
         tag1.text = ""
 
+        // FONT SCALLED
+        //
+        let scaledFontCallout = UIFontMetrics(forTextStyle: .callout)
+            .scaledFont(for: UIFont.preferredFont(forTextStyle: .callout), maximumPointSize: 20)
+        labelTitle.font = scaledFontCallout
+        labelTitle.adjustsFontForContentSizeCategory = true
+
+        let scaledFontCaption1 = UIFontMetrics(forTextStyle: .caption1)
+            .scaledFont(for: UIFont.preferredFont(forTextStyle: .caption1), maximumPointSize: 15)
+        labelInfo.font = scaledFontCaption1
+        labelInfoSeparator.font = scaledFontCaption1
+        labelSubinfo.font = scaledFontCaption1
+        labelInfo.adjustsFontForContentSizeCategory = true
+        labelInfoSeparator.adjustsFontForContentSizeCategory = true
+        labelSubinfo.adjustsFontForContentSizeCategory = true
+
         separatorHeightConstraint.constant = 0.5
 
         buttonMore.menu = nil
