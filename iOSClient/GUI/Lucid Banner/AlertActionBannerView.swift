@@ -6,10 +6,10 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showAlertActionBannerView(lucidBanner: LucidBanner?,
-                               title: String? = nil,
-                               subtitle: String? = nil,
-                               onConfirm: (() -> Void)? = nil) {
+func showAlertActionBanner(lucidBanner: LucidBanner?,
+                           title: String? = nil,
+                           subtitle: String? = nil,
+                           onConfirm: (() -> Void)? = nil) {
     guard let lucidBanner else {
         return
     }
@@ -27,10 +27,8 @@ func showAlertActionBannerView(lucidBanner: LucidBanner?,
         swipeToDismiss: true
     )
 
-    lucidBanner.show(
-        payload: payload,
-        policy: .replace) { _, _ in
-    } content: { state in
+    lucidBanner.show(payload: payload,
+                     policy: .enqueue) { state in
         AlertActionBannerView(
             state: state,
             onConfirm: {
