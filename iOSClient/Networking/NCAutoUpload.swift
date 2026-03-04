@@ -45,24 +45,25 @@ class NCAutoUpload: NSObject {
         let windowScene = SceneManager.shared.getWindowScene(controller: controller)
         var banner: LucidBanner?
         defer {
-            banner?.dismiss(after: 1)
+            if let banner {
+                banner.dismiss()
+            }
         }
 
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
-        banner = await showBanner(windowScene: windowScene,
-                                  title: "_info_",
-                                  subtitle: "_creating_db_photo_progress_",
-                                  textColor: .label,
-                                  image: "photo.on.rectangle.angled",
-                                  imageAnimation: .bounce,
-                                  imageColor: .label,
-                                  backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
-                                  autoDismissAfter: 0,
-                                  swipeToDismiss: false,
-                                  policy: .drop
+        (banner, _) = await showBanner(windowScene: windowScene,
+                                       title: "_info_",
+                                       subtitle: "_creating_db_photo_progress_",
+                                       textColor: .label,
+                                       image: "photo.on.rectangle.angled",
+                                       imageAnimation: .bounce,
+                                       imageColor: .label,
+                                       backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
+                                       autoDismissAfter: 0,
+                                       swipeToDismiss: false
         )
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)

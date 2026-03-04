@@ -346,7 +346,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                let (token, banner) = showHudBanner(windowScene: windowScene,
+                let (banner, token) = showHudBanner(windowScene: windowScene,
                                                     title: "_download_in_progress_",
                                                     stage: .button) {
                     if let request = downloadRequest {
@@ -375,7 +375,9 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }) { _, etag, _, _, _, _, error in
                     Task {
-                        banner?.dismiss()
+                        if let banner {
+                            banner.dismiss()
+                        }
 
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,

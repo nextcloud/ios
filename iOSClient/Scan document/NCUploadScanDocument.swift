@@ -69,6 +69,9 @@ class NCUploadScanDocument: ObservableObject {
                 metadata.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadata.sessionDate = Date()
 
+                // replace current metadata
+                self.metadata = metadata
+
                 if self.database.getMetadataConflict(account: self.session.account, serverUrl: self.serverUrl, fileNameView: fileName, nativeFormat: metadata.nativeFormat) != nil {
                     completion(true, false)
                 } else {
