@@ -63,7 +63,7 @@ struct NCFileNameView: View {
                         .multilineTextAlignment(.trailing)
                 }
                 Text("\(model.fileNamePreview)")
-                    .font(.callout())
+                    .font(.body())
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))
@@ -75,6 +75,7 @@ struct NCFileNameView: View {
         } else {
             Section(content: {
                 Text("IMG_0001.JPG")
+                    .font(.body())
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))

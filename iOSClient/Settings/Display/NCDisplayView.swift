@@ -23,6 +23,7 @@ struct NCDisplayView: View {
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_light_", comment: ""))
+                                .font(.body())
                             Image(systemName: colorScheme == .light ? "checkmark.circle.fill" : "circle")
                                 .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                                 .imageScale(.large)
@@ -42,6 +43,7 @@ struct NCDisplayView: View {
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_dark_", comment: ""))
+                                .font(.body())
                             Image(systemName: colorScheme == .dark ? "checkmark.circle.fill" : "circle")
                                 .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                                 .imageScale(.large)
@@ -72,7 +74,7 @@ struct NCDisplayView: View {
             ) {
                 HStack {
                     Text(NSLocalizedString("_keep_screen_awake_", comment: ""))
-                        .font(.callout())
+                        .font(.body())
 
                     Spacer()
 

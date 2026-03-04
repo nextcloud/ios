@@ -36,6 +36,7 @@ struct NCAssistant: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("_close_")
+                            .font(.body())
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -69,6 +70,7 @@ struct NCAssistant: View {
         .navigationViewStyle(.stack)
         .popup(isPresented: $assistantModel.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
+                .font(.body())
                 .padding()
                 .background(.red)
                 .cornerRadius(30.0)
@@ -117,6 +119,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_share_")
+                                .font(.body())
                         } icon: {
                             Image(systemName: "square.and.arrow.up")
                         }
@@ -127,6 +130,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_retry_")
+                                .font(.body())
                         } icon: {
                             Image(systemName: "arrow.trianglehead.clockwise")
                         }
@@ -151,6 +155,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_delete_")
+                                .font(.body())
                         } icon: {
                             Image(systemName: "trash")
                         }
@@ -238,10 +243,12 @@ struct TaskItem: View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(task.input?.input ?? "")
+                    .font(.body())
                     .lineLimit(1)
 
                 if let output = task.output?.output, !output.isEmpty {
                     Text(output)
+                        .font(.body())
                         .lineLimit(1)
                         .foregroundStyle(.secondary)
                 }

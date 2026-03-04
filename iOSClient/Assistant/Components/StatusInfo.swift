@@ -17,7 +17,7 @@ struct StatusInfo: View {
                     let text = (showStatusText && task.statusInfo.stringKey != "_assistant_task_completed_") ? "(\(NSLocalizedString(task.statusInfo.stringKey, comment: "")))" : ""
 
                     Text("\(task.statusDate) \(text)")
-                        .font(.callout())
+                        .font(.body())
                         .foregroundStyle(.secondary)
                 },
                 icon: {

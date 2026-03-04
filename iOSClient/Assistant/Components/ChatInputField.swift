@@ -21,6 +21,7 @@ struct ChatInputField: View {
     var body: some View {
         VStack {
             Text("_assistant_ai_warning_")
+                .font(.body())
                 .lineLimit(1)
                 .allowsTightening(true)
                 .minimumScaleFactor(0.5)

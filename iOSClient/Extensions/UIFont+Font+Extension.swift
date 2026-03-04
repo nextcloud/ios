@@ -8,7 +8,7 @@ import SwiftUI
 
 extension UIFont {
     @inline(__always)
-    private static func scaled(textStyle: UIFont.TextStyle,max: CGFloat) -> UIFont {
+    private static func scaled(textStyle: UIFont.TextStyle, max: CGFloat) -> UIFont {
         UIFontMetrics(forTextStyle: textStyle)
             .scaledFont(
                 for: UIFont.preferredFont(forTextStyle: textStyle),

@@ -186,6 +186,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 
                         if !tabBarSelect.canSetAsOffline && !tabBarSelect.isAnyOffline {
                             Text(NSLocalizedString("_e2ee_set_as_offline_", comment: ""))
+                                .font(.body())
                         }
                     })
                     .disabled(!tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty))
@@ -198,6 +199,7 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 
                             if !tabBarSelect.enableLock {
                                 Text(NSLocalizedString("_lock_no_permissions_selected_", comment: ""))
+                                    .font(.body())
                             }
                         })
                         .disabled(!tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty)

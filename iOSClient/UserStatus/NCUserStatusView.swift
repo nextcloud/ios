@@ -29,10 +29,11 @@ struct NCUserStatusView: View {
                         .frame(width: 20, height: 20)
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString(item.titleKey, comment: ""))
+                            .font(.body())
 
                         if !item.descriptionKey.isEmpty {
                             Text(NSLocalizedString(item.descriptionKey, comment: ""))
-                                .font(.subheadline())
+                                .font(.body())
                                 .foregroundStyle(.secondary)
                         }
                     }

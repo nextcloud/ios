@@ -255,7 +255,6 @@ var noPermissionsView: some View {
 
     VStack {
         Text("_access_photo_not_enabled_")
-            .font(.title3())
             .padding()
             .font(.body())
         Text("_access_photo_not_enabled_msg_")
@@ -347,6 +346,7 @@ struct ConfirmAutoUploadSheet: View {
                     isPresented = false
                 } label: {
                     Text(NSLocalizedString("_cancel_", comment: ""))
+                        .font(.body())
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                 }
@@ -358,6 +358,7 @@ struct ConfirmAutoUploadSheet: View {
                     isPresented = false
                 } label: {
                     Text(NSLocalizedString("_confirm_", comment: ""))
+                        .font(.body())
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                 }
@@ -370,6 +371,7 @@ struct ConfirmAutoUploadSheet: View {
                     isPresented = false
                 } label: {
                     Text(NSLocalizedString("_cancel_", comment: ""))
+                        .font(.body())
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                 }

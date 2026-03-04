@@ -58,7 +58,7 @@ struct NCCapabilitiesView: View {
         var body: some View {
             Label {
                 Text(text)
-                    .font(.callout())
+                    .font(.body())
             } icon: {
                 if resize {
                     image

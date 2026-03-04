@@ -34,7 +34,7 @@ struct NCUploadAssetsView: View {
         NavigationView {
             ZStack(alignment: .top) {
                 List {
-                    Section(footer: Text(NSLocalizedString("_modify_image_desc_", comment: ""))) {
+                    Section(footer: Text(NSLocalizedString("_modify_image_desc_", comment: "")).font(.footnote())) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<model.previewStore.count, id: \.self) { index in
@@ -121,6 +121,7 @@ struct NCUploadAssetsView: View {
                                                 Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
                                             } message: {
                                                 Text(renameError)
+                                                    .font(.body())
                                             }
                                     }
                                     .onChange(of: renameFileName) { _, newValue in

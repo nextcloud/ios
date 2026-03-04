@@ -20,7 +20,9 @@ struct NCTermOfServiceModelView: View {
 
                 Picker("Select Language", selection: $selectedLanguage) {
                     ForEach(model.languages.keys.sorted(), id: \.self) { key in
-                        Text(model.languages[key] ?? "").tag(key)
+                        Text(model.languages[key] ?? "")
+                            .font(.body())
+                            .tag(key)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
@@ -49,6 +51,7 @@ struct NCTermOfServiceModelView: View {
                 model.signTermsOfService(termId: model.termsId[selectedLanguage])
             }) {
                 Text(NSLocalizedString("_terms_accept_", comment: "Accept terms"))
+                    .font(.body())
                     .foregroundColor(.white)
                     .padding()
                     .background(Color.blue)

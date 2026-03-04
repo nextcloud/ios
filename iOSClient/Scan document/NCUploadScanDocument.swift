@@ -344,7 +344,8 @@ struct UploadScanDocumentView: View {
         GeometryReader { geo in
             ZStack(alignment: .top) {
                 List {
-                    Section(header: Text(NSLocalizedString("_file_creation_", comment: "")).font(.headline()), footer: Text(footer).font(.footnote())) {
+                    Section(header: Text(NSLocalizedString("_file_creation_", comment: "")).font(.headline()),
+                            footer: Text(footer).font(.footnote())) {
                         HStack {
                             Label {
                                 if NCUtilityFileSystem().getHomeServer(session: model.session) == model.serverUrl {

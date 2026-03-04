@@ -194,11 +194,12 @@ struct EmptyChatView: View {
                 .frame(height: 100)
 
             Text(NSLocalizedString("_start_conversation_", comment: ""))
-                .font(.system(size: 22, weight: .bold))
+                .font(.body())
+                .fontWeight(.bold)
                 .padding(.bottom, 5)
 
             Text(NSLocalizedString("_ask_assistant_anything_", comment: ""))
-                .font(.system(size: 14))
+                .font(.body())
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)

@@ -111,8 +111,9 @@ struct SelectionButton: View {
 
                 VStack(alignment: .leading) {
                     Text((album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? ""))
+                        .font(.body())
                     Text(String(assetCount))
-                        .font(.footnote())
+                        .font(.body())
                         .foregroundStyle(.secondary)
                 }
             }

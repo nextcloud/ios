@@ -86,6 +86,7 @@ struct AlertActionBannerView: View {
                         onCancel?()
                     } label: {
                         Text("_cancel_")
+                            .font(.body())
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }
@@ -101,6 +102,7 @@ struct AlertActionBannerView: View {
                         onConfirm?()
                     } label: {
                         Text("_ok_")
+                            .font(.body())
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }

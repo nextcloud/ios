@@ -26,7 +26,7 @@ struct Maintenance: View {
                     .foregroundColor(.white)
 
                 Text("_opt_in_pro_")
-                    .font(.headline())
+                    .font(.body())
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundColor(.white)

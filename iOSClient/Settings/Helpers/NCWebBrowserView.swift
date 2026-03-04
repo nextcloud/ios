@@ -23,7 +23,7 @@ struct NCBrowserWebView: View {
             HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
-                        .font(.title3())
+                        .font(.body())
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
                         .padding(.leading, 8)
                 }

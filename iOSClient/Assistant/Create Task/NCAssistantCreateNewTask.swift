@@ -18,11 +18,13 @@ struct NCAssistantCreateNewTask: View {
     var body: some View {
         VStack {
             Text(model.selectedType?.description ?? "")
+                .font(.body())
                 .frame(maxWidth: .infinity, alignment: .topLeading)
 
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
                     Text(NSLocalizedString("_input_", comment: ""))
+                        .font(.body())
                         .padding(24)
                         .foregroundStyle(.secondary)
                 }
@@ -44,6 +46,7 @@ struct NCAssistantCreateNewTask: View {
                 presentationMode.wrappedValue.dismiss()
             }, label: {
                 Text(NSLocalizedString(editMode ? "_edit_" : "_create_", comment: ""))
+                    .font(.body())
             })
             .disabled(text.isEmpty)
         }

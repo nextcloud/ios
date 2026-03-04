@@ -57,6 +57,7 @@ struct InputOutputScrollView: View {
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.input?.input ?? "")
+                    .font(.body())
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
@@ -68,6 +69,7 @@ struct InputOutputScrollView: View {
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.output?.output ?? "")
+                    .font(.body())
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))

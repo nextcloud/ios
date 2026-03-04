@@ -39,7 +39,7 @@ struct ClientIntegrationUIViewer: View {
                         let finalUrl = baseURL + row.urlString
 
                         Text(finalUrl)
-                            .font(.footnote)
+                            .font(.footnote())
                             .foregroundStyle(.secondary)
                             .textSelection(.enabled)
 
