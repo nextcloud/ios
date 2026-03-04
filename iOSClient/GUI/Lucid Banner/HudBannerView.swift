@@ -69,6 +69,7 @@ func completeHudBannerError(description: String, token: Int?, banner: LucidBanne
 
 struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @State private var displayedProgress: Double = 0
 
     let onButtonTap: (() -> Void)?
@@ -111,7 +112,8 @@ struct HudBannerView: View {
                 // TITLE
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline.weight(.semibold))
+                        .font(.headline())
+                        .id(dynamicTypeSize)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -119,7 +121,8 @@ struct HudBannerView: View {
                 // SUBTITLE
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .font(.subheadline())
+                        .id(dynamicTypeSize)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -149,14 +152,17 @@ struct HudBannerView: View {
                         if isSuccess {
                             Image(systemName: "checkmark")
                                 .font(.system(size: 34, weight: .bold))
+                                .id(dynamicTypeSize)
                                 .foregroundStyle(strokeColor)
                         } else if isError {
                             Image(systemName: "xmark")
                                 .font(.system(size: 34, weight: .bold))
+                                .id(dynamicTypeSize)
                                 .foregroundStyle(strokeColor)
                         } else {
                             Text("\(Int(visualProgress * 100))%")
-                                .font(.headline.monospacedDigit())
+                                .font(.headline().monospacedDigit())
+                                .id(dynamicTypeSize)
                                 .foregroundStyle(textColor)
                         }
                     }

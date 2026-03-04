@@ -25,6 +25,8 @@ struct NCSettingsView: View {
         NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
     }
 
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+
     var body: some View {
         Form {
             // `Auto Upload` Section
@@ -39,10 +41,14 @@ struct NCSettingsView: View {
                             .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
+                            .font(.body())
+                            .id(dynamicTypeSize)
                     }
                 }
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
+                    .font(.footnote())
+                    .id(dynamicTypeSize)
             })
             // `Privacy` Section
             Section(content: {
@@ -57,15 +63,21 @@ struct NCSettingsView: View {
                             .frame(width: 20, height: 20)
                             .opacity(NCBrandOptions.shared.enforce_passcode_lock ? 0.5 : 1)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
+                            .font(.body())
+                            .id(dynamicTypeSize)
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .disabled(NCBrandOptions.shared.enforce_passcode_lock)
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
+                    .font(.headline())
+                    .id(dynamicTypeSize)
             }, footer: {
                 if NCBrandOptions.shared.enforce_passcode_lock {
                     Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
+                        .font(.footnote())
+                        .id(dynamicTypeSize)
                 }
             })
 

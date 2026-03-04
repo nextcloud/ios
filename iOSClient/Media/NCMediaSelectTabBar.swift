@@ -82,6 +82,7 @@ class NCMediaSelectTabBar: ObservableObject {
 struct MediaTabBarSelectView: View {
     @ObservedObject var tabBarSelect: NCMediaSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         VStack {
@@ -92,12 +93,15 @@ struct MediaTabBarSelectView: View {
                     if tabBarSelect.selectCount == 0 {
                         Text(NSLocalizedString("_select_photos_", comment: ""))
                             .font(.body())
+                            .id(dynamicTypeSize)
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
                             .font(.body())
+                            .id(dynamicTypeSize)
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
                             .font(.body())
+                            .id(dynamicTypeSize)
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)
@@ -107,6 +111,7 @@ struct MediaTabBarSelectView: View {
                 } label: {
                     Image(systemName: "trash")
                         .font(.icon())
+                        .id(dynamicTypeSize)
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)

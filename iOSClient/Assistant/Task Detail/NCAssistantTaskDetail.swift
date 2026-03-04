@@ -46,12 +46,15 @@ struct NCAssistantTaskDetail: View {
 
 struct InputOutputScrollView: View {
     @Environment(NCAssistantModel.self) var model
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let task: AssistantTask
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                Text(NSLocalizedString("_input_", comment: "")).font(.headline)
+                Text(NSLocalizedString("_input_", comment: ""))
+                    .font(.headline())
+                    .id(dynamicTypeSize)
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.input?.input ?? "")
@@ -61,7 +64,9 @@ struct InputOutputScrollView: View {
                     .clipShape(.rect(cornerRadius: 8))
                     .textSelection(.enabled)
 
-                Text(NSLocalizedString("_output_", comment: "")).font(.headline)
+                Text(NSLocalizedString("_output_", comment: ""))
+                    .font(.headline())
+                    .id(dynamicTypeSize)
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.output?.output ?? "")

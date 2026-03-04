@@ -5,6 +5,7 @@
 import SwiftUI
 
 struct ChatInputField: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @FocusState private var isInputFocused: Bool
     @State var text: String = ""
     @Binding var isLoading: Bool

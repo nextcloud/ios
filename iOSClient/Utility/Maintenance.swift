@@ -9,6 +9,7 @@ import NextcloudKit
 
 /// A modal SwiftUI view responsible for maintenance database
 struct Maintenance: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let onCompleted: () -> Void
 
     var body: some View {
@@ -25,7 +26,8 @@ struct Maintenance: View {
                     .foregroundColor(.white)
 
                 Text("_opt_in_pro_")
-                    .font(.headline)
+                    .font(.headline())
+                    .id(dynamicTypeSize)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundColor(.white)

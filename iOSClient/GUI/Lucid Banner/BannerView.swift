@@ -54,6 +54,7 @@ func showBanner(windowScene: UIWindowScene?,
 
 struct BannerView: View {
     @ObservedObject var state: LucidBannerState
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         let showTitle = !(state.payload.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -71,7 +72,8 @@ struct BannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .font(.subheadline.weight(.bold))
+                                .font(.subheadline())
+                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -79,14 +81,16 @@ struct BannerView: View {
 
                         if showSubtitle, let subtitle = state.payload.subtitle {
                             Text(subtitle)
-                                .font(.subheadline)
+                                .font(.subheadline())
+                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
                         }
                         if showFootnote, let footnote = state.payload.footnote {
                             Text(footnote)
-                                .font(.caption)
+                                .font(.footnote())
+                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)

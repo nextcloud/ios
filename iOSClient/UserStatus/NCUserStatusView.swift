@@ -9,6 +9,7 @@ struct NCUserStatusView: View {
 
     @State private var model: NCUserStatusModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     init(account: String, controller: NCMainTabBarController?) {
         self.account = account

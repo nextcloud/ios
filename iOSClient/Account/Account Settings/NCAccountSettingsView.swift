@@ -20,6 +20,7 @@ struct NCAccountSettingsView: View {
     }
 
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         NavigationView {
@@ -52,11 +53,13 @@ struct NCAccountSettingsView: View {
                                     .offset(x: 30, y: -30)
                                 }
                                 Text(model.getUserName())
-                                    .font(.subheadline)
+                                    .font(.subheadline())
+                                    .id(dynamicTypeSize)
                                 Spacer()
                                     .frame(height: 10)
                                 Text(status.statusMessage)
-                                    .font(.caption)
+                                    .font(.caption1())
+                                    .id(dynamicTypeSize)
                                 Spacer()
                                     .frame(height: 20)
                                 //
@@ -109,7 +112,8 @@ struct NCAccountSettingsView: View {
                             }
                         }
                     }
-                    .font(.subheadline)
+                    .font(.subheadline())
+                    .id(dynamicTypeSize)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
@@ -125,7 +129,8 @@ struct NCAccountSettingsView: View {
                                 .fontWeight(.medium)
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                                .font(.callout)
+                                .font(.callout())
+                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: model.alias) { _, newValue in
                                     model.setAlias(newValue)
@@ -133,7 +138,8 @@ struct NCAccountSettingsView: View {
                         }
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.caption)
+                            .font(.caption1())
+                            .id(dynamicTypeSize)
                             .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
                     }
@@ -155,7 +161,8 @@ struct NCAccountSettingsView: View {
                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                                 }
-                                .font(.subheadline)
+                                .font(.subheadline())
+                                .id(dynamicTypeSize)
                             }
                         }
 
@@ -174,7 +181,8 @@ struct NCAccountSettingsView: View {
                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                                 }
-                                .font(.subheadline)
+                                .font(.subheadline())
+                                .id(dynamicTypeSize)
                             }
                         }
                     }
@@ -198,7 +206,8 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.subheadline)
+                            .font(.subheadline())
+                            .id(dynamicTypeSize)
                         })
                         .sheet(isPresented: $showServerCertificate) {
                             if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
@@ -223,7 +232,8 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.subheadline)
+                            .font(.subheadline())
+                            .id(dynamicTypeSize)
                         })
                         .sheet(isPresented: $showPushCertificate) {
                             Group {
@@ -263,7 +273,8 @@ struct NCAccountSettingsView: View {
                                 .foregroundStyle(.red)
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                         }
-                        .font(.callout)
+                        .font(.callout())
+                        .id(dynamicTypeSize)
                     })
                     .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
                         Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {

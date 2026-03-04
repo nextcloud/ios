@@ -10,6 +10,7 @@ import NextcloudKit
 /// A modal SwiftUI view responsible for migrating existing folders under File Provider Storage
 /// to the appropriate domain subdirectories. This is used when transitioning to multi-domain support.
 struct MigrationMultiDomains: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let onCompleted: () -> Void
 
     @State private var progressText: String = NSLocalizedString("_preparing_migration_", comment: "")
@@ -30,7 +31,8 @@ struct MigrationMultiDomains: View {
                     .foregroundColor(.white)
 
                 Text(progressText)
-                    .font(.headline)
+                    .font(.headline())
+                    .id(dynamicTypeSize)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundColor(.white)
@@ -41,7 +43,8 @@ struct MigrationMultiDomains: View {
                     .padding(.bottom, 4)
 
                 Text(String(format: "%.0f%%", progress * 100))
-                    .font(.subheadline)
+                    .font(.subheadline())
+                    .id(dynamicTypeSize)
                     .foregroundColor(.white)
 
                 Spacer()

@@ -98,6 +98,7 @@ struct NCStatusMessageView: View {
 }
 
 private struct StatusPresetRow: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Binding var model: NCStatusMessageModel
     let preset: NKUserStatus
 

@@ -8,6 +8,7 @@ import SwiftUI
 
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @StateObject private var model: TransfersViewModel
 
     private let onClose: (() -> Void)?

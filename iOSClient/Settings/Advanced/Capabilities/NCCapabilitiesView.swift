@@ -25,6 +25,7 @@ import SwiftUI
 import NextcloudKit
 
 struct NCCapabilitiesView: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: NCCapabilitiesModel
 
     var body: some View {

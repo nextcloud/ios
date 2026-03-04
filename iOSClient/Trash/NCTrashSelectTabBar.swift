@@ -116,6 +116,7 @@ class NCTrashSelectTabBar: ObservableObject {
 struct NCTrashSelectTabBarView: View {
     @ObservedObject var tabBarSelect: NCTrashSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         VStack {
@@ -126,6 +127,7 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.icon())
+                        .id(dynamicTypeSize)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
@@ -136,6 +138,7 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "trash")
                         .font(.icon())
+                        .id(dynamicTypeSize)
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)
@@ -146,6 +149,7 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "checkmark")
                         .font(.icon())
+                        .id(dynamicTypeSize)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)

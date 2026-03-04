@@ -13,9 +13,10 @@ import SwiftUI
 ///   - urlBase: A URL value to which our view will open initially
 ///   - browserTitle: A String value to show as the title of the webView
 struct NCBrowserWebView: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var urlBase: URL
     var browserTitle: String
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     var body: some View {
         VStack(spacing: 0) {

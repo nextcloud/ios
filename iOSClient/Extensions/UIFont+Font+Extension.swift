@@ -7,72 +7,95 @@ import UIKit
 import SwiftUI
 
 extension UIFont {
-    // regular
+    @inline(__always)
+    private static func scaled(textStyle: UIFont.TextStyle,max: CGFloat) -> UIFont {
+        UIFontMetrics(forTextStyle: textStyle)
+            .scaledFont(
+                for: UIFont.preferredFont(forTextStyle: textStyle),
+                maximumPointSize: max
+            )
+    }
+
+    // FONT Regular
+    //
     static func body(max: CGFloat = 25) -> UIFont {
-        UIFontMetrics(forTextStyle: .body)
-            .scaledFont(
-                for: UIFont.preferredFont(forTextStyle: .body),
-                maximumPointSize: max
-            )
+        scaled(textStyle: .body, max: max)
     }
 
-    // regular
     static func callout(max: CGFloat = 20) -> UIFont {
-        UIFontMetrics(forTextStyle: .callout)
-            .scaledFont(
-                for: UIFont.preferredFont(forTextStyle: .callout),
-                maximumPointSize: max
-            )
+        scaled(textStyle: .callout, max: max)
     }
 
-    // regular
+    static func footnote(max: CGFloat = 16) -> UIFont {
+        scaled(textStyle: .footnote, max: max)
+    }
+
     static func caption1(max: CGFloat = 15) -> UIFont {
-        UIFontMetrics(forTextStyle: .caption1)
-            .scaledFont(
-                for: UIFont.preferredFont(forTextStyle: .caption1),
-                maximumPointSize: max
-            )
+        scaled(textStyle: .caption1, max: max)
     }
 
-    // regular
     static func caption2(max: CGFloat = 12) -> UIFont {
-        UIFontMetrics(forTextStyle: .caption2)
-            .scaledFont(
-                for: UIFont.preferredFont(forTextStyle: .caption2),
-                maximumPointSize: max
-            )
+        scaled(textStyle: .caption2, max: max)
     }
 
-    // semibold
+    // FONT Semibold
+    //
     static func headline(max: CGFloat = 25) -> UIFont {
-        UIFontMetrics(forTextStyle: .headline)
-            .scaledFont(
-                for: UIFont.preferredFont(forTextStyle: .headline),
-                maximumPointSize: max
-            )
+        scaled(textStyle: .headline, max: max)
+    }
+
+    static func subheadline(max: CGFloat = 18) -> UIFont {
+        scaled(textStyle: .subheadline, max: max)
     }
 }
 
 // SwiftUI version
 //
 extension Font {
-    // regular
-    static func body(max: CGFloat = 25) -> Font {
-        let font = UIFontMetrics(forTextStyle: .body)
-            .scaledFont(for: UIFont.preferredFont(forTextStyle: .body),
-                        maximumPointSize: max)
+    @inline(__always)
+    private static func scaled(textStyle: UIFont.TextStyle, max: CGFloat) -> Font {
+        let font = UIFontMetrics(forTextStyle: textStyle)
+            .scaledFont(
+                for: UIFont.preferredFont(forTextStyle: textStyle),
+                maximumPointSize: max
+            )
         return Font(font)
     }
 
-    // regular
+    // FONT Regular
+    //
+    static func body(max: CGFloat = 25) -> Font {
+        scaled(textStyle: .body, max: max)
+    }
+
     static func callout(max: CGFloat = 20) -> Font {
-        let font = UIFontMetrics(forTextStyle: .callout)
-            .scaledFont(for: UIFont.preferredFont(forTextStyle: .callout),
-                        maximumPointSize: max)
-        return Font(font)
+        scaled(textStyle: .callout, max: max)
+    }
+
+    static func footnote(max: CGFloat = 16) -> Font {
+        scaled(textStyle: .footnote, max: max)
+    }
+
+    static func caption1(max: CGFloat = 15) -> Font {
+        scaled(textStyle: .caption1, max: max)
+    }
+
+    static func caption2(max: CGFloat = 12) -> Font {
+        scaled(textStyle: .caption2, max: max)
+    }
+
+    // FONT Semibold
+    //
+    static func headline(max: CGFloat = 25) -> Font {
+        scaled(textStyle: .headline, max: max)
+    }
+
+    static func subheadline(max: CGFloat = 18) -> Font {
+        scaled(textStyle: .subheadline, max: max)
     }
 
     // Image - Icon
+    //
     static func icon(_ size: CGFloat = 23, weight: Weight = .regular) -> Font {
         .system(size: size, weight: weight)
     }

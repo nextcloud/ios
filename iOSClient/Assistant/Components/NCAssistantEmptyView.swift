@@ -6,6 +6,7 @@ import SwiftUI
 
 struct NCAssistantEmptyView: View {
     @Environment(NCAssistantModel.self) var assistantModel
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let titleKey, subtitleKey: String
 
     var body: some View {

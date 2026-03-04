@@ -28,6 +28,7 @@ struct NCUploadAssetsView: View {
     let utilityFileSystem = NCUtilityFileSystem()
 
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         NavigationView {
@@ -140,7 +141,8 @@ struct NCUploadAssetsView: View {
                         if NCNetworking.shared.isOnline {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
-                                    .font(.system(size: 15))
+                                    .font(.body())
+                                    .id(dynamicTypeSize)
                             })
                             .onChange(of: model.useAutoUploadFolder) {
                                 model.updateUseAutoUploadFolder()
@@ -150,7 +152,8 @@ struct NCUploadAssetsView: View {
                             if model.useAutoUploadFolder {
                                 Toggle(isOn: $model.useAutoUploadSubFolder, label: {
                                     Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
-                                        .font(.system(size: 15))
+                                        .font(.body())
+                                        .id(dynamicTypeSize)
                                 })
                                 .onChange(of: model.useAutoUploadSubFolder) {
                                     model.updateUseAutoUploadSubFolder()
@@ -164,11 +167,13 @@ struct NCUploadAssetsView: View {
                                 Label {
                                     if utilityFileSystem.getHomeServer(session: model.session) == model.serverUrl {
                                         Text("/")
-                                            .font(.system(size: 15))
+                                            .font(.body())
+                                            .id(dynamicTypeSize)
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     } else {
                                         Text(model.getTextServerUrl())
-                                            .font(.system(size: 15))
+                                            .font(.body())
+                                            .id(dynamicTypeSize)
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     }
                                 } icon: {

@@ -190,6 +190,7 @@ struct TaskList: View {
 
 struct TypeButton: View {
     @Environment(NCAssistantModel.self) var model
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
@@ -202,7 +203,9 @@ struct TypeButton: View {
                 scrollProxy.scrollTo(taskType?.id, anchor: .center)
             }
         } label: {
-            Text(taskType?.name ?? "").font(.body)
+            Text(taskType?.name ?? "")
+                .font(.body())
+                .id(dynamicTypeSize)
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
@@ -225,6 +228,7 @@ struct TypeButton: View {
 
 struct TaskItem: View {
     @Environment(NCAssistantModel.self) var model
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Binding var showDeleteConfirmation: Bool
     @Binding var taskToDelete: AssistantTask?
     var task: AssistantTask
@@ -245,7 +249,8 @@ struct TaskItem: View {
                     Label(
                         title: {
                             Text(task.statusDate)
-                                .font(.callout)
+                                .font(.callout())
+                                .id(dynamicTypeSize)
                                 .foregroundStyle(.secondary)
                         },
                         icon: {

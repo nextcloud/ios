@@ -8,6 +8,7 @@ import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @State private var reachedAnchor = false
 
     @StateObject var model: NCAutoUploadModel
@@ -202,6 +203,8 @@ struct NCAutoUploadView: View {
 
     @ViewBuilder
     var autoUploadStartButton: some View {
+        @Environment(\.dynamicTypeSize) var dynamicTypeSize
+
         Section(content: {
             let toggle = Toggle(isOn: model.autoUploadSinceDate != nil || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                 Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
@@ -213,7 +216,8 @@ struct NCAutoUploadView: View {
                 albumModel.populateSelectedAlbums()
                 model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
             }
-            .font(.headline)
+            .font(.headline())
+            .id(dynamicTypeSize)
 
             if #available(iOS 26.0, *) {
                 toggle
@@ -230,7 +234,8 @@ struct NCAutoUploadView: View {
 @ViewBuilder
 var noPermissionsView: some View {
     VStack {
-        Text("_access_photo_not_enabled_").font(.title3)
+        Text("_access_photo_not_enabled_")
+            .font(.title3)
             .padding()
         Text("_access_photo_not_enabled_msg_")
     }

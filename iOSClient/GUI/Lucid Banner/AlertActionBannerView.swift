@@ -46,6 +46,7 @@ func showAlertActionBanner(lucidBanner: LucidBanner?,
 
 struct AlertActionBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let onConfirm: (() -> Void)?
     let onCancel: (() -> Void)?
@@ -66,7 +67,8 @@ struct AlertActionBannerView: View {
                 // Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline.weight(.semibold))
+                        .font(.headline())
+                        .id(dynamicTypeSize)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -74,7 +76,8 @@ struct AlertActionBannerView: View {
                 // Subtitle
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .font(.subheadline())
+                        .id(dynamicTypeSize)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
                 }
