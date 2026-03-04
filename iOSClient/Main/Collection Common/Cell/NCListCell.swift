@@ -130,6 +130,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelInfo.font = scaledFontCaption1
         labelInfoSeparator.font = scaledFontCaption1
         labelSubinfo.font = scaledFontCaption1
+
         labelInfo.adjustsFontForContentSizeCategory = true
         labelInfoSeparator.adjustsFontForContentSizeCategory = true
         labelSubinfo.adjustsFontForContentSizeCategory = true

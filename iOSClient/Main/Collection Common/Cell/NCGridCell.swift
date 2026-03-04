@@ -89,6 +89,21 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelInfo.text = ""
         labelSubinfo.text = ""
 
+        // FONT SCALLED
+        //
+        let scaledFontCallout = UIFontMetrics(forTextStyle: .callout)
+            .scaledFont(for: UIFont.preferredFont(forTextStyle: .callout), maximumPointSize: 20)
+        labelTitle.font = scaledFontCallout
+        labelTitle.adjustsFontForContentSizeCategory = true
+
+        let scaledFontCaption1 = UIFontMetrics(forTextStyle: .caption1)
+            .scaledFont(for: UIFont.preferredFont(forTextStyle: .caption1), maximumPointSize: 15)
+        labelInfo.font = scaledFontCaption1
+        labelSubinfo.font = scaledFontCaption1
+
+        labelInfo.adjustsFontForContentSizeCategory = true
+        labelSubinfo.adjustsFontForContentSizeCategory = true
+
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
@@ -285,7 +300,6 @@ extension NCCollectionViewCommon {
 
         // Color string find in search
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
-        cell.labelTitle.font = .systemFont(ofSize: 15)
 
         // Obligatory here, at the end !!
         cell.metadata = metadata
