@@ -97,7 +97,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelInfo.font = .caption1()
         labelInfo.adjustsFontForContentSizeCategory = true
 
-
         labelSubinfo.font = .caption1()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
