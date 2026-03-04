@@ -528,7 +528,6 @@ extension NCCollectionViewCommon {
 
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
-        cell.labelTitle?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode,
            let searchResultStore,
