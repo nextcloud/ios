@@ -30,7 +30,6 @@ func showAlertActionBannerView(lucidBanner: LucidBanner?,
     lucidBanner.show(
         payload: payload,
         policy: .replace) { _, _ in
-        lucidBanner.dismiss()
     } content: { state in
         AlertActionBannerView(
             state: state,
@@ -84,26 +83,34 @@ struct AlertActionBannerView: View {
 
                 // Buttons
                 HStack(spacing: 12) {
-                    Button("_cancel_") {
+                    Button {
                         onCancel?()
+                    } label: {
+                        Text("_cancel_")
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                     }
                     .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
                     .background(
                         Capsule()
                             .stroke(Color.secondary.opacity(0.5), lineWidth: 1)
                     )
                     .foregroundStyle(.primary)
+                    .buttonStyle(.plain)
 
-                    Button("_ok_") {
+                    Button {
                         onConfirm?()
+                    } label: {
+                        Text("_ok_")
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                     }
                     .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
                     .background(
                         Capsule().fill(Color.accentColor)
                     )
                     .foregroundStyle(.white)
+                    .buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity)
             }
