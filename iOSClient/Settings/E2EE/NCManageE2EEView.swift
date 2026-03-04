@@ -13,7 +13,7 @@ struct NCManageE2EEView: View {
         VStack {
             if model.isEndToEndEnabled {
                 List {
-                    Section(header: Text("").font(.headline()).font(.headline()),
+                    Section(header: Text("").font(.headline()),
                             footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
@@ -85,7 +85,7 @@ struct NCManageE2EEView: View {
                 }
             } else {
                 List {
-                    Section(header: Text("").font(.headline()).font(.headline()),
+                    Section(header: Text("").font(.headline()),
                             footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
                         HStack {
                             Label {

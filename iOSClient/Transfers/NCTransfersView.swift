@@ -58,7 +58,7 @@ struct TransfersView: View {
                     inWaitingCount: model.inWaitingCount,
                     inProgressCount: model.inProgressCount,
                     inErrorCount: model.inErrorCount
-                )) {
+                ).font(.headline())) {
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
