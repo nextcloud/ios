@@ -11,9 +11,9 @@ struct NCFileNameView: View {
     var body: some View {
         Form {
             // Specify Filename
-            Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+            Section(header: Text(NSLocalizedString("_mode_filename_", comment: "")).font(.headline())) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
-                    .font(.callout())
+                    .font(.body())
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.maintainFilenameOriginal) { _, newValue in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
@@ -22,7 +22,7 @@ struct NCFileNameView: View {
                 // Filename
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
-                        .font(.callout())
+                        .font(.body())
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.addFileNameType) { _, newValue in
                             model.toggleAddFilenameType(newValue: newValue)
@@ -67,8 +67,10 @@ struct NCFileNameView: View {
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))
+                    .font(.headline())
             }, footer: {
                 Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm"))
+                    .font(.footnote())
             })
         } else {
             Section(content: {
@@ -76,8 +78,10 @@ struct NCFileNameView: View {
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))
+                    .font(.headline())
             }, footer: {
                 Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
+                    .font(.footnote())
             })
         }
     }

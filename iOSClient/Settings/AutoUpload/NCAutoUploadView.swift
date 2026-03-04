@@ -227,9 +227,9 @@ struct NCAutoUploadView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
             }
-                .font(.body())
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadStart) { _, newValue in
+            .font(.body())
+            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+            .onChange(of: model.autoUploadStart) { _, newValue in
                     albumModel.populateSelectedAlbums()
                     model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
             }

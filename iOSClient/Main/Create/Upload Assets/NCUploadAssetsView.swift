@@ -143,6 +143,7 @@ struct NCUploadAssetsView: View {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                     .font(.body())
                             })
+                            .font(.body())
                             .onChange(of: model.useAutoUploadFolder) {
                                 model.updateUseAutoUploadFolder()
                             }
@@ -153,6 +154,7 @@ struct NCUploadAssetsView: View {
                                     Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                         .font(.body())
                                 })
+                                .font(.body())
                                 .onChange(of: model.useAutoUploadSubFolder) {
                                     model.updateUseAutoUploadSubFolder()
                                 }
