@@ -13,14 +13,17 @@ struct NCManageE2EEView: View {
         VStack {
             if model.isEndToEndEnabled {
                 List {
-                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion)) {
+                    Section(header: Text("").font(.headline()).font(.headline()),
+                            footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                                .font(.body())
                         } icon: {
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
+                                .fontWeight(.light)
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(.green)
                         }
@@ -28,11 +31,14 @@ struct NCManageE2EEView: View {
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
+                                .font(.body())
+
                         } icon: {
                             Image(systemName: "eye")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
+                                .fontWeight(.light)
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         }
@@ -51,11 +57,13 @@ struct NCManageE2EEView: View {
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                                .font(.body())
                         } icon: {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
+                                .fontWeight(.light)
                                 .frame(width: 25, height: 15)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         }
@@ -77,15 +85,18 @@ struct NCManageE2EEView: View {
                 }
             } else {
                 List {
-                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion)) {
+                    Section(header: Text("").font(.headline()).font(.headline()),
+                            footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
+                                    .font(.body())
                             } icon: {
                                 Image(systemName: "play.circle")
                                     .resizable()
                                     .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
+                                    .font(.body())
+                                    .fontWeight(.light)
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(.green)
                             }
@@ -121,15 +132,18 @@ struct NCManageE2EEView: View {
 
     @ViewBuilder
     var deleteCerificateSection: some View {
-        Section(header: Text("Delete Server keys"), footer: Text("Available only in debug mode")) {
+        Section(header: Text("Delete Server keys").font(.headline()),
+                footer: Text("Available only in debug mode").font(.footnote())) {
             HStack {
                 Label {
                     Text("Delete Certificate")
+                        .font(.body())
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
+                        .font(.body())
+                        .fontWeight(.light)
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
@@ -159,11 +173,13 @@ struct NCManageE2EEView: View {
             HStack {
                 Label {
                     Text("Delete PrivateKey")
+                        .font(.body())
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
+                        .font(.body())
+                        .fontWeight(.light)
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
