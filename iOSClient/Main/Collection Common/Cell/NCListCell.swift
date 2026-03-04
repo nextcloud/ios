@@ -120,19 +120,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
         // FONT SCALLED
         //
-        let scaledFontCallout = UIFontMetrics(forTextStyle: .callout)
-            .scaledFont(for: UIFont.preferredFont(forTextStyle: .callout), maximumPointSize: 20)
-        labelTitle.font = scaledFontCallout
+        labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
-        let scaledFontCaption1 = UIFontMetrics(forTextStyle: .caption1)
-            .scaledFont(for: UIFont.preferredFont(forTextStyle: .caption1), maximumPointSize: 15)
-        labelInfo.font = scaledFontCaption1
-        labelInfoSeparator.font = scaledFontCaption1
-        labelSubinfo.font = scaledFontCaption1
-
+        labelInfo.font = .caption1()
         labelInfo.adjustsFontForContentSizeCategory = true
+
+        labelInfoSeparator.font = .caption1()
         labelInfoSeparator.adjustsFontForContentSizeCategory = true
+
+        labelSubinfo.font = .caption1()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
         separatorHeightConstraint.constant = 0.5

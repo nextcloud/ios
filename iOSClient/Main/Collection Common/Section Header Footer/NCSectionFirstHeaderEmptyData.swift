@@ -28,14 +28,10 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
         // FONT SCALLED
         //
-        let scaledFontHeadline = UIFontMetrics(forTextStyle: .headline)
-            .scaledFont(for: UIFont.preferredFont(forTextStyle: .headline), maximumPointSize: 25)
-        emptyTitle.font = scaledFontHeadline
+        emptyTitle.font = .headline()
         emptyTitle.adjustsFontForContentSizeCategory = true
 
-        let scaledFontCaption1 = UIFontMetrics(forTextStyle: .caption1)
-            .scaledFont(for: UIFont.preferredFont(forTextStyle: .caption1), maximumPointSize: 15)
-        emptyDescription.font = scaledFontCaption1
+        emptyDescription.font = .caption1()
         emptyDescription.adjustsFontForContentSizeCategory = true
     }
 

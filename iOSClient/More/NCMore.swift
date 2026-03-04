@@ -328,9 +328,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             // FONT SCALLED
             //
-            let scaledFontCallout = UIFontMetrics(forTextStyle: .callout)
-                .scaledFont(for: UIFont.preferredFont(forTextStyle: .callout), maximumPointSize: 20)
-            cell.labelText?.font = scaledFontCallout
+            cell.labelText?.font = .callout()
             cell.labelText?.adjustsFontForContentSizeCategory = true
 
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator

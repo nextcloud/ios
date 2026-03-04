@@ -763,6 +763,7 @@
 		F7CAFE222F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CAFE1C2F17A34F00DB35A5 /* NCNetworking+Actor.swift */; };
 		F7CAFE232F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CAFE1C2F17A34F00DB35A5 /* NCNetworking+Actor.swift */; };
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
+		F7CB77642F5843E500DE649A /* UIFont+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CB77632F5843D700DE649A /* UIFont+Extension.swift */; };
 		F7CBC1232BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */; };
 		F7CBC1242BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */; };
 		F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */; };
@@ -1709,6 +1710,7 @@
 		F7CAFE1A2F16AA8600DB35A5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F7CAFE1C2F17A34F00DB35A5 /* NCNetworking+Actor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Actor.swift"; sourceTree = "<group>"; };
 		F7CB68992541676B0050EC94 /* NCMore.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMore.storyboard; sourceTree = "<group>"; };
+		F7CB77632F5843D700DE649A /* UIFont+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extension.swift"; sourceTree = "<group>"; };
 		F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionFirstHeaderEmptyData.xib; sourceTree = "<group>"; };
 		F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSectionFirstHeaderEmptyData.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2830,6 +2832,7 @@
 				F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extension.swift */,
+				F7CB77632F5843D700DE649A /* UIFont+Extension.swift */,
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */,
@@ -4650,6 +4653,7 @@
 				F376A3742E5CC6030067EE25 /* ContextMenuActions.swift in Sources */,
 				F74B91E92F51D45A0050813D /* ErrorBannerView.swift in Sources */,
 				F7E8A391295DC5E0006CB2D0 /* View+Extension.swift in Sources */,
+				F7CB77642F5843E500DE649A /* UIFont+Extension.swift in Sources */,
 				F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extension.swift in Sources */,
 				AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */,

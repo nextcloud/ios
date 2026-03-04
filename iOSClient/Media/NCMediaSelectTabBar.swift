@@ -83,6 +83,14 @@ struct MediaTabBarSelectView: View {
     @ObservedObject var tabBarSelect: NCMediaSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
 
+    private let scaledFont = Font(
+        UIFontMetrics(forTextStyle: .callout)
+            .scaledFont(
+                for: UIFont.preferredFont(forTextStyle: .callout),
+                maximumPointSize: 20
+            )
+        )
+
     var body: some View {
         VStack {
             Spacer().frame(height: sizeClass == .compact ? 5 : 10)
@@ -91,10 +99,13 @@ struct MediaTabBarSelectView: View {
                 Group {
                     if tabBarSelect.selectCount == 0 {
                         Text(NSLocalizedString("_select_photos_", comment: ""))
+                            .font(scaledFont)
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
+                            .font(scaledFont)
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
+                            .font(scaledFont)
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)
@@ -103,8 +114,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                    .font(Font.system(.body).weight(.light))
-                    .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.system(size: 23, weight: .regular))
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)

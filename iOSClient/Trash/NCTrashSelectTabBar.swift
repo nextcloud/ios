@@ -125,8 +125,7 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.recover()
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.system(size: 23, weight: .regular))
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
@@ -136,8 +135,7 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.system(size: 23, weight: .regular))
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)
@@ -147,8 +145,7 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.selectAll()
                 } label: {
                     Image(systemName: "checkmark")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.system(size: 23, weight: .regular))
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
