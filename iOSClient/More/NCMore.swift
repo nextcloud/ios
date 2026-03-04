@@ -326,6 +326,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.shared.textColor
 
+            // FONT SCALLED
+            //
+            let scaledFontCallout = UIFontMetrics(forTextStyle: .callout)
+                .scaledFont(for: UIFont.preferredFont(forTextStyle: .callout), maximumPointSize: 20)
+            cell.labelText?.font = scaledFontCallout
+            cell.labelText?.adjustsFontForContentSizeCategory = true
+
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
             cell.separator.backgroundColor = .separator
