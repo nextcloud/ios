@@ -17,39 +17,42 @@ struct NCUserStatusView: View {
     }
 
     var body: some View {
-            List {
-                ForEach(model.userStatuses, id: \.self) { item in
-                    HStack {
-                        let status = model.getStatusDetails(name: item.name)
+        List {
+            ForEach(model.userStatuses, id: \.self) { item in
+                HStack {
+                    let status = model.getStatusDetails(name: item.name)
 
-                        Image(uiImage: status.statusImage ?? UIImage())
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundStyle(Color(status.statusImageColor))
-                            .frame(width: 20, height: 20)
-                        VStack(alignment: .leading) {
-                            Text(NSLocalizedString(item.titleKey, comment: ""))
+                    Image(uiImage: status.statusImage ?? UIImage())
+                        .renderingMode(.template)
+                        .resizable()
+                        .foregroundStyle(Color(status.statusImageColor))
+                        .frame(width: 20, height: 20)
+                    VStack(alignment: .leading) {
+                        Text(NSLocalizedString(item.titleKey, comment: ""))
 
-                            if !item.descriptionKey.isEmpty {
-                                Text(NSLocalizedString(item.descriptionKey, comment: "")).font(.subheadline).foregroundStyle(.secondary)
-                            }
-                        }
-                        Spacer()
-                        if model.selectedStatus == item.name {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+                        if !item.descriptionKey.isEmpty {
+                            Text(NSLocalizedString(item.descriptionKey, comment: ""))
+                                .font(.subheadline())
+                                .foregroundStyle(.secondary)
                         }
                     }
-                    .contentShape(Rectangle()) // make the whole row tappable
-                    .onTapGesture {
-                        model.selectedStatus = (model.selectedStatus == item.name) ? nil : item.name
-                        model.setStatus(account: account)
-                    }
-                    .onChange(of: model.canDismiss) { _, newValue in
-                        if newValue { dismiss() }
+                    Spacer()
+                    if model.selectedStatus == item.name {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
                     }
                 }
+                .contentShape(Rectangle()) // make the whole row tappable
+                .onTapGesture {
+                    model.selectedStatus = (model.selectedStatus == item.name) ? nil : item.name
+                    model.setStatus(account: account)
+                }
+                .onChange(of: model.canDismiss) { _, newValue in
+                    if newValue { dismiss() }
+                }
             }
+        }
+        .id(dynamicTypeSize)
         .navigationTitle(NSLocalizedString("_select_user_status_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

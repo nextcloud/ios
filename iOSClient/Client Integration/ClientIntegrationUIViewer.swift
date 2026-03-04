@@ -27,7 +27,6 @@ struct ClientIntegrationUIViewer: View {
                         HStack {
                             Text(row.element)
                                 .font(.subheadline())
-                                .id(dynamicTypeSize)
                                 .foregroundStyle(.secondary)
                             Spacer()
                         }
@@ -35,14 +34,12 @@ struct ClientIntegrationUIViewer: View {
                         if let title = row.title {
                             Text(title)
                                 .font(.headline())
-                                .id(dynamicTypeSize)
                         }
 
                         let finalUrl = baseURL + row.urlString
 
                         Text(finalUrl)
                             .font(.footnote)
-                            .id(dynamicTypeSize)
                             .foregroundStyle(.secondary)
                             .textSelection(.enabled)
 
@@ -65,6 +62,7 @@ struct ClientIntegrationUIViewer: View {
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
             }
+            .id(dynamicTypeSize)
             .padding()
         }
     }

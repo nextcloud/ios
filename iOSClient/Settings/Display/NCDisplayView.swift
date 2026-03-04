@@ -7,6 +7,7 @@ import SwiftUI
 struct NCDisplayView: View {
     @ObservedObject var model: NCDisplayModel
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         Form {
@@ -18,7 +19,7 @@ struct NCDisplayView: View {
                             Image(systemName: "sun.max")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_light_", comment: ""))
@@ -61,7 +62,6 @@ struct NCDisplayView: View {
                         }
                 }
             }
-            .font(.system(size: 16))
 
             Section(header: Text(NSLocalizedString("_additional_options_", comment: ""))) {
 
@@ -75,6 +75,7 @@ struct NCDisplayView: View {
             }
             .pickerStyle(.menu)
         }
+        .id(dynamicTypeSize)
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .defaultViewModifier(model)

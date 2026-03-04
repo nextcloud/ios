@@ -50,6 +50,7 @@ struct NCCapabilitiesView: View {
     }
 
     struct CapabilityName: View {
+        @Environment(\.dynamicTypeSize) var dynamicTypeSize
         @Binding var text: String
         @State var image: Image
         @State var resize: Bool
@@ -57,7 +58,7 @@ struct NCCapabilitiesView: View {
         var body: some View {
             Label {
                 Text(text)
-                    .font(.system(size: 15))
+                    .font(.callout())
             } icon: {
                 if resize {
                     image
@@ -72,6 +73,7 @@ struct NCCapabilitiesView: View {
                         .foregroundColor(.primary)
                 }
             }
+            .id(dynamicTypeSize)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }

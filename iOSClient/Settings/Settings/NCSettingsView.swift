@@ -42,13 +42,11 @@ struct NCSettingsView: View {
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                             .font(.body())
-                            .id(dynamicTypeSize)
                     }
                 }
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
                     .font(.footnote())
-                    .id(dynamicTypeSize)
             })
             // `Privacy` Section
             Section(content: {
@@ -64,7 +62,6 @@ struct NCSettingsView: View {
                             .opacity(NCBrandOptions.shared.enforce_passcode_lock ? 0.5 : 1)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
                             .font(.body())
-                            .id(dynamicTypeSize)
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
@@ -72,12 +69,10 @@ struct NCSettingsView: View {
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
                     .font(.headline())
-                    .id(dynamicTypeSize)
             }, footer: {
                 if NCBrandOptions.shared.enforce_passcode_lock {
                     Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
                         .font(.footnote())
-                        .id(dynamicTypeSize)
                 }
             })
 
@@ -267,6 +262,7 @@ struct NCSettingsView: View {
                 Text(model.footerApp + model.footerServer + model.footerSlogan)
             })
         }
+        .id(dynamicTypeSize)
         .sheet(isPresented: $showPasscode) {
             SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller)
         }

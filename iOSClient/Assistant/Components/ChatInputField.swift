@@ -45,12 +45,13 @@ struct ChatInputField: View {
                             .frame(width: 28, height: 28)
                     } else {
                         Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 28))
+                            .font(.icon(28))
                     }
                 }
                 .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || isDisabled || isLoading)
             }
         }
+        .id(dynamicTypeSize)
         .padding(.horizontal)
         .padding(.top, 16)
         .padding(.bottom, 16)

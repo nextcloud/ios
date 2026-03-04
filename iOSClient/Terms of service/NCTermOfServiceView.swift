@@ -15,7 +15,7 @@ struct NCTermOfServiceModelView: View {
         VStack {
             HStack {
                 Text(NSLocalizedString("_terms_of_service_", comment: "Terms of Service"))
-                    .font(.headline)
+                    .font(.headline())
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Picker("Select Language", selection: $selectedLanguage) {
@@ -38,7 +38,7 @@ struct NCTermOfServiceModelView: View {
 
             ScrollView {
                 Text(termsText)
-                    .font(.body)
+                    .font(.body())
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
@@ -56,6 +56,7 @@ struct NCTermOfServiceModelView: View {
                     .padding(.bottom)
             }
         }
+        .id(dynamicTypeSize)
         .padding()
         .onAppear {
             if let item = model.terms[selectedLanguage] {

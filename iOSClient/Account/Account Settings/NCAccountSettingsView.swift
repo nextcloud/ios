@@ -54,12 +54,10 @@ struct NCAccountSettingsView: View {
                                 }
                                 Text(model.getUserName())
                                     .font(.subheadline())
-                                    .id(dynamicTypeSize)
                                 Spacer()
                                     .frame(height: 10)
                                 Text(status.statusMessage)
                                     .font(.caption1())
-                                    .id(dynamicTypeSize)
                                 Spacer()
                                     .frame(height: 20)
                                 //
@@ -113,7 +111,6 @@ struct NCAccountSettingsView: View {
                         }
                     }
                     .font(.subheadline())
-                    .id(dynamicTypeSize)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
@@ -130,7 +127,6 @@ struct NCAccountSettingsView: View {
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                                 .font(.callout())
-                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: model.alias) { _, newValue in
                                     model.setAlias(newValue)
@@ -139,7 +135,6 @@ struct NCAccountSettingsView: View {
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.caption1())
-                            .id(dynamicTypeSize)
                             .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
                     }
@@ -162,7 +157,6 @@ struct NCAccountSettingsView: View {
                                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                                 }
                                 .font(.subheadline())
-                                .id(dynamicTypeSize)
                             }
                         }
 
@@ -182,7 +176,6 @@ struct NCAccountSettingsView: View {
                                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                                 }
                                 .font(.subheadline())
-                                .id(dynamicTypeSize)
                             }
                         }
                     }
@@ -207,7 +200,6 @@ struct NCAccountSettingsView: View {
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
                             .font(.subheadline())
-                            .id(dynamicTypeSize)
                         })
                         .sheet(isPresented: $showServerCertificate) {
                             if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
@@ -233,7 +225,6 @@ struct NCAccountSettingsView: View {
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
                             .font(.subheadline())
-                            .id(dynamicTypeSize)
                         })
                         .sheet(isPresented: $showPushCertificate) {
                             Group {
@@ -274,7 +265,6 @@ struct NCAccountSettingsView: View {
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                         }
                         .font(.callout())
-                        .id(dynamicTypeSize)
                     })
                     .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
                         Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
@@ -294,6 +284,7 @@ struct NCAccountSettingsView: View {
                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
             })
         }
+        .id(dynamicTypeSize)
         .defaultViewModifier(model)
         .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(model.$dismissView) { newValue in

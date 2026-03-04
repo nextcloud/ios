@@ -73,14 +73,14 @@ struct UploadBannerView: View {
                 HStack(spacing: 5) {
                     Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.body.weight(.medium))
+                        .font(.body())
+                        .fontWeight(.medium)
                         .frame(width: 20, height: 20)
                         .foregroundStyle(state.payload.imageColor)
 
                     if let p = state.payload.progress {
                         Text("\(Int(p * 100))%")
                             .font(.caption2().monospacedDigit())
-                            .id(dynamicTypeSize)
                             .frame(height: 20)
                             .foregroundStyle(state.payload.textColor)
                     }
@@ -92,8 +92,7 @@ struct UploadBannerView: View {
                  HStack(alignment: .center, spacing: 10) {
                      if #available(iOS 26, *) {
                          Image(systemName: "checkmark")
-                             .font(.system(size: 60, weight: .regular))
-                             .id(dynamicTypeSize)
+                             .font(.icon(60))
                              .foregroundStyle(.green)
                              .symbolEffect(.drawOn, isActive: trigger)
                              .task {
@@ -102,8 +101,7 @@ struct UploadBannerView: View {
                              }
                      } else {
                          Image(systemName: "checkmark")
-                             .font(.system(size: 80, weight: .regular))
-                             .id(dynamicTypeSize)
+                             .font(.icon(80))
                              .foregroundStyle(.green)
                      }
                  }
@@ -113,14 +111,12 @@ struct UploadBannerView: View {
                 VStack(spacing: 15) {
                     HStack(alignment: .center, spacing: 10) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30, weight: .bold))
-                            .id(dynamicTypeSize)
+                            .font(.icon(30, weight: .bold))
                             .foregroundStyle(.white)
 
                         VStack(alignment: .leading, spacing: 7) {
                             Text("_error_")
                                 .font(.subheadline())
-                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
@@ -128,7 +124,6 @@ struct UploadBannerView: View {
                             if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline())
-                                    .id(dynamicTypeSize)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(textColor)
@@ -145,7 +140,7 @@ struct UploadBannerView: View {
                         if let systemImage = state.payload.systemImage {
                             Image(systemName: systemImage)
                                 .applyBannerAnimation(state.payload.imageAnimation)
-                                .font(.system(size: 30, weight: .regular))
+                                .font(.icon(30))
                                 .foregroundStyle(state.payload.imageColor)
                         }
 
@@ -153,7 +148,6 @@ struct UploadBannerView: View {
                             if showTitle, let title = state.payload.title {
                                 Text(title)
                                     .font(.subheadline())
-                                    .id(dynamicTypeSize)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .minimumScaleFactor(0.9)
@@ -162,7 +156,6 @@ struct UploadBannerView: View {
                             if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline())
-                                    .id(dynamicTypeSize)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(textColor)
@@ -170,7 +163,6 @@ struct UploadBannerView: View {
                             if showFootnote, let footnote = state.payload.footnote {
                                 Text(footnote)
                                     .font(.footnote())
-                                    .id(dynamicTypeSize)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(textColor)
@@ -207,6 +199,7 @@ struct UploadBannerView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .id(dynamicTypeSize)
     }
 }
 

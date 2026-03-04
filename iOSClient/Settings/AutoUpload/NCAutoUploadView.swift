@@ -217,7 +217,6 @@ struct NCAutoUploadView: View {
                 model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
             }
             .font(.headline())
-            .id(dynamicTypeSize)
 
             if #available(iOS 26.0, *) {
                 toggle
@@ -228,17 +227,21 @@ struct NCAutoUploadView: View {
                     .toggleStyle(AutoUploadProminentButtonStyle(model: model))
             }
         })
+        .id(dynamicTypeSize)
     }
 }
 
 @ViewBuilder
 var noPermissionsView: some View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+
     VStack {
         Text("_access_photo_not_enabled_")
-            .font(.title3)
+            .font(.title3())
             .padding()
         Text("_access_photo_not_enabled_msg_")
     }
+    .id(dynamicTypeSize)
     .padding(16)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(UIColor.systemGroupedBackground))
@@ -274,18 +277,19 @@ private struct AutoUploadProminentButtonStyle: ToggleStyle {
 
 struct ConfirmAutoUploadSheet: View {
     @ObservedObject var model: NCAutoUploadModel
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Binding var isPresented: Bool
 
     var body: some View {
         VStack(spacing: 16) {
             // Title
             Text(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""))
-                .font(.headline)
+                .font(.headline())
                 .multilineTextAlignment(.center)
 
             // Message
             Text(NSLocalizedString("_auto_upload_all_photos_warning_message_", comment: ""))
-                .font(.subheadline)
+                .font(.subheadline())
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
@@ -350,6 +354,7 @@ struct ConfirmAutoUploadSheet: View {
                 .buttonStyle(.bordered)
             }
         }
+        .id(dynamicTypeSize)
         .padding(.horizontal, 20)
     }
 }

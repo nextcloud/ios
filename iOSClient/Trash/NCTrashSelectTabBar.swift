@@ -127,7 +127,6 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.icon())
-                        .id(dynamicTypeSize)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
@@ -138,7 +137,6 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "trash")
                         .font(.icon())
-                        .id(dynamicTypeSize)
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)
@@ -149,12 +147,12 @@ struct NCTrashSelectTabBarView: View {
                 } label: {
                     Image(systemName: "checkmark")
                         .font(.icon())
-                        .id(dynamicTypeSize)
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
             }
         }
+        .id(dynamicTypeSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)

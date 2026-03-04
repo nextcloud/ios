@@ -27,7 +27,6 @@ struct Maintenance: View {
 
                 Text("_opt_in_pro_")
                     .font(.headline())
-                    .id(dynamicTypeSize)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundColor(.white)
@@ -39,6 +38,7 @@ struct Maintenance: View {
 
                 Spacer()
             }
+            .id(dynamicTypeSize)
             .task {
                 await startMaintenance()
             }

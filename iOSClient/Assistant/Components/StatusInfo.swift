@@ -18,7 +18,6 @@ struct StatusInfo: View {
 
                     Text("\(task.statusDate) \(text)")
                         .font(.callout())
-                        .id(dynamicTypeSize)
                         .foregroundStyle(.secondary)
                 },
                 icon: {
@@ -27,6 +26,7 @@ struct StatusInfo: View {
                         .font(Font.system(.body).weight(.light))
                 }
             )
+            .id(dynamicTypeSize)
             .padding(.top, 1)
             .labelStyle(CustomLabelStyle())
         }

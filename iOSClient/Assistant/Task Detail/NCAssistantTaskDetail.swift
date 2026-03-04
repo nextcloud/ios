@@ -54,7 +54,6 @@ struct InputOutputScrollView: View {
             VStack(alignment: .leading) {
                 Text(NSLocalizedString("_input_", comment: ""))
                     .font(.headline())
-                    .id(dynamicTypeSize)
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.input?.input ?? "")
@@ -66,7 +65,6 @@ struct InputOutputScrollView: View {
 
                 Text(NSLocalizedString("_output_", comment: ""))
                     .font(.headline())
-                    .id(dynamicTypeSize)
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.output?.output ?? "")
@@ -76,6 +74,7 @@ struct InputOutputScrollView: View {
                     .clipShape(.rect(cornerRadius: 8))
                     .textSelection(.enabled)
             }
+            .id(dynamicTypeSize)
             .padding(.horizontal)
             .padding(.bottom, 80)
         }

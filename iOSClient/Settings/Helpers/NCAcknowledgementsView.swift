@@ -22,7 +22,7 @@ struct NCAcknowledgementsView: View {
             HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
-                        .font(.title3)
+                        .font(.title3())
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
                         .padding(.leading, 8)
                 }

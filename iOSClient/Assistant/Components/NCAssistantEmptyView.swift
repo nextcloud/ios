@@ -20,13 +20,15 @@ struct NCAssistantEmptyView: View {
                 .frame(height: 100)
 
             Text(NSLocalizedString(titleKey, comment: ""))
-                .font(.system(size: 22, weight: .bold))
+                .font(.body())
+                .fontWeight(.bold)
                 .padding(.bottom, 5)
 
             Text(NSLocalizedString(subtitleKey, comment: ""))
-                .font(.system(size: 14))
+                .font(.footnote())
                 .foregroundStyle(.secondary)
         }
+        .id(dynamicTypeSize)
     }
 }
 

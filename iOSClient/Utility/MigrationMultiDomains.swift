@@ -32,7 +32,6 @@ struct MigrationMultiDomains: View {
 
                 Text(progressText)
                     .font(.headline())
-                    .id(dynamicTypeSize)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundColor(.white)
@@ -44,11 +43,11 @@ struct MigrationMultiDomains: View {
 
                 Text(String(format: "%.0f%%", progress * 100))
                     .font(.subheadline())
-                    .id(dynamicTypeSize)
                     .foregroundColor(.white)
 
                 Spacer()
             }
+            .id(dynamicTypeSize)
             .task {
                 await startMigration()
             }

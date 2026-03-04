@@ -93,15 +93,12 @@ struct MediaTabBarSelectView: View {
                     if tabBarSelect.selectCount == 0 {
                         Text(NSLocalizedString("_select_photos_", comment: ""))
                             .font(.body())
-                            .id(dynamicTypeSize)
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
                             .font(.body())
-                            .id(dynamicTypeSize)
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
                             .font(.body())
-                            .id(dynamicTypeSize)
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)
@@ -111,7 +108,6 @@ struct MediaTabBarSelectView: View {
                 } label: {
                     Image(systemName: "trash")
                         .font(.icon())
-                        .id(dynamicTypeSize)
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
@@ -119,6 +115,7 @@ struct MediaTabBarSelectView: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .id(dynamicTypeSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)

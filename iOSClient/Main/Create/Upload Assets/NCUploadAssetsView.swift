@@ -142,7 +142,6 @@ struct NCUploadAssetsView: View {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                     .font(.body())
-                                    .id(dynamicTypeSize)
                             })
                             .onChange(of: model.useAutoUploadFolder) {
                                 model.updateUseAutoUploadFolder()
@@ -153,7 +152,6 @@ struct NCUploadAssetsView: View {
                                 Toggle(isOn: $model.useAutoUploadSubFolder, label: {
                                     Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                         .font(.body())
-                                        .id(dynamicTypeSize)
                                 })
                                 .onChange(of: model.useAutoUploadSubFolder) {
                                     model.updateUseAutoUploadSubFolder()
@@ -168,12 +166,10 @@ struct NCUploadAssetsView: View {
                                     if utilityFileSystem.getHomeServer(session: model.session) == model.serverUrl {
                                         Text("/")
                                             .font(.body())
-                                            .id(dynamicTypeSize)
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     } else {
                                         Text(model.getTextServerUrl())
                                             .font(.body())
-                                            .id(dynamicTypeSize)
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     }
                                 } icon: {
@@ -213,6 +209,7 @@ struct NCUploadAssetsView: View {
                     }
                 }
             }
+            .id(dynamicTypeSize)
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: {

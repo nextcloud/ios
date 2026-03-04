@@ -64,6 +64,10 @@ extension Font {
 
     // FONT Regular
     //
+    static func title3(max: CGFloat = 28) -> Font {
+        scaled(textStyle: .title3, max: max)
+    }
+
     static func body(max: CGFloat = 25) -> Font {
         scaled(textStyle: .body, max: max)
     }

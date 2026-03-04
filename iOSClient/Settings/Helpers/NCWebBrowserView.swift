@@ -23,7 +23,7 @@ struct NCBrowserWebView: View {
             HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
-                        .font(.title3)
+                        .font(.title3())
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
                         .padding(.leading, 8)
                 }
@@ -37,7 +37,8 @@ struct NCBrowserWebView: View {
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
+                            .font(.body())
+                            .fontWeight(.light)
                             .frame(width: 14, height: 14)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     }
@@ -47,6 +48,7 @@ struct NCBrowserWebView: View {
             Divider()
             WebView(url: urlBase)
         }
+        .id(dynamicTypeSize)
         .navigationBarTitle(Text(""), displayMode: .inline) // Empty title to hide default navigation bar title
     }
 }

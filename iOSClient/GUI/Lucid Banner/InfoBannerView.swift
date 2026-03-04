@@ -77,14 +77,13 @@ struct InfoBannerView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: state.payload.systemImage ?? "info.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.system(size: 30, weight: .regular))
+                        .font(.icon(30))
                         .foregroundStyle(state.payload.imageColor)
 
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
                                 .font(.subheadline())
-                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -93,7 +92,6 @@ struct InfoBannerView: View {
                         if showSubtitle, let subtitle = state.payload.subtitle {
                             Text(subtitle)
                                 .font(.subheadline())
-                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -101,7 +99,6 @@ struct InfoBannerView: View {
                         if showFootnote, let footnote = state.payload.footnote {
                             Text(footnote)
                                 .font(.footnote())
-                                .id(dynamicTypeSize)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -109,6 +106,7 @@ struct InfoBannerView: View {
                     }
                 }
             }
+            .id(dynamicTypeSize)
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)

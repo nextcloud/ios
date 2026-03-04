@@ -12,6 +12,8 @@ struct NCAssistant: View {
     @State var conversationsModel: NCAssistantChatConversationsModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+
 
     var body: some View {
         NavigationView {

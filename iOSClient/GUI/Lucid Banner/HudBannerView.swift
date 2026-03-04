@@ -113,7 +113,6 @@ struct HudBannerView: View {
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
                         .font(.headline())
-                        .id(dynamicTypeSize)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -122,7 +121,6 @@ struct HudBannerView: View {
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.subheadline())
-                        .id(dynamicTypeSize)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -151,18 +149,15 @@ struct HudBannerView: View {
                     Group {
                         if isSuccess {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 34, weight: .bold))
-                                .id(dynamicTypeSize)
+                                .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
                         } else if isError {
                             Image(systemName: "xmark")
-                                .font(.system(size: 34, weight: .bold))
-                                .id(dynamicTypeSize)
+                                .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
                         } else {
                             Text("\(Int(visualProgress * 100))%")
                                 .font(.headline().monospacedDigit())
-                                .id(dynamicTypeSize)
                                 .foregroundStyle(textColor)
                         }
                     }
@@ -184,6 +179,7 @@ struct HudBannerView: View {
                     }
                 }
             }
+            .id(dynamicTypeSize)
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
         }

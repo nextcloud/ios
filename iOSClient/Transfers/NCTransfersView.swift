@@ -76,6 +76,7 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let inWaitingCount: Int
     let inProgressCount: Int
     let inErrorCount: Int
@@ -93,10 +94,11 @@ struct TransfersSummaryHeader: View {
     private func summaryPill(title: String, value: Int) -> some View {
         HStack(spacing: 6) {
             Text(NSLocalizedString(title, comment: ""))
-                .font(.caption)
+                .font(.caption1())
                 .foregroundStyle(.secondary)
             Text("\(value)")
-                .font(.caption.weight(.semibold))
+                .font(.caption1())
+                .fontWeight(.semibold)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -107,6 +109,7 @@ struct TransfersSummaryHeader: View {
 // MARK: - Empty State
 
 struct EmptyTransfersView: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: TransfersViewModel
     @State private var flash = false
 
@@ -114,22 +117,22 @@ struct EmptyTransfersView: View {
         VStack(spacing: 16) {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: flash ? "checkmark.circle" : "arrow.left.arrow.right.circle")
-                    .font(.system(size: 48, weight: .regular))
+                    .font(.icon(48))
                     .foregroundStyle(flash ? .green : .secondary)
                     .symbolEffect(.bounce, value: flash)
             }
 
             if flash {
                 Text("_update_in_progress_")
-                    .font(.headline)
+                    .font(.headline())
                     .multilineTextAlignment(.center)
             } else {
                 Text("_no_transfer_")
-                    .font(.headline)
+                    .font(.headline())
                     .multilineTextAlignment(.center)
 
                 Text("_no_transfer_sub_")
-                    .font(.subheadline)
+                    .font(.subheadline())
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 24)
@@ -186,6 +189,7 @@ struct EmptyTransfersView: View {
 // MARK: - Row
 
 struct TransferRowView: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: TransfersViewModel
 
     let item: tableMetadata
@@ -197,27 +201,27 @@ struct TransferRowView: View {
                 let status = model.status(for: item)
 
                 Image(systemName: status.symbol)
-                    .font(.system(size: 30))
+                    .font(.icon(30))
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName)
-                        .font(.headline)
+                        .font(.headline())
 
                     if !status.status.isEmpty {
                         Text(status.status)
-                            .font(.footnote)
+                            .font(.footnote())
                             .foregroundStyle(.secondary)
                             .padding(.top, 2)
                     }
 
                     if let wwan = model.wwanWaitInfoIfNeeded(for: item), !wwan.isEmpty {
                         Text(wwan)
-                            .font(.footnote)
+                            .font(.footnote())
                             .foregroundStyle(.secondary)
                             .padding(.top, 2)
                     } else if !status.info.isEmpty {
                         Text(status.info)
-                            .font(.footnote)
+                            .font(.footnote())
                             .foregroundStyle(.secondary)
                             .padding(.top, 2)
                     }
@@ -248,7 +252,7 @@ struct TransferRowView: View {
                             .frame(width: 36, height: 36)
                             .animation(.easeInOut(duration: 0.25), value: model.progress(for: item))
                         Image(systemName: "stop.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.icon(14, weight: .bold))
                             .foregroundStyle(.primary)
                     }
                 }
@@ -258,6 +262,7 @@ struct TransferRowView: View {
             .contentShape(Rectangle())
             Divider()
         }
+        .id(dynamicTypeSize)
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
     }
