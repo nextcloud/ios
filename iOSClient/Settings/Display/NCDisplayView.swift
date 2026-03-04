@@ -26,7 +26,8 @@ struct NCDisplayView: View {
                             Image(systemName: colorScheme == .light ? "checkmark.circle.fill" : "circle")
                                 .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                                 .imageScale(.large)
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
+                                .fontWeight(.light)
                                 .frame(width: 50, height: 50)
                         }
                         .onTapGesture {
@@ -37,14 +38,15 @@ struct NCDisplayView: View {
                             Image(systemName: "moon.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_dark_", comment: ""))
                             Image(systemName: colorScheme == .dark ? "checkmark.circle.fill" : "circle")
                                 .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                                 .imageScale(.large)
-                                .font(Font.system(.body).weight(.light))
+                                .font(.body())
+                                .fontWeight(.light)
                                 .frame(width: 50, height: 50)
                         }
                         .onTapGesture {
@@ -56,6 +58,7 @@ struct NCDisplayView: View {
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: -50))
 
                     Toggle(NSLocalizedString("_use_system_style_", comment: ""), isOn: $model.appearanceAutomatic)
+                        .font(.body())
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.appearanceAutomatic) {
                             model.updateAppearanceAutomatic()
@@ -63,17 +66,25 @@ struct NCDisplayView: View {
                 }
             }
 
-            Section(header: Text(NSLocalizedString("_additional_options_", comment: ""))) {
+            Section(
+                header: Text(NSLocalizedString("_additional_options_", comment: ""))
+                    .font(.headline())
+            ) {
+                HStack {
+                    Text(NSLocalizedString("_keep_screen_awake_", comment: ""))
+                        .font(.callout())
 
-                Picker(NSLocalizedString("_keep_screen_awake_", comment: ""),
-                       selection: $model.screenAwakeState) {
-                    Text(NSLocalizedString("_off_", comment: "")).tag(AwakeMode.off)
-                    Text(NSLocalizedString("_on_", comment: "")).tag(AwakeMode.on)
-                    Text(NSLocalizedString("_while_charging_", comment: "")).tag(AwakeMode.whileCharging)
+                    Spacer()
+
+                    Picker("", selection: $model.screenAwakeState) {
+                        Text(NSLocalizedString("_off_", comment: "")).tag(AwakeMode.off)
+                        Text(NSLocalizedString("_on_", comment: "")).tag(AwakeMode.on)
+                        Text(NSLocalizedString("_while_charging_", comment: "")).tag(AwakeMode.whileCharging)
+                    }
+                    .pickerStyle(.menu)
                 }
-                       .frame(height: 50)
+                .font(.callout())
             }
-            .pickerStyle(.menu)
         }
         .id(dynamicTypeSize)
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
