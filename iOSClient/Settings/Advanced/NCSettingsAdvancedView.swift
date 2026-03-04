@@ -23,57 +23,68 @@ struct NCSettingsAdvancedView: View {
                    NCFileNameView(model: NCFileNameModel(controller: model.controller))
                }) {
                    Text(NSLocalizedString("_filenamemask_", comment: ""))
+                       .font(.body())
                }
             }, footer: {
                 Text(fileNameMaskFooter)
+                    .font(.footnote())
             })
             // Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
+                    .font(.body())
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.mostCompatible) {
                         model.updateMostCompatible()
                     }
             }, footer: {
                 Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
+                    .font(.footnote())
             })
 
             Section(content: {
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
+                    .font(.body())
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.livePhoto) {
                         model.updateLivePhoto()
                     }
             }, footer: {
                 Text(NSLocalizedString("_upload_mov_livephoto_footer_", comment: ""))
+                    .font(.footnote())
             })
 
             // Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
+                    .font(.body())
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.removeFromCameraRoll) {
                         model.updateRemoveFromCameraRoll()
                 }
             }, footer: {
                 Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
+                    .font(.footnote())
             })
             // Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
+                        .font(.body())
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.appIntegration) {
                             model.updateAppIntegration()
                     }
                 }, footer: {
                     Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
+                        .font(.footnote())
                 })
             }
             // Section: Privacy
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
+                        .font(.body())
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.crashReporter) {
                             model.updateCrashReporter()
@@ -85,11 +96,14 @@ struct NCSettingsAdvancedView: View {
                         }
                     }, message: {
                         Text(NSLocalizedString("_crashservice_alert_", comment: ""))
+                            .font(.body())
                     })
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
+                        .font(.headline())
                 }, footer: {
                     Text(NSLocalizedString("_privacy_footer_", comment: ""))
+                        .font(.footnote())
                 })
             }
             // Section: Diagnostic
@@ -106,6 +120,7 @@ struct NCSettingsAdvancedView: View {
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
+                                .font(.body())
                         }
                     })
                     .tint(Color(UIColor.label))
@@ -113,8 +128,10 @@ struct NCSettingsAdvancedView: View {
                     Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
                         ForEach(NKLogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
+                                .font(.body())
                         }
                     }
+                    .font(.body())
                     .onChange(of: model.selectedLogLevel) {
                         model.updateSelectedLogLevel()
                     }
@@ -129,13 +146,16 @@ struct NCSettingsAdvancedView: View {
                                 .frame(width: 25, height: 15)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
+                                .font(.body())
                         }
                     })
                     .tint(Color(UIColor.label))
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
+                        .font(.headline())
                 }, footer: {
                     Text(NSLocalizedString("_diagnostics_footer_", comment: ""))
+                        .font(.footnote())
                 })
                 // Set Log Level() & Capabilities
                 if model.isAdminGroup {
@@ -150,12 +170,15 @@ struct NCSettingsAdvancedView: View {
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
+                                    .font(.body())
                             }
                         }
                     }, header: {
                         Text(NSLocalizedString("_capabilities_", comment: ""))
+                            .font(.headline())
                     }, footer: {
                         Text(NSLocalizedString("_capabilities_footer_", comment: ""))
+                            .font(.footnote())
                     })
                 }
             }
@@ -163,9 +186,12 @@ struct NCSettingsAdvancedView: View {
             Section(content: {
                 Picker(NSLocalizedString("_delete_old_files_", comment: ""), selection: $model.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
-                        Text(interval.displayText).tag(interval)
+                        Text(interval.displayText)
+                            .tag(interval)
+                            .font(.body())
                     }
                 }
+                .font(.body())
                 .pickerStyle(.automatic)
                 .onChange(of: model.selectedInterval) {
                     model.updateSelectedInterval()
@@ -180,6 +206,7 @@ struct NCSettingsAdvancedView: View {
                             .frame(width: 15, height: 15)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
+                            .font(.body())
                     }
                 })
                 .tint(Color(UIColor.label))
@@ -191,9 +218,11 @@ struct NCSettingsAdvancedView: View {
                 }
             }, header: {
                 Text(NSLocalizedString("_delete_files_desc_", comment: ""))
+                    .font(.headline())
             }, footer: {
                 Text("_clear_cache_footer_")
                     .multilineTextAlignment(.leading)
+                    .font(.footnote())
             })
             // Reset Application
             Section(content: {
@@ -207,6 +236,7 @@ struct NCSettingsAdvancedView: View {
                             .frame(width: 15, height: 15)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
+                            .font(.body())
                             .foregroundColor(Color(UIColor.systemRed))
                     }
                 })
@@ -220,8 +250,10 @@ struct NCSettingsAdvancedView: View {
             }, footer: {
                (
                 Text(NSLocalizedString("_exit_footer_", comment: ""))
+                    .font(.footnote())
                 +
                 Text("\n\n")
+                    .font(.footnote())
                )
             })
         }
