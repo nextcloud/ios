@@ -63,9 +63,6 @@ func showErrorBanner(windowScene: UIWindowScene?,
         swipeToDismiss: true,
     )
 
-    // remove if exists another banner
-    banner.dismiss()
-
     banner.show(
         payload: payload,
         policy: .replace,
