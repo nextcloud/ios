@@ -14,7 +14,6 @@ struct NCAssistant: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
-
     var body: some View {
         NavigationView {
             ZStack {

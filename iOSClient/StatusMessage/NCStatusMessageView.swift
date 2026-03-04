@@ -110,14 +110,16 @@ private struct StatusPresetRow: View {
         }) {
             HStack(spacing: 16) {
                 Text(preset.icon ?? "")
-                    .font(.title3())
+                    .font(.headline())
                     .frame(width: 32)
                 Text(preset.message ?? "")
                     .font(.headline())
                     .foregroundStyle(.primary)
                 Text("—")
+                    .font(.headline())
                     .foregroundStyle(.secondary)
                 Text(cleatAtText)
+                    .font(.headline())
                     .foregroundStyle(.secondary)
                 Spacer()
             }

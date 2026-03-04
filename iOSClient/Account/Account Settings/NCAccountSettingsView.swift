@@ -123,7 +123,7 @@ struct NCAccountSettingsView: View {
                     VStack {
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: "") + ":")
-                                .fontWeight(.medium)
+                                .font(.callout())
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                                 .font(.callout())
