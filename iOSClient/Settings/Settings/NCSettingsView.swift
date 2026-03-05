@@ -49,8 +49,6 @@ struct NCSettingsView: View {
                     .font(.footnote)
             })
 
-
-
             // `Privacy` Section
             Section(content: {
                 Button(action: {

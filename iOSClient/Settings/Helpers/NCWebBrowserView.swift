@@ -23,7 +23,7 @@ struct NCBrowserWebView: View {
             HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
                         .padding(.leading, 8)
                 }
@@ -37,7 +37,7 @@ struct NCBrowserWebView: View {
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .fontWeight(.light)
                             .frame(width: 14, height: 14)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))

@@ -13,7 +13,7 @@ struct NCFileNameView: View {
             // Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: "")).font(.headline())) {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.maintainFilenameOriginal) { _, newValue in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
@@ -22,7 +22,7 @@ struct NCFileNameView: View {
                 // Filename
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.addFileNameType) { _, newValue in
                             model.toggleAddFilenameType(newValue: newValue)
@@ -50,7 +50,7 @@ struct NCFileNameView: View {
             Section(content: {
                 HStack {
                     Text(NSLocalizedString("_filename_", comment: ""))
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .fontWeight(.medium)
                     Spacer()
                     TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
@@ -63,7 +63,7 @@ struct NCFileNameView: View {
                         .multilineTextAlignment(.trailing)
                 }
                 Text("\(model.fileNamePreview)")
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))
@@ -75,7 +75,7 @@ struct NCFileNameView: View {
         } else {
             Section(content: {
                 Text("IMG_0001.JPG")
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
                 Text(NSLocalizedString("_filename_", comment: ""))

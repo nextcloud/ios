@@ -58,7 +58,7 @@ struct NCCapabilitiesView: View {
         var body: some View {
             Label {
                 Text(text)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
             } icon: {
                 if resize {
                     image

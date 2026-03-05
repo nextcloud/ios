@@ -17,12 +17,12 @@ struct NCManageE2EEView: View {
                             footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .fontWeight(.light)
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(.green)
@@ -31,13 +31,13 @@ struct NCManageE2EEView: View {
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
 
                         } icon: {
                             Image(systemName: "eye")
                                 .resizable()
                                 .scaledToFit()
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .fontWeight(.light)
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -57,12 +57,12 @@ struct NCManageE2EEView: View {
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .fontWeight(.light)
                                 .frame(width: 25, height: 15)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -90,12 +90,12 @@ struct NCManageE2EEView: View {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
-                                    .font(.body())
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                             } icon: {
                                 Image(systemName: "play.circle")
                                     .resizable()
                                     .scaledToFit()
-                                    .font(.body())
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                                     .fontWeight(.light)
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(.green)
@@ -137,12 +137,12 @@ struct NCManageE2EEView: View {
             HStack {
                 Label {
                     Text("Delete Certificate")
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .fontWeight(.light)
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.textColor2))
@@ -173,12 +173,12 @@ struct NCManageE2EEView: View {
             HStack {
                 Label {
                     Text("Delete PrivateKey")
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .fontWeight(.light)
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.textColor2))

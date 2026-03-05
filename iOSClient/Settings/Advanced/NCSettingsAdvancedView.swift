@@ -23,7 +23,7 @@ struct NCSettingsAdvancedView: View {
                    NCFileNameView(model: NCFileNameModel(controller: model.controller))
                }) {
                    Text(NSLocalizedString("_filenamemask_", comment: ""))
-                       .font(.body())
+                       .cappedFont(.body, maxDynamicType: .accessibility2)
                }
             }, footer: {
                 Text(fileNameMaskFooter)
@@ -32,7 +32,7 @@ struct NCSettingsAdvancedView: View {
             // Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.mostCompatible) {
                         model.updateMostCompatible()
@@ -44,7 +44,7 @@ struct NCSettingsAdvancedView: View {
 
             Section(content: {
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.livePhoto) {
                         model.updateLivePhoto()
@@ -57,7 +57,7 @@ struct NCSettingsAdvancedView: View {
             // Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.removeFromCameraRoll) {
                         model.updateRemoveFromCameraRoll()
@@ -70,7 +70,7 @@ struct NCSettingsAdvancedView: View {
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.appIntegration) {
                             model.updateAppIntegration()
@@ -84,7 +84,7 @@ struct NCSettingsAdvancedView: View {
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.crashReporter) {
                             model.updateCrashReporter()
@@ -96,7 +96,7 @@ struct NCSettingsAdvancedView: View {
                         }
                     }, message: {
                         Text(NSLocalizedString("_crashservice_alert_", comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     })
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
@@ -119,7 +119,7 @@ struct NCSettingsAdvancedView: View {
                                 .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         }
                     })
                     .tint(Color(UIColor.label))
@@ -127,10 +127,10 @@ struct NCSettingsAdvancedView: View {
                     Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
                         ForEach(NKLogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         }
                     }
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .onChange(of: model.selectedLogLevel) {
                         model.updateSelectedLogLevel()
                     }
@@ -144,7 +144,7 @@ struct NCSettingsAdvancedView: View {
                                 .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         }
                     })
                     .tint(Color(UIColor.label))
@@ -167,7 +167,7 @@ struct NCSettingsAdvancedView: View {
                                     .frame(width: 26)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
-                                    .font(.body())
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                             }
                         }
                     }, header: {
@@ -185,10 +185,10 @@ struct NCSettingsAdvancedView: View {
                     ForEach(CacheDeletionInterval.allCases) { interval in
                         Text(interval.displayText)
                             .tag(interval)
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 }
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .pickerStyle(.automatic)
                 .onChange(of: model.selectedInterval) {
                     model.updateSelectedInterval()
@@ -202,7 +202,7 @@ struct NCSettingsAdvancedView: View {
                             .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 })
                 .tint(Color(UIColor.label))
@@ -231,7 +231,7 @@ struct NCSettingsAdvancedView: View {
                             .frame(width: 26)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .foregroundColor(Color(UIColor.systemRed))
                     }
                 })
