@@ -42,19 +42,19 @@ struct NCStatusMessageView: View {
 
                 HStack {
                     Text("_clear_status_message_after_")
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                     Menu {
                         ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
                             Button {
                                 model.clearAfterString = option.rawValue
                             } label: {
                                 Text(NSLocalizedString(option.rawValue, comment: ""))
-                                    .font(.body())
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                             }
                         }
                     } label: {
                         Text(NSLocalizedString(model.clearAfterString, comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .foregroundStyle(.blue)
                         Image(systemName: "chevron.up.chevron.down")
                             .imageScale(.small)

@@ -92,13 +92,13 @@ struct MediaTabBarSelectView: View {
                 Group {
                     if tabBarSelect.selectCount == 0 {
                         Text(NSLocalizedString("_select_photos_", comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)

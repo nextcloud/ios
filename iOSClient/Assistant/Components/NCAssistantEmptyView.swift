@@ -20,7 +20,7 @@ struct NCAssistantEmptyView: View {
                 .frame(height: 100)
 
             Text(NSLocalizedString(titleKey, comment: ""))
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .fontWeight(.bold)
                 .padding(.bottom, 5)
 

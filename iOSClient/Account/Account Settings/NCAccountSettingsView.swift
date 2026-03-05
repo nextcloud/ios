@@ -68,7 +68,7 @@ struct NCAccountSettingsView: View {
                                             Image(systemName: "mail")
                                                 .font(.icon())
                                             Text(tblAccount.email)
-                                                .font(.body())
+                                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -81,7 +81,7 @@ struct NCAccountSettingsView: View {
                                             Image(systemName: "phone")
                                                 .font(.icon())
                                             Text(tblAccount.phone)
-                                                .font(.body())
+                                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -93,7 +93,7 @@ struct NCAccountSettingsView: View {
                                             Image(systemName: "house")
                                                 .font(.icon())
                                             Text(tblAccount.address)
-                                                .font(.body())
+                                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -117,10 +117,10 @@ struct NCAccountSettingsView: View {
                     VStack {
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: "") + ":")
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: model.alias) { _, newValue in
                                     model.setAlias(newValue)
@@ -142,7 +142,7 @@ struct NCAccountSettingsView: View {
                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                         .frame(width: 26)
                                     Text(NSLocalizedString("_set_user_status_", comment: ""))
-                                        .font(.body())
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                 }
                             }
@@ -156,7 +156,7 @@ struct NCAccountSettingsView: View {
                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                         .frame(width: 26)
                                     Text(NSLocalizedString("_set_user_status_message_", comment: ""))
-                                        .font(.body())
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                 }
                             }
@@ -175,7 +175,7 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                     .frame(width: 26)
                                 Text(NSLocalizedString("_certificate_details_", comment: ""))
-                                    .font(.body())
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                             }
                             .font(.subheadline())
@@ -196,7 +196,7 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                     .frame(width: 26)
                                 Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
-                                    .font(.body())
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                             }
                             .font(.subheadline())
@@ -232,7 +232,7 @@ struct NCAccountSettingsView: View {
                                 .foregroundStyle(.red)
                                 .frame(width: 26)
                             Text(NSLocalizedString("_remove_local_account_", comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.red)
                         }
                         .font(.callout())

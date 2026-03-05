@@ -28,11 +28,11 @@ struct NCUserStatusView: View {
                         .foregroundStyle(Color(status.statusImageColor))
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString(item.titleKey, comment: ""))
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
 
                         if !item.descriptionKey.isEmpty {
                             Text(NSLocalizedString(item.descriptionKey, comment: ""))
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.secondary)
                         }
                     }

@@ -100,7 +100,7 @@ struct MessageBubbleView: View {
 
             VStack(alignment: message.isFromHuman ? .trailing : .leading, spacing: 4) {
                 Text(message.content)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .id(dynamicTypeSize)
                     .foregroundStyle(message.isFromHuman ? .white : .primary)
                     .padding()
@@ -194,12 +194,12 @@ struct EmptyChatView: View {
                 .frame(height: 100)
 
             Text(NSLocalizedString("_start_conversation_", comment: ""))
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .fontWeight(.bold)
                 .padding(.bottom, 5)
 
             Text(NSLocalizedString("_ask_assistant_anything_", comment: ""))
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)

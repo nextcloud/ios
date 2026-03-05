@@ -36,7 +36,7 @@ struct NCAssistant: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("_close_")
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -70,7 +70,7 @@ struct NCAssistant: View {
         .navigationViewStyle(.stack)
         .popup(isPresented: $assistantModel.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .padding()
                 .background(.red)
                 .cornerRadius(30.0)
@@ -119,7 +119,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_share_")
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "square.and.arrow.up")
                         }
@@ -130,7 +130,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_retry_")
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "arrow.trianglehead.clockwise")
                         }
@@ -155,7 +155,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_delete_")
-                                .font(.body())
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "trash")
                         }
@@ -210,7 +210,7 @@ struct TypeButton: View {
             }
         } label: {
             Text(taskType?.name ?? "")
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .id(dynamicTypeSize)
         }
         .padding(.horizontal)
@@ -243,12 +243,12 @@ struct TaskItem: View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(task.input?.input ?? "")
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .lineLimit(1)
 
                 if let output = task.output?.output, !output.isEmpty {
                     Text(output)
-                        .font(.body())
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .lineLimit(1)
                         .foregroundStyle(.secondary)
                 }

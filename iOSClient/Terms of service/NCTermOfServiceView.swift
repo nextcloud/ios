@@ -21,7 +21,7 @@ struct NCTermOfServiceModelView: View {
                 Picker("Select Language", selection: $selectedLanguage) {
                     ForEach(model.languages.keys.sorted(), id: \.self) { key in
                         Text(model.languages[key] ?? "")
-                            .font(.body())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .tag(key)
                     }
                 }
@@ -40,7 +40,7 @@ struct NCTermOfServiceModelView: View {
 
             ScrollView {
                 Text(termsText)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
@@ -51,7 +51,7 @@ struct NCTermOfServiceModelView: View {
                 model.signTermsOfService(termId: model.termsId[selectedLanguage])
             }) {
                 Text(NSLocalizedString("_terms_accept_", comment: "Accept terms"))
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .foregroundColor(.white)
                     .padding()
                     .background(Color.blue)

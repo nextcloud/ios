@@ -21,14 +21,14 @@ struct ChatInputField: View {
     var body: some View {
         VStack {
             Text("_assistant_ai_warning_")
-                .font(.body())
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .lineLimit(1)
                 .allowsTightening(true)
                 .minimumScaleFactor(0.5)
 
             HStack(spacing: 8) {
                 TextField(NSLocalizedString("_type_message_", comment: ""), text: $text, axis: .vertical)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)

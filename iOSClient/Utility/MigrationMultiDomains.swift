@@ -31,7 +31,7 @@ struct MigrationMultiDomains: View {
                     .foregroundColor(.white)
 
                 Text(progressText)
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .foregroundColor(.white)
@@ -42,7 +42,7 @@ struct MigrationMultiDomains: View {
                     .padding(.bottom, 4)
 
                 Text(String(format: "%.0f%%", progress * 100))
-                    .font(.body())
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .foregroundColor(.white)
 
                 Spacer()
