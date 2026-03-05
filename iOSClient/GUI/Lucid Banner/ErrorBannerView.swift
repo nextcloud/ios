@@ -90,13 +90,14 @@ struct ErrorBannerView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: state.payload.systemImage ?? "info.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.icon(30))
+                        .font(.icon())
                         .foregroundStyle(state.payload.imageColor)
 
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .font(.subheadline())
+                                .font(.title3())
+                                .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -119,11 +120,11 @@ struct ErrorBannerView: View {
                     }
                 }
             }
-            .id(dynamicTypeSize)
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .id(dynamicTypeSize)
     }
 }
 

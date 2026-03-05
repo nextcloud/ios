@@ -67,7 +67,8 @@ struct AlertActionBannerView: View {
                 // Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline())
+                        .font(.title3())
+                        .fontWeight(.semibold)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -115,9 +116,9 @@ struct AlertActionBannerView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .id(dynamicTypeSize)
             .padding(20)
         }
+        .id(dynamicTypeSize)
     }
 
     // MARK: - Container

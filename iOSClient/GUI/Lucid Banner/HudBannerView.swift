@@ -112,7 +112,8 @@ struct HudBannerView: View {
                 // TITLE
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline())
+                        .font(.title3())
+                        .fontWeight(.semibold)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -179,10 +180,10 @@ struct HudBannerView: View {
                     }
                 }
             }
-            .id(dynamicTypeSize)
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
         }
+        .id(dynamicTypeSize)
         .onAppear {
             displayedProgress = clampedProgress
         }

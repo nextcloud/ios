@@ -73,15 +73,12 @@ struct UploadBannerView: View {
                 HStack(spacing: 5) {
                     Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.body())
-                        .fontWeight(.medium)
-                        .frame(width: 20, height: 20)
+                        .font(.icon())
                         .foregroundStyle(state.payload.imageColor)
 
                     if let p = state.payload.progress {
                         Text("\(Int(p * 100))%")
-                            .font(.caption2().monospacedDigit())
-                            .frame(height: 20)
+                            .font(.body().monospacedDigit())
                             .foregroundStyle(state.payload.textColor)
                     }
                 }
@@ -92,7 +89,7 @@ struct UploadBannerView: View {
                  HStack(alignment: .center, spacing: 10) {
                      if #available(iOS 26, *) {
                          Image(systemName: "checkmark")
-                             .font(.icon(60))
+                             .font(.icon(30, weight: .semibold))
                              .foregroundStyle(.green)
                              .symbolEffect(.drawOn, isActive: trigger)
                              .task {
@@ -101,7 +98,7 @@ struct UploadBannerView: View {
                              }
                      } else {
                          Image(systemName: "checkmark")
-                             .font(.icon(80))
+                             .font(.icon(30, weight: .semibold))
                              .foregroundStyle(.green)
                      }
                  }
@@ -111,7 +108,7 @@ struct UploadBannerView: View {
                 VStack(spacing: 15) {
                     HStack(alignment: .center, spacing: 10) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.icon(30, weight: .bold))
+                            .font(.icon(30, weight: .semibold))
                             .foregroundStyle(.white)
 
                         VStack(alignment: .leading, spacing: 7) {
@@ -120,13 +117,13 @@ struct UploadBannerView: View {
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
-                                .foregroundStyle(textColor)
+                                .foregroundStyle(.white)
                             if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
                                     .font(.subheadline())
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(textColor)
+                                    .foregroundStyle(.white)
                             }
                         }
                     }
@@ -140,14 +137,15 @@ struct UploadBannerView: View {
                         if let systemImage = state.payload.systemImage {
                             Image(systemName: systemImage)
                                 .applyBannerAnimation(state.payload.imageAnimation)
-                                .font(.icon(30))
+                                .font(.icon())
                                 .foregroundStyle(state.payload.imageColor)
                         }
 
                         VStack(alignment: .leading, spacing: 7) {
                             if showTitle, let title = state.payload.title {
                                 Text(title)
-                                    .font(.subheadline())
+                                    .font(.title3())
+                                    .fontWeight(.semibold)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .minimumScaleFactor(0.9)
@@ -211,8 +209,9 @@ struct UploadBannerView: View {
                                      systemImage: "arrowshape.up.circle",
                                      imageAnimation: .none,
                                      progress: 0.4,
-                                     stage: .button)
+                                     stage: .error)
     let state = LucidBannerState(payload: payload)
+   // state.variant = .alternate
 
     return ZStack {
         Text(
