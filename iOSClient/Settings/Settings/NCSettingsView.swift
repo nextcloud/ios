@@ -36,9 +36,8 @@ struct NCSettingsView: View {
                 }) {
                     HStack {
                         Image(systemName: "photo.on.rectangle.angled")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 25, height: 25)
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                             .font(.body())
@@ -55,10 +54,9 @@ struct NCSettingsView: View {
                 }, label: {
                     HStack {
                         Image(systemName: model.isLockActive ? "lock" : "lock.open")
-                            .resizable()
-                            .scaledToFit()
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            .frame(width: 20, height: 20)
                             .opacity(NCBrandOptions.shared.enforce_passcode_lock ? 0.5 : 1)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
                             .font(.body())
@@ -142,9 +140,8 @@ struct NCSettingsView: View {
                 }) {
                     HStack {
                         Image(systemName: "sun.max.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_display_", comment: ""))
                             .font(.body())
@@ -159,9 +156,8 @@ struct NCSettingsView: View {
                     }, label: {
                         HStack {
                             Image(systemName: "calendar.badge.plus")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .font(.icon())
+                                .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                                 .font(.body())
@@ -208,9 +204,8 @@ struct NCSettingsView: View {
                 }) {
                     HStack {
                         Image(systemName: "gear")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 25, height: 25)
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                             .font(.body())
@@ -227,7 +222,7 @@ struct NCSettingsView: View {
                         Image("acknowledgements")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 25, height: 25)
+                            .frame(width: 26, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                             .font(.body())
@@ -243,9 +238,8 @@ struct NCSettingsView: View {
                 }, label: {
                     HStack {
                         Image(systemName: "shield.checkerboard")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 25, height: 25)
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                             .font(.body())
@@ -264,7 +258,7 @@ struct NCSettingsView: View {
                             Image("gitHub")
                                 .resizable()
                                 .renderingMode(.template)
-                                .frame(width: 25, height: 25)
+                                .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_source_code_", comment: ""))
                                 .font(.body())
@@ -305,9 +299,8 @@ struct E2EESection: View {
             }) {
                 HStack {
                     Image(systemName: "lock")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
+                        .font(.icon())
+                        .frame(width: 26)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                         .font(.body())

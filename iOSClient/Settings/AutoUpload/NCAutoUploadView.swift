@@ -62,9 +62,8 @@ struct NCAutoUploadView: View {
                     }, label: {
                         HStack {
                             Image(systemName: "folder")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .font(.icon())
+                                .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 .opacity(model.autoUploadStart ? 0.15 : 1)
                             Text(NSLocalizedString("_destination_", comment: ""))
@@ -87,9 +86,8 @@ struct NCAutoUploadView: View {
                         }, label: {
                             HStack {
                                 Image(systemName: "person.2.crop.square.stack")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
+                                    .font(.icon())
+                                    .frame(width: 26)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                     .opacity(model.autoUploadStart ? 0.3 : 1)
                                 Text(NSLocalizedString("_upload_from_", comment: ""))

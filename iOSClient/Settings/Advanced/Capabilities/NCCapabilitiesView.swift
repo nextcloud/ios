@@ -62,15 +62,15 @@ struct NCCapabilitiesView: View {
             } icon: {
                 if resize {
                     image
-                        .renderingMode(.template)
                         .resizable()
-                        .scaledToFill()
+                        .font(.icon())
                         .frame(width: 23.0, height: 23.0)
                         .foregroundColor(.primary)
                 } else {
                     image
-                        .renderingMode(.template)
                         .foregroundColor(.primary)
+                        .font(.icon())
+                        .frame(width: 23.0, height: 23.0)
                 }
             }
             .id(dynamicTypeSize)
@@ -84,9 +84,11 @@ struct NCCapabilitiesView: View {
         var body: some View {
             if available {
                 Image(systemName: "checkmark.circle.fill")
+                    .font(.icon())
                     .foregroundColor(.green)
             } else {
                 Image(systemName: "multiply.circle.fill")
+                    .font(.icon())
                     .foregroundColor(Color(NCBrandColor.shared.textColor2))
             }
         }

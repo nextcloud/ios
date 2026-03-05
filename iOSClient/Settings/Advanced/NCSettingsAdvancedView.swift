@@ -115,9 +115,8 @@ struct NCSettingsAdvancedView: View {
                     }, label: {
                         HStack {
                             Image(systemName: "doc.badge.gearshape")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .font(.icon())
+                                .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
                                 .font(.body())
@@ -141,9 +140,8 @@ struct NCSettingsAdvancedView: View {
                     }, label: {
                         HStack {
                             Image(systemName: "xmark")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 15)
+                                .font(.icon())
+                                .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                                 .font(.body())
@@ -165,9 +163,8 @@ struct NCSettingsAdvancedView: View {
                         }) {
                             HStack {
                                 Image(systemName: "list.bullet")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
+                                    .font(.icon())
+                                    .frame(width: 26)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
                                     .font(.body())
@@ -201,9 +198,8 @@ struct NCSettingsAdvancedView: View {
                 }, label: {
                     HStack {
                         Image(systemName: "xmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 15, height: 15)
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
                             .font(.body())
@@ -231,9 +227,8 @@ struct NCSettingsAdvancedView: View {
                 }, label: {
                     HStack {
                         Image(systemName: "xmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 15, height: 15)
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .font(.body())
