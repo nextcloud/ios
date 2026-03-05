@@ -259,6 +259,7 @@
 		F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */; };
 		F71CFA672F2A07DB007A3AE9 /* NCMedia+Netwoking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CFA662F2A07C6007A3AE9 /* NCMedia+Netwoking.swift */; };
 		F71D2FB72E09BBD700B751CC /* NCAutoUploadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71D2FB62E09BBD700B751CC /* NCAutoUploadModel.swift */; };
+		F71DFA222F59FB9A003A93C5 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D082B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
@@ -4203,6 +4204,7 @@
 				F7CAFE202F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */,
 				F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				F71DFA222F59FB9A003A93C5 /* View+Extension.swift in Sources */,
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,

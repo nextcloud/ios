@@ -67,7 +67,7 @@ struct AlertActionBannerView: View {
                 // Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .cappedFont(.title3, maxDynamicType: .accessibility1)
+                        .cappedFont(.title3, maxDynamicType: .accessibility2)
                         .fontWeight(.semibold)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
@@ -87,7 +87,7 @@ struct AlertActionBannerView: View {
                         onCancel?()
                     } label: {
                         Text("_cancel_")
-                            .cappedFont(.body, maxDynamicType: .xxxLarge)
+                            .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }
@@ -103,7 +103,7 @@ struct AlertActionBannerView: View {
                         onConfirm?()
                     } label: {
                         Text("_ok_")
-                            .cappedFont(.body, maxDynamicType: .xxxLarge)
+                            .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }
