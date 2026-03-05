@@ -96,7 +96,7 @@ struct ErrorBannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .font(.title3())
+                                .cappedFont(.title3, maxDynamicType: .accessibility2)
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
@@ -105,14 +105,14 @@ struct ErrorBannerView: View {
 
                         if showSubtitle, let subtitle = state.payload.subtitle {
                             Text(subtitle)
-                                .font(.subheadline())
+                                .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
                         }
                         if showFootnote, let footnote = state.payload.footnote {
                             Text(footnote)
-                                .font(.footnote())
+                                .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)

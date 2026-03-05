@@ -78,7 +78,8 @@ struct UploadBannerView: View {
 
                     if let p = state.payload.progress {
                         Text("\(Int(p * 100))%")
-                            .font(.body().monospacedDigit())
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
+                            .monospacedDigit()
                             .foregroundStyle(state.payload.textColor)
                     }
                 }
@@ -113,7 +114,7 @@ struct UploadBannerView: View {
 
                         VStack(alignment: .leading, spacing: 7) {
                             Text("_error_")
-                                .font(.subheadline())
+                                .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
@@ -144,7 +145,7 @@ struct UploadBannerView: View {
                         VStack(alignment: .leading, spacing: 7) {
                             if showTitle, let title = state.payload.title {
                                 Text(title)
-                                    .font(.title3())
+                                    .cappedFont(.title3, maxDynamicType: .accessibility2)
                                     .fontWeight(.semibold)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
@@ -153,14 +154,14 @@ struct UploadBannerView: View {
                             }
                             if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
-                                    .font(.subheadline())
+                                    .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(textColor)
                             }
                             if showFootnote, let footnote = state.payload.footnote {
                                 Text(footnote)
-                                    .font(.footnote())
+                                    .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(textColor)

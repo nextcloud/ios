@@ -72,7 +72,7 @@ struct BannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .cappedFont(.title3, maxDynamicType: .accessibility1)
+                                .cappedFont(.title3, maxDynamicType: .accessibility2)
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
@@ -88,7 +88,7 @@ struct BannerView: View {
                         }
                         if showFootnote, let footnote = state.payload.footnote {
                             Text(footnote)
-                                .cappedFont(.footnote, maxDynamicType: .xxLarge)
+                                .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
