@@ -116,6 +116,7 @@ class NCTrashSelectTabBar: ObservableObject {
 struct NCTrashSelectTabBarView: View {
     @ObservedObject var tabBarSelect: NCTrashSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         VStack {
@@ -125,8 +126,7 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.recover()
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.icon())
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
@@ -136,8 +136,7 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.icon())
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)
@@ -147,13 +146,13 @@ struct NCTrashSelectTabBarView: View {
                     tabBarSelect.delegate?.selectAll()
                 } label: {
                     Image(systemName: "checkmark")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.icon())
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
             }
         }
+        .id(dynamicTypeSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)

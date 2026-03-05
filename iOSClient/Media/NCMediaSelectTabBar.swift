@@ -82,6 +82,7 @@ class NCMediaSelectTabBar: ObservableObject {
 struct MediaTabBarSelectView: View {
     @ObservedObject var tabBarSelect: NCMediaSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         VStack {
@@ -91,10 +92,13 @@ struct MediaTabBarSelectView: View {
                 Group {
                     if tabBarSelect.selectCount == 0 {
                         Text(NSLocalizedString("_select_photos_", comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)
@@ -103,8 +107,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                    .font(Font.system(.body).weight(.light))
-                    .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.icon())
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
@@ -112,6 +115,7 @@ struct MediaTabBarSelectView: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .id(dynamicTypeSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)

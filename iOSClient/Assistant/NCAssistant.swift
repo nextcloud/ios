@@ -12,6 +12,7 @@ struct NCAssistant: View {
     @State var conversationsModel: NCAssistantChatConversationsModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         NavigationView {
@@ -35,6 +36,7 @@ struct NCAssistant: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("_close_")
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -68,6 +70,7 @@ struct NCAssistant: View {
         .navigationViewStyle(.stack)
         .popup(isPresented: $assistantModel.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .padding()
                 .background(.red)
                 .cornerRadius(30.0)
@@ -116,6 +119,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_share_")
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "square.and.arrow.up")
                         }
@@ -126,6 +130,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_retry_")
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "arrow.trianglehead.clockwise")
                         }
@@ -150,6 +155,7 @@ struct TaskList: View {
                     } label: {
                         Label {
                             Text("_delete_")
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                         } icon: {
                             Image(systemName: "trash")
                         }
@@ -190,6 +196,7 @@ struct TaskList: View {
 
 struct TypeButton: View {
     @Environment(NCAssistantModel.self) var model
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
@@ -202,7 +209,9 @@ struct TypeButton: View {
                 scrollProxy.scrollTo(taskType?.id, anchor: .center)
             }
         } label: {
-            Text(taskType?.name ?? "").font(.body)
+            Text(taskType?.name ?? "")
+                .cappedFont(.body, maxDynamicType: .accessibility2)
+                .id(dynamicTypeSize)
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
@@ -225,6 +234,7 @@ struct TypeButton: View {
 
 struct TaskItem: View {
     @Environment(NCAssistantModel.self) var model
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Binding var showDeleteConfirmation: Bool
     @Binding var taskToDelete: AssistantTask?
     var task: AssistantTask
@@ -233,10 +243,12 @@ struct TaskItem: View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(task.input?.input ?? "")
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .lineLimit(1)
 
                 if let output = task.output?.output, !output.isEmpty {
                     Text(output)
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .lineLimit(1)
                         .foregroundStyle(.secondary)
                 }
@@ -245,7 +257,8 @@ struct TaskItem: View {
                     Label(
                         title: {
                             Text(task.statusDate)
-                                .font(.callout)
+                                .font(.callout())
+                                .id(dynamicTypeSize)
                                 .foregroundStyle(.secondary)
                         },
                         icon: {

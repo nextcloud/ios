@@ -77,6 +77,14 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
+        // FONT SCALLED
+        //
+        labelTitle.font = .callout()
+        labelTitle.adjustsFontForContentSizeCategory = true
+
+        labelInfo.font = .caption1()
+        labelInfo.adjustsFontForContentSizeCategory = true
+
         separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
     }

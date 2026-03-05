@@ -46,6 +46,7 @@ func showAlertActionBanner(lucidBanner: LucidBanner?,
 
 struct AlertActionBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let onConfirm: (() -> Void)?
     let onCancel: (() -> Void)?
@@ -66,7 +67,8 @@ struct AlertActionBannerView: View {
                 // Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline.weight(.semibold))
+                        .cappedFont(.title3, maxDynamicType: .accessibility2)
+                        .fontWeight(.semibold)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -74,7 +76,7 @@ struct AlertActionBannerView: View {
                 // Subtitle
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -85,6 +87,7 @@ struct AlertActionBannerView: View {
                         onCancel?()
                     } label: {
                         Text("_cancel_")
+                            .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }
@@ -100,6 +103,7 @@ struct AlertActionBannerView: View {
                         onConfirm?()
                     } label: {
                         Text("_ok_")
+                            .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }
@@ -114,6 +118,7 @@ struct AlertActionBannerView: View {
             }
             .padding(20)
         }
+        .id(dynamicTypeSize)
     }
 
     // MARK: - Container

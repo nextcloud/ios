@@ -68,6 +68,17 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
+
+        // FONT SCALLED
+        //
+        labelTitle.font = .callout()
+        labelTitle.adjustsFontForContentSizeCategory = true
+
+        labelInfo.font = .caption1()
+        labelInfo.adjustsFontForContentSizeCategory = true
+
+        labelSubinfo.font = .caption1()
+        labelSubinfo.adjustsFontForContentSizeCategory = true
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {

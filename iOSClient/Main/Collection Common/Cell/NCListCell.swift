@@ -118,6 +118,20 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         tag0.text = ""
         tag1.text = ""
 
+        // FONT SCALLED
+        //
+        labelTitle.font = .callout()
+        labelTitle.adjustsFontForContentSizeCategory = true
+
+        labelInfo.font = .caption1()
+        labelInfo.adjustsFontForContentSizeCategory = true
+
+        labelInfoSeparator.font = .caption1()
+        labelInfoSeparator.adjustsFontForContentSizeCategory = true
+
+        labelSubinfo.font = .caption1()
+        labelSubinfo.adjustsFontForContentSizeCategory = true
+
         separatorHeightConstraint.constant = 0.5
 
         buttonMore.menu = nil
@@ -528,14 +542,14 @@ extension NCCollectionViewCommon {
 
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
-        cell.labelTitle?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode,
            let searchResultStore,
-           let title = cell.labelTitle?.text {
+           let title = cell.labelTitle?.text,
+           let font = cell.labelTitle.font {
             let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
-            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
+            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: font])
+            attributedString.setAttributes([NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.labelTitle?.attributedText = attributedString
         }
 

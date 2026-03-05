@@ -53,6 +53,14 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         labelFilename.text = ""
         labelInfo.text = ""
 
+        // FONT SCALLED
+        //
+        labelFilename.font = .caption2()
+        labelFilename.adjustsFontForContentSizeCategory = true
+
+        labelInfo.font = .caption2()
+        labelInfo.adjustsFontForContentSizeCategory = true
+
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
         contentView.bringSubviewToFront(buttonMore)

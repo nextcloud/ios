@@ -12,6 +12,7 @@ struct NCStatusMessageView: View {
 
     @State private var model: NCStatusMessageModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @FocusState private var isTextFieldFocused: Bool
 
     init(account: String, controller: NCMainTabBarController?) {
@@ -41,16 +42,19 @@ struct NCStatusMessageView: View {
 
                 HStack {
                     Text("_clear_status_message_after_")
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                     Menu {
                         ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
                             Button {
                                 model.clearAfterString = option.rawValue
                             } label: {
                                 Text(NSLocalizedString(option.rawValue, comment: ""))
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                             }
                         }
                     } label: {
                         Text(NSLocalizedString(model.clearAfterString, comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .foregroundStyle(.blue)
                         Image(systemName: "chevron.up.chevron.down")
                             .imageScale(.small)
@@ -81,6 +85,7 @@ struct NCStatusMessageView: View {
             }
             .padding(24)
         }
+        .id(dynamicTypeSize)
         .scrollDismissesKeyboard(.interactively)
         .onTapGesture {
             isTextFieldFocused = false
@@ -109,14 +114,16 @@ private struct StatusPresetRow: View {
         }) {
             HStack(spacing: 16) {
                 Text(preset.icon ?? "")
-                    .font(.title3)
+                    .font(.headline())
                     .frame(width: 32)
                 Text(preset.message ?? "")
-                    .font(.headline)
+                    .font(.headline())
                     .foregroundStyle(.primary)
                 Text("—")
+                    .font(.headline())
                     .foregroundStyle(.secondary)
                 Text(cleatAtText)
+                    .font(.headline())
                     .foregroundStyle(.secondary)
                 Spacer()
             }

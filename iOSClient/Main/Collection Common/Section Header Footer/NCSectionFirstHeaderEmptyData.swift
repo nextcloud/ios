@@ -25,6 +25,14 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         emptyImage.image = nil
         emptyTitle.text = ""
         emptyDescription.text = ""
+
+        // FONT SCALLED
+        //
+        emptyTitle.font = .headline()
+        emptyTitle.adjustsFontForContentSizeCategory = true
+
+        emptyDescription.font = .caption1()
+        emptyDescription.adjustsFontForContentSizeCategory = true
     }
 
     // MARK: -

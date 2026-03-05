@@ -6,6 +6,7 @@ import SwiftUI
 
 struct ClientIntegrationUIViewer: View {
     @Environment(\.openURL) private var openURL
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     struct Row: Identifiable {
         let id = UUID()
@@ -25,20 +26,20 @@ struct ClientIntegrationUIViewer: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text(row.element)
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
+                                .font(.subheadline())
                                 .foregroundStyle(.secondary)
                             Spacer()
                         }
 
                         if let title = row.title {
-                            Text(title).font(.headline)
+                            Text(title)
+                                .font(.headline())
                         }
 
                         let finalUrl = baseURL + row.urlString
 
                         Text(finalUrl)
-                            .font(.footnote)
+                            .font(.footnote())
                             .foregroundStyle(.secondary)
                             .textSelection(.enabled)
 
@@ -61,6 +62,7 @@ struct ClientIntegrationUIViewer: View {
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
             }
+            .id(dynamicTypeSize)
             .padding()
         }
     }

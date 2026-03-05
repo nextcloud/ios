@@ -78,6 +78,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
 
 struct ErrorBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         let showTitle = !(state.payload.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -89,13 +90,14 @@ struct ErrorBannerView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: state.payload.systemImage ?? "info.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.system(size: 30, weight: .regular))
+                        .font(.icon())
                         .foregroundStyle(state.payload.imageColor)
 
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .font(.subheadline.weight(.bold))
+                                .cappedFont(.title3, maxDynamicType: .accessibility2)
+                                .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -103,14 +105,14 @@ struct ErrorBannerView: View {
 
                         if showSubtitle, let subtitle = state.payload.subtitle {
                             Text(subtitle)
-                                .font(.subheadline)
+                                .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
                         }
                         if showFootnote, let footnote = state.payload.footnote {
                             Text(footnote)
-                                .font(.caption)
+                                .cappedFont(.footnote, maxDynamicType: .xxxLarge)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
                                 .foregroundStyle(state.payload.textColor)
@@ -122,6 +124,7 @@ struct ErrorBannerView: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .id(dynamicTypeSize)
     }
 }
 

@@ -25,6 +25,7 @@ import SwiftUI
 import NextcloudKit
 
 struct NCCapabilitiesView: View {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: NCCapabilitiesModel
 
     var body: some View {
@@ -49,6 +50,7 @@ struct NCCapabilitiesView: View {
     }
 
     struct CapabilityName: View {
+        @Environment(\.dynamicTypeSize) var dynamicTypeSize
         @Binding var text: String
         @State var image: Image
         @State var resize: Bool
@@ -56,21 +58,22 @@ struct NCCapabilitiesView: View {
         var body: some View {
             Label {
                 Text(text)
-                    .font(.system(size: 15))
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
             } icon: {
                 if resize {
                     image
-                        .renderingMode(.template)
                         .resizable()
-                        .scaledToFill()
+                        .font(.icon())
                         .frame(width: 23.0, height: 23.0)
                         .foregroundColor(.primary)
                 } else {
                     image
-                        .renderingMode(.template)
                         .foregroundColor(.primary)
+                        .font(.icon())
+                        .frame(width: 23.0, height: 23.0)
                 }
             }
+            .id(dynamicTypeSize)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -81,9 +84,11 @@ struct NCCapabilitiesView: View {
         var body: some View {
             if available {
                 Image(systemName: "checkmark.circle.fill")
+                    .font(.icon())
                     .foregroundColor(.green)
             } else {
                 Image(systemName: "multiply.circle.fill")
+                    .font(.icon())
                     .foregroundColor(Color(NCBrandColor.shared.textColor2))
             }
         }

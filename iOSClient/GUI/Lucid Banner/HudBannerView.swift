@@ -69,6 +69,7 @@ func completeHudBannerError(description: String, token: Int?, banner: LucidBanne
 
 struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @State private var displayedProgress: Double = 0
 
     let onButtonTap: (() -> Void)?
@@ -111,7 +112,8 @@ struct HudBannerView: View {
                 // TITLE
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline.weight(.semibold))
+                        .cappedFont(.title3, maxDynamicType: .accessibility2)
+                        .fontWeight(.semibold)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -119,7 +121,7 @@ struct HudBannerView: View {
                 // SUBTITLE
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -148,15 +150,16 @@ struct HudBannerView: View {
                     Group {
                         if isSuccess {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 34, weight: .bold))
+                                .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
                         } else if isError {
                             Image(systemName: "xmark")
-                                .font(.system(size: 34, weight: .bold))
+                                .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
                         } else {
                             Text("\(Int(visualProgress * 100))%")
-                                .font(.headline.monospacedDigit())
+                                .cappedFont(.headline, maxDynamicType: .accessibility2)
+                                .monospacedDigit()
                                 .foregroundStyle(textColor)
                         }
                     }
@@ -181,6 +184,7 @@ struct HudBannerView: View {
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
         }
+        .id(dynamicTypeSize)
         .onAppear {
             displayedProgress = clampedProgress
         }

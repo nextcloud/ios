@@ -73,6 +73,7 @@ struct SelectionButton: View {
     var assetCount: Int
     @StateObject var loader = PHAssetCollectionThumbnailLoader()
     @Binding var selection: Set<String>
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         Button(action: {
@@ -110,11 +111,14 @@ struct SelectionButton: View {
 
                 VStack(alignment: .leading) {
                     Text((album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? ""))
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                     Text(String(assetCount))
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
+        .id(dynamicTypeSize)
         .foregroundColor(.primary)
         .onAppear {
             loader.loadThumbnail(for: album)
