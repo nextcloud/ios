@@ -24,9 +24,8 @@ struct NCUserStatusView: View {
 
                     Image(uiImage: status.statusImage ?? UIImage())
                         .renderingMode(.template)
-                        .resizable()
+                        .font(.icon())
                         .foregroundStyle(Color(status.statusImageColor))
-                        .frame(width: 20, height: 20)
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString(item.titleKey, comment: ""))
                             .font(.body())
@@ -40,6 +39,7 @@ struct NCUserStatusView: View {
                     Spacer()
                     if model.selectedStatus == item.name {
                         Image(systemName: "checkmark")
+                            .font(.icon())
                             .foregroundColor(.blue)
                     }
                 }
