@@ -219,10 +219,9 @@ struct NCSettingsView: View {
                     showAcknowledgements.toggle()
                 }, label: {
                     HStack {
-                        Image("acknowledgements")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 26, height: 25)
+                        Image(systemName: "figure.2.circle")
+                            .font(.icon())
+                            .frame(width: 26)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                             .font(.body())
@@ -256,7 +255,6 @@ struct NCSettingsView: View {
                     }, label: {
                         HStack {
                             Image("gitHub")
-                                .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 26)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
