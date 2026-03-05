@@ -66,10 +66,7 @@ struct NCAccountSettingsView: View {
                                     if !tblAccount.email.isEmpty {
                                         HStack {
                                             Image(systemName: "mail")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .font(Font.system(.body).weight(.light))
-                                                .frame(width: 20, height: 20)
+                                                .font(.icon())
                                             Text(tblAccount.email)
                                                 .font(.body())
                                                 .lineLimit(1)
@@ -82,10 +79,7 @@ struct NCAccountSettingsView: View {
                                     if !tblAccount.phone.isEmpty {
                                         HStack {
                                             Image(systemName: "phone")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .font(Font.system(.body).weight(.light))
-                                                .frame(width: 20, height: 20)
+                                                .font(.icon())
                                             Text(tblAccount.phone)
                                                 .font(.body())
                                                 .lineLimit(1)
@@ -97,10 +91,7 @@ struct NCAccountSettingsView: View {
                                     if !tblAccount.address.isEmpty {
                                         HStack {
                                             Image(systemName: "house")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .font(Font.system(.body).weight(.light))
-                                                .frame(width: 20, height: 20)
+                                                .font(.icon())
                                             Text(tblAccount.address)
                                                 .font(.body())
                                                 .lineLimit(1)
@@ -129,17 +120,16 @@ struct NCAccountSettingsView: View {
                                 .font(.body())
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                                .font(.callout())
+                                .font(.body())
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: model.alias) { _, newValue in
                                     model.setAlias(newValue)
                                 }
                         }
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
-                            .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.footnote())
-                            .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     //
                     // User Status
@@ -148,19 +138,13 @@ struct NCAccountSettingsView: View {
                             NavigationLink(destination: NCUserStatusView(account: account, controller: model.controller)) {
                                 HStack {
                                     Image(systemName: "moon.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .font(Font.system(.body).weight(.light))
-                                        .frame(width: 20, height: 20)
+                                        .font(.icon())
                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                        .frame(width: 26)
                                     Text(NSLocalizedString("_set_user_status_", comment: ""))
-                                        .font(.callout())
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
+                                        .font(.body())
                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                                 }
-                                .font(.subheadline())
                             }
                         }
 
@@ -168,19 +152,13 @@ struct NCAccountSettingsView: View {
                             NavigationLink(destination: NCStatusMessageView(account: account, controller: model.controller)) {
                                 HStack {
                                     Image(systemName: "message.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .font(Font.system(.body).weight(.light))
-                                        .frame(width: 20, height: 20)
+                                        .font(.icon())
                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                        .frame(width: 26)
                                     Text(NSLocalizedString("_set_user_status_message_", comment: ""))
                                         .font(.body())
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
                                         .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                                 }
-                                .font(.subheadline())
                             }
                         }
                     }
@@ -192,18 +170,13 @@ struct NCAccountSettingsView: View {
                             showServerCertificate.toggle()
                         }, label: {
                             HStack {
-                                Image(systemName: "lock")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: 20, height: 20)
+                                Image(systemName: "network.badge.shield.half.filled")
+                                    .font(.icon())
                                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                    .frame(width: 26)
                                 Text(NSLocalizedString("_certificate_details_", comment: ""))
                                     .font(.body())
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
                             .font(.subheadline())
                         })
@@ -218,18 +191,13 @@ struct NCAccountSettingsView: View {
                             showPushCertificate.toggle()
                         }, label: {
                             HStack {
-                                Image(systemName: "lock")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: 20, height: 20)
+                                Image(systemName: "network.badge.shield.half.filled")
+                                    .font(.icon())
                                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                    .frame(width: 26)
                                 Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
                                     .font(.body())
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
                             .font(.subheadline())
                         })
@@ -260,17 +228,12 @@ struct NCAccountSettingsView: View {
                     }, label: {
                         HStack {
                             Image(systemName: "trash")
-                                .resizable()
-                                .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 20, height: 20)
+                                .font(.icon())
                                 .foregroundStyle(.red)
+                                .frame(width: 26)
                             Text(NSLocalizedString("_remove_local_account_", comment: ""))
                                 .font(.body())
-                                .lineLimit(1)
-                                .truncationMode(.middle)
                                 .foregroundStyle(.red)
-                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                         }
                         .font(.callout())
                     })
@@ -288,7 +251,6 @@ struct NCAccountSettingsView: View {
                 presentationMode.wrappedValue.dismiss()
             }) {
                 Image(systemName: "xmark")
-                    .font(Font.system(.body).weight(.light))
                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
             })
         }
