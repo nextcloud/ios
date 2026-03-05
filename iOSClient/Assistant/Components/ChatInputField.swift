@@ -28,6 +28,7 @@ struct ChatInputField: View {
 
             HStack(spacing: 8) {
                 TextField(NSLocalizedString("_type_message_", comment: ""), text: $text, axis: .vertical)
+                    .font(.body())
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
