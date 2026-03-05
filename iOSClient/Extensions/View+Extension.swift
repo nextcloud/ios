@@ -57,24 +57,39 @@ extension View {
 
     /// Applies a font and caps Dynamic Type to the specified range.
     ///
-    /// .xSmall
-    /// .small
-    /// .medium
-    /// .large        ← default iOS
-    /// .xLarge
-    /// .xxLarge
-    /// .xxxLarge
+    /// iOS Typography Reference (SwiftUI)
     ///
-    /// .accessibility1
-    /// .accessibility2
-    /// .accessibility3
-    /// .accessibility4
-    /// .accessibility5
+    /// Font Style     Base Size   Typical Usage                     Suggested Dynamic Type Cap
+    /// -----------------------------------------------------------------------------------------
+    /// largeTitle      ~34 pt      Large screen titles                      .accessibility3
+    /// title               ~28 pt      Primary titles                              .accessibility3
+    /// title2             ~22 pt      Important subtitles                     .accessibility2
+    /// title3            ~20 pt       Small titles / list icons                .accessibility2
+    /// headline       ~17 pt      Section headers (semibold)        .accessibility2
+    /// body            ~17 pt      Main readable text                      .accessibility2
+    /// callout          ~16 pt      Highlighted secondary text        .accessibility2
+    /// subheadline ~15 pt      Secondary information               .accessibility1
+    /// footnote       ~13 pt      Metadata / notes                        .xxxLarge
+    /// caption         ~12 pt      Captions / small descriptions    .xxLarge
+    /// caption2       ~11 pt      Very small labels                        .xLarge
+    ///
+    /// Practical guideline:
+    ///
+    /// title*          → cap around .accessibility2 / .accessibility3
+    /// body          → cap around .accessibility2
+    /// metadata   → cap around .xxxLarge
+    /// caption      → cap around .xxLarge
+    ///
+    /// Example:
+    ///
+    /// Text("Privacy and Legal Policy")
+    ///     .cappedFont(.body, maxDynamicType: .accessibility2)
     ///
     /// - Parameters:
     ///   - font: The SwiftUI font to apply (e.g. .body, .title3).
     ///   - maxDynamicType: The maximum Dynamic Type size allowed for this view.
     /// - Returns: A view configured with the given font and Dynamic Type cap.
+    /// 
     func cappedFont(_ font: Font, maxDynamicType: DynamicTypeSize = .accessibility2) -> some View {
         self
             .font(font)
