@@ -112,7 +112,7 @@ extension Font {
 
     // Image - Icon
     //
-    static func icon(_ size: CGFloat = 23, weight: Weight = .regular) -> Font {
+    static func icon(_ size: CGFloat = 26, weight: Weight = .regular) -> Font {
         .system(size: size, weight: weight)
     }
 }

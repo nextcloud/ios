@@ -54,6 +54,32 @@ extension View {
     func onFirstAppear(perform action: @escaping () -> Void) -> some View {
         modifier(ViewFirstAppearModifier(perform: action))
     }
+
+    /// Applies a font and caps Dynamic Type to the specified range.
+    ///
+    /// .xSmall
+    /// .small
+    /// .medium
+    /// .large        ← default iOS
+    /// .xLarge
+    /// .xxLarge
+    /// .xxxLarge
+    ///
+    /// .accessibility1
+    /// .accessibility2
+    /// .accessibility3
+    /// .accessibility4
+    /// .accessibility5
+    ///
+    /// - Parameters:
+    ///   - font: The SwiftUI font to apply (e.g. .body, .title3).
+    ///   - maxDynamicType: The maximum Dynamic Type size allowed for this view.
+    /// - Returns: A view configured with the given font and Dynamic Type cap.
+    func cappedFont(_ font: Font, maxDynamicType: DynamicTypeSize = .accessibility2) -> some View {
+        self
+            .font(font)
+            .dynamicTypeSize(.xSmall ... maxDynamicType)
+    }
 }
 
 struct ViewFirstAppearModifier: ViewModifier {
