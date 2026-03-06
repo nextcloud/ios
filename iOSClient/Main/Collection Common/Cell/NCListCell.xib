@@ -51,8 +51,13 @@
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
+                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
                         <rect key="frame" x="107" y="13" width="425" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-lSt" userLabel="labelExtension">
+                        <rect key="frame" x="532" y="13" width="0" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -193,7 +198,9 @@
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="PQ8-0b-fLa"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="10" id="RYl-cO-cCN"/>
                 <constraint firstItem="C4K-Nv-phA" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="-10" id="Sof-wy-toF"/>
-                <constraint firstAttribute="trailing" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="137" id="Tq4-bB-YMV"/>
+                <constraint firstItem="Ext-Lb-lSt" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" id="Ext-Le-tTr"/>
+                <constraint firstItem="Ext-Lb-lSt" firstAttribute="firstBaseline" secondItem="UtT-L6-mgW" secondAttribute="firstBaseline" id="Ext-Bl-tBl"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ext-Lb-lSt" secondAttribute="trailing" constant="137" id="Ext-Tr-cTr"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="VSJ-7R-Srk"/>
                 <constraint firstAttribute="bottom" secondItem="qnc-hI-Z9r" secondAttribute="bottom" constant="9" id="XTs-Qg-kiX"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
@@ -231,7 +238,8 @@
                 <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="B6g-qe-MTb"/>
                 <outlet property="tag0" destination="qnc-hI-Z9r" id="6jJ-lV-0ck"/>
                 <outlet property="tag1" destination="jUe-8q-VJd" id="Wcm-rS-rEd"/>
-                <outlet property="titleTrailingConstraint" destination="Tq4-bB-YMV" id="v4n-j5-ZWT"/>
+                <outlet property="labelExtension" destination="Ext-Lb-lSt" id="ext-Ot-lSt"/>
+                <outlet property="titleTrailingConstraint" destination="Ext-Tr-cTr" id="v4n-j5-ZWT"/>
             </connections>
             <point key="canvasLocation" x="127.60663507109004" y="196.92307692307691"/>
         </collectionViewCell>

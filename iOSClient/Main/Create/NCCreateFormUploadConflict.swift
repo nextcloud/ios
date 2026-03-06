@@ -325,7 +325,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.getElement(account: metadataNewFile.account)
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
-            cell.labelFileName.text = metadataNewFile.fileNameView
+            cell.setBidiSafeFilename(metadataNewFile.fileNameView, isDirectory: metadataNewFile.directory, titleLabel: cell.labelFileName, extensionLabel: cell.labelExtensionFileName)
             cell.labelDetailAlreadyExistingFile.text = ""
             cell.labelDetailNewFile.text = ""
 

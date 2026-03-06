@@ -24,10 +24,15 @@
                             <constraint firstAttribute="width" constant="40" id="v0e-MW-EeE"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
+                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
                         <rect key="frame" x="95" y="33" width="440" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-tLs" userLabel="labelExtension">
+                        <rect key="frame" x="535" y="33" width="0" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
@@ -99,7 +104,9 @@
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="5" id="UtX-Ca-aBN"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="Yad-MJ-UU7"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
-                <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="5" id="cEw-b3-odo"/>
+                <constraint firstItem="Ext-Lb-tLs" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" id="Ext-Le-tLs"/>
+                <constraint firstItem="Ext-Lb-tLs" firstAttribute="firstBaseline" secondItem="UtT-L6-mgW" secondAttribute="firstBaseline" id="Ext-Bl-tLs"/>
+                <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ext-Lb-tLs" secondAttribute="trailing" constant="5" id="cEw-b3-odo"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="14" id="d06-sn-I3Y"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ldm-kv-P98"/>
@@ -121,6 +128,7 @@
                 <outlet property="imageRestore" destination="nwZ-pi-Igj" id="d9Y-zK-8dx"/>
                 <outlet property="imageSelect" destination="AyA-hP-r6w" id="c1t-yz-HBg"/>
                 <outlet property="labelInfo" destination="AXX-71-9Q6" id="krb-tZ-UQ7"/>
+                <outlet property="labelExtension" destination="Ext-Lb-tLs" id="ext-Ot-tLs"/>
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
                 <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="azN-3h-Cvp"/>

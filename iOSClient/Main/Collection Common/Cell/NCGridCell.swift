@@ -22,6 +22,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonMore: UIButton!
 
@@ -86,6 +87,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageLocal.image = nil
 
         labelTitle.text = ""
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
 
@@ -237,7 +240,15 @@ extension NCCollectionViewCommon {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.labelTitle.text = metadata.fileNameView
+        cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
+
+        if cell.labelExtension?.isHidden ?? true {
+            cell.labelTitle.numberOfLines = 2
+            cell.labelTitle.lineBreakMode = .byWordWrapping
+        } else {
+            cell.labelTitle.numberOfLines = 1
+            cell.labelTitle.lineBreakMode = .byTruncatingTail
+        }
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
@@ -286,6 +297,8 @@ extension NCCollectionViewCommon {
         // Color string find in search
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.labelTitle.font = .systemFont(ofSize: 15)
+        cell.labelExtension?.textColor = NCBrandColor.shared.textColor
+        cell.labelExtension?.font = .systemFont(ofSize: 15)
 
         // Obligatory here, at the end !!
         cell.metadata = metadata

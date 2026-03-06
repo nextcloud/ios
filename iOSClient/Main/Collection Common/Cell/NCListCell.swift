@@ -28,6 +28,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelInfoSeparator: UILabel!
     @IBOutlet weak var tag0: UILabel!
     @IBOutlet weak var tag1: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
@@ -113,6 +114,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageSelect.image = nil
 
         labelTitle.text = ""
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
         tag0.text = ""
@@ -314,79 +317,6 @@ class NCListLayout: UICollectionViewFlowLayout {
     }
 }
 
-class BidiFilenameLabel: UILabel {
-    var fullFilename: String = ""
-
-    var isFolder: Bool = false
-
-    var isRTL: Bool = false
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateText()
-    }
-
-    private func updateText() {
-        guard !fullFilename.isEmpty else {
-            self.text = ""
-            return
-        }
-
-        let availableWidth = bounds.width
-        guard availableWidth > 0 else { return }
-
-        let isRTL = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
-        let sanitizedFilename = fullFilename.sanitizeForBidiCharacters(isFolder: isFolder, isRTL: isRTL)
-
-        let nsFilename = sanitizedFilename as NSString
-        let ext = nsFilename.pathExtension
-        let base = nsFilename.deletingPathExtension
-
-        let dotExt = ext.isEmpty ? "" : "." + ext
-        let truncatedBase = truncateBase(base: base, dotExt: dotExt, maxWidth: availableWidth, font: font ?? UIFont.systemFont(ofSize: 17))
-
-        self.text = sanitizedFilename.replacingOccurrences(of: base, with: truncatedBase)
-    }
-
-    private func truncateBase(base: String, dotExt: String, maxWidth: CGFloat, font: UIFont) -> String {
-        let extWidth = (dotExt as NSString).size(withAttributes: [.font: font]).width
-
-        if (base as NSString).size(withAttributes: [.font: font]).width + extWidth <= maxWidth {
-            return base
-        }
-
-        let characters = Array(base)
-        var low = 0
-        var high = characters.count
-        var result = ""
-
-        while low <= high {
-            let mid = (low + high) / 2
-            let prefixCount = mid / 2
-            let suffixCount = mid - prefixCount
-            let finalString = String(characters.prefix(prefixCount)) + "…" + String(characters.suffix(suffixCount))
-            let finalStringWidth = (finalString as NSString).size(withAttributes: [.font: font]).width + extWidth
-
-            if finalStringWidth <= maxWidth {
-                result = finalString
-                low = mid + 1
-            } else {
-                high = mid - 1
-            }
-        }
-
-        return result
-    }
-}
-
 #if !EXTENSION
 extension NCCollectionViewCommon {
     func listCell(cell: NCListCell, indexPath: IndexPath, metadata: tableMetadata) -> NCListCell {
@@ -435,7 +365,7 @@ extension NCCollectionViewCommon {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        cell.labelTitle?.text = metadata.fileNameView
+        cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
@@ -529,6 +459,8 @@ extension NCCollectionViewCommon {
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
         cell.labelTitle?.font = .systemFont(ofSize: 15)
+        cell.labelExtension?.textColor = NCBrandColor.shared.textColor
+        cell.labelExtension?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode,
            let searchResultStore,

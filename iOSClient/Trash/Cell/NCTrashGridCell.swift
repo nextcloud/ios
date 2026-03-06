@@ -31,6 +31,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
@@ -66,8 +67,18 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         imageVisualEffect.alpha = 0.5
 
         labelTitle.text = ""
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
+
+        if labelExtension?.isHidden ?? true {
+            labelTitle.numberOfLines = 2
+            labelTitle.lineBreakMode = .byWordWrapping
+        } else {
+            labelTitle.numberOfLines = 1
+            labelTitle.lineBreakMode = .byTruncatingTail
+        }
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {

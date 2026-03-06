@@ -12,6 +12,7 @@ protocol NCRecommendationsCellDelegate: AnyObject {
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var labelFilename: UILabel!
+    @IBOutlet weak var labelExtensionFilename: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
 
@@ -51,6 +52,8 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
         image.image = nil
         labelFilename.text = ""
+        labelExtensionFilename?.text = ""
+        labelExtensionFilename?.isHidden = true
         labelInfo.text = ""
 
         buttonMore.menu = nil
