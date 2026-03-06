@@ -62,8 +62,10 @@ func showErrorBanner(windowScene: UIWindowScene?,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true,
     )
+
     banner.show(
         payload: payload,
+        policy: .replace,
         onTap: { _, _ in
             banner.dismiss()
         }

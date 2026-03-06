@@ -162,7 +162,7 @@ class NCViewerMedia: UIViewController {
                                     return
                                 }
                                 var downloadRequest: DownloadRequest?
-                                let (token, banner) = showHudBanner(windowScene: self.windowScene,
+                                let (banner, token) = showHudBanner(windowScene: self.windowScene,
                                                                     title: "_download_in_progress_",
                                                                     stage: .button) {
                                     if let request = downloadRequest {
@@ -174,11 +174,16 @@ class NCViewerMedia: UIViewController {
                                     downloadRequest = request
                                 } progressHandler: { progress in
                                     Task {@MainActor in
-                                        banner?.update(payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
-                                                       for: token)
+                                        banner?.update(
+                                            payload: LucidBannerPayload.Update(progress: progress.fractionCompleted),
+                                            for: token
+                                        )
                                     }
                                 }
-                                banner?.dismiss()
+
+                                if let banner {
+                                    banner.dismiss()
+                                }
 
                                 if results.nkError == .success {
                                     if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {

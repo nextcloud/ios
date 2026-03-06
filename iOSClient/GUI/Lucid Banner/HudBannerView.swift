@@ -10,7 +10,7 @@ func showHudBanner(windowScene: UIWindowScene?,
                    title: String? = nil,
                    subtitle: String? = nil,
                    stage: LucidBanner.Stage? = nil,
-                   onButtonTap: (() -> Void)? = nil) -> (token: Int?, banner: LucidBanner?) {
+                   onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene else {
         return (nil, nil)
     }
@@ -27,12 +27,13 @@ func showHudBanner(windowScene: UIWindowScene?,
     )
 
     let token = banner.show(
-        payload: payload
+        payload: payload,
+        policy: .enqueue
     ) { state in
         HudBannerView(state: state, onButtonTap: onButtonTap)
     }
 
-    return (token, banner)
+    return(banner, token)
 }
 
 @MainActor

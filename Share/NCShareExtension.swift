@@ -388,7 +388,7 @@ extension NCShareExtension {
                                          vPosition: .center,
                                          horizontalLayout: horizontalLayout,
                                          blocksTouches: true)
-        (token, banner) = showUploadBanner(windowScene: window.windowScene,
+        (banner, token) = showUploadBanner(windowScene: window.windowScene,
                                            payload: payload,
                                            allowMinimizeOnTap: false,
                                            onButtonTap: {
@@ -416,8 +416,11 @@ extension NCShareExtension {
             banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
         }
 
-        banner?.dismiss(after: 2) {
-            self.cancel()
+        if let banner, let token {
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(2))
+                banner.dismiss()
+            }
         }
     }
 

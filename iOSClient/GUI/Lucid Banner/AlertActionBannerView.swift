@@ -6,10 +6,10 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showAlertActionBannerView(lucidBanner: LucidBanner?,
-                               title: String? = nil,
-                               subtitle: String? = nil,
-                               onConfirm: (() -> Void)? = nil) {
+func showAlertActionBanner(lucidBanner: LucidBanner?,
+                           title: String? = nil,
+                           subtitle: String? = nil,
+                           onConfirm: (() -> Void)? = nil) {
     guard let lucidBanner else {
         return
     }
@@ -28,9 +28,7 @@ func showAlertActionBannerView(lucidBanner: LucidBanner?,
     )
 
     lucidBanner.show(payload: payload,
-                     policy: .replace) { _, _ in
-        lucidBanner.dismiss()
-    } content: { state in
+                     policy: .enqueue) { state in
         AlertActionBannerView(
             state: state,
             onConfirm: {
@@ -42,7 +40,6 @@ func showAlertActionBannerView(lucidBanner: LucidBanner?,
             }
         )
     }
-
 }
 
 // MARK: - SwiftUI
@@ -84,26 +81,34 @@ struct AlertActionBannerView: View {
 
                 // Buttons
                 HStack(spacing: 12) {
-                    Button("_cancel_") {
+                    Button {
                         onCancel?()
+                    } label: {
+                        Text("_cancel_")
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                     }
                     .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
                     .background(
                         Capsule()
                             .stroke(Color.secondary.opacity(0.5), lineWidth: 1)
                     )
                     .foregroundStyle(.primary)
+                    .buttonStyle(.plain)
 
-                    Button("_ok_") {
+                    Button {
                         onConfirm?()
+                    } label: {
+                        Text("_ok_")
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                     }
                     .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
                     .background(
                         Capsule().fill(Color.accentColor)
                     )
                     .foregroundStyle(.white)
+                    .buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity)
             }

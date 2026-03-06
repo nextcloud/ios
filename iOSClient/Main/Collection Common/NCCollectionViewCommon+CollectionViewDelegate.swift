@@ -30,17 +30,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         func downloadFile() async {
             var downloadRequest: DownloadRequest?
             var banner: LucidBanner?
-            var tokenBanner: Int?
-            await MainActor.run {
-                (tokenBanner, banner) = showHudBanner(windowScene: windowScene,
-                                                      title: "_download_in_progress_",
-                                                      stage: .button,
-                                                      onButtonTap: {
-                    if let request = downloadRequest {
-                        request.cancel()
-                    }
-                })
-            }
+            var token: Int?
+
+            (banner, token) = showHudBanner(windowScene: windowScene,
+                                            title: "_download_in_progress_",
+                                            stage: .button,
+                                            onButtonTap: {
+                if let request = downloadRequest {
+                    request.cancel()
+                }
+            })
 
             guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                        session: self.networking.sessionDownload,
@@ -55,11 +54,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 Task {@MainActor in
                     banner?.update(
                         payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
-                        for: tokenBanner)
+                        for: token)
                 }
             }
-            await MainActor.run {
-                banner?.dismiss()
+
+            if let banner {
+                await banner.dismissAsync()
             }
 
             if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
