@@ -53,11 +53,12 @@ struct NCAccountSettingsView: View {
                                     .offset(x: 30, y: -30)
                                 }
                                 Text(model.getUserName())
+                                    .cappedFont(.subheadline, maxDynamicType: .xxxLarge)
                                     .font(.subheadline)
                                 Spacer()
                                     .frame(height: 10)
                                 Text(status.statusMessage)
-                                    .font(.caption)
+                                    .cappedFont(.caption, maxDynamicType: .xxxLarge)
                                 Spacer()
                                     .frame(height: 20)
                                 //
@@ -68,7 +69,7 @@ struct NCAccountSettingsView: View {
                                             Image(systemName: "mail")
                                                 .font(.icon())
                                             Text(tblAccount.email)
-                                                .cappedFont(.body, maxDynamicType: .accessibility2)
+                                                .cappedFont(.body, maxDynamicType: .xxxLarge)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -81,7 +82,7 @@ struct NCAccountSettingsView: View {
                                             Image(systemName: "phone")
                                                 .font(.icon())
                                             Text(tblAccount.phone)
-                                                .cappedFont(.body, maxDynamicType: .accessibility2)
+                                                .cappedFont(.body, maxDynamicType: .xxxLarge)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -93,7 +94,7 @@ struct NCAccountSettingsView: View {
                                             Image(systemName: "house")
                                                 .font(.icon())
                                             Text(tblAccount.address)
-                                                .cappedFont(.body, maxDynamicType: .accessibility2)
+                                                .cappedFont(.body, maxDynamicType: .xxxLarge)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -104,7 +105,7 @@ struct NCAccountSettingsView: View {
                             }
                         }
                     }
-                    .font(.subheadline)
+                    .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
