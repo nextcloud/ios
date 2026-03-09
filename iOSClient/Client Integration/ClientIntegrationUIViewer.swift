@@ -26,20 +26,20 @@ struct ClientIntegrationUIViewer: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text(row.element)
-                                .font(.subheadline())
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Spacer()
                         }
 
                         if let title = row.title {
                             Text(title)
-                                .font(.headline())
+                                .font(.headline)
                         }
 
                         let finalUrl = baseURL + row.urlString
 
                         Text(finalUrl)
-                            .font(.footnote())
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .textSelection(.enabled)
 

@@ -13,8 +13,8 @@ struct NCManageE2EEView: View {
         VStack {
             if model.isEndToEndEnabled {
                 List {
-                    Section(header: Text("").font(.headline()),
-                            footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
+                    Section(header: Text("").font(.headline),
+                            footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote)) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                                 .cappedFont(.body, maxDynamicType: .accessibility2)
@@ -85,8 +85,8 @@ struct NCManageE2EEView: View {
                 }
             } else {
                 List {
-                    Section(header: Text("").font(.headline()),
-                            footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote())) {
+                    Section(header: Text("").font(.headline),
+                            footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.e2EEApiVersion).font(.footnote)) {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
@@ -132,8 +132,8 @@ struct NCManageE2EEView: View {
 
     @ViewBuilder
     var deleteCerificateSection: some View {
-        Section(header: Text("Delete Server keys").font(.headline()),
-                footer: Text("Available only in debug mode").font(.footnote())) {
+        Section(header: Text("Delete Server keys").font(.headline),
+                footer: Text("Available only in debug mode").font(.footnote)) {
             HStack {
                 Label {
                     Text("Delete Certificate")

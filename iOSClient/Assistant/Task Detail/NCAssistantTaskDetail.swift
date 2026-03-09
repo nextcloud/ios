@@ -53,7 +53,7 @@ struct InputOutputScrollView: View {
         ScrollView {
             VStack(alignment: .leading) {
                 Text(NSLocalizedString("_input_", comment: ""))
-                    .font(.headline())
+                    .font(.headline)
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.input?.input ?? "")
@@ -65,7 +65,7 @@ struct InputOutputScrollView: View {
                     .textSelection(.enabled)
 
                 Text(NSLocalizedString("_output_", comment: ""))
-                    .font(.headline())
+                    .font(.headline)
                     .padding(.top, 10)
 
                 Text(model.selectedTask?.output?.output ?? "")

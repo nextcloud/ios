@@ -25,7 +25,7 @@ struct NCAssistantEmptyView: View {
                 .padding(.bottom, 5)
 
             Text(NSLocalizedString(subtitleKey, comment: ""))
-                .font(.footnote())
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .id(dynamicTypeSize)

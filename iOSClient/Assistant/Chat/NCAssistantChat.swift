@@ -108,7 +108,7 @@ struct MessageBubbleView: View {
                     .clipShape(.rect(cornerRadius: 16))
 
                 Text(NCUtility().getRelativeDateTitle(Date(timeIntervalSince1970: TimeInterval(message.timestamp))))
-                    .font(.caption1())
+                    .font(.caption)
                     .id(dynamicTypeSize)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)

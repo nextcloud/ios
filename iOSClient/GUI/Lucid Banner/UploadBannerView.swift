@@ -121,7 +121,7 @@ struct UploadBannerView: View {
                                 .foregroundStyle(.white)
                             if showSubtitle, let subtitle = state.payload.subtitle {
                                 Text(subtitle)
-                                    .font(.subheadline())
+                                    .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)
                                     .foregroundStyle(.white)

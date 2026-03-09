@@ -11,7 +11,7 @@ struct NCDisplayView: View {
 
     var body: some View {
         Form {
-            Section(header: Text(NSLocalizedString("_appearance_", comment: "")).font(.headline())) {
+            Section(header: Text(NSLocalizedString("_appearance_", comment: "")).font(.headline)) {
                 VStack {
                     HStack {
                         Spacer()

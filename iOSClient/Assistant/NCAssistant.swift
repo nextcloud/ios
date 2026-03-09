@@ -257,7 +257,7 @@ struct TaskItem: View {
                     Label(
                         title: {
                             Text(task.statusDate)
-                                .font(.callout())
+                                .font(.callout)
                                 .id(dynamicTypeSize)
                                 .foregroundStyle(.secondary)
                         },

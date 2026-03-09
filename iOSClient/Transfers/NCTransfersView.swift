@@ -58,7 +58,7 @@ struct TransfersView: View {
                     inWaitingCount: model.inWaitingCount,
                     inProgressCount: model.inProgressCount,
                     inErrorCount: model.inErrorCount
-                ).font(.headline())) {
+                ).font(.headline)) {
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
@@ -94,10 +94,10 @@ struct TransfersSummaryHeader: View {
     private func summaryPill(title: String, value: Int) -> some View {
         HStack(spacing: 6) {
             Text(NSLocalizedString(title, comment: ""))
-                .font(.caption1())
+                .font(.caption)
                 .foregroundStyle(.secondary)
             Text("\(value)")
-                .font(.caption1())
+                .font(.caption)
                 .fontWeight(.semibold)
         }
         .padding(.horizontal, 10)
@@ -124,15 +124,15 @@ struct EmptyTransfersView: View {
 
             if flash {
                 Text("_update_in_progress_")
-                    .font(.headline())
+                    .font(.headline)
                     .multilineTextAlignment(.center)
             } else {
                 Text("_no_transfer_")
-                    .font(.headline())
+                    .font(.headline)
                     .multilineTextAlignment(.center)
 
                 Text("_no_transfer_sub_")
-                    .font(.subheadline())
+                    .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 24)
@@ -205,23 +205,23 @@ struct TransferRowView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName)
-                        .font(.headline())
+                        .font(.headline)
 
                     if !status.status.isEmpty {
                         Text(status.status)
-                            .font(.footnote())
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .padding(.top, 2)
                     }
 
                     if let wwan = model.wwanWaitInfoIfNeeded(for: item), !wwan.isEmpty {
                         Text(wwan)
-                            .font(.footnote())
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .padding(.top, 2)
                     } else if !status.info.isEmpty {
                         Text(status.info)
-                            .font(.footnote())
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .padding(.top, 2)
                     }

@@ -53,11 +53,11 @@ struct NCAccountSettingsView: View {
                                     .offset(x: 30, y: -30)
                                 }
                                 Text(model.getUserName())
-                                    .font(.subheadline())
+                                    .font(.subheadline)
                                 Spacer()
                                     .frame(height: 10)
                                 Text(status.statusMessage)
-                                    .font(.caption1())
+                                    .font(.caption)
                                 Spacer()
                                     .frame(height: 20)
                                 //
@@ -104,7 +104,7 @@ struct NCAccountSettingsView: View {
                             }
                         }
                     }
-                    .font(.subheadline())
+                    .font(.subheadline)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
@@ -127,7 +127,7 @@ struct NCAccountSettingsView: View {
                                 }
                         }
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
-                            .font(.footnote())
+                            .font(.footnote)
                             .foregroundStyle(Color(UIColor.lightGray))
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -178,7 +178,7 @@ struct NCAccountSettingsView: View {
                                     .cappedFont(.body, maxDynamicType: .accessibility2)
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                             }
-                            .font(.subheadline())
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showServerCertificate) {
                             if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
@@ -199,7 +199,7 @@ struct NCAccountSettingsView: View {
                                     .cappedFont(.body, maxDynamicType: .accessibility2)
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                             }
-                            .font(.subheadline())
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showPushCertificate) {
                             Group {
@@ -235,7 +235,7 @@ struct NCAccountSettingsView: View {
                                 .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .foregroundStyle(.red)
                         }
-                        .font(.callout())
+                        .font(.callout)
                     })
                     .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
                         Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
