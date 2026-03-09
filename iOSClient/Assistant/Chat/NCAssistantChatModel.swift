@@ -63,15 +63,15 @@ class NCAssistantChatModel {
         showRetryResponseGenerationButton = false
         currentSession = nil
 
-            await loadAllMessages()
-            currentSession = await checkChatSession(sessionId: selectedConversation.id)
-            chatMessageTaskId = currentSession?.messageTaskId
+        await loadAllMessages()
+        currentSession = await checkChatSession(sessionId: selectedConversation.id)
+        chatMessageTaskId = currentSession?.messageTaskId
 
-            if messages.last?.isFromHuman == true, chatMessageTaskId == nil, isSending == false {
-                showRetryResponseGenerationButton = true
-            } else if chatMessageTaskId != nil {
-                startPollingForResponse()
-            }
+        if messages.last?.isFromHuman == true, chatMessageTaskId == nil, isSending == false {
+            showRetryResponseGenerationButton = true
+        } else if chatMessageTaskId != nil {
+            startPollingForResponse()
+        }
     }
 
     func generateChatSession() async {
