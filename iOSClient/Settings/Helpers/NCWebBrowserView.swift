@@ -13,7 +13,6 @@ import SwiftUI
 ///   - urlBase: A URL value to which our view will open initially
 ///   - browserTitle: A String value to show as the title of the webView
 struct NCBrowserWebView: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var urlBase: URL
     var browserTitle: String
@@ -48,7 +47,6 @@ struct NCBrowserWebView: View {
             Divider()
             WebView(url: urlBase)
         }
-        .id(dynamicTypeSize)
         .navigationBarTitle(Text(""), displayMode: .inline) // Empty title to hide default navigation bar title
     }
 }

@@ -25,8 +25,6 @@ struct NCSettingsView: View {
         NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
     }
 
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
-
     var body: some View {
         Form {
             // `Auto Upload` Section
@@ -284,7 +282,6 @@ struct NCSettingsView: View {
                     .font(.footnote)
             })
         }
-        .id(dynamicTypeSize)
         .sheet(isPresented: $showPasscode) {
             SetupPasscodeView(isLockActive: $model.isLockActive, controller: model.controller)
         }

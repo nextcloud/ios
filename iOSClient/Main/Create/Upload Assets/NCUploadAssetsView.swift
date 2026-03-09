@@ -28,7 +28,6 @@ struct NCUploadAssetsView: View {
     let utilityFileSystem = NCUtilityFileSystem()
 
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         NavigationView {
@@ -212,7 +211,6 @@ struct NCUploadAssetsView: View {
                     }
                 }
             }
-            .id(dynamicTypeSize)
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: {

@@ -6,7 +6,6 @@ import SwiftUI
 
 struct ClientIntegrationUIViewer: View {
     @Environment(\.openURL) private var openURL
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     struct Row: Identifiable {
         let id = UUID()
@@ -62,7 +61,6 @@ struct ClientIntegrationUIViewer: View {
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
             }
-            .id(dynamicTypeSize)
             .padding()
         }
     }

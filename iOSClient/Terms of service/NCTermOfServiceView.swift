@@ -8,7 +8,6 @@ struct NCTermOfServiceModelView: View {
     @State private var selectedLanguage = Locale.preferredLanguages.first?.components(separatedBy: "-").first ?? "en"
     @State private var termsText = "Loading terms..."
     @ObservedObject var model: NCTermOfServiceModel
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -59,7 +58,6 @@ struct NCTermOfServiceModelView: View {
                     .padding(.bottom)
             }
         }
-        .id(dynamicTypeSize)
         .padding()
         .onAppear {
             if let item = model.terms[selectedLanguage] {

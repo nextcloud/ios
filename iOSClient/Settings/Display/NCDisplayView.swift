@@ -7,7 +7,6 @@ import SwiftUI
 struct NCDisplayView: View {
     @ObservedObject var model: NCDisplayModel
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         Form {
@@ -84,7 +83,6 @@ struct NCDisplayView: View {
                 .font(.callout)
             }
         }
-        .id(dynamicTypeSize)
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .defaultViewModifier(model)

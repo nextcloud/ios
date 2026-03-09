@@ -12,7 +12,6 @@ struct NCAssistant: View {
     @State var conversationsModel: NCAssistantChatConversationsModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         NavigationView {
@@ -196,7 +195,6 @@ struct TaskList: View {
 
 struct TypeButton: View {
     @Environment(NCAssistantModel.self) var model
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
@@ -211,7 +209,6 @@ struct TypeButton: View {
         } label: {
             Text(taskType?.name ?? "")
                 .cappedFont(.body, maxDynamicType: .accessibility2)
-                .id(dynamicTypeSize)
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
@@ -234,7 +231,6 @@ struct TypeButton: View {
 
 struct TaskItem: View {
     @Environment(NCAssistantModel.self) var model
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Binding var showDeleteConfirmation: Bool
     @Binding var taskToDelete: AssistantTask?
     var task: AssistantTask
@@ -258,7 +254,6 @@ struct TaskItem: View {
                         title: {
                             Text(task.statusDate)
                                 .font(.callout)
-                                .id(dynamicTypeSize)
                                 .foregroundStyle(.secondary)
                         },
                         icon: {

@@ -6,7 +6,6 @@ import SwiftUI
 import NextcloudKit
 
 struct StatusInfo: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let task: AssistantTask
     var showStatusText = false
 
@@ -26,7 +25,6 @@ struct StatusInfo: View {
                         .font(Font.system(.body).weight(.light))
                 }
             )
-            .id(dynamicTypeSize)
             .padding(.top, 1)
             .labelStyle(CustomLabelStyle())
         }

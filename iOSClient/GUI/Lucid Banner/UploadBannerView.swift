@@ -45,7 +45,6 @@ func showUploadBanner(windowScene: UIWindowScene?,
 
 struct UploadBannerView: View {
     @ObservedObject var state: LucidBannerState
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @State var trigger = true
     var coordinator: LucidBannerVariantCoordinator?
     let onButtonTap: (() -> Void)?
@@ -198,7 +197,6 @@ struct UploadBannerView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .id(dynamicTypeSize)
     }
 }
 

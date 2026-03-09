@@ -54,7 +54,6 @@ func showBanner(windowScene: UIWindowScene?,
 
 struct BannerView: View {
     @ObservedObject var state: LucidBannerState
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         let showTitle = !(state.payload.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
@@ -100,7 +99,6 @@ struct BannerView: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .id(dynamicTypeSize)
     }
 }
 

@@ -8,7 +8,6 @@ import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @State private var reachedAnchor = false
 
     @StateObject var model: NCAutoUploadModel
@@ -249,8 +248,6 @@ struct NCAutoUploadView: View {
 
 @ViewBuilder
 var noPermissionsView: some View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
-
     VStack {
         Text("_access_photo_not_enabled_")
             .padding()
@@ -258,7 +255,6 @@ var noPermissionsView: some View {
         Text("_access_photo_not_enabled_msg_")
             .font(.body)
     }
-    .id(dynamicTypeSize)
     .padding(16)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(UIColor.systemGroupedBackground))
@@ -294,7 +290,6 @@ private struct AutoUploadProminentButtonStyle: ToggleStyle {
 
 struct ConfirmAutoUploadSheet: View {
     @ObservedObject var model: NCAutoUploadModel
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -376,7 +371,6 @@ struct ConfirmAutoUploadSheet: View {
                 .buttonStyle(.bordered)
             }
         }
-        .id(dynamicTypeSize)
         .padding(.horizontal, 20)
     }
 }

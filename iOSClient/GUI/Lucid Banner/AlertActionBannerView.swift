@@ -46,7 +46,6 @@ func showAlertActionBanner(lucidBanner: LucidBanner?,
 
 struct AlertActionBannerView: View {
     @ObservedObject var state: LucidBannerState
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     let onConfirm: (() -> Void)?
     let onCancel: (() -> Void)?
@@ -118,7 +117,6 @@ struct AlertActionBannerView: View {
             }
             .padding(20)
         }
-        .id(dynamicTypeSize)
     }
 
     // MARK: - Container

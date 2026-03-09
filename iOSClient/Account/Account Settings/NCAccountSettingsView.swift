@@ -20,7 +20,6 @@ struct NCAccountSettingsView: View {
     }
 
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         NavigationView {
@@ -255,7 +254,6 @@ struct NCAccountSettingsView: View {
                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
             })
         }
-        .id(dynamicTypeSize)
         .defaultViewModifier(model)
         .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(model.$dismissView) { newValue in

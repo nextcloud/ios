@@ -6,7 +6,6 @@ import SwiftUI
 
 struct NCFileNameView: View {
     @ObservedObject var model: NCFileNameModel
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         Form {
@@ -37,7 +36,6 @@ struct NCFileNameView: View {
             fileNamePreview
                 .animation(.easeInOut, value: model.addFileNameType)
         }
-        .id(dynamicTypeSize)
         .navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
         .defaultViewModifier(model)
         .padding(.top, 0)

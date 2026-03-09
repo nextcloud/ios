@@ -46,7 +46,6 @@ struct NCAssistantTaskDetail: View {
 
 struct InputOutputScrollView: View {
     @Environment(NCAssistantModel.self) var model
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let task: AssistantTask
 
     var body: some View {
@@ -76,7 +75,6 @@ struct InputOutputScrollView: View {
                     .clipShape(.rect(cornerRadius: 8))
                     .textSelection(.enabled)
             }
-            .id(dynamicTypeSize)
             .padding(.horizontal)
             .padding(.bottom, 80)
         }

@@ -69,7 +69,6 @@ func completeHudBannerError(description: String, token: Int?, banner: LucidBanne
 
 struct HudBannerView: View {
     @ObservedObject var state: LucidBannerState
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @State private var displayedProgress: Double = 0
 
     let onButtonTap: (() -> Void)?
@@ -184,7 +183,6 @@ struct HudBannerView: View {
             .padding(.horizontal, 22)
             .padding(.vertical, 24)
         }
-        .id(dynamicTypeSize)
         .onAppear {
             displayedProgress = clampedProgress
         }

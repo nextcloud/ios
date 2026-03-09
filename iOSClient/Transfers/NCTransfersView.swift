@@ -8,7 +8,6 @@ import SwiftUI
 
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @StateObject private var model: TransfersViewModel
 
     private let onClose: (() -> Void)?
@@ -76,7 +75,6 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let inWaitingCount: Int
     let inProgressCount: Int
     let inErrorCount: Int
@@ -109,7 +107,6 @@ struct TransfersSummaryHeader: View {
 // MARK: - Empty State
 
 struct EmptyTransfersView: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: TransfersViewModel
     @State private var flash = false
 
@@ -189,7 +186,6 @@ struct EmptyTransfersView: View {
 // MARK: - Row
 
 struct TransferRowView: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: TransfersViewModel
 
     let item: tableMetadata
@@ -262,7 +258,6 @@ struct TransferRowView: View {
             .contentShape(Rectangle())
             Divider()
         }
-        .id(dynamicTypeSize)
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
     }

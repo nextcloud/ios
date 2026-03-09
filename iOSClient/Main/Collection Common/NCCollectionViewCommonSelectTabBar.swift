@@ -141,7 +141,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
 struct NCCollectionViewCommonSelectTabBarView: View {
     @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
         VStack {
@@ -217,7 +216,6 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .id(dynamicTypeSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)

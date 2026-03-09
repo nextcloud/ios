@@ -88,7 +88,6 @@ struct NCAssistantChat: View {
 // MARK: - Message Bubble View
 
 struct MessageBubbleView: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let message: AssistantChatMessage
     let account: String
 
@@ -101,7 +100,6 @@ struct MessageBubbleView: View {
             VStack(alignment: message.isFromHuman ? .trailing : .leading, spacing: 4) {
                 Text(message.content)
                     .cappedFont(.body, maxDynamicType: .accessibility2)
-                    .id(dynamicTypeSize)
                     .foregroundStyle(message.isFromHuman ? .white : .primary)
                     .padding()
                     .background(bubbleBackground)
@@ -109,7 +107,6 @@ struct MessageBubbleView: View {
 
                 Text(NCUtility().getRelativeDateTitle(Date(timeIntervalSince1970: TimeInterval(message.timestamp))))
                     .font(.caption)
-                    .id(dynamicTypeSize)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)
             }

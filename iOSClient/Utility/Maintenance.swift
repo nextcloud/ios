@@ -9,7 +9,6 @@ import NextcloudKit
 
 /// A modal SwiftUI view responsible for maintenance database
 struct Maintenance: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     let onCompleted: () -> Void
 
     var body: some View {
@@ -38,7 +37,6 @@ struct Maintenance: View {
 
                 Spacer()
             }
-            .id(dynamicTypeSize)
             .task {
                 await startMaintenance()
             }

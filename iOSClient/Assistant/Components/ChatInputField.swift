@@ -5,7 +5,6 @@
 import SwiftUI
 
 struct ChatInputField: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @FocusState private var isInputFocused: Bool
     @State var text: String = ""
     @Binding var isLoading: Bool
@@ -53,7 +52,6 @@ struct ChatInputField: View {
                 .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || isDisabled || isLoading)
             }
         }
-        .id(dynamicTypeSize)
         .padding(.horizontal)
         .padding(.top, 16)
         .padding(.bottom, 16)

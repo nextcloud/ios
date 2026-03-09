@@ -12,7 +12,6 @@ struct NCStatusMessageView: View {
 
     @State private var model: NCStatusMessageModel
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @FocusState private var isTextFieldFocused: Bool
 
     init(account: String, controller: NCMainTabBarController?) {
@@ -87,7 +86,6 @@ struct NCStatusMessageView: View {
             }
             .padding(24)
         }
-        .id(dynamicTypeSize)
         .scrollDismissesKeyboard(.interactively)
         .onTapGesture {
             isTextFieldFocused = false

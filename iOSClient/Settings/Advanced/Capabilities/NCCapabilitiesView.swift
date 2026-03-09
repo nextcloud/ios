@@ -25,7 +25,6 @@ import SwiftUI
 import NextcloudKit
 
 struct NCCapabilitiesView: View {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ObservedObject var model: NCCapabilitiesModel
 
     var body: some View {
@@ -50,7 +49,6 @@ struct NCCapabilitiesView: View {
     }
 
     struct CapabilityName: View {
-        @Environment(\.dynamicTypeSize) var dynamicTypeSize
         @Binding var text: String
         @State var image: Image
         @State var resize: Bool
@@ -74,7 +72,6 @@ struct NCCapabilitiesView: View {
                         .frame(width: size, height: size)
                 }
             }
-            .id(dynamicTypeSize)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }

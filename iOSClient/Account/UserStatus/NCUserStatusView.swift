@@ -9,7 +9,6 @@ struct NCUserStatusView: View {
 
     @State private var model: NCUserStatusModel
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     init(account: String, controller: NCMainTabBarController?) {
         self.account = account
@@ -53,7 +52,6 @@ struct NCUserStatusView: View {
                 }
             }
         }
-        .id(dynamicTypeSize)
         .navigationTitle(NSLocalizedString("_select_user_status_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
