@@ -26,10 +26,12 @@ struct NCStatusMessageView: View {
             VStack(spacing: 24) {
                 HStack(spacing: 12) {
                     EmojiField(text: $model.emojiText)
+                        .font(.icon())
 
                     TextField("_status_message_placehorder_", text: $model.statusText)
                         .focused($isTextFieldFocused)
                         .textFieldStyle(.roundedBorder)
+                        .cappedFont(.body, maxDynamicType: .xxxLarge)
                 }
                 .frame(height: 20)
 
@@ -114,16 +116,16 @@ private struct StatusPresetRow: View {
         }) {
             HStack(spacing: 16) {
                 Text(preset.icon ?? "")
-                    .font(.headline)
+                    .font(.icon())
                     .frame(width: 32)
                 Text(preset.message ?? "")
-                    .font(.headline)
+                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.primary)
                 Text("—")
-                    .font(.headline)
+                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.secondary)
                 Text(cleatAtText)
-                    .font(.headline)
+                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.secondary)
                 Spacer()
             }
