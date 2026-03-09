@@ -54,6 +54,7 @@ struct NCCapabilitiesView: View {
         @Binding var text: String
         @State var image: Image
         @State var resize: Bool
+        let size = 26.0
 
         var body: some View {
             Label {
@@ -63,14 +64,14 @@ struct NCCapabilitiesView: View {
                 if resize {
                     image
                         .resizable()
-                        .font(.icon())
-                        .frame(width: 23.0, height: 23.0)
+                        .frame(width: size, height: size)
                         .foregroundColor(.primary)
                 } else {
                     image
+                        .resizable()
+                        .scaledToFit()
                         .foregroundColor(.primary)
-                        .font(.icon())
-                        .frame(width: 23.0, height: 23.0)
+                        .frame(width: size, height: size)
                 }
             }
             .id(dynamicTypeSize)
