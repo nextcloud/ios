@@ -55,7 +55,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         emptyTitle.font = .headline()
         emptyTitle.adjustsFontForContentSizeCategory = true
 
-        emptyDescription.font = .caption1()
+        emptyDescription.font = .callout()
         emptyDescription.adjustsFontForContentSizeCategory = true
     }
 
