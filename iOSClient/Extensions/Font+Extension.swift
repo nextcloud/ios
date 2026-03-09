@@ -5,8 +5,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - SwiftUI Font Helpers
-//
 // This extension provides a convenience font for icon rendering in SwiftUI.
 //
 // SF Symbols behave like typographic glyphs rather than images. The correct

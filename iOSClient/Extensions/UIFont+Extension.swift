@@ -6,8 +6,6 @@ import Foundation
 import UIKit
 import SwiftUI
 
-// MARK: - UIFont Dynamic Type Helpers
-//
 // This extension provides convenience helpers for creating Dynamic Type fonts
 // with an upper bound on their maximum size.
 //
