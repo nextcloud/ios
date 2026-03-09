@@ -33,7 +33,7 @@ struct NCUploadAssetsView: View {
         NavigationView {
             ZStack(alignment: .top) {
                 List {
-                    Section(footer: Text(NSLocalizedString("_modify_image_desc_", comment: ""))) {
+                    Section(footer: Text(NSLocalizedString("_modify_image_desc_", comment: "")).font(.footnote)) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<model.previewStore.count, id: \.self) { index in
@@ -120,6 +120,7 @@ struct NCUploadAssetsView: View {
                                                 Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
                                             } message: {
                                                 Text(renameError)
+                                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                                             }
                                     }
                                     .onChange(of: renameFileName) { _, newValue in
@@ -140,8 +141,9 @@ struct NCUploadAssetsView: View {
                         if NCNetworking.shared.isOnline {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
-                                    .font(.system(size: 15))
+                                    .cappedFont(.body, maxDynamicType: .accessibility2)
                             })
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                             .onChange(of: model.useAutoUploadFolder) {
                                 model.updateUseAutoUploadFolder()
                             }
@@ -150,8 +152,9 @@ struct NCUploadAssetsView: View {
                             if model.useAutoUploadFolder {
                                 Toggle(isOn: $model.useAutoUploadSubFolder, label: {
                                     Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
-                                        .font(.system(size: 15))
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
                                 })
+                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .onChange(of: model.useAutoUploadSubFolder) {
                                     model.updateUseAutoUploadSubFolder()
                                 }
@@ -164,11 +167,11 @@ struct NCUploadAssetsView: View {
                                 Label {
                                     if utilityFileSystem.getHomeServer(session: model.session) == model.serverUrl {
                                         Text("/")
-                                            .font(.system(size: 15))
+                                            .cappedFont(.body, maxDynamicType: .accessibility2)
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     } else {
                                         Text(model.getTextServerUrl())
-                                            .font(.system(size: 15))
+                                            .cappedFont(.body, maxDynamicType: .accessibility2)
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     }
                                 } icon: {

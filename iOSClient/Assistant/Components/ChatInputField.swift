@@ -20,12 +20,14 @@ struct ChatInputField: View {
     var body: some View {
         VStack {
             Text("_assistant_ai_warning_")
+                .cappedFont(.body, maxDynamicType: .accessibility2)
                 .lineLimit(1)
                 .allowsTightening(true)
                 .minimumScaleFactor(0.5)
 
             HStack(spacing: 8) {
                 TextField(NSLocalizedString("_type_message_", comment: ""), text: $text, axis: .vertical)
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
@@ -44,7 +46,7 @@ struct ChatInputField: View {
                             .frame(width: 28, height: 28)
                     } else {
                         Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 28))
+                            .font(.icon(28))
                     }
                 }
                 .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || isDisabled || isLoading)

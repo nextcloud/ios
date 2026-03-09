@@ -111,7 +111,8 @@ struct HudBannerView: View {
                 // TITLE
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .font(.headline.weight(.semibold))
+                        .cappedFont(.title3, maxDynamicType: .accessibility2)
+                        .fontWeight(.semibold)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -119,7 +120,7 @@ struct HudBannerView: View {
                 // SUBTITLE
                 if let subtitle = state.payload.subtitle, !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .cappedFont(.subheadline, maxDynamicType: .accessibility1)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
                 }
@@ -148,15 +149,16 @@ struct HudBannerView: View {
                     Group {
                         if isSuccess {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 34, weight: .bold))
+                                .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
                         } else if isError {
                             Image(systemName: "xmark")
-                                .font(.system(size: 34, weight: .bold))
+                                .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
                         } else {
                             Text("\(Int(visualProgress * 100))%")
-                                .font(.headline.monospacedDigit())
+                                .cappedFont(.headline, maxDynamicType: .accessibility2)
+                                .monospacedDigit()
                                 .foregroundStyle(textColor)
                         }
                     }

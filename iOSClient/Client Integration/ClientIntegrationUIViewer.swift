@@ -26,13 +26,13 @@ struct ClientIntegrationUIViewer: View {
                         HStack {
                             Text(row.element)
                                 .font(.subheadline)
-                                .fontWeight(.semibold)
                                 .foregroundStyle(.secondary)
                             Spacer()
                         }
 
                         if let title = row.title {
-                            Text(title).font(.headline)
+                            Text(title)
+                                .font(.headline)
                         }
 
                         let finalUrl = baseURL + row.urlString

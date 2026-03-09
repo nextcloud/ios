@@ -13,16 +13,16 @@ import SwiftUI
 ///   - urlBase: A URL value to which our view will open initially
 ///   - browserTitle: A String value to show as the title of the webView
 struct NCBrowserWebView: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var urlBase: URL
     var browserTitle: String
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
-                        .font(.title3)
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
                         .padding(.leading, 8)
                 }
@@ -36,7 +36,8 @@ struct NCBrowserWebView: View {
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
+                            .fontWeight(.light)
                             .frame(width: 14, height: 14)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     }
