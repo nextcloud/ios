@@ -19,15 +19,13 @@ struct NCDisplayView: View {
                             Image(systemName: "sun.max")
                                 .resizable()
                                 .scaledToFit()
-                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_light_", comment: ""))
                                 .cappedFont(.body, maxDynamicType: .accessibility2)
                             Image(systemName: colorScheme == .light ? "checkmark.circle.fill" : "circle")
                                 .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                                .imageScale(.large)
-                                .cappedFont(.body, maxDynamicType: .accessibility2)
+                                .imageScale(.medium)
                                 .fontWeight(.light)
                                 .frame(width: 50, height: 50)
                         }
@@ -39,15 +37,13 @@ struct NCDisplayView: View {
                             Image(systemName: "moon.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .cappedFont(.body, maxDynamicType: .accessibility2)
                                 .frame(width: 50, height: 100)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_dark_", comment: ""))
                                 .cappedFont(.body, maxDynamicType: .accessibility2)
                             Image(systemName: colorScheme == .dark ? "checkmark.circle.fill" : "circle")
                                 .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                                .imageScale(.large)
-                                .cappedFont(.body, maxDynamicType: .accessibility2)
+                                .imageScale(.medium)
                                 .fontWeight(.light)
                                 .frame(width: 50, height: 50)
                         }
@@ -60,7 +56,7 @@ struct NCDisplayView: View {
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: -50))
 
                     Toggle(NSLocalizedString("_use_system_style_", comment: ""), isOn: $model.appearanceAutomatic)
-                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                        .font(.body)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.appearanceAutomatic) {
                             model.updateAppearanceAutomatic()
@@ -70,7 +66,7 @@ struct NCDisplayView: View {
 
             Section(
                 header: Text(NSLocalizedString("_additional_options_", comment: ""))
-                    .font(.headline())
+                    .font(.headline)
             ) {
                 HStack {
                     Text(NSLocalizedString("_keep_screen_awake_", comment: ""))
@@ -85,7 +81,7 @@ struct NCDisplayView: View {
                     }
                     .pickerStyle(.menu)
                 }
-                .font(.callout())
+                .font(.callout)
             }
         }
         .id(dynamicTypeSize)
