@@ -321,7 +321,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             let item = sections[indexPath.section].items[indexPath.row]
 
-            cell.imageIcon?.image = utility.loadImage(named: item.icon, colors: [NCBrandColor.shared.iconImageColor])
+            cell.imageIcon?.image = utility.loadImage(named: item.icon, colors: [NCBrandColor.shared.iconImageColor], weight: .regular)
             cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.shared.textColor

@@ -11,7 +11,12 @@ import CoreMedia
 import Photos
 
 extension NCUtility {
-    func loadImage(named imageName: String, colors: [UIColor]? = nil, size: CGFloat? = nil, useTypeIconFile: Bool = false, account: String? = nil) -> UIImage {
+    func loadImage(named imageName: String,
+                   colors: [UIColor]? = nil,
+                   size: CGFloat? = nil,
+                   useTypeIconFile: Bool = false,
+                   account: String? = nil,
+                   weight: UIImage.SymbolWeight = .light) -> UIImage {
         var image: UIImage?
 
         if useTypeIconFile {
@@ -36,9 +41,9 @@ extension NCUtility {
 
         // SF IMAGE
         if let colors {
-            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: colors))
+            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: weight))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: colors))
         } else {
-            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: .light))
+            image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(weight: weight))
         }
 
         if let image { return image }

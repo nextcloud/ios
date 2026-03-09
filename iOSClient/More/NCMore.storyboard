@@ -29,14 +29,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ybA-XY-jKA">
-                                                    <rect key="frame" x="15" y="12.5" width="25" height="25"/>
+                                                    <rect key="frame" x="15" y="12" width="26" height="26"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="25" id="97R-Fz-3Om"/>
-                                                        <constraint firstAttribute="width" constant="25" id="ldi-oV-Yce"/>
+                                                        <constraint firstAttribute="height" constant="26" id="97R-Fz-3Om"/>
+                                                        <constraint firstAttribute="width" constant="26" id="ldi-oV-Yce"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8e-56-e81">
-                                                    <rect key="frame" x="60" y="15" width="334" height="20"/>
+                                                    <rect key="frame" x="61" y="15" width="333" height="20"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
