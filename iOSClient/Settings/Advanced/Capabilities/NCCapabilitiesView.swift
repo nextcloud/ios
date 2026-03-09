@@ -52,23 +52,24 @@ struct NCCapabilitiesView: View {
         @Binding var text: String
         @State var image: Image
         @State var resize: Bool
+        let size = 26.0
 
         var body: some View {
             Label {
                 Text(text)
-                    .font(.system(size: 15))
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
             } icon: {
                 if resize {
                     image
-                        .renderingMode(.template)
                         .resizable()
-                        .scaledToFill()
-                        .frame(width: 23.0, height: 23.0)
+                        .frame(width: size, height: size)
                         .foregroundColor(.primary)
                 } else {
                     image
-                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
                         .foregroundColor(.primary)
+                        .frame(width: size, height: size)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -81,9 +82,11 @@ struct NCCapabilitiesView: View {
         var body: some View {
             if available {
                 Image(systemName: "checkmark.circle.fill")
+                    .font(.icon())
                     .foregroundColor(.green)
             } else {
                 Image(systemName: "multiply.circle.fill")
+                    .font(.icon())
                     .foregroundColor(Color(NCBrandColor.shared.textColor2))
             }
         }

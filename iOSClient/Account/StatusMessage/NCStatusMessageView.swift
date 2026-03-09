@@ -25,10 +25,12 @@ struct NCStatusMessageView: View {
             VStack(spacing: 24) {
                 HStack(spacing: 12) {
                     EmojiField(text: $model.emojiText)
+                        .font(.icon())
 
                     TextField("_status_message_placehorder_", text: $model.statusText)
                         .focused($isTextFieldFocused)
                         .textFieldStyle(.roundedBorder)
+                        .cappedFont(.body, maxDynamicType: .xxxLarge)
                 }
                 .frame(height: 20)
 
@@ -41,16 +43,19 @@ struct NCStatusMessageView: View {
 
                 HStack {
                     Text("_clear_status_message_after_")
+                        .font(.body)
                     Menu {
                         ForEach(NCStatusMessageModel.ClearAfter.allCases) { option in
                             Button {
                                 model.clearAfterString = option.rawValue
                             } label: {
                                 Text(NSLocalizedString(option.rawValue, comment: ""))
+                                    .font(.body)
                             }
                         }
                     } label: {
                         Text(NSLocalizedString(model.clearAfterString, comment: ""))
+                            .font(.body)
                             .foregroundStyle(.blue)
                         Image(systemName: "chevron.up.chevron.down")
                             .imageScale(.small)
@@ -109,14 +114,16 @@ private struct StatusPresetRow: View {
         }) {
             HStack(spacing: 16) {
                 Text(preset.icon ?? "")
-                    .font(.title3)
+                    .font(.icon())
                     .frame(width: 32)
                 Text(preset.message ?? "")
-                    .font(.headline)
+                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.primary)
                 Text("—")
+                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.secondary)
                 Text(cleatAtText)
+                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                     .foregroundStyle(.secondary)
                 Spacer()
             }

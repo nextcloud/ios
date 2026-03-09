@@ -22,6 +22,7 @@ struct NCAssistantChatConversations: View {
                 } label: {
                     HStack {
                         Text(conversation.validTitle)
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                         Spacer()
                         if selectedConversation?.id == conversation.id {
                             Image(systemName: "checkmark")

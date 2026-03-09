@@ -261,6 +261,7 @@
 		F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */; };
 		F71CFA672F2A07DB007A3AE9 /* NCMedia+Netwoking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CFA662F2A07C6007A3AE9 /* NCMedia+Netwoking.swift */; };
 		F71D2FB72E09BBD700B751CC /* NCAutoUploadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71D2FB62E09BBD700B751CC /* NCAutoUploadModel.swift */; };
+		F71DFA222F59FB9A003A93C5 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D082B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
@@ -644,6 +645,8 @@
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
 		F794E13F2BBC0F70003693D7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */; };
 		F79699E72E689F68000EC82A /* NCMediaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79699E62E689F68000EC82A /* NCMediaNavigationController.swift */; };
+		F79792472F5EECE100FE9544 /* Font+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79792462F5EECE100FE9544 /* Font+Extension.swift */; };
+		F79792482F5EECE100FE9544 /* Font+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79792462F5EECE100FE9544 /* Font+Extension.swift */; };
 		F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F798F0EC2588060A000DAFFD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F799DF822C4B7DCC003410B5 /* NCSectionFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F799DF812C4B7DCC003410B5 /* NCSectionFooter.swift */; };
@@ -765,6 +768,8 @@
 		F7CAFE222F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CAFE1C2F17A34F00DB35A5 /* NCNetworking+Actor.swift */; };
 		F7CAFE232F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CAFE1C2F17A34F00DB35A5 /* NCNetworking+Actor.swift */; };
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
+		F7CB77642F5843E500DE649A /* UIFont+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CB77632F5843D700DE649A /* UIFont+Extension.swift */; };
+		F7CB77652F58463E00DE649A /* UIFont+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CB77632F5843D700DE649A /* UIFont+Extension.swift */; };
 		F7CBC1232BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */; };
 		F7CBC1242BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */; };
 		F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */; };
@@ -1568,6 +1573,7 @@
 		F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
 		F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F79699E62E689F68000EC82A /* NCMediaNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaNavigationController.swift; sourceTree = "<group>"; };
+		F79792462F5EECE100FE9544 /* Font+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extension.swift"; sourceTree = "<group>"; };
 		F799DF812C4B7DCC003410B5 /* NCSectionFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionFooter.swift; sourceTree = "<group>"; };
 		F799DF842C4B7E56003410B5 /* NCSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeader.swift; sourceTree = "<group>"; };
 		F799DF872C4B83CC003410B5 /* NCCollectionViewCommon+EasyTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+EasyTipView.swift"; sourceTree = "<group>"; };
@@ -1713,6 +1719,7 @@
 		F7CAFE1A2F16AA8600DB35A5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F7CAFE1C2F17A34F00DB35A5 /* NCNetworking+Actor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Actor.swift"; sourceTree = "<group>"; };
 		F7CB68992541676B0050EC94 /* NCMore.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMore.storyboard; sourceTree = "<group>"; };
+		F7CB77632F5843D700DE649A /* UIFont+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extension.swift"; sourceTree = "<group>"; };
 		F7CBC1212BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionFirstHeaderEmptyData.xib; sourceTree = "<group>"; };
 		F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSectionFirstHeaderEmptyData.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2823,6 +2830,7 @@
 				F7AC1CAF28AB94490032D99F /* Array+Extension.swift */,
 				F7817CF729801A3500FFBC65 /* Data+Extension.swift */,
 				AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */,
+				F79792462F5EECE100FE9544 /* Font+Extension.swift */,
 				F72EC7232F45C81600A2135C /* NotificationCenter+Extension.swift */,
 				F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift */,
 				F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */,
@@ -2835,6 +2843,7 @@
 				F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extension.swift */,
+				F7CB77632F5843D700DE649A /* UIFont+Extension.swift */,
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */,
@@ -3312,8 +3321,6 @@
 				F7132C6D2D085AD200B42D6A /* Terms of service */,
 				F7E9C41320F4CA870040CF18 /* Transfers */,
 				F78F74322163753B00C2ADAD /* Trash */,
-				F34E1AD52ECB935E00FA10C3 /* StatusMessage */,
-				F7EFC0CB256BF89300461AAD /* UserStatus */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 				F79630EC215526B60015EEA5 /* Viewer */,
 			);
@@ -3376,6 +3383,8 @@
 				F7FDFF552E437E55000D7688 /* Account Request */,
 				F7FDFF582E437E55000D7688 /* Account Settings */,
 				F7FDFF592E437E55000D7688 /* NCAccount.swift */,
+				F34E1AD52ECB935E00FA10C3 /* StatusMessage */,
+				F7EFC0CB256BF89300461AAD /* UserStatus */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -4206,6 +4215,7 @@
 				F7CAFE202F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */,
 				F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				F71DFA222F59FB9A003A93C5 /* View+Extension.swift in Sources */,
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
@@ -4245,6 +4255,7 @@
 				F7D4BF382CA2E8D800A5E746 /* TOPasscodeVariableInputView.m in Sources */,
 				F7D4BF392CA2E8D800A5E746 /* TOPasscodeCircleView.m in Sources */,
 				F7D4BF3A2CA2E8D800A5E746 /* TOPasscodeViewContentLayout.m in Sources */,
+				F79792482F5EECE100FE9544 /* Font+Extension.swift in Sources */,
 				F7D61EBF2EBF1878007F865B /* NCManageDatabase+Tag.swift in Sources */,
 				F7D4BF3B2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadButton.m in Sources */,
 				F7D4BF3C2CA2E8D800A5E746 /* TOPasscodeViewController.m in Sources */,
@@ -4271,6 +4282,7 @@
 				F36E64FA2B96236C0085ABB5 /* UIView+Extension.swift in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				AF730AFA27843E4C00B7520E /* NCShareExtension+NCAccountRequestDelegate.swift in Sources */,
+				F7CB77652F58463E00DE649A /* UIFont+Extension.swift in Sources */,
 				F7327E232B73A42F00A462C7 /* NCNetworking+Download.swift in Sources */,
 				F7D497082EBFAFD6004F9823 /* NCImageCache.swift in Sources */,
 				F749B64D297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
@@ -4658,6 +4670,7 @@
 				F376A3742E5CC6030067EE25 /* ContextMenuActions.swift in Sources */,
 				F74B91E92F51D45A0050813D /* ErrorBannerView.swift in Sources */,
 				F7E8A391295DC5E0006CB2D0 /* View+Extension.swift in Sources */,
+				F7CB77642F5843E500DE649A /* UIFont+Extension.swift in Sources */,
 				F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extension.swift in Sources */,
 				AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */,
@@ -4694,6 +4707,7 @@
 				F7814E972F3B5F170074DA3A /* NCSVGRenderer.swift in Sources */,
 				F7CF06802E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
+				F79792472F5EECE100FE9544 /* Font+Extension.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,

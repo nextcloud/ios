@@ -22,7 +22,7 @@ struct NCAcknowledgementsView: View {
             HStack {
                 HStack(alignment: .center) {
                     Text(browserTitle)
-                        .font(.title3)
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .foregroundColor(Color(NCBrandColor.shared.textColor))
                         .padding(.leading, 8)
                 }
@@ -47,6 +47,7 @@ struct NCAcknowledgementsView: View {
             if showText {
                 ScrollView {
                     Text(text)
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
                         .padding()
                 }
             }

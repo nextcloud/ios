@@ -57,7 +57,7 @@ struct TransfersView: View {
                     inWaitingCount: model.inWaitingCount,
                     inProgressCount: model.inProgressCount,
                     inErrorCount: model.inErrorCount
-                )) {
+                ).font(.headline)) {
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
@@ -95,7 +95,8 @@ struct TransfersSummaryHeader: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text("\(value)")
-                .font(.caption.weight(.semibold))
+                .font(.caption)
+                .fontWeight(.semibold)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -113,7 +114,7 @@ struct EmptyTransfersView: View {
         VStack(spacing: 16) {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: flash ? "checkmark.circle" : "arrow.left.arrow.right.circle")
-                    .font(.system(size: 48, weight: .regular))
+                    .font(.icon(48))
                     .foregroundStyle(flash ? .green : .secondary)
                     .symbolEffect(.bounce, value: flash)
             }
@@ -163,7 +164,7 @@ struct TransferRowView: View {
                 let status = model.status(for: item)
 
                 Image(systemName: status.symbol)
-                    .font(.system(size: 30))
+                    .font(.icon(30))
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName).font(.headline)
@@ -213,7 +214,7 @@ struct TransferRowView: View {
                             .frame(width: 36, height: 36)
                             .animation(.easeInOut(duration: 0.25), value: model.progress(for: item))
                         Image(systemName: "stop.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.icon(14, weight: .bold))
                             .foregroundStyle(.primary)
                     }
                 }

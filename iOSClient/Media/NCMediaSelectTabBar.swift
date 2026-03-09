@@ -91,10 +91,13 @@ struct MediaTabBarSelectView: View {
                 Group {
                     if tabBarSelect.selectCount == 0 {
                         Text(NSLocalizedString("_select_photos_", comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     } else if tabBarSelect.selectCount == 1 {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     } else {
                         Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
                     }
                 }
                 .frame(minWidth: 250, maxWidth: .infinity)
@@ -103,8 +106,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                    .font(Font.system(.body).weight(.light))
-                    .imageScale(sizeClass == .compact ? .medium : .large)
+                        .font(.icon())
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
