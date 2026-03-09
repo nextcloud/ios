@@ -227,6 +227,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let quotaUsed: String = utilityFileSystem.transformedSize(tableAccount.quotaUsed)
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        labelQuota.font = .footnote()
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false,
