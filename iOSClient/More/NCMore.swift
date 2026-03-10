@@ -352,7 +352,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             // adjustsFontForContentSizeCategory:
             //     Enables live updates when accessibility settings change.
             //
-            cell.labelText?.font = .callout()
+            cell.labelText?.font = .body()
             cell.labelText?.adjustsFontForContentSizeCategory = true
 
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator

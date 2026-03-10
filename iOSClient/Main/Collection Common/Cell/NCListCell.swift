@@ -162,7 +162,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelSubinfo.font = .caption1()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
-
         separatorHeightConstraint.constant = 0.5
 
         buttonMore.menu = nil
