@@ -110,7 +110,8 @@ class NCAssistantChatModel {
 
         let result = await NextcloudKit.shared.checkAssistantChatGeneration(taskId: chatMessageTaskId, sessionId: selectedConversation?.id ?? 0, account: ncSession.account)
 
-        if result.error != .success {
+        // API sends expectation failed error (417) when a message is not ready yet. We should continue polling.
+        if result.error != .success, result.error.errorCode != NCGlobal.shared.errorExpectationFailed {
             stopPolling()
             await showErrorBanner(windowScene: windowScene, title: "_error_", text: "_assistant_error_generate_response_", errorCode: result.error.errorCode)
             return
