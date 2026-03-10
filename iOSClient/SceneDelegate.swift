@@ -220,6 +220,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         hidePrivacyProtectionWindow()
+
+        if !NextcloudKit.shared.isNetworkReachable(),
+           let windowScenee = SceneManager.shared.getWindow(scene: scene)?.windowScene {
+            Task {
+                await showBanner(windowScene: windowScenee,
+                                 title: "_info_",
+                                 subtitle: "_network_not_available_",
+                                 textColor: .label,
+                                 image: "wifi.exclamationmark.circle",
+                                 imageAnimation: .bounce,
+                                 imageColor: .label,
+                                 backgroundColor: UIColor.lightGray.withAlphaComponent(0.75))
+            }
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
