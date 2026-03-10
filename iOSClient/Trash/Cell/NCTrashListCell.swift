@@ -108,6 +108,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
+        labelExtension.font = .callout()
+        labelExtension.adjustsFontForContentSizeCategory = true
+
         labelInfo.font = .caption1()
         labelInfo.adjustsFontForContentSizeCategory = true
 
