@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 import CloudKit
 
-class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate, NCShareNavigationTitleSetting {
+class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFooterDelegate, NCShareNavigationTitleSetting {
     let database = NCManageDatabase.shared
 
     var oldTableShare: tableShare?
@@ -113,7 +113,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         guard let headerView = (Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader) else { return }
         headerView.setupUI(with: metadata)
 
-        let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 220))
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 200))
         container.addSubview(headerView)
         tableView.tableHeaderView = container
         headerView.translatesAutoresizingMaskIntoConstraints = false

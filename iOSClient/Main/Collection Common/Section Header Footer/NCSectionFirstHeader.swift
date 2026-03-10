@@ -217,7 +217,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 cell.setImageCorner(withBorder: false)
             }
 
-            cell.labelFilename.text = metadata.fileNameView
+            cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelFilename, extensionLabel: cell.labelExtensionFilename)
             cell.labelInfo.text = recommendedFiles.reason
 
             cell.delegate = self

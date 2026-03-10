@@ -27,6 +27,7 @@ import TagListView
 class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var fileName: UILabel!
+    @IBOutlet weak var fileNameExtension: UILabel!
     @IBOutlet weak var info: UILabel!
     @IBOutlet weak var fullWidthImageView: UIImageView!
     @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
@@ -54,8 +55,12 @@ class NCShareHeader: UIView {
             fileNameTopConstraint.constant -= 45
         }
 
-        fileName.text = metadata.fileNameView
+        fileName?.numberOfLines = 1
+        fileNameExtension?.numberOfLines = 1
+        setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: fileName, extensionLabel: fileNameExtension)
+
         fileName.textColor = NCBrandColor.shared.textColor
+        fileNameExtension?.textColor = NCBrandColor.shared.textColor
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
