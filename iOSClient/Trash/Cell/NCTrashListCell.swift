@@ -73,8 +73,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        labelExtension?.text = ""
-        labelExtension?.isHidden = true
+        labelExtension.text = ""
+        labelExtension.isHidden = true
 
         imageRestore.image = NCUtility().loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
