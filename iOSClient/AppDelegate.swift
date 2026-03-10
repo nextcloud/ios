@@ -124,15 +124,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationWillTerminate(_ application: UIApplication) {
         if self.notificationSettings?.authorizationStatus != .denied && UIApplication.shared.backgroundRefreshStatus == .available {
-            let tblAccounts = NCManageDatabase.shared.getTableAccounts(predicate: NSPredicate(format: "autoUploadStart == true"))
-            if !tblAccounts.isEmpty {
-                let content = UNMutableNotificationContent()
-                content.title = NCBrandOptions.shared.brand
-                content.body = NSLocalizedString("_keep_running_", comment: "")
-                let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                let notificationCenter = UNUserNotificationCenter.current()
-                notificationCenter.add(req)
-            }
+            let content = UNMutableNotificationContent()
+            content.title = NCBrandOptions.shared.brand
+            content.body = NSLocalizedString("_keep_running_", comment: "")
+            let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.add(req)
         }
 
         nkLog(debug: "bye bye")
