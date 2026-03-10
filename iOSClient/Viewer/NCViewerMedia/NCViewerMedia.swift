@@ -125,7 +125,7 @@ class NCViewerMedia: UIViewController {
             tabBarController?.tabBar.isHidden = true
         }
 
-        viewerMediaPage?.navigationItem.title = (metadata.fileNameView as NSString).deletingPathExtension
+        viewerMediaPage?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {

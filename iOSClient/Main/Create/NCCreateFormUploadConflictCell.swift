@@ -26,6 +26,7 @@ import UIKit
 class NCCreateFormUploadConflictCell: UITableViewCell {
 
     @IBOutlet weak var labelFileName: UILabel!
+    @IBOutlet weak var labelExtensionFileName: UILabel!
 
     @IBOutlet weak var imageAlreadyExistingFile: UIImageView!
     @IBOutlet weak var imageNewFile: UIImageView!

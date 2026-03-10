@@ -146,39 +146,6 @@ struct EmptyTransfersView: View {
                     flash = false
                 }
             }
-
-            /*
-            guard model.showFlushMessage else {
-                return
-            }
-
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
-                flash = true
-            }
-
-            let timeout: UInt64 = 15_000_000_000
-            let interval: UInt64 = 200_000_000
-            var elapsed: UInt64 = 0
-
-            while elapsed < timeout {
-                try? await Task.sleep(nanoseconds: interval)
-                elapsed += interval
-
-                if model.inProgressCount > 0 || model.inWaitingCount == 0 {
-                    break
-                }
-
-                if Task.isCancelled {
-                    return
-                }
-            }
-
-            withAnimation(.easeInOut(duration: 0.25)) {
-                flash = false
-            }
-
-            model.showFlushMessage = false
-            */
         }
     }
 }
@@ -200,8 +167,7 @@ struct TransferRowView: View {
                     .font(.icon(30))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(item.fileName)
-                        .font(.headline)
+                    Text(item.fileName).font(.headline)
 
                     if !status.status.isEmpty {
                         Text(status.status)

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -19,8 +18,14 @@
                         <constraint firstAttribute="height" constant="140" id="xTr-ay-Wso"/>
                     </constraints>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pu4-Nd-M08">
-                    <rect key="frame" x="16" y="150" width="382" height="18"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Test" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pu4-Nd-M08">
+                    <rect key="frame" x="16" y="150" width="30.666666666666671" height="18"/>
+                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-shh">
+                    <rect key="frame" x="46.666666666666664" y="150" width="24.333333333333336" height="18"/>
                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -82,8 +87,10 @@
                 <constraint firstItem="VaC-Fz-kHk" firstAttribute="top" secondItem="pu4-Nd-M08" secondAttribute="bottom" constant="1" id="Z5Q-L6-DMc"/>
                 <constraint firstItem="cki-Ql-o1I" firstAttribute="leading" secondItem="wbW-yR-MZC" secondAttribute="leading" id="ZlH-LU-x2x"/>
                 <constraint firstAttribute="height" constant="90" id="eIA-KE-jMG"/>
+                <constraint firstItem="Ext-Lb-shh" firstAttribute="firstBaseline" secondItem="pu4-Nd-M08" secondAttribute="firstBaseline" id="ext-bl-shh"/>
+                <constraint firstItem="Ext-Lb-shh" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="trailing" id="ext-ld-shh"/>
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="Dkw-QP-be6" secondAttribute="bottom" constant="10" id="knE-ki-nPr"/>
-                <constraint firstAttribute="trailing" secondItem="pu4-Nd-M08" secondAttribute="trailing" constant="16" id="pP5-G4-ey4"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ext-Lb-shh" secondAttribute="trailing" constant="16" id="pP5-G4-ey4"/>
                 <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="wbW-yR-MZC" secondAttribute="bottom" id="v3t-y8-sw0"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
@@ -107,6 +114,7 @@
             </variation>
             <connections>
                 <outlet property="fileName" destination="pu4-Nd-M08" id="iLj-ya-6hM"/>
+                <outlet property="fileNameExtension" destination="Ext-Lb-shh" id="ext-out-shh"/>
                 <outlet property="fileNameTopConstraint" destination="LGa-dZ-YWB" id="coJ-JB-oVJ"/>
                 <outlet property="fullWidthImageView" destination="cki-Ql-o1I" id="KYn-3Y-SZH"/>
                 <outlet property="imageView" destination="Dkw-QP-be6" id="wzX-Sb-Ajt"/>

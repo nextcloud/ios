@@ -35,6 +35,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelExtension: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
@@ -71,6 +72,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
                 selector: #selector(touchUpInsideMore(_:)))
 
         ]
+
+        labelExtension?.text = ""
+        labelExtension?.isHidden = true
 
         imageRestore.image = NCUtility().loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])

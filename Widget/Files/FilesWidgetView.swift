@@ -68,10 +68,8 @@ struct FilesWidgetView: View {
                                         }
 
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text(element.title)
-                                                .font(.system(size: 12))
+                                            FilesWidgetBidiFilename(filename: element.title)
                                                 .lineLimit(1)
-                                                .truncationMode(.tail)
                                             Text(element.subTitle)
                                                 .font(.system(size: 10))
                                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
@@ -174,6 +172,32 @@ struct FilesWidgetView: View {
             }
         }
         .containerBackground(.background, for: .widget)
+    }
+}
+
+private struct FilesWidgetBidiFilename: View {
+    let filename: String
+
+    var body: some View {
+        let nsName = filename as NSString
+        let ext = nsName.pathExtension
+        let base = nsName.deletingPathExtension
+
+        if ext.isEmpty || base.isEmpty {
+            Text(filename)
+                .font(.system(size: 12))
+        } else {
+            HStack(spacing: 0) {
+                Text(base)
+                    .font(.system(size: 12))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text("." + ext)
+                    .font(.system(size: 12))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+        }
     }
 }
 
