@@ -219,6 +219,24 @@ actor NCNetworkingProcess {
             //
             let metadatas = await NCManageDatabase.shared.getMetadataProcess()
 
+            // TEST EXISTS ACCOUNT
+            //
+            var metadatasByAccount: [String: [tableMetadata]] = [:]
+            for metadata in metadatas {
+                metadatasByAccount[metadata.account, default: []].append(metadata)
+            }
+            var metadatasToDelete: [tableMetadata] = []
+            for account in metadatasByAccount.keys {
+                if await NCManageDatabase.shared.getTableAccountAsync(account: account) == nil {
+                    metadatasToDelete.append(contentsOf: metadatasByAccount[account] ?? [])
+                }
+            }
+            if !metadatasToDelete.isEmpty {
+                let ocIds = metadatasToDelete.map { $0.ocId }
+                await NCManageDatabase.shared.deleteMetadatasAsync(ocIds: ocIds)
+                return
+            }
+
             // TRANSFERS SUCCESS
             //
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
