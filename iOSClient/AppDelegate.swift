@@ -384,7 +384,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        guard !isXcodeRunningForPreviews else { return }
+        guard !isXcodeRunningForPreviews,
+              application.applicationState != .background else {
+            return
+        }
 
         if let deviceToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
             NCPreferences().deviceTokenPushNotification = deviceToken
