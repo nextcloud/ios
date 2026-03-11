@@ -9,20 +9,14 @@ import RealmSwift
 
 protocol NCCellMainProtocol {
     var metadata: tableMetadata? {get set }
-    var avatarImg: UIImageView? { get }
     var previewImg: UIImageView? { get set }
     var localImg: UIImageView? { get set }
     var statusImg: UIImageView? { get set }
     var infoLbl: UILabel? { get set }
-
 }
 
 extension NCCellMainProtocol {
     var metadata: tableMetadata? {
-        get { return nil }
-        set {}
-    }
-    var avatarImg: UIImageView? {
         get { return nil }
         set {}
     }

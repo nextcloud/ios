@@ -13,14 +13,12 @@ protocol NCListCellDelegate: AnyObject {
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
+class NCListCell: UICollectionViewCell, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-    @IBOutlet weak var imageShared: UIImageView!
-    @IBOutlet weak var imageMore: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -44,10 +42,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
-    }
-    var avatarImg: UIImageView? {
-        get { return imageShared }
-        set { imageShared = newValue }
     }
     var previewImg: UIImageView? {
         get { return imageItem }
@@ -82,11 +76,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
-        tapObserver.cancelsTouchesInView = false
-        tapObserver.delegate = self
-        contentView.addGestureRecognizer(tapObserver)
-
         initCell()
     }
 
@@ -108,8 +97,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
-        imageShared.image = nil
-        imageMore.image = nil
         imageSelect.image = nil
 
         labelTitle.text = ""
@@ -177,30 +164,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         delegate?.tapShareListItem(with: metadata, button: buttonShared, sender: sender)
     }
 
-    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let location = g.location(in: contentView)
-
-        if buttonMore.frame.contains(location) {
-            delegate?.onMenuIntent(with: metadata)
-        }
-    }
-
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        let location = touch.location(in: contentView)
-        return buttonMore.frame.contains(location)
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        delegate?.onMenuIntent(with: metadata)
     }
 
     func setButtonMore(image: UIImage) {
-        imageMore.image = image
+        buttonMore.setImage(image, for: .normal)
     }
 
     func hideButtonMore(_ status: Bool) {
-        imageMore.isHidden = status
         buttonMore.isHidden = status
     }
 
     func hideButtonShare(_ status: Bool) {
-        imageShared.isHidden = status
         buttonShared.isHidden = status
     }
 
@@ -208,16 +184,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
-            imageShared.isHidden = true
-            imageMore.isHidden = true
             buttonShared.isHidden = true
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
-            imageShared.isHidden = false
-            imageMore.isHidden = false
             buttonShared.isHidden = false
             buttonMore.isHidden = false
             backgroundView = nil
@@ -366,7 +338,6 @@ extension NCCollectionViewCommon {
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // CONTENT MODE
-        cell.avatarImg?.contentMode = .center
         cell.previewImg?.layer.borderWidth = 0
 
         if existsImagePreview && layoutForView?.layout != global.layoutPhotoRatio {
@@ -418,15 +389,15 @@ extension NCCollectionViewCommon {
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
-        // Share image
+        // Share button image
         if isShare {
-            cell.imageShared?.image = imageCache.getImageShared()
+            cell.buttonShared.setImage(imageCache.getImageShared(), for: .normal)
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-            (cell.imageShared?.image = imageCache.getImageShareByLink()) :
-            (cell.imageShared?.image = imageCache.getImageShared())
+            (cell.buttonShared.setImage(imageCache.getImageShareByLink(), for: .normal)) :
+            (cell.buttonShared.setImage(imageCache.getImageShared(), for: .normal))
         } else {
-            cell.imageShared?.image = imageCache.getImageCanShare()
+            cell.buttonShared.setImage(imageCache.getImageCanShare(), for: .normal)
         }
 
         // Button More
@@ -444,17 +415,15 @@ extension NCCollectionViewCommon {
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
             if let image = NCImageCache.shared.getImageCache(key: fileName) {
-                cell.avatarImg?.contentMode = .scaleAspectFill
-                cell.avatarImg?.image = image
+                cell.buttonShared.setImage(image, for: .normal)
             } else {
                 self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
                     if let image {
-                        cell.avatarImg?.contentMode = .scaleAspectFill
-                        cell.avatarImg?.image = image
+                        cell.buttonShared.setImage(image, for: .normal)
                         NCImageCache.shared.addImageCache(image: image, key: fileName)
                     } else {
-                        cell.avatarImg?.contentMode = .scaleAspectFill
-                        cell.avatarImg?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                        let image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                        cell.buttonShared.setImage(image, for: .normal)
                     }
 
                     if !(tblAvatar?.loaded ?? false),
