@@ -111,7 +111,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
-        labelInfo.font = .caption1()
+        labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
         separator.backgroundColor = .separator

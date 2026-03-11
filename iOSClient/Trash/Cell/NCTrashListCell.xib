@@ -23,19 +23,19 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
-                        <rect key="frame" x="95" y="7" width="39.5" height="19.5"/>
+                        <rect key="frame" x="95" y="9" width="39.5" height="19.5"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text=".ext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-tLs" userLabel="labelExtension">
-                        <rect key="frame" x="134.5" y="7" width="26.5" height="19.5"/>
+                        <rect key="frame" x="134.5" y="9" width="26.5" height="19.5"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
-                        <rect key="frame" x="95" y="139" width="440" height="15"/>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                        <rect key="frame" x="95" y="136" width="440" height="16"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -104,11 +104,11 @@
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="Yad-MJ-UU7"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ext-Lb-tLs" secondAttribute="trailing" constant="5" id="cEw-b3-odo"/>
-                <constraint firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="7" id="d06-sn-I3Y"/>
+                <constraint firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="9" id="d06-sn-I3Y"/>
                 <constraint firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="ldm-kv-P98"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="45" id="mBb-ff-7HD"/>
-                <constraint firstItem="UtT-L6-mgW" firstAttribute="top" secondItem="jxV-Pk-fPt" secondAttribute="top" constant="7" id="nrY-2F-QZ2"/>
+                <constraint firstItem="UtT-L6-mgW" firstAttribute="top" secondItem="jxV-Pk-fPt" secondAttribute="top" constant="9" id="nrY-2F-QZ2"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="qKl-4Y-m5t"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="rgG-ei-7VN"/>
                 <constraint firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>

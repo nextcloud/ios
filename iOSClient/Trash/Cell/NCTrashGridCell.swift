@@ -112,10 +112,10 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
-        labelInfo.font = .caption1()
+        labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
-        labelSubinfo.font = .caption1()
+        labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
     }
 
