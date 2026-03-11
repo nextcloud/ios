@@ -168,7 +168,7 @@
                                             <constraint firstAttribute="width" constant="40" id="YSF-9Z-XlJ"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <state key="normal" image="ellipsis" catalog="system"/>
+                                        <state key="normal" image="person.fill.badge.plus" catalog="system"/>
                                         <connections>
                                             <action selector="touchUpInsideShare:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="UVA-XS-fRf"/>
                                         </connections>
@@ -258,6 +258,7 @@
     </objects>
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
+        <image name="person.fill.badge.plus" catalog="system" width="128" height="126"/>
         <image name="play.circle" catalog="system" width="128" height="123"/>
         <image name="star.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="secondaryLabelColor">

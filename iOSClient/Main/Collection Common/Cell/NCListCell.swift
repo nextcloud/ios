@@ -150,15 +150,13 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
 
         separatorHeightConstraint.constant = 0.5
 
-        buttonShared.imageView?.contentMode = .scaleAspectFill
-        buttonShared.clipsToBounds = true
-
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
     }
 
     func setSharedAvatarImage(_ image: UIImage) {
         buttonShared.setImage(image, for: .normal)
+        buttonShared.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
