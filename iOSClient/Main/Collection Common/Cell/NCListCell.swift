@@ -492,16 +492,14 @@ extension NCCollectionViewCommon {
 
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
-        cell.labelTitle?.font = .systemFont(ofSize: 15)
         cell.labelExtension?.textColor = NCBrandColor.shared.textColor
-        cell.labelExtension?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode,
            let searchResultStore,
            let title = cell.labelTitle?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
-            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
+            let attributedString = NSMutableAttributedString(string: title)
+            attributedString.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.labelTitle?.attributedText = attributedString
         }
 
