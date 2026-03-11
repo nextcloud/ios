@@ -74,7 +74,7 @@ class NCContextMenu: NSObject {
 //        if metadata.canShare {
 //            topActionsMenu.append(makeShareAction())
 //        }
-
+        
         if NCNetworking.shared.isOnline,
            !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty), !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
             topActionsMenu.append(makeDetailAction(metadata: metadata))
@@ -120,8 +120,8 @@ class NCContextMenu: NSObject {
 
     private func makeShareAction() -> UIAction {
         return UIAction(
-            title: NSLocalizedString("_share_", comment: ""),
-            image: UIImage(named: "share")?.withTintColor(NCBrandColor.shared.iconImageColor)
+            title: NSLocalizedString("_open_in_", comment: ""),
+            image: UIImage(named: "open_file")?.withTintColor(NCBrandColor.shared.iconImageColor)
         ) { _ in
             Task { @MainActor in
                 let controller = self.viewController.tabBarController as? NCMainTabBarController
@@ -141,6 +141,11 @@ class NCContextMenu: NSObject {
         capabilities: NKCapabilities.Capabilities
     ) -> [UIMenuElement] {
         var mainActionsMenu: [UIMenuElement] = []
+        
+        if !metadata.directory {
+            mainActionsMenu.append(makeShareAction())
+        }
+
         // Lock/Unlock
         if NCNetworking.shared.isOnline,
            !metadata.directory,

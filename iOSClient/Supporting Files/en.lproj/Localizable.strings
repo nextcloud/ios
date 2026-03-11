@@ -621,7 +621,7 @@
 "_add_favorites_"               = "Favorite";
 "_share_"                       = "Share";
 "_reload_"                      = "Reload";
-"_open_in_"                     = "Open in …";
+"_open_in_"                     = "Open with..."; //"Open in …";
 "_open_"                        = "Open …";
 "_remove_local_file_"           = "Remove locally";
 "_add_local_"                   = "Add to local storage";
