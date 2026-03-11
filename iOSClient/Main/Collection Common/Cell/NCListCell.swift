@@ -152,13 +152,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
-        labelInfo.font = .caption1()
+        labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
-        labelInfoSeparator.font = .caption1()
+        labelInfoSeparator.font = .footnote()
         labelInfoSeparator.adjustsFontForContentSizeCategory = true
 
-        labelSubinfo.font = .caption1()
+        labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
         separatorHeightConstraint.constant = 0.5
