@@ -197,18 +197,12 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
-            buttonShared.isHidden = true
-            buttonMore.isHidden = true
-            shareContainer.isHidden = true
-            moreContainer.isHidden = true
+            setButtonsHidden(true)
             accessibilityCustomActions = nil
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
-            buttonShared.isHidden = false
-            buttonMore.isHidden = false
-            shareContainer.isHidden = false
-            moreContainer.isHidden = false
+            setButtonsHidden(false)
             backgroundView = nil
         }
         if status {

@@ -453,8 +453,9 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.imageSelect.isHidden = true
         cell.backgroundView = nil
-        cell.setButtonsHidden(true)
         cell.selected(false, isEditMode: false)
+        cell.buttonMore.setImage(nil, for: .normal)
+        cell.buttonShared.setImage(nil, for: .normal)
 
         // Live Photo
         if metadata.isLivePhoto {

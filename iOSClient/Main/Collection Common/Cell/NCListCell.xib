@@ -52,10 +52,10 @@
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
-                        <rect key="frame" x="107" y="54" width="552" height="40"/>
+                        <rect key="frame" x="107" y="54" width="557" height="40"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">
-                                <rect key="frame" x="0.0" y="0.6666666666666643" width="462" height="38.666666666666664"/>
+                                <rect key="frame" x="0.0" y="0.6666666666666643" width="467" height="38.666666666666664"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" translatesAutoresizingMaskIntoConstraints="NO" id="c4t-Rw-3dN" userLabel="titleRow">
                                         <rect key="frame" x="0.0" y="0.0" width="69" height="20.333333333333332"/>
@@ -159,7 +159,7 @@
                                 </constraints>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v5o-Yr-9Lm" userLabel="shareContainer">
-                                <rect key="frame" x="467" y="0.0" width="40" height="40"/>
+                                <rect key="frame" x="472" y="0.0" width="40" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -182,7 +182,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p2F-Qu-3Nc" userLabel="moreContainer">
-                                <rect key="frame" x="512" y="0.0" width="40" height="40"/>
+                                <rect key="frame" x="517" y="0.0" width="40" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -216,7 +216,7 @@
                 </subviews>
             </view>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="k4y-2T-b9M" secondAttribute="trailing" constant="10" id="1M4-vz-4aF"/>
+                <constraint firstAttribute="trailing" secondItem="k4y-2T-b9M" secondAttribute="trailing" constant="5" id="1M4-vz-4aF"/>
                 <constraint firstItem="k4y-2T-b9M" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="3dQ-YQ-4eV"/>
                 <constraint firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="top" secondItem="C4K-Nv-phA" secondAttribute="bottom" constant="-10" id="DB1-jf-rpE"/>
