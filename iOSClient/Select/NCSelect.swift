@@ -453,8 +453,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.imageSelect.isHidden = true
         cell.backgroundView = nil
-        cell.hideButtonMore(true)
-        cell.hideButtonShare(true)
+        cell.setButtonsHidden(true)
         cell.selected(false, isEditMode: false)
 
         // Live Photo

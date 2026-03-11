@@ -30,6 +30,8 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
 
     @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var shareContainer: UIView!
+    @IBOutlet weak var moreContainer: UIView!
     @IBOutlet weak var separator: UIView!
 
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
@@ -151,6 +153,8 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
         separatorHeightConstraint.constant = 0.5
 
         buttonShared.imageEdgeInsets = .zero
+        shareContainer.isHidden = false
+        moreContainer.isHidden = false
 
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
@@ -177,12 +181,16 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
         buttonMore.setImage(image, for: .normal)
     }
 
-    func hideButtonMore(_ status: Bool) {
-        buttonMore.isHidden = status
-    }
-
     func hideButtonShare(_ status: Bool) {
         buttonShared.isHidden = status
+        shareContainer.isHidden = status
+    }
+
+    func setButtonsHidden(_ hidden: Bool) {
+        buttonShared.isHidden = hidden
+        buttonMore.isHidden = hidden
+        shareContainer.isHidden = hidden
+        moreContainer.isHidden = hidden
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {
@@ -191,12 +199,16 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
             imageSelect.isHidden = false
             buttonShared.isHidden = true
             buttonMore.isHidden = true
+            shareContainer.isHidden = true
+            moreContainer.isHidden = true
             accessibilityCustomActions = nil
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
             buttonShared.isHidden = false
             buttonMore.isHidden = false
+            shareContainer.isHidden = false
+            moreContainer.isHidden = false
             backgroundView = nil
         }
         if status {
@@ -442,8 +454,7 @@ extension NCCollectionViewCommon {
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
             cell.imageLocal.image = nil
-            cell.hideButtonShare(true)
-            cell.hideButtonMore(true)
+            cell.setButtonsHidden(true)
         }
 
         // Separator
@@ -487,8 +498,7 @@ extension NCCollectionViewCommon {
 
         // Hide buttons
         if metadata.name != global.appName {
-            cell.hideButtonShare(true)
-            cell.hideButtonMore(true)
+            cell.setButtonsHidden(true)
         }
 
         cell.setIconOutlines()
