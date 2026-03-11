@@ -167,8 +167,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
 
-        titleTrailingConstraint.constant = 90
-
         contentView.bringSubviewToFront(buttonMore)
     }
 
@@ -191,10 +189,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         let location = touch.location(in: contentView)
         return buttonMore.frame.contains(location)
-    }
-
-    func titleInfoTrailingFull() {
-        titleTrailingConstraint.constant = 10
     }
 
     func setButtonMore(image: UIImage) {
@@ -522,7 +516,6 @@ extension NCCollectionViewCommon {
 
         // Hide buttons
         if metadata.name != global.appName {
-            cell.titleInfoTrailingFull()
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)
         }

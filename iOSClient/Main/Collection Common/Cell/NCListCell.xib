@@ -51,16 +51,26 @@
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fill" alignment="leading" spacing="4" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">
-                        <rect key="frame" x="107" y="57.333333333333336" width="425" height="41.666666666666664"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">
+                        <rect key="frame" x="107" y="55.333333333333343" width="425" height="37.666666666666657"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
-                                <rect key="frame" x="0.0" y="0.0" width="39.666666666666657" height="19.333333333333332"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" translatesAutoresizingMaskIntoConstraints="NO" id="c4t-Rw-3dN" userLabel="titleRow">
+                                <rect key="frame" x="0.0" y="0.0" width="66" height="19.333333333333332"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
+                                        <rect key="frame" x="0.0" y="0.0" width="39.666666666666664" height="19.333333333333332"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text=".ext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-lSt" userLabel="labelExtension">
+                                        <rect key="frame" x="39.666666666666657" y="0.0" width="26.333333333333329" height="19.333333333333332"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="h9v-hN-ILw">
-                                <rect key="frame" x="0.0" y="39.333333333333336" width="425" height="14.333333333333329"/>
+                                <rect key="frame" x="0.0" y="23.333333333333336" width="71.666666666666671" height="14.333333333333336"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
                                         <rect key="frame" x="0.0" y="0.0" width="31" height="14.333333333333334"/>
@@ -75,7 +85,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fu0-vg-6GU" userLabel="labelSubinfo">
-                                        <rect key="frame" x="40.666666666666657" y="0.0" width="384.33333333333337" height="14.333333333333334"/>
+                                        <rect key="frame" x="40.666666666666657" y="0.0" width="31" height="14.333333333333334"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="secondaryLabelColor"/>
                                         <nil key="highlightedColor"/>
@@ -83,12 +93,10 @@
                                 </subviews>
                             </stackView>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="c4t-Rw-3dN" firstAttribute="leading" secondItem="Zt0-xx-1aB" secondAttribute="leading" id="PQ8-0b-fLa"/>
+                        </constraints>
                     </stackView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" ambiguous="YES" text=".ext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-lSt" userLabel="labelExtension">
-                        <rect key="frame" x="146.66666666666666" y="64.333333333333343" width="26.333333333333343" height="19.333333333333329"/>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
                         <rect key="frame" x="584" y="45" width="40" height="58"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -195,15 +203,11 @@
                 <constraint firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="top" secondItem="C4K-Nv-phA" secondAttribute="bottom" constant="-10" id="DB1-jf-rpE"/>
                 <constraint firstItem="Zt0-xx-1aB" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="DFS-Us-g8o"/>
-                <constraint firstItem="Ext-Lb-lSt" firstAttribute="firstBaseline" secondItem="UtT-L6-mgW" secondAttribute="firstBaseline" id="Ext-Bl-tBl"/>
-                <constraint firstItem="Ext-Lb-lSt" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" id="Ext-Le-tTr"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ext-Lb-lSt" secondAttribute="trailing" constant="137" id="Ext-Tr-cTr"/>
                 <constraint firstItem="H4E-G2-C1H" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="5" id="Gj2-CV-ryj"/>
                 <constraint firstItem="o4u-0K-Qpt" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="HFM-sM-wJr"/>
                 <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" id="JCm-UU-Pxu"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="OMy-Cu-HAx"/>
                 <constraint firstItem="H4E-G2-C1H" firstAttribute="trailing" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="5" id="OvG-vU-iYm"/>
-                <constraint firstItem="UtT-L6-mgW" firstAttribute="leading" secondItem="Zt0-xx-1aB" secondAttribute="leading" id="PQ8-0b-fLa"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="10" id="RYl-cO-cCN"/>
                 <constraint firstItem="C4K-Nv-phA" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="-10" id="Sof-wy-toF"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="VSJ-7R-Srk"/>
@@ -243,7 +247,7 @@
                 <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="B6g-qe-MTb"/>
                 <outlet property="tag0" destination="qnc-hI-Z9r" id="6jJ-lV-0ck"/>
                 <outlet property="tag1" destination="jUe-8q-VJd" id="Wcm-rS-rEd"/>
-                <outlet property="titleTrailingConstraint" destination="Ext-Tr-cTr" id="v4n-j5-ZWT"/>
+                <outlet property="titleTrailingConstraint" destination="DFS-Us-g8o" id="uT7-XP-QXB"/>
             </connections>
             <point key="canvasLocation" x="127.60663507109004" y="196.92307692307691"/>
         </collectionViewCell>
