@@ -247,7 +247,6 @@
                 <outlet property="separatorHeightConstraint" destination="G5S-67-boG" id="B6g-qe-MTb"/>
                 <outlet property="tag0" destination="qnc-hI-Z9r" id="6jJ-lV-0ck"/>
                 <outlet property="tag1" destination="jUe-8q-VJd" id="Wcm-rS-rEd"/>
-                <outlet property="titleTrailingConstraint" destination="DFS-Us-g8o" id="uT7-XP-QXB"/>
             </connections>
             <point key="canvasLocation" x="127.60663507109004" y="196.92307692307691"/>
         </collectionViewCell>

@@ -36,7 +36,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
     weak var delegate: NCListCellDelegate?
 
