@@ -150,10 +150,15 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
 
         separatorHeightConstraint.constant = 0.5
 
+        buttonShared.imageView?.contentMode = .scaleAspectFill
+        buttonShared.clipsToBounds = true
+
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
+    }
 
-        contentView.bringSubviewToFront(buttonMore)
+    func setSharedAvatarImage(_ image: UIImage) {
+        buttonShared.setImage(image, for: .normal)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -389,7 +394,7 @@ extension NCCollectionViewCommon {
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
-        // Share button image
+        // Share button image (SF Symbol)
         if isShare {
             cell.buttonShared.setImage(imageCache.getImageShared(), for: .normal)
         } else if !metadata.shareType.isEmpty {
@@ -415,15 +420,15 @@ extension NCCollectionViewCommon {
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
             if let image = NCImageCache.shared.getImageCache(key: fileName) {
-                cell.buttonShared.setImage(image, for: .normal)
+                cell.setSharedAvatarImage(image)
             } else {
                 self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
                     if let image {
-                        cell.buttonShared.setImage(image, for: .normal)
+                        cell.setSharedAvatarImage(image)
                         NCImageCache.shared.addImageCache(image: image, key: fileName)
                     } else {
                         let image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
-                        cell.buttonShared.setImage(image, for: .normal)
+                        cell.setSharedAvatarImage(image)
                     }
 
                     if !(tblAvatar?.loaded ?? false),
