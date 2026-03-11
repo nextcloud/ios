@@ -410,6 +410,14 @@ extension NCSelect: UICollectionViewDataSource {
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
 
+        cell.imageSelect.isHidden = true
+        cell.backgroundView = nil
+        cell.buttonMore.setImage(nil, for: .normal)
+        cell.buttonShared.setImage(nil, for: .normal)
+
+        cell.selected(false, isEditMode: false)
+        cell.setButtonsHidden(true)
+
         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.directory {
@@ -450,12 +458,6 @@ extension NCSelect: UICollectionViewDataSource {
         if metadata.favorite {
             cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
-
-        cell.imageSelect.isHidden = true
-        cell.backgroundView = nil
-        cell.selected(false, isEditMode: false)
-        cell.buttonMore.setImage(nil, for: .normal)
-        cell.buttonShared.setImage(nil, for: .normal)
 
         // Live Photo
         if metadata.isLivePhoto {

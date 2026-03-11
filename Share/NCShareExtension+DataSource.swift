@@ -93,6 +93,13 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageFavorite.image = nil
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
+        cell.buttonMore.setImage(nil, for: .normal)
+        cell.buttonShared.setImage(nil, for: .normal)
+        cell.imageSelect.isHidden = true
+
+        cell.selected(false, isEditMode: false)
+        cell.setButtonsHidden(true)
+        cell.backgroundView = nil
 
         if metadata.directory {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
@@ -102,11 +109,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
 
-        cell.imageSelect.isHidden = true
-        cell.backgroundView = nil
-        cell.selected(false, isEditMode: false)
-        cell.buttonMore.setImage(nil, for: .normal)
-        cell.buttonShared.setImage(nil, for: .normal)
         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.isLivePhoto {
