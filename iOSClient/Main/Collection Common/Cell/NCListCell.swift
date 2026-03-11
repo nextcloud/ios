@@ -150,6 +150,8 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
 
         separatorHeightConstraint.constant = 0.5
 
+        buttonShared.imageEdgeInsets = .zero
+
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
     }
