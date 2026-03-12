@@ -171,7 +171,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     func setSharedAvatarImage(_ image: UIImage) {
         buttonShared.setImage(image, for: .normal)
-        buttonShared.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        buttonShared.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
