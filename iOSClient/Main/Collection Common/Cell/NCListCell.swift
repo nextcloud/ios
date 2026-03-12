@@ -155,15 +155,18 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
-        separatorHeightConstraint.constant = 0.5
-
+        buttonShared.setImage(nil, for: .normal)
         buttonShared.imageEdgeInsets = .zero
+
+        buttonMore.setImage(nil, for: .normal)
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
 
         shareContainer.isHidden = false
         moreContainer.isHidden = false
 
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
+        imageItemLeftConstraint.constant = 10
+        separatorHeightConstraint.constant = 0.5
     }
 
     func setSharedAvatarImage(_ image: UIImage) {

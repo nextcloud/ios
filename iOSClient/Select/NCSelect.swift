@@ -400,24 +400,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.labelExtension?.textColor = NCBrandColor.shared.textColor
-        cell.labelExtension?.font = .systemFont(ofSize: 15)
-
-        cell.imageSelect.image = nil
-        cell.imageStatus.image = nil
-        cell.imageLocal?.image = nil
-        cell.imageFavorite.image = nil
-
-        cell.imageItem.image = nil
-        cell.imageItem.backgroundColor = nil
-
-        cell.imageSelect.isHidden = true
-        cell.backgroundView = nil
-        cell.buttonMore.setImage(nil, for: .normal)
-        cell.buttonShared.setImage(nil, for: .normal)
-
-        cell.selected(false, isEditMode: false)
         cell.setButtonsHidden(true)
-
         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.directory {
