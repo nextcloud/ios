@@ -19,8 +19,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-    @IBOutlet weak var imageShared: UIImageView!
-    @IBOutlet weak var imageMore: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -32,11 +30,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
     @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var shareContainer: UIView!
+    @IBOutlet weak var moreContainer: UIView!
     @IBOutlet weak var separator: UIView!
 
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
 
     weak var delegate: NCListCellDelegate?
 
@@ -45,10 +44,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
-    }
-    var avatarImg: UIImageView? {
-        get { return imageShared }
-        set { imageShared = newValue }
     }
     var previewImg: UIImageView? {
         get { return imageItem }
@@ -109,8 +104,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
-        imageShared.image = nil
-        imageMore.image = nil
         imageSelect.image = nil
 
         labelTitle.text = ""
@@ -153,23 +146,32 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
-        labelInfo.font = .caption1()
+        labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
-        labelInfoSeparator.font = .caption1()
+        labelInfoSeparator.font = .footnote()
         labelInfoSeparator.adjustsFontForContentSizeCategory = true
 
-        labelSubinfo.font = .caption1()
+        labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
-        separatorHeightConstraint.constant = 0.5
+        buttonShared.setImage(nil, for: .normal)
+        buttonShared.imageEdgeInsets = .zero
 
+        buttonMore.setImage(nil, for: .normal)
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
 
-        titleTrailingConstraint.constant = 90
+        shareContainer.isHidden = false
+        moreContainer.isHidden = false
 
-        contentView.bringSubviewToFront(buttonMore)
+        imageItemLeftConstraint.constant = 10
+        separatorHeightConstraint.constant = 0.5
+    }
+
+    func setSharedAvatarImage(_ image: UIImage) {
+        buttonShared.setImage(image, for: .normal)
+        buttonShared.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -181,52 +183,52 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     }
 
     @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let location = g.location(in: contentView)
+        let locationInButton = g.location(in: buttonMore)
 
-        if buttonMore.frame.contains(location) {
+        if buttonMore.bounds.contains(locationInButton) {
             delegate?.onMenuIntent(with: metadata)
         }
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        let location = touch.location(in: contentView)
-        return buttonMore.frame.contains(location)
-    }
+        let locationInButton = touch.location(in: buttonMore)
+        let result = buttonMore.bounds.contains(locationInButton)
 
-    func titleInfoTrailingFull() {
-        titleTrailingConstraint.constant = 10
+        return result
     }
 
     func setButtonMore(image: UIImage) {
-        imageMore.image = image
-    }
-
-    func hideButtonMore(_ status: Bool) {
-        imageMore.isHidden = status
-        buttonMore.isHidden = status
+        buttonMore.setImage(image, for: .normal)
     }
 
     func hideButtonShare(_ status: Bool) {
-        imageShared.isHidden = status
         buttonShared.isHidden = status
+        shareContainer.isHidden = status
+    }
+
+    func setButtonsHidden(_ hidden: Bool) {
+        buttonShared.isHidden = hidden
+        buttonMore.isHidden = hidden
+        shareContainer.isHidden = hidden
+        moreContainer.isHidden = hidden
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
-            imageShared.isHidden = true
-            imageMore.isHidden = true
             buttonShared.isHidden = true
             buttonMore.isHidden = true
+            shareContainer.isHidden = true
+            moreContainer.isHidden = true
             accessibilityCustomActions = nil
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
-            imageShared.isHidden = false
-            imageMore.isHidden = false
             buttonShared.isHidden = false
             buttonMore.isHidden = false
+            shareContainer.isHidden = false
+            moreContainer.isHidden = false
             backgroundView = nil
         }
         if status {
@@ -373,7 +375,6 @@ extension NCCollectionViewCommon {
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // CONTENT MODE
-        cell.avatarImg?.contentMode = .center
         cell.previewImg?.layer.borderWidth = 0
 
         if existsImagePreview && layoutForView?.layout != global.layoutPhotoRatio {
@@ -425,15 +426,15 @@ extension NCCollectionViewCommon {
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
-        // Share image
+        // Share button image (SF Symbol)
         if isShare {
-            cell.imageShared?.image = imageCache.getImageShared()
+            cell.buttonShared.setImage(imageCache.getImageShared(), for: .normal)
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(NKShare.ShareType.publicLink.rawValue) ?
-            (cell.imageShared?.image = imageCache.getImageShareByLink()) :
-            (cell.imageShared?.image = imageCache.getImageShared())
+            (cell.buttonShared.setImage(imageCache.getImageShareByLink(), for: .normal)) :
+            (cell.buttonShared.setImage(imageCache.getImageShared(), for: .normal))
         } else {
-            cell.imageShared?.image = imageCache.getImageCanShare()
+            cell.buttonShared.setImage(imageCache.getImageCanShare(), for: .normal)
         }
 
         // Button More
@@ -451,17 +452,15 @@ extension NCCollectionViewCommon {
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
             if let image = NCImageCache.shared.getImageCache(key: fileName) {
-                cell.avatarImg?.contentMode = .scaleAspectFill
-                cell.avatarImg?.image = image
+                cell.setSharedAvatarImage(image)
             } else {
                 self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
                     if let image {
-                        cell.avatarImg?.contentMode = .scaleAspectFill
-                        cell.avatarImg?.image = image
+                        cell.setSharedAvatarImage(image)
                         NCImageCache.shared.addImageCache(image: image, key: fileName)
                     } else {
-                        cell.avatarImg?.contentMode = .scaleAspectFill
-                        cell.avatarImg?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                        let image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                        cell.setSharedAvatarImage(image)
                     }
 
                     if !(tblAvatar?.loaded ?? false),
@@ -475,8 +474,7 @@ extension NCCollectionViewCommon {
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue {
             cell.imageLocal.image = nil
-            cell.hideButtonShare(true)
-            cell.hideButtonMore(true)
+            cell.setButtonsHidden(true)
         }
 
         // Separator
@@ -499,16 +497,14 @@ extension NCCollectionViewCommon {
 
         // Color string find in search
         cell.labelTitle?.textColor = NCBrandColor.shared.textColor
-        cell.labelTitle?.font = .systemFont(ofSize: 15)
         cell.labelExtension?.textColor = NCBrandColor.shared.textColor
-        cell.labelExtension?.font = .systemFont(ofSize: 15)
 
         if isSearchingMode,
            let searchResultStore,
            let title = cell.labelTitle?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
-            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
+            let attributedString = NSMutableAttributedString(string: title)
+            attributedString.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.labelTitle?.attributedText = attributedString
         }
 
@@ -522,9 +518,7 @@ extension NCCollectionViewCommon {
 
         // Hide buttons
         if metadata.name != global.appName {
-            cell.titleInfoTrailingFull()
-            cell.hideButtonShare(true)
-            cell.hideButtonMore(true)
+            cell.setButtonsHidden(true)
         }
 
         cell.setIconOutlines()

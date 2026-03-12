@@ -86,15 +86,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelTitle, extensionLabel: cell.labelExtension)
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         cell.labelExtension?.textColor = NCBrandColor.shared.textColor
-        cell.labelExtension?.font = .systemFont(ofSize: 15)
-        cell.imageSelect.image = nil
-        cell.imageStatus.image = nil
-        cell.imageLocal?.image = nil
-        cell.imageFavorite.image = nil
-        cell.imageShared.image = nil
-        cell.imageMore.image = nil
-        cell.imageItem.image = nil
-        cell.imageItem.backgroundColor = nil
+        cell.setButtonsHidden(true)
 
         if metadata.directory {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
@@ -104,11 +96,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
 
-        cell.imageSelect.isHidden = true
-        cell.backgroundView = nil
-        cell.hideButtonMore(true)
-        cell.hideButtonShare(true)
-        cell.selected(false, isEditMode: false)
         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.isLivePhoto {

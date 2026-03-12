@@ -18,23 +18,23 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="image">
-                        <rect key="frame" x="0.0" y="0.0" width="400" height="365"/>
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="355"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ixP-qo-bb5">
-                        <rect key="frame" x="0.0" y="371.33333333333331" width="28.666666666666668" height="13.333333333333314"/>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
+                        <rect key="frame" x="0.0" y="363" width="39.666666666666664" height="19.333333333333314"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text=".ext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-rec" userLabel="labelExtensionFilename">
-                        <rect key="frame" x="28.666666666666671" y="371.33333333333331" width="19.333333333333329" height="13.333333333333314"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text=".ext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-rec" userLabel="labelExtensionFilename">
+                        <rect key="frame" x="39.666666666666664" y="363" width="26.333333333333336" height="19.333333333333314"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pg-4i-UyV">
-                        <rect key="frame" x="0.0" y="386.66666666666669" width="393" height="13.333333333333314"/>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
+                        <rect key="frame" x="0.0" y="384.33333333333331" width="393" height="15.666666666666686"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -53,7 +53,7 @@
             </view>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="7" id="1bq-87-crR"/>
-                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="35" id="8aV-2N-Kxz"/>
+                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="45" id="8aV-2N-Kxz"/>
                 <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="3" id="9CX-Ek-lXy"/>
                 <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="B8v-xz-Iyo"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="D9v-jw-FzB"/>
@@ -81,7 +81,7 @@
     <resources>
         <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
