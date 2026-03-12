@@ -13,7 +13,7 @@ protocol NCListCellDelegate: AnyObject {
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any)
 }
 
-class NCListCell: UICollectionViewCell, NCCellMainProtocol {
+class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -77,6 +77,11 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        let tapObserver = UITapGestureRecognizer(target: self, action: #selector(handleTapObserver(_:)))
+        tapObserver.cancelsTouchesInView = false
+        tapObserver.delegate = self
+        contentView.addGestureRecognizer(tapObserver)
 
         initCell()
     }
@@ -173,8 +178,19 @@ class NCListCell: UICollectionViewCell, NCCellMainProtocol {
         delegate?.tapShareListItem(with: metadata, button: buttonShared, sender: sender)
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.onMenuIntent(with: metadata)
+    @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
+        let location = g.location(in: contentView)
+
+        if buttonMore.frame.contains(location) {
+            delegate?.onMenuIntent(with: metadata)
+        }
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        let location = touch.location(in: contentView)
+        let result = buttonMore.frame.contains(location)
+
+        return result
     }
 
     func setButtonMore(image: UIImage) {

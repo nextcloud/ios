@@ -192,9 +192,6 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                         <state key="normal" image="ellipsis" catalog="system"/>
-                                        <connections>
-                                            <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Xw3-V4-XfL"/>
-                                        </connections>
                                     </button>
                                 </subviews>
                                 <constraints>
