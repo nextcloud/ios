@@ -81,13 +81,13 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         // adjustsFontForContentSizeCategory:
         //     Enables live updates when accessibility settings change.
         //
-        labelFilename.font = .caption2()
+        labelFilename.font = .callout()
         labelFilename.adjustsFontForContentSizeCategory = true
 
-        labelExtensionFilename.font = .caption2()
+        labelExtensionFilename.font = .footnote()
         labelExtensionFilename.adjustsFontForContentSizeCategory = true
 
-        labelInfo.font = .caption2()
+        labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
         buttonMore.menu = nil
