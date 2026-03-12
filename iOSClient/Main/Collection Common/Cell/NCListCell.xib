@@ -52,10 +52,10 @@
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
-                        <rect key="frame" x="107" y="54" width="557" height="40"/>
+                        <rect key="frame" x="107" y="49" width="558" height="50"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">
-                                <rect key="frame" x="0.0" y="0.6666666666666643" width="467" height="38.666666666666664"/>
+                                <rect key="frame" x="0.0" y="5.6666666666666643" width="459" height="38.666666666666664"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" translatesAutoresizingMaskIntoConstraints="NO" id="c4t-Rw-3dN" userLabel="titleRow">
                                         <rect key="frame" x="0.0" y="0.0" width="69" height="20.333333333333332"/>
@@ -159,10 +159,10 @@
                                 </constraints>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v5o-Yr-9Lm" userLabel="shareContainer">
-                                <rect key="frame" x="472" y="0.0" width="40" height="40"/>
+                                <rect key="frame" x="461" y="3" width="44" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
-                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="WOg-y5-5UA"/>
                                             <constraint firstAttribute="width" constant="44" id="YSF-9Z-XlJ"/>
@@ -183,10 +183,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p2F-Qu-3Nc" userLabel="moreContainer">
-                                <rect key="frame" x="517" y="0.0" width="40" height="40"/>
+                                <rect key="frame" x="507" y="3" width="44" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
-                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="44" id="ZgH-mI-l2k"/>
                                             <constraint firstAttribute="height" constant="44" id="woC-64-Tyc"/>
@@ -204,9 +204,9 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H6z-7M-J4w" userLabel="trailingSpacer">
-                                <rect key="frame" x="561" y="0.0" width="4" height="40"/>
+                                <rect key="frame" x="553" y="0.0" width="5" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="8" id="uVx-6S-pfj"/>
+                                    <constraint firstAttribute="width" constant="5" id="uVx-6S-pfj"/>
                                 </constraints>
                             </view>
                         </subviews>
