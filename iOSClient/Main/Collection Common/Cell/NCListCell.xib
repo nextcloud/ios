@@ -51,7 +51,7 @@
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="0" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
                         <rect key="frame" x="107" y="54" width="557" height="40"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">

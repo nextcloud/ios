@@ -806,11 +806,8 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                         if self.user == cell.metadata?.ownerId {
                             if self.isPreviewImage, let previewImage = cell.previewImg {
                                 UIView.transition(with: previewImage, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImage.image = image}, completion: nil)
-                            } else {
-                            /*
-                            if let avatarImage = cell.avatarImg {
-                                UIView.transition(with: avatarImage, duration: 0.75, options: .transitionCrossDissolve, animations: { avatarImage.image = image}, completion: nil)
-                            */
+                            } else if let cellList = cell as? NCListCell {
+                                cellList.setSharedAvatarImage(image)
                             }
                             break
                         }
