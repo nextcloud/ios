@@ -29,7 +29,7 @@ enum NCViewerContextMenu {
            if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty), !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
                let action = UIAction(
                    title: NSLocalizedString("_details_", comment: ""),
-                   image: UIImage(named: "share")?.withTintColor(NCBrandColor.shared.iconImageColor)
+                   image: UIImage(named: "share")?.image(color: NCBrandColor.shared.iconImageColor, size: 22).withTintColor(NCBrandColor.shared.iconImageColor)
                ) { _ in
                    NCCreate().createShare(viewController: controller,
                                           metadata: metadata,
@@ -44,7 +44,7 @@ enum NCViewerContextMenu {
            if !webView {
                let action = UIAction(
                    title: NSLocalizedString("_view_in_folder_", comment: ""),
-                   image: UIImage(systemName: "arrow.forward.square")?.withTintColor(NCBrandColor.shared.iconImageColor)
+                   image: NCUtility().loadImage(named: "arrow.forward.square", colors: [NCBrandColor.shared.iconImageColor]).withTintColor(NCBrandColor.shared.iconImageColor)
                ) { _ in
                    NCNetworking.shared.openFileViewInFolder(serverUrl: metadata.serverUrl,
                                                             fileNameBlink: metadata.fileName,
@@ -86,9 +86,21 @@ enum NCViewerContextMenu {
            //
            // SHARE
            //
-//           if !webView, metadata.canShare {
-//               menuElements.append(ContextMenuActions.share(selectedMetadatas: [metadata], controller: controller, sender: sender))
-//           }
+           if !webView, metadata.canShare {
+               let action = UIAction(
+                   title: NSLocalizedString("_open_in_", comment: ""),
+                   image: UIImage(named: "open_file")?.withTintColor(NCBrandColor.shared.iconImageColor)
+               ) { _ in
+                   Task {
+                       await NCCreate().createActivityViewController(
+                           selectedMetadata: [metadata],
+                           controller: controller,
+                           sender: sender
+                       )
+                   }
+               }
+               menuElements.append(action)
+           }
 
             //
             // PRINT
@@ -186,11 +198,14 @@ enum NCViewerContextMenu {
                             Task {
                                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                        let metadata = metadata.detachedCopy()
-                                        metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
-//                                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-//                                                                metadata: metadata,
-//                                                                error: .success)
+                                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                                account: metadata.account,
+                                                                fileName: metadata.fileName,
+                                                                serverUrl: metadata.serverUrl,
+                                                                selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                ocId: metadata.ocId,
+                                                                destination: nil,
+                                                                error: .success)
                                     }
                                 } else {
                                     if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
