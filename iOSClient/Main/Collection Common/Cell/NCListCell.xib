@@ -51,7 +51,7 @@
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="0" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
                         <rect key="frame" x="107" y="54" width="557" height="40"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">
@@ -164,10 +164,11 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="WOg-y5-5UA"/>
-                                            <constraint firstAttribute="width" constant="40" id="YSF-9Z-XlJ"/>
+                                            <constraint firstAttribute="height" constant="44" id="WOg-y5-5UA"/>
+                                            <constraint firstAttribute="width" constant="44" id="YSF-9Z-XlJ"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                        <inset key="contentEdgeInsets" minX="0.0" minY="3" maxX="6" maxY="3"/>
                                         <state key="normal" image="person.fill.badge.plus" catalog="system"/>
                                         <connections>
                                             <action selector="touchUpInsideShare:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="UVA-XS-fRf"/>
@@ -175,8 +176,8 @@
                                     </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="1gA-3h-K7b"/>
-                                    <constraint firstAttribute="height" constant="40" id="7yY-tB-2tq"/>
+                                    <constraint firstAttribute="width" constant="44" id="1gA-3h-K7b"/>
+                                    <constraint firstAttribute="height" constant="44" id="7yY-tB-2tq"/>
                                     <constraint firstItem="o4u-0K-Qpt" firstAttribute="centerX" secondItem="v5o-Yr-9Lm" secondAttribute="centerX" id="B5r-eF-aL9"/>
                                     <constraint firstItem="o4u-0K-Qpt" firstAttribute="centerY" secondItem="v5o-Yr-9Lm" secondAttribute="centerY" id="Q7A-bW-2Qh"/>
                                 </constraints>
@@ -187,16 +188,17 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>
-                                            <constraint firstAttribute="height" constant="40" id="woC-64-Tyc"/>
+                                            <constraint firstAttribute="width" constant="44" id="ZgH-mI-l2k"/>
+                                            <constraint firstAttribute="height" constant="44" id="woC-64-Tyc"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                        <inset key="contentEdgeInsets" minX="6" minY="3" maxX="0.0" maxY="3"/>
                                         <state key="normal" image="ellipsis" catalog="system"/>
                                     </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="3pM-Y4-6nJ"/>
-                                    <constraint firstAttribute="height" constant="40" id="8Js-8B-Si4"/>
+                                    <constraint firstAttribute="width" constant="44" id="3pM-Y4-6nJ"/>
+                                    <constraint firstAttribute="height" constant="44" id="8Js-8B-Si4"/>
                                     <constraint firstItem="yhy-xd-w5C" firstAttribute="centerX" secondItem="p2F-Qu-3Nc" secondAttribute="centerX" id="P6b-UJ-0j3"/>
                                     <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="p2F-Qu-3Nc" secondAttribute="centerY" id="R8a-2M-Mw1"/>
                                 </constraints>

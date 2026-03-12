@@ -158,6 +158,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         separatorHeightConstraint.constant = 0.5
 
         buttonShared.imageEdgeInsets = .zero
+
         shareContainer.isHidden = false
         moreContainer.isHidden = false
 
