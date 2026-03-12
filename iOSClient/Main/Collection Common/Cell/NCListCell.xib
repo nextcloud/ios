@@ -51,7 +51,7 @@
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="k4y-2T-b9M" userLabel="titleActionsStack">
                         <rect key="frame" x="107" y="54" width="557" height="40"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Zt0-xx-1aB" userLabel="titleInfoStack">
@@ -203,6 +203,12 @@
                                     <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="p2F-Qu-3Nc" secondAttribute="centerY" id="R8a-2M-Mw1"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H6z-7M-J4w" userLabel="trailingSpacer">
+                                <rect key="frame" x="561" y="0.0" width="4" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="8" id="uVx-6S-pfj"/>
+                                </constraints>
+                            </view>
                         </subviews>
                     </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="separator">
@@ -215,7 +221,7 @@
                 </subviews>
             </view>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="k4y-2T-b9M" secondAttribute="trailing" constant="5" id="1M4-vz-4aF"/>
+                <constraint firstAttribute="trailing" secondItem="k4y-2T-b9M" secondAttribute="trailing" constant="4" id="1M4-vz-4aF"/>
                 <constraint firstItem="k4y-2T-b9M" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="3dQ-YQ-4eV"/>
                 <constraint firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="top" secondItem="C4K-Nv-phA" secondAttribute="bottom" constant="-10" id="DB1-jf-rpE"/>
