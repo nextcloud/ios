@@ -179,16 +179,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     }
 
     @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
-        let location = g.location(in: contentView)
+        let locationInButton = g.location(in: buttonMore)
 
-        if buttonMore.frame.contains(location) {
+        if buttonMore.bounds.contains(locationInButton) {
             delegate?.onMenuIntent(with: metadata)
         }
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        let location = touch.location(in: contentView)
-        let result = buttonMore.frame.contains(location)
+        let locationInButton = touch.location(in: buttonMore)
+        let result = buttonMore.bounds.contains(locationInButton)
 
         return result
     }
