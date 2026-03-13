@@ -25,7 +25,7 @@ extension NCMedia: UICollectionViewDelegate {
                 let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
                 let ocIds = dataSource.metadatas.map { $0.ocId }
 
-                if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: ocIds, image: image, delegate: self) {
+                if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: ocIds, siblingMedia: [metadata], image: image, delegate: self) {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             }

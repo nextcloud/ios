@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-FileCopyrightText: 2025 Serhii Kaliberda
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
@@ -179,7 +180,10 @@ class NCViewerProviderContextMenu: UIViewController {
     }
 
     private func viewVideo(metadata: tableMetadata) {
-        self.networking.getVideoUrl(metadata: metadata) { url, _, _ in
+        if NCMediaCoordinator.shared.isPlaying {
+            return
+        }
+        self.networking.getVideoUrl(metadata: metadata) { url, _ in
             if let url = url {
                 self.player.media = VLCMedia(url: url)
                 self.player.delegate = self
