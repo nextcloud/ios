@@ -7,15 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F683F8E2DFB08FD0083C089 /* FloatingPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F683F8D2DFB08FD0083C089 /* FloatingPlayerView.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
 		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		370D26AF248A3D7A00121797 /* NCCellMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellMain.swift */; };
+		420216572F557C9100BBD630 /* NCMediaCoordinatorVLCStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420216562F557C7F00BBD630 /* NCMediaCoordinatorVLCStrategy.swift */; };
+		420216592F557CB100BBD630 /* NCMediaCoordinatorAVKitStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420216582F557CA300BBD630 /* NCMediaCoordinatorAVKitStrategy.swift */; };
+		4202165D2F5586D800BBD630 /* NCMediaCoordinatorStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4202165C2F5586D300BBD630 /* NCMediaCoordinatorStrategy.swift */; };
 		4250C8472E2E53BA00349A8A /* NCMediaCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4250C8462E2E53B400349A8A /* NCMediaCoordinator.swift */; };
-		428FFFD62E31238A00D0B7E4 /* FloatingPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428FFFD52E31238700D0B7E4 /* FloatingPlayerViewModel.swift */; };
-		42E01E212E6AFFE900A5B2EF /* FloatingPlayerViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E01E202E6AFFE200A5B2EF /* FloatingPlayerViewPresenter.swift */; };
+		426E38DD2F571E8D0073EE47 /* NCMediaCoordinatorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E38DC2F571E890073EE47 /* NCMediaCoordinatorConstants.swift */; };
 		A5A87F9E4B0E4441A6A4BC20 /* NCContextMenuProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7697C94BA14450A0867940 /* NCContextMenuProfile.swift */; };
 		AA3C85E82D36B08C00F74F12 /* UITestBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3C85E72D36B08C00F74F12 /* UITestBackend.swift */; };
 		AA3C85EB2D36BBFB00F74F12 /* OCSResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3C85EA2D36BBF400F74F12 /* OCSResponse.swift */; };
@@ -1115,14 +1116,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0F683F8D2DFB08FD0083C089 /* FloatingPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlayerView.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
 		370D26AE248A3D7A00121797 /* NCCellMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCellMain.swift; sourceTree = "<group>"; };
+		420216562F557C7F00BBD630 /* NCMediaCoordinatorVLCStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCoordinatorVLCStrategy.swift; sourceTree = "<group>"; };
+		420216582F557CA300BBD630 /* NCMediaCoordinatorAVKitStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCoordinatorAVKitStrategy.swift; sourceTree = "<group>"; };
+		4202165C2F5586D300BBD630 /* NCMediaCoordinatorStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCoordinatorStrategy.swift; sourceTree = "<group>"; };
 		4250C8462E2E53B400349A8A /* NCMediaCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCoordinator.swift; sourceTree = "<group>"; };
-		428FFFD52E31238700D0B7E4 /* FloatingPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlayerViewModel.swift; sourceTree = "<group>"; };
-		42E01E202E6AFFE200A5B2EF /* FloatingPlayerViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlayerViewPresenter.swift; sourceTree = "<group>"; };
+		426E38DC2F571E890073EE47 /* NCMediaCoordinatorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaCoordinatorConstants.swift; sourceTree = "<group>"; };
 		8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuComment.swift; sourceTree = "<group>"; };
 		AA3C85E72D36B08C00F74F12 /* UITestBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestBackend.swift; sourceTree = "<group>"; };
 		AA3C85EA2D36BBF400F74F12 /* OCSResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCSResponse.swift; sourceTree = "<group>"; };
@@ -1998,16 +2000,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0F9D62CB2DFAF93000C8E466 /* FloatingPlayerView */ = {
-			isa = PBXGroup;
-			children = (
-				42E01E202E6AFFE200A5B2EF /* FloatingPlayerViewPresenter.swift */,
-				0F683F8D2DFB08FD0083C089 /* FloatingPlayerView.swift */,
-				428FFFD52E31238700D0B7E4 /* FloatingPlayerViewModel.swift */,
-			);
-			path = FloatingPlayerView;
-			sourceTree = "<group>";
-		};
 		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2027,13 +2019,24 @@
 				8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */,
 				F72EC7252F45C90600A2135C /* NCContextMenuNavigation.swift */,
 				F72EC7272F45FF0600A2135C /* NCContextMenuPlus.swift */,
-				B4C7A5B36D1ED178FB6B76CB /* NCContextMenuPlayerTracks.swift */,
 				F7FAFD3928BFA947000777FE /* NCContextMenuNotification.swift */,
 				AF93471127E2341B002537EE /* NCContextMenuShare.swift */,
 				F75D19E225EFE09000D74598 /* NCContextMenuTrash.swift */,
 				F710D2012405826100A6033D /* NCViewerContextMenu.swift */,
 			);
 			path = Menu;
+			sourceTree = "<group>";
+		};
+		420216552F55791E00BBD630 /* NCMediaCoordinator */ = {
+			isa = PBXGroup;
+			children = (
+				426E38DC2F571E890073EE47 /* NCMediaCoordinatorConstants.swift */,
+				4250C8462E2E53B400349A8A /* NCMediaCoordinator.swift */,
+				4202165C2F5586D300BBD630 /* NCMediaCoordinatorStrategy.swift */,
+				420216562F557C7F00BBD630 /* NCMediaCoordinatorVLCStrategy.swift */,
+				420216582F557CA300BBD630 /* NCMediaCoordinatorAVKitStrategy.swift */,
+			);
+			path = NCMediaCoordinator;
 			sourceTree = "<group>";
 		};
 		AA3C85E92D36BBDE00F74F12 /* UITestBackend */ = {
@@ -2784,7 +2787,7 @@
 		F79018B1240962C7007C9B6D /* NCViewerMedia */ = {
 			isa = PBXGroup;
 			children = (
-				0F9D62CB2DFAF93000C8E466 /* FloatingPlayerView */,
+				420216552F55791E00BBD630 /* NCMediaCoordinator */,
 				F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */,
 				F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */,
@@ -2834,7 +2837,6 @@
 			isa = PBXGroup;
 			children = (
 				F79EDAA126B004980007D134 /* NCPlayer.swift */,
-				4250C8462E2E53B400349A8A /* NCMediaCoordinator.swift */,
 				F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */,
 				F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */,
 			);
@@ -4482,6 +4484,7 @@
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				F7D890752BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift in Sources */,
 				F7BD0A042C4689E9003A4A6D /* NCMedia+MediaLayout.swift in Sources */,
+				426E38DD2F571E8D0073EE47 /* NCMediaCoordinatorConstants.swift in Sources */,
 				F718E25A2DF2D5D1004038AF /* NCBackgroundLocationUploadManager.swift in Sources */,
 				F761856B29E98543006EB3B0 /* NCIntroViewController.swift in Sources */,
 				F7743A142C33F13A0034F670 /* NCCollectionViewCommon+CollectionViewDataSource.swift in Sources */,
@@ -4544,6 +4547,7 @@
 				F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AA8D31662D411FA100FE2775 /* NCShareDateCell.swift in Sources */,
 				F3F442EE2DDE292D00FD701F /* NCMetadataPermissions.swift in Sources */,
+				420216592F557CB100BBD630 /* NCMediaCoordinatorAVKitStrategy.swift in Sources */,
 				F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */,
 				AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */,
 				AA8D31682D41224800FE2775 /* NCShareToggleCell.swift in Sources */,
@@ -4563,6 +4567,7 @@
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F724377B2C10B83E00C7C68D /* NCSharePermissions.swift in Sources */,
 				F317C82E2E844C5300761AEA /* ClientIntegrationUIViewer.swift in Sources */,
+				420216572F557C9100BBD630 /* NCMediaCoordinatorVLCStrategy.swift in Sources */,
 				F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */,
 				F7D4BF3D2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,
@@ -4626,6 +4631,7 @@
 				F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */,
 				F75D90212D2BE26F003E740B /* NCRecommendationsCell.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
+				4202165D2F5586D800BBD630 /* NCMediaCoordinatorStrategy.swift in Sources */,
 				F76882222C0DD1E7001CF441 /* NCCapabilitiesView.swift in Sources */,
 				F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,
@@ -4636,7 +4642,6 @@
 				F72EC7242F45C81600A2135C /* NotificationCenter+Extension.swift in Sources */,
 				F389C9F52CEE383300049762 /* SelectAlbumView.swift in Sources */,
 				F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */,
-				42E01E212E6AFFE900A5B2EF /* FloatingPlayerViewPresenter.swift in Sources */,
 				F7816EF22C2C3E1F00A52517 /* NCPushNotification.swift in Sources */,
 				F76882342C0DD1E7001CF441 /* NCDisplayView.swift in Sources */,
 				F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */,
@@ -4663,7 +4668,6 @@
 				F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */,
 				F73EF7DF2B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
 				F79B646026CA661600838ACA /* UIControl+Extension.swift in Sources */,
-				0F683F8E2DFB08FD0083C089 /* FloatingPlayerView.swift in Sources */,
 				F768823E2C0DD305001CF441 /* LazyView.swift in Sources */,
 				F7CAFE1B2F16AA8D00DB35A5 /* main.swift in Sources */,
 				F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */,
@@ -4677,7 +4681,6 @@
 				F769CA192966EA3C00039397 /* ComponentView.swift in Sources */,
 				F7C9B91D2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				AF93474C27E34120002537EE /* NCUtility+Image.swift in Sources */,
-				428FFFD62E31238A00D0B7E4 /* FloatingPlayerViewModel.swift in Sources */,
 				F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */,
 				AF93474E27E3F212002537EE /* NCShareNewUserAddComment.swift in Sources */,
 				F7C30DFD291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,

@@ -19,7 +19,6 @@ class NCViewerMediaPage: UIViewController {
     // Parameters
     var ocIds: [String] = []
     var currentIndex: Int = 0
-    var delegateViewController: UIViewController?
 
     var modifiedOcId: [String] = []
     private var nextIndex: Int?
@@ -150,8 +149,6 @@ class NCViewerMediaPage: UIViewController {
 
         changeScreenMode(mode: viewerMediaScreenMode)
         tabBarController?.tabBar.isHidden = true
-
-        FloatingPlayerViewPresenter.shared.isMediaScreenVisible = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -166,8 +163,6 @@ class NCViewerMediaPage: UIViewController {
 
         changeScreenMode(mode: .normal)
         tabBarController?.tabBar.isHidden = false
-
-        FloatingPlayerViewPresenter.shared.isMediaScreenVisible = false
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -511,10 +506,6 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 self.progressView.progress = 0
 
                 if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
-                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                          fileName: metadata.fileNameView,
-                                                                                                          userId: metadata.userId,
-                                                                                                          urlBase: metadata.urlBase))
                     if ncplayer.isPlaying() {
                         ncplayer.playerPause()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
