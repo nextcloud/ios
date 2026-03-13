@@ -1,22 +1,21 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-FileCopyrightText: 2025 Serhii Kaliberda
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import NextcloudKit
-import CoreMedia
 import UIKit
-import AVKit
-import MediaPlayer
-import MobileVLCKit
 import Alamofire
 import LucidBanner
+import Combine
 
 class NCPlayerToolBar: UIView {
     @IBOutlet weak var utilityView: UIView!
     @IBOutlet weak var fullscreenButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!
+    @IBOutlet weak var pictureInPictureButton: UIButton!
 
     @IBOutlet weak var playerButtonView: UIStackView!
     @IBOutlet weak var backButton: UIButton!
@@ -29,6 +28,8 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var labelCurrentTime: UILabel!
     @IBOutlet weak var repeatButton: UIButton!
 
+    private var mediaCoordinator = NCMediaCoordinator.shared
+
     enum sliderEventType {
         case none
         case began
@@ -38,11 +39,17 @@ class NCPlayerToolBar: UIView {
 
     var playbackSliderEvent: sliderEventType = .none
     var isFullscreen: Bool = false
-    var playRepeat: Bool = false
+    var playRepeat: Bool {
+        get {
+            mediaCoordinator.playRepeat
+        }
+        set {
+            mediaCoordinator.playRepeat = newValue
+        }
+    }
 
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
-    private let audioSession = AVAudioSession.sharedInstance()
     private var pointSize: CGFloat = 0
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
@@ -50,6 +57,8 @@ class NCPlayerToolBar: UIView {
     private let database = NCManageDatabase.shared
     private weak var viewerMediaPage: NCViewerMediaPage?
     private var buttonImage = UIImage()
+
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - View Life Cycle
 
@@ -67,6 +76,11 @@ class NCPlayerToolBar: UIView {
         audioButton.setImage(utility.loadImage(named: "speaker.zzz", colors: [.white]), for: .normal)
         audioButton.isEnabled = false
         audioButton.showsMenuAsPrimaryAction = true
+
+        pictureInPictureButton.setImage(UIImage(systemName: "pip.enter")!.withTintColor(.white,
+                                                                                         renderingMode: .alwaysOriginal),
+                                         for: .normal)
+        pictureInPictureButton.isHidden = true
 
         if UIDevice.current.userInterfaceIdiom == .pad {
             pointSize = 60
@@ -91,7 +105,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
-        repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
+        updateRepeatButtonImage()
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
@@ -104,6 +118,23 @@ class NCPlayerToolBar: UIView {
         // Normally hide
         self.alpha = 0
         self.isHidden = true
+
+        NCMediaCoordinator.shared.isPictureInPictureSupportedPublisher.sink { [weak self] isPictureInPictureSupported in
+            self?.pictureInPictureButton.isHidden = !isPictureInPictureSupported
+        }.store(in: &cancellables)
+
+        NCMediaCoordinator.shared.isPictureInPictureActivePublisher.sink { [weak self] isPictureInPictureActive in
+            self?.updatePictureInPictureButtonImage(isPictureInPictureActive)
+        }.store(in: &cancellables)
+
+        NCMediaCoordinator.shared.metadataSwitchPublisher.sink { [weak self] _, newItem in
+            self?.subtitleButton.isEnabled = newItem?.isVideo == true
+            self?.audioButton.isEnabled = newItem?.isVideo == true
+        }.store(in: &cancellables)
+
+        NCMediaCoordinator.shared.isPlayingPublisher.sink { [weak self] isPlaying in
+            self?.updatePlayButtonImage(isPlaying)
+        }.store(in: &cancellables)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -134,8 +165,8 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.value = position
 
-        labelCurrentTime.text = "--:--"
-        labelLeftTime.text = "--:--"
+        labelCurrentTime.text = NCMediaCoordinatorConstants.emptyTime
+        labelLeftTime.text = NCMediaCoordinatorConstants.emptyTime
 
         if viewerMediaScreenMode == .normal {
             show()
@@ -143,45 +174,17 @@ class NCPlayerToolBar: UIView {
             hide()
         }
 
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = position
-
         setupSubtitleButton()
         setupAudioButton()
     }
 
-    public func updatePlaybackPosition() {
-        guard let ncplayer = self.ncplayer,
-              let media = ncplayer.player.media else {
-            return
-        }
-
-        let length = media.length.intValue
-
-        let position = ncplayer.player.position
-
-        let currentSeconds = Double(position) * (Double(length) / 1000.0)
-
-        let currentTimeObj = VLCTime(int: Int32(currentSeconds * 1000))
-        let remainingTimeObj = VLCTime(int: Int32((Double(length) / 1000.0) - currentSeconds) * 1000)
-
-        labelCurrentTime.text = currentTimeObj.stringValue == "--:--" ? "00:00" : currentTimeObj.stringValue
-
-        let remaining = remainingTimeObj.stringValue
-        labelLeftTime.text = "-\(remaining)"
-
-        if playbackSliderEvent == .ended {
+    public func update(position: Float, length: Float, playedTime: String, remainingTime: String?) {
+        // SLIDER & TIME
+        if playbackSliderEvent != .began && playbackSliderEvent != .moved {
             playbackSlider.value = position
         }
-
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentSeconds
-    }
-
-    public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
-        if let metadata = metadata, metadata.isVideo {
-            self.subtitleButton.isEnabled = true
-            self.audioButton.isEnabled = true
-        }
+        labelCurrentTime.text = playedTime
+        labelLeftTime.text = remainingTime
     }
 
     // MARK: -
@@ -202,16 +205,24 @@ class NCPlayerToolBar: UIView {
         })
     }
 
-    func showPauseButton() {
-        buttonImage = UIImage(systemName: "pause.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
-        playButton.setImage(buttonImage, for: .normal)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
+    // MARK: - Update Play Button Image
+
+    private func updatePlayButtonImage(_ isPlaying: Bool) {
+        if isPlaying && (mediaCoordinator.item?.ocId == metadata?.ocId) {
+            showPauseButton()
+        } else {
+            showPlayButton()
+        }
     }
 
-    func showPlayButton() {
+    private func showPauseButton() {
+        buttonImage = UIImage(systemName: "pause.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
+        playButton.setImage(buttonImage, for: .normal)
+    }
+
+    private func showPlayButton() {
         buttonImage = UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))!.withTintColor(.white, renderingMode: .alwaysOriginal)
         playButton.setImage(buttonImage, for: .normal)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
     }
 
     // MARK: - Event / Gesture
@@ -257,47 +268,59 @@ class NCPlayerToolBar: UIView {
         viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
 
+    @IBAction func tapPictureInPicture(_ sender: Any) {
+        mediaCoordinator.switchPictureInPicture()
+    }
+
+    private func updatePictureInPictureButtonImage(_ isPictureInPictureActive: Bool) {
+        if isPictureInPictureActive {
+            pictureInPictureButton.setImage(UIImage(systemName: "pip.exit")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+        } else {
+            pictureInPictureButton.setImage(UIImage(systemName: "pip.enter")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+        }
+    }
+
     private func setupSubtitleButton() {
-        guard let player = ncplayer?.player else { return }
+          guard let player = ncplayer else { return }
 
-        var currentIndex: Int?
-        if let data = database.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
-            currentIndex = idx
-        } else {
-            currentIndex = Int(player.currentVideoSubTitleIndex)
-        }
+          var currentIndex: Int?
+          if let data = database.getVideoOrAudio(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
+              currentIndex = idx
+          } else {
+              currentIndex = Int(player.currentVideoSubTitleIndex)
+          }
 
-        subtitleButton.menu = NCContextMenuPlayerTracks(
-            trackType: .subtitle,
-            tracks: player.videoSubTitlesNames,
-            trackIndexes: player.videoSubTitlesIndexes,
-            currentIndex: currentIndex,
-            ncplayer: ncplayer,
-            metadata: metadata,
-            viewerMediaPage: viewerMediaPage
-        ).viewMenu()
-    }
+          subtitleButton.menu = NCContextMenuPlayerTracks(
+              trackType: .subtitle,
+              tracks: player.videoSubTitlesNames,
+              trackIndexes: player.videoSubTitlesIndexes,
+              currentIndex: currentIndex,
+              ncplayer: ncplayer,
+              metadata: metadata,
+              viewerMediaPage: viewerMediaPage
+          ).viewMenu()
+      }
 
-    private func setupAudioButton() {
-        guard let player = ncplayer?.player else { return }
+      private func setupAudioButton() {
+          guard let player = ncplayer else { return }
 
-        var currentIndex: Int?
-        if let data = database.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
-            currentIndex = idx
-        } else {
-            currentIndex = Int(player.currentAudioTrackIndex)
-        }
+          var currentIndex: Int?
+          if let data = database.getVideoOrAudio(metadata: metadata), let idx = data.currentAudioTrackIndex {
+              currentIndex = idx
+          } else {
+              currentIndex = Int(player.currentAudioTrackIndex)
+          }
 
-        audioButton.menu = NCContextMenuPlayerTracks(
-            trackType: .audio,
-            tracks: player.audioTrackNames,
-            trackIndexes: player.audioTrackIndexes,
-            currentIndex: currentIndex,
-            ncplayer: ncplayer,
-            metadata: metadata,
-            viewerMediaPage: viewerMediaPage
-        ).viewMenu()
-    }
+          audioButton.menu = NCContextMenuPlayerTracks(
+              trackType: .audio,
+              tracks: player.audioTrackNames,
+              trackIndexes: player.audioTrackIndexes,
+              currentIndex: currentIndex,
+              ncplayer: ncplayer,
+              metadata: metadata,
+              viewerMediaPage: viewerMediaPage
+          ).viewMenu()
+      }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
@@ -326,12 +349,15 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapRepeat(_ sender: Any) {
+        playRepeat.toggle()
+        updateRepeatButtonImage()
+    }
+
+    private func updateRepeatButtonImage() {
         if playRepeat {
-            playRepeat = false
-            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
-        } else {
-            playRepeat = true
             repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.white]), for: .normal)
+        } else {
+            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
         }
     }
 }
@@ -343,7 +369,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
             let scene = SceneManager.shared.getWindow(controller: viewerMediaPage.tabBarController)?.windowScene
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
-                addPlaybackSlave(type: type, metadata: metadata)
+                addPlaybackTrack(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
                 let token = showHudBanner(scene: scene,
@@ -387,7 +413,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                                     etag: etag)
 
                         if error == .success {
-                            self.addPlaybackSlave(type: type, metadata: metadata)
+                            self.addPlaybackTrack(type: type, metadata: metadata)
                         } else if error.errorCode != 200 {
                             await showErrorBanner(scene: scene, text: error.errorDescription, errorCode: error.errorCode)
                         }
@@ -398,14 +424,14 @@ extension NCPlayerToolBar: NCSelectDelegate {
     }
 
     // swiftlint:disable inclusive_language
-    func addPlaybackSlave(type: String, metadata: tableMetadata) {
+    func addPlaybackTrack(type: String, metadata: tableMetadata) {
         // swiftlint:enable inclusive_language
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if type == "subtitle" {
-            self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .subtitle, enforce: true)
+            self.ncplayer?.addPlaybackTrack(URL(fileURLWithPath: fileNameLocalPath), type: .subtitle, enforce: true)
         } else if type == "audio" {
-            self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .audio, enforce: true)
+            self.ncplayer?.addPlaybackTrack(URL(fileURLWithPath: fileNameLocalPath), type: .audio, enforce: true)
         }
     }
 }
