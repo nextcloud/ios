@@ -57,11 +57,11 @@ class NCAutoUpload: NSObject {
         (banner, _) = await showBanner(windowScene: windowScene,
                                        title: "_info_",
                                        subtitle: "_creating_db_photo_progress_",
-                                       textColor: .label,
-                                       image: "photo.on.rectangle.angled",
+                                       systemImage: "photo.on.rectangle.angled",
                                        imageAnimation: .bounce,
-                                       imageColor: .label,
-                                       backgroundColor: UIColor.lightGray.withAlphaComponent(0.75),
+                                       backgroundColor: UIColor.systemBlue.withAlphaComponent(0.12),
+                                       textColor: .label,
+                                       imageColor: .systemBlue,
                                        autoDismissAfter: 0,
                                        swipeToDismiss: false
         )

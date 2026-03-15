@@ -225,13 +225,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            let windowScenee = SceneManager.shared.getWindow(scene: scene)?.windowScene {
             Task {
                 await showBanner(windowScene: windowScenee,
-                                 title: "_info_",
+                                 title: "_warning_",
                                  subtitle: "_network_not_available_",
-                                 textColor: .label,
-                                 image: "wifi.exclamationmark.circle",
+                                 systemImage: "wifi.exclamationmark.circle",
                                  imageAnimation: .bounce,
-                                 imageColor: .label,
-                                 backgroundColor: UIColor.lightGray.withAlphaComponent(0.75))
+                                 backgroundColor: UIColor.systemOrange.withAlphaComponent(0.12),
+                                 textColor: .label,
+                                 imageColor: .systemOrange
+                )
             }
         }
     }

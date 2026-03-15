@@ -22,14 +22,14 @@ extension NCNetworking {
                 Task {
                     for windowScene in windowScenes {
                         await showBanner(windowScene: windowScene,
-                                         title: "_info_",
+                                         title: "_warning_",
                                          subtitle: "_network_not_available_",
-                                         textColor: .label,
-                                         image: "wifi.exclamationmark.circle",
+                                         systemImage: "wifi.exclamationmark.circle",
                                          imageAnimation: .bounce,
-                                         imageColor: .label,
-                                         backgroundColor: UIColor.lightGray.withAlphaComponent(0.75))
-
+                                         backgroundColor: UIColor.systemOrange.withAlphaComponent(0.12),
+                                         textColor: .label,
+                                         imageColor: .systemOrange
+                        )
                     }
                 }
             }

@@ -14,24 +14,31 @@ func showBanner(windowScene: UIWindowScene?,
                 title: String?,
                 subtitle: String? = nil,
                 footnote: String? = nil,
-                textColor: UIColor,
-                image: String?,
+                systemImage: String?,
                 imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                backgroundColor: UIColor,
+                textColor: UIColor,
                 imageColor: UIColor,
                 vPosition: LucidBanner.VerticalPosition = .top,
-                backgroundColor: UIColor,
                 autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
                 swipeToDismiss: Bool = true,
-                policy: LucidBanner.ShowPolicy = .replace) async -> (banner: LucidBanner?, token: Int?) {
+                policy: LucidBanner.ShowPolicy = .replace,
+                errorCode: Int? = nil) async -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene else {
         return (nil, nil)
     }
+
+#if !EXTENSION
+    guard !bannerContainsError(errorCode: errorCode) else {
+        return (nil, nil)
+    }
+#endif
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title ?? "", comment: ""),
         subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        systemImage: image,
+        systemImage: systemImage,
         imageAnimation: imageAnimation,
         backgroundColor: Color(uiColor: backgroundColor),
         textColor: Color(uiColor: textColor),
@@ -104,7 +111,7 @@ struct BannerView: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("maintenance mode") {
     ZStack {
         Text(
             Array(0...500)
@@ -117,10 +124,41 @@ struct BannerView: View {
 
         let state = LucidBannerState(
             payload: LucidBannerPayload(
-                title: "Title",
-                subtitle: "Subtitle",
-                footnote: "footnote",
-                systemImage: "wifi.circle"
+                title: "_warning_",
+                subtitle: "_maintenance_mode_",
+                systemImage: "xmark.icloud.fill",
+                imageAnimation: .none,
+                backgroundColor: Color(UIColor.systemOrange.withAlphaComponent(0.12)),
+                textColor: Color(uiColor: .label),
+                imageColor: Color(uiColor: .systemOrange),
+            )
+        )
+
+        BannerView(state: state)
+        .padding()
+    }
+}
+
+#Preview("creating db photo") {
+    ZStack {
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
+
+        let state = LucidBannerState(
+            payload: LucidBannerPayload(
+                title: "_info_",
+                subtitle: "_creating_db_photo_progress_",
+                systemImage: "photo.on.rectangle.angled",
+                imageAnimation: .none,
+                backgroundColor: Color(UIColor.systemBlue.withAlphaComponent(0.12)),
+                textColor: Color(uiColor: .label),
+                imageColor: Color(uiColor: .systemBlue),
             )
         )
 
