@@ -130,7 +130,7 @@ struct InfoBannerView: View {
                 subtitle: "Subtitle",
                 footnote: "footnote",
                 systemImage: "checkmark.circle",
-                backgroundColor:  Color(UIColor.systemBlue.withAlphaComponent(0.12)),
+                backgroundColor: Color(UIColor.systemBlue.withAlphaComponent(0.12)),
                 textColor: Color(uiColor: .label),
                 imageColor: Color(uiColor: .systemBlue)
             )
