@@ -9,51 +9,58 @@ import Alamofire
 
 // MARK: - Show Banner
 
+@discardableResult
 @MainActor
-func showWarningBanner(windowScene: UIWindowScene?,
-                       subtitle: String,
-                       systemImage: String,
-                       imageAnimation: LucidBanner.LucidBannerAnimationStyle,
-                       errorCode: Int? = nil) async {
+func showBanner(windowScene: UIWindowScene?,
+                title: String?,
+                subtitle: String? = nil,
+                footnote: String? = nil,
+                systemImage: String?,
+                imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                backgroundColor: UIColor,
+                textColor: UIColor,
+                imageColor: UIColor,
+                vPosition: LucidBanner.VerticalPosition = .top,
+                autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
+                swipeToDismiss: Bool = true,
+                policy: LucidBanner.ShowPolicy = .replace,
+                errorCode: Int? = nil) async -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene else {
-        return
+        return (nil, nil)
     }
 
 #if !EXTENSION
     guard !bannerContainsError(errorCode: errorCode) else {
-        return
+        return (nil, nil)
     }
 #endif
 
     let payload = LucidBannerPayload(
-        title: NSLocalizedString("_warning_", comment: ""),
-        subtitle: NSLocalizedString(subtitle, comment: ""),
+        title: NSLocalizedString(title ?? "", comment: ""),
+        subtitle: NSLocalizedString(subtitle ?? "", comment: ""),
+        footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: systemImage,
         imageAnimation: imageAnimation,
-        backgroundColor: Color(uiColor: UIColor.systemOrange.withAlphaComponent(0.12)),
-        textColor: Color(uiColor: .label),
-        imageColor: Color(uiColor: .systemOrange),
-        vPosition: .top,
-        autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true
+        backgroundColor: Color(uiColor: backgroundColor),
+        textColor: Color(uiColor: textColor),
+        imageColor: Color(uiColor: imageColor),
+        vPosition: vPosition,
+        autoDismissAfter: autoDismissAfter,
+        swipeToDismiss: swipeToDismiss
     )
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
-    banner.show(
-        payload: payload,
-        policy: .replace,
-        onTap: { _, _ in
-            banner.dismiss()
-        }
-    ) { state in
-        WarningBannerView(state: state)
+    let token = banner.show(payload: payload, policy: policy) { state in
+        BannerView(state: state)
     }
+
+    return(banner, token)
 }
 
 // MARK: - SwiftUI
 
-struct WarningBannerView: View {
+struct BannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
@@ -160,3 +167,4 @@ struct WarningBannerView: View {
         .padding()
     }
 }
+

@@ -850,6 +850,8 @@
 		F7D7A7712DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */; };
 		F7D7A7722DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */; };
 		F7D890752BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D890742BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift */; };
+		F7DA0F662F66AA0D0033020C /* ShowBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DA0F652F66AA0A0033020C /* ShowBanner.swift */; };
+		F7DA0F672F66AA0D0033020C /* ShowBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DA0F652F66AA0A0033020C /* ShowBanner.swift */; };
 		F7DF7B3F2F1A2EF900514020 /* WarningBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DF7B3E2F1A2EE400514020 /* WarningBannerView.swift */; };
 		F7DF7B422F1A36C100514020 /* HelperBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DF7B412F1A36B600514020 /* HelperBanner.swift */; };
 		F7DF7B432F1A373E00514020 /* HelperBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DF7B412F1A36B600514020 /* HelperBanner.swift */; };
@@ -1779,6 +1781,7 @@
 		F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+DashboardWidget.swift"; sourceTree = "<group>"; };
 		F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+AutoUpload.swift"; sourceTree = "<group>"; };
 		F7D890742BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+DragDrop.swift"; sourceTree = "<group>"; };
+		F7DA0F652F66AA0A0033020C /* ShowBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBanner.swift; sourceTree = "<group>"; };
 		F7DE9AB01F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7DF7B3E2F1A2EE400514020 /* WarningBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningBannerView.swift; sourceTree = "<group>"; };
 		F7DF7B412F1A36B600514020 /* HelperBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperBanner.swift; sourceTree = "<group>"; };
@@ -2262,6 +2265,7 @@
 				F74B91E42F51D4100050813D /* InfoBannerView.swift */,
 				F7DF7B3E2F1A2EE400514020 /* WarningBannerView.swift */,
 				F74B91E72F51D4510050813D /* ErrorBannerView.swift */,
+				F7DA0F652F66AA0A0033020C /* ShowBanner.swift */,
 				F714A1462ED84AF00050A43B /* HudBannerView.swift */,
 				F70557BB2ED44F1800135623 /* UploadBannerView.swift */,
 				F7DF7B412F1A36B600514020 /* HelperBanner.swift */,
@@ -4310,6 +4314,7 @@
 				F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
 				F749B654297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */,
+				F7DA0F662F66AA0D0033020C /* ShowBanner.swift in Sources */,
 				F73EF7C22B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				F7148041262EBE4000693E51 /* NCShareExtension.swift in Sources */,
 				F71FA7992F3508C600E86192 /* NCNetworking+WebDAV.swift in Sources */,
@@ -4757,6 +4762,7 @@
 				F7F563042E15762B00631A11 /* MigrationMultiDomains.swift in Sources */,
 				F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
+				F7DA0F672F66AA0D0033020C /* ShowBanner.swift in Sources */,
 				F752BA052E58C05200616A26 /* Maintenance.swift in Sources */,
 				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F76882252C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift in Sources */,
