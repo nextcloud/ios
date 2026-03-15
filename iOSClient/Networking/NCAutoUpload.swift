@@ -59,7 +59,7 @@ class NCAutoUpload: NSObject {
                                        subtitle: "_creating_db_photo_progress_",
                                        systemImage: "photo.on.rectangle.angled",
                                        imageAnimation: .bounce,
-                                       backgroundColor: UIColor.systemBlue.withAlphaComponent(0.12),
+                                       backgroundColor: UIColor.systemBlue.withAlphaComponent(0.40),
                                        textColor: .label,
                                        imageColor: .systemBlue,
                                        autoDismissAfter: 0,

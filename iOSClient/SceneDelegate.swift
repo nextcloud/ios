@@ -227,7 +227,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 await showWarningBanner(windowScene: windowScenee,
                                         subtitle: "_network_not_available_",
                                         systemImage: "wifi.exclamationmark.circle",
-                                        imageAnimation: .bounce)
+                                        imageAnimation: .bounce,
+                                        errorCode: NSURLErrorNotConnectedToInternet)
             }
         }
     }

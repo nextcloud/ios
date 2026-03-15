@@ -52,6 +52,7 @@ func showBanner(windowScene: UIWindowScene?,
         imageColor: Color(uiColor: imageColor),
         vPosition: vPosition,
         verticalMargin: verticalMargin,
+        horizontalLayout: horizontalLayout,
         autoDismissAfter: autoDismissAfter,
         swipeToDismiss: swipeToDismiss
     )
