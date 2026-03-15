@@ -21,7 +21,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
                      title: String = "_error_",
                      text: String,
                      footnote: String? = nil,
-                     errorCode: Int,
+                     errorCode: Int? = nil,
                      afError: AFError? = nil) async {
     guard let windowScene else {
         return

@@ -224,15 +224,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !NextcloudKit.shared.isNetworkReachable(),
            let windowScenee = SceneManager.shared.getWindow(scene: scene)?.windowScene {
             Task {
-                await showBanner(windowScene: windowScenee,
-                                 title: "_warning_",
-                                 subtitle: "_network_not_available_",
-                                 systemImage: "wifi.exclamationmark.circle",
-                                 imageAnimation: .bounce,
-                                 backgroundColor: UIColor.systemOrange.withAlphaComponent(0.12),
-                                 textColor: .label,
-                                 imageColor: .systemOrange
-                )
+                await showWarningBanner(windowScene: windowScenee,
+                                        subtitle: "_network_not_available_",
+                                        systemImage: "wifi.exclamationmark.circle",
+                                        imageAnimation: .bounce)
             }
         }
     }

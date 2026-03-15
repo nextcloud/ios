@@ -21,15 +21,10 @@ extension NCNetworking {
                     .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
                 Task {
                     for windowScene in windowScenes {
-                        await showBanner(windowScene: windowScene,
-                                         title: "_warning_",
-                                         subtitle: "_network_not_available_",
-                                         systemImage: "wifi.exclamationmark.circle",
-                                         imageAnimation: .bounce,
-                                         backgroundColor: UIColor.systemOrange.withAlphaComponent(0.12),
-                                         textColor: .label,
-                                         imageColor: .systemOrange
-                        )
+                        await showWarningBanner(windowScene: windowScene,
+                                                subtitle: "_network_not_available_",
+                                                systemImage: "wifi.exclamationmark.circle",
+                                                imageAnimation: .bounce)
                     }
                 }
             }

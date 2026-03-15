@@ -8,6 +8,24 @@ import NextcloudKit
 import Alamofire
 
 // MARK: - Show Banner
+
+@MainActor
+func showWarningBanner(windowScene: UIWindowScene?,
+                       subtitle: String,
+                       systemImage: String,
+                       imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                       errorCode: Int? = nil) async {
+    await showBanner(windowScene: windowScene,
+                     title: "_warning_",
+                     subtitle: subtitle,
+                     systemImage: systemImage,
+                     imageAnimation: imageAnimation,
+                     backgroundColor: UIColor.systemOrange.withAlphaComponent(0.12),
+                     textColor: .label,
+                     imageColor: .systemOrange,
+                     errorCode: errorCode)
+}
+
 @discardableResult
 @MainActor
 func showBanner(windowScene: UIWindowScene?,
