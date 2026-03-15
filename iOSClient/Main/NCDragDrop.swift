@@ -212,7 +212,7 @@ class NCDragDrop: NSObject {
                                                       idiom: window.traitCollection.userInterfaceIdiom)
 
         let payload = LucidBannerPayload(stage: nil,
-                                         backgroundColor: Color(.systemBackground),
+                                         backgroundColor: Color(.systemBackground).opacity(0.4),
                                          horizontalLayout: horizontalLayout,
                                          blocksTouches: false,
                                          draggable: false)

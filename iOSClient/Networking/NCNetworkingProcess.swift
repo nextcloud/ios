@@ -436,7 +436,7 @@ actor NCNetworkingProcess {
                     let horizontalLayout = await horizontalLayoutBanner(bounds: window.bounds,
                                                                         safeAreaInsets: window.safeAreaInsets,
                                                                         idiom: window.traitCollection.userInterfaceIdiom)
-                    let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
+                    let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground).opacity(0.4),
                                                      horizontalLayout: horizontalLayout,
                                                      blocksTouches: true,
                                                      draggable: false)
@@ -499,7 +499,7 @@ actor NCNetworkingProcess {
 
         (banner, token) = showUploadBanner(windowScene: windowScene,
                                            payload: LucidBannerPayload(stage: .button,
-                                                                       backgroundColor: Color(.systemBackground),
+                                                                       backgroundColor: Color(.systemBackground).opacity(0.4),
                                                                        vPosition: .bottom,
                                                                        verticalMargin: 50,
                                                                        horizontalLayout: horizontalLayout,
