@@ -15,7 +15,7 @@ func showWarningBanner(windowScene: UIWindowScene?,
                        systemImage: String,
                        imageAnimation: LucidBanner.LucidBannerAnimationStyle,
                        errorCode: Int? = nil) async {
-    guard let windowScene else {
+    guard let windowScene, let window = windowScene.windows.first else {
         return
     }
 
@@ -24,6 +24,11 @@ func showWarningBanner(windowScene: UIWindowScene?,
         return
     }
 #endif
+
+    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString("_warning_", comment: ""),
@@ -34,11 +39,11 @@ func showWarningBanner(windowScene: UIWindowScene?,
         textColor: Color(uiColor: .label),
         imageColor: Color(uiColor: .systemOrange),
         vPosition: .top,
+        verticalMargin: 10,
+        horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
         swipeToDismiss: true
     )
-
-    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
     banner.show(
         payload: payload,

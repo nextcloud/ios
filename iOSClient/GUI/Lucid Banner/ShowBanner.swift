@@ -21,12 +21,13 @@ func showBanner(windowScene: UIWindowScene?,
                 textColor: UIColor,
                 imageColor: UIColor,
                 vPosition: LucidBanner.VerticalPosition = .top,
+                verticalMargin: CGFloat = 10,
                 autoDismissAfter: TimeInterval = NCGlobal.shared.dismissAfterSecond,
                 swipeToDismiss: Bool = true,
                 policy: LucidBanner.ShowPolicy = .replace,
                 errorCode: Int? = nil) async -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene else {
-        return (nil, nil)
+    guard let windowScene, let window = windowScene.windows.first else {
+        return(nil, nil)
     }
 
 #if !EXTENSION
@@ -34,6 +35,11 @@ func showBanner(windowScene: UIWindowScene?,
         return (nil, nil)
     }
 #endif
+
+    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title ?? "", comment: ""),
@@ -45,13 +51,17 @@ func showBanner(windowScene: UIWindowScene?,
         textColor: Color(uiColor: textColor),
         imageColor: Color(uiColor: imageColor),
         vPosition: vPosition,
+        verticalMargin: verticalMargin,
         autoDismissAfter: autoDismissAfter,
         swipeToDismiss: swipeToDismiss
     )
 
-    let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-
-    let token = banner.show(payload: payload, policy: policy) { state in
+    let token = banner.show(
+        payload: payload,
+        policy: policy,
+        onTap: { _, _ in
+        }
+    ) { state in
         BannerView(state: state)
     }
 

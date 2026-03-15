@@ -23,7 +23,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
                      footnote: String? = nil,
                      errorCode: Int? = nil,
                      afError: AFError? = nil) async {
-    guard let windowScene else {
+    guard let windowScene, let window = windowScene.windows.first else {
         return
     }
 
@@ -34,16 +34,11 @@ func showErrorBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-
-    guard let window = banner.windowScene.windows.first else {
-        return
-    }
-
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
                                                   safeAreaInsets: window.safeAreaInsets,
                                                   idiom: window.traitCollection.userInterfaceIdiom)
 
-    try? await Task.sleep(for: .seconds(1))
+    try? await Task.sleep(for: .seconds(0.5))
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
