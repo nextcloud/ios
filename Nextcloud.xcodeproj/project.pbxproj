@@ -114,6 +114,7 @@
 		F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F34BDB3A2F5744EC007A222C /* UINavigationItem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34BDB392F5744E5007A222C /* UINavigationItem+Extension.swift */; };
 		F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */; };
+		C10A00012F760001000A0001 /* NCViewerNextcloudTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10A00002F760001000A0001 /* NCViewerNextcloudTextTests.swift */; };
 		F34E1AD72ECB937D00FA10C3 /* NCStatusMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E1AD62ECB937D00FA10C3 /* NCStatusMessageView.swift */; };
 		F34E1AD92ECC839100FA10C3 /* EmojiTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E1AD82ECC839100FA10C3 /* EmojiTextField.swift */; };
 		F34E1ADB2ECC842B00FA10C3 /* NCStatusMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E1ADA2ECC842200FA10C3 /* NCStatusMessageModel.swift */; };
@@ -1253,6 +1254,7 @@
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
 		F34BDB392F5744E5007A222C /* UINavigationItem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationItem+Extension.swift"; sourceTree = "<group>"; };
 		F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidiSafeFilenameTests.swift; sourceTree = "<group>"; };
+		C10A00002F760001000A0001 /* NCViewerNextcloudTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerNextcloudTextTests.swift; sourceTree = "<group>"; };
 		F34E1AD62ECB937D00FA10C3 /* NCStatusMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStatusMessageView.swift; sourceTree = "<group>"; };
 		F34E1AD82ECC839100FA10C3 /* EmojiTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiTextField.swift; sourceTree = "<group>"; };
 		F34E1ADA2ECC842200FA10C3 /* NCStatusMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStatusMessageModel.swift; sourceTree = "<group>"; };
@@ -2042,6 +2044,7 @@
 			isa = PBXGroup;
 			children = (
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
+				C10A00002F760001000A0001 /* NCViewerNextcloudTextTests.swift */,
 				AA52EB452D42AC5A0089C348 /* Placeholder.swift */,
 			);
 			path = NextcloudUnitTests;
@@ -4117,6 +4120,7 @@
 			files = (
 				AA52EB472D42AC9E0089C348 /* Placeholder.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
+				C10A00012F760001000A0001 /* NCViewerNextcloudTextTests.swift in Sources */,
 				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
 			);
