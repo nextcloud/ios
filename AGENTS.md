@@ -48,9 +48,10 @@ Avoid creating source files that implement multiple types; instead, place each t
 
 ## Commit and Pull Request Guidelines
 
-- **Commits**: Follow Conventional Commits format. Use `feat: ...`, `fix: ...`, or `refactor: ...` as appropriate in the commit message prefix.
+- **DCO sign-off (required)**: All commits must comply with the Developer Certificate of Origin (DCO) as described in `README.md` and include a `Signed-off-by: …` line in the commit message.
+- **Commits**: In addition to the DCO sign-off, follow the Conventional Commits format for the subject line where reasonable. Use `feat: ...`, `fix: ...`, or `refactor: ...` as appropriate in the commit message prefix.
 - Include a short summary of what changed. *Example:* `fix: prevent crash on empty todo title`.
-- **Pull Request**: When the agent creates a PR, it should include a description summarizing the changes and why they were made. If a GitHub issue exists, reference it (e.g., “Closes #123”).
+- **Pull Request**: When the agent creates a PR, it should include a description summarizing the changes and why they were made. If a GitHub issue exists, reference it (e.g., “Closes #123”). If there is any discrepancy between this section and the contribution guidance in `README.md`, the rules in `README.md` take precedence.
 
 ## iOS Specifics
 
