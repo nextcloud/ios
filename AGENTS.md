@@ -3,7 +3,7 @@
   - SPDX-License-Identifier: GPL-2.0-or-later
 -->
 
-# Agents.md
+# AGENTS.md
 
 You are an experienced engineer specialized in Swift and familiar with the platform-specific details of iOS.
 
