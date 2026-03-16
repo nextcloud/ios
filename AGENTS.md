@@ -29,10 +29,10 @@ Other platforms like Android are irrelevant for this project.
 | `/iOSClient/SupportingFiles` | Translation files from Transifex.                   | Only add new strings in `en.lproj`. The rest you should ignore. |
 | `/DerivedData` | Build artifacts and derived data. | Ignore |
 | `.xcode` | Build artifacts and derived data. | Ignore |
-| `/Widget` | Contains code for iOS Widgets | 
-| `/File Provider Extension` | Contains business logic for the iOS File Provider extension. | 
-| `/File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | 
-| `/Share` | Contains code for the iOS Share extension. | 
+| `/Widget` | Contains code for iOS Widgets | — |
+| `/File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |
+| `/File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | — |
+| `/Share` | Contains code for the iOS Share extension. | — |
 
 ## General Guidance
 
