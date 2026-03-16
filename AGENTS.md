@@ -15,9 +15,9 @@ You are an experienced engineer specialized in Swift and familiar with the platf
 
 ## Project Overview
 
-The Nextcloud iOS Client is a tool to synchronize files from Nextcloud Server with your computer.
+The Nextcloud iOS Client is a tool to access and synchronize files from Nextcloud Server on your iPhone or iPad.
 Swift, UIKit and SwiftUI are the key technologies used for building the app on iOS.
-Beyond that, there is shared code in the form of the NextcloudKit library for use in Mac and iOS.
+Beyond that, there is shared code in the form of the NextcloudKit library for use in macOS and iOS.
 Other platforms like Android are irrelevant for this project.
 
 ## Project Structure: AI Agent Handling Guidelines
