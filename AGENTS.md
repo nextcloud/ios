@@ -24,7 +24,7 @@ Other platforms like Android are irrelevant for this project.
 
 | Directory       | Description                                         | Agent Action         |
 |-----------------|-----------------------------------------------------|----------------------|
-| `./github`       | Github CI workflows. | Try to add a unit tests for new features, where applicable and makes sense. Do not overcomplicate unit tests.
+| `./github`       | GitHub CI workflows. | Try to add a unit tests for new features, where applicable and makes sense. Do not overcomplicate unit tests.
 | `./shell_integration/MacOSX/NextcloudIntegration` | Xcode project for macOS app extensions | Look here first for changes in context of the file provider extension |
 | `/iOSClient/SupportingFiles` | Translation files from Transifex.                   | Only add new strings in `en.lproj`. The rest you should ignore. |
 | `/DerivedData` | Build artifacts and derived data. | Ignore |
