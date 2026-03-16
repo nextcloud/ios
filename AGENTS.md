@@ -24,7 +24,7 @@ Other platforms like Android are irrelevant for this project.
 
 | Directory       | Description                                         | Agent Action         |
 |-----------------|-----------------------------------------------------|----------------------|
-| `./github`       | GitHub CI workflows. | Try to add a unit tests for new features, where applicable and makes sense. Do not overcomplicate unit tests.
+| `.github`       | GitHub CI workflows. | Try to add a unit tests for new features, where applicable and makes sense. Do not overcomplicate unit tests.
 | `/iOSClient/SupportingFiles` | Translation files from Transifex.                   | Only add new strings in `en.lproj`. The rest you should ignore. |
 | `/DerivedData` | Build artifacts and derived data. | Ignore |
 | `.xcode` | Build artifacts and derived data. | Ignore |
