@@ -15,9 +15,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     // X-NC-PAGINATE
 #if DEBUG
-    var recordsPerPage: Int = 50
+    var paginateCount: Int = 50
 #else
-    var recordsPerPage: Int = 200
+    var paginateCount: Int = 200
 #endif
     // X-NC-PAGINATE
 
@@ -200,15 +200,15 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Request pagination
         //
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
-        var offset = 0
+        var paginateOffset = 0
         if pageNumber > 0 {
-           offset = getOffset(for: pageNumber)
+           paginateOffset = getOffset(for: pageNumber)
         }
         let optionsPaginate = await FileProviderData.shared.isPaginatedAvailabile(serverUrl: serverUrl, session: session)
         let options = NKRequestOptions(paginate: optionsPaginate,
                                        paginateToken: self.paginateToken,
-                                       paginateOffset: offset,
-                                       paginateCount: recordsPerPage,
+                                       paginateOffset: paginateOffset,
+                                       paginateCount: paginateCount,
                                        queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue
         )
 
@@ -222,7 +222,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             options: options
         )
 
-        print("PAGINATE OFFSET: \(offset) COUNT: \(resultsRead.files?.count ?? 0) PAGE NUMBER: \(pageNumber) TOTAL: \(self.paginatedTotal) SERVERURL: \(serverUrl)")
+        print("PAGINATE OFFSET: \(paginateOffset) COUNT: \(resultsRead.files?.count ?? 0) PAGE NUMBER: \(pageNumber) TOTAL: \(self.paginatedTotal) SERVERURL: \(serverUrl)")
 
         // Header for paginate
         //
