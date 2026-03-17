@@ -24,14 +24,16 @@ Other platforms like Android are irrelevant for this project.
 
 | Directory       | Description                                         | Agent Action         |
 |-----------------|-----------------------------------------------------|----------------------|
-| `.github`       | GitHub CI workflows. | Try to add a unit tests for new features, where applicable and makes sense. Do not overcomplicate unit tests.
-| `/iOSClient/SupportingFiles` | Translation files from Transifex.                   | Only add new strings in `en.lproj`. The rest you should ignore. |
-| `/DerivedData` | Build artifacts and derived data. | Ignore |
-| `.xcode` | Build artifacts and derived data. | Ignore |
-| `/Widget` | Contains code for iOS Widgets | — |
-| `/File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |
-| `/File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | — |
-| `/Share` | Contains code for the iOS Share extension. | — |
+| `.github` | GitHub CI workflows. | Try to add unit tests for new features, where applicable and makes sense. Do not overcomplicate unit tests. |
+| `iOSClient` | Main iOS client source code. | — |
+| `iOSClient/SupportingFiles` | Translation files from Transifex. | Only add new strings in `en.lproj`. The rest you should ignore. |
+| `File Provider Extension` | Contains business logic for the iOS File Provider extension. | — |
+| `File Provider Extension UI` | Contains UI logic for the iOS File Provider extension. | — |
+| `Share` | Contains code for the iOS Share extension. | — |
+| `Widget` | Contains code for iOS Widgets. | — |
+| `WidgetDashboardIntentHandler` | Contains the intent handler for the dashboard widget. | — |
+| `Notification Service Extension` | Contains the push notification service extension. | — |
+| `Tests` | Contains unit and UI tests. | — |
 
 ## General Guidance
 
