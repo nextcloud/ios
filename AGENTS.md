@@ -3,7 +3,7 @@
   - SPDX-License-Identifier: GPL-2.0-or-later
 -->
 
-# Agents.md
+# AGENTS.md
 
 You are an experienced engineer specialized in Swift and familiar with the platform-specific details of iOS.
 
@@ -15,9 +15,9 @@ You are an experienced engineer specialized in Swift and familiar with the platf
 
 ## Project Overview
 
-The Nextcloud iOS Client is a tool to synchronize files from Nextcloud Server with your computer.
+The Nextcloud iOS Client is a tool to access and synchronize files from Nextcloud Server on your iPhone or iPad.
 Swift, UIKit and SwiftUI are the key technologies used for building the app on iOS.
-Beyond that, there is shared code in the form of the NextcloudKit library for use in Mac and iOS.
+Beyond that, there is shared code in the form of the NextcloudKit library for use in macOS and iOS.
 Other platforms like Android are irrelevant for this project.
 
 ## Project Structure: AI Agent Handling Guidelines
@@ -50,9 +50,10 @@ Avoid creating source files that implement multiple types; instead, place each t
 
 ## Commit and Pull Request Guidelines
 
-- **Commits**: Follow Conventional Commits format. Use `feat: ...`, `fix: ...`, or `refactor: ...` as appropriate in the commit message prefix.
+- **DCO sign-off (required)**: All commits must comply with the Developer Certificate of Origin (DCO) as described in `README.md` and include a `Signed-off-by: …` line in the commit message.
+- **Commits**: In addition to the DCO sign-off, follow the Conventional Commits format for the subject line where reasonable. Use `feat: ...`, `fix: ...`, or `refactor: ...` as appropriate in the commit message prefix.
 - Include a short summary of what changed. *Example:* `fix: prevent crash on empty todo title`.
-- **Pull Request**: When the agent creates a PR, it should include a description summarizing the changes and why they were made. If a GitHub issue exists, reference it (e.g., “Closes #123”).
+- **Pull Request**: When the agent creates a PR, it should include a description summarizing the changes and why they were made. If a GitHub issue exists, reference it (e.g., “Closes #123”). If there is any discrepancy between this section and the contribution guidance in `README.md`, the rules in `README.md` take precedence.
 
 ## iOS Specifics
 
