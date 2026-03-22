@@ -829,13 +829,19 @@ extension NCManageDatabase {
 
     /// Syncs the remote and local metadata.
     /// Returns true if there were changes (additions or deletions), false if everything was already up-to-date.
-    func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata], localMetadatas: [tableMetadata]) async -> Bool {
+    ///
+    /// Incremental media searches are page-limited, so they must not delete older
+    /// records that simply were not part of the latest page. Callers can disable
+    /// deletions and use this as an append-only merge.
+    func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata],
+                                   localMetadatas: [tableMetadata],
+                                   deleteMissingLocalMetadatas: Bool = true) async -> Bool {
         // Set of ocId
         let remoteOcIds = Set(remoteMetadatas.map { $0.ocId })
         let localOcIds = Set(localMetadatas.map { $0.ocId })
 
         // Calculate diffs
-        let toDeleteOcIds = localOcIds.subtracting(remoteOcIds)
+        let toDeleteOcIds = deleteMissingLocalMetadatas ? localOcIds.subtracting(remoteOcIds) : []
         let toAddOcIds = remoteOcIds.subtracting(localOcIds)
 
         guard !toDeleteOcIds.isEmpty || !toAddOcIds.isEmpty else {
@@ -846,11 +852,12 @@ extension NCManageDatabase {
 
         await core.performRealmWriteAsync { realm in
             let toAdd = remoteMetadatas.filter { toAddOcIds.contains($0.ocId) }
-            let toDelete = toDeleteKeys.compactMap {
-                realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
+            if deleteMissingLocalMetadatas {
+                let toDelete = toDeleteKeys.compactMap {
+                    realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
+                }
+                realm.delete(toDelete)
             }
-
-            realm.delete(toDelete)
             realm.add(toAdd, update: .modified)
         }
 

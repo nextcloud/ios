@@ -75,6 +75,8 @@ extension NCMedia {
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
         var visibleCells: [NCMediaCell] = []
+        var hasVisibleCells = false
+        let hasCachedResults = await MainActor.run { !self.dataSource.metadatas.isEmpty }
 
         await MainActor.run {
             if self.dataSource.metadatas.isEmpty {
@@ -110,6 +112,7 @@ extension NCMedia {
                 }
                 return date1 > date2
             }
+            hasVisibleCells = !visibleCells.isEmpty
 
             if !visibleCells.isEmpty, !distant {
                 let firstCellDate = visibleCells.first?.date
@@ -127,6 +130,17 @@ extension NCMedia {
                     greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate ?? .distantPast) ?? .distantPast
                 }
             }
+        }
+
+        // A transient reload can briefly leave the collection view without visible cells.
+        // Treating that state as a full-range search can wipe the media timeline back to
+        // "today", so keep the existing index and wait for the next stable scroll event.
+        if hasCachedResults && !distant && !hasVisibleCells {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+            return
         }
 
         let limit = await MainActor.run {
@@ -158,13 +172,6 @@ extension NCMedia {
             return
         }
 
-        if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
-            await MainActor.run {
-                self.dataSource.clearMetadatas()
-                self.collectionViewReloadData()
-            }
-        }
-
         Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else {
                 return
@@ -194,7 +201,9 @@ extension NCMedia {
                 self.searchMediaInProgress = false
             }
 
-            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
+            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas,
+                                                        localMetadatas: localMetadatas,
+                                                        deleteMissingLocalMetadatas: distant) {
                 await loadDataSource()
             } else if await self.dataSource.isEmpty() {
                 await self.collectionViewReloadData()
