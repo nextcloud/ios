@@ -45,10 +45,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
+        let hasQueuedThumbnailDownload = self.networking.downloadThumbnailQueue.operations
+            .compactMap { $0 as? NCCollectionViewDownloadThumbnail }
+            .contains { $0.metadata.ocId == metadata.ocId }
 
         if metadata.hasPreview,
            !existsImagePreview,
-           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+           !hasQueuedThumbnailDownload {
             self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
         }
     }
