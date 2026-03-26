@@ -15,6 +15,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var imageIcon: UIImage?
     let utility = NCUtility()
     var items: [UIBarButtonItem] = []
+    var didEncounterLoadingError = false
+    var loadingTimeoutInterval: TimeInterval = 10.0
+    var loadingTimeoutTimer: Timer?
 
     @MainActor
     var controller: NCMainTabBarController? {
@@ -54,11 +57,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             representativeItem: nil
         )
         navigationItem.trailingItemGroups = [group]
-        navigationItem.leftBarButtonItems = nil
-
-        if editor == "nextcloud text" {
-            navigationItem.hidesBackButton = true
-        }
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
@@ -123,10 +121,17 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
 
         NCActivityIndicator.shared.start(backgroundView: view)
+        loadingTimeoutTimer = Timer.scheduledTimer(withTimeInterval: loadingTimeoutInterval, repeats: false) { [weak self] _ in
+            Task { @MainActor in
+                self?.handleLoadingError()
+            }
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        loadingTimeoutTimer?.invalidate()
+        loadingTimeoutTimer = nil
 
         if #available(iOS 18.0, *) {
             tabBarController?.setTabBarHidden(false, animated: true)
@@ -211,7 +216,33 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        loadingTimeoutTimer?.invalidate()
+        loadingTimeoutTimer = nil
+        didEncounterLoadingError = false
         NCActivityIndicator.shared.stop()
+    }
+
+    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        handleLoadingError()
+    }
+
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        handleLoadingError()
+    }
+
+    public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        handleLoadingError()
+    }
+
+    private func handleLoadingError() {
+        loadingTimeoutTimer?.invalidate()
+        loadingTimeoutTimer = nil
+        didEncounterLoadingError = true
+        NCActivityIndicator.shared.stop()
+        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
+        Task {
+            await showErrorBanner(windowScene: windowScene, text: NSLocalizedString("_error_loading_editor_", comment: ""), errorCode: 0)
+        }
     }
 
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
