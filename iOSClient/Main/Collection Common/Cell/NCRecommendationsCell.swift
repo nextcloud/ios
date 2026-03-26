@@ -84,7 +84,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         labelFilename.font = .callout()
         labelFilename.adjustsFontForContentSizeCategory = true
 
-        labelExtensionFilename.font = .footnote()
+        labelExtensionFilename.font = .callout()
         labelExtensionFilename.adjustsFontForContentSizeCategory = true
 
         labelInfo.font = .footnote()

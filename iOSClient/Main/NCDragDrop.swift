@@ -207,14 +207,7 @@ class NCDragDrop: NSObject {
         }
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
-        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
-                                                      safeAreaInsets: window.safeAreaInsets,
-                                                      idiom: window.traitCollection.userInterfaceIdiom)
-
-        let payload = LucidBannerPayload(stage: nil,
-                                         backgroundColor: Color(.systemBackground),
-                                         horizontalLayout: horizontalLayout,
-                                         blocksTouches: false,
+        let payload = LucidBannerPayload(blocksTouches: false,
                                          draggable: false)
         (banner, token) = showUploadBanner(windowScene: window.windowScene,
                                            payload: payload,

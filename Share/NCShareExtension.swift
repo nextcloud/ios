@@ -379,14 +379,8 @@ extension NCShareExtension {
         guard let window = self.view.window else {
             return
         }
-        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
-                                                      safeAreaInsets: window.safeAreaInsets,
-                                                      idiom: window.traitCollection.userInterfaceIdiom)
-
         let payload = LucidBannerPayload(stage: .button,
-                                         backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalLayout: horizontalLayout,
                                          blocksTouches: true)
         (banner, token) = showUploadBanner(windowScene: window.windowScene,
                                            payload: payload,

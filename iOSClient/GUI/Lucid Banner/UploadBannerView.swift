@@ -10,11 +10,18 @@ func showUploadBanner(windowScene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
                       onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene else {
+    guard let windowScene, let window = windowScene.windows.first  else {
         return (nil, nil)
     }
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
     let bannerCoordinator = LucidBannerVariantCoordinator(banner: banner)
+    var payload = payload
+
+    payload.backgroundColor = Color(.systemBackground).opacity(0.4)
+    payload.horizontalLayout = horizontalLayout
 
     let token = banner.show(
         payload: payload,

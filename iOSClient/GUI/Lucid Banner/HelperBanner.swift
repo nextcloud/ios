@@ -33,7 +33,7 @@ public extension View {
                         .fill(backgroundColor)
                         .id(backgroundColor)
                 )
-                .glassEffect(.clear, in: RoundedRectangle(cornerRadius: cornerRadius))
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius))
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
                 .frame(maxWidth: .infinity, alignment: .center)
 

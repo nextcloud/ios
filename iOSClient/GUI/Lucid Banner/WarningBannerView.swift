@@ -7,28 +7,20 @@ import LucidBanner
 import NextcloudKit
 import Alamofire
 
-@MainActor
-func showErrorBanner(windowScene: UIWindowScene?,
-                     error: NKError) async {
-    await showErrorBanner(windowScene: windowScene,
-                          title: "_error_",
-                          text: error.errorDescription,
-                          errorCode: error.errorCode)
-}
+// MARK: - Show Banner
 
 @MainActor
-func showErrorBanner(windowScene: UIWindowScene?,
-                     title: String = "_error_",
-                     text: String,
-                     footnote: String? = nil,
-                     errorCode: Int? = nil,
-                     afError: AFError? = nil) async {
+func showWarningBanner(windowScene: UIWindowScene?,
+                       subtitle: String,
+                       systemImage: String,
+                       imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                       errorCode: Int? = nil) async {
     guard let windowScene, let window = windowScene.windows.first else {
         return
     }
 
 #if !EXTENSION
-    guard !bannerContainsError(errorCode: errorCode, afError: afError) else {
+    guard !bannerContainsError(errorCode: errorCode) else {
         return
     }
 #endif
@@ -38,21 +30,19 @@ func showErrorBanner(windowScene: UIWindowScene?,
                                                   safeAreaInsets: window.safeAreaInsets,
                                                   idiom: window.traitCollection.userInterfaceIdiom)
 
-    try? await Task.sleep(for: .seconds(0.5))
-
     let payload = LucidBannerPayload(
-        title: NSLocalizedString(title, comment: ""),
-        subtitle: NSLocalizedString(text, comment: ""),
-        footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        systemImage: "xmark.circle.fill",
+        title: NSLocalizedString("_warning_", comment: ""),
+        subtitle: NSLocalizedString(subtitle, comment: ""),
+        systemImage: systemImage,
+        imageAnimation: imageAnimation,
         backgroundColor: Color(.systemBackground).opacity(0.4),
         textColor: Color(uiColor: .label),
-        imageColor: Color(uiColor: .red),
+        imageColor: Color(uiColor: .systemOrange),
         vPosition: .top,
         verticalMargin: 10,
         horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true,
+        swipeToDismiss: true
     )
 
     banner.show(
@@ -62,13 +52,13 @@ func showErrorBanner(windowScene: UIWindowScene?,
             banner.dismiss()
         }
     ) { state in
-        ErrorBannerView(state: state)
+        WarningBannerView(state: state)
     }
 }
 
 // MARK: - SwiftUI
 
-struct ErrorBannerView: View {
+struct WarningBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
@@ -120,7 +110,7 @@ struct ErrorBannerView: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("maintenance mode") {
     ZStack {
         Text(
             Array(0...500)
@@ -133,17 +123,45 @@ struct ErrorBannerView: View {
 
         let state = LucidBannerState(
             payload: LucidBannerPayload(
-                title: "Error",
-                subtitle: "Subtitle",
-                footnote: "footnote",
-                systemImage: "xmark.circle.fill",
-                backgroundColor: Color(UIColor.red.withAlphaComponent(0.12)),
+                title: "_warning_",
+                subtitle: "_maintenance_mode_",
+                systemImage: "xmark.icloud.fill",
+                imageAnimation: .none,
+                backgroundColor: Color(UIColor.systemOrange.withAlphaComponent(0.12)),
                 textColor: Color(uiColor: .label),
-                imageColor: Color(uiColor: .red)
+                imageColor: Color(uiColor: .systemOrange),
             )
         )
 
-        ErrorBannerView(state: state)
+        BannerView(state: state)
+        .padding()
+    }
+}
+
+#Preview("creating db photo") {
+    ZStack {
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
+
+        let state = LucidBannerState(
+            payload: LucidBannerPayload(
+                title: "_info_",
+                subtitle: "_creating_db_photo_progress_",
+                systemImage: "photo.on.rectangle.angled",
+                imageAnimation: .none,
+                backgroundColor: Color(UIColor.systemBlue.withAlphaComponent(0.12)),
+                textColor: Color(uiColor: .label),
+                imageColor: Color(uiColor: .systemBlue),
+            )
+        )
+
+        BannerView(state: state)
         .padding()
     }
 }

@@ -12,10 +12,8 @@ func showInfoBanner(windowScene: UIWindowScene?,
                     title: String = "_info_",
                     text: String,
                     footnote: String? = nil,
-                    foregroundColor: UIColor = .label,
-                    backgroundColor: UIColor = .systemBackground,
                     errorCode: Int? = nil) async {
-    guard let windowScene else {
+    guard let windowScene, let window = windowScene.windows.first else {
         return
     }
 
@@ -26,11 +24,6 @@ func showInfoBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-
-    guard let window = banner.windowScene.windows.first else {
-        return
-    }
-
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
                                                   safeAreaInsets: window.safeAreaInsets,
                                                   idiom: window.traitCollection.userInterfaceIdiom)
@@ -40,9 +33,9 @@ func showInfoBanner(windowScene: UIWindowScene?,
         subtitle: NSLocalizedString(text, comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "checkmark.circle",
-        backgroundColor: Color(uiColor: backgroundColor),
-        textColor: Color(uiColor: foregroundColor),
-        imageColor: Color(uiColor: NCBrandColor.shared.customer),
+        backgroundColor: Color(.systemBackground).opacity(0.4),
+        textColor: Color(uiColor: .label),
+        imageColor: Color(uiColor: .systemBlue),
         vPosition: .top,
         verticalMargin: 10,
         horizontalLayout: horizontalLayout,
@@ -132,9 +125,9 @@ struct InfoBannerView: View {
                 subtitle: "Subtitle",
                 footnote: "footnote",
                 systemImage: "checkmark.circle",
-                backgroundColor: Color(uiColor: .systemBackground),
+                backgroundColor: Color(UIColor.systemBlue.withAlphaComponent(0.12)),
                 textColor: Color(uiColor: .label),
-                imageColor: Color(uiColor: NCBrandColor.shared.customer)
+                imageColor: Color(uiColor: .systemBlue)
             )
         )
 
