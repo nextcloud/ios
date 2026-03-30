@@ -430,15 +430,9 @@ actor NCNetworkingProcess {
                 // UPLOAD E2EE
                 //
                 if metadata.isDirectoryE2EE,
-                   let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-                   let window = await windowScene.windows.first {
+                   let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    let horizontalLayout = await horizontalLayoutBanner(bounds: window.bounds,
-                                                                        safeAreaInsets: window.safeAreaInsets,
-                                                                        idiom: window.traitCollection.userInterfaceIdiom)
-                    let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
-                                                     horizontalLayout: horizontalLayout,
-                                                     blocksTouches: true,
+                    let payload = LucidBannerPayload(blocksTouches: true,
                                                      draggable: false)
                     let bannerResults = await showUploadBanner(windowScene: windowScene,
                                                        payload: payload,
@@ -487,22 +481,16 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        guard let windowScene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-              let window = windowScene.windows.first else {
+        guard let windowScene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene else {
             return
         }
         var token: Int?
         var banner: LucidBanner?
-        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
-                                                      safeAreaInsets: window.safeAreaInsets,
-                                                      idiom: window.traitCollection.userInterfaceIdiom)
 
         (banner, token) = showUploadBanner(windowScene: windowScene,
                                            payload: LucidBannerPayload(stage: .button,
-                                                                       backgroundColor: Color(.systemBackground),
                                                                        vPosition: .bottom,
                                                                        verticalMargin: 50,
-                                                                       horizontalLayout: horizontalLayout,
                                                                        blocksTouches: false,
                                                                        draggable: true),
                                            allowMinimizeOnTap: true,

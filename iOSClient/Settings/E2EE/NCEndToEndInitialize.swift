@@ -68,16 +68,14 @@ class NCEndToEndInitialize: NSObject {
                 switch error.errorCode {
                 case NCGlobal.shared.errorBadRequest:
                     Task {
-                        await showInfoBanner(windowScene: self.windowScene,
-                                             title: "E2E get publicKey",
-                                             text: "Bad request: internal error")
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E get publicKey - Bad request: internal error")
                     }
                 case NCGlobal.shared.errorResourceNotFound:
                     guard let csr = NCEndToEndEncryption.shared().createCSR(self.session.userId, directory: self.utilityFileSystem.directoryUserData) else {
                         Task {
-                            await showInfoBanner(windowScene: self.windowScene,
-                                                 title: "E2E Csr",
-                                                 text: "Error creating CSR")
+                            await showErrorBanner(windowScene: self.windowScene,
+                                                  text: "Error creating CSR")
                         }
                         return
                     }
@@ -94,7 +92,8 @@ class NCEndToEndInitialize: NSObject {
                             let extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
                             if extractedPublicKey != NCEndToEndEncryption.shared().generatedPublicKey {
                                 Task {
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E sign publicKey: the public key is incorrect", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E sign publicKey: the public key is incorrect")
                                 }
                             } else {
                                 NCPreferences().setEndToEndCertificate(account: account, certificate: certificate)
@@ -105,22 +104,27 @@ class NCEndToEndInitialize: NSObject {
                             Task {
                                 switch error.errorCode {
                                 case NCGlobal.shared.errorBadRequest:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E sign publicKey: bad request: internal error", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E sign publicKey: bad request: internal error")
                                 case NCGlobal.shared.errorConflict:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E sign publicKey: conflict, a public key for the user already exists", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E sign publicKey: conflict, a public key for the user already exists")
                                 default:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E sign publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E sign publicKey: \(error.errorDescription)")
                                 }
                             }
                         }
                     }
                 case NCGlobal.shared.errorConflict:
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E get publicKey: forbidden, the user can't access the public keys", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E get publicKey: forbidden, the user can't access the public keys")
                     }
                 default:
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E get publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E get publicKey: \(error.errorDescription)")
                     }
                 }
             }
@@ -166,7 +170,8 @@ class NCEndToEndInitialize: NSObject {
                         NCPreferences().setEndToEndPrivateKey(account: account, privateKey: privateKey)
                     } else {
                         Task {
-                            await showErrorBanner(windowScene: self.windowScene, text: "E2E decrypt privateKey: serious internal error to decrypt Private Key", errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: self.windowScene,
+                                                  text: "E2E decrypt privateKey: serious internal error to decrypt Private Key")
                         }
                         return
                     }
@@ -189,7 +194,8 @@ class NCEndToEndInitialize: NSObject {
                             }
                             if verifyCertificate == false {
                                 Task {
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E verify certificate server: serious internal error to verify certificate", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E verify certificate server: serious internal error to verify certificate")
                                 }
                                 return
                             }
@@ -203,13 +209,17 @@ class NCEndToEndInitialize: NSObject {
                             Task {
                                 switch error.errorCode {
                                 case NCGlobal.shared.errorBadRequest:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: bad request: internal error", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E Server publicKey: bad request: internal error")
                                 case NCGlobal.shared.errorResourceNotFound:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: server public key doesn't exist", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E Server publicKey: server public key doesn't exist")
                                 case NCGlobal.shared.errorConflict:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: forbidden, the user can't access the Server public key", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E Server publicKey: forbidden, the user can't access the Server public key")
                                 default:
-                                    await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                                    await showErrorBanner(windowScene: self.windowScene,
+                                                          text: "E2E Server publicKey: \(error.errorDescription)")
                                 }
                             }
                         }
@@ -229,7 +239,8 @@ class NCEndToEndInitialize: NSObject {
                 switch error.errorCode {
                 case NCGlobal.shared.errorBadRequest:
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E get privateKey: bad request, internal error", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E get privateKey: bad request, internal error")
                     }
                 case NCGlobal.shared.errorResourceNotFound:
                     // message
@@ -249,11 +260,13 @@ class NCEndToEndInitialize: NSObject {
                     self.controller?.present(alertController, animated: true)
                 case NCGlobal.shared.errorConflict:
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E get privateKey: forbidden, the user can't access the private key", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E get privateKey: forbidden, the user can't access the private key")
                     }
                 default:
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E get privateKey: \(error.errorDescription)", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E get privateKey: \(error.errorDescription)")
                     }
                 }
             }
@@ -264,7 +277,8 @@ class NCEndToEndInitialize: NSObject {
         var privateKeyString: NSString?
         guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
             Task {
-                await showErrorBanner(windowScene: self.windowScene, text: "E2E privateKey: error creating private key cipher", errorCode: error.errorCode)
+                await showErrorBanner(windowScene: self.windowScene,
+                                      text: "E2E privateKey: error creating private key cipher")
             }
             return
         }
@@ -300,7 +314,8 @@ class NCEndToEndInitialize: NSObject {
                         }
                         if verifyCertificate == false {
                             Task {
-                                await showErrorBanner(windowScene: self.windowScene, text: "E2E verify certificate server: serious internal error to verify certificate", errorCode: error.errorCode)
+                                await showErrorBanner(windowScene: self.windowScene,
+                                                      text: "E2E verify certificate server: serious internal error to verify certificate")
                             }
                             return
                         }
@@ -316,13 +331,17 @@ class NCEndToEndInitialize: NSObject {
                         Task {
                             switch error.errorCode {
                             case NCGlobal.shared.errorBadRequest:
-                                await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: bad request, internal error", errorCode: error.errorCode)
+                                await showErrorBanner(windowScene: self.windowScene,
+                                                      text: "E2E Server publicKey: bad request, internal error")
                             case NCGlobal.shared.errorResourceNotFound:
-                                await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: server public key doesn't exist", errorCode: error.errorCode)
+                                await showErrorBanner(windowScene: self.windowScene,
+                                                      text: "E2E Server publicKey: server public key doesn't exist")
                             case NCGlobal.shared.errorConflict:
-                                await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: forbidden, the user can't access the Server public key", errorCode: error.errorCode)
+                                await showErrorBanner(windowScene: self.windowScene,
+                                                      text: "E2E Server publicKey: forbidden, the user can't access the Server public key",)
                             default:
-                                await showErrorBanner(windowScene: self.windowScene, text: "E2E Server publicKey: \(error.errorDescription)", errorCode: error.errorCode)
+                                await showErrorBanner(windowScene: self.windowScene,
+                                                      text: "E2E Server publicKey: \(error.errorDescription)")
                             }
                         }
                     }
@@ -331,11 +350,14 @@ class NCEndToEndInitialize: NSObject {
                 Task {
                     switch error.errorCode {
                     case NCGlobal.shared.errorBadRequest:
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E store privateKey: bad request, internal error", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E store privateKey: bad request, internal error")
                     case NCGlobal.shared.errorConflict:
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E store privateKey: conflict, a private key for the user already exists", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E store privateKey: conflict, a private key for the user already exists")
                     default:
-                        await showErrorBanner(windowScene: self.windowScene, text: "E2E store privateKey: \(error.errorDescription)", errorCode: error.errorCode)
+                        await showErrorBanner(windowScene: self.windowScene,
+                                              text: "E2E store privateKey: \(error.errorDescription)")
                     }
                 }
             }
