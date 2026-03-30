@@ -6009,7 +6009,7 @@
 			repositoryURL = "https://github.com/marinofaggiana/LucidBanner";
 			requirement = {
 				kind = exactVersion;
-				version = 0.7.0;
+				version = 0.7.1;
 			};
 		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
