@@ -181,7 +181,7 @@ extension NCEndToEndMetadata {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
-                           errorDescription: "E2ee error, cannot decode metadata")
+                           errorDescription: "_e2ee_decode_metadata_")
         }
 
         let decoder = JSONDecoder()
@@ -210,7 +210,7 @@ extension NCEndToEndMetadata {
                 metadataKey = key
             } else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadataV12,
-                               errorDescription: "E2ee error, cannot decrypt metadata key")
+                               errorDescription: "_e2ee_no_decrypt_metadata_")
             }
 
             // DATA
@@ -338,7 +338,7 @@ extension NCEndToEndMetadata {
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                               errorDescription: "E2ee error, checksum does not match")
+                               errorDescription: "_e2ee_no_match_checksum_")
             }
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
@@ -355,7 +355,7 @@ extension NCEndToEndMetadata {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
-                           errorDescription: "E2ee error, cannot decode metadata")
+                           errorDescription: "_e2ee_decode_metadata_")
         }
 
         let decoder = JSONDecoder()

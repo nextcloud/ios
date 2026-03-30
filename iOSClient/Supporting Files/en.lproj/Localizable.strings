@@ -469,7 +469,6 @@
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_file_encrypted_"              = "File encrypted";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
-"_e2e_error_"                       = "An internal end-to-end encryption error occurred.";
 "_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred.";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
@@ -727,6 +726,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_assistant_error_send_message_"  = "Could not send message. Please try again.";
 "_assistant_error_load_messages_" = "Could not load messages. Please try again.";
 "_assistant_error_generate_response_" = "Could not generate response. Please try again.";
+
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate.";
 "_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
@@ -756,15 +756,33 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_albums_" = "Albums";
 "_new_photos_only_" = "New photos only";
 "_all_photos_" = "All photos";
-//"_back_up_" = "Back up...";
 "_back_up_new_photos_only_" = "Back up new photos/videos only";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
 "_item_with_same_name_already_exists_" = "An item with the same name already exists.";
 
 // MARK: Migration Multi Domains
-
 "_preparing_migration_" = "Preparing migration …";
 "_scanning_files_" = "Scanning files …";
 "_moving_items_to_domain_" = "Moving items to correct domain …";
 "_finishing_up_" = "Finishing up …";
+
+// MARK: E2EE
+"_e2ee_no_session_" = "E2ee error, no account for this session";
+"_e2ee_no_dir_" = "E2ee error, cannot get directory";
+"_e2ee_no_certificate_" = "E2ee error, cannot get certificate";
+"_e2ee_no_generate_key_" = "E2ee error, cannot generate key";
+"_e2ee_no_user_found_" = "E2ee error, user not found";
+"_e2ee_no_signature_found_" = "E2ee error, no signature found";
+"_e2ee_signature_failed_" = "E2ee error, verify signature failed";
+"_e2ee_enc_payload_" = "E2ee error, encrypt payload file";
+"_e2ee_no_metadata_" = "E2ee error, cannot get metadata";
+"_e2ee_filedrop_ciphertext_" = "E2ee error, filedrop ciphertext failed";
+"_e2ee_key_ciphertext_" = "E2ee error, key ciphertext failed";
+"_e2ee_key_checksums_" = "E2ee error, key checksums failed";
+"_e2ee_decode_metadata_" = "E2ee error, cannot decode metadata";
+"_e2ee_no_lock_" = "E2ee error, unable to lock file";
+"_e2ee_no_decrypt_metadata_" = "E2ee error, cannot decrypt metadata";
+"_e2ee_no_enc_file_" = "E2ee error, cannot encrypt file";
+"_e2ee_no_enc_key_" = "E2ee error, cannot get encoded key";
+"_e2ee_no_match_checksum_" = "E2ee error, checksum does not match";

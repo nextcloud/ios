@@ -19,7 +19,7 @@ class NCNetworkingE2EERename: NSObject {
         }
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                           errorDescription: "E2ee error, could not get table directory from db")
+                           errorDescription: "_e2ee_no_dir_")
         }
 
         // TEST UPLOAD IN PROGRESS

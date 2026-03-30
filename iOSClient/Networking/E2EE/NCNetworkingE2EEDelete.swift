@@ -15,7 +15,7 @@ class NCNetworkingE2EEDelete: NSObject {
         let session = NCSession.shared.getSession(account: metadata.account)
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                           errorDescription: "E2ee error, no table directory found")
+                           errorDescription: "_e2ee_no_dir_")
         }
 
         // TEST UPLOAD IN PROGRESS

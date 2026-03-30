@@ -283,7 +283,6 @@ class NCContextMenuMain: NSObject {
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
                     await showErrorBanner(windowScene: self.windowScene,
-                                          title: "_e2e_error_",
                                           text: results.error.errorDescription,
                                           errorCode: results.error.errorCode)
                 }

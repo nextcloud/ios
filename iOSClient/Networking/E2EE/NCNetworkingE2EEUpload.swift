@@ -38,7 +38,7 @@ class NCNetworkingE2EEUpload: NSObject {
         guard let session,
               !session.account.isEmpty else {
             return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound,
-                           errorDescription: "E2ee error, no session found")
+                           errorDescription: "_e2ee_no_session_")
         }
 
         defer {
@@ -73,7 +73,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             finalError = NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                                 errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                                 errorDescription: "_e2ee_no_dir_")
             return finalError
         }
 
@@ -85,12 +85,12 @@ class NCNetworkingE2EEUpload: NSObject {
             //
             if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
                 finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile,
-                                     errorDescription: "E2ee error, cannot encrypt file")
+                                     errorDescription: "_e2ee_no_enc_file_")
                 return finalError
             }
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
                 finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey,
-                                     errorDescription: "E2ee error, cannot get encoded key")
+                                     errorDescription: "_e2ee_no_enc_key_")
                 return finalError
             }
 
@@ -114,7 +114,7 @@ class NCNetworkingE2EEUpload: NSObject {
             } else {
                 guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
                     finalError = NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey,
-                                         errorDescription: "E2ee error, cannot generate key")
+                                         errorDescription: "_e2ee_no_generate_key_")
                     return finalError
                 }
                 object.metadataKey = key.base64EncodedString()
@@ -151,7 +151,7 @@ class NCNetworkingE2EEUpload: NSObject {
         else {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
             finalError = NKError(errorCode: NCGlobal.shared.errorE2EELock,
-                                 errorDescription: "E2ee error, unable to lock file")
+                                 errorDescription: "_e2ee_no_lock_")
             return finalError
         }
 
