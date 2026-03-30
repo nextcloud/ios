@@ -82,11 +82,11 @@ extension NCEndToEndMetadata {
     func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
         guard let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
-                                         errorDescription: "_e2ee_no_dir_"))
+                                         errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: "")))
         }
         guard let certificate = NCPreferences().getEndToEndCertificate(account: session.account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                                         errorDescription: "_e2ee_no_certificate_"))
+                                         errorDescription: NSLocalizedString("_e2ee_no_certificate_", comment: "")))
         }
 
         let isDirectoryTop = serverUrl == directoryTop.serverUrlFileName
@@ -111,7 +111,7 @@ extension NCEndToEndMetadata {
         if isDirectoryTop {
             guard var key = NCEndToEndEncryption.shared().generateKey() else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                                             errorDescription: "_e2ee_no_generate_key_"))
+                                             errorDescription: NSLocalizedString("_e2ee_no_generate_key_", comment: "")))
             }
             if let tableUserId = await self.database.getE2EUserAsync(account: session.account, directoryTopOcId: directoryTopOcId, userId: session.userId),
                let metadataKey = tableUserId.metadataKey {
@@ -138,7 +138,7 @@ extension NCEndToEndMetadata {
         } else {
             guard let tableUserId = await self.database.getE2EUserAsync(account: session.account, directoryTopOcId: directoryTopOcId, userId: session.userId), let key = tableUserId.metadataKey else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                                             errorDescription: "_e2ee_no_user_found_"))
+                                             errorDescription: NSLocalizedString("_e2ee_no_user_found_", comment: "")))
             }
 
             metadataKey = key.base64EncodedString()
@@ -184,7 +184,7 @@ extension NCEndToEndMetadata {
             let ciphertextMetadata = NCEndToEndEncryption.shared().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
             guard var ciphertextMetadata, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil, counter, NKError(errorCode: NCGlobal.shared.errorE2EEEncryptPayloadFile,
-                                                   errorDescription: "_e2ee_enc_payload_"))
+                                                   errorDescription: NSLocalizedString("_e2ee_enc_payload_", comment: "")))
             }
 
             // Add initializationVector [ANDROID]
@@ -214,7 +214,7 @@ extension NCEndToEndMetadata {
         guard let data = json.data(using: .utf8),
               let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
-                           errorDescription: "_e2ee_no_metadata_")
+                           errorDescription: NSLocalizedString("_e2ee_no_metadata_", comment: ""))
         }
         let directoryTopOcId = directoryTop.ocId
         let isDirectoryTop = serverUrl == directoryTop.serverUrlFileName
@@ -281,19 +281,16 @@ extension NCEndToEndMetadata {
             guard let tableUser = await self.database.getE2EUserAsync(account: session.account, directoryTopOcId: directoryTopOcId, userId: session.userId),
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
-                nkLog(tag: global.logTagE2EE, message: "Error user not found")
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                               errorDescription: "_e2ee_no_user_found_")
+                               errorDescription: NSLocalizedString("_e2ee_no_user_found_", comment: ""))
             }
 
             // SIGNATURE CHECK
             //
             guard let signature, !signature.isEmpty else {
-                nkLog(tag: global.logTagE2EE, message: "Missing signature")
                 return NKError(
                     errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature,
-                    errorDescription: "_e2ee_no_signature_found_"
-                )
+                    errorDescription: NSLocalizedString("_e2ee_no_signature_found_", comment: ""))
             }
 
             guard verifySignature(
@@ -305,11 +302,9 @@ extension NCEndToEndMetadata {
                 version: version,
                 certificate: tableUser.certificate
             ) else {
-                nkLog(tag: global.logTagE2EE, message: "Error verify signature")
                 return NKError(
                     errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature,
-                    errorDescription: "_e2ee_signature_failed_"
-                )
+                    errorDescription: NSLocalizedString("_e2ee_signature_failed_", comment: ""))
             }
 
             // FILEDROP
@@ -326,9 +321,8 @@ extension NCEndToEndMetadata {
                             let filedropKey = decryptedFiledropKey.base64EncodedString()
                             guard let decryptedFiledrop = NCEndToEndEncryption.shared().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
                                   decryptedFiledrop.isGzipped else {
-                                nkLog(tag: global.logTagE2EE, message: "Error Filedrop Ciphertext")
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext,
-                                               errorDescription: "_e2ee_filedrop_ciphertext_")
+                                               errorDescription: NSLocalizedString("_e2ee_filedrop_ciphertext_", comment: ""))
                             }
                             let data = try decryptedFiledrop.gunzipped()
                             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
@@ -344,9 +338,8 @@ extension NCEndToEndMetadata {
             //
             guard let decryptedMetadata = NCEndToEndEncryption.shared().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
                   decryptedMetadata.isGzipped else {
-                nkLog(tag: global.logTagE2EE, message: "Error Key Ciphertext")
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext,
-                               errorDescription: "_e2ee_key_ciphertext_")
+                               errorDescription: NSLocalizedString("_e2ee_key_ciphertext_", comment: ""))
             }
             let data = try decryptedMetadata.gunzipped()
             // DEBUG
@@ -359,9 +352,8 @@ extension NCEndToEndMetadata {
             if let keyChecksums = jsonCiphertextMetadata.keyChecksums, !keyChecksums.isEmpty {
                 guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
                       keyChecksums.contains(hash) else {
-                    nkLog(tag: global.logTagE2EE, message: "Error Key Checksums")
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                                   errorDescription: "_e2ee_key_checksums_")
+                                   errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: ""))
                 }
             }
 

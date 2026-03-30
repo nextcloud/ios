@@ -17,7 +17,7 @@ class NCEndToEndMetadata: NSObject {
 
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
-                                         errorDescription: "_e2ee_no_session_"))
+                                         errorDescription: NSLocalizedString("_e2ee_no_session_", comment: "")))
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
