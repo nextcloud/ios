@@ -18,7 +18,8 @@ class NCNetworkingE2EERename: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_file_already_exists_")
         }
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
-            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
+                           errorDescription: "E2ee error, could not get table directory from db")
         }
 
         // TEST UPLOAD IN PROGRESS

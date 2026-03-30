@@ -22,10 +22,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameIdentifier)
         fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: global.errorUnexpectedResponseFromDB,
+                           errorDescription: "E2ee error, no fileNameFolder")
         }
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: global.errorUnexpectedResponseFromDB,
+                           errorDescription: "E2ee error, no directory in db")
         }
 
         // TEST UPLOAD IN PROGRESS
@@ -50,7 +52,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
             NCEndToEndEncryption.shared().encodedkey(&key, initializationVector: &initializationVector)
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
-                return NKError(errorCode: global.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                return NKError(errorCode: global.errorE2EEEncodedKey,
+                               errorDescription: "E2ee error, cannot generate key")
             }
 
             let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
@@ -60,7 +63,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
                 guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
-                    return NKError(errorCode: global.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                    return NKError(errorCode: global.errorE2EEGenerateKey,
+                                   errorDescription:"E2ee error, cannot generate key")
                 }
                 object.metadataKey = key.base64EncodedString()
                 object.metadataKeyIndex = 0
@@ -89,7 +93,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsLock = await networkingE2EE.lock(account: session.account, serverUrl: serverUrl)
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
-            return NKError(errorCode: global.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: global.errorE2EELock,
+                           errorDescription: "E2ee error, lock failed")
         }
 
         // SEND NEW METADATA

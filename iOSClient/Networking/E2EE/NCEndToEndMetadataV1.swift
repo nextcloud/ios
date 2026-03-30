@@ -180,7 +180,8 @@ extension NCEndToEndMetadata {
     func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
+                           errorDescription: "E2ee error, cannot decode metadata")
         }
 
         let decoder = JSONDecoder()
@@ -208,7 +209,8 @@ extension NCEndToEndMetadata {
                 let key = String(data: keyData, encoding: .utf8) {
                 metadataKey = key
             } else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadataV12, errorDescription: "_e2e_error_")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadataV12,
+                               errorDescription: "E2ee error, cannot decrypt metadata key")
             }
 
             // DATA
@@ -335,7 +337,8 @@ extension NCEndToEndMetadata {
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: "_e2e_error_")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                               errorDescription: "E2ee error, checksum does not match")
             }
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
@@ -351,7 +354,8 @@ extension NCEndToEndMetadata {
     func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
+                           errorDescription: "E2ee error, cannot decode metadata")
         }
 
         let decoder = JSONDecoder()

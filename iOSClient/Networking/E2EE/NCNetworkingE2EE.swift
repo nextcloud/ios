@@ -112,7 +112,8 @@ class NCNetworkingE2EE: NSObject {
         let session = NCSession.shared.getSession(account: account)
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
-            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
+                           errorDescription: "E2ee error, no table directory found")
         }
 
         if let addUserId {
@@ -242,7 +243,8 @@ class NCNetworkingE2EE: NSObject {
         var e2eToken: String?
         var e2eCounter = "1"
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
+                                      errorDescription: "E2ee error, no directory found in db"))
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
 
