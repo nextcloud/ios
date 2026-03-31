@@ -309,26 +309,19 @@ class NCFiles: NCCollectionViewCommon {
         guard resultsE2eeGetMetadata.error == .success,
               let e2eMetadata = resultsE2eeGetMetadata.e2eMetadata,
               let version = resultsE2eeGetMetadata.version else {
-            // No metadata fount, re-send it
+            // No metadata fount, send it
             if resultsE2eeGetMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                await showInfoBanner(windowScene: windowScene, text: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
                     await showErrorBanner(windowScene: windowScene,
                                           text: error.errorDescription,
                                           errorCode: error.errorCode)
-                    // Error: Go back
-                    navigationController?.popViewController(animated: false)
                 }
             } else {
                 await showErrorBanner(windowScene: windowScene,
                                       text: resultsE2eeGetMetadata.error.errorDescription,
                                       errorCode: resultsE2eeGetMetadata.error.errorCode)
             }
-
-            // Error: Go back
-            navigationController?.popViewController(animated: false)
-
             return(metadatas, resultsE2eeGetMetadata.error, reloadRequired)
         }
 

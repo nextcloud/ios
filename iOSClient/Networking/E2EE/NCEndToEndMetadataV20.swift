@@ -76,7 +76,7 @@ extension NCEndToEndMetadata {
     }
 
     // --------------------------------------------------------------------------------------------
-    // MARK: Ecode JSON Metadata V2.0
+    // MARK: Ecode JSON Metadata V2
     // --------------------------------------------------------------------------------------------
 
     func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
@@ -89,6 +89,7 @@ extension NCEndToEndMetadata {
                                          errorDescription: NSLocalizedString("_e2ee_no_certificate_", comment: "")))
         }
 
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         let isDirectoryTop = serverUrl == directoryTop.serverUrlFileName
         let directoryTopOcId = directoryTop.ocId
 
@@ -191,12 +192,12 @@ extension NCEndToEndMetadata {
             ciphertextMetadata = ciphertextMetadata + "|" + initializationVector
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
-            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: "2.0")
+            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: capabilities.e2EEApiVersion)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
-            let signature = createSignature(metadata: metadataCodable, users: usersCodable, version: "2.0", certificate: certificate, session: session)
+            let signature = createSignature(metadata: metadataCodable, users: usersCodable, version: capabilities.e2EEApiVersion, certificate: certificate, session: session)
 
             return (e2eeJson, signature, counter, NKError())
 
@@ -206,7 +207,7 @@ extension NCEndToEndMetadata {
     }
 
     // --------------------------------------------------------------------------------------------
-    // MARK: Decode JSON Metadata V2.0
+    // MARK: Decode JSON Metadata V2
     // --------------------------------------------------------------------------------------------
 
     func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
@@ -218,8 +219,7 @@ extension NCEndToEndMetadata {
         }
         let directoryTopOcId = directoryTop.ocId
         let isDirectoryTop = serverUrl == directoryTop.serverUrlFileName
-
-        nkLog(tag: global.logTagE2EE, message: "Start decode metadata v2.0. Directory top: \(directoryTop.serverUrlFileName)")
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
         func addE2eEncryption(fileNameIdentifier: String, fileName: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) async {
             if let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
@@ -232,7 +232,7 @@ extension NCEndToEndMetadata {
                 object.metadataKey = metadataKey
                 object.mimeType = mimetype
                 object.serverUrl = serverUrl
-                object.version = "2.0"
+                object.version = "2"
 
                 // Write file parameter for decrypted on DB
                 await self.database.addE2eEncryptionAsync(object)
@@ -256,7 +256,7 @@ extension NCEndToEndMetadata {
             let metadata = json.metadata
             let users = json.users
             let filesdrop = json.filedrop
-            let version = json.version as String? ?? "2.0"
+            let version = json.version as String? ?? capabilities.e2EEApiVersion
 
             if isDirectoryTop {
 
@@ -419,7 +419,6 @@ extension NCEndToEndMetadata {
             print("DECODE SUCCESS ------------------------\n\n")
 
         } catch let error {
-            nkLog(tag: global.logTagE2EE, message: "Error decoding JSON V2.0: \(error.localizedDescription)")
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
         }
 
