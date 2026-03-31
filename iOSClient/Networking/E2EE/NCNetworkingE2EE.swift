@@ -47,7 +47,7 @@ class NCNetworkingE2EE: NSObject {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
 
         switch capabilities.e2EEApiVersion {
-        case "1.1", "1.2":
+        case let v where v.hasPrefix("1."):
             let options = NKRequestOptions(version: e2EEApiVersion1)
             let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                 Task {
@@ -58,7 +58,7 @@ class NCNetworkingE2EE: NSObject {
                 }
             }
             return (results.account, self.e2EEApiVersion1, results.e2eMetadata, results.signature, results.responseData, results.error)
-        case "2.0", "2.1":
+        case let v where v.hasPrefix("2."):
             var options = NKRequestOptions(version: e2EEApiVersion2)
             let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                 Task {
