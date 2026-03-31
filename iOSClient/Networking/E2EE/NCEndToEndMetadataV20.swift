@@ -76,7 +76,7 @@ extension NCEndToEndMetadata {
     }
 
     // --------------------------------------------------------------------------------------------
-    // MARK: Ecode JSON Metadata V2
+    // MARK: Encode JSON Metadata V2
     // --------------------------------------------------------------------------------------------
 
     func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
