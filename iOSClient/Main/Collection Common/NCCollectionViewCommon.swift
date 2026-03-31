@@ -896,7 +896,11 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                    serverUrl == self.serverUrl,
                    selector != self.global.selectorUploadAutoUpload,
                    let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
-                    self.pushMetadata(metadata)
+                    if metadata.e2eEncrypted {
+                        await self.reloadDataSource()
+                    } else {
+                        self.pushMetadata(metadata)
+                    }
                 }
                 return
             }

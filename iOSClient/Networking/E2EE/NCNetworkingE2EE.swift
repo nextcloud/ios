@@ -102,6 +102,7 @@ class NCNetworkingE2EE: NSObject {
 
     // MARK: -
 
+    @discardableResult
     func uploadMetadata(serverUrl: String,
                         addUserId: String? = nil,
                         removeUserId: String? = nil,

@@ -309,7 +309,6 @@ class NCFiles: NCCollectionViewCommon {
         guard resultsE2eeGetMetadata.error == .success,
               let e2eMetadata = resultsE2eeGetMetadata.e2eMetadata,
               let version = resultsE2eeGetMetadata.version else {
-            // No metadata fount, send it
             if resultsE2eeGetMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
