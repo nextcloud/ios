@@ -36,6 +36,35 @@ func showHudIndeterminateBanner(windowScene: UIWindowScene?,
     return(banner, token)
 }
 
+@MainActor
+func completeHudIndeterminateBannerSuccess(token: Int?, banner: LucidBanner?) {
+    guard let banner else {
+        return
+    }
+
+    let payload = LucidBannerPayload.Update(
+        stage: .success,
+        autoDismissAfter: 2
+    )
+
+    banner.update(payload: payload, for: token)
+}
+
+@MainActor
+func completeHudIndeterminateBannerError(description: String, token: Int?, banner: LucidBanner?) {
+    guard let banner else {
+        return
+    }
+
+    let payload = LucidBannerPayload.Update(
+        subtitle: NSLocalizedString(description, comment: ""),
+        stage: .error,
+        autoDismissAfter: NCGlobal.shared.dismissAfterSecond
+    )
+
+    banner.update(payload: payload, for: token)
+}
+
 struct HudBannerViewIndeterminate: View {
     @ObservedObject var state: LucidBannerState
     @State private var rotation: Double = 0
@@ -86,24 +115,34 @@ struct HudBannerViewIndeterminate: View {
 
                 // SPINNER
                 ZStack {
+                    if isSuccess || isError {
+                        // FULL RING (no trim)
+                        Circle()
+                            .stroke(
+                                strokeColor,
+                                style: StrokeStyle(lineWidth: lineWidth)
+                            )
+                            .frame(width: circleSize, height: circleSize)
 
-                    // Background ring
-                    Circle()
-                        .stroke(
-                            .gray.opacity(0.1),
-                            style: StrokeStyle(lineWidth: lineWidth)
-                        )
-                        .frame(width: circleSize, height: circleSize)
+                    } else {
+                        // Background ring
+                        Circle()
+                            .stroke(
+                                .gray.opacity(0.1),
+                                style: StrokeStyle(lineWidth: lineWidth)
+                            )
+                            .frame(width: circleSize, height: circleSize)
 
-                    // Foreground spinning arc
-                    Circle()
-                        .trim(from: 0.0, to: 0.25)
-                        .stroke(
-                            strokeColor,
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
-                        )
-                        .rotationEffect(.degrees(rotation))
-                        .frame(width: circleSize, height: circleSize)
+                        // Spinning arc
+                        Circle()
+                            .trim(from: 0.0, to: 0.25)
+                            .stroke(
+                                strokeColor,
+                                style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(rotation))
+                            .frame(width: circleSize, height: circleSize)
+                    }
 
                     // Center content
                     Group {
@@ -115,8 +154,6 @@ struct HudBannerViewIndeterminate: View {
                             Image(systemName: "xmark")
                                 .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
-                        } else {
-                            EmptyView()
                         }
                     }
                 }

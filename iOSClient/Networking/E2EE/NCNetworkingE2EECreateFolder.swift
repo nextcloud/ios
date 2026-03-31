@@ -18,9 +18,16 @@ class NCNetworkingE2EECreateFolder: NSObject {
     @MainActor
     func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
         var banner: LucidBanner?
+        var token: Int?
+        var error = NKError()
+
         defer {
-            if let banner {
-                banner.dismiss()
+            if let banner, let token {
+                if error == .success {
+                    completeHudIndeterminateBannerSuccess(token: token, banner: banner)
+                } else {
+                    banner.dismiss()
+                }
             }
         }
 
@@ -31,21 +38,23 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameIdentifier)
         fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB,
-                           errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: ""))
+            error = NKError(errorCode: global.errorUnexpectedResponseFromDB,
+                            errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: ""))
+            return error
         }
 
         // TEST UPLOAD IN PROGRESS
         //
         if await networkingE2EE.isInUpload(account: session.account, serverUrl: serverUrl) {
-            return NKError(errorCode: global.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+            error = NKError(errorCode: global.errorE2EEUploadInProgress,
+                            errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+            return error
         }
 
 #if !EXTENSION
         if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
-            (banner, _) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")
+            (banner, token) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")
         }
-
 #endif
 
         // LOCK
@@ -54,21 +63,22 @@ class NCNetworkingE2EECreateFolder: NSObject {
         guard let e2eToken = resultsLock.e2eToken,
               let fileId = resultsLock.fileId,
               resultsLock.error == .success else {
-            return NKError(errorCode: global.errorE2EELock,
-                           errorDescription: NSLocalizedString("_e2ee_no_lock_", comment: ""))
+            error = NKError(errorCode: global.errorE2EELock,
+                            errorDescription: NSLocalizedString("_e2ee_no_lock_", comment: ""))
+            return error
         }
 
         // UPDATE METADATA
         //
-        let sendE2eeError = await updateMetadata(serverUrl: serverUrl,
-                                                 e2eToken: e2eToken,
-                                                 fileId: fileId,
-                                                 fileNameIdentifier: fileNameIdentifier,
-                                                 fileNameFolder: fileNameFolder,
-                                                 session: session)
-        guard sendE2eeError == .success else {
+        error = await updateMetadata(serverUrl: serverUrl,
+                                     e2eToken: e2eToken,
+                                     fileId: fileId,
+                                     fileNameIdentifier: fileNameIdentifier,
+                                     fileNameFolder: fileNameFolder,
+                                     session: session)
+        guard error == .success else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return sendE2eeError
+            return error
         }
 
         // CREATE FOLDER
@@ -83,7 +93,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = utility.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return resultsCreateFolder.error
+            error = resultsCreateFolder.error
+            return error
         }
 
         // SET FOLDER AS E2EE
@@ -98,7 +109,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return resultsMarkE2EEFolder.error
+            error = resultsMarkE2EEFolder.error
+            return error
         }
 
         // UNLOCK
@@ -118,7 +130,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files?.first else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return resultsReadFileOrFolder.error
+            error = resultsReadFileOrFolder.error
+            return error
         }
         let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
 
@@ -138,7 +151,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                                     error: .success)
         }
 
-        return NKError()
+        return error
     }
 
     func updateMetadata(serverUrl: String,
