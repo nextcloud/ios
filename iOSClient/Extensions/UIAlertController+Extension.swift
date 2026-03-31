@@ -51,6 +51,13 @@ extension UIAlertController {
                     return
                 }
                 Task {
+                    var banner: LucidBanner?
+                    var token: Int?
+#if !EXTENSION
+                    if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
+                        (banner, token) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")
+                    }
+#endif
                     let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
                     let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                         Task {
@@ -64,8 +71,18 @@ extension UIAlertController {
                     }
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId)
+                        if let banner, let token {
+                            if error == .success {
+                                completeHudIndeterminateBannerSuccess(token: token, banner: banner)
+                            } else {
+                                banner.dismiss()
+                            }
+                        }
                         completion?(error)
                     } else {
+                        if let banner, let token {
+                            banner.dismiss()
+                        }
                         completion?(NKError(errorCode: createFolderResults.error.errorCode, errorDescription: createFolderResults.error.errorDescription))
                     }
                 }
