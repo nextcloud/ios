@@ -82,7 +82,7 @@ class tableE2eMetadataV2: Object {
     @Persisted var keyChecksums = List<String>()
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
-    @Persisted var version: String = "2.0"
+    @Persisted var version: String = "2"
 
     convenience init(account: String, ocIdServerUrl: String) {
         self.init()

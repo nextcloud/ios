@@ -98,10 +98,10 @@ final class NCGlobal: Sendable {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    let e2eeCompatibleVersions                      = ["1.1", "1.2", "2.0", "2.1"]
+    let e2eeCompatibleVersions                      = ["1.1", "1.2", "2.0", "2.1", "2.2"]
 
     func isE2eeVersion2(_ version: String) -> Bool {
-        if version == "2.0" || version == "2.1" {
+        if version.hasPrefix("2.") {
             return true
         }
         return false
