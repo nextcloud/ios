@@ -314,13 +314,20 @@ class NCFiles: NCCollectionViewCommon {
                 await showInfoBanner(windowScene: windowScene, text: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene,
+                                          text: error.errorDescription,
+                                          errorCode: error.errorCode)
+                    // Error: Go back
+                    navigationController?.popViewController(animated: false)
                 }
             } else {
                 await showErrorBanner(windowScene: windowScene,
                                       text: resultsE2eeGetMetadata.error.errorDescription,
                                       errorCode: resultsE2eeGetMetadata.error.errorCode)
             }
+
+            // Error: Go back
+            navigationController?.popViewController(animated: false)
 
             return(metadatas, resultsE2eeGetMetadata.error, reloadRequired)
         }
@@ -348,6 +355,7 @@ class NCFiles: NCCollectionViewCommon {
             await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
         }
 
+        // Error: Go back
         if error != .success {
             navigationController?.popViewController(animated: false)
         }
