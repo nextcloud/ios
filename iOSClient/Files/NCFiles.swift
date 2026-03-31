@@ -325,17 +325,18 @@ class NCFiles: NCCollectionViewCommon {
             return(metadatas, resultsE2eeGetMetadata.error, reloadRequired)
         }
 
-        let errorDecodeMetadata = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
-                                                                            signature: resultsE2eeGetMetadata.signature,
-                                                                            serverUrl: serverUrl, session: self.session)
-        if errorDecodeMetadata == .success {
+        var error = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
+                                                              signature: resultsE2eeGetMetadata.signature,
+                                                              serverUrl: serverUrl, session: self.session)
+
+        if error == .success {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
             if version == "v1", NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
                 await showInfoBanner(windowScene: windowScene, text: "Conversion metadata v1 to v2 required, please wait...")
                 nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                 NCActivityIndicator.shared.start()
 
-                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
+                error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                 if error != .success {
                     await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
                 }
@@ -344,10 +345,14 @@ class NCFiles: NCCollectionViewCommon {
         } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            await showErrorBanner(windowScene: windowScene, text: errorDecodeMetadata.errorDescription, errorCode: errorDecodeMetadata.errorCode)
+            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
         }
 
-        return (metadatas, errorDecodeMetadata, reloadRequired)
+        if error != .success {
+            navigationController?.popViewController(animated: false)
+        }
+
+        return (metadatas, error, reloadRequired)
     }
 
     func blinkCell(fileName: String?) {
