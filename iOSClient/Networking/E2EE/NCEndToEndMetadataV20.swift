@@ -348,13 +348,15 @@ extension NCEndToEndMetadata {
 
             // CHECKSUM CHECK
             //
-            // TODO: if null exit with error
-            if let keyChecksums = jsonCiphertextMetadata.keyChecksums, !keyChecksums.isEmpty {
-                guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
-                      keyChecksums.contains(hash) else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                                   errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: ""))
-                }
+            guard let keyChecksums = jsonCiphertextMetadata.keyChecksums, !keyChecksums.isEmpty else {
+                return NKError(
+                    errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                    errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: ""))
+            }
+            guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
+                  keyChecksums.contains(hash) else {
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                               errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: ""))
             }
 
             print("\n\nCOUNTER ---------------------")
@@ -365,15 +367,10 @@ extension NCEndToEndMetadata {
             if let resultCounter = await self.database.getCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl) {
                 nkLog(tag: global.logTagE2EE, message: "COUNTER CHECK: counter saved \(resultCounter), counter UPDATED: \(jsonCiphertextMetadata.counter)")
                 await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
-                // TODO: whats happen with < ?
-                /*
                 if jsonCiphertextMetadata.counter < resultCounter {
-                    //showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_error_", comment: "")))
-                } else if jsonCiphertextMetadata.counter > resultCounter {
-                    print("Counter UPDATED: \(jsonCiphertextMetadata.counter)")
-                    await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                                   errorDescription: NSLocalizedString("_e2ee_counter_check_", comment: ""))
                 }
-                */
             } else {
                 nkLog(tag: global.logTagE2EE, message: "COUNTER CHECK: counter RESET: \(jsonCiphertextMetadata.counter)")
                 await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
