@@ -17,17 +17,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
     @MainActor
     func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
-#if !EXTENSION
         var banner: LucidBanner?
-        if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
-            (banner, _) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")
-        }
         defer {
             if let banner {
                 banner.dismiss()
             }
         }
-#endif
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
@@ -45,6 +40,13 @@ class NCNetworkingE2EECreateFolder: NSObject {
         if await networkingE2EE.isInUpload(account: session.account, serverUrl: serverUrl) {
             return NKError(errorCode: global.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
         }
+
+#if !EXTENSION
+        if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
+            (banner, _) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")
+        }
+
+#endif
 
         // LOCK
         //
