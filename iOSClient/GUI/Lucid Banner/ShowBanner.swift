@@ -178,4 +178,3 @@ struct BannerView: View {
         .padding()
     }
 }
-

@@ -363,7 +363,7 @@ class NCContextMenuMain: NSObject {
                     return
                 }
 
-                let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
+                let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew, windowScene: self.windowScene)
                 if error != .success {
                     await showErrorBanner(windowScene: self.windowScene, error: error)
                 }

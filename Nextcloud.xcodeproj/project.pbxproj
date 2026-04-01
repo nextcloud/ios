@@ -289,8 +289,8 @@
 		F7245926289BB59300474787 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
 		F7245927289BB59300474787 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
 		F72685E727C78E490019EF5E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72685E927C78E490019EF5E /* InfoPlist.strings */; };
-		F72944F22A84246400246839 /* NCEndToEndMetadataV20.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F12A84246400246839 /* NCEndToEndMetadataV20.swift */; };
-		F72944F32A84246400246839 /* NCEndToEndMetadataV20.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F12A84246400246839 /* NCEndToEndMetadataV20.swift */; };
+		F72944F22A84246400246839 /* NCEndToEndMetadataV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F12A84246400246839 /* NCEndToEndMetadataV2.swift */; };
+		F72944F32A84246400246839 /* NCEndToEndMetadataV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F12A84246400246839 /* NCEndToEndMetadataV2.swift */; };
 		F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */; };
 		F72944F62A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */; };
 		F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */; };
@@ -1361,7 +1361,7 @@
 		F724377A2C10B83E00C7C68D /* NCSharePermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSharePermissions.swift; sourceTree = "<group>"; };
 		F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadSafeDictionary.swift; sourceTree = "<group>"; };
 		F72685E827C78E490019EF5E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F72944F12A84246400246839 /* NCEndToEndMetadataV20.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadataV20.swift; sourceTree = "<group>"; };
+		F72944F12A84246400246839 /* NCEndToEndMetadataV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadataV2.swift; sourceTree = "<group>"; };
 		F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadataV1.swift; sourceTree = "<group>"; };
 		F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardWidgetView.swift; sourceTree = "<group>"; };
 		F72CA0562F5048C3002E2F06 /* UIApplication+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extension.swift"; sourceTree = "<group>"; };
@@ -3025,7 +3025,7 @@
 				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
 				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
-				F72944F12A84246400246839 /* NCEndToEndMetadataV20.swift */,
+				F72944F12A84246400246839 /* NCEndToEndMetadataV2.swift */,
 				F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */,
 				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */,
@@ -4324,7 +4324,7 @@
 				F7148041262EBE4000693E51 /* NCShareExtension.swift in Sources */,
 				F71FA7992F3508C600E86192 /* NCNetworking+WebDAV.swift in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F72944F32A84246400246839 /* NCEndToEndMetadataV20.swift in Sources */,
+				F72944F32A84246400246839 /* NCEndToEndMetadataV2.swift in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4633,7 +4633,7 @@
 				F3DDFE232F1FB4C300A784C8 /* NCAssistantChatModel.swift in Sources */,
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
 				F7411C552D7B26D700F57358 /* NCNetworking+ServerError.swift in Sources */,
-				F72944F22A84246400246839 /* NCEndToEndMetadataV20.swift in Sources */,
+				F72944F22A84246400246839 /* NCEndToEndMetadataV2.swift in Sources */,
 				F78026122E9CFA6300B63436 /* NCTransfersModel.swift in Sources */,
 				F7EF2AEB2E43157B0081B2C9 /* NCNotification.swift in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,

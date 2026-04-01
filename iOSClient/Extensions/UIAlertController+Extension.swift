@@ -80,7 +80,7 @@ extension UIAlertController {
                         }
                         completion?(error)
                     } else {
-                        if let banner, let token {
+                        if let banner {
                             banner.dismiss()
                         }
                         completion?(NKError(errorCode: createFolderResults.error.errorCode, errorDescription: createFolderResults.error.errorDescription))
