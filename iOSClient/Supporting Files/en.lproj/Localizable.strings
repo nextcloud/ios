@@ -86,6 +86,11 @@
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
 "_search_"                  = "Search";
+"_search_or_create_tags"    = "Search or create tag";
+"_tags_"                    = "Tags";
+"_share_tags_create_"       = "Create \"%@\"";
+"_share_tags_no_results_"   = "No tags found";
+"_edit_tags_"               = "Manage tags";
 "_of_"                      = "of";
 "_livephoto_save_"          = "Save Live Photo to Photo Album";
 "_livephoto_save_error_"    = "Error during save of Live Photo.";

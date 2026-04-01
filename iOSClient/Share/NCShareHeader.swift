@@ -23,6 +23,8 @@
 
 import UIKit
 import TagListView
+import SwiftUI
+import NextcloudKit
 
 class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
@@ -33,10 +35,13 @@ class NCShareHeader: UIView {
     @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tagListView: TagListView!
 
+    private var metadata = tableMetadata()
+
     private var heightConstraintWithImage: NSLayoutConstraint?
     private var heightConstraintWithoutImage: NSLayoutConstraint?
 
     func setupUI(with metadata: tableMetadata) {
+        self.metadata = metadata.detachedCopy()
         let utilityFileSystem = NCUtilityFileSystem()
         if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase) {
             fullWidthImageView.image = image
@@ -64,7 +69,7 @@ class NCShareHeader: UIView {
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
-        tagListView.addTags(Array(metadata.tags))
+        refreshTags(Array(metadata.tags))
 
         setNeedsLayout()
         layoutIfNeeded()
@@ -74,5 +79,31 @@ class NCShareHeader: UIView {
         if fullWidthImageView.image != nil {
             imageView.isHidden = traitCollection.verticalSizeClass != .compact
         }
+    }
+
+    func presentTagEditor(from sourceViewController: UIViewController, onApplied: (([String]) -> Void)? = nil) {
+        let editor = NCShareTagEditorView(
+            metadata: metadata.detachedCopy(),
+            initialTags: Array(metadata.tags),
+            windowScene: sourceViewController.view.window?.windowScene,
+            onApplied: { [weak self] tags in
+                self?.metadata.tags.removeAll()
+                self?.metadata.tags.append(objectsIn: tags)
+                self?.refreshTags(tags)
+                onApplied?(tags)
+            }
+        )
+        let hosting = UIHostingController(rootView: editor)
+        hosting.title = NSLocalizedString("_tags_", comment: "")
+        if let sheet = hosting.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        sourceViewController.present(hosting, animated: true)
+    }
+
+    private func refreshTags(_ tags: [String]) {
+        tagListView.removeAllTags()
+        tagListView.addTags(tags.sorted())
     }
 }
