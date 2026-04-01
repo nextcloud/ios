@@ -30,7 +30,7 @@ class NCNetworkingE2EE: NSObject {
 
     func getOptions(account: String, capabilities: NKCapabilities.Capabilities) -> NKRequestOptions {
         var version = e2EEApiVersion1
-        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
+        if capabilities.e2EEApiVersion.hasPrefix("2.") {
             version = e2EEApiVersion2
         }
         return NKRequestOptions(version: version)
@@ -209,9 +209,7 @@ class NCNetworkingE2EE: NSObject {
 
         // COUNTER
         //
-        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
-            await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
-        }
+        await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
 
         return NKError()
     }
@@ -253,8 +251,7 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        if NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion),
-           var counter = await self.database.getCounterE2eMetadataAsync(account: account, ocIdServerUrl: directory.ocId) {
+        if var counter = await self.database.getCounterE2eMetadataAsync(account: account, ocIdServerUrl: directory.ocId) {
             counter += 1
             e2eCounter = "\(counter)"
         }

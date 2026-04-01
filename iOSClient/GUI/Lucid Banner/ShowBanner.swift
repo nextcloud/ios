@@ -90,7 +90,7 @@ struct BannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .cappedFont(.title3, maxDynamicType: .accessibility2)
+                                .cappedFont(.headline, maxDynamicType: .accessibility2)
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
@@ -178,4 +178,3 @@ struct BannerView: View {
         .padding()
     }
 }
-

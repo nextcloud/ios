@@ -38,7 +38,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        if capabilities.e2EEEnabled && NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) {
+        if capabilities.e2EEEnabled {
             isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")

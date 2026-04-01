@@ -79,7 +79,7 @@ extension NCEndToEndMetadata {
     // MARK: Encode JSON Metadata V2
     // --------------------------------------------------------------------------------------------
 
-    func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
+    func encodeMetadataV2(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
         guard let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
                                          errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: "")))

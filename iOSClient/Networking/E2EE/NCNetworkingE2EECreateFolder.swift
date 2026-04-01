@@ -51,6 +51,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return error
         }
 
+        // BANNER
+        //
 #if !EXTENSION
         if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
             (banner, token) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")

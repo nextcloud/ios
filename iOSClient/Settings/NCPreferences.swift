@@ -445,12 +445,10 @@ final class NCPreferences: NSObject {
     }
 
     func isEndToEndEnabled(account: String) -> Bool {
-        guard let capabilities = NCNetworking.shared.capabilities[account],
-              let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
+        guard let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
               let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
               let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,
-              let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty,
-              NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) else {
+              let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty else {
             return false
         }
         return true
