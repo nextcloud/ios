@@ -99,7 +99,7 @@ struct HudBannerViewIndeterminate: View {
                 // TITLE
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .cappedFont(.title3, maxDynamicType: .accessibility2)
+                        .cappedFont(.headline, maxDynamicType: .accessibility2)
                         .fontWeight(.semibold)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)
