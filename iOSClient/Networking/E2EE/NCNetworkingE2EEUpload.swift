@@ -202,8 +202,15 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.sessionError = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
+            // Remove if exists same file name view
+            if let metadataExists = await self.database.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@ ", metadata.account, metadata.serverUrl, metadata.fileNameView)) {
+                await self.database.deleteMetadataAsync(ocId: metadataExists.ocId)
+                await self.database.deleteLocalFileAsync(id: metadataExists.ocId)
+            }
+
             await self.database.addMetadataAsync(metadata)
             await self.database.addLocalFilesAsync(metadatas: [metadata])
+
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
