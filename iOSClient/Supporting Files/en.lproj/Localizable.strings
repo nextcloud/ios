@@ -789,3 +789,4 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_no_match_checksum_" = "End-to-end encryption error, checksum does not match";
 "_e2ee_create_folder_" = "End-to-end encryption directory creation in progress, please wait …";
 "_e2ee_rename_file_" = "End-to-end encryption rename in progress, please wait …";
+"_e2ee_encrypt_folder_" = "End-to-end encryption folder in progress, please wait …";

@@ -241,7 +241,8 @@ class NCContextMenuMain: NSObject {
                 let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(
                     account: metadata.account,
                     serverUrlFileName: metadata.serverUrlFileName,
-                    userId: metadata.userId
+                    userId: metadata.userId,
+                    sceneIdentifier: self.sceneIdentifier
                 )
                 if error != .success {
                     await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
