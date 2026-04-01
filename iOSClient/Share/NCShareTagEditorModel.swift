@@ -89,7 +89,13 @@ final class NCShareTagEditorModel: ObservableObject {
         searchText = ""
     }
 
-    func saveChanges() async -> [String]? {
+    var selectedTags: [NKTag] {
+        tags
+            .filter { selectedTagIDs.contains($0.id) }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    func saveChanges() async -> [NKTag]? {
         guard !metadata.fileId.isEmpty else {
             await showErrorBanner(
                 windowScene: windowScene,
@@ -143,10 +149,8 @@ final class NCShareTagEditorModel: ObservableObject {
             }
         }
 
-        let selectedTagNames = tags
-            .filter { selectedTagIDs.contains($0.id) }
-            .map(\.name)
-            .sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+        let selectedTags = self.selectedTags
+        let selectedTagNames = selectedTags.map(\.name)
 
         await NCManageDatabase.shared.setMetadataTagsAsync(ocId: metadata.ocId, tags: selectedTagNames)
 
@@ -159,7 +163,7 @@ final class NCShareTagEditorModel: ObservableObject {
         initialAssignedTagIDs = selectedTagIDs
         pendingNewTagNames.removeAll()
 
-        return selectedTagNames
+        return selectedTags
     }
 
     private func reloadTags(keepCurrentSelection: Bool) async -> Bool {

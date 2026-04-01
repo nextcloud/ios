@@ -4,14 +4,15 @@
 
 import SwiftUI
 import UIKit
+import NextcloudKit
 
 struct NCShareTagEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: NCShareTagEditorModel
 
-    private let onApplied: ([String]) -> Void
+    private let onApplied: ([NKTag]) -> Void
 
-    init(metadata: tableMetadata, initialTags: [String], windowScene: UIWindowScene?, onApplied: @escaping ([String]) -> Void) {
+    init(metadata: tableMetadata, initialTags: [String], windowScene: UIWindowScene?, onApplied: @escaping ([NKTag]) -> Void) {
         _model = StateObject(wrappedValue: NCShareTagEditorModel(metadata: metadata, initialTags: initialTags, windowScene: windowScene))
         self.onApplied = onApplied
     }
@@ -42,6 +43,10 @@ struct NCShareTagEditorView: View {
                                 model.toggleSelection(for: tag)
                             } label: {
                                 HStack {
+                                    Circle()
+                                        .fill(color(for: tag))
+                                        .frame(width: 10, height: 10)
+
                                     Text(tag.name)
                                         .foregroundStyle(.primary)
 
@@ -71,10 +76,10 @@ struct NCShareTagEditorView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(NSLocalizedString("_done_", comment: "")) {
                         Task { @MainActor in
-                            guard let names = await model.saveChanges() else {
+                            guard let selectedTags = await model.saveChanges() else {
                                 return
                             }
-                            onApplied(names)
+                            onApplied(selectedTags)
                             dismiss()
                         }
                     }
@@ -90,5 +95,12 @@ struct NCShareTagEditorView: View {
         .task {
             await model.loadTagsIfNeeded()
         }
+    }
+
+    private func color(for tag: NKTag) -> Color {
+        if let colorHex = tag.color, let color = UIColor(hex: colorHex) {
+            return Color(color)
+        }
+        return .secondary
     }
 }
