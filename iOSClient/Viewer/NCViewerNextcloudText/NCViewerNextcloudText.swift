@@ -56,10 +56,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
 
-        if editor == "nextcloud text" {
-            navigationItem.hidesBackButton = true
-        }
-
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
