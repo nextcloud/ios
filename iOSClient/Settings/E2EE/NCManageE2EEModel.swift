@@ -100,7 +100,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
                 do {
                     let e2ee = NCEndToEndSetup(controller: controller)
                     try await e2ee.start()
-
+                    isEndToEndEnabled = true
                 } catch let error as NKError {
                     if error.errorCode == NSUserCancelledError {
                         return

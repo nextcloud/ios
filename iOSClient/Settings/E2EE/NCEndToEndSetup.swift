@@ -75,7 +75,7 @@ class NCEndToEndSetup {
         case .zero:
             guard let certificate = results.certificate else {
                 throw NKError(errorCode: global.errorInternalError,
-                              errorDescription: NSLocalizedString("E2E get publicKey - Bad request: internal error", comment: ""))
+                              errorDescription: NSLocalizedString("_e2ee_setup_get_certificate_", comment: ""))
             }
             NCPreferences().setEndToEndCertificate(account: self.session.account, certificate: certificate)
             self.extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
@@ -84,7 +84,7 @@ class NCEndToEndSetup {
             // Create CSR
             guard let csr = NCEndToEndEncryption.shared().createCSR(self.session.userId, directory: self.utilityFileSystem.directoryUserData) else {
                 throw NKError(errorCode: global.errorInternalError,
-                              errorDescription: NSLocalizedString("Error creating CSR", comment: ""))
+                              errorDescription: NSLocalizedString("_e2ee_setup_create_csr_", comment: ""))
             }
 
             // Get certificate from server
@@ -95,7 +95,7 @@ class NCEndToEndSetup {
                 throw results.error == .success
                     ? NKError(
                         errorCode: global.errorInternalError,
-                        errorDescription: "certificate absent"
+                        errorDescription: NSLocalizedString("_e2ee_setup_sign_certificate_", comment: "")
                     )
                     : results.error
             }
@@ -105,7 +105,7 @@ class NCEndToEndSetup {
             guard extractedPublicKey == NCEndToEndEncryption.shared().generatedPublicKey else {
                 throw NKError(
                     errorCode: global.errorInternalError,
-                    errorDescription: NSLocalizedString("E2E sign publicKey: the public key is incorrect", comment: "")
+                    errorDescription: NSLocalizedString("_e2ee_setup_extract_publickey_", comment: "")
                 )
             }
             NCPreferences().setEndToEndCertificate(account: self.session.account, certificate: certificate)
@@ -137,12 +137,13 @@ class NCEndToEndSetup {
     ///   - Server errors propagated from NextcloudKit
     private func getPrivateKey() async throws {
         let results = await NextcloudKit.shared.getE2EEPrivateKeyAsync(account: self.session.account)
+
         switch results.error.errorCode {
         case .zero:
             guard let privateKeyCipher = results.privateKey else {
                 throw NKError(
                     errorCode: global.errorInternalError,
-                    errorDescription: "Private key cipher absent"
+                    errorDescription: NSLocalizedString("_e2ee_setup_get_privatekey_", comment: "")
                 )
             }
 
@@ -154,7 +155,7 @@ class NCEndToEndSetup {
             else {
                 throw NKError(
                     errorCode: global.errorInternalError,
-                    errorDescription: "Decrypt private key failed"
+                    errorDescription: NSLocalizedString("_e2ee_setup_passphrase_error_", comment: "")
                 )
             }
 
@@ -169,7 +170,7 @@ class NCEndToEndSetup {
                 throw results.error == .success
                     ? NKError(
                         errorCode: global.errorInternalError,
-                        errorDescription: "PublicKey absent"
+                        errorDescription: NSLocalizedString("_e2ee_setup_get_publickey_", comment: "")
                     )
                     : results.error
             }
@@ -222,7 +223,7 @@ class NCEndToEndSetup {
         ) else {
             throw NKError(
                 errorCode: global.errorInternalError,
-                errorDescription: "Error creating private key cipher"
+                errorDescription: NSLocalizedString("_e2ee_setup_encript_privatekey_", comment: "")
             )
         }
 
@@ -239,7 +240,7 @@ class NCEndToEndSetup {
             guard let privateKeyString else {
                 throw NKError(
                     errorCode: global.errorInternalError,
-                    errorDescription: "Private key (plaintext) missing"
+                    errorDescription: NSLocalizedString("_e2ee_setup_store_privatekey_", comment: "")
                 )
             }
 
@@ -259,7 +260,7 @@ class NCEndToEndSetup {
                 throw publicKeyResults.error == .success
                     ? NKError(
                         errorCode: global.errorInternalError,
-                        errorDescription: "Public key absent"
+                        errorDescription: NSLocalizedString("_e2ee_setup_get_publickey_", comment: "")
                     )
                     : publicKeyResults.error
             }
@@ -294,7 +295,7 @@ class NCEndToEndSetup {
         else {
             throw NKError(
                 errorCode: global.errorInternalError,
-                errorDescription: "Verify public key error"
+                errorDescription: NSLocalizedString("_e2ee_setup_verify_publickey_", comment: "")
             )
         }
     }
@@ -357,11 +358,10 @@ class NCEndToEndSetup {
     /// - Note:
     ///   - Always executed on MainActor due to UIKit usage
     func requestNewPassphraseAsync() async throws -> PassphraseChoice {
-
         guard let e2ePassphrase = NYMnemonic.generateString(128, language: "english") else {
             throw NKError(
                 errorCode: global.errorInternalError,
-                errorDescription: "Failed to generate passphrase"
+                errorDescription: NSLocalizedString("_e2ee_setup_generate_passphrase_", comment: "")
             )
         }
 
