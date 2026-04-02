@@ -30,10 +30,6 @@ class NCEndToEndSetup {
         NCSession.shared.getSession(controller: controller)
     }
 
-    var windowScene: UIWindowScene? {
-        SceneManager.shared.getWindowScene(controller: controller)
-    }
-
     enum PassphraseChoice {
         case ok(passphrase: String)
         case copy(passphrase: String)
@@ -41,18 +37,20 @@ class NCEndToEndSetup {
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-        // Clear all keys
-        NCPreferences().clearAllKeysEndToEnd(account: session.account)
     }
 
     /// Starts the E2EE initialization pipeline.
     ///
     /// Flow:
-    /// 1. Ensure a valid certificate exists (fetch or create/sign)
-    /// 2. Ensure a valid private key exists (fetch or create)
+    /// 1. Clear all keys e2ee in preferences
+    /// 2. Ensure a valid certificate exists (fetch or create/sign)
+    /// 3. Ensure a valid private key exists (fetch or create)
     ///
     /// - Throws: `NKError` if any step fails (network, crypto, validation, or user cancellation)
     func start() async throws {
+        // Clear all keys
+        NCPreferences().clearAllKeysEndToEnd(account: session.account)
+
         try await getPublicKey()
         try await getPrivateKey()
     }
