@@ -29,7 +29,8 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         // BANNER
         //
 #if !EXTENSION
-        if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
+        if let sceneIdentifier,
+           let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
             (banner, token) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_encrypt_folder_")
         }
 #endif

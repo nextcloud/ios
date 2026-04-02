@@ -70,7 +70,7 @@ extension UIAlertController {
                         }
                     }
                     if createFolderResults.error == .success {
-                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId, sceneIdentifier: sceneIdentifier)
+                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId, sceneIdentifier: nil)
                         if let banner, let token {
                             if error == .success {
                                 completeHudIndeterminateBannerSuccess(token: token, banner: banner)
