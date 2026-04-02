@@ -20,7 +20,7 @@ import NextcloudKit
 /// - Networking is performed via NextcloudKit async APIs
 /// - Errors are propagated using `throws` and must be handled by the caller
 @MainActor
-class NCEndToEndInit {
+class NCEndToEndSetup {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     var extractedPublicKey: String?
