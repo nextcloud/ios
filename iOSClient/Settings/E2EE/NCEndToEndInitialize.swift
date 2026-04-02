@@ -248,10 +248,10 @@ class NCEndToEndInitialize: NSObject {
                     let message = "\n" + NSLocalizedString("_e2e_settings_view_passphrase_", comment: "") + "\n\n" + e2ePassphrase
                     let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_title_", comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
                     let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
-                        self.createNewE2EE(e2ePassphrase: e2ePassphrase, error: error, copyPassphrase: false)
+                        self.createNewE2EE(e2ePassphrase: e2ePassphrase, copyPassphrase: false)
                     }
                     let copyAction = UIAlertAction(title: NSLocalizedString("_ok_copy_passphrase_", comment: ""), style: .default) { _ in
-                        self.createNewE2EE(e2ePassphrase: e2ePassphrase, error: error, copyPassphrase: true)
+                        self.createNewE2EE(e2ePassphrase: e2ePassphrase, copyPassphrase: true)
                     }
 
                     alertController.addAction(OKAction)
@@ -273,7 +273,7 @@ class NCEndToEndInitialize: NSObject {
         }
     }
 
-    private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
+    private func createNewE2EE(e2ePassphrase: String,  copyPassphrase: Bool) {
         var privateKeyString: NSString?
         guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
             Task {

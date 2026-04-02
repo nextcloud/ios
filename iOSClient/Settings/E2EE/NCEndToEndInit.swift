@@ -21,6 +21,11 @@ class NCEndToEndInit: NSObject {
         SceneManager.shared.getWindowScene(controller: controller)
     }
 
+    enum PassphraseChoice {
+        case ok(passphrase: String)
+        case copy(passphrase: String)
+    }
+
     init(controller: NCMainTabBarController?, metadata: tableMetadata?) {
         super.init()
 
@@ -114,7 +119,6 @@ class NCEndToEndInit: NSObject {
             NCPreferences().setEndToEndPrivateKey(account: session.account, privateKey: privateKey)
             NCPreferences().setEndToEndPassphrase(account: session.account, passphrase: passphrase)
 
-            // Verify Certificate
             let results = await NextcloudKit.shared.getE2EEPublicKeyAsync(account: self.session.account)
             guard results.error == .success,
                   let publicKey = results.publicKey
@@ -127,27 +131,27 @@ class NCEndToEndInit: NSObject {
                     : results.error
             }
 
-            var verifyCertificate: Bool = false
-            if let certificate = NCPreferences().getEndToEndCertificate(account: self.session.account) {
-                verifyCertificate = NCEndToEndEncryption.shared().verifyCertificate(certificate, publicKey: publicKey)
-            }
-            if !verifyCertificate {
-                throw NKError(
-                    errorCode: global.errorInternalError,
-                    errorDescription: "verify PublicKey error"
-                )
-            }
+            try await verifyPublicKey(publicKey)
 
             NCPreferences().setEndToEndPublicKey(account: self.session.account, publicKey: publicKey)
             NCManageDatabase.shared.clearTablesE2EE(account: self.session.account)
+
         case NCGlobal.shared.errorResourceNotFound:
-            break
+            let choice = try await requestNewPassphraseAsync()
+
+            switch choice {
+            case .ok(let passphrase):
+                try await createNewE2EE(e2ePassphrase: passphrase, copyPassphrase: false)
+
+            case .copy(let passphrase):
+                try await createNewE2EE(e2ePassphrase: passphrase, copyPassphrase: true)
+            }
         default:
             throw results.error
         }
     }
 
-    private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) async throws {
+    private func createNewE2EE(e2ePassphrase: String, copyPassphrase: Bool) async throws {
         var privateKeyString: NSString?
 
         guard let privateKey = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId,
@@ -181,16 +185,7 @@ class NCEndToEndInit: NSObject {
                 )
             }
 
-            var verifyCertificate: Bool = false
-            if let certificate = NCPreferences().getEndToEndCertificate(account: self.session.account) {
-                verifyCertificate = NCEndToEndEncryption.shared().verifyCertificate(certificate, publicKey: publicKey)
-            }
-            if !verifyCertificate {
-                throw NKError(
-                    errorCode: global.errorInternalError,
-                    errorDescription: "verify PublicKey error"
-                )
-            }
+            try await verifyPublicKey(publicKey)
 
             NCPreferences().setEndToEndPublicKey(account: session.account, publicKey: publicKey)
             NCManageDatabase.shared.clearTablesE2EE(account: session.account)
@@ -201,6 +196,19 @@ class NCEndToEndInit: NSObject {
 
         default:
             throw results.error
+        }
+    }
+
+    private func verifyPublicKey(_ publicKey: String) async throws {
+        var verifyCertificate: Bool = false
+        if let certificate = NCPreferences().getEndToEndCertificate(account: self.session.account) {
+            verifyCertificate = NCEndToEndEncryption.shared().verifyCertificate(certificate, publicKey: publicKey)
+        }
+        if !verifyCertificate {
+            throw NKError(
+                errorCode: global.errorInternalError,
+                errorDescription: "verify PublicKey error"
+            )
         }
     }
 
@@ -235,6 +243,43 @@ class NCEndToEndInit: NSObject {
                 textField.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 textField.isSecureTextEntry = true
             }
+
+            self.controller?.present(alertController, animated: true)
+        }
+    }
+
+    @MainActor
+    func requestNewPassphraseAsync() async throws -> PassphraseChoice {
+
+        guard let e2ePassphrase = NYMnemonic.generateString(128, language: "english") else {
+            throw NKError(
+                errorCode: global.errorInternalError,
+                errorDescription: "Failed to generate passphrase"
+            )
+        }
+
+        let message = "\n" +
+            NSLocalizedString("_e2e_settings_view_passphrase_", comment: "") +
+            "\n\n" + e2ePassphrase
+
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<PassphraseChoice, Error>) in
+
+            let alertController = UIAlertController(
+                title: NSLocalizedString("_e2e_settings_title_", comment: ""),
+                message: message,
+                preferredStyle: .alert
+            )
+
+            let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
+                continuation.resume(returning: .ok(passphrase: e2ePassphrase))
+            }
+
+            let copyAction = UIAlertAction(title: NSLocalizedString("_ok_copy_passphrase_", comment: ""), style: .default) { _ in
+                continuation.resume(returning: .copy(passphrase: e2ePassphrase))
+            }
+
+            alertController.addAction(okAction)
+            alertController.addAction(copyAction)
 
             self.controller?.present(alertController, animated: true)
         }
