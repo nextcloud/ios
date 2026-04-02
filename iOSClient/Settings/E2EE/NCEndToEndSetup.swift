@@ -20,12 +20,11 @@ import NextcloudKit
 /// - Networking is performed via NextcloudKit async APIs
 /// - Errors are propagated using `throws` and must be handled by the caller
 @MainActor
-class NCEndToEndInit: NSObject {
+class NCEndToEndInit {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     var extractedPublicKey: String?
     var controller: NCMainTabBarController?
-    var metadata: tableMetadata?
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -40,12 +39,8 @@ class NCEndToEndInit: NSObject {
         case copy(passphrase: String)
     }
 
-    init(controller: NCMainTabBarController?, metadata: tableMetadata?) {
-        super.init()
-
+    init(controller: NCMainTabBarController?) {
         self.controller = controller
-        self.metadata = metadata
-
         // Clear all keys
         NCPreferences().clearAllKeysEndToEnd(account: session.account)
     }
@@ -60,11 +55,6 @@ class NCEndToEndInit: NSObject {
     func start() async throws {
         try await getPublicKey()
         try await getPrivateKey()
-    }
-
-    func statusOfService(session: NCSession.Session) async -> NKError {
-        let results = await NextcloudKit.shared.getE2EECertificateAsync(account: session.account)
-        return results.error
     }
 
     /// Ensures that a valid user certificate is available.

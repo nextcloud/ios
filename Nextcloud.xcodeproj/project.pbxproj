@@ -496,7 +496,6 @@
 		F76882252C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */; };
 		F76882262C0DD1E7001CF441 /* NCSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */; };
 		F76882272C0DD1E7001CF441 /* NCManageE2EEView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */; };
-		F76882282C0DD1E7001CF441 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820F2C0DD1E7001CF441 /* NCEndToEndInitialize.swift */; };
 		F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */; };
 		F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */; };
 		F768822C2C0DD1E7001CF441 /* NCPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCPreferences.swift */; };
@@ -657,7 +656,6 @@
 		F799DF852C4B7E56003410B5 /* NCSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F799DF842C4B7E56003410B5 /* NCSectionHeader.swift */; };
 		F799DF862C4B7E56003410B5 /* NCSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F799DF842C4B7E56003410B5 /* NCSectionHeader.swift */; };
 		F799DF882C4B83CC003410B5 /* NCCollectionViewCommon+EasyTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F799DF872C4B83CC003410B5 /* NCCollectionViewCommon+EasyTipView.swift */; };
-		F799DF8B2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F799DF8A2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F79B646026CA661600838ACA /* UIControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extension.swift */; };
@@ -1469,7 +1467,6 @@
 		F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvancedModel.swift; sourceTree = "<group>"; };
 		F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsView.swift; sourceTree = "<group>"; };
 		F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageE2EEView.swift; sourceTree = "<group>"; };
-		F768820F2C0DD1E7001CF441 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
 		F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageE2EEModel.swift; sourceTree = "<group>"; };
 		F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsModel.swift; sourceTree = "<group>"; };
 		F76882132C0DD1E7001CF441 /* NCPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPreferences.swift; sourceTree = "<group>"; };
@@ -1584,7 +1581,6 @@
 		F799DF812C4B7DCC003410B5 /* NCSectionFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionFooter.swift; sourceTree = "<group>"; };
 		F799DF842C4B7E56003410B5 /* NCSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeader.swift; sourceTree = "<group>"; };
 		F799DF872C4B83CC003410B5 /* NCCollectionViewCommon+EasyTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+EasyTipView.swift"; sourceTree = "<group>"; };
-		F799DF8A2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+EndToEndInitialize.swift"; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
 		F79B645F26CA661600838ACA /* UIControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Extension.swift"; sourceTree = "<group>"; };
@@ -2528,7 +2524,6 @@
 				F747EB0C2C4AC1FF00F959A8 /* NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift */,
 				F7D890742BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift */,
 				F799DF872C4B83CC003410B5 /* NCCollectionViewCommon+EasyTipView.swift */,
-				F799DF8A2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift */,
 				F778231D2C42C07C001BB94F /* NCCollectionViewCommon+MediaLayout.swift */,
 				F7865FF02F39D32500D09AE4 /* NCCollectionViewCommon+Search.swift */,
 				F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */,
@@ -2621,7 +2616,6 @@
 		F768820D2C0DD1E7001CF441 /* E2EE */ = {
 			isa = PBXGroup;
 			children = (
-				F768820F2C0DD1E7001CF441 /* NCEndToEndInitialize.swift */,
 				F71070AA2F7E49E100AEE58A /* NCEndToEndInit.swift */,
 				F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */,
 				F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */,
@@ -4480,7 +4474,6 @@
 				F761856B29E98543006EB3B0 /* NCIntroViewController.swift in Sources */,
 				F7743A142C33F13A0034F670 /* NCCollectionViewCommon+CollectionViewDataSource.swift in Sources */,
 				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */,
-				F76882282C0DD1E7001CF441 /* NCEndToEndInitialize.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
@@ -4760,7 +4753,6 @@
 				F3DDFE0F2F15453900A784C8 /* NCAssistantChat.swift in Sources */,
 				F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */,
-				F799DF8B2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift in Sources */,
 				F7CCAB512ECF316700F8E68B /* NCCollectionViewCommon+SyncMetadata.swift in Sources */,
 				AA8E041D2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift in Sources */,
 				F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */,

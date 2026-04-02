@@ -13,6 +13,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) async {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
+        /*
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
                 if !NCPreferences().isEndToEndEnabled(account: metadata.account) {
@@ -26,6 +27,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
         }
+        */
 
         func downloadFile() async {
             var downloadRequest: DownloadRequest?

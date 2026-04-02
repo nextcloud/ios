@@ -8,8 +8,7 @@ import NextcloudKit
 import LocalAuthentication
 
 @MainActor
-class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
-    let endToEndInitialize = NCEndToEndInitialize()
+class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscodeViewControllerDelegate {
     var passcodeType = ""
 
     @Published var controller: NCMainTabBarController?
@@ -32,23 +31,18 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     init(controller: NCMainTabBarController?) {
         super.init()
         self.controller = controller
-        endToEndInitialize.delegate = self
         onViewAppear()
     }
 
     /// Triggered when the view appears.
     func onViewAppear() {
         if capabilities.e2EEEnabled {
-            isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
-            if isEndToEndEnabled {
-                statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
-            } else {
-                endToEndInitialize.statusOfService(session: session) { error in
-                    if error == .success {
-                        self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
-                    } else {
-                        self.statusOfService = NSLocalizedString("_status_e2ee_not_setup_", comment: "")
-                    }
+            NextcloudKit.shared.getE2EECertificate(account: session.account) { _ in
+            } completion: { _, _, _, _, error in
+                if error == .success {
+                    self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
+                } else {
+                    self.statusOfService = NSLocalizedString("_status_e2ee_not_setup_", comment: "")
                 }
             }
         } else {
@@ -97,7 +91,10 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     @objc func correctPasscode() {
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(controller: controller, metadata: nil)
+            Task {
+                let e2ee = NCEndToEndInit(controller: controller)
+                try await e2ee.start()
+            }
         case "readPassphrase":
             if let e2ePassphrase = NCPreferences().getEndToEndPassphrase(account: session.account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)
