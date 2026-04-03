@@ -1,0 +1,106 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+import UIKit
+import NextcloudKit
+
+struct NCShareTagEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var model: NCShareTagEditorModel
+
+    private let onApplied: ([NKTag]) -> Void
+
+    init(metadata: tableMetadata, initialTags: [String], windowScene: UIWindowScene?, onApplied: @escaping ([NKTag]) -> Void) {
+        _model = StateObject(wrappedValue: NCShareTagEditorModel(metadata: metadata, initialTags: initialTags, windowScene: windowScene))
+        self.onApplied = onApplied
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if let createCandidateName = model.createCandidateName {
+                    Section {
+                        Button {
+                            model.addCreateCandidateToSelection()
+                        } label: {
+                            Label(
+                                String(format: NSLocalizedString("_share_tags_create_", comment: ""), createCandidateName),
+                                systemImage: "plus.circle.fill"
+                            )
+                        }
+                    }
+                }
+
+                Section {
+                    if model.filteredTags.isEmpty, model.createCandidateName == nil, !model.isLoading {
+                        Text(NSLocalizedString("_share_tags_no_results_", comment: ""))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(model.filteredTags, id: \.id) { tag in
+                            Button {
+                                model.toggleSelection(for: tag)
+                            } label: {
+                                HStack {
+                                    Circle()
+                                        .fill(color(for: tag))
+                                        .frame(width: 10, height: 10)
+
+                                    Text(tag.name)
+                                        .foregroundStyle(.primary)
+
+                                    Spacer()
+
+                                    if model.isSelected(tag) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.account)))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text(NSLocalizedString("_tags_", comment: ""))
+                }
+            }
+            .listStyle(.plain)
+            .navigationTitle(NSLocalizedString("_tags_", comment: ""))
+            .searchable(text: $model.searchText, prompt: Text(NSLocalizedString("_search_", comment: "")))
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(NSLocalizedString("_cancel_", comment: "")) {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(NSLocalizedString("_done_", comment: "")) {
+                        Task { @MainActor in
+                            guard let selectedTags = await model.saveChanges() else {
+                                return
+                            }
+                            onApplied(selectedTags)
+                            dismiss()
+                        }
+                    }
+                    .disabled(model.isSaving || model.isLoading)
+                }
+            }
+            .overlay {
+                if model.isLoading || model.isSaving {
+                    ProgressView()
+                }
+            }
+        }
+        .task {
+            await model.loadTagsIfNeeded()
+        }
+    }
+
+    private func color(for tag: NKTag) -> Color {
+        if let colorHex = tag.color, let color = UIColor(hex: colorHex) {
+            return Color(color)
+        }
+        return .secondary
+    }
+}

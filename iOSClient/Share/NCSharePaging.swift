@@ -52,6 +52,7 @@ class NCSharePaging: UIViewController {
         title = NSLocalizedString("_details_", comment: "")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(exitTapped(_:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_edit_tags_", comment: ""), style: .plain, target: self, action: #selector(editTagsTapped(_:)))
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -166,6 +167,20 @@ class NCSharePaging: UIViewController {
 
     @objc func exitTapped(_ sender: Any?) {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    @objc func editTagsTapped(_ sender: Any?) {
+        guard let header = (pagingViewController.view as? NCSharePagingView)?.header else {
+            return
+        }
+
+        header.presentTagEditor(from: self) { [weak self] tags in
+            guard let self else { return }
+            self.metadata.tags.removeAll()
+            self.metadata.tags.append(objectsIn: tags.map(\.name))
+            self.pagingViewController.metadata.tags.removeAll()
+            self.pagingViewController.metadata.tags.append(objectsIn: tags.map(\.name))
+        }
     }
 
     @objc func applicationDidEnterBackground(notification: Notification) {

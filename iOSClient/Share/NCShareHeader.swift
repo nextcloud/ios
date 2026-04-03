@@ -23,6 +23,8 @@
 
 import UIKit
 import TagListView
+import SwiftUI
+import NextcloudKit
 
 class NCShareHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
@@ -33,10 +35,14 @@ class NCShareHeader: UIView {
     @IBOutlet weak var fileNameTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tagListView: TagListView!
 
+    private var metadata = tableMetadata()
+
     private var heightConstraintWithImage: NSLayoutConstraint?
     private var heightConstraintWithoutImage: NSLayoutConstraint?
+    private var currentTagsByToken: [String: NKTag] = [:]
 
     func setupUI(with metadata: tableMetadata) {
+        self.metadata = metadata.detachedCopy()
         let utilityFileSystem = NCUtilityFileSystem()
         if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase) {
             fullWidthImageView.image = image
@@ -64,7 +70,8 @@ class NCShareHeader: UIView {
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
-        tagListView.addTags(Array(metadata.tags))
+        refreshTags(Array(metadata.tags))
+        loadTagColors()
 
         setNeedsLayout()
         layoutIfNeeded()
@@ -73,6 +80,74 @@ class NCShareHeader: UIView {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if fullWidthImageView.image != nil {
             imageView.isHidden = traitCollection.verticalSizeClass != .compact
+        }
+    }
+
+    func presentTagEditor(from sourceViewController: UIViewController, onApplied: (([NKTag]) -> Void)? = nil) {
+        let editor = NCShareTagEditorView(
+            metadata: metadata.detachedCopy(),
+            initialTags: Array(metadata.tags),
+            windowScene: sourceViewController.view.window?.windowScene,
+            onApplied: { [weak self] tags in
+                self?.metadata.tags.removeAll()
+                self?.metadata.tags.append(objectsIn: tags.map(\.name))
+                self?.refreshTags(tags.map(\.name), tagModels: tags)
+                onApplied?(tags)
+            }
+        )
+        let hosting = UIHostingController(rootView: editor)
+        hosting.title = NSLocalizedString("_tags_", comment: "")
+        if let sheet = hosting.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        sourceViewController.present(hosting, animated: true)
+    }
+
+    private func refreshTags(_ tags: [String], tagModels: [NKTag]? = nil) {
+        if let tagModels {
+            var tagsByToken: [String: NKTag] = [:]
+            for tag in tagModels {
+                tagsByToken[tag.id] = tag
+                tagsByToken[tag.name] = tag
+            }
+            currentTagsByToken = tagsByToken
+        }
+
+        tagListView.removeAllTags()
+        for tagToken in tags {
+            let matchedTag = currentTagsByToken[tagToken]
+            let displayName = matchedTag?.name ?? tagToken
+
+            let tagView = tagListView.addTag(displayName)
+            if let colorHex = matchedTag?.color, let color = UIColor(hex: colorHex) {
+                tagView.tagBackgroundColor = color
+                tagView.textColor = color.isLight(threshold: 0.7) ? .black : .white
+                tagView.selectedTextColor = tagView.textColor
+                tagView.borderColor = color
+            }
+        }
+    }
+
+    private func loadTagColors() {
+        let account = metadata.account
+        let selectedTokens = Set(Array(metadata.tags))
+        guard !account.isEmpty, !selectedTokens.isEmpty else {
+            return
+        }
+
+        NextcloudKit.shared.getTags(account: account) { [weak self] _, allTags, _, error in
+            guard let self, error == .success, let allTags else {
+                return
+            }
+
+            let selectedTags = allTags.filter { tag in
+                selectedTokens.contains(tag.id) || selectedTokens.contains(tag.name)
+            }
+
+            DispatchQueue.main.async {
+                self.refreshTags(Array(self.metadata.tags), tagModels: selectedTags)
+            }
         }
     }
 }
