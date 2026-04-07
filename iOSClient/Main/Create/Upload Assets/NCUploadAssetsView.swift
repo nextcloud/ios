@@ -1,10 +1,7 @@
-//
-//  NCUploadAssetsView.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 03/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Rasmus Wøldike
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
@@ -46,7 +43,7 @@ struct NCUploadAssetsView: View {
                                         }) {
                                             Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
                                         }
-                                        if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                        if item.asset?.type == .photo || item.asset?.type == .livePhoto {
                                             Button(action: {
                                                 if model.presentedQuickLook(index: index, fileNamePath: fileNamePath) {
                                                     self.index = index
@@ -58,22 +55,22 @@ struct NCUploadAssetsView: View {
                                         }
                                         if item.data != nil {
                                             Button(action: {
-                                                if let image = model.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: 240, height: 240), isAspectRation: true) {
+                                                if let image = model.previewStore[index].asset?.fullResolutionImage?.resizeImage(size: CGSize(width: 240, height: 240), isAspectRation: true) {
                                                     model.previewStore[index].image = image
                                                     model.previewStore[index].data = nil
-                                                    model.previewStore[index].assetType = model.previewStore[index].asset.type
+                                                    model.previewStore[index].assetType = model.previewStore[index].asset?.type ?? .photo
                                                 }
                                             }) {
                                                 Label(NSLocalizedString("_undo_modify_", comment: ""), systemImage: "arrow.uturn.backward.circle")
                                             }
                                         }
-                                        if item.data == nil && item.asset.type == .livePhoto && item.assetType == .livePhoto {
+                                        if item.data == nil && item.asset?.type == .livePhoto && item.assetType == .livePhoto {
                                             Button(action: {
                                                 model.previewStore[index].assetType = .photo
                                             }) {
                                                 Label(NSLocalizedString("_disable_livephoto_", comment: ""), systemImage: "livephoto.slash")
                                             }
-                                        } else if item.data == nil && item.asset.type == .livePhoto && item.assetType == .photo {
+                                        } else if item.data == nil && item.asset?.type == .livePhoto && item.assetType == .photo {
                                             Button(action: {
                                                 model.previewStore[index].assetType = .livePhoto
                                             }) {
@@ -135,9 +132,15 @@ struct NCUploadAssetsView: View {
                         }
                     }
 
+                    if !model.tempAssets.isEmpty {
+                        Section {
+                            Toggle(NSLocalizedString("_save_to_camera_roll_", comment: ""), isOn: $model.saveToCameraRoll)
+                                .font(.body)
+                                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        }
+                    }
+
                     Section {
-                        // Auto upload requires creating folders and subfolders which are difficult to manage offline
-                        // 
                         if NCNetworking.shared.isOnline {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
@@ -260,12 +263,12 @@ struct NCUploadAssetsView: View {
                             .frame(width: 80, height: 80, alignment: .center)
                             .cornerRadius(10)
                     } else {
-                        Color(.lightGray) // Placeholder
+                        Color(.lightGray)
                             .frame(width: 80, height: 80)
                             .cornerRadius(10)
                             .onAppear {
                                 DispatchQueue.main.async {
-                                    if let asset = item.asset.phAsset,
+                                    if let asset = item.asset?.phAsset,
                                        let image = model.lowResolutionImage(asset: asset) {
                                         model.previewStore[index].image = image
                                     }
@@ -294,8 +297,4 @@ struct NCUploadAssetsView: View {
             }
         }
     }
-}
-
-#Preview {
-    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", controller: nil))
 }

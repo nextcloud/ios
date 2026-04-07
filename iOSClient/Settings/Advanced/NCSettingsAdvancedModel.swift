@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2024 Aditya Tyagi
 // SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Rasmus Wøldike
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -20,6 +21,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     @Published var livePhoto: Bool = false
     // State variable for indicating whether to remove photos from the camera roll after upload.
     @Published var removeFromCameraRoll: Bool = false
+    // State variable for saving custom camera media to camera roll.
+    @Published var saveCameraMediaToCameraRoll: Bool = false
     // State variable for app integration.
     @Published var appIntegration: Bool = false
     // State variable for enabling the crash reporter.
@@ -55,6 +58,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         mostCompatible = keychain.formatCompatibility
         livePhoto = keychain.livePhoto
         removeFromCameraRoll = keychain.removePhotoCameraRoll
+        saveCameraMediaToCameraRoll = keychain.saveCameraMediaToCameraRoll
         appIntegration = keychain.disableFilesApp
         crashReporter = keychain.disableCrashservice
         selectedLogLevel = keychain.log
@@ -76,6 +80,11 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the value of `removeFromCameraRoll` in the keychain.
     func updateRemoveFromCameraRoll() {
         keychain.removePhotoCameraRoll = removeFromCameraRoll
+    }
+
+    /// Updates the value of `saveCameraMediaToCameraRoll` in the keychain.
+    func updateSaveCameraMediaToCameraRoll() {
+        keychain.saveCameraMediaToCameraRoll = saveCameraMediaToCameraRoll
     }
 
     /// Updates the value of `appIntegration` in the keychain.
