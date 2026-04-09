@@ -136,8 +136,10 @@ class NCShareHeader: UIView {
             return
         }
 
-        NextcloudKit.shared.getTags(account: account) { [weak self] _, allTags, _, error in
-            guard let self, error == .success, let allTags else {
+        Task { [weak self] in
+            guard let self else { return }
+            let result = await NextcloudKit.shared.getTags(account: account)
+            guard result.error == .success, let allTags = result.tags else {
                 return
             }
 

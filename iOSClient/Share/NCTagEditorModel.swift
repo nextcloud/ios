@@ -110,7 +110,7 @@ import NextcloudKit
 
         if !pendingNewTagNames.isEmpty {
             for name in pendingNewTagNames.sorted() {
-                let createResult = await NextcloudKit.shared.createTagAsync(name: name, account: metadata.account)
+                let createResult = await NextcloudKit.shared.createTag(name: name, account: metadata.account)
                 if createResult.error != .success {
                     await showErrorBanner(windowScene: windowScene, error: createResult.error)
                     return nil
@@ -134,7 +134,7 @@ import NextcloudKit
         let tagsToRemove = initialAssignedTagIDs.subtracting(selectedTagIDs)
 
         for tagID in tagsToAdd.sorted() {
-            let addResult = await NextcloudKit.shared.addTagToFileAsync(tagId: tagID, fileId: metadata.fileId, account: metadata.account)
+            let addResult = await NextcloudKit.shared.addTagToFile(tagId: tagID, fileId: metadata.fileId, account: metadata.account)
             if addResult.error != .success {
                 await showErrorBanner(windowScene: windowScene, error: addResult.error)
                 return nil
@@ -142,7 +142,7 @@ import NextcloudKit
         }
 
         for tagID in tagsToRemove.sorted() {
-            let removeResult = await NextcloudKit.shared.removeTagFromFileAsync(tagId: tagID, fileId: metadata.fileId, account: metadata.account)
+            let removeResult = await NextcloudKit.shared.removeTagFromFile(tagId: tagID, fileId: metadata.fileId, account: metadata.account)
             if removeResult.error != .success {
                 await showErrorBanner(windowScene: windowScene, error: removeResult.error)
                 return nil
@@ -173,7 +173,7 @@ import NextcloudKit
             hasLoaded = true
         }
 
-        let result = await NextcloudKit.shared.getTagsAsync(account: metadata.account)
+        let result = await NextcloudKit.shared.getTags(account: metadata.account)
         guard result.error == .success, let receivedTags = result.tags else {
             await showErrorBanner(windowScene: windowScene, error: result.error)
             return false

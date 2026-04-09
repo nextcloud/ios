@@ -335,10 +335,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         }
 
         NCListCell.loadingTagColorsForAccounts.insert(account)
-        NextcloudKit.shared.getTags(account: account) { [weak self] _, tags, _, error in
+        Task { [weak self] in
+            let result = await NextcloudKit.shared.getTags(account: account)
             DispatchQueue.main.async {
                 NCListCell.loadingTagColorsForAccounts.remove(account)
-                guard error == .success, let tags else {
+                guard result.error == .success, let tags = result.tags else {
                     return
                 }
 
