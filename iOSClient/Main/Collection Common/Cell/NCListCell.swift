@@ -14,6 +14,9 @@ protocol NCListCellDelegate: AnyObject {
 }
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
+    private static var tagColorsByAccount: [String: [String: NKTag]] = [:]
+    private static var loadingTagColorsForAccounts: Set<String> = []
+
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -24,8 +27,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var labelInfoSeparator: UILabel!
-    @IBOutlet weak var tag0: UILabel!
-    @IBOutlet weak var tag1: UILabel!
+    @IBOutlet weak var tag0: PaddedAndBorderedLabel!
+    @IBOutlet weak var tag1: PaddedAndBorderedLabel!
     @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonShared: UIButton!
@@ -38,6 +41,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCListCellDelegate?
+    private var currentTagTokens: [String] = []
+    private var currentTagAccount: String = ""
 
     // Cell Protocol
     var metadata: tableMetadata? {
@@ -113,6 +118,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelSubinfo.text = ""
         tag0.text = ""
         tag1.text = ""
+        currentTagTokens = []
+        currentTagAccount = ""
 
         // Dynamic Type Font Configuration
         //
@@ -258,7 +265,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         accessibilityValue = value
     }
 
-    func setTags(tags: [String]) {
+    func setTags(tags: [String], account: String) {
+        currentTagTokens = tags
+        currentTagAccount = account
+        applyDefaultTagBorderStyle()
+
         if tags.isEmpty {
             tag0.isHidden = true
             tag1.isHidden = true
@@ -278,6 +289,70 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
                     tag1.isHidden = false
                     tag1.text = "+\(tags.count - 1)"
                 }
+            }
+        }
+
+        applyTagBorderColorsIfAvailable()
+        loadTagColorsIfNeeded(account: account)
+    }
+
+    private func applyDefaultTagBorderStyle() {
+        tag0.backgroundColor = .clear
+        tag1.backgroundColor = .clear
+        tag0.borderColor = .systemGray5
+        tag1.borderColor = .systemGray5
+        tag0.textColor = .systemGray
+        tag1.textColor = .systemGray
+        tag0.setNeedsDisplay()
+        tag1.setNeedsDisplay()
+    }
+
+    private func applyTagBorderColorsIfAvailable() {
+        guard !currentTagTokens.isEmpty,
+              let lookup = NCListCell.tagColorsByAccount[currentTagAccount],
+              let firstToken = currentTagTokens.first,
+              let colorHex = lookup[firstToken]?.color,
+              let color = UIColor(hex: colorHex) else {
+            return
+        }
+
+        tag0.borderColor = color
+        tag0.textColor = color
+        if !tag1.isHidden {
+            tag1.borderColor = .systemGray5
+            tag1.textColor = .systemGray
+        }
+        tag0.setNeedsDisplay()
+        tag1.setNeedsDisplay()
+    }
+
+    private func loadTagColorsIfNeeded(account: String) {
+        guard !account.isEmpty else {
+            return
+        }
+        if NCListCell.tagColorsByAccount[account] != nil || NCListCell.loadingTagColorsForAccounts.contains(account) {
+            return
+        }
+
+        NCListCell.loadingTagColorsForAccounts.insert(account)
+        NextcloudKit.shared.getTags(account: account) { [weak self] _, tags, _, error in
+            DispatchQueue.main.async {
+                NCListCell.loadingTagColorsForAccounts.remove(account)
+                guard error == .success, let tags else {
+                    return
+                }
+
+                var lookup: [String: NKTag] = [:]
+                for tag in tags {
+                    lookup[tag.id] = tag
+                    lookup[tag.name] = tag
+                }
+                NCListCell.tagColorsByAccount[account] = lookup
+
+                guard let self, self.currentTagAccount == account else {
+                    return
+                }
+                self.applyTagBorderColorsIfAvailable()
             }
         }
     }
@@ -509,7 +584,7 @@ extension NCCollectionViewCommon {
         }
 
         // TAGS
-        cell.setTags(tags: Array(metadata.tags))
+        cell.setTags(tags: Array(metadata.tags), account: metadata.account)
 
         // SearchingMode - TAG Separator Hidden
         if isSearchingMode {

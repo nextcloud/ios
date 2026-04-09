@@ -6,14 +6,14 @@ import SwiftUI
 import UIKit
 import NextcloudKit
 
-struct NCShareTagEditorView: View {
+struct NCTagEditorView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var model: NCShareTagEditorModel
+    @State private var model: NCTagEditorModel
 
     private let onApplied: ([NKTag]) -> Void
 
     init(metadata: tableMetadata, initialTags: [String], windowScene: UIWindowScene?, onApplied: @escaping ([NKTag]) -> Void) {
-        _model = StateObject(wrappedValue: NCShareTagEditorModel(metadata: metadata, initialTags: initialTags, windowScene: windowScene))
+        _model = State(initialValue: NCTagEditorModel(metadata: metadata, initialTags: initialTags, windowScene: windowScene))
         self.onApplied = onApplied
     }
 

@@ -36,8 +36,6 @@
 		AA8D316F2D4123B200FE2775 /* NCShareDownloadLimitTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8D316A2D4123B200FE2775 /* NCShareDownloadLimitTableViewController.swift */; };
 		AA8D31702D4123B200FE2775 /* DownloadLimitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8D31692D4123B200FE2775 /* DownloadLimitViewModel.swift */; };
 		AA8D31712D4123B200FE2775 /* NCShareDownloadLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8D316C2D4123B200FE2775 /* NCShareDownloadLimitViewController.swift */; };
-		AB6000012F60000100FE2775 /* NCShareTagEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000002F60000100FE2775 /* NCShareTagEditorModel.swift */; };
-		AB6000032F60000200FE2775 /* NCShareTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCShareTagEditorView.swift */; };
 		AA8E03DA2D2ED83300E7E89C /* TransientShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E03D92D2ED83300E7E89C /* TransientShare.swift */; };
 		AA8E03DC2D2FBAC200E7E89C /* DownloadLimitUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */; };
 		AA8E041D2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */; };
@@ -46,6 +44,8 @@
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
+		AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000002F60000100FE2775 /* NCTagEditorModel.swift */; };
+		AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCTagEditorView.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
@@ -1188,8 +1188,6 @@
 		AA8D316A2D4123B200FE2775 /* NCShareDownloadLimitTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitTableViewController.swift; sourceTree = "<group>"; };
 		AA8D316B2D4123B200FE2775 /* NCShareDownloadLimitTableViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitTableViewControllerDelegate.swift; sourceTree = "<group>"; };
 		AA8D316C2D4123B200FE2775 /* NCShareDownloadLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitViewController.swift; sourceTree = "<group>"; };
-		AB6000002F60000100FE2775 /* NCShareTagEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareTagEditorModel.swift; sourceTree = "<group>"; };
-		AB6000022F60000200FE2775 /* NCShareTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareTagEditorView.swift; sourceTree = "<group>"; };
 		AA8E03D92D2ED83300E7E89C /* TransientShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransientShare.swift; sourceTree = "<group>"; };
 		AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLimitUITests.swift; sourceTree = "<group>"; };
 		AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNetworkingDelegate.swift; sourceTree = "<group>"; };
@@ -1213,6 +1211,8 @@
 		AACCAB632CFE04F700DA1786 /* lo */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lo; path = lo.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AACCAB642CFE04F700DA1786 /* lo */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lo; path = lo.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNavigationTitleSetting.swift; sourceTree = "<group>"; };
+		AB6000002F60000100FE2775 /* NCTagEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorModel.swift; sourceTree = "<group>"; };
+		AB6000022F60000200FE2775 /* NCTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorView.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
 		AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+DataSource.swift"; sourceTree = "<group>"; };
@@ -2374,8 +2374,8 @@
 				F769454722E9F20D000A798A /* NCShareNetworking.swift */,
 				AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */,
 				F769453F22E9F077000A798A /* NCSharePaging.swift */,
-				AB6000002F60000100FE2775 /* NCShareTagEditorModel.swift */,
-				AB6000022F60000200FE2775 /* NCShareTagEditorView.swift */,
+				AB6000002F60000100FE2775 /* NCTagEditorModel.swift */,
+				AB6000022F60000200FE2775 /* NCTagEditorView.swift */,
 				F774264822EB4D0000B23912 /* NCSearchUserDropDownCell.xib */,
 				F769453B22E9CFFF000A798A /* NCShareUserCell.xib */,
 				AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */,
@@ -4707,8 +4707,8 @@
 				AA8D316F2D4123B200FE2775 /* NCShareDownloadLimitTableViewController.swift in Sources */,
 				AA8D31702D4123B200FE2775 /* DownloadLimitViewModel.swift in Sources */,
 				AA8D31712D4123B200FE2775 /* NCShareDownloadLimitViewController.swift in Sources */,
-				AB6000012F60000100FE2775 /* NCShareTagEditorModel.swift in Sources */,
-				AB6000032F60000200FE2775 /* NCShareTagEditorView.swift in Sources */,
+				AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */,
+				AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */,
 				AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */,
 				F77BC3ED293E528A005F2B08 /* NCConfigServer.swift in Sources */,
 				F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */,

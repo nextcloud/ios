@@ -52,7 +52,14 @@ class NCSharePaging: UIViewController {
         title = NSLocalizedString("_details_", comment: "")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(exitTapped(_:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_edit_tags_", comment: ""), style: .plain, target: self, action: #selector(editTagsTapped(_:)))
+
+        let manageTagsAction = UIAction(title: NSLocalizedString("_edit_tags_", comment: ""), image: UIImage(systemName: "tag")) { [weak self] _ in
+            self?.editTagsTapped(nil)
+        }
+
+        let moreButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: nil, action: nil)
+        moreButton.menu = UIMenu(children: [manageTagsAction])
+        navigationItem.rightBarButtonItem = moreButton
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)

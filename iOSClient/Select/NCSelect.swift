@@ -455,7 +455,7 @@ extension NCSelect: UICollectionViewDataSource {
         }
 
         // Add TAGS
-        cell.setTags(tags: Array(metadata.tags))
+        cell.setTags(tags: Array(metadata.tags), account: metadata.account)
 
         return cell
     }

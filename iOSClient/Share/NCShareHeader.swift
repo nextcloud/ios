@@ -84,7 +84,7 @@ class NCShareHeader: UIView {
     }
 
     func presentTagEditor(from sourceViewController: UIViewController, onApplied: (([NKTag]) -> Void)? = nil) {
-        let editor = NCShareTagEditorView(
+        let editor = NCTagEditorView(
             metadata: metadata.detachedCopy(),
             initialTags: Array(metadata.tags),
             windowScene: sourceViewController.view.window?.windowScene,
@@ -121,10 +121,10 @@ class NCShareHeader: UIView {
 
             let tagView = tagListView.addTag(displayName)
             if let colorHex = matchedTag?.color, let color = UIColor(hex: colorHex) {
-                tagView.tagBackgroundColor = color
-                tagView.textColor = color.isLight(threshold: 0.7) ? .black : .white
-                tagView.selectedTextColor = tagView.textColor
+                tagView.tagBackgroundColor = .clear
                 tagView.borderColor = color
+                tagView.textColor = color
+                tagView.selectedTextColor = color
             }
         }
     }

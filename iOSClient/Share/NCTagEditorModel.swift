@@ -7,14 +7,14 @@ import UIKit
 import NextcloudKit
 
 @MainActor
-final class NCShareTagEditorModel: ObservableObject {
-    @Published var searchText: String = ""
-    @Published private(set) var tags: [NKTag] = []
-    @Published private(set) var selectedTagIDs: Set<String> = []
-    @Published private(set) var pendingNewTagNames: Set<String> = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isSaving = false
-    @Published private(set) var hasLoaded = false
+@Observable final class NCTagEditorModel {
+    var searchText: String = ""
+    private(set) var tags: [NKTag] = []
+    private(set) var selectedTagIDs: Set<String> = []
+    private(set) var pendingNewTagNames: Set<String> = []
+    private(set) var isLoading = false
+    private(set) var isSaving = false
+    private(set) var hasLoaded = false
 
     private let metadata: tableMetadata
     private let initialTagTokens: Set<String>

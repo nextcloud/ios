@@ -754,6 +754,17 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataTagsAsync(ocId: String, tags: [String]) async {
+        await core.performRealmWriteAsync { realm in
+            guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
+                return
+            }
+
+            metadata.tags.removeAll()
+            metadata.tags.append(objectsIn: tags)
+        }
+    }
+
     func moveMetadataAsync(ocId: String, serverUrlTo: String) async {
         await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)
