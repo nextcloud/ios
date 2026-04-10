@@ -95,36 +95,43 @@ class NCShareHeader: UIView {
                 onApplied?(tags)
             }
         )
+
         let hosting = UIHostingController(rootView: editor)
         hosting.title = NSLocalizedString("_tags_", comment: "")
+
         if let sheet = hosting.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersGrabberVisible = true
         }
+
         sourceViewController.present(hosting, animated: true)
     }
 
     private func refreshTags(_ tags: [String], tagModels: [NKTag]? = nil) {
         if let tagModels {
             var tagsByToken: [String: NKTag] = [:]
+
             for tag in tagModels {
                 tagsByToken[tag.id] = tag
                 tagsByToken[tag.name] = tag
             }
+
             currentTagsByToken = tagsByToken
         }
 
         tagListView.removeAllTags()
+
         for tagToken in tags {
             let matchedTag = currentTagsByToken[tagToken]
             let displayName = matchedTag?.name ?? tagToken
-
             let tagView = tagListView.addTag(displayName)
+
             if let colorHex = matchedTag?.color, let color = UIColor(hex: colorHex) {
                 tagView.tagBackgroundColor = .clear
                 tagView.borderColor = color
                 tagView.textColor = color
                 tagView.selectedTextColor = color
+                tagView.textFont = UIFont.boldSystemFont(ofSize: 12)
             }
         }
     }

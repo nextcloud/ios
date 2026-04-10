@@ -125,10 +125,6 @@ class NCSharePaging: UIViewController {
         if !capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty {
             self.dismiss(animated: false, completion: nil)
         }
-
-//        pagingViewController.menuItemSize = .fixed(
-//            width: self.view.bounds.width / CGFloat(self.pages.count),
-//            height: 40)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
