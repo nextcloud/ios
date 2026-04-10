@@ -27,8 +27,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var labelInfoSeparator: UILabel!
-    @IBOutlet weak var tag0: PaddedAndBorderedLabel!
     @IBOutlet weak var tag1: PaddedAndBorderedLabel!
+    @IBOutlet weak var tag2: PaddedAndBorderedLabel!
+    @IBOutlet weak var tagMore: PaddedAndBorderedLabel!
     @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonShared: UIButton!
@@ -116,8 +117,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelExtension.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
-        tag0.text = ""
         tag1.text = ""
+        tag2.text = ""
+        tagMore.text = ""
         currentTagTokens = []
         currentTagAccount = ""
 
@@ -161,6 +163,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
+
+        tag1.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        tag2.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        tag1.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        tag2.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        tagMore.setContentCompressionResistancePriority(.required, for: .horizontal)
+        tagMore.setContentHuggingPriority(.required, for: .horizontal)
 
         buttonShared.setImage(nil, for: .normal)
         buttonShared.imageEdgeInsets = .zero
@@ -271,24 +280,32 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         applyDefaultTagBorderStyle()
 
         if tags.isEmpty {
-            tag0.isHidden = true
             tag1.isHidden = true
+            tag2.isHidden = true
+            tagMore.isHidden = true
             labelInfo.isHidden = false
             labelSubinfo.isHidden = false
             labelInfoSeparator.isHidden = false
         } else {
-            tag0.isHidden = false
-            tag1.isHidden = true
             labelInfo.isHidden = true
             labelSubinfo.isHidden = true
             labelInfoSeparator.isHidden = true
 
-            if let tag = tags.first {
-                tag0.text = tag
-                if tags.count > 1 {
-                    tag1.isHidden = false
-                    tag1.text = "+\(tags.count - 1)"
-                }
+            tag1.isHidden = true
+            tag2.isHidden = true
+            tagMore.isHidden = true
+
+            if tags.count >= 1 {
+                tag1.isHidden = false
+                tag1.text = tags[0]
+            }
+            if tags.count >= 2 {
+                tag2.isHidden = false
+                tag2.text = tags[1]
+            }
+            if tags.count > 2 {
+                tagMore.isHidden = false
+                tagMore.text = "+\(tags.count - 2)"
             }
         }
 
@@ -297,33 +314,49 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     }
 
     private func applyDefaultTagBorderStyle() {
-        tag0.backgroundColor = .clear
         tag1.backgroundColor = .clear
-        tag0.borderColor = .systemGray5
+        tag2.backgroundColor = .clear
+        tagMore.backgroundColor = .clear
         tag1.borderColor = .systemGray5
-        tag0.textColor = .systemGray
+        tag2.borderColor = .systemGray5
+        tagMore.borderColor = .systemGray5
         tag1.textColor = .systemGray
-        tag0.setNeedsDisplay()
+        tag2.textColor = .systemGray
+        tagMore.textColor = .systemGray
         tag1.setNeedsDisplay()
+        tag2.setNeedsDisplay()
+        tagMore.setNeedsDisplay()
     }
 
     private func applyTagBorderColorsIfAvailable() {
         guard !currentTagTokens.isEmpty,
-              let lookup = NCListCell.tagColorsByAccount[currentTagAccount],
-              let firstToken = currentTagTokens.first,
-              let colorHex = lookup[firstToken]?.color,
-              let color = UIColor(hex: colorHex) else {
+              let lookup = NCListCell.tagColorsByAccount[currentTagAccount] else {
             return
         }
 
-        tag0.borderColor = color
-        tag0.textColor = color
-        if !tag1.isHidden {
-            tag1.borderColor = .systemGray5
-            tag1.textColor = .systemGray
+        if !tag1.isHidden,
+           let colorHex = lookup[currentTagTokens[0]]?.color,
+           let color = UIColor(hex: colorHex) {
+            tag1.borderColor = color
+            tag1.textColor = color
         }
-        tag0.setNeedsDisplay()
+
+        if currentTagTokens.count > 1,
+           !tag2.isHidden,
+           let colorHex = lookup[currentTagTokens[1]]?.color,
+           let color = UIColor(hex: colorHex) {
+            tag2.borderColor = color
+            tag2.textColor = color
+        }
+
+        if !tagMore.isHidden {
+            tagMore.borderColor = .systemGray5
+            tagMore.textColor = .systemGray
+        }
+
         tag1.setNeedsDisplay()
+        tag2.setNeedsDisplay()
+        tagMore.setNeedsDisplay()
     }
 
     private func loadTagColorsIfNeeded(account: String) {

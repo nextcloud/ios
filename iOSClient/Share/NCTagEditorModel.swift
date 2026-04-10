@@ -168,6 +168,7 @@ import NextcloudKit
 
     private func reloadTags(keepCurrentSelection: Bool) async -> Bool {
         isLoading = true
+
         defer {
             isLoading = false
             hasLoaded = true
