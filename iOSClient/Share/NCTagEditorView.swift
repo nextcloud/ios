@@ -104,3 +104,45 @@ struct NCTagEditorView: View {
         return .secondary
     }
 }
+
+#Preview {
+    NCTagEditorPreviewSheetScaffold()
+}
+
+private struct NCTagEditorPreviewSheetScaffold: View {
+    @State private var isPresentingTagEditor = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Text("Tag Editor Preview")
+                    .font(.headline)
+
+                Button("Open Tag Editor Sheet") {
+                    isPresentingTagEditor = true
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+            .navigationTitle("Preview Host")
+            .sheet(isPresented: $isPresentingTagEditor) {
+                previewTagEditor
+            }
+        }
+    }
+
+    private var previewTagEditor: NCTagEditorView {
+        let metadata = tableMetadata()
+        metadata.account = "preview"
+        metadata.fileId = "1"
+        metadata.ocId = "preview-ocid"
+        metadata.serverUrl = "/"
+        metadata.urlBase = "https://cloud.example.com"
+
+        return NCTagEditorView(
+            metadata: metadata,
+            initialTags: ["Important", "Ideas"],
+            windowScene: nil
+        ) { _ in }
+    }
+}
