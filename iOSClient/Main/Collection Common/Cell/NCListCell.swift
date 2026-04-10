@@ -543,7 +543,7 @@ extension NCCollectionViewCommon {
         }
 
         // TAGS
-        cell.setTags(tags: Array(metadata.tags), account: metadata.account)
+        cell.setTags(tags: metadata.tagNames, account: metadata.account)
 
         // SearchingMode - TAG Separator Hidden
         if isSearchingMode {

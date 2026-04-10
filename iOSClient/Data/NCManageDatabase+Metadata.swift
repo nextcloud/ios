@@ -32,7 +32,7 @@ class tableMetadata: Object {
            self.longitude == object.longitude,
            self.altitude == object.altitude,
            self.status == object.status,
-           Array(self.tags).elementsEqual(Array(object.tags)),
+           self.tags.map(\.nkTag).elementsEqual(object.tags.map(\.nkTag)),
            Array(self.shareType).elementsEqual(Array(object.shareType)) {
             return true
         } else {
@@ -110,7 +110,7 @@ class tableMetadata: Object {
     @objc dynamic var status: Int = 0
     @objc dynamic var storeFlag: String?
     @objc dynamic var subline: String?
-    let tags = List<String>()
+    let tags = List<tableMetadataTag>()
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
@@ -347,20 +347,26 @@ extension tableMetadata {
 
     /// Returns a detached (unmanaged) deep copy of the current `tableMetadata` object.
     ///
-    /// - Note: The Realm `List` properties containing primitive types (e.g., `tags`, `shareType`) are copied automatically
-    ///         by the Realm initializer `init(value:)`. For `List` containing Realm objects (e.g., `exifPhotos`), this method
-    ///         creates new instances to ensure the copy is fully detached and safe to use outside of a Realm context.
+    /// - Note: Primitive list properties (e.g., `shareType`) are copied automatically by `init(value:)`.
+    ///         For `List` containing Realm objects (e.g., `exifPhotos`, `tags`) this method creates new instances
+    ///         to ensure the copy is fully detached and safe to use outside of a Realm context.
     ///
     /// - Returns: A new `tableMetadata` instance fully detached from Realm.
     func detachedCopy() -> tableMetadata {
         // Use Realm's built-in copy constructor for primitive properties and List of primitives
         let detached = tableMetadata(value: self)
 
-        // Deep copy of List of Realm objects (exifPhotos)
+        // Deep copy of List of Realm objects (exifPhotos and tags)
         detached.exifPhotos.removeAll()
         detached.exifPhotos.append(objectsIn: self.exifPhotos.map { NCKeyValue(value: $0) })
+        detached.tags.removeAll()
+        detached.tags.append(objectsIn: self.tags.map { tableMetadataTag(value: $0) })
 
         return detached
+    }
+
+    var tagNames: [String] {
+        tags.map(\.name)
     }
 }
 
@@ -754,7 +760,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataTagsAsync(ocId: String, tags: [String]) async {
+    func setMetadataTagsAsync(ocId: String, tags: [NKTag]) async {
         await core.performRealmWriteAsync { realm in
             guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
                 return
@@ -763,6 +769,13 @@ extension NCManageDatabase {
             metadata.tags.removeAll()
             metadata.tags.append(objectsIn: tags)
         }
+    }
+
+    func setMetadataTagsAsync(ocId: String, tagNames: [String]) async {
+        await setMetadataTagsAsync(
+            ocId: ocId,
+            tags: tagNames.map { NKTag(id: "", name: $0, color: nil) }
+        )
     }
 
     func moveMetadataAsync(ocId: String, serverUrlTo: String) async {
@@ -1337,5 +1350,49 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first != nil
         } ?? false
+    }
+}
+
+class tableMetadataTag: Object {
+    @objc dynamic var id = ""
+    @objc dynamic var name = ""
+    @objc dynamic var color: String?
+
+    convenience init(name: String) {
+        self.init()
+        self.name = name
+    }
+
+    convenience init(tag: NKTag) {
+        self.init()
+        self.id = tag.id
+        self.name = tag.name
+        self.color = tag.color
+    }
+
+    var nkTag: NKTag {
+        NKTag(id: id, name: name, color: color)
+    }
+}
+
+extension List where Element == tableMetadataTag {
+    func append(_ name: String) {
+        append(tableMetadataTag(name: name))
+    }
+
+    func append(_ tag: NKTag) {
+        append(tableMetadataTag(tag: tag))
+    }
+
+    func append(objectsIn names: [String]) {
+        for name in names {
+            append(name)
+        }
+    }
+
+    func append(objectsIn tags: [NKTag]) {
+        for tag in tags {
+            append(tag)
+        }
     }
 }

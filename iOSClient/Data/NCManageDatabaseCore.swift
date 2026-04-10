@@ -45,6 +45,35 @@ final class NCManageDatabaseCore {
             }
         }
 
+        if oldSchemaVersion < 408 {
+            migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
+                guard let oldObject, let newObject else {
+                    return
+                }
+
+                let oldTags: [String]
+                if let oldList = oldObject["tags"] as? List<String> {
+                    oldTags = Array(oldList)
+                } else if let oldArray = oldObject["tags"] as? [String] {
+                    oldTags = oldArray
+                } else {
+                    oldTags = []
+                }
+
+                let migratedTags = oldTags.map { tagName in
+                    migration.create(
+                        tableMetadataTag.className(),
+                        value: [
+                            "id": "",
+                            "name": tagName,
+                            "color": ""
+                        ]
+                    )
+                }
+                newObject["tags"] = migratedTags
+            }
+        }
+
         if oldSchemaVersion < 373 {
             // Fix from version 6.2.5
         } else if oldSchemaVersion < 403 {

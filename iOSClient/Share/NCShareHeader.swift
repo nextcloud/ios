@@ -70,7 +70,7 @@ class NCShareHeader: UIView {
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
-        refreshTags(Array(metadata.tags))
+        refreshTags(metadata.tagNames)
         loadTagColors()
 
         setNeedsLayout()
@@ -86,7 +86,7 @@ class NCShareHeader: UIView {
     func presentTagEditor(from sourceViewController: UIViewController, onApplied: (([NKTag]) -> Void)? = nil) {
         let editor = NCTagEditorView(
             metadata: metadata.detachedCopy(),
-            initialTags: Array(metadata.tags),
+            initialTags: metadata.tagNames,
             windowScene: sourceViewController.view.window?.windowScene,
             onApplied: { [weak self] tags in
                 self?.metadata.tags.removeAll()
@@ -140,7 +140,7 @@ class NCShareHeader: UIView {
 
     private func loadTagColors() {
         let account = metadata.account
-        let selectedTokens = Set(Array(metadata.tags))
+        let selectedTokens = Set(metadata.tagNames)
         guard !account.isEmpty, !selectedTokens.isEmpty else {
             return
         }
@@ -157,7 +157,7 @@ class NCShareHeader: UIView {
             }
 
             DispatchQueue.main.async {
-                self.refreshTags(Array(self.metadata.tags), tagModels: selectedTags)
+                self.refreshTags(self.metadata.tagNames, tagModels: selectedTags)
             }
         }
     }

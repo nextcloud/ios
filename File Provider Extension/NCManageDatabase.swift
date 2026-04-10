@@ -30,7 +30,7 @@ final class NCManageDatabase {
                 fileURL: databaseURL,
                 schemaVersion: databaseSchemaVersion,
                 objectTypes: [
-                    NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+                    NCKeyValue.self, tableMetadata.self, tableMetadataTag.self, tableLocalFile.self,
                     tableDirectory.self, tableTag.self, tableAccount.self
                 ]
             )

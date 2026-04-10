@@ -150,9 +150,7 @@ import NextcloudKit
         }
 
         let selectedTags = self.selectedTags
-        let selectedTagNames = selectedTags.map(\.name)
-
-        await NCManageDatabase.shared.setMetadataTagsAsync(ocId: metadata.ocId, tags: selectedTagNames)
+        await NCManageDatabase.shared.setMetadataTagsAsync(ocId: metadata.ocId, tags: selectedTags)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
 
