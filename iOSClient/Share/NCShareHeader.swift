@@ -101,6 +101,7 @@ class NCShareHeader: UIView {
 
         if let sheet = hosting.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
+            sheet.selectedDetentIdentifier = .medium
             sheet.prefersGrabberVisible = true
         }
 

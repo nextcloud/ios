@@ -65,6 +65,8 @@ struct NCTagEditorView: View {
                 }
             }
             .listStyle(.plain)
+//            .scrollContentBackground(.hidden)
+            .background(.regularMaterial)
             .navigationTitle(NSLocalizedString("_tags_", comment: ""))
             .searchable(text: $model.searchText, prompt: Text(NSLocalizedString("_search_", comment: "")))
             .toolbar {
@@ -92,6 +94,7 @@ struct NCTagEditorView: View {
                 }
             }
         }
+        .background(.regularMaterial)
         .task {
             await model.loadTagsIfNeeded()
         }
