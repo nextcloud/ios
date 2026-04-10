@@ -131,8 +131,9 @@ class NCShareHeader: UIView {
                 tagView.borderColor = color
                 tagView.textColor = color
                 tagView.selectedTextColor = color
-                tagView.textFont = UIFont.boldSystemFont(ofSize: 12)
             }
+
+            tagView.textFont = UIFont.boldSystemFont(ofSize: 12)
         }
     }
 

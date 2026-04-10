@@ -5,7 +5,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import RealmSwift
 
 protocol NCListCellDelegate: AnyObject {
     func onMenuIntent(with metadata: tableMetadata?)
@@ -14,9 +13,6 @@ protocol NCListCellDelegate: AnyObject {
 }
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainProtocol {
-    private static var tagColorsByAccount: [String: [String: NKTag]] = [:]
-    private static var loadingTagColorsForAccounts: Set<String> = []
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -42,8 +38,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCListCellDelegate?
-    private var currentTagTokens: [String] = []
-    private var currentTagAccount: String = ""
 
     // Cell Protocol
     var metadata: tableMetadata? {
@@ -120,8 +114,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         tag1.text = ""
         tag2.text = ""
         tagMore.text = ""
-        currentTagTokens = []
-        currentTagAccount = ""
 
         // Dynamic Type Font Configuration
         //
@@ -275,8 +267,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     }
 
     func setTags(tags: [String], account: String) {
-        currentTagTokens = tags
-        currentTagAccount = account
         applyDefaultTagBorderStyle()
 
         if tags.isEmpty {
@@ -309,8 +299,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             }
         }
 
-        applyTagBorderColorsIfAvailable()
-        loadTagColorsIfNeeded(account: account)
     }
 
     private func applyDefaultTagBorderStyle() {
@@ -326,69 +314,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         tag1.setNeedsDisplay()
         tag2.setNeedsDisplay()
         tagMore.setNeedsDisplay()
-    }
-
-    private func applyTagBorderColorsIfAvailable() {
-        guard !currentTagTokens.isEmpty,
-              let lookup = NCListCell.tagColorsByAccount[currentTagAccount] else {
-            return
-        }
-
-        if !tag1.isHidden,
-           let colorHex = lookup[currentTagTokens[0]]?.color,
-           let color = UIColor(hex: colorHex) {
-            tag1.borderColor = color
-            tag1.textColor = color
-        }
-
-        if currentTagTokens.count > 1,
-           !tag2.isHidden,
-           let colorHex = lookup[currentTagTokens[1]]?.color,
-           let color = UIColor(hex: colorHex) {
-            tag2.borderColor = color
-            tag2.textColor = color
-        }
-
-        if !tagMore.isHidden {
-            tagMore.borderColor = .systemGray5
-            tagMore.textColor = .systemGray
-        }
-
-        tag1.setNeedsDisplay()
-        tag2.setNeedsDisplay()
-        tagMore.setNeedsDisplay()
-    }
-
-    private func loadTagColorsIfNeeded(account: String) {
-        guard !account.isEmpty else {
-            return
-        }
-        if NCListCell.tagColorsByAccount[account] != nil || NCListCell.loadingTagColorsForAccounts.contains(account) {
-            return
-        }
-
-        NCListCell.loadingTagColorsForAccounts.insert(account)
-        Task { [weak self] in
-            let result = await NextcloudKit.shared.getTags(account: account)
-            DispatchQueue.main.async {
-                NCListCell.loadingTagColorsForAccounts.remove(account)
-                guard result.error == .success, let tags = result.tags else {
-                    return
-                }
-
-                var lookup: [String: NKTag] = [:]
-                for tag in tags {
-                    lookup[tag.id] = tag
-                    lookup[tag.name] = tag
-                }
-                NCListCell.tagColorsByAccount[account] = lookup
-
-                guard let self, self.currentTagAccount == account else {
-                    return
-                }
-                self.applyTagBorderColorsIfAvailable()
-            }
-        }
     }
 
     func setIconOutlines() {
