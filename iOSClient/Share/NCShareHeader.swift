@@ -98,6 +98,7 @@ class NCShareHeader: UIView {
 
         let hosting = UIHostingController(rootView: editor)
         hosting.title = NSLocalizedString("_tags_", comment: "")
+        hosting.isModalInPresentation = true
 
         if let sheet = hosting.sheetPresentationController {
             sheet.detents = [.medium(), .large()]

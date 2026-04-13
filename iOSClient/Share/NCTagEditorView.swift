@@ -58,15 +58,28 @@ struct NCTagEditorView: View {
                                     }
                                 }
                             }
+                            .contextMenu {
+                                Button {
+                                    model.openTagColorPicker(for: tag)
+                                } label: {
+                                    Label(NSLocalizedString("_change_color_", comment: ""), systemImage: "paintpalette")
+                                }
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button {
+                                    model.openTagColorPicker(for: tag)
+                                } label: {
+                                    Label(NSLocalizedString("_change_color_", comment: ""), systemImage: "paintpalette")
+                                }
+                                .tint(.blue)
+                            }
                         }
                     }
-                } header: {
-                    Text(NSLocalizedString("_tags_", comment: ""))
                 }
             }
             .listStyle(.plain)
             .navigationTitle(NSLocalizedString("_tags_", comment: ""))
-            .searchable(text: $model.searchText, prompt: Text(NSLocalizedString("_search_", comment: "")))
+            .searchable(text: $model.searchText, prompt: Text(NSLocalizedString("_search_or_create_tags", comment: "")))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(NSLocalizedString("_cancel_", comment: "")) {
@@ -83,11 +96,11 @@ struct NCTagEditorView: View {
                             dismiss()
                         }
                     }
-                    .disabled(model.isSaving || model.isLoading)
+                    .disabled(model.isSaving || model.isLoading || model.isUpdatingTagColor)
                 }
             }
             .overlay {
-                if model.isLoading || model.isSaving {
+                if model.isLoading || model.isSaving || model.isUpdatingTagColor {
                     ProgressView()
                 }
             }

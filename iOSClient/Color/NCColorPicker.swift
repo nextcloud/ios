@@ -32,6 +32,8 @@ class NCColorPicker: UIViewController {
     var tapAction: UITapGestureRecognizer?
     var selectedColor: UIColor?
     var collectionViewCommon: NCCollectionViewCommon?
+    var initialHexColor: String?
+    var onColorSelected: ((String?) -> Void)?
 
     // MARK: - View Life Cycle
 
@@ -40,7 +42,9 @@ class NCColorPicker: UIViewController {
 
         view.backgroundColor = .secondarySystemBackground
 
-        if let metadata = metadata {
+        if let initialHexColor, let color = UIColor(hex: initialHexColor) {
+            selectedColor = color
+        } else if let metadata = metadata {
             if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName)), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
                 selectedColor = color
             }
@@ -192,7 +196,9 @@ class NCColorPicker: UIViewController {
 
     func updateColor(hexColor: String?) {
         Task { @MainActor in
-            if let metadata {
+            if let onColorSelected {
+                onColorSelected(hexColor)
+            } else if let metadata {
                 await NCManageDatabase.shared.updateDirectoryColorFolderAsync(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
                 self.collectionViewCommon?.collectionView.reloadData()
             }

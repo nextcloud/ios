@@ -14,6 +14,7 @@ import NextcloudKit
     private(set) var pendingNewTagNames: Set<String> = []
     private(set) var isLoading = false
     private(set) var isSaving = false
+    private(set) var isUpdatingTagColor = false
     private(set) var hasLoaded = false
 
     private let metadata: tableMetadata
@@ -81,11 +82,33 @@ import NextcloudKit
         }
     }
 
+    func openTagColorPicker(for tag: NKTag) {
+        guard let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker,
+              let presenter = topViewController() else {
+            return
+        }
+
+        picker.initialHexColor = tag.color
+        picker.onColorSelected = { [weak self] hexColor in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.updateTagColor(tagID: tag.id, colorHex: hexColor)
+            }
+        }
+
+        let popup = NCPopupViewController(contentController: picker, popupWidth: 200, popupHeight: 320)
+        popup.backgroundAlpha = 0
+        presenter.present(popup, animated: true)
+    }
+
     func addCreateCandidateToSelection() {
         guard let candidate = createCandidateName else {
             return
         }
         pendingNewTagNames.insert(candidate)
+        tags.append(NKTag(id: candidate, name: candidate, color: nil))
+        tags.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        selectedTagIDs.insert(candidate)
         searchText = ""
     }
 
@@ -193,5 +216,40 @@ import NextcloudKit
         initialAssignedTagIDs = assignedIDs
         selectedTagIDs = assignedIDs
         return true
+    }
+
+    private func updateTagColor(tagID: String, colorHex: String?) async {
+        isUpdatingTagColor = true
+        defer { isUpdatingTagColor = false }
+
+        let normalizedColor = normalizedTagColor(colorHex)
+        let result = await NextcloudKit.shared.updateTagColor(tagId: tagID, color: normalizedColor, account: metadata.account)
+        guard result.error == .success else {
+            await showErrorBanner(windowScene: windowScene, error: result.error)
+            return
+        }
+
+        guard let index = tags.firstIndex(where: { $0.id == tagID }) else {
+            return
+        }
+
+        let oldTag = tags[index]
+        tags[index] = NKTag(id: oldTag.id, name: oldTag.name, color: normalizedColor)
+    }
+
+    private func normalizedTagColor(_ colorHex: String?) -> String? {
+        guard let colorHex, !colorHex.isEmpty else {
+            return nil
+        }
+        return colorHex.hasPrefix("#") ? colorHex : "#\(colorHex)"
+    }
+
+    private func topViewController() -> UIViewController? {
+        let root = windowScene?.keyWindow?.rootViewController ?? windowScene?.windows.first?.rootViewController
+        var top = root
+        while let presented = top?.presentedViewController {
+            top = presented
+        }
+        return top
     }
 }
