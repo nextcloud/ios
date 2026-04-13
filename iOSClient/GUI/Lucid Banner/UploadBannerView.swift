@@ -10,7 +10,8 @@ func showUploadBanner(windowScene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
                       onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene, let window = windowScene.windows.first  else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return (nil, nil)
     }
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,

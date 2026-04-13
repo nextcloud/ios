@@ -26,7 +26,8 @@ func showBanner(windowScene: UIWindowScene?,
                 swipeToDismiss: Bool = true,
                 policy: LucidBanner.ShowPolicy = .replace,
                 errorCode: Int? = nil) async -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene, let window = windowScene.windows.first else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return(nil, nil)
     }
 
