@@ -187,6 +187,15 @@ import NextcloudKit
         return selectedTags
     }
 
+    func showTagAddedBanner(tagName: String) async {
+        let message = String(format: NSLocalizedString("_share_tags_added_named_", comment: ""), tagName)
+        await showInfoBanner(
+            windowScene: windowScene,
+            title: "_success_",
+            text: message
+        )
+    }
+
     private func reloadTags(keepCurrentSelection: Bool) async -> Bool {
         isLoading = true
 

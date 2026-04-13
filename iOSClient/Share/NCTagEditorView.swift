@@ -24,7 +24,7 @@ struct NCTagEditorView: View {
                 if let createCandidateName = model.createCandidateName {
                     Section {
                         Button {
-                            addTagAndExitSearch()
+                            addTagAndExitSearch(tagName: createCandidateName)
                         } label: {
                             Label(
                                 String(format: NSLocalizedString("_share_tags_create_", comment: ""), createCandidateName),
@@ -122,8 +122,11 @@ struct NCTagEditorView: View {
         return .secondary
     }
 
-    private func addTagAndExitSearch() {
+    private func addTagAndExitSearch(tagName: String) {
         model.addCreateCandidateToSelection()
+        Task { @MainActor in
+            await model.showTagAddedBanner(tagName: tagName)
+        }
         isSearchPresented = false
         unfocusSearchField()
     }

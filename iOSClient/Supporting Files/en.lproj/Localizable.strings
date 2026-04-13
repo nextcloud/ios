@@ -90,6 +90,7 @@
 "_tags_"                    = "Tags";
 "_share_tags_create_"       = "Create \"%@\"";
 "_share_tags_no_results_"   = "No tags found";
+"_share_tags_added_named_"  = "Tag %@ has been created.";
 "_edit_tags_"               = "Manage tags";
 "_of_"                      = "of";
 "_livephoto_save_"          = "Save Live Photo to Photo Album";
