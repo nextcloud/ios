@@ -39,7 +39,6 @@ class NCShareHeader: UIView {
 
     private var heightConstraintWithImage: NSLayoutConstraint?
     private var heightConstraintWithoutImage: NSLayoutConstraint?
-    private var currentTagsByToken: [String: NKTag] = [:]
 
     func setupUI(with metadata: tableMetadata) {
         self.metadata = metadata.detachedCopy()
@@ -70,8 +69,7 @@ class NCShareHeader: UIView {
         info.textColor = NCBrandColor.shared.textColor2
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
-        refreshTags(metadata.tagNames)
-        loadTagColors()
+        refreshTags(metadata.tagNames, tagModels: metadata.tags.map(\.nkTag))
 
         setNeedsLayout()
         layoutIfNeeded()
@@ -90,7 +88,7 @@ class NCShareHeader: UIView {
             windowScene: sourceViewController.view.window?.windowScene,
             onApplied: { [weak self] tags in
                 self?.metadata.tags.removeAll()
-                self?.metadata.tags.append(objectsIn: tags.map(\.name))
+                self?.metadata.tags.append(objectsIn: tags)
                 self?.refreshTags(tags.map(\.name), tagModels: tags)
                 onApplied?(tags)
             }
@@ -110,22 +108,13 @@ class NCShareHeader: UIView {
     }
 
     private func refreshTags(_ tags: [String], tagModels: [NKTag]? = nil) {
-        if let tagModels {
-            var tagsByToken: [String: NKTag] = [:]
-
-            for tag in tagModels {
-                tagsByToken[tag.id] = tag
-                tagsByToken[tag.name] = tag
-            }
-
-            currentTagsByToken = tagsByToken
-        }
+        let tagModels = tagModels ?? []
 
         tagListView.removeAllTags()
 
-        for tagToken in tags {
-            let matchedTag = currentTagsByToken[tagToken]
-            let displayName = matchedTag?.name ?? tagToken
+        for tagName in tags {
+            let matchedTag = tagModels.first { $0.name == tagName }
+            let displayName = matchedTag?.name ?? tagName
             let tagView = tagListView.addTag(displayName)
 
             if let colorHex = matchedTag?.color, let color = UIColor(hex: colorHex) {
@@ -139,27 +128,4 @@ class NCShareHeader: UIView {
         }
     }
 
-    private func loadTagColors() {
-        let account = metadata.account
-        let selectedTokens = Set(metadata.tagNames)
-        guard !account.isEmpty, !selectedTokens.isEmpty else {
-            return
-        }
-
-        Task { [weak self] in
-            guard let self else { return }
-            let result = await NextcloudKit.shared.getTags(account: account)
-            guard result.error == .success, let allTags = result.tags else {
-                return
-            }
-
-            let selectedTags = allTags.filter { tag in
-                selectedTokens.contains(tag.id) || selectedTokens.contains(tag.name)
-            }
-
-            DispatchQueue.main.async {
-                self.refreshTags(self.metadata.tagNames, tagModels: selectedTags)
-            }
-        }
-    }
 }

@@ -25,26 +25,6 @@ final class NCManageDatabaseCore {
         // MANUAL MIGRATIONS (custom logic required)
         //
 
-        if oldSchemaVersion < 390 {
-            migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
-                if let schema = oldObject?.objectSchema,
-                   schema["jsondata"] != nil,
-                   let oldData = oldObject?["jsondata"] as? Data {
-                    newObject?["capabilities"] = oldData
-                }
-            }
-        }
-
-        if oldSchemaVersion < 393 {
-            migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
-                if let schema = oldObject?.objectSchema,
-                   schema["serveUrlFileName"] != nil,
-                   let oldData = oldObject?["serveUrlFileName"] as? String {
-                    newObject?["serverUrlFileName"] = oldData
-                }
-            }
-        }
-
         if oldSchemaVersion < 408 {
             migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
                 guard let oldObject, let newObject else {
@@ -71,6 +51,26 @@ final class NCManageDatabaseCore {
                     )
                 }
                 newObject["tags"] = migratedTags
+            }
+        }
+
+        if oldSchemaVersion < 390 {
+            migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
+                if let schema = oldObject?.objectSchema,
+                   schema["jsondata"] != nil,
+                   let oldData = oldObject?["jsondata"] as? Data {
+                    newObject?["capabilities"] = oldData
+                }
+            }
+        }
+
+        if oldSchemaVersion < 393 {
+            migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
+                if let schema = oldObject?.objectSchema,
+                   schema["serveUrlFileName"] != nil,
+                   let oldData = oldObject?["serveUrlFileName"] as? String {
+                    newObject?["serverUrlFileName"] = oldData
+                }
             }
         }
 

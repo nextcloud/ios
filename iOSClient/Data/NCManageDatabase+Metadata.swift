@@ -772,10 +772,14 @@ extension NCManageDatabase {
     }
 
     func setMetadataTagsAsync(ocId: String, tagNames: [String]) async {
-        await setMetadataTagsAsync(
-            ocId: ocId,
-            tags: tagNames.map { NKTag(id: "", name: $0, color: nil) }
-        )
+        await core.performRealmWriteAsync { realm in
+            guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
+                return
+            }
+
+            metadata.tags.removeAll()
+            metadata.tags.append(objectsIn: tagNames)
+        }
     }
 
     func moveMetadataAsync(ocId: String, serverUrlTo: String) async {
