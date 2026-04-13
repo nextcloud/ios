@@ -222,8 +222,7 @@ import NextcloudKit
         isUpdatingTagColor = true
         defer { isUpdatingTagColor = false }
 
-        let normalizedColor = normalizedTagColor(colorHex)
-        let result = await NextcloudKit.shared.updateTagColor(tagId: tagID, color: normalizedColor, account: metadata.account)
+        let result = await NextcloudKit.shared.updateTagColor(tagId: tagID, color: colorHex, account: metadata.account)
         guard result.error == .success else {
             await showErrorBanner(windowScene: windowScene, error: result.error)
             return
@@ -234,14 +233,7 @@ import NextcloudKit
         }
 
         let oldTag = tags[index]
-        tags[index] = NKTag(id: oldTag.id, name: oldTag.name, color: normalizedColor)
-    }
-
-    private func normalizedTagColor(_ colorHex: String?) -> String? {
-        guard let colorHex, !colorHex.isEmpty else {
-            return nil
-        }
-        return colorHex.hasPrefix("#") ? colorHex : "#\(colorHex)"
+        tags[index] = NKTag(id: oldTag.id, name: oldTag.name, color: colorHex)
     }
 
     private func topViewController() -> UIViewController? {

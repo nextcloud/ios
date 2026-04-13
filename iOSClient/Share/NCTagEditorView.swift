@@ -9,6 +9,7 @@ import NextcloudKit
 struct NCTagEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: NCTagEditorModel
+    @State private var isSearchPresented = false
 
     private let onApplied: ([NKTag]) -> Void
 
@@ -23,7 +24,7 @@ struct NCTagEditorView: View {
                 if let createCandidateName = model.createCandidateName {
                     Section {
                         Button {
-                            model.addCreateCandidateToSelection()
+                            addTagAndExitSearch()
                         } label: {
                             Label(
                                 String(format: NSLocalizedString("_share_tags_create_", comment: ""), createCandidateName),
@@ -79,7 +80,11 @@ struct NCTagEditorView: View {
             }
             .listStyle(.plain)
             .navigationTitle(NSLocalizedString("_tags_", comment: ""))
-            .searchable(text: $model.searchText, prompt: Text(NSLocalizedString("_search_or_create_tags", comment: "")))
+            .searchable(
+                text: $model.searchText,
+                isPresented: $isSearchPresented,
+                prompt: Text(NSLocalizedString("_search_or_create_tags", comment: ""))
+            )
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(NSLocalizedString("_cancel_", comment: "")) {
@@ -115,6 +120,16 @@ struct NCTagEditorView: View {
             return Color(color)
         }
         return .secondary
+    }
+
+    private func addTagAndExitSearch() {
+        model.addCreateCandidateToSelection()
+        isSearchPresented = false
+        unfocusSearchField()
+    }
+
+    private func unfocusSearchField() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
