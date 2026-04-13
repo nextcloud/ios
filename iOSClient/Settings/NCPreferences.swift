@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Rasmus Wøldike
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -200,6 +201,15 @@ final class NCPreferences: NSObject {
         }
         set {
             setUserDefaults(newValue, forKey: "removePhotoCameraRoll")
+        }
+    }
+
+    var saveCameraMediaToCameraRoll: Bool {
+        get {
+            return getBoolPreference(key: "saveCameraMediaToCameraRoll", defaultValue: false)
+        }
+        set {
+            setUserDefaults(newValue, forKey: "saveCameraMediaToCameraRoll")
         }
     }
 
@@ -445,10 +455,12 @@ final class NCPreferences: NSObject {
     }
 
     func isEndToEndEnabled(account: String) -> Bool {
-        guard let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
+        guard let capabilities = NCNetworking.shared.capabilities[account],
+              let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
               let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
               let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,
-              let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty else {
+              let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty,
+              NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) else {
             return false
         }
         return true
