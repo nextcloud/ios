@@ -15,7 +15,8 @@ func showWarningBanner(windowScene: UIWindowScene?,
                        systemImage: String,
                        imageAnimation: LucidBanner.LucidBannerAnimationStyle,
                        errorCode: Int? = nil) async {
-    guard let windowScene, let window = windowScene.windows.first else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return
     }
 
