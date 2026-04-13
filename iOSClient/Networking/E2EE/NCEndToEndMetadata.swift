@@ -45,8 +45,8 @@ class NCEndToEndMetadata: NSObject {
             return await decodeMetadataV1(metadata, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
         } else if (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil {
             return await decodeMetadataV12(metadata, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
-        } else if (try? JSONDecoder().decode(E2eeV20.self, from: data)) != nil {
-            return await decodeMetadataV20(metadata, signature: signature, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
+        } else if (try? JSONDecoder().decode(E2eeV2.self, from: data)) != nil {
+            return await decodeMetadataV2(metadata, signature: signature, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
         } else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Unable to decode the metadata file")
         }
