@@ -863,6 +863,8 @@ extension NCCollectionViewCommon: NCSectionFooterDelegate {
     }
 }
 
+// MARK: - Transfer Delegate
+
 extension NCCollectionViewCommon: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
@@ -887,11 +889,20 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                error.errorCode != global.errorResourceNotFound {
                 await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
+
             guard session.account == account else {
                 return
             }
 
-            if status == self.global.networkingStatusCreateFolder {
+            if self.isSearchingMode {
+                await self.debouncerNetworkSearch.call {
+                    await self.search()
+                }
+                return
+            }
+
+            switch status {
+            case self.global.networkingStatusCreateFolder:
                 if error == .success,
                    serverUrl == self.serverUrl,
                    selector != self.global.selectorUploadAutoUpload,
@@ -902,16 +913,11 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                         self.pushMetadata(metadata)
                     }
                 }
-                return
-            }
-
-            if self.isSearchingMode {
-                await self.debouncerNetworkSearch.call {
-                    await self.search()
-                }
-            } else if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
-                await self.debouncerReloadDataSource.call {
-                    await self.reloadDataSource()
+            default:
+                if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
+                    await self.debouncerReloadDataSource.call {
+                        await self.reloadDataSource()
+                    }
                 }
             }
         }

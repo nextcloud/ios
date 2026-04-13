@@ -13,7 +13,8 @@ func showInfoBanner(windowScene: UIWindowScene?,
                     text: String,
                     footnote: String? = nil,
                     errorCode: Int? = nil) async {
-    guard let windowScene, let window = windowScene.windows.first else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return
     }
 
@@ -75,7 +76,7 @@ struct InfoBannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .cappedFont(.title3, maxDynamicType: .accessibility2)
+                                .cappedFont(.headline, maxDynamicType: .accessibility2)
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)

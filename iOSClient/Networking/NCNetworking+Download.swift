@@ -327,5 +327,10 @@ extension NCNetworking {
                                                                                     selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
+
+        // Reload data sorce
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadDataSource(serverUrl: metadata.serverUrl, requestData: false, status: nil)
+        }
     }
 }

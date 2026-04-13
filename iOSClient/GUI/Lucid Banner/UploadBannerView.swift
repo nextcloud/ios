@@ -10,7 +10,8 @@ func showUploadBanner(windowScene: UIWindowScene?,
                       payload: LucidBannerPayload,
                       allowMinimizeOnTap: Bool,
                       onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene, let window = windowScene.windows.first  else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return (nil, nil)
     }
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
@@ -151,7 +152,7 @@ struct UploadBannerView: View {
                         VStack(alignment: .leading, spacing: 7) {
                             if showTitle, let title = state.payload.title {
                                 Text(title)
-                                    .cappedFont(.title3, maxDynamicType: .accessibility2)
+                                    .cappedFont(.headline, maxDynamicType: .accessibility2)
                                     .fontWeight(.semibold)
                                     .multilineTextAlignment(.leading)
                                     .truncationMode(.tail)

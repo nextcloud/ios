@@ -450,7 +450,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 openNotification(controller: controller)
             }
         } else {
-            let message = NSLocalizedString("_the_account_", comment: "") + " " + account + " " + NSLocalizedString("_does_not_exist_", comment: "")
+            let message = String(
+                format: NSLocalizedString("account_does_not_exist", comment: ""),
+                account
+            )
+
             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             UIApplication.shared.mainAppWindow?.rootViewController?.present(alertController, animated: true, completion: { })

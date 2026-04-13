@@ -11,18 +11,23 @@ func showHudBanner(windowScene: UIWindowScene?,
                    subtitle: String? = nil,
                    stage: LucidBanner.Stage? = nil,
                    onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return (nil, nil)
     }
     let localizedTitle = title.map { NSLocalizedString($0, comment: "") }
     let localizedSubTitle = subtitle.map { NSLocalizedString($0, comment: "") }
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
         title: localizedTitle,
         subtitle: localizedSubTitle,
         stage: stage,
         vPosition: .center,
+        horizontalLayout: horizontalLayout,
         blocksTouches: true,
     )
 
@@ -111,7 +116,7 @@ struct HudBannerView: View {
                 // TITLE
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .cappedFont(.title3, maxDynamicType: .accessibility2)
+                        .cappedFont(.headline, maxDynamicType: .accessibility2)
                         .fontWeight(.semibold)
                         .foregroundStyle(textColor)
                         .multilineTextAlignment(.center)

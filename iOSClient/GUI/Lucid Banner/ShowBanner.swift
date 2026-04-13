@@ -26,7 +26,8 @@ func showBanner(windowScene: UIWindowScene?,
                 swipeToDismiss: Bool = true,
                 policy: LucidBanner.ShowPolicy = .replace,
                 errorCode: Int? = nil) async -> (banner: LucidBanner?, token: Int?) {
-    guard let windowScene, let window = windowScene.windows.first else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return(nil, nil)
     }
 
@@ -90,7 +91,7 @@ struct BannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .cappedFont(.title3, maxDynamicType: .accessibility2)
+                                .cappedFont(.headline, maxDynamicType: .accessibility2)
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
@@ -178,4 +179,3 @@ struct BannerView: View {
         .padding()
     }
 }
-

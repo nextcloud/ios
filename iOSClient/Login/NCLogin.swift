@@ -198,6 +198,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             self.banner = LucidBannerRegistry.shared.banner(for: windowScene)
 
             showAlertActionBanner(lucidBanner: banner,
+                                  windowScene: windowScene,
                                   title: title,
                                   subtitle: subtitle) {
                 self.openShareAccountsViewController(nil)

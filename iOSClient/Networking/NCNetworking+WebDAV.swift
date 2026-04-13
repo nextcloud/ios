@@ -447,7 +447,7 @@ extension NCNetworking {
 
     // MARK: - Rename
 
-    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String) async -> NKError {
+    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String, windowScene: UIWindowScene?) async -> NKError {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
         if (!metadata.permissions.isEmpty && permission == false) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
@@ -459,7 +459,7 @@ extension NCNetworking {
                 return NKError(errorCode: global.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_")
             }
 
-            let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
+            let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, windowScene: windowScene)
             if error != .success {
                 return NKError(errorCode: error.errorCode, errorDescription: error.errorDescription)
             }

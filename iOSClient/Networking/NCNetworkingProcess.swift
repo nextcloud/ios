@@ -318,6 +318,16 @@ actor NCNetworkingProcess {
         let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
+        // Banner
+        var banner: LucidBanner?
+        var token: Int?
+        defer {
+            if let banner {
+                Task { @MainActor in
+                    banner.dismiss()
+                }
+            }
+        }
 
         // WEBDAV
         //
@@ -434,20 +444,22 @@ actor NCNetworkingProcess {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
                     let payload = LucidBannerPayload(blocksTouches: true,
                                                      draggable: false)
-                    let bannerResults = await showUploadBanner(windowScene: windowScene,
-                                                       payload: payload,
-                                                       allowMinimizeOnTap: false,
-                                                       onButtonTap: {
-                        Task {
-                            await self.cancelCurrentUpload()
-                        }
-                    })
+                    if banner == nil {
+                        (banner, token) = await showUploadBanner(windowScene: windowScene,
+                                                                 payload: payload,
+                                                                 allowMinimizeOnTap: false,
+                                                                 onButtonTap: {
+                            Task {
+                                await self.cancelCurrentUpload()
+                            }
+                        })
+                    }
 
                     await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           controller: controller,
-                                                          banner: bannerResults.banner,
+                                                          banner: banner,
                                                           stageBanner: .button,
-                                                          tokenBanner: bannerResults.token) { uploadRequest in
+                                                          tokenBanner: token) { uploadRequest in
                         Task {@MainActor in
                             self.currentUploadRequest = uploadRequest
                         }
@@ -455,11 +467,6 @@ actor NCNetworkingProcess {
                         Task {@MainActor in
                             self.currentUploadTask = task
                         }
-                    }
-
-                    // wait dismiss banner before open another (loop)
-                    if let banner = bannerResults.banner {
-                        await banner.dismiss()
                     }
 
                 // UPLOAD CHUNK

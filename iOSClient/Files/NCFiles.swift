@@ -330,7 +330,7 @@ class NCFiles: NCCollectionViewCommon {
 
         if error == .success {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-            if version == "v1", NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
+            if version == "v1", capabilities.e2EEApiVersion.hasPrefix("2.") {
                 await showInfoBanner(windowScene: windowScene, text: "Conversion metadata v1 to v2 required, please wait...")
                 nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                 NCActivityIndicator.shared.start()

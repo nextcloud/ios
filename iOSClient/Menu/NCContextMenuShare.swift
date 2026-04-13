@@ -157,7 +157,7 @@ class NCContextMenuShare: NSObject {
 
         if share.shareType != NKShare.ShareType.publicLink.rawValue,
            let metadata = shareController.metadata,
-           metadata.e2eEncrypted && NCGlobal.shared.isE2eeVersion2(capabilities.e2EEApiVersion) {
+           metadata.e2eEncrypted && capabilities.e2EEApiVersion.hasPrefix("2.") {
             if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
                 Task {
                     await showErrorBanner(windowScene: self.windowScene,

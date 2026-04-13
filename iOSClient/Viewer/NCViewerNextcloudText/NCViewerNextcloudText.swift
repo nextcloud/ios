@@ -56,8 +56,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
 
-        if editor == "nextcloud text" {
-            navigationItem.hidesBackButton = true
+        // Prevent back navigation gesture of iOS/iPadOS >= 26 as that will interfere with the possibility to mark text in onlyoffice
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
         }
 
         let config = WKWebViewConfiguration()

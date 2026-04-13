@@ -8,7 +8,7 @@ import NextcloudKit
 import Gzip
 
 extension NCEndToEndMetadata {
-    struct E2eeV20: Codable {
+    struct E2eeV2: Codable {
 
         struct Metadata: Codable {
             let ciphertext: String
@@ -56,7 +56,7 @@ extension NCEndToEndMetadata {
         let version: String
     }
 
-    struct E2eeV20Signature: Codable {
+    struct E2eeV2Signature: Codable {
 
         struct Metadata: Codable {
             let ciphertext: String
@@ -79,7 +79,7 @@ extension NCEndToEndMetadata {
     // MARK: Encode JSON Metadata V2
     // --------------------------------------------------------------------------------------------
 
-    func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
+    func encodeMetadataV2(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
         guard let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
                                          errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: "")))
@@ -95,8 +95,8 @@ extension NCEndToEndMetadata {
 
         var metadataKey: String?
         var keyChecksums: [String] = []
-        var usersCodable: [E2eeV20.Users] = []
-        var filesCodable: [String: E2eeV20.Metadata.ciphertext.Files] = [:]
+        var usersCodable: [E2eeV2.Users] = []
+        var filesCodable: [String: E2eeV2.Metadata.ciphertext.Files] = [:]
         var folders: [String: String] = [:]
         var counter: Int = 1
 
@@ -151,7 +151,7 @@ extension NCEndToEndMetadata {
         let users = await self.database.getE2EUsersAsync(account: session.account, directoryTopOcId: directoryTopOcId)
         for user in users {
             if isDirectoryTop {
-                usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
+                usersCodable.append(E2eeV2.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
             }
             if let hash = NCEndToEndEncryption.shared().createSHA256(user.metadataKey) {
                 keyChecksums.append(hash)
@@ -172,7 +172,7 @@ extension NCEndToEndMetadata {
             if e2eEncryption.mimeType == "httpd/unix-directory" {
                 folders[e2eEncryption.fileNameIdentifier] = e2eEncryption.fileName
             } else {
-                let file = E2eeV20.Metadata.ciphertext.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
+                let file = E2eeV2.Metadata.ciphertext.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
                 filesCodable.updateValue(file, forKey: e2eEncryption.fileNameIdentifier)
             }
         }
@@ -180,7 +180,7 @@ extension NCEndToEndMetadata {
         do {
             var authenticationTag: NSString?
             var initializationVector: NSString?
-            let json = try JSONEncoder().encode(E2eeV20.Metadata.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders))
+            let json = try JSONEncoder().encode(E2eeV2.Metadata.ciphertext(counter: counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders))
             let jsonZip = try json.gzipped()
             let ciphertextMetadata = NCEndToEndEncryption.shared().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
             guard var ciphertextMetadata, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
@@ -191,8 +191,8 @@ extension NCEndToEndMetadata {
             // Add initializationVector [ANDROID]
             ciphertextMetadata = ciphertextMetadata + "|" + initializationVector
 
-            let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
-            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: capabilities.e2EEApiVersion)
+            let metadataCodable = E2eeV2.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
+            let e2eeCodable = E2eeV2(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: capabilities.e2EEApiVersion)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
 
@@ -210,7 +210,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V2
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
+    func decodeMetadataV2(_ json: String, signature: String?, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
         let global = NCGlobal.shared
         guard let data = json.data(using: .utf8),
               let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
@@ -252,7 +252,7 @@ extension NCEndToEndMetadata {
         }
 
         do {
-            let json = try JSONDecoder().decode(E2eeV20.self, from: data)
+            let json = try JSONDecoder().decode(E2eeV2.self, from: data)
             let metadata = json.metadata
             let users = json.users
             let filesdrop = json.filedrop
@@ -326,7 +326,7 @@ extension NCEndToEndMetadata {
                             }
                             let data = try decryptedFiledrop.gunzipped()
                             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
-                            let file = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.Files.self, from: data)
+                            let file = try JSONDecoder().decode(E2eeV2.Metadata.ciphertext.Files.self, from: data)
                             print(file)
                             await addE2eEncryption(fileNameIdentifier: fileNameIdentifier, fileName: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype)
                         }
@@ -344,7 +344,7 @@ extension NCEndToEndMetadata {
             let data = try decryptedMetadata.gunzipped()
             // DEBUG
             // if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
-            let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.self, from: data)
+            let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV2.Metadata.ciphertext.self, from: data)
 
             // CHECKSUM CHECK
             //
@@ -424,15 +424,15 @@ extension NCEndToEndMetadata {
 
     // MARK: -
 
-    func createSignature(metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String, session: NCSession.Session) -> String? {
+    func createSignature(metadata: E2eeV2.Metadata, users: [E2eeV2.Users]?, version: String, certificate: String, session: NCSession.Session) -> String? {
         guard let users else { return nil }
-        var usersSignatureCodable: [E2eeV20Signature.Users] = []
+        var usersSignatureCodable: [E2eeV2Signature.Users] = []
 
         for user in users {
-            usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
+            usersSignatureCodable.append(E2eeV2Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
         }
 
-        let signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
+        let signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
 
         do {
             let jsonEncoder = JSONEncoder()
@@ -451,19 +451,19 @@ extension NCEndToEndMetadata {
         return nil
     }
 
-    func verifySignature(account: String, signature: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> Bool {
-        var signatureCodable: E2eeV20Signature?
+    func verifySignature(account: String, signature: String, userId: String, metadata: E2eeV2.Metadata, users: [E2eeV2.Users]?, version: String, certificate: String) -> Bool {
+        var signatureCodable: E2eeV2Signature?
         var certificates: [String] = []
 
         if let users {
-            var usersSignatureCodable: [E2eeV20Signature.Users] = []
+            var usersSignatureCodable: [E2eeV2Signature.Users] = []
             for user in users {
-                usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
+                usersSignatureCodable.append(E2eeV2Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
             }
-            signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
+            signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
             certificates = users.map { $0.certificate }
         } else {
-            signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: nil, version: version)
+            signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: nil, version: version)
             certificates = [certificate]
         }
 

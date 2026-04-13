@@ -7,17 +7,18 @@ import LucidBanner
 
 @MainActor
 func showAlertActionBanner(lucidBanner: LucidBanner?,
+                           windowScene: UIWindowScene?,
                            title: String? = nil,
                            subtitle: String? = nil,
                            onConfirm: (() -> Void)? = nil) {
-    guard let lucidBanner else {
+    guard let lucidBanner,
+          let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return
     }
-    let isPad = lucidBanner.windowScene.traitCollection.userInterfaceIdiom == .pad
-    let horizontalLayout: LucidBanner.HorizontalLayout =
-        isPad
-        ? .centered(width: 450)
-        : .stretch(margins: 20)
+    let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
+                                                  safeAreaInsets: window.safeAreaInsets,
+                                                  idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
         title: title,
@@ -66,7 +67,7 @@ struct AlertActionBannerView: View {
                 // Title
                 if let title = state.payload.title, !title.isEmpty {
                     Text(title)
-                        .cappedFont(.title3, maxDynamicType: .accessibility2)
+                        .cappedFont(.headline, maxDynamicType: .accessibility2)
                         .fontWeight(.semibold)
                         .foregroundStyle(state.payload.textColor)
                         .multilineTextAlignment(.center)
