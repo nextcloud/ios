@@ -32,7 +32,7 @@ class tableMetadata: Object {
            self.longitude == object.longitude,
            self.altitude == object.altitude,
            self.status == object.status,
-           self.tags.map(\.nkTag).elementsEqual(object.tags.map(\.nkTag)),
+           Array(self.tags).elementsEqual(Array(object.tags)),
            Array(self.shareType).elementsEqual(Array(object.shareType)) {
             return true
         } else {
@@ -1372,6 +1372,10 @@ class tableMetadataTag: Object {
 
     var nkTag: NKTag {
         NKTag(id: id, name: name, color: color)
+    }
+
+    static func == (lhs: tableMetadataTag, rhs: tableMetadataTag) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.color == rhs.color
     }
 }
 

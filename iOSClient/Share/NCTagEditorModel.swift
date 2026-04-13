@@ -88,7 +88,9 @@ import NextcloudKit
             return
         }
 
-        picker.initialHexColor = tag.color
+        if let colorHex = tag.color, let color = UIColor(hex: colorHex) {
+            picker.selectedColor = color
+        }
         picker.onColorSelected = { [weak self] hexColor in
             guard let self else { return }
             Task { @MainActor in
