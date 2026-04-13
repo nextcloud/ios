@@ -102,7 +102,7 @@ extension NCShareExtension: UICollectionViewDataSource {
             cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
         }
 
-        cell.setTags(tags: metadata.tagNames, account: metadata.account)
+        cell.setTags(tags: Array(metadata.tags))
 
         cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
 

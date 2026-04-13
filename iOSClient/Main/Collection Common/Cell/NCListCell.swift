@@ -266,7 +266,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         accessibilityValue = value
     }
 
-    func setTags(tags: [String], account: String) {
+    func setTags(tags: [tableMetadataTag]) {
         applyDefaultTagBorderStyle()
 
         if tags.isEmpty {
@@ -286,12 +286,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             tagMore.isHidden = true
 
             if tags.count >= 1 {
+                let firstTag = tags[0]
                 tag1.isHidden = false
-                tag1.text = tags[0]
+                tag1.text = firstTag.name
+                applyTagBorderStyle(tag1, colorHex: firstTag.color)
             }
             if tags.count >= 2 {
+                let secondTag = tags[1]
                 tag2.isHidden = false
-                tag2.text = tags[1]
+                tag2.text = secondTag.name
+                applyTagBorderStyle(tag2, colorHex: secondTag.color)
             }
             if tags.count > 2 {
                 tagMore.isHidden = false
@@ -314,6 +318,17 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         tag1.setNeedsDisplay()
         tag2.setNeedsDisplay()
         tagMore.setNeedsDisplay()
+    }
+
+    private func applyTagBorderStyle(_ label: PaddedAndBorderedLabel, colorHex: String?) {
+        guard let colorHex, let color = UIColor(hex: colorHex) else {
+            return
+        }
+
+        label.backgroundColor = .clear
+        label.borderColor = color
+        label.textColor = color
+        label.setNeedsDisplay()
     }
 
     func setIconOutlines() {
@@ -543,7 +558,7 @@ extension NCCollectionViewCommon {
         }
 
         // TAGS
-        cell.setTags(tags: metadata.tagNames, account: metadata.account)
+        cell.setTags(tags: Array(metadata.tags))
 
         // SearchingMode - TAG Separator Hidden
         if isSearchingMode {
