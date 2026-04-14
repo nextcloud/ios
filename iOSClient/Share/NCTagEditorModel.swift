@@ -178,6 +178,10 @@ import NextcloudKit
 
         let selectedTags = self.selectedTags
 
+        await NCManageDatabase.shared.setMetadataTagsAsync(ocId: metadata.ocId, account: metadata.account, tags: selectedTags)
+        metadata.tags.removeAll()
+        metadata.tags.append(objectsIn: selectedTags, account: metadata.account)
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
