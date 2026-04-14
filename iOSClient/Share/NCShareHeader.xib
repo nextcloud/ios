@@ -91,7 +91,7 @@
                 <constraint firstItem="Ext-Lb-shh" firstAttribute="leading" secondItem="pu4-Nd-M08" secondAttribute="trailing" id="ext-ld-shh"/>
                 <constraint firstItem="pu4-Nd-M08" firstAttribute="top" secondItem="Dkw-QP-be6" secondAttribute="bottom" constant="10" id="knE-ki-nPr"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ext-Lb-shh" secondAttribute="trailing" constant="16" id="pP5-G4-ey4"/>
-                <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="wbW-yR-MZC" secondAttribute="bottom" id="v3t-y8-sw0"/>
+                <constraint firstItem="qpa-L5-mof" firstAttribute="bottom" secondItem="wbW-yR-MZC" secondAttribute="bottom" constant="-4" id="v3t-y8-sw0"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
