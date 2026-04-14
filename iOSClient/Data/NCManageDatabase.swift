@@ -208,6 +208,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableLivePhoto.self)
         self.clearTable(tableLocalFile.self)
         self.clearTable(tableMetadata.self)
+        self.clearTable(tableMetadataTag.self)
         self.clearTable(tableRecommendedFiles.self)
         self.clearTable(tableShare.self)
     }
@@ -236,6 +237,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableLivePhoto.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
+        self.clearTable(tableMetadataTag.self, account: account)
         self.clearTable(tableRecommendedFiles.self, account: account)
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
         self.clearTable(tableShare.self, account: account)
