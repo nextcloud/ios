@@ -25,7 +25,6 @@
 import UIKit
 import Parchment
 import NextcloudKit
-import MarqueeLabel
 import TagListView
 
 protocol NCSharePagingContent {
