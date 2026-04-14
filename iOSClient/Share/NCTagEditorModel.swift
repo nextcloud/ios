@@ -133,7 +133,9 @@ import NextcloudKit
         isSaving = true
         defer { isSaving = false }
 
-        if !pendingNewTagNames.isEmpty {
+        let hasNewTags = !pendingNewTagNames.isEmpty
+
+        if hasNewTags {
             for name in pendingNewTagNames.sorted() {
                 let createResult = await NextcloudKit.shared.createTag(name: name, account: metadata.account)
                 if createResult.error != .success {
@@ -175,12 +177,11 @@ import NextcloudKit
         }
 
         let selectedTags = self.selectedTags
-        await NCManageDatabase.shared.setMetadataTagsAsync(ocId: metadata.ocId, tags: selectedTags)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferReloadDataSource(serverUrl: self.metadata.serverUrl, requestData: false, status: nil)
+            delegate.transferReloadDataSource(serverUrl: self.metadata.serverUrl, requestData: true, status: nil)
         }
 
         initialAssignedTagIDs = selectedTagIDs

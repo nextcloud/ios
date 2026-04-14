@@ -760,28 +760,6 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataTagsAsync(ocId: String, tags: [NKTag]) async {
-        await core.performRealmWriteAsync { realm in
-            guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
-                return
-            }
-
-            metadata.tags.removeAll()
-            metadata.tags.append(objectsIn: tags, account: metadata.account)
-        }
-    }
-
-    func setMetadataTagsAsync(ocId: String, tagNames: [String]) async {
-        await core.performRealmWriteAsync { realm in
-            guard let metadata = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
-                return
-            }
-
-            metadata.tags.removeAll()
-            metadata.tags.append(objectsIn: tagNames, account: metadata.account)
-        }
-    }
-
     func moveMetadataAsync(ocId: String, serverUrlTo: String) async {
         await core.performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)
@@ -1358,19 +1336,11 @@ extension NCManageDatabase {
 }
 
 class tableMetadataTag: Object {
-    @Persisted(primaryKey: true) var primaryKey = ""
+    @Persisted(primaryKey: true) var primaryKey: String
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted var name = ""
     @Persisted var color: String?
-
-    convenience init(name: String, account: String) {
-        self.init()
-        self.account = account
-        self.id = name
-        self.name = name
-        self.primaryKey = account + id
-    }
 
     convenience init(tag: NKTag, account: String) {
         self.init()
@@ -1391,10 +1361,6 @@ class tableMetadataTag: Object {
 }
 
 extension List where Element == tableMetadataTag {
-    func append(_ name: String, account: String) {
-        append(tableMetadataTag(name: name, account: account))
-    }
-
     func append(_ tag: NKTag, account: String) {
         let object = tableMetadataTag(tag: tag, account: account)
 
@@ -1407,12 +1373,6 @@ extension List where Element == tableMetadataTag {
         }
 
         append(object)
-    }
-
-    func append(objectsIn names: [String], account: String) {
-        for name in names {
-            append(name, account: account)
-        }
     }
 
     func append(objectsIn tags: [NKTag], account: String) {
