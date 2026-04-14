@@ -1345,7 +1345,7 @@ class tableMetadataTag: Object {
     convenience init(tag: NKTag, account: String) {
         self.init()
         self.account = account
-        self.id = tag.id.isEmpty ? tag.name : tag.id
+        self.id = tag.id
         self.name = tag.name
         self.color = tag.color
         self.primaryKey = account + id

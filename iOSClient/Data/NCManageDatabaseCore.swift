@@ -41,13 +41,11 @@ final class NCManageDatabaseCore {
                 }
 
                 let account = (oldObject["account"] as? String) ?? ""
-                let ocId = (oldObject["ocId"] as? String) ?? ""
                 let fileId = (oldObject["fileId"] as? String) ?? ""
-                let metadataScope = ocId.isEmpty ? fileId : ocId
 
                 let migratedTags: [MigrationObject] = oldTags.enumerated().map { index, tagName in
                     // We use a temp unique ID, as it will be replaced with server ID on a PROPFIND.
-                    let legacyId = "legacy-\(metadataScope)-\(index)"
+                    let legacyId = "legacy-\(fileId)-\(index)"
 
                     return migration.create(
                         tableMetadataTag.className(),
