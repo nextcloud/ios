@@ -7,12 +7,14 @@ import LucidBanner
 import NextcloudKit
 import Alamofire
 
+// MARK: - Show Banner
+
 @MainActor
-func showInfoBanner(windowScene: UIWindowScene?,
-                    title: String = "_info_",
-                    text: String,
-                    footnote: String? = nil,
-                    errorCode: Int? = nil) async {
+func showWarningBanner(windowScene: UIWindowScene?,
+                       subtitle: String,
+                       systemImage: String,
+                       imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+                       errorCode: Int? = nil) async {
     guard let windowScene,
           let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return
@@ -30,18 +32,18 @@ func showInfoBanner(windowScene: UIWindowScene?,
                                                   idiom: window.traitCollection.userInterfaceIdiom)
 
     let payload = LucidBannerPayload(
-        title: NSLocalizedString(title, comment: ""),
-        subtitle: NSLocalizedString(text, comment: ""),
-        footnote: NSLocalizedString(footnote ?? "", comment: ""),
-        systemImage: "checkmark.circle",
+        title: NSLocalizedString("_warning_", comment: ""),
+        subtitle: NSLocalizedString(subtitle, comment: ""),
+        systemImage: systemImage,
+        imageAnimation: imageAnimation,
         backgroundColor: Color(.systemBackground).opacity(0.4),
         textColor: Color(uiColor: .label),
-        imageColor: Color(uiColor: .systemBlue),
+        imageColor: Color(uiColor: .systemOrange),
         vPosition: .top,
         verticalMargin: 10,
         horizontalLayout: horizontalLayout,
         autoDismissAfter: NCGlobal.shared.dismissAfterSecond,
-        swipeToDismiss: true,
+        swipeToDismiss: true
     )
 
     banner.show(
@@ -51,13 +53,13 @@ func showInfoBanner(windowScene: UIWindowScene?,
             banner.dismiss()
         }
     ) { state in
-        InfoBannerView(state: state)
+        WarningBannerView(state: state)
     }
 }
 
 // MARK: - SwiftUI
 
-struct InfoBannerView: View {
+struct WarningBannerView: View {
     @ObservedObject var state: LucidBannerState
 
     var body: some View {
@@ -109,7 +111,7 @@ struct InfoBannerView: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("maintenance mode") {
     ZStack {
         Text(
             Array(0...500)
@@ -122,17 +124,45 @@ struct InfoBannerView: View {
 
         let state = LucidBannerState(
             payload: LucidBannerPayload(
-                title: "Info",
-                subtitle: "Subtitle",
-                footnote: "footnote",
-                systemImage: "checkmark.circle",
-                backgroundColor: Color(UIColor.systemBlue.withAlphaComponent(0.12)),
+                title: "_warning_",
+                subtitle: "_maintenance_mode_",
+                systemImage: "xmark.icloud.fill",
+                imageAnimation: .none,
+                backgroundColor: Color(UIColor.systemOrange.withAlphaComponent(0.12)),
                 textColor: Color(uiColor: .label),
-                imageColor: Color(uiColor: .systemBlue)
+                imageColor: Color(uiColor: .systemOrange),
             )
         )
 
-        InfoBannerView(state: state)
+        BannerView(state: state)
+        .padding()
+    }
+}
+
+#Preview("creating db photo") {
+    ZStack {
+        Text(
+            Array(0...500)
+                .map(String.init)
+                .joined(separator: "  ")
+            )
+            .font(.system(size: 16, design: .monospaced))
+            .foregroundStyle(.primary)
+            .padding()
+
+        let state = LucidBannerState(
+            payload: LucidBannerPayload(
+                title: "_info_",
+                subtitle: "_creating_db_photo_progress_",
+                systemImage: "photo.on.rectangle.angled",
+                imageAnimation: .none,
+                backgroundColor: Color(UIColor.systemBlue.withAlphaComponent(0.12)),
+                textColor: Color(uiColor: .label),
+                imageColor: Color(uiColor: .systemBlue),
+            )
+        )
+
+        BannerView(state: state)
         .padding()
     }
 }

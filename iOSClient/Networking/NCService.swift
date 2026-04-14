@@ -64,14 +64,16 @@ class NCService: NSObject {
             if serverInfo.maintenance {
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
-                await showInfoBanner(windowScene: windowScene,
-                                     title: "_warning_",
-                                     text: "_warning_owncloud_")
+                await showWarningBanner(windowScene: windowScene,
+                                        subtitle: "_warning_owncloud_",
+                                        systemImage: "xmark.icloud.fill",
+                                        imageAnimation: .none)
                 return false
             } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
-                await showInfoBanner(windowScene: windowScene,
-                                     title: "_warning_",
-                                     text: "_warning_unsupported_")
+                await showWarningBanner(windowScene: windowScene,
+                                        subtitle: "_warning_unsupported_",
+                                        systemImage: "xmark.icloud.fill",
+                                        imageAnimation: .none)
             }
         case .failure:
             return false

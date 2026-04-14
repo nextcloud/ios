@@ -6,6 +6,7 @@ import UIKit
 import NextcloudKit
 import CFNetwork
 import Foundation
+import LucidBanner
 
 class NCNetworkingE2EECreateFolder: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
@@ -14,7 +15,22 @@ class NCNetworkingE2EECreateFolder: NSObject {
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
 
+    @MainActor
     func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
+        var banner: LucidBanner?
+        var token: Int?
+        var error = NKError()
+
+        defer {
+            if let banner, let token {
+                if error == .success {
+                    completeHudIndeterminateBannerSuccess(token: token, banner: banner)
+                } else {
+                    banner.dismiss()
+                }
+            }
+        }
+
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
 
@@ -22,82 +38,49 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameIdentifier)
         fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
-        }
-        guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            error = NKError(errorCode: global.errorUnexpectedResponseFromDB,
+                            errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: ""))
+            return error
         }
 
         // TEST UPLOAD IN PROGRESS
         //
         if await networkingE2EE.isInUpload(account: session.account, serverUrl: serverUrl) {
-            return NKError(errorCode: global.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+            error = NKError(errorCode: global.errorE2EEUploadInProgress,
+                            errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+            return error
         }
 
-        func sendE2ee(e2eToken: String, fileId: String, session: NCSession.Session) async -> NKError {
-            var key: NSString?
-            var initializationVector: NSString?
-            var method = "POST"
-
-            // DOWNLOAD METADATA
-            //
-            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
-            if errorDownloadMetadata == .success {
-                method = "PUT"
-            } else if errorDownloadMetadata.errorCode != global.errorResourceNotFound {
-                return errorDownloadMetadata
-            }
-
-            NCEndToEndEncryption.shared().encodedkey(&key, initializationVector: &initializationVector)
-            guard let key = key as? String, let initializationVector = initializationVector as? String else {
-                return NKError(errorCode: global.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
-            }
-
-            let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
-            object.blob = "folders"
-            if let results = await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
-                object.metadataKey = results.metadataKey
-                object.metadataKeyIndex = results.metadataKeyIndex
-            } else {
-                guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
-                    return NKError(errorCode: global.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
-                }
-                object.metadataKey = key.base64EncodedString()
-                object.metadataKeyIndex = 0
-            }
-            object.authenticationTag = ""
-            object.fileName = fileNameFolder
-            object.key = key
-            object.initializationVector = initializationVector
-            object.mimeType = "httpd/unix-directory"
-            object.serverUrl = serverUrl
-            await self.database.addE2eEncryptionAsync(object)
-
-            // UPLOAD METADATA
-            //
-            let uploadMetadataError = await networkingE2EE.uploadMetadata(serverUrl: serverUrl,
-                                                                          ocIdServerUrl: directory.ocId,
-                                                                          fileId: fileId,
-                                                                          e2eToken: e2eToken,
-                                                                          method: method,
-                                                                          session: session)
-
-            return uploadMetadataError
+        // BANNER
+        //
+#if !EXTENSION
+        if let windowScene = SceneManager.shared.getWindow(sceneIdentifier: sceneIdentifier)?.windowScene {
+            (banner, token) = showHudIndeterminateBanner(windowScene: windowScene, title: "_e2ee_create_folder_")
         }
+#endif
 
         // LOCK
         //
         let resultsLock = await networkingE2EE.lock(account: session.account, serverUrl: serverUrl)
-        guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
-            return NKError(errorCode: global.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+        guard let e2eToken = resultsLock.e2eToken,
+              let fileId = resultsLock.fileId,
+              resultsLock.error == .success else {
+            error = NKError(errorCode: global.errorE2EELock,
+                            errorDescription: NSLocalizedString("_e2ee_no_lock_", comment: ""))
+            return error
         }
 
-        // SEND NEW METADATA
+        // UPDATE METADATA
         //
-        let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId, session: session)
-        guard sendE2eeError == .success else {
+        error = await updateMetadata(serverUrl: serverUrl,
+                                     e2eToken: e2eToken,
+                                     fileId: fileId,
+                                     fileNameIdentifier: fileNameIdentifier,
+                                     fileNameFolder: fileNameFolder,
+                                     session: session)
+        guard error == .success else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return sendE2eeError
+            return error
         }
 
         // CREATE FOLDER
@@ -112,7 +95,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = utility.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return resultsCreateFolder.error
+            error = resultsCreateFolder.error
+            return error
         }
 
         // SET FOLDER AS E2EE
@@ -127,7 +111,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return resultsMarkE2EEFolder.error
+            error = resultsMarkE2EEFolder.error
+            return error
         }
 
         // UNLOCK
@@ -147,11 +132,15 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files?.first else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
-            return resultsReadFileOrFolder.error
+            error = resultsReadFileOrFolder.error
+            return error
         }
         let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
 
         await self.database.createDirectory(metadata: metadata)
+
+        // SEND METADATA FOR THE NEW FOLDER
+        await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrlFileName, account: session.account)
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCreateFolder,
@@ -164,6 +153,69 @@ class NCNetworkingE2EECreateFolder: NSObject {
                                     error: .success)
         }
 
-        return NKError()
+        return error
+    }
+
+    func updateMetadata(serverUrl: String,
+                        e2eToken: String,
+                        fileId: String,
+                        fileNameIdentifier: String,
+                        fileNameFolder: String,
+                        session: NCSession.Session) async -> NKError {
+        var key: NSString?
+        var initializationVector: NSString?
+        var method = "POST"
+
+        guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
+            return NKError(errorCode: global.errorUnexpectedResponseFromDB,
+                           errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: ""))
+        }
+
+        // DOWNLOAD METADATA
+        //
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
+        if errorDownloadMetadata == .success {
+            method = "PUT"
+        } else if errorDownloadMetadata.errorCode != global.errorResourceNotFound {
+            return errorDownloadMetadata
+        }
+
+        NCEndToEndEncryption.shared().encodedkey(&key, initializationVector: &initializationVector)
+        guard let key = key as? String, let initializationVector = initializationVector as? String else {
+            return NKError(errorCode: global.errorE2EEEncodedKey,
+                           errorDescription: NSLocalizedString("_e2ee_no_generate_key_", comment: ""))
+        }
+
+        let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
+        object.blob = "folders"
+        if let results = await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
+            object.metadataKey = results.metadataKey
+            object.metadataKeyIndex = results.metadataKeyIndex
+        } else {
+            guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
+                return NKError(errorCode: global.errorE2EEGenerateKey,
+                               errorDescription: NSLocalizedString("_e2ee_no_generate_key_", comment: ""))
+            }
+            object.metadataKey = key.base64EncodedString()
+            object.metadataKeyIndex = 0
+        }
+        object.authenticationTag = ""
+        object.fileName = fileNameFolder
+        object.key = key
+        object.initializationVector = initializationVector
+        object.mimeType = "httpd/unix-directory"
+        object.serverUrl = serverUrl
+        await self.database.addE2eEncryptionAsync(object)
+
+        // UPLOAD METADATA
+        //
+        let uploadMetadataError = await networkingE2EE.uploadMetadata(serverUrl: serverUrl,
+                                                                      ocIdServerUrl: directory.ocId,
+                                                                      fileId: fileId,
+                                                                      e2eToken: e2eToken,
+                                                                      method: method,
+                                                                      session: session)
+
+        return uploadMetadataError
     }
 }

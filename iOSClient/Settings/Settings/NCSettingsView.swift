@@ -197,7 +197,7 @@ struct NCSettingsView: View {
                     .font(.footnote)
             })
             // E2EEncryption` Section
-            if capabilities.e2EEEnabled && NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) {
+            if capabilities.e2EEEnabled {
                 E2EESection(model: model)
             }
             // `Advanced` Section

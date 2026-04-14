@@ -863,6 +863,8 @@ extension NCCollectionViewCommon: NCSectionFooterDelegate {
     }
 }
 
+// MARK: - Transfer Delegate
+
 extension NCCollectionViewCommon: NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
@@ -887,17 +889,8 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                error.errorCode != global.errorResourceNotFound {
                 await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
-            guard session.account == account else {
-                return
-            }
 
-            if status == self.global.networkingStatusCreateFolder {
-                if error == .success,
-                   serverUrl == self.serverUrl,
-                   selector != self.global.selectorUploadAutoUpload,
-                   let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
-                    self.pushMetadata(metadata)
-                }
+            guard session.account == account else {
                 return
             }
 
@@ -905,9 +898,26 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                 await self.debouncerNetworkSearch.call {
                     await self.search()
                 }
-            } else if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
-                await self.debouncerReloadDataSource.call {
-                    await self.reloadDataSource()
+                return
+            }
+
+            switch status {
+            case self.global.networkingStatusCreateFolder:
+                if error == .success,
+                   serverUrl == self.serverUrl,
+                   selector != self.global.selectorUploadAutoUpload,
+                   let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)) {
+                    if metadata.e2eEncrypted {
+                        await self.reloadDataSource()
+                    } else {
+                        self.pushMetadata(metadata)
+                    }
+                }
+            default:
+                if self.serverUrl == serverUrl || destination == self.serverUrl || self.serverUrl.isEmpty {
+                    await self.debouncerReloadDataSource.call {
+                        await self.reloadDataSource()
+                    }
                 }
             }
         }

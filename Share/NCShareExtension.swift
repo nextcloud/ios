@@ -182,7 +182,7 @@ class NCShareExtension: UIViewController {
         if let error {
             extensionContext?.cancelRequest(withError: error)
         } else {
-            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
         }
     }
 
@@ -379,14 +379,8 @@ extension NCShareExtension {
         guard let window = self.view.window else {
             return
         }
-        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
-                                                      safeAreaInsets: window.safeAreaInsets,
-                                                      idiom: window.traitCollection.userInterfaceIdiom)
-
         let payload = LucidBannerPayload(stage: .button,
-                                         backgroundColor: Color(.systemBackground),
                                          vPosition: .center,
-                                         horizontalLayout: horizontalLayout,
                                          blocksTouches: true)
         (banner, token) = showUploadBanner(windowScene: window.windowScene,
                                            payload: payload,
@@ -416,11 +410,10 @@ extension NCShareExtension {
             banner?.update(payload: LucidBannerPayload.Update(subtitle: error?.errorDescription, stage: .error), for: self.token)
         }
 
-        if let banner, let token {
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(2))
-                banner.dismiss()
-            }
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(2))
+            banner?.dismiss()
+            extensionContext?.completeRequest(returningItems: extensionContext?.inputItems, completionHandler: nil)
         }
     }
 

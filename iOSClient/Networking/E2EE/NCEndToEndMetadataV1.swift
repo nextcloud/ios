@@ -70,7 +70,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encodeMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
+    func encodeMetadataV1(account: String, serverUrl: String, ocIdServerUrl: String) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -180,7 +180,8 @@ extension NCEndToEndMetadata {
     func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
+                           errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
         }
 
         let decoder = JSONDecoder()
@@ -208,7 +209,8 @@ extension NCEndToEndMetadata {
                 let key = String(data: keyData, encoding: .utf8) {
                 metadataKey = key
             } else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadataV12, errorDescription: "_e2e_error_")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadataV12,
+                               errorDescription: NSLocalizedString("_e2ee_no_decrypt_metadata_", comment: ""))
             }
 
             // DATA
@@ -335,7 +337,8 @@ extension NCEndToEndMetadata {
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: "_e2e_error_")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                               errorDescription: NSLocalizedString("_e2ee_no_match_checksum_", comment: ""))
             }
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
@@ -351,7 +354,8 @@ extension NCEndToEndMetadata {
     func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
+                           errorDescription: NSLocalizedString("_e2ee_decode_metadata_", comment: ""))
         }
 
         let decoder = JSONDecoder()

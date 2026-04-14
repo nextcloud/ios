@@ -52,7 +52,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     }
                 ]))
         }
-        navigationItem.hidesBackButton = true
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()

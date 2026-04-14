@@ -6,11 +6,11 @@ import SwiftUI
 import LucidBanner
 
 @MainActor
-func showHudBanner(windowScene: UIWindowScene?,
-                   title: String? = nil,
-                   subtitle: String? = nil,
-                   stage: LucidBanner.Stage? = nil,
-                   onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
+func showHudIndeterminateBanner(windowScene: UIWindowScene?,
+                                title: String? = nil,
+                                subtitle: String? = nil,
+                                stage: LucidBanner.Stage? = nil,
+                                onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene,
           let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return (nil, nil)
@@ -35,14 +35,14 @@ func showHudBanner(windowScene: UIWindowScene?,
         payload: payload,
         policy: .enqueue
     ) { state in
-        HudBannerView(state: state, onButtonTap: onButtonTap)
+        HudBannerViewIndeterminate(state: state, onButtonTap: onButtonTap)
     }
 
     return(banner, token)
 }
 
 @MainActor
-func completeHudBannerSuccess(token: Int?, banner: LucidBanner?) {
+func completeHudIndeterminateBannerSuccess(token: Int?, banner: LucidBanner?) {
     guard let banner else {
         return
     }
@@ -56,7 +56,7 @@ func completeHudBannerSuccess(token: Int?, banner: LucidBanner?) {
 }
 
 @MainActor
-func completeHudBannerError(description: String, token: Int?, banner: LucidBanner?) {
+func completeHudIndeterminateBannerError(description: String, token: Int?, banner: LucidBanner?) {
     guard let banner else {
         return
     }
@@ -70,11 +70,9 @@ func completeHudBannerError(description: String, token: Int?, banner: LucidBanne
     banner.update(payload: payload, for: token)
 }
 
-// MARK: - SwiftUI
-
-struct HudBannerView: View {
+struct HudBannerViewIndeterminate: View {
     @ObservedObject var state: LucidBannerState
-    @State private var displayedProgress: Double = 0
+    @State private var rotation: Double = 0
 
     let onButtonTap: (() -> Void)?
 
@@ -89,20 +87,10 @@ struct HudBannerView: View {
     }
 
     var body: some View {
-        let rawProgress = state.payload.progress ?? 0
-        let clampedProgress = min(max(rawProgress, 0), 1)
 
         let isSuccess = (state.payload.stage == .success)
         let isError = (state.payload.stage == .error)
         let isButton = (state.payload.stage == .button)
-
-        let visualProgress: Double = {
-            if isSuccess || isError {
-                return 1.0
-            } else {
-                return displayedProgress
-            }
-        }()
 
         let strokeColor: Color = {
             if isSuccess { return .green }
@@ -130,27 +118,38 @@ struct HudBannerView: View {
                         .multilineTextAlignment(.center)
                 }
 
-                // PROGRESS CIRCLE + CENTER CONTENT
+                // SPINNER
                 ZStack {
-                    // Background ring
-                    Circle()
-                        .stroke(
-                            .gray.opacity(0.1),
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
-                        )
-                        .frame(width: circleSize, height: circleSize)
+                    if isSuccess || isError {
+                        // FULL RING (no trim)
+                        Circle()
+                            .stroke(
+                                strokeColor,
+                                style: StrokeStyle(lineWidth: lineWidth)
+                            )
+                            .frame(width: circleSize, height: circleSize)
 
-                    // Foreground ring
-                    Circle()
-                        .trim(from: 0, to: visualProgress)
-                        .stroke(
-                            strokeColor,
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
-                        )
-                        .rotationEffect(.degrees(-90))
-                        .frame(width: circleSize, height: circleSize)
+                    } else {
+                        // Background ring
+                        Circle()
+                            .stroke(
+                                .gray.opacity(0.1),
+                                style: StrokeStyle(lineWidth: lineWidth)
+                            )
+                            .frame(width: circleSize, height: circleSize)
 
-                    // Center content:
+                        // Spinning arc
+                        Circle()
+                            .trim(from: 0.0, to: 0.25)
+                            .stroke(
+                                strokeColor,
+                                style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(rotation))
+                            .frame(width: circleSize, height: circleSize)
+                    }
+
+                    // Center content
                     Group {
                         if isSuccess {
                             Image(systemName: "checkmark")
@@ -160,11 +159,6 @@ struct HudBannerView: View {
                             Image(systemName: "xmark")
                                 .font(.icon(34, weight: .bold))
                                 .foregroundStyle(strokeColor)
-                        } else {
-                            Text("\(Int(visualProgress * 100))%")
-                                .cappedFont(.headline, maxDynamicType: .accessibility2)
-                                .monospacedDigit()
-                                .foregroundStyle(textColor)
                         }
                     }
                 }
@@ -189,47 +183,31 @@ struct HudBannerView: View {
             .padding(.vertical, 24)
         }
         .onAppear {
-            displayedProgress = clampedProgress
-        }
-        .onChange(of: state.payload.progress) { _, newValue in
-            guard let newValue else {
-                withTransaction(Transaction(animation: nil)) {
-                    displayedProgress = 0
-                }
-                return
-            }
-
-            let newClamped = min(max(newValue, 0), 1)
-
-            if newClamped < displayedProgress {
-                let wasComplete = displayedProgress >= 0.95
-                let isNewStart = newClamped <= 0.1
-
-                if wasComplete && isNewStart {
-                    withTransaction(Transaction(animation: nil)) {
-                        displayedProgress = newClamped
-                    }
-                } else {
-                    return
-                }
-            } else {
-                withAnimation(.easeInOut(duration: 0.20)) {
-                    displayedProgress = newClamped
-                }
-            }
+            startSpinning()
         }
         .onChange(of: state.payload.stage) { _, newStage in
-            if let newStage {
-                if newStage == .success || newStage == .error {
-                    withAnimation(.easeInOut(duration: 0.20)) {
-                        displayedProgress = 1.0
-                    }
-                }
+            if newStage == .success || newStage == .error {
+                stopSpinning()
             }
         }
     }
 
-    // MARK: - Container
+    // MARK: - Spinner animation
+
+    private func startSpinning() {
+        rotation = 0
+        withAnimation(.linear(duration: 1).repeatForever(autoreverses: false)) {
+            rotation = 360
+        }
+    }
+
+    private func stopSpinning() {
+        withAnimation(.easeOut(duration: 0.2)) {
+            rotation = rotation.truncatingRemainder(dividingBy: 360)
+        }
+    }
+
+    // MARK: - Container (identico)
 
     @ViewBuilder
     func hudContainerView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
@@ -263,45 +241,5 @@ struct HudBannerView: View {
                 )
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         }
-    }
-}
-
-// MARK: - Preview
-
-#Preview("HudBannerView") {
-    ZStack {
-        Text(
-            Array(0...500)
-                .map(String.init)
-                .joined(separator: "  ")
-            )
-            .font(.system(size: 16, design: .monospaced))
-            .foregroundStyle(.primary)
-            .padding()
-
-        HudBannerPreviewWrapper()
-    }
-}
-
-private struct HudBannerPreviewWrapper: View {
-    @StateObject private var state = LucidBannerState(payload: LucidBannerPayload(
-        title: "Uploading files",
-        subtitle: "Syncing your library…",
-        footnote: nil,
-        imageAnimation: .none,
-        stage: .button
-    ))
-
-    var body: some View {
-        HudBannerView(state: state)
-            .task {
-                for i in 0...100 {
-                    try? await Task.sleep(for: .milliseconds(45))
-                    state.payload.progress = Double(i) / 100
-                }
-
-                try? await Task.sleep(for: .seconds(0.4))
-                state.payload.stage = .success
-            }
     }
 }

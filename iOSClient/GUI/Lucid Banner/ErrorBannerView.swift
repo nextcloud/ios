@@ -21,12 +21,10 @@ func showErrorBanner(windowScene: UIWindowScene?,
                      title: String = "_error_",
                      text: String,
                      footnote: String? = nil,
-                     foregroundColor: UIColor = .white,
-                     backgroundColor: UIColor = .red,
-                     sleepBefore: Double = 1,
-                     errorCode: Int,
+                     errorCode: Int? = nil,
                      afError: AFError? = nil) async {
-    guard let windowScene else {
+    guard let windowScene,
+          let window = windowScene.windows.first(where: \.isKeyWindow) else {
         return
     }
 
@@ -37,25 +35,20 @@ func showErrorBanner(windowScene: UIWindowScene?,
 #endif
 
     let banner = LucidBannerRegistry.shared.banner(for: windowScene)
-
-    guard let window = banner.windowScene.windows.first else {
-        return
-    }
-
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
                                                   safeAreaInsets: window.safeAreaInsets,
                                                   idiom: window.traitCollection.userInterfaceIdiom)
 
-    try? await Task.sleep(for: .seconds(sleepBefore))
+    try? await Task.sleep(for: .seconds(0.5))
 
     let payload = LucidBannerPayload(
         title: NSLocalizedString(title, comment: ""),
         subtitle: NSLocalizedString(text, comment: ""),
         footnote: NSLocalizedString(footnote ?? "", comment: ""),
         systemImage: "xmark.circle.fill",
-        backgroundColor: Color(uiColor: backgroundColor),
-        textColor: Color(uiColor: foregroundColor),
-        imageColor: .white,
+        backgroundColor: Color(.systemBackground).opacity(0.4),
+        textColor: Color(uiColor: .label),
+        imageColor: Color(uiColor: .red),
         vPosition: .top,
         verticalMargin: 10,
         horizontalLayout: horizontalLayout,
@@ -95,7 +88,7 @@ struct ErrorBannerView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         if showTitle, let title = state.payload.title {
                             Text(title)
-                                .cappedFont(.title3, maxDynamicType: .accessibility2)
+                                .cappedFont(.headline, maxDynamicType: .accessibility2)
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .truncationMode(.tail)
@@ -145,9 +138,9 @@ struct ErrorBannerView: View {
                 subtitle: "Subtitle",
                 footnote: "footnote",
                 systemImage: "xmark.circle.fill",
-                backgroundColor: .red,
-                textColor: .white,
-                imageColor: .white
+                backgroundColor: Color(UIColor.red.withAlphaComponent(0.12)),
+                textColor: Color(uiColor: .label),
+                imageColor: Color(uiColor: .red)
             )
         )
 

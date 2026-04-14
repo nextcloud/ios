@@ -74,9 +74,7 @@
 "_denied_album_"            = "This app does not have access to \"Photos\". You can enable access in Privacy Settings.";
 "_denied_camera_"           = "This app does not have access to the \"Camera\". You can enable access in Privacy Settings.";
 "_force_start_"             = "Force the start";
-"_account_not_available_"   = "The account %@ of %@ does not exist, please add it.";
-"_the_account_"             = "The account";
-"_does_not_exist_"          = "does not exist";
+"_account_does_not_exist_"  = "The account %@ does not exist. Please log in again.";
 "_sharing_"                 = "Sharing";
 "_details_"                 = "Details";
 "_no_permission_add_file_"  = "You don't have permission to add files.";
@@ -469,7 +467,6 @@
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_file_encrypted_"              = "File encrypted";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
-"_e2e_error_"                       = "An internal end-to-end encryption error occurred.";
 "_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred.";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
@@ -727,6 +724,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_assistant_error_send_message_"  = "Could not send message. Please try again.";
 "_assistant_error_load_messages_" = "Could not load messages. Please try again.";
 "_assistant_error_generate_response_" = "Could not generate response. Please try again.";
+
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate.";
 "_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
@@ -756,15 +754,48 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_albums_" = "Albums";
 "_new_photos_only_" = "New photos only";
 "_all_photos_" = "All photos";
-//"_back_up_" = "Back up...";
 "_back_up_new_photos_only_" = "Back up new photos/videos only";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
 "_item_with_same_name_already_exists_" = "An item with the same name already exists.";
 
 // MARK: Migration Multi Domains
-
 "_preparing_migration_" = "Preparing migration …";
 "_scanning_files_" = "Scanning files …";
 "_moving_items_to_domain_" = "Moving items to correct domain …";
 "_finishing_up_" = "Finishing up …";
+
+// MARK: E2EE
+"_e2ee_no_session_" = "End-to-end encryption error, no account for this session";
+"_e2ee_no_dir_" = "End-to-end encryption error, cannot get directory";
+"_e2ee_no_certificate_" = "End-to-end encryption error, cannot get certificate";
+"_e2ee_no_generate_key_" = "End-to-end encryption error, cannot generate key";
+"_e2ee_no_user_found_" = "End-to-end encryption error, user not found";
+"_e2ee_no_signature_found_" = "End-to-end encryption error, no signature found";
+"_e2ee_counter_check_" = "End-to-end encryption error, the counter is lower than the previous one";
+"_e2ee_signature_failed_" = "End-to-end encryption error, verify signature failed";
+"_e2ee_enc_payload_" = "End-to-end encryption error, encrypt payload file";
+"_e2ee_no_metadata_" = "End-to-end encryption error, cannot get metadata";
+"_e2ee_filedrop_ciphertext_" = "End-to-end encryption error, filedrop ciphertext failed";
+"_e2ee_key_ciphertext_" = "End-to-end encryption error, key ciphertext failed";
+"_e2ee_key_checksums_" = "End-to-end encryption error, key checksums failed";
+"_e2ee_decode_metadata_" = "End-to-end encryption error, cannot decode metadata";
+"_e2ee_no_lock_" = "End-to-end encryption error, unable to lock file";
+"_e2ee_no_decrypt_metadata_" = "End-to-end encryption error, cannot decrypt metadata";
+"_e2ee_no_enc_file_" = "End-to-end encryption error, cannot encrypt file";
+"_e2ee_no_enc_key_" = "End-to-end encryption error, cannot get encoded key";
+"_e2ee_no_match_checksum_" = "End-to-end encryption error, checksum does not match";
+"_e2ee_create_folder_" = "End-to-end encryption directory creation in progress, please wait …";
+"_e2ee_rename_file_" = "End-to-end encryption rename in progress, please wait …";
+"_e2ee_encrypt_folder_" = "End-to-end encryption folder in progress, please wait …";
+"_e2ee_setup_get_certificate_" = "Server did not return a certificate";
+"_e2ee_setup_create_csr_" = "Unable to generate certificate signing request (CSR)";
+"_e2ee_setup_sign_certificate_" = "Server did not return a certificate after signing request";
+"_e2ee_setup_extract_publickey_" = "Public key mismatch between generated key and certificate";
+"_e2ee_setup_get_privatekey_" = "Server did not return an encrypted private key";
+"_e2ee_setup_passphrase_error_" = "The provided passphrase is incorrect";
+"_e2ee_setup_get_publickey_" = "Server did not return an encrypted public key";
+"_e2ee_setup_encript_privatekey_" = "Unable to encrypt the private key";
+"_e2ee_setup_store_privatekey_" = "Private key generation returned no usable key";
+"_e2ee_setup_verify_publickey_" = "Public key does not match the certificate";
+"_e2ee_setup_generate_passphrase_" = "Unable to generate a passphrase";

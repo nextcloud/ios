@@ -16,10 +16,26 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
                 if !NCPreferences().isEndToEndEnabled(account: metadata.account) {
-                    let e2ee = NCEndToEndInitialize()
-                    e2ee.delegate = self
-                    e2ee.initEndToEndEncryption(controller: self.controller, metadata: metadata)
-                    return
+                    do {
+                        let e2ee = NCEndToEndSetup(controller: controller)
+                        try await e2ee.start()
+                    } catch let error as NKError {
+                        if error.errorCode == NSUserCancelledError {
+                            return
+                        }
+                        await showErrorBanner(
+                            windowScene: windowScene,
+                            text: error.errorDescription
+                        )
+                        return
+                    } catch {
+                        // fallback (non NKError)
+                        await showErrorBanner(
+                            windowScene: windowScene,
+                            text: error.localizedDescription
+                        )
+                        return
+                    }
                 }
             } else {
                 await showInfoBanner(windowScene: windowScene, text: "_e2e_server_disabled_")

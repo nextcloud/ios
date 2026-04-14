@@ -38,7 +38,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.imageItem.image = image
             self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)
         }
-        
+
         self.accessibilityLabel = tableTrash.trashbinFileName + ", " + (self.labelInfo?.text ?? "")
 
         if self is NCTrashGridCell {

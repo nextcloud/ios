@@ -37,7 +37,8 @@ class NCNetworkingE2EEUpload: NSObject {
         }
         guard let session,
               !session.account.isEmpty else {
-            return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound,
+                           errorDescription: NSLocalizedString("_e2ee_no_session_", comment: ""))
         }
 
         defer {
@@ -71,7 +72,8 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
-            finalError = NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            finalError = NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB,
+                                 errorDescription: NSLocalizedString("_e2ee_no_dir_", comment: ""))
             return finalError
         }
 
@@ -82,11 +84,13 @@ class NCNetworkingE2EEUpload: NSObject {
             // ENCRYPT FILE
             //
             if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
-                finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile,
+                                     errorDescription: NSLocalizedString("_e2ee_no_enc_file_", comment: ""))
                 return finalError
             }
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
-                finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey,
+                                     errorDescription: NSLocalizedString("_e2ee_no_enc_key_", comment: ""))
                 return finalError
             }
 
@@ -109,7 +113,8 @@ class NCNetworkingE2EEUpload: NSObject {
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
                 guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
-                    finalError = NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                    finalError = NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey,
+                                         errorDescription: NSLocalizedString("_e2ee_no_generate_key_", comment: ""))
                     return finalError
                 }
                 object.metadataKey = key.base64EncodedString()
@@ -145,7 +150,8 @@ class NCNetworkingE2EEUpload: NSObject {
                 resultsLock.error == .success
         else {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            finalError = NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            finalError = NKError(errorCode: NCGlobal.shared.errorE2EELock,
+                                 errorDescription: NSLocalizedString("_e2ee_no_lock_", comment: ""))
             return finalError
         }
 
@@ -196,8 +202,15 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.sessionError = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
+            // Remove if exists same file name view
+            if let metadataExists = await self.database.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@ ", metadata.account, metadata.serverUrl, metadata.fileNameView)) {
+                await self.database.deleteMetadataAsync(ocId: metadataExists.ocId)
+                await self.database.deleteLocalFileAsync(id: metadataExists.ocId)
+            }
+
             await self.database.addMetadataAsync(metadata)
             await self.database.addLocalFilesAsync(metadatas: [metadata])
+
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in

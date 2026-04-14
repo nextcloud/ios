@@ -8,8 +8,7 @@ import NextcloudKit
 import LocalAuthentication
 
 @MainActor
-class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
-    let endToEndInitialize = NCEndToEndInitialize()
+class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscodeViewControllerDelegate {
     var passcodeType = ""
 
     @Published var controller: NCMainTabBarController?
@@ -32,18 +31,18 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     init(controller: NCMainTabBarController?) {
         super.init()
         self.controller = controller
-        endToEndInitialize.delegate = self
         onViewAppear()
     }
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        if capabilities.e2EEEnabled && NCGlobal.shared.e2eeCompatibleVersions.contains(capabilities.e2EEApiVersion) {
+        if capabilities.e2EEEnabled {
             isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
             } else {
-                endToEndInitialize.statusOfService(session: session) { error in
+                NextcloudKit.shared.getE2EECertificate(account: session.account) { _ in
+                } completion: { _, _, _, _, error in
                     if error == .success {
                         self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
                     } else {
@@ -69,8 +68,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         self.passcodeType = passcodeType
         correctPasscode()
         return
-        #endif
-
+        #else
         let laContext = LAContext()
         var error: NSError?
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
@@ -92,12 +90,33 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
 
         self.passcodeType = passcodeType
         controller?.present(passcodeViewController, animated: true)
+        #endif
     }
 
     @objc func correctPasscode() {
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(controller: controller, metadata: nil)
+            Task {
+                do {
+                    let e2ee = NCEndToEndSetup(controller: controller)
+                    try await e2ee.start()
+                    isEndToEndEnabled = true
+                } catch let error as NKError {
+                    if error.errorCode == NSUserCancelledError {
+                        return
+                    }
+                    await showErrorBanner(
+                        windowScene: windowScene,
+                        text: error.errorDescription
+                    )
+                } catch {
+                    // fallback (non NKError)
+                    await showErrorBanner(
+                        windowScene: windowScene,
+                        text: error.localizedDescription
+                    )
+                }
+            }
         case "readPassphrase":
             if let e2ePassphrase = NCPreferences().getEndToEndPassphrase(account: session.account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)

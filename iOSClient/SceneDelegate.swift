@@ -224,14 +224,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !NextcloudKit.shared.isNetworkReachable(),
            let windowScenee = SceneManager.shared.getWindow(scene: scene)?.windowScene {
             Task {
-                await showBanner(windowScene: windowScenee,
-                                 title: "_info_",
-                                 subtitle: "_network_not_available_",
-                                 textColor: .label,
-                                 image: "wifi.exclamationmark.circle",
-                                 imageAnimation: .bounce,
-                                 imageColor: .label,
-                                 backgroundColor: UIColor.lightGray.withAlphaComponent(0.75))
+                await showWarningBanner(windowScene: windowScenee,
+                                        subtitle: "_network_not_available_",
+                                        systemImage: "wifi.exclamationmark.circle",
+                                        imageAnimation: .bounce,
+                                        errorCode: NSURLErrorNotConnectedToInternet)
             }
         }
     }
@@ -352,7 +349,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 Task {
                     if await getMatchedAccount(user: userScheme, url: urlScheme) == nil {
-                        let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
+                        let message = String(
+                            format: NSLocalizedString("account_does_not_exist", comment: ""),
+                            userScheme,
+                        )
+
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 

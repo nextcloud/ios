@@ -318,6 +318,16 @@ actor NCNetworkingProcess {
         let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
+        // Banner
+        var banner: LucidBanner?
+        var token: Int?
+        defer {
+            if let banner {
+                Task { @MainActor in
+                    banner.dismiss()
+                }
+            }
+        }
 
         // WEBDAV
         //
@@ -430,30 +440,26 @@ actor NCNetworkingProcess {
                 // UPLOAD E2EE
                 //
                 if metadata.isDirectoryE2EE,
-                   let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-                   let window = await windowScene.windows.first {
+                   let windowScene = await SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    let horizontalLayout = await horizontalLayoutBanner(bounds: window.bounds,
-                                                                        safeAreaInsets: window.safeAreaInsets,
-                                                                        idiom: window.traitCollection.userInterfaceIdiom)
-                    let payload = LucidBannerPayload(backgroundColor: Color(.systemBackground),
-                                                     horizontalLayout: horizontalLayout,
-                                                     blocksTouches: true,
+                    let payload = LucidBannerPayload(blocksTouches: true,
                                                      draggable: false)
-                    let bannerResults = await showUploadBanner(windowScene: windowScene,
-                                                       payload: payload,
-                                                       allowMinimizeOnTap: false,
-                                                       onButtonTap: {
-                        Task {
-                            await self.cancelCurrentUpload()
-                        }
-                    })
+                    if banner == nil {
+                        (banner, token) = await showUploadBanner(windowScene: windowScene,
+                                                                 payload: payload,
+                                                                 allowMinimizeOnTap: false,
+                                                                 onButtonTap: {
+                            Task {
+                                await self.cancelCurrentUpload()
+                            }
+                        })
+                    }
 
                     await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           controller: controller,
-                                                          banner: bannerResults.banner,
+                                                          banner: banner,
                                                           stageBanner: .button,
-                                                          tokenBanner: bannerResults.token) { uploadRequest in
+                                                          tokenBanner: token) { uploadRequest in
                         Task {@MainActor in
                             self.currentUploadRequest = uploadRequest
                         }
@@ -461,11 +467,6 @@ actor NCNetworkingProcess {
                         Task {@MainActor in
                             self.currentUploadTask = task
                         }
-                    }
-
-                    // wait dismiss banner before open another (loop)
-                    if let banner = bannerResults.banner {
-                        await banner.dismiss()
                     }
 
                 // UPLOAD CHUNK
@@ -487,22 +488,16 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        guard let windowScene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene,
-              let window = windowScene.windows.first else {
+        guard let windowScene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene else {
             return
         }
         var token: Int?
         var banner: LucidBanner?
-        let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
-                                                      safeAreaInsets: window.safeAreaInsets,
-                                                      idiom: window.traitCollection.userInterfaceIdiom)
 
         (banner, token) = showUploadBanner(windowScene: windowScene,
                                            payload: LucidBannerPayload(stage: .button,
-                                                                       backgroundColor: Color(.systemBackground),
                                                                        vPosition: .bottom,
                                                                        verticalMargin: 50,
-                                                                       horizontalLayout: horizontalLayout,
                                                                        blocksTouches: false,
                                                                        draggable: true),
                                            allowMinimizeOnTap: true,

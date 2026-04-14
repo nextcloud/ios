@@ -90,6 +90,14 @@ extension NCManageDatabase {
        }
     }
 
+    func deleteLocalFileAsync(predicate: NSPredicate) async {
+        await core.performRealmWriteAsync { realm in
+            let result = realm.objects(tableLocalFile.self)
+                .filter(predicate)
+            realm.delete(result)
+        }
+    }
+
     func deleteLocalFileAsync(id: String?) async {
         guard let id else { return }
 

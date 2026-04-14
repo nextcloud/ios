@@ -72,10 +72,11 @@ extension NCNetworking {
                 if serverInfo.maintenance {
                     Task {
                         let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                        await showInfoBanner(windowScene: windowScene,
-                                             title: "_warning_",
-                                             text: "_maintenance_mode_",
-                                             errorCode: 401)
+                        await showWarningBanner(windowScene: windowScene,
+                                                subtitle: "_maintenance_mode_",
+                                                systemImage: "xmark.icloud.fill",
+                                                imageAnimation: .none,
+                                                errorCode: 401)
                     }
                 }
             case .failure:

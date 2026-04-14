@@ -241,7 +241,8 @@ class NCContextMenuMain: NSObject {
                 let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(
                     account: metadata.account,
                     serverUrlFileName: metadata.serverUrlFileName,
-                    userId: metadata.userId
+                    userId: metadata.userId,
+                    sceneIdentifier: self.sceneIdentifier
                 )
                 if error != .success {
                     await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription, errorCode: error.errorCode)
@@ -283,7 +284,6 @@ class NCContextMenuMain: NSObject {
                     await (self.viewController as? NCCollectionViewCommon)?.reloadDataSource()
                 } else {
                     await showErrorBanner(windowScene: self.windowScene,
-                                          title: "_e2e_error_",
                                           text: results.error.errorDescription,
                                           errorCode: results.error.errorCode)
                 }
@@ -364,7 +364,7 @@ class NCContextMenuMain: NSObject {
                     return
                 }
 
-                let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
+                let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew, windowScene: self.windowScene)
                 if error != .success {
                     await showErrorBanner(windowScene: self.windowScene, error: error)
                 }

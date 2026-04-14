@@ -98,14 +98,6 @@ final class NCGlobal: Sendable {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    let e2eeCompatibleVersions                      = ["1.1", "1.2", "2.0", "2.1"]
-
-    func isE2eeVersion2(_ version: String) -> Bool {
-        if version == "2.0" || version == "2.1" {
-            return true
-        }
-        return false
-    }
 
     // CHUNK
     let chunkSizeMBCellular                         = 10000000
@@ -164,6 +156,7 @@ final class NCGlobal: Sendable {
     let errorConflict: Int                      = 409
     let errorPreconditionFailed: Int            = 412
     let errorUnsupportedMediaType: Int          = 415
+    let errorExpectationFailed: Int             = 417
     let errorInternalServerError: Int           = 500
     let errorMaintenance: Int                   = 503
     let errorQuota: Int                         = 507
