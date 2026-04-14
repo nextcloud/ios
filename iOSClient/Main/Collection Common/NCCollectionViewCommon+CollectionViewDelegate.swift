@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-FileCopyrightText: 2025 Serhii Kaliberda
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -71,51 +72,62 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
-            let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)
+            Task { @MainActor in
+                let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+                let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)
 
-            // --- E2EE -------
-            if metadata.isDirectoryE2EE {
-                if fileExists {
-                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
+                // --- E2EE -------
+                if metadata.isDirectoryE2EE {
+                    if fileExists {
+                        if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    } else {
+                        await downloadFile()
+                    }
+                    return
+                }
+                // ---------------
+
+                if metadata.isImage || metadata.isAudioOrVideo {
+                    let metadatas = self.dataSource.getMetadatas()
+
+                    let siblingMedia: [tableMetadata]
+                    let siblingMetadatasOcIds: [String]
+                    if self.layoutKey == NCGlobal.shared.layoutViewFiles {
+                        siblingMedia = metadatas.filter { $0.classFile == metadata.classFile }
+                        siblingMetadatasOcIds = siblingMedia.map(\.ocId)
+                    } else {
+                        siblingMedia = [metadata]
+                        siblingMetadatasOcIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
+                            $0.classFile == NKTypeClassFile.video.rawValue ||
+                            $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
+                    }
+
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? siblingMetadatasOcIds : nil, siblingMedia: siblingMedia, image: image, delegate: self) {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                } else if !metadata.isDirectoryE2EE, metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: self) {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                } else if NextcloudKit.shared.isNetworkReachable() {
+                    guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                               session: self.networking.sessionDownload,
+                                                                                               selector: global.selectorLoadFileView,
+                                                                                               sceneIdentifier: self.controller?.sceneIdentifier) else {
+                        return
+                    }
+
+                    if metadata.name == "files" {
+                        await downloadFile()
+                    } else if !metadata.url.isEmpty,
+                              let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 } else {
-                    await downloadFile()
+                    await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
                 }
-                return
-            }
-            // ---------------
-
-            if metadata.isImage || metadata.isAudioOrVideo {
-                let metadatas = self.dataSource.getMetadatas()
-                let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
-                    $0.classFile == NKTypeClassFile.video.rawValue ||
-                    $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
-
-                if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image, delegate: self) {
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            } else if !metadata.isDirectoryE2EE, metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
-                if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: self) {
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            } else if NextcloudKit.shared.isNetworkReachable() {
-                guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                           session: self.networking.sessionDownload,
-                                                                                           selector: global.selectorLoadFileView,
-                                                                                           sceneIdentifier: self.controller?.sceneIdentifier) else {
-                    return
-                }
-
-                if metadata.name == "files" {
-                    await downloadFile()
-                } else if !metadata.url.isEmpty,
-                          let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            } else {
-                await showErrorBanner(controller: controller, text: "_go_online_", errorCode: NCGlobal.shared.errorOffline)
             }
         }
     }
