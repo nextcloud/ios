@@ -624,7 +624,7 @@ class NCMediaCoordinator: NSObject {
     @MainActor
     private func createStrategy(for url: URL) async -> NCMediaCoordinatorStrategy {
         let avKitStrategy = NCMediaCoordinatorAVKitStrategy(context: self, url: url)
-        let isPlayableByAVKit = await avKitStrategy.isSupported(url: url)
+        let isPlayableByAVKit = await avKitStrategy.isSupported()
 
         let strategy: NCMediaCoordinatorStrategy
         if isPlayableByAVKit {

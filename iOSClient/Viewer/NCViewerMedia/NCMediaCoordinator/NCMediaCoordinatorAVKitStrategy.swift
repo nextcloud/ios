@@ -47,7 +47,7 @@ class NCMediaCoordinatorAVKitStrategy: NSObject, NCMediaCoordinatorStrategy {
     private var playbackEndedObserver: Any?
     private var playingTimeControlStatusObserver: NSKeyValueObservation?
 
-    private var pictureInPictureController: AVPictureInPictureController?
+    private let pictureInPictureController: AVPictureInPictureController?
 
     private var isAudioSessionActive: Bool = false
     private let session = AVAudioSession.sharedInstance()
@@ -62,13 +62,17 @@ class NCMediaCoordinatorAVKitStrategy: NSObject, NCMediaCoordinatorStrategy {
         self.context = context
         self.url = url
         self.playerItem = AVPlayerItem(url: url)
+        self.pictureInPictureController = AVPictureInPictureController(playerLayer: videoOutputView.playerLayer)
+        self.pictureInPictureController?.canStartPictureInPictureAutomaticallyFromInline = true
+        super.init()
+        self.pictureInPictureController?.delegate = self
     }
 
     deinit {
         removeObservers()
     }
 
-    func isSupported(url: URL) async -> Bool {
+    func isSupported() async -> Bool {
         let isPlayable = try? await playerItem?.asset.load(.isPlayable)
         return isPlayable == true
     }
@@ -237,7 +241,6 @@ class NCMediaCoordinatorAVKitStrategy: NSObject, NCMediaCoordinatorStrategy {
         player?.seek(to: .zero)
         removeObservers()
         pictureInPictureController?.stopPictureInPicture()
-        pictureInPictureController = nil
         player = nil
         playerItem = nil
         url = nil
@@ -250,7 +253,6 @@ class NCMediaCoordinatorAVKitStrategy: NSObject, NCMediaCoordinatorStrategy {
         removeObservers()
         pictureInPictureController?.stopPictureInPicture()
         context.handlePictureInPictureStateChanged(isActive: false, dueToPlaybackEnded: true)
-        pictureInPictureController = nil
         player = nil
         deactivateAudioSessionIfNeeded()
     }
@@ -278,28 +280,19 @@ class NCMediaCoordinatorAVKitStrategy: NSObject, NCMediaCoordinatorStrategy {
     func startPictureInPicture() {
         guard isPictureInPictureSupported else { return }
 
-        if pictureInPictureController == nil {
-            let controller = AVPictureInPictureController(playerLayer: videoOutputView.playerLayer)
-            controller?.canStartPictureInPictureAutomaticallyFromInline = true
-            controller?.delegate = self
-            pictureInPictureController = controller
-        }
-
-        guard let controller = pictureInPictureController,
-              !controller.isPictureInPictureActive else {
+        if pictureInPictureController?.isPictureInPictureActive ?? false {
             return
         }
 
-        controller.startPictureInPicture()
+        pictureInPictureController?.startPictureInPicture()
     }
 
     func stopPictureInPicture() {
-        guard let controller = pictureInPictureController,
-              controller.isPictureInPictureActive else {
+        guard pictureInPictureController?.isPictureInPictureActive ?? false else {
             return
         }
 
-        controller.stopPictureInPicture()
+        pictureInPictureController?.stopPictureInPicture()
     }
 
     func play() {
@@ -533,12 +526,10 @@ extension NCMediaCoordinatorAVKitStrategy: AVPictureInPictureControllerDelegate 
     }
 
     func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        self.pictureInPictureController = nil
         context.handlePictureInPictureStateChanged(isActive: false, dueToPlaybackEnded: false)
     }
 
     func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
-        self.pictureInPictureController = nil
         context.handlePictureInPictureStateChanged(isActive: false, dueToPlaybackEnded: false)
     }
 
