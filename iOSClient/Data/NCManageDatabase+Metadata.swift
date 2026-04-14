@@ -767,7 +767,7 @@ extension NCManageDatabase {
             }
 
             metadata.tags.removeAll()
-            metadata.tags.append(objectsIn: tags)
+            metadata.tags.append(objectsIn: tags, account: metadata.account)
         }
     }
 
@@ -778,7 +778,7 @@ extension NCManageDatabase {
             }
 
             metadata.tags.removeAll()
-            metadata.tags.append(objectsIn: tagNames)
+            metadata.tags.append(objectsIn: tagNames, account: metadata.account)
         }
     }
 
@@ -1358,20 +1358,27 @@ extension NCManageDatabase {
 }
 
 class tableMetadataTag: Object {
-    @objc dynamic var id = ""
-    @objc dynamic var name = ""
-    @objc dynamic var color: String?
+    @Persisted(primaryKey: true) var primaryKey = ""
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var name = ""
+    @Persisted var color: String?
 
-    convenience init(name: String) {
+    convenience init(name: String, account: String) {
         self.init()
+        self.account = account
+        self.id = name
         self.name = name
+        self.primaryKey = account + id
     }
 
-    convenience init(tag: NKTag) {
+    convenience init(tag: NKTag, account: String) {
         self.init()
-        self.id = tag.id
+        self.account = account
+        self.id = tag.id.isEmpty ? tag.name : tag.id
         self.name = tag.name
         self.color = tag.color
+        self.primaryKey = account + id
     }
 
     var nkTag: NKTag {
@@ -1384,23 +1391,33 @@ class tableMetadataTag: Object {
 }
 
 extension List where Element == tableMetadataTag {
-    func append(_ name: String) {
-        append(tableMetadataTag(name: name))
+    func append(_ name: String, account: String) {
+        append(tableMetadataTag(name: name, account: account))
     }
 
-    func append(_ tag: NKTag) {
-        append(tableMetadataTag(tag: tag))
+    func append(_ tag: NKTag, account: String) {
+        let object = tableMetadataTag(tag: tag, account: account)
+
+        if let realm {
+            realm.add(object, update: .all)
+            if let managedObject = realm.object(ofType: tableMetadataTag.self, forPrimaryKey: object.primaryKey) {
+                append(managedObject)
+                return
+            }
+        }
+
+        append(object)
     }
 
-    func append(objectsIn names: [String]) {
+    func append(objectsIn names: [String], account: String) {
         for name in names {
-            append(name)
+            append(name, account: account)
         }
     }
 
-    func append(objectsIn tags: [NKTag]) {
+    func append(objectsIn tags: [NKTag], account: String) {
         for tag in tags {
-            append(tag)
+            append(tag, account: account)
         }
     }
 }

@@ -39,11 +39,14 @@ final class NCManageDatabaseCore {
                 } else {
                     oldTags = []
                 }
+                let account = (oldObject["account"] as? String) ?? ""
 
                 let migratedTags = oldTags.map { tagName in
                     migration.create(
                         tableMetadataTag.className(),
                         value: [
+                            "primaryKey": account + tagName,
+                            "account": account,
                             "id": "",
                             "name": tagName,
                             "color": ""

@@ -180,9 +180,9 @@ class NCSharePaging: UIViewController {
         header.presentTagEditor(from: self) { [weak self] tags in
             guard let self else { return }
             self.metadata.tags.removeAll()
-            self.metadata.tags.append(objectsIn: tags)
+            self.metadata.tags.append(objectsIn: tags, account: self.metadata.account)
             self.pagingViewController.metadata.tags.removeAll()
-            self.pagingViewController.metadata.tags.append(objectsIn: tags)
+            self.pagingViewController.metadata.tags.append(objectsIn: tags, account: self.pagingViewController.metadata.account)
         }
     }
 

@@ -88,9 +88,10 @@ class NCShareHeader: UIView {
             initialTags: metadata.tagNames,
             windowScene: sourceViewController.view.window?.windowScene,
             onApplied: { [weak self] tags in
-                self?.metadata.tags.removeAll()
-                self?.metadata.tags.append(objectsIn: tags)
-                self?.refreshTags(tags.map(\.name), tagModels: tags)
+                guard let self else { return }
+                self.metadata.tags.removeAll()
+                self.metadata.tags.append(objectsIn: tags, account: self.metadata.account)
+                self.refreshTags(tags.map(\.name), tagModels: tags)
                 onApplied?(tags)
             }
         )
