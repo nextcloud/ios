@@ -129,7 +129,6 @@
 		F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A32BAB63EE006B5430 /* QRCodeReader */; };
 		F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A52BAB63EE006B5430 /* SwiftRichString */; };
 		F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A92BAB63EE006B5430 /* MarkdownKit */; };
-		F37208AE2BAB63EE006B5430 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AD2BAB63EE006B5430 /* MarqueeLabel */; };
 		F37208B02BAB63EF006B5430 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AF2BAB63EF006B5430 /* Queuer */; };
 		F37208B22BAB63EF006B5430 /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B12BAB63EF006B5430 /* DropDown */; };
 		F37208B42BAB63EF006B5430 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B32BAB63EF006B5430 /* Parchment */; };
@@ -442,7 +441,6 @@
 		F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD767290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
-		F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = F75EAED726D2552E00F4320E /* MarqueeLabel */; };
 		F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE022AE66EA80027D78A /* KeychainAccess */; };
 		F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE042AE66EBE0027D78A /* KeychainAccess */; };
 		F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE062AE66EC70027D78A /* KeychainAccess */; };
@@ -1874,7 +1872,6 @@
 				F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */,
 				F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */,
 				F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */,
-				F37208AE2BAB63EE006B5430 /* MarqueeLabel in Frameworks */,
 				F37208C02BAB63F0006B5430 /* Mantis in Frameworks */,
 				F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */,
 				F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */,
@@ -1977,7 +1974,6 @@
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
-				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */,
 			);
@@ -3471,7 +3467,6 @@
 				F37208A32BAB63EE006B5430 /* QRCodeReader */,
 				F37208A52BAB63EE006B5430 /* SwiftRichString */,
 				F37208A92BAB63EE006B5430 /* MarkdownKit */,
-				F37208AD2BAB63EE006B5430 /* MarqueeLabel */,
 				F37208AF2BAB63EF006B5430 /* Queuer */,
 				F37208B12BAB63EF006B5430 /* DropDown */,
 				F37208B32BAB63EF006B5430 /* Parchment */,
@@ -3644,7 +3639,6 @@
 				F72DA9B325F53E4E00B87DB1 /* SwiftRichString */,
 				F788ECC6263AAAFA00ADC67F /* MarkdownKit */,
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
-				F75EAED726D2552E00F4320E /* MarqueeLabel */,
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA968277B77EA0082465B /* DropDown */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
@@ -3827,7 +3821,6 @@
 				F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */,
 				F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */,
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
 				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
@@ -6104,14 +6097,6 @@
 				kind = branch;
 			};
 		};
-		F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/cbpowell/MarqueeLabel";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.3.0;
-			};
-		};
 		F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
@@ -6164,7 +6149,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = 7.2.7;
+				branch = "tags-manage";
 				kind = branch;
 			};
 		};
@@ -6306,11 +6291,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
-		};
-		F37208AD2BAB63EE006B5430 /* MarqueeLabel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
-			productName = MarqueeLabel;
 		};
 		F37208AF2BAB63EF006B5430 /* Queuer */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -6506,11 +6486,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */;
 			productName = EasyTipView;
-		};
-		F75EAED726D2552E00F4320E /* MarqueeLabel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75EAED626D2552E00F4320E /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
-			productName = MarqueeLabel;
 		};
 		F760DE022AE66EA80027D78A /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
