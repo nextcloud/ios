@@ -412,9 +412,17 @@ class NCContextMenuMain: NSObject {
         ) { _ in
             if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil)
                 .instantiateInitialViewController() as? NCColorPicker {
-
-                picker.metadata = metadata
-                picker.collectionViewCommon = self.viewController as? NCFiles
+                if let tableDirectory = NCManageDatabase.shared.getTableDirectory(
+                    predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName)
+                ), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
+                    picker.selectedColor = color
+                }
+                picker.onColorSelected = { [weak self] hexColor in
+                    Task { @MainActor in
+                        await NCManageDatabase.shared.updateDirectoryColorFolderAsync(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
+                        (self?.viewController as? NCFiles)?.collectionView.reloadData()
+                    }
+                }
                 let popup = NCPopupViewController(
                     contentController: picker,
                     popupWidth: 200,

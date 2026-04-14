@@ -53,6 +53,14 @@ class NCSharePaging: UIViewController {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(exitTapped(_:)))
 
+        let manageTagsAction = UIAction(title: NSLocalizedString("_edit_tags_", comment: ""), image: UIImage(systemName: "tag")) { [weak self] _ in
+            self?.editTagsTapped(nil)
+        }
+
+        let moreButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: nil, action: nil)
+        moreButton.menu = UIMenu(children: [manageTagsAction])
+        navigationItem.rightBarButtonItem = moreButton
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -117,10 +125,6 @@ class NCSharePaging: UIViewController {
         if !capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty {
             self.dismiss(animated: false, completion: nil)
         }
-
-//        pagingViewController.menuItemSize = .fixed(
-//            width: self.view.bounds.width / CGFloat(self.pages.count),
-//            height: 40)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -166,6 +170,20 @@ class NCSharePaging: UIViewController {
 
     @objc func exitTapped(_ sender: Any?) {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    @objc func editTagsTapped(_ sender: Any?) {
+        guard let header = (pagingViewController.view as? NCSharePagingView)?.header else {
+            return
+        }
+
+        header.presentTagEditor(from: self) { [weak self] tags in
+            guard let self else { return }
+            self.metadata.tags.removeAll()
+            self.metadata.tags.append(objectsIn: tags, account: self.metadata.account)
+            self.pagingViewController.metadata.tags.removeAll()
+            self.pagingViewController.metadata.tags.append(objectsIn: tags, account: self.pagingViewController.metadata.account)
+        }
     }
 
     @objc func applicationDidEnterBackground(notification: Notification) {

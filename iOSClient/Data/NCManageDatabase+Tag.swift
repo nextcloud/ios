@@ -17,7 +17,7 @@ class tableTag: Object {
 }
 
 extension NCManageDatabase {
-    func addTagAsunc(_ ocId: String, tagIOS: Data?, account: String) async {
+    func addTagAsync(_ ocId: String, tagIOS: Data?, account: String) async {
         await core.performRealmWriteAsync { realm in
             let addObject = tableTag()
             addObject.account = account
