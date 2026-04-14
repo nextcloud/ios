@@ -25,42 +25,6 @@ final class NCManageDatabaseCore {
         // MANUAL MIGRATIONS (custom logic required)
         //
 
-        if oldSchemaVersion < 408 {
-            migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
-                guard let oldObject, let newObject else {
-                    return
-                }
-
-                let oldTags: [String]
-                if let oldList = oldObject["tags"] as? List<String> {
-                    oldTags = Array(oldList)
-                } else if let oldArray = oldObject["tags"] as? [String] {
-                    oldTags = oldArray
-                } else {
-                    oldTags = []
-                }
-
-                let account = (oldObject["account"] as? String) ?? ""
-                let ocId = (oldObject["ocId"] as? String) ?? ""
-
-                let migratedTags: [MigrationObject] = oldTags.enumerated().map { index, tagName in
-                    let legacyId = "legacy-\(ocId)-\(index)"
-
-                    return migration.create(
-                        tableMetadataTag.className(),
-                        value: [
-                            "primaryKey": account + legacyId,
-                            "account": account,
-                            "id": legacyId,
-                            "name": tagName,
-                            "color": ""
-                        ]
-                    )
-                }
-                newObject["tags"] = migratedTags
-            }
-        }
-
         if oldSchemaVersion < 390 {
             migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
                 if let schema = oldObject?.objectSchema,
