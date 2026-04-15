@@ -5,7 +5,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import RealmSwift
 
 protocol NCListCellDelegate: AnyObject {
     func onMenuIntent(with metadata: tableMetadata?)
@@ -24,8 +23,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var labelInfoSeparator: UILabel!
-    @IBOutlet weak var tag0: UILabel!
-    @IBOutlet weak var tag1: UILabel!
+    @IBOutlet weak var tag1: PaddedAndBorderedLabel!
+    @IBOutlet weak var tag2: PaddedAndBorderedLabel!
+    @IBOutlet weak var tagMore: PaddedAndBorderedLabel!
     @IBOutlet weak var labelExtension: UILabel!
 
     @IBOutlet weak var buttonShared: UIButton!
@@ -111,8 +111,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         labelExtension.isHidden = true
         labelInfo.text = ""
         labelSubinfo.text = ""
-        tag0.text = ""
         tag1.text = ""
+        tag2.text = ""
+        tagMore.text = ""
 
         // Dynamic Type Font Configuration
         //
@@ -154,6 +155,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
+
+        tag1.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        tag2.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        tag1.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        tag2.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        tagMore.setContentCompressionResistancePriority(.required, for: .horizontal)
+        tagMore.setContentHuggingPriority(.required, for: .horizontal)
 
         buttonShared.setImage(nil, for: .normal)
         buttonShared.imageEdgeInsets = .zero
@@ -258,28 +266,69 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         accessibilityValue = value
     }
 
-    func setTags(tags: [String]) {
+    func setTags(tags: [tableMetadataTag]) {
+        applyDefaultTagBorderStyle()
+
         if tags.isEmpty {
-            tag0.isHidden = true
             tag1.isHidden = true
+            tag2.isHidden = true
+            tagMore.isHidden = true
             labelInfo.isHidden = false
             labelSubinfo.isHidden = false
             labelInfoSeparator.isHidden = false
         } else {
-            tag0.isHidden = false
-            tag1.isHidden = true
             labelInfo.isHidden = true
             labelSubinfo.isHidden = true
             labelInfoSeparator.isHidden = true
 
-            if let tag = tags.first {
-                tag0.text = tag
-                if tags.count > 1 {
-                    tag1.isHidden = false
-                    tag1.text = "+\(tags.count - 1)"
-                }
+            tag1.isHidden = true
+            tag2.isHidden = true
+            tagMore.isHidden = true
+
+            if tags.count >= 1 {
+                let firstTag = tags[0]
+                tag1.isHidden = false
+                tag1.text = firstTag.name
+                applyTagBorderStyle(tag1, colorHex: firstTag.color)
+            }
+            if tags.count >= 2 {
+                let secondTag = tags[1]
+                tag2.isHidden = false
+                tag2.text = secondTag.name
+                applyTagBorderStyle(tag2, colorHex: secondTag.color)
+            }
+            if tags.count > 2 {
+                tagMore.isHidden = false
+                tagMore.text = "+\(tags.count - 2)"
             }
         }
+
+    }
+
+    private func applyDefaultTagBorderStyle() {
+        tag1.backgroundColor = .clear
+        tag2.backgroundColor = .clear
+        tagMore.backgroundColor = .clear
+        tag1.borderColor = .systemGray5
+        tag2.borderColor = .systemGray5
+        tagMore.borderColor = .systemGray5
+        tag1.textColor = .systemGray
+        tag2.textColor = .systemGray
+        tagMore.textColor = .systemGray
+        tag1.setNeedsDisplay()
+        tag2.setNeedsDisplay()
+        tagMore.setNeedsDisplay()
+    }
+
+    private func applyTagBorderStyle(_ label: PaddedAndBorderedLabel, colorHex: String?) {
+        guard let colorHex, let color = UIColor(hex: colorHex) else {
+            return
+        }
+
+        label.backgroundColor = .clear
+        label.borderColor = color
+        label.textColor = color
+        label.setNeedsDisplay()
     }
 
     func setIconOutlines() {

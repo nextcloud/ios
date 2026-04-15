@@ -33,7 +33,7 @@ actor NCNetworkingProcess {
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
     private var lastUsedInterval: TimeInterval = 3.5
-    private let maxInterval: TimeInterval = 3.5
+    public let maxInterval: TimeInterval = 3.5
     private let minInterval: TimeInterval = 2.5
     private let offlineInterval: TimeInterval = 10
 

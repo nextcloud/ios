@@ -28,10 +28,9 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var defaultButton: UIButton!
     @IBOutlet weak var customButton: UIButton!
 
-    var metadata: tableMetadata?
     var tapAction: UITapGestureRecognizer?
     var selectedColor: UIColor?
-    var collectionViewCommon: NCCollectionViewCommon?
+    var onColorSelected: ((String?) -> Void)?
 
     // MARK: - View Life Cycle
 
@@ -39,12 +38,6 @@ class NCColorPicker: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .secondarySystemBackground
-
-        if let metadata = metadata {
-            if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName)), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
-                selectedColor = color
-            }
-        }
 
         closeButton.setImage(NCUtility().loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
         titleLabel.text = NSLocalizedString("_select_color_", comment: "")
@@ -192,10 +185,7 @@ class NCColorPicker: UIViewController {
 
     func updateColor(hexColor: String?) {
         Task { @MainActor in
-            if let metadata {
-                await NCManageDatabase.shared.updateDirectoryColorFolderAsync(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
-                self.collectionViewCommon?.collectionView.reloadData()
-            }
+            onColorSelected?(hexColor)
             self.dismiss(animated: true)
         }
     }

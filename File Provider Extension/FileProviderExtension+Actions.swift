@@ -252,7 +252,7 @@ extension FileProviderExtension {
             let ocId = metadataForTag.ocId
             let account = metadataForTag.account
 
-            await NCManageDatabase.shared.addTagAsunc(ocId, tagIOS: tagData, account: account)
+            await NCManageDatabase.shared.addTagAsync(ocId, tagIOS: tagData, account: account)
 
             let item = await FileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
 

@@ -110,7 +110,7 @@ class tableMetadata: Object {
     @objc dynamic var status: Int = 0
     @objc dynamic var storeFlag: String?
     @objc dynamic var subline: String?
-    let tags = List<String>()
+    let tags = List<tableMetadataTag>()
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
@@ -347,20 +347,26 @@ extension tableMetadata {
 
     /// Returns a detached (unmanaged) deep copy of the current `tableMetadata` object.
     ///
-    /// - Note: The Realm `List` properties containing primitive types (e.g., `tags`, `shareType`) are copied automatically
-    ///         by the Realm initializer `init(value:)`. For `List` containing Realm objects (e.g., `exifPhotos`), this method
-    ///         creates new instances to ensure the copy is fully detached and safe to use outside of a Realm context.
+    /// - Note: Primitive list properties (e.g., `shareType`) are copied automatically by `init(value:)`.
+    ///         For `List` containing Realm objects (e.g., `exifPhotos`, `tags`) this method creates new instances
+    ///         to ensure the copy is fully detached and safe to use outside of a Realm context.
     ///
     /// - Returns: A new `tableMetadata` instance fully detached from Realm.
     func detachedCopy() -> tableMetadata {
         // Use Realm's built-in copy constructor for primitive properties and List of primitives
         let detached = tableMetadata(value: self)
 
-        // Deep copy of List of Realm objects (exifPhotos)
+        // Deep copy of List of Realm objects (exifPhotos and tags)
         detached.exifPhotos.removeAll()
         detached.exifPhotos.append(objectsIn: self.exifPhotos.map { NCKeyValue(value: $0) })
+        detached.tags.removeAll()
+        detached.tags.append(objectsIn: self.tags.map { tableMetadataTag(value: $0) })
 
         return detached
+    }
+
+    var tagNames: [String] {
+        tags.map(\.name)
     }
 }
 
@@ -742,6 +748,19 @@ extension NCManageDatabase {
                 .filter("ocId == %@", ocId)
                 .first
             result?.e2eEncrypted = encrypted
+        }
+    }
+
+    func setMetadataTagsAsync(ocId: String, account: String, tags: [NKTag]) async {
+        await core.performRealmWriteAsync { realm in
+            guard let result = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND ocId == %@", account, ocId)
+                .first else {
+                return
+            }
+
+            result.tags.removeAll()
+            result.tags.append(objectsIn: tags, account: account)
         }
     }
 
@@ -1326,5 +1345,52 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first != nil
         } ?? false
+    }
+}
+
+class tableMetadataTag: Object {
+    @Persisted(primaryKey: true) var primaryKey: String
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var name = ""
+    @Persisted var color: String?
+
+    convenience init(tag: NKTag, account: String) {
+        self.init()
+        self.account = account
+        self.id = tag.id
+        self.name = tag.name
+        self.color = tag.color
+        self.primaryKey = account + id
+    }
+
+    var nkTag: NKTag {
+        NKTag(id: id, name: name, color: color)
+    }
+
+    static func == (lhs: tableMetadataTag, rhs: tableMetadataTag) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.color == rhs.color
+    }
+}
+
+extension List where Element == tableMetadataTag {
+    func append(_ tag: NKTag, account: String) {
+        let object = tableMetadataTag(tag: tag, account: account)
+
+        if let realm {
+            realm.add(object, update: .all)
+            if let managedObject = realm.object(ofType: tableMetadataTag.self, forPrimaryKey: object.primaryKey) {
+                append(managedObject)
+                return
+            }
+        }
+
+        append(object)
+    }
+
+    func append(objectsIn tags: [NKTag], account: String) {
+        for tag in tags {
+            append(tag, account: account)
+        }
     }
 }

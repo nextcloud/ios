@@ -147,8 +147,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
             }
 
-            // Set up networking session
+            // Start Networking Process
             await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
+            await NCNetworkingProcess.shared.startTimer(interval: NCNetworkingProcess.shared.maxInterval)
         }
 
         // Set up networking session for all configured accounts

@@ -202,9 +202,7 @@ final class NCManageDatabaseCreateMetadata {
         for element in file.shareType {
             metadata.shareType.append(element)
         }
-        for element in file.tags {
-            metadata.tags.append(element)
-        }
+        metadata.tags.append(objectsIn: file.tags, account: metadata.account)
         metadata.size = file.size
         metadata.classFile = file.classFile
         // iOS 12.0,* don't detect UTI text/markdown, text/x-markdown

@@ -118,7 +118,7 @@ final class NCManageDatabase: @unchecked Sendable {
         }
         let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let objectTypes = [
-            NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+            NCKeyValue.self, tableMetadata.self, tableMetadataTag.self, tableLocalFile.self,
             tableDirectory.self, tableTag.self, tableAccount.self,
             tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,
             tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
@@ -208,6 +208,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableLivePhoto.self)
         self.clearTable(tableLocalFile.self)
         self.clearTable(tableMetadata.self)
+        self.clearTable(tableMetadataTag.self)
         self.clearTable(tableRecommendedFiles.self)
         self.clearTable(tableShare.self)
     }
@@ -236,6 +237,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableLivePhoto.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
+        self.clearTable(tableMetadataTag.self, account: account)
         self.clearTable(tableRecommendedFiles.self, account: account)
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
         self.clearTable(tableShare.self, account: account)
