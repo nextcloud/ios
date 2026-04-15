@@ -776,6 +776,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_no_dir_" = "End-to-end encryption error, cannot get directory";
 "_e2ee_no_certificate_" = "End-to-end encryption error, cannot get certificate";
 "_e2ee_no_generate_key_" = "End-to-end encryption error, cannot generate key";
+"_e2ee_no_metadataKey_found_" = "End-to-end encryption error, cannot decrypt metadata key";
 "_e2ee_no_user_found_" = "End-to-end encryption error, user not found";
 "_e2ee_no_signature_found_" = "End-to-end encryption error, no signature found";
 "_e2ee_counter_check_" = "End-to-end encryption error, the counter is lower than the previous one";
