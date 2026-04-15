@@ -7,25 +7,40 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
-class tableTrash: Object {
-    @objc dynamic var account = ""
-    @objc dynamic var classFile = ""
-    @objc dynamic var contentType = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var directory: Bool = false
-    @objc dynamic var fileId = ""
-    @objc dynamic var fileName = ""
-    @objc dynamic var filePath = ""
-    @objc dynamic var hasPreview: Bool = false
-    @objc dynamic var iconName = ""
-    @objc dynamic var size: Int64 = 0
-    @objc dynamic var trashbinFileName = ""
-    @objc dynamic var trashbinOriginalLocation = ""
-    @objc dynamic var trashbinDeletionTime = NSDate()
+/// Represents a trash item stored in Realm.
+///
+/// Each object corresponds to a file or folder in the Nextcloud trashbin,
+/// associated with a specific account.
+///
+/// The `identifier` is used as primary key and is built from:
+/// `account + "|" + fileName`, where `fileName` includes the `.dXXXXX` suffix,
+/// making each item unique.
+///
+/// - `fileName`: name of the file in trash (includes `.dXXXXX`)
+/// - `trashbinFileName`: original file name before deletion
+/// - `trashbinOriginalLocation`: original path before deletion
+/// - `classFile`: type of file (e.g. "image", "video", "document")
+///
+/// This model replaces the legacy `tableTrash` schema.
+typealias tableTrash = tableTrashV2
+class tableTrashV2: Object {
+    // Primary key: unique per account + trash item
+    @Persisted(primaryKey: true) var identifier: String
 
-    override static func primaryKey() -> String {
-        return "fileId"
-    }
+    @Persisted var account: String = ""
+    @Persisted var classFile: String = ""
+    @Persisted var contentType: String = ""
+    @Persisted var date: Date = Date()
+    @Persisted var directory: Bool = false
+    @Persisted var fileId: String = ""
+    @Persisted var fileName: String = ""
+    @Persisted var filePath: String = ""
+    @Persisted var hasPreview: Bool = false
+    @Persisted var iconName: String = ""
+    @Persisted var size: Int64 = 0
+    @Persisted var trashbinFileName: String = ""
+    @Persisted var trashbinOriginalLocation: String = ""
+    @Persisted var trashbinDeletionTime: Date = Date()
 }
 
 extension NCManageDatabase {
@@ -38,12 +53,22 @@ extension NCManageDatabase {
     ///   - account: The account string used to associate each trash item.
     ///   - items: An array of `NKTrash` items to be added to the database.
     func addTrashAsync(items: [NKTrash], account: String) async {
+        let itemsFiltered = filterOutVideosMatchingImages(items)
+
         await core.performRealmWriteAsync { realm in
-            items.forEach { trash in
+
+            // Delete all existing trash items for this account.
+            let existingItems = realm.objects(tableTrash.self)
+                .where { $0.account == account }
+            realm.delete(existingItems)
+
+            itemsFiltered.forEach { trash in
                 let object = tableTrash()
+
+                object.identifier = "\(account)|\(trash.fileName)"
                 object.account = account
                 object.contentType = trash.contentType
-                object.date = trash.date as NSDate
+                object.date = trash.date
                 object.directory = trash.directory
                 object.fileId = trash.fileId
                 object.fileName = trash.fileName
@@ -51,10 +76,11 @@ extension NCManageDatabase {
                 object.hasPreview = trash.hasPreview
                 object.iconName = trash.iconName
                 object.size = trash.size
-                object.trashbinDeletionTime = trash.trashbinDeletionTime as NSDate
+                object.trashbinDeletionTime = trash.trashbinDeletionTime
                 object.trashbinFileName = trash.trashbinFileName
                 object.trashbinOriginalLocation = trash.trashbinOriginalLocation
                 object.classFile = trash.classFile
+
                 realm.add(object, update: .all)
             }
         }
@@ -140,5 +166,68 @@ extension NCManageDatabase {
                 .first
                 .map { tableTrash(value: $0) }
         }
+    }
+
+    // MARK: - helpers
+
+    /// Filters out video items that have a matching image counterpart based on a shared trash suffix.
+    ///
+    /// This function is designed to handle Live Photo pairs in the trash, where both the image
+    /// (e.g., `.jpg`) and the video (e.g., `.mov`) share the same suffix (e.g., `.d123456`).
+    ///
+    /// The logic works as follows:
+    /// - Extract all suffixes from items classified as `image`.
+    /// - Build a set of these suffixes for fast lookup.
+    /// - Iterate through all items:
+    ///   - Keep all non-video items.
+    ///   - For video items, extract their suffix and check if it exists in the image suffix set.
+    ///   - If a match is found, the video is considered part of a Live Photo pair and is excluded.
+    ///
+    /// - Parameter items: An array of `NKTrash` items to filter.
+    /// - Returns: A filtered array where videos paired with images are removed.
+    func filterOutVideosMatchingImages(_ items: [NKTrash]) -> [NKTrash] {
+        // Collect suffixes from image items.
+        let imageSuffixes: Set<String> = Set(
+            items.compactMap { item in
+                guard item.classFile == "image" else { return nil }
+                return trashSuffix(from: item.fileName)
+            }
+        )
+
+        // Remove videos whose suffix matches any image suffix.
+        return items.filter { item in
+            guard item.classFile == "video" else {
+                return true
+            }
+
+            guard let suffix = trashSuffix(from: item.fileName) else {
+                return true
+            }
+
+            return !imageSuffixes.contains(suffix)
+        }
+    }
+
+    /// Extracts the suffix component from a trash file name.
+    ///
+    /// The suffix is defined as the substring after the last dot (`.`) in the file name.
+    /// This is typically used to identify related files in the trash (e.g., Live Photo pairs),
+    /// where files share a common suffix such as `d123456`.
+    ///
+    /// Examples:
+    /// - `file.jpg.d123456` → `d123456`
+    /// - `video.mov.d987654` → `d987654`
+    ///
+    /// If the file name does not contain a dot or the suffix is empty, the function returns `nil`.
+    ///
+    /// - Parameter fileName: The full file name string.
+    /// - Returns: The extracted suffix, or `nil` if not available.
+    func trashSuffix(from fileName: String) -> String? {
+        guard let lastDot = fileName.lastIndex(of: ".") else {
+            return nil
+        }
+
+        let suffix = String(fileName[fileName.index(after: lastDot)...])
+        return suffix.isEmpty ? nil : suffix
     }
 }
