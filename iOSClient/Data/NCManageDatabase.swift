@@ -211,6 +211,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableMetadataTag.self)
         self.clearTable(tableRecommendedFiles.self)
         self.clearTable(tableShare.self)
+        self.clearTable(tableTrash.self)
     }
 
     func clearDatabase(account: String) {
