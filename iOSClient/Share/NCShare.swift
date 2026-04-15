@@ -27,7 +27,6 @@ import UIKit
 import Parchment
 import DropDown
 import NextcloudKit
-import MarqueeLabel
 import ContactsUI
 
 class NCShare: UIViewController, NCSharePagingContent {
