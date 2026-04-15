@@ -88,13 +88,6 @@
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F317C82E2E844C5300761AEA /* ClientIntegrationUIViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F317C82D2E844C5300761AEA /* ClientIntegrationUIViewer.swift */; };
-		F31F91DE2F61B7A600DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
-		F31F91DF2F61B7FB00DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
-		F31F91E02F61B7FB00DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
-		F31F91E12F61B7FB00DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
-		F31F91E22F61B7FB00DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
-		F31F91E32F61B7FB00DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
-		F31F91E42F61B7FB00DF1B3F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
 		F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */; };
 		F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A802D64AB9E002A38F9 /* StatusInfo.swift */; };
@@ -1252,7 +1245,6 @@
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F317C82D2E844C5300761AEA /* ClientIntegrationUIViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientIntegrationUIViewer.swift; sourceTree = "<group>"; };
-		F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
 		F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		F3374A802D64AB9E002A38F9 /* StatusInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfo.swift; sourceTree = "<group>"; };
@@ -3284,7 +3276,6 @@
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
-				F31F91DD2F61B7A600DF1B3F /* AppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3876,7 +3867,6 @@
 			files = (
 				F7E4022F2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */,
-				F31F91E42F61B7FB00DF1B3F /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3910,7 +3900,6 @@
 				F7E4022E2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				AA517B812D660EFE00F8D37C /* Localizable.stringsdict in Resources */,
 				F722F0112CFF569500065FB5 /* MainInterface.storyboard in Resources */,
-				F31F91E32F61B7FB00DF1B3F /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3931,7 +3920,6 @@
 				F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */,
 				F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */,
 				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
-				F31F91E12F61B7FB00DF1B3F /* AppIcon.icon in Resources */,
 				F7FDFF702E437E55000D7688 /* NCAccountRequest.storyboard in Resources */,
 				F79ED0F22D2FCA6A00A389D9 /* NCRecommendationsCell.xib in Resources */,
 			);
@@ -3946,7 +3934,6 @@
 				F7E4022A2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				AA517B832D660EFE00F8D37C /* Localizable.stringsdict in Resources */,
 				F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */,
-				F31F91DF2F61B7FB00DF1B3F /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3956,7 +3943,6 @@
 			files = (
 				F7E4022D2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F746EC52273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
-				F31F91E22F61B7FB00DF1B3F /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4013,7 +3999,6 @@
 				F7AC934A296193050002BC0F /* Reasons to use Nextcloud.pdf in Resources */,
 				F761856A29E98543006EB3B0 /* NCIntro.storyboard in Resources */,
 				F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */,
-				F31F91DE2F61B7A600DF1B3F /* AppIcon.icon in Resources */,
 				AA517B802D660EFE00F8D37C /* Localizable.stringsdict in Resources */,
 				F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
@@ -4049,7 +4034,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7E4022B2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
-				F31F91E02F61B7FB00DF1B3F /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
