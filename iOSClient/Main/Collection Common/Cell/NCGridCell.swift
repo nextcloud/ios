@@ -80,8 +80,16 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageItem.image = nil
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-        imageSelect.isHidden = true
+
         imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageSelect.alpha = 0
+
+        imageVisualEffect.isHidden = false
+        imageVisualEffect.effect = nil
+        imageVisualEffect.alpha = 0
+        imageVisualEffect.isUserInteractionEnabled = false
+        imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
@@ -140,8 +148,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
 
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
-
-        contentView.bringSubviewToFront(buttonMore)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -171,14 +177,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         } else {
             buttonMore.isHidden = false
         }
-        if status {
-            imageSelect.isHidden = false
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            imageVisualEffect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+
+        self.imageVisualEffect.alpha = status ? 1 : 0
+        self.imageSelect.alpha = status ? 1 : 0
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {

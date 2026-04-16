@@ -8,7 +8,7 @@ protocol NCTrashGridCellDelegate: AnyObject {
     func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any)
 }
 
-class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {    
+class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
@@ -48,9 +48,14 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageSelect.alpha = 0
+
+        imageVisualEffect.isHidden = false
+        imageVisualEffect.effect = nil
+        imageVisualEffect.alpha = 0
+        imageVisualEffect.isUserInteractionEnabled = false
+        imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
 
         labelTitle.text = ""
         labelExtension.text = ""
@@ -135,14 +140,9 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
             buttonMore.isHidden = false
             setA11yActions()
         }
-        if status {
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+
+        self.imageVisualEffect.alpha = status ? 1 : 0
+        self.imageSelect.alpha = status ? 1 : 0
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
