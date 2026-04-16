@@ -144,6 +144,5 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
             separator.isHidden = false
         }
-
     }
 }

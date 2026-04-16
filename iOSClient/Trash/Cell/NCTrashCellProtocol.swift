@@ -54,5 +54,13 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
                 labelTitle.lineBreakMode = .byTruncatingTail
             }
         }
+
+        self.setIconOutlines()
+    }
+
+    func setIconOutlines() {
+        statusImg?.makeCircularBackground(
+            withColor: statusImg?.image != nil ? .systemBackground : .clear
+        )
     }
 }
