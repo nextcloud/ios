@@ -13,8 +13,8 @@ struct NCTagEditorView: View {
 
     private let onApplied: ([NKTag]) -> Void
 
-    init(metadata: tableMetadata, initialTags: [String], windowScene: UIWindowScene?, onApplied: @escaping ([NKTag]) -> Void) {
-        _model = State(initialValue: NCTagEditorModel(metadata: metadata, initialTags: initialTags, windowScene: windowScene))
+    init(metadata: tableMetadata, windowScene: UIWindowScene?, onApplied: @escaping ([NKTag]) -> Void) {
+        _model = State(initialValue: NCTagEditorModel(metadata: metadata, windowScene: windowScene))
         self.onApplied = onApplied
     }
 
@@ -24,13 +24,14 @@ struct NCTagEditorView: View {
                 if let createCandidateName = model.createCandidateName {
                     Section {
                         Button {
-                            addTagAndExitSearch(tagName: createCandidateName)
+                            addTagAndExitSearch()
                         } label: {
                             Label(
                                 String(format: NSLocalizedString("_share_tags_create_", comment: ""), createCandidateName),
                                 systemImage: "plus.circle.fill"
                             )
                         }
+                        .disabled(model.isSaving || model.isLoading || model.isUpdatingTagColor)
                     }
                 }
 
@@ -111,7 +112,7 @@ struct NCTagEditorView: View {
             }
         }
         .task {
-            await model.loadTagsIfNeeded()
+            await model.loadTags()
         }
     }
 
@@ -122,13 +123,15 @@ struct NCTagEditorView: View {
         return .secondary
     }
 
-    private func addTagAndExitSearch(tagName: String) {
-        model.addCreateCandidateToSelection()
+    private func addTagAndExitSearch() {
         Task { @MainActor in
-            await model.showTagAddedBanner(tagName: tagName)
+            guard let createdTagName = await model.createCandidateTagAndSelect() else {
+                return
+            }
+            await model.showTagAddedBanner(tagName: createdTagName)
+            isSearchPresented = false
+            unfocusSearchField()
         }
-        isSearchPresented = false
-        unfocusSearchField()
     }
 
     private func unfocusSearchField() {
@@ -137,43 +140,8 @@ struct NCTagEditorView: View {
 }
 
 #Preview {
-    NCTagEditorPreviewSheetScaffold()
-}
-
-private struct NCTagEditorPreviewSheetScaffold: View {
-    @State private var isPresentingTagEditor = false
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                Text("Tag Editor Preview")
-                    .font(.headline)
-
-                Button("Open Tag Editor Sheet") {
-                    isPresentingTagEditor = true
-                }
-                .buttonStyle(.borderedProminent)
-            }
-            .padding()
-            .navigationTitle("Preview Host")
-            .sheet(isPresented: $isPresentingTagEditor) {
-                previewTagEditor
-            }
-        }
-    }
-
-    private var previewTagEditor: NCTagEditorView {
-        let metadata = tableMetadata()
-        metadata.account = "preview"
-        metadata.fileId = "1"
-        metadata.ocId = "preview-ocid"
-        metadata.serverUrl = "/"
-        metadata.urlBase = "https://cloud.example.com"
-
-        return NCTagEditorView(
-            metadata: metadata,
-            initialTags: ["Important", "Ideas"],
-            windowScene: nil
-        ) { _ in }
-    }
+    return NCTagEditorView(
+        metadata: tableMetadata(),
+        windowScene: nil
+    ) { _ in }
 }

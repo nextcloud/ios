@@ -85,7 +85,6 @@ class NCShareHeader: UIView {
     func presentTagEditor(from sourceViewController: UIViewController, onApplied: (([NKTag]) -> Void)? = nil) {
         let editor = NCTagEditorView(
             metadata: metadata.detachedCopy(),
-            initialTags: metadata.tagNames,
             windowScene: sourceViewController.view.window?.windowScene,
             onApplied: { [weak self] tags in
                 guard let self else { return }
