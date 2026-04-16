@@ -10,6 +10,7 @@ protocol NCTrashCellProtocol {
     var labelExtension: UILabel! { get set }
     var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
+    var statusImg: UIImageView? { get set }
     var account: String { get set }
 
     func selected(_ status: Bool, isEditMode: Bool, account: String)
@@ -25,6 +26,9 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
         self.labelExtension?.textColor = NCBrandColor.shared.textColor
         if self is NCTrashListCell {
             self.labelInfo?.text = NCUtility().getRelativeDateTitle(tableTrash.trashbinDeletionTime as Date)
+            if tableTrash.livePhoto {
+                statusImg?.image = NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            }
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short

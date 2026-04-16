@@ -38,6 +38,7 @@ class tableTrashV2: Object {
     @Persisted var hasPreview: Bool = false
     @Persisted var iconName: String = ""
     @Persisted var size: Int64 = 0
+    @Persisted var livePhoto: Bool = false
     @Persisted var trashbinFileName: String = ""
     @Persisted var trashbinOriginalLocation: String = ""
     @Persisted var trashbinDeletionTime: Date = Date()
@@ -80,6 +81,7 @@ extension NCManageDatabase {
                 object.trashbinFileName = trash.trashbinFileName
                 object.trashbinOriginalLocation = trash.trashbinOriginalLocation
                 object.classFile = trash.classFile
+                object.livePhoto = trash.livePhoto
 
                 realm.add(object, update: .all)
             }
@@ -173,38 +175,55 @@ extension NCManageDatabase {
     /// Filters out video items that have a matching image counterpart based on a shared trash suffix.
     ///
     /// This function is designed to handle Live Photo pairs in the trash, where both the image
-    /// (e.g., `.jpg`) and the video (e.g., `.mov`) share the same suffix (e.g., `.d123456`).
+    /// (e.g. `.jpg`) and the video (e.g. `.mov`) share the same suffix (e.g. `.d123456`).
     ///
     /// The logic works as follows:
-    /// - Extract all suffixes from items classified as `image`.
-    /// - Build a set of these suffixes for fast lookup.
+    /// - Extract the suffix from each trash item file name.
+    /// - Detect which suffixes contain both an image and a video.
     /// - Iterate through all items:
-    ///   - Keep all non-video items.
-    ///   - For video items, extract their suffix and check if it exists in the image suffix set.
-    ///   - If a match is found, the video is considered part of a Live Photo pair and is excluded.
+    ///   - If an item is a video and its suffix is shared with an image, the video is excluded.
+    ///   - If an item is an image and its suffix is shared with a video, the image is kept and
+    ///     marked with `isLivePhoto = true`.
+    ///   - All other items are returned unchanged.
     ///
-    /// - Parameter items: An array of `NKTrash` items to filter.
-    /// - Returns: A filtered array where videos paired with images are removed.
+    /// - Parameter items: An array of `NKTrash` items to process.
+    /// - Returns: A filtered array where Live Photo videos are removed and matching images are marked as Live Photos.
     func filterOutVideosMatchingImages(_ items: [NKTrash]) -> [NKTrash] {
-        // Collect suffixes from image items.
-        let imageSuffixes: Set<String> = Set(
-            items.compactMap { item in
-                guard item.classFile == "image" else { return nil }
-                return trashSuffix(from: item.fileName)
-            }
-        )
+        var suffixMap: [String: (hasImage: Bool, hasVideo: Bool)] = [:]
 
-        // Remove videos whose suffix matches any image suffix.
-        return items.filter { item in
-            guard item.classFile == "video" else {
-                return true
-            }
-
+        for item in items {
             guard let suffix = trashSuffix(from: item.fileName) else {
-                return true
+                continue
+            }
+            var entry = suffixMap[suffix] ?? (false, false)
+
+            if item.classFile == "image" {
+                entry.hasImage = true
+            } else if item.classFile == "video" {
+                entry.hasVideo = true
             }
 
-            return !imageSuffixes.contains(suffix)
+            suffixMap[suffix] = entry
+        }
+
+        return items.compactMap { item -> NKTrash? in
+            guard let suffix = trashSuffix(from: item.fileName) else {
+                return item
+            }
+            let entry = suffixMap[suffix]
+            let isLive = (entry?.hasImage == true && entry?.hasVideo == true)
+
+            if item.classFile == "video" && isLive {
+                return nil
+            }
+
+            if item.classFile == "image" && isLive {
+                var copy = item
+                copy.livePhoto = true
+                return copy
+            }
+
+            return item
         }
     }
 

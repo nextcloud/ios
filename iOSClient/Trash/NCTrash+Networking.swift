@@ -26,7 +26,6 @@ extension NCTrash {
         }
 
         if let items = resultsListingTrash.items {
-            await self.database.deleteTrashAsync(fileId: self.getFilePath(), account: self.session.account)
             await self.database.addTrashAsync(items: items, account: self.session.account)
         }
 

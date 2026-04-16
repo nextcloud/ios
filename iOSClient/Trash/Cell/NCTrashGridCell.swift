@@ -8,7 +8,7 @@ protocol NCTrashGridCellDelegate: AnyObject {
     func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any)
 }
 
-class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
+class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {    
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
@@ -23,6 +23,11 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     var indexPath = IndexPath()
     var account = ""
     var user = ""
+
+    var statusImg: UIImageView? {
+        get { return nil }
+        set { imageItem = newValue }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
