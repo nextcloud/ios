@@ -15,6 +15,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
         set { imageItem = newValue }
     }
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        initCell()
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
 
@@ -27,10 +33,15 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
         accessibilityValue = nil
 
         imageItem.image = nil
-        imageSelect.isHidden = true
+
+        imageVisualEffect.isHidden = false
+        imageVisualEffect.effect = nil
+        imageVisualEffect.alpha = 0
+        imageVisualEffect.isUserInteractionEnabled = false
+        imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+
         imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
+        imageSelect.alpha = 0
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -38,14 +49,8 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {
-        if status {
-            imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+        self.imageVisualEffect.alpha = status ? 1 : 0
+        self.imageSelect.alpha = status ? 1 : 0
     }
 
     func setAccessibility(label: String, value: String) {

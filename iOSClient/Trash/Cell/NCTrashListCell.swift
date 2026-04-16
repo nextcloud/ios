@@ -58,9 +58,6 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        labelExtension.text = ""
-        labelExtension.isHidden = true
-
         imageRestore.image = NCUtility().loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
         imageItem.layer.cornerRadius = 6
@@ -92,12 +89,16 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         // adjustsFontForContentSizeCategory:
         //     Enables live updates when accessibility settings change.
         //
+        labelTitle.text = ""
         labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
+        labelExtension.text = ""
+        labelExtension.isHidden = true
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
+        labelInfo.text = ""
         labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 

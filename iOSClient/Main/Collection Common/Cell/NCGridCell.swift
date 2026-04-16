@@ -81,8 +81,13 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageSelect.alpha = 0
+        imageStatus.image = nil
+        imageFavorite.image = nil
+        imageLocal.image = nil
+
+        iconsStackView.addBlurBackground(style: .systemMaterial)
+        iconsStackView.layer.cornerRadius = 8
+        iconsStackView.clipsToBounds = true
 
         imageVisualEffect.isHidden = false
         imageVisualEffect.effect = nil
@@ -90,15 +95,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageVisualEffect.isUserInteractionEnabled = false
         imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
 
-        imageStatus.image = nil
-        imageFavorite.image = nil
-        imageLocal.image = nil
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageSelect.alpha = 0
 
-        labelTitle.text = ""
-        labelExtension.text = ""
-        labelExtension.isHidden = true
-        labelInfo.text = ""
-        labelSubinfo.text = ""
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
 
         // Dynamic Type Font Configuration
         //
@@ -126,28 +127,22 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         // adjustsFontForContentSizeCategory:
         //     Enables live updates when accessibility settings change.
         //
+        labelTitle.text = ""
         labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
+        labelExtension.text = ""
+        labelExtension.isHidden = true
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
+        labelInfo.text = ""
         labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
+        labelSubinfo.text = ""
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
-
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
-
-        iconsStackView.addBlurBackground(style: .systemMaterial)
-        iconsStackView.layer.cornerRadius = 8
-        iconsStackView.clipsToBounds = true
-
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
