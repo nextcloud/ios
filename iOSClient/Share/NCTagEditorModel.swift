@@ -101,7 +101,7 @@ import NextcloudKit
 
         let createResult = await NextcloudKit.shared.createTag(name: candidate, account: metadata.account)
         guard createResult.error == .success else {
-            await showErrorBanner(windowScene: windowScene, error: createResult.error)
+            await showErrorBanner(windowScene: windowScene, text: "_create_tag_error_", errorCode: createResult.error.errorCode)
             return nil
         }
 
