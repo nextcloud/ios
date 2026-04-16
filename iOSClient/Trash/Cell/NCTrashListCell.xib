@@ -22,27 +22,34 @@
                             <constraint firstAttribute="width" constant="40" id="v0e-MW-EeE"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="RiA-GE-uv4" userLabel="imageStatus">
+                        <rect key="frame" x="40" y="91" width="15" height="14"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="15" id="Dvu-uG-xEY"/>
+                            <constraint firstAttribute="height" constant="15" id="GCy-64-Zsm"/>
+                        </constraints>
+                    </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="mxe-fC-q7F" userLabel="titleInfoStack">
-                        <rect key="frame" x="95" y="60.5" width="65.5" height="38.5"/>
+                        <rect key="frame" x="95" y="61" width="440" height="39.5"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="firstBaseline" translatesAutoresizingMaskIntoConstraints="NO" id="myy-Kj-m59" userLabel="titleRow">
-                                <rect key="frame" x="0.0" y="0.0" width="65.5" height="18"/>
+                                <rect key="frame" x="0.0" y="0.0" width="66" height="19.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
-                                        <rect key="frame" x="0.0" y="0.0" width="39.5" height="18"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="39.5" height="19.5"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text=".ext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ext-Lb-tLs" userLabel="labelExtension">
-                                        <rect key="frame" x="39.5" y="0.0" width="26" height="18"/>
+                                        <rect key="frame" x="39.5" y="0.0" width="26.5" height="19.5"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
-                                <rect key="frame" x="0.0" y="22" width="33.5" height="16.5"/>
+                                <rect key="frame" x="0.0" y="23.5" width="440" height="16"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                 <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -106,6 +113,7 @@
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="3mk-e2-iDg" secondAttribute="centerY" id="A31-Yy-Gyn"/>
+                <constraint firstItem="RiA-GE-uv4" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="-10" id="Fqe-FO-cgL"/>
                 <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" id="JCm-UU-Pxu"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="3mk-e2-iDg" secondAttribute="trailing" id="PxA-lT-Gll"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="10" id="RYl-cO-cCN"/>
@@ -113,11 +121,12 @@
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="Yad-MJ-UU7"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ext-Lb-tLs" secondAttribute="trailing" constant="5" id="cEw-b3-odo"/>
+                <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="RiA-GE-uv4" secondAttribute="trailing" constant="-10" id="djk-k1-kQq"/>
                 <constraint firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="ldm-kv-P98"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="45" id="mBb-ff-7HD"/>
-                <constraint firstItem="mxe-fC-q7F" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="rQe-30-zu8"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="qKl-4Y-m5t"/>
+                <constraint firstItem="mxe-fC-q7F" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="rQe-30-zu8"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="rgG-ei-7VN"/>
                 <constraint firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="sJp-0x-bdC"/>
@@ -133,6 +142,7 @@
                 <outlet property="imageMore" destination="dgL-g5-Nkc" id="r7x-Ib-4nz"/>
                 <outlet property="imageRestore" destination="nwZ-pi-Igj" id="d9Y-zK-8dx"/>
                 <outlet property="imageSelect" destination="AyA-hP-r6w" id="c1t-yz-HBg"/>
+                <outlet property="imageStatus" destination="RiA-GE-uv4" id="8fN-8B-pXV"/>
                 <outlet property="labelExtension" destination="Ext-Lb-tLs" id="ext-Ot-tLs"/>
                 <outlet property="labelInfo" destination="AXX-71-9Q6" id="krb-tZ-UQ7"/>
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
@@ -142,4 +152,7 @@
             <point key="canvasLocation" x="113.59999999999999" y="174.96251874062969"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <image name="play.circle" catalog="system" width="128" height="123"/>
+    </resources>
 </document>

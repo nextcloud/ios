@@ -75,9 +75,9 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if isEditMode, fileSelect.contains(metadata.ocId) {
-            cell.selected(true)
+            cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
         } else {
-            cell.selected(false)
+            cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
         if cell.imageItem.image == nil {

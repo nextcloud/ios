@@ -20,7 +20,7 @@ extension NCMedia {
 
         if let visibleCells = collectionView?.indexPathsForVisibleItems.compactMap({ collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCMediaCell in visibleCells {
-                cell.selected(false)
+                cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
             }
         }
 

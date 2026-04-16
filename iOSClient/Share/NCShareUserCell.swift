@@ -102,7 +102,6 @@ class NCShareUserCell: UITableViewCell {
 
         stackViewQuickStatus.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
 
-        contentView.bringSubviewToFront(buttonMenu)
         buttonMenu.menu = nil
         buttonMenu.showsMenuAsPrimaryAction = true
 

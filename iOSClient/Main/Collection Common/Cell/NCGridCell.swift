@@ -80,17 +80,23 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageItem.image = nil
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-        imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
 
-        labelTitle.text = ""
-        labelExtension.text = ""
-        labelExtension.isHidden = true
-        labelInfo.text = ""
-        labelSubinfo.text = ""
+        iconsStackView.addBlurBackground(style: .systemMaterial)
+        iconsStackView.layer.cornerRadius = 8
+        iconsStackView.clipsToBounds = true
+
+        imageVisualEffect.isHidden = false
+        imageVisualEffect.effect = nil
+        imageVisualEffect.alpha = 0
+        imageVisualEffect.isUserInteractionEnabled = false
+        imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
 
         // Dynamic Type Font Configuration
         //
@@ -118,30 +124,22 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         // adjustsFontForContentSizeCategory:
         //     Enables live updates when accessibility settings change.
         //
+        labelTitle.text = ""
         labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
+        labelExtension.text = ""
+        labelExtension.isHidden = true
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
+        labelInfo.text = ""
         labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
+        labelSubinfo.text = ""
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
-
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
-
-        iconsStackView.addBlurBackground(style: .systemMaterial)
-        iconsStackView.layer.cornerRadius = 8
-        iconsStackView.clipsToBounds = true
-
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
-
-        contentView.bringSubviewToFront(buttonMore)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -164,21 +162,17 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
             buttonMore.isHidden = false
         }
-        if status {
-            imageSelect.isHidden = false
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            imageVisualEffect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+
+        imageVisualEffect.alpha = status ? 1 : 0
+        imageSelect.alpha = status ? 1 : 0
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
@@ -323,10 +317,10 @@ extension NCCollectionViewCommon {
 
         // Edit mode
         if fileSelect.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode)
+            cell.selected(true, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
             a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selected(false, isEditMode: isEditMode)
+            cell.selected(false, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
         // Accessibility

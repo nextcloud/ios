@@ -22,7 +22,6 @@ struct NCUploadAssetsView: View {
     @State private var renameIndex: Int = 0
     @State private var index: Int = 0
 
-    var metadata: tableMetadata?
     let gridItems: [GridItem] = [GridItem()]
     let fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     let utilityFileSystem = NCUtilityFileSystem()
@@ -147,7 +146,7 @@ struct NCUploadAssetsView: View {
                             .onChange(of: model.useAutoUploadFolder) {
                                 model.updateUseAutoUploadFolder()
                             }
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
 
                             if model.useAutoUploadFolder {
                                 Toggle(isOn: $model.useAutoUploadSubFolder, label: {
@@ -158,7 +157,7 @@ struct NCUploadAssetsView: View {
                                 .onChange(of: model.useAutoUploadSubFolder) {
                                     model.updateUseAutoUploadSubFolder()
                                 }
-                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
                             }
                         }
 

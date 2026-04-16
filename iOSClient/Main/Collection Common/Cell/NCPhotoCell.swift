@@ -15,6 +15,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
         set { imageItem = newValue }
     }
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        initCell()
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
 
@@ -27,25 +33,22 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
         accessibilityValue = nil
 
         imageItem.image = nil
-        imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
+
+        imageVisualEffect.isHidden = false
+        imageVisualEffect.effect = nil
+        imageVisualEffect.alpha = 0
+        imageVisualEffect.isUserInteractionEnabled = false
+        imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
-        if status {
-            imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
+        imageVisualEffect.alpha = status ? 1 : 0
+        imageSelect.alpha = status ? 1 : 0
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
     }
 
     func setAccessibility(label: String, value: String) {
@@ -96,9 +99,9 @@ extension NCCollectionViewCommon {
         // Edit mode
         //
         if fileSelect.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode)
+            cell.selected(true, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         } else {
-            cell.selected(false, isEditMode: isEditMode)
+            cell.selected(false, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
         return cell

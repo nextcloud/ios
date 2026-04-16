@@ -13,6 +13,8 @@ protocol NCCellMainProtocol {
     var localImg: UIImageView? { get set }
     var statusImg: UIImageView? { get set }
     var infoLbl: UILabel? { get set }
+
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor)
 }
 
 extension NCCellMainProtocol {

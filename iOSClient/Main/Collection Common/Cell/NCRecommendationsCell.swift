@@ -92,7 +92,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
-        contentView.bringSubviewToFront(buttonMore)
     }
 
     @objc private func handleTapObserver(_ g: UITapGestureRecognizer) {
