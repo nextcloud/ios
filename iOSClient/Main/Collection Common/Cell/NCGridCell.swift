@@ -95,9 +95,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageVisualEffect.isUserInteractionEnabled = false
         imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
 
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageSelect.alpha = 0
-
         buttonMore.menu = nil
         buttonMore.showsMenuAsPrimaryAction = true
 
@@ -165,7 +162,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -173,8 +170,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             buttonMore.isHidden = false
         }
 
-        self.imageVisualEffect.alpha = status ? 1 : 0
-        self.imageSelect.alpha = status ? 1 : 0
+        imageVisualEffect.alpha = status ? 1 : 0
+        imageSelect.alpha = status ? 1 : 0
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
@@ -319,10 +317,10 @@ extension NCCollectionViewCommon {
 
         // Edit mode
         if fileSelect.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode)
+            cell.selected(true, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
             a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selected(false, isEditMode: isEditMode)
+            cell.selected(false, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
         // Accessibility

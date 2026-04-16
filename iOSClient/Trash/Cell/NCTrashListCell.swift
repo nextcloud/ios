@@ -26,7 +26,6 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
     weak var delegate: NCTrashListCellDelegate?
     var objectId = ""
-    var account = ""
 
     var statusImg: UIImageView? {
         get { return imageStatus }
@@ -114,7 +113,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
-    func selected(_ status: Bool, isEditMode: Bool, account: String) {
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
@@ -137,11 +136,11 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCImageCache.shared.getImageCheckedNo()
+            imageSelect.image = NCImageCache.shared.getImageCheckedNo(color: color)
             backgroundView = nil
             separator.isHidden = false
         }

@@ -46,9 +46,6 @@ class NCMediaCell: UICollectionViewCell {
         imageStatus.image = nil
         imageItem.image = nil
 
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageSelect.alpha = 0
-
         imageVisualEffect.isHidden = false
         imageVisualEffect.effect = nil
         imageVisualEffect.alpha = 0
@@ -56,8 +53,9 @@ class NCMediaCell: UICollectionViewCell {
         imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
     }
 
-    func selected(_ status: Bool) {
-        self.imageVisualEffect.alpha = status ? 1 : 0
-        self.imageSelect.alpha = status ? 1 : 0
+    func selected(_ status: Bool, color: UIColor) {
+        imageVisualEffect.alpha = status ? 1 : 0
+        imageSelect.alpha = status ? 1 : 0
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
     }
 }

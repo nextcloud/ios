@@ -20,9 +20,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
 
     weak var delegate: NCTrashGridCellDelegate?
     var objectId = ""
-    var indexPath = IndexPath()
-    var account = ""
-    var user = ""
 
     var statusImg: UIImageView? {
         get { return nil }
@@ -48,28 +45,11 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageSelect.alpha = 0
-
         imageVisualEffect.isHidden = false
         imageVisualEffect.effect = nil
         imageVisualEffect.alpha = 0
         imageVisualEffect.isUserInteractionEnabled = false
         imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
-
-        labelTitle.text = ""
-        labelExtension.text = ""
-        labelExtension.isHidden = true
-        labelInfo.text = ""
-        labelSubinfo.text = ""
-
-        if labelExtension.isHidden {
-            labelTitle.numberOfLines = 2
-            labelTitle.lineBreakMode = .byWordWrapping
-        } else {
-            labelTitle.numberOfLines = 1
-            labelTitle.lineBreakMode = .byTruncatingTail
-        }
 
         // Dynamic Type Font Configuration
         //
@@ -97,17 +77,30 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         // adjustsFontForContentSizeCategory:
         //     Enables live updates when accessibility settings change.
         //
+        labelTitle.text = ""
         labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
+        labelExtension.text = ""
+        labelExtension.isHidden = true
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
+        labelInfo.text = ""
         labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
+        labelSubinfo.text = ""
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
+
+        if labelExtension.isHidden {
+            labelTitle.numberOfLines = 2
+            labelTitle.lineBreakMode = .byWordWrapping
+        } else {
+            labelTitle.numberOfLines = 1
+            labelTitle.lineBreakMode = .byTruncatingTail
+        }
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -132,7 +125,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         setA11yActions()
     }
 
-    func selected(_ status: Bool, isEditMode: Bool, account: String) {
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -141,8 +134,9 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
             setA11yActions()
         }
 
-        self.imageVisualEffect.alpha = status ? 1 : 0
-        self.imageSelect.alpha = status ? 1 : 0
+        imageVisualEffect.alpha = status ? 1 : 0
+        imageSelect.alpha = status ? 1 : 0
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {

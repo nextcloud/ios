@@ -39,18 +39,16 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMain
         imageVisualEffect.alpha = 0
         imageVisualEffect.isUserInteractionEnabled = false
         imageVisualEffect.backgroundColor = UIColor.white.withAlphaComponent(0.2)
-
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageSelect.alpha = 0
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
-        self.imageVisualEffect.alpha = status ? 1 : 0
-        self.imageSelect.alpha = status ? 1 : 0
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
+        imageVisualEffect.alpha = status ? 1 : 0
+        imageSelect.alpha = status ? 1 : 0
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
     }
 
     func setAccessibility(label: String, value: String) {
@@ -101,9 +99,9 @@ extension NCCollectionViewCommon {
         // Edit mode
         //
         if fileSelect.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode)
+            cell.selected(true, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         } else {
-            cell.selected(false, isEditMode: isEditMode)
+            cell.selected(false, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
         return cell
