@@ -140,15 +140,8 @@ struct NCTagEditorView: View {
 }
 
 #Preview {
-    let metadata = tableMetadata()
-    metadata.account = ""
-    metadata.fileId = ""
-    metadata.ocId = ""
-    metadata.serverUrl = ""
-    metadata.urlBase = ""
-
     return NCTagEditorView(
-        metadata: metadata,
+        metadata: tableMetadata(),
         windowScene: nil
     ) { _ in }
 }
