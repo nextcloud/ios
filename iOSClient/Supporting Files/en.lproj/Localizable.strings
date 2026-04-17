@@ -90,7 +90,7 @@
 "_share_tags_no_results_"   = "No tags found";
 "_share_tags_added_named_"  = "Tag %@ has been created.";
 "_edit_tags_"               = "Manage tags";
-"_create_tag_error_"        = "There was an issue in creating a new tag. Please try again";
+"_create_tag_error_"        = "New tag could not be created. Please try again.";
 "_of_"                      = "of";
 "_livephoto_save_"          = "Save Live Photo to Photo Album";
 "_livephoto_save_error_"    = "Error during save of Live Photo.";
