@@ -94,8 +94,7 @@ class NCContextMenuMain: NSObject {
             title: NSLocalizedString("_details_", comment: ""),
             image: utility.loadImage(named: "info.circle.fill")
         ) { _ in
-            NCCreate().createShare(viewController: self.viewController,
-                                   controller: self.controller,
+            NCCreate().createShare(controller: self.controller,
                                    metadata: metadata,
                                    page: .activity)
         }
