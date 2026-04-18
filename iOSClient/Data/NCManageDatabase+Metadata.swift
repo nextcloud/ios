@@ -1355,7 +1355,7 @@ extension NCManageDatabase {
     /// - Returns: A tuple containing the relative path and filename.
     func relativeDavComponents(for metadata: tableMetadata) -> (path: String, fileName: String) {
         let fullPath = metadata.serverUrlFileName
-        let prefix = "\(metadata.urlBase)" + NCGlobal.shared.davFilesBasePath + "\(metadata.userId)"
+        let prefix = NKDav.homeURLStringNoSlash(urlBase: metadata.urlBase, userId: metadata.userId)
 
         guard fullPath.hasPrefix(prefix) else {
             return (path: "", fileName: metadata.fileName)

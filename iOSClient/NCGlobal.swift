@@ -16,9 +16,6 @@ final class NCGlobal: Sendable {
         case original = "original"
     }
 
-    // WebDAV path
-    let davFilesBasePath = "/remote.php/dav/files/"
-
     // Directory on Group
     //
     let directoryProviderStorage                    = "File Provider Storage"
