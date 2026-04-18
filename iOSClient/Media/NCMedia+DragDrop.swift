@@ -35,7 +35,11 @@ extension NCMedia: UICollectionViewDropDelegate {
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true, controller: self.controller) {
             DragDropHover.shared.sourceMetadatas = metadatas
-            openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
+            Task {
+                await NCDragDrop().transfers(windowScene: windowScene,
+                                             destination: nil,
+                                             session: self.session)
+            }
         }
     }
 
@@ -45,38 +49,5 @@ extension NCMedia: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         DragDropHover.shared.cleanPushDragDropHover()
-    }
-
-    // MARK: -
-
-    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
-        var listMenuItems: [UIMenuItem] = []
-
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile(_:))))
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile(_:))))
-        UIMenuController.shared.menuItems = listMenuItems
-        UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
-    }
-
-    @objc func copyMenuFile(_ sender: Any?) {
-        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-
-        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
-            let destination = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-            Task {
-                await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
-            }
-        }
-    }
-
-    @objc func moveMenuFile(_ sender: Any?) {
-        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-
-        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
-            let destination = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-            Task {
-                await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
-            }
-        }
     }
 }

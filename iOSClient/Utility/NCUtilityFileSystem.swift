@@ -127,11 +127,11 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func getHomeServer(urlBase: String, userId: String) -> String {
-        return urlBase + "/remote.php/dav/files/" + userId
+        return urlBase + NCGlobal.shared.davFilesBasePath + userId
     }
 
     func getPath(path: String, user: String, fileName: String? = nil) -> String {
-        var path = path.replacingOccurrences(of: "/remote.php/dav/files/" + user, with: "")
+        var path = path.replacingOccurrences(of: NCGlobal.shared.davFilesBasePath + user, with: "")
         if let fileName = fileName {
             path += fileName
         }

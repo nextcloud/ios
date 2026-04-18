@@ -96,7 +96,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             if let metadata = metadatas.first, metadata.account != self.session.account {
                 DragDropHover.shared.sourceMetadatas = metadatas
                 Task {
-                    await NCDragDrop().transfers(collectionViewCommon: self,
+                    await NCDragDrop().transfers(windowScene: windowScene,
                                                  destination: serverUrl,
                                                  session: self.session)
                 }
