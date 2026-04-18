@@ -1346,6 +1346,31 @@ extension NCManageDatabase {
                 .first != nil
         } ?? false
     }
+
+    // MARK: - helpers
+
+    /// Extracts the relative DAV folder path and filename from metadata.
+    ///
+    /// - Parameter metadata: The metadata object containing DAV URLs.
+    /// - Returns: A tuple containing the relative path and filename.
+    func relativeDavComponents(for metadata: tableMetadata) -> (path: String, fileName: String) {
+        let fullPath = metadata.serverUrlFileName
+        let prefix = NKDav.homeURLStringNoSlash(urlBase: metadata.urlBase, userId: metadata.userId)
+
+        guard fullPath.hasPrefix(prefix) else {
+            return (path: "", fileName: metadata.fileName)
+        }
+
+        let relative = String(fullPath.dropFirst(prefix.count))
+
+        // Split into path + filename
+        let url = URL(fileURLWithPath: relative)
+
+        let fileName = url.lastPathComponent
+        let path = url.deletingLastPathComponent().path
+
+        return (path, fileName)
+    }
 }
 
 class tableMetadataTag: Object {

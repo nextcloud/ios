@@ -138,21 +138,55 @@ final class NCImageCache: @unchecked Sendable {
                            mediaPath: String,
                            showOnlyImages: Bool,
                            showOnlyVideos: Bool) -> NSPredicate {
-        var predicate = NSPredicate()
         let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
-        let showBothPredicate = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
-        let showOnlyPredicateImage = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == 'image' AND NOT (status IN %@)"
-        let showOnlyPredicateVideo = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == 'video' AND livePhotoFile == '' AND NOT (status IN %@)"
+
+        let showBothPredicate = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        mediaSearch == true AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateImage = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        mediaSearch == true AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateVideo = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        mediaSearch == true AND
+        hasPreview == true AND
+        classFile == 'video' AND
+        NOT (status IN %@)
+        """
 
         if showOnlyImages {
-            predicate = NSPredicate(format: showOnlyPredicateImage, session.account, startServerUrl, global.metadataStatusHideInView)
+            return NSPredicate(format: showOnlyPredicateImage,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
         } else if showOnlyVideos {
-            predicate = NSPredicate(format: showOnlyPredicateVideo, session.account, startServerUrl, global.metadataStatusHideInView)
+            return NSPredicate(format: showOnlyPredicateVideo,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
         } else {
-            predicate = NSPredicate(format: showBothPredicate, session.account, startServerUrl, global.metadataStatusHideInView)
+            return NSPredicate(format: showBothPredicate,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
         }
-
-        return predicate
     }
 
     // MARK: -

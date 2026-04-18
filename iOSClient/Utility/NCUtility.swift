@@ -116,13 +116,6 @@ final class NCUtility: NSObject, Sendable {
         return zeros + fileId
     }
 
-    func getLivePhotoOcId(metadata: tableMetadata) -> String? {
-        if let instanceId = splitOcId(metadata.ocId).instanceId {
-            return paddedFileId(metadata.livePhotoFile) + instanceId
-        }
-        return nil
-    }
-
     func getVersionBuild() -> String {
         if let dictionary = Bundle.main.infoDictionary,
            let version = dictionary["CFBundleShortVersionString"],

@@ -268,7 +268,7 @@ extension NCCollectionViewCommon {
                     return(nil)
                 }
                 if let metadata = await NCManageDatabase.shared.getMetadataAsync(
-                    predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", session.account, "/remote.php/dav/files/" + session.user + dir, filename)) {
+                    predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", session.account, NKDav.userPath(userId: session.user) + dir, filename)) {
                     metadatas.append(metadata)
                 } else {
                     if let metadata = await loadMetadata(session: session,
@@ -307,7 +307,9 @@ extension NCCollectionViewCommon {
     private func loadMetadata(session: NCSession.Session,
                               provider: NKSearchProvider,
                               filePath: String) async -> tableMetadata? {
-        let urlPath = session.urlBase + "/remote.php/dav/files/" + session.user + filePath
+        let cleanPath = filePath.hasPrefix("/") ? String(filePath.dropFirst()) : filePath
+        let urlPath = NKDav.homeURLString(urlBase: session.urlBase,
+                                          userId: session.user) + cleanPath
         let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: urlPath,
                                                               account: session.account
         )

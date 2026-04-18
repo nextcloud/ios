@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import NextcloudKit
 import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
@@ -127,15 +128,21 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func getHomeServer(urlBase: String, userId: String) -> String {
-        return urlBase + "/remote.php/dav/files/" + userId
+        return NKDav.homeURLStringNoSlash(urlBase: urlBase, userId: userId)
     }
 
     func getPath(path: String, user: String, fileName: String? = nil) -> String {
-        var path = path.replacingOccurrences(of: "/remote.php/dav/files/" + user, with: "")
-        if let fileName = fileName {
-            path += fileName
+        let prefix = NKDav.userPathNoSlash(userId: user)
+
+        var result = path.hasPrefix(prefix)
+            ? String(path.dropFirst(prefix.count))
+            : path
+
+        if let fileName {
+            result += fileName
         }
-        return path
+
+        return result
     }
 
     func createServerUrl(serverUrl: String, fileName: String) -> String {
