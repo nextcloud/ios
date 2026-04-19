@@ -301,7 +301,7 @@
 "_favorite_short_"              = "Favorite";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
 "_tutorial_offline_view_"       = "Files copied here will be available offline.\n\nThey will be synchronized with your cloud.";
-"_tutorial_groupfolders_view_"  = "No Group folders yet";
+"_tutorial_groupfolders_view_"  = "No team folders yet";
 "_more_"                        = "More";
 "_favorite_no_files_"           = "No favorites yet";
 "_no_date_information_"                     = "No date information";
@@ -600,7 +600,7 @@
 "_disable_livephoto_"       = "Disable Live Photo";
 "_undo_modify_"             = "Undo modifying";
 "_rename_already_exists_"   = "A file with this name already exists.";
-"_group_folders_"           = "Group folders";
+"_group_folders_"           = "Team folders";
 "_play_from_files_"         = "Play movie from a file";
 "_play_from_url_"           = "Play movie from URL";
 "_valid_video_url_"         = "Insert a valid URL";
