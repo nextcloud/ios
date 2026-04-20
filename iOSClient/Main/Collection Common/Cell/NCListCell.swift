@@ -551,10 +551,17 @@ extension NCCollectionViewCommon {
 
         if isSearchingMode,
            let searchResultStore,
+           !searchResultStore.isEmpty,
            let title = cell.labelTitle?.text {
-            let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
             let attributedString = NSMutableAttributedString(string: title)
-            attributedString.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
+            let nsTitle = title as NSString
+            let range = nsTitle.range(of: searchResultStore, options: [.caseInsensitive])
+
+            if range.location != NSNotFound,
+               NSMaxRange(range) <= nsTitle.length {
+                attributedString.addAttribute(.foregroundColor, value: UIColor.systemBlue, range: range)
+            }
+
             cell.labelTitle?.attributedText = attributedString
         }
 
