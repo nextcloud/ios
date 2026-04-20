@@ -556,10 +556,11 @@ extension NCCollectionViewCommon {
             let attributedString = NSMutableAttributedString(string: title)
             let nsTitle = title as NSString
             let range = nsTitle.range(of: searchResultStore, options: [.caseInsensitive])
+            let color = NCBrandColor.shared.getElement(account: session.account)
 
             if range.location != NSNotFound,
                NSMaxRange(range) <= nsTitle.length {
-                attributedString.addAttribute(.foregroundColor, value: UIColor.systemBlue, range: range)
+                attributedString.addAttribute(.foregroundColor, value: color, range: range)
             }
 
             cell.labelTitle?.attributedText = attributedString
