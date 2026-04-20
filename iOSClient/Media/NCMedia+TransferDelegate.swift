@@ -9,7 +9,14 @@ import NextcloudKit
 // MARK: - Drag
 
 extension NCMedia: NCTransferDelegate {
-    func transferReloadData(serverUrl: String?) { }
+    func transferReloadData(serverUrl: String?) {
+        Task {
+            await self.debouncerSearch.call {
+                await self.loadDataSource()
+                await self.searchMediaUI()
+            }
+        }
+    }
 
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) {
         Task {

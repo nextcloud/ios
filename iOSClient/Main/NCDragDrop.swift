@@ -285,7 +285,9 @@ class NCDragDrop: NSObject {
                 for: token)
         }
 
-        //await collectionViewCommon.getServerData(forced: true)
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadData(serverUrl: nil)
+        }
     }
 }
 
