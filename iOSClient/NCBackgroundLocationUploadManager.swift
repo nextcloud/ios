@@ -118,7 +118,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
-            await appDelegate.backgroundSync()
+            await appDelegate.autoUploadBackgroundSync()
         }
     }
 

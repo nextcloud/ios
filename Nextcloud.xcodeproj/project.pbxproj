@@ -230,6 +230,9 @@
 		F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC7F277B7D2700AA9FBF /* RealmSwift */; };
 		F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC83277B7D3500AA9FBF /* RealmSwift */; };
 		F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC87277B7D3F00AA9FBF /* RealmSwift */; };
+		F7110AE02F9773230095AA5C /* AppDelegate+AppRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7110ADF2F9773210095AA5C /* AppDelegate+AppRefresh.swift */; };
+		F7110AE42F9774140095AA5C /* AppDelegate+AppProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7110AE32F9774130095AA5C /* AppDelegate+AppProcessing.swift */; };
+		F7110AE62F977A680095AA5C /* AppDelegate+AutoUploadBackgroundSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7110AE52F977A630095AA5C /* AppDelegate+AutoUploadBackgroundSync.swift */; };
 		F711A4DC2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */; };
 		F711A4DD2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */; };
 		F711A4DE2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */; };
@@ -1331,6 +1334,9 @@
 		F71070AA2F7E49E100AEE58A /* NCEndToEndSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndSetup.swift; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCContextMenuViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContextMenuViewer.swift; sourceTree = "<group>"; };
+		F7110ADF2F9773210095AA5C /* AppDelegate+AppRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+AppRefresh.swift"; sourceTree = "<group>"; };
+		F7110AE32F9774130095AA5C /* AppDelegate+AppProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+AppProcessing.swift"; sourceTree = "<group>"; };
+		F7110AE52F977A630095AA5C /* AppDelegate+AutoUploadBackgroundSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+AutoUploadBackgroundSync.swift"; sourceTree = "<group>"; };
 		F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCUtility+Date.swift"; sourceTree = "<group>"; };
 		F7132C6B2D085AD200B42D6A /* NCTermOfServiceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTermOfServiceModel.swift; sourceTree = "<group>"; };
 		F7132C6C2D085AD200B42D6A /* NCTermOfServiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTermOfServiceView.swift; sourceTree = "<group>"; };
@@ -3287,6 +3293,9 @@
 			children = (
 				AA517BB42D66149900F8D37C /* .tx */,
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
+				F7110ADF2F9773210095AA5C /* AppDelegate+AppRefresh.swift */,
+				F7110AE32F9774130095AA5C /* AppDelegate+AppProcessing.swift */,
+				F7110AE52F977A630095AA5C /* AppDelegate+AutoUploadBackgroundSync.swift */,
 				F7CAFE1A2F16AA8600DB35A5 /* main.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */,
@@ -4508,6 +4517,8 @@
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
 				F799DF822C4B7DCC003410B5 /* NCSectionFooter.swift in Sources */,
 				F76B649C2ADFFAED00014640 /* NCImageCache.swift in Sources */,
+				F7110AE42F9774140095AA5C /* AppDelegate+AppProcessing.swift in Sources */,
+				F7110AE62F977A680095AA5C /* AppDelegate+AutoUploadBackgroundSync.swift in Sources */,
 				F76341182EBE0BC60056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F34E1AD92ECC839100FA10C3 /* EmojiTextField.swift in Sources */,
@@ -4531,6 +4542,7 @@
 				F765E9CD295C585800A09ED8 /* NCUploadScanDocument.swift in Sources */,
 				F741C2242B6B9FD600E849BB /* NCMediaSelectTabBar.swift in Sources */,
 				F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
+				F7110AE02F9773230095AA5C /* AppDelegate+AppRefresh.swift in Sources */,
 				AA8D31662D411FA100FE2775 /* NCShareDateCell.swift in Sources */,
 				F3F442EE2DDE292D00FD701F /* NCMetadataPermissions.swift in Sources */,
 				F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */,
