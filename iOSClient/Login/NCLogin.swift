@@ -100,7 +100,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         // certificate
-        certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
+        let configCertificate = UIImage.SymbolConfiguration(pointSize: 50, weight: .regular)
+            .applying(UIImage.SymbolConfiguration(paletteColors: [.white]))
+        let imageCertificate = UIImage(systemName: "network.badge.shield.half.filled", withConfiguration: configCertificate)
+        certificate.setImage(imageCertificate, for: .normal)
         certificate.isHidden = true
         certificate.isEnabled = false
 

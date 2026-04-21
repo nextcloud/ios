@@ -88,7 +88,7 @@ class NCShareUserCell: UITableViewCell {
         imageItem.contentMode = .scaleAspectFill
 
         if tableShare.shareType == NKShare.ShareType.team.rawValue {
-            imageItem.image = utility.loadImage(named: "custom.person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
+            imageItem.image = utility.loadImage(named: "person.3.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
         } else {
