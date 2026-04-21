@@ -47,7 +47,7 @@ extension AppDelegate {
         scheduleAppRefresh()
 
         let refreshTask = Task { () -> Bool in
-            await self.autoUploadBackgroundSync()
+            await NCAutoUpload.shared.autoUploadBackgroundSync()
             return !Task.isCancelled
         }
 

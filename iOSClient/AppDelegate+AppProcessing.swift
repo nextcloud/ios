@@ -80,7 +80,7 @@ extension AppDelegate {
                 nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Stop cleaning week")
                 return true
             } else {
-                await self.autoUploadBackgroundSync()
+                await NCAutoUpload.shared.autoUploadBackgroundSync()
                 return !Task.isCancelled
             }
         }
