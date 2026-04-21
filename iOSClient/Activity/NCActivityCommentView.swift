@@ -22,7 +22,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image
         } else {
-            imageItem.image = NCUtility().loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
+            imageItem.image = NCUtility().loadImage(imageName: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
     }
 

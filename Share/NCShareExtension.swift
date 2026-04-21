@@ -73,7 +73,7 @@ class NCShareExtension: UIViewController {
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
+        createFolderImage.image = utility.loadImage(imageName: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder(_:)))
         createFolderView.addGestureRecognizer(createFolderGesture)

@@ -48,7 +48,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                    if cell.ocId == tblMetadata.ocId {
                        if image == nil {
                            cell.imageItem.contentMode = .scaleAspectFit
-                           image = NCUtility().loadImage(named: tblMetadata.iconName, useTypeIconFile: true, account: tblMetadata.account)
+                           image = NCUtility().loadImage(imageName: tblMetadata.iconName, useTypeIconFile: true, account: tblMetadata.account)
                        } else {
                            cell.imageItem.contentMode = .scaleAspectFill
                        }

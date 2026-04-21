@@ -35,7 +35,7 @@ class NCContextMenuComment: NSObject {
     private func makeEditAction() -> UIAction {
         UIAction(
             title: NSLocalizedString("_edit_comment_", comment: ""),
-            image: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "pencil", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -80,7 +80,7 @@ class NCContextMenuComment: NSObject {
     private func makeDeleteAction() -> UIAction {
         UIAction(
             title: NSLocalizedString("_delete_comment_", comment: ""),
-            image: utility.loadImage(named: "trash", colors: [.red]),
+            image: utility.loadImage(imageName: "trash", colors: [.red]),
             attributes: .destructive
         ) { _ in
             NextcloudKit.shared.deleteComments(

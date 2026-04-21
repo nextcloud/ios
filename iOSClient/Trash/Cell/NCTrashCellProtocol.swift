@@ -26,7 +26,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
         if self is NCTrashListCell {
             self.labelInfo?.text = NCUtility().getRelativeDateTitle(tableTrash.trashbinDeletionTime as Date)
             if tableTrash.livePhoto {
-                statusImg?.image = NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+                statusImg?.image = NCUtility().loadImage(imageName: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             }
         } else {
             let dateFormatter = DateFormatter()

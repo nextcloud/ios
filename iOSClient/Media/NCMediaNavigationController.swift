@@ -70,15 +70,15 @@ class NCMediaNavigationController: NCMainNavigationController {
         }
         //
         let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
+        let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(imageName: "square.grid.3x3") : utility.loadImage(imageName: "rectangle.grid.3x2")
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
-                              image: utility.loadImage(named: "checkmark.circle")) { _ in
+                              image: utility.loadImage(imageName: "checkmark.circle")) { _ in
             media.setEditMode(true)
         }
 
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
-        UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
+        UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(imageName: "photo")) { _ in
             media.showOnlyImages = true
             media.showOnlyVideos = false
             Task {
@@ -86,7 +86,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                 await media.networkRemoveAll()
             }
         },
-            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
+            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(imageName: "video")) { _ in
                 media.showOnlyImages = false
                 media.showOnlyVideos = true
                 Task {
@@ -94,7 +94,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                     await media.networkRemoveAll()
                 }
             },
-            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
+            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(imageName: "photo.on.rectangle")) { _ in
                 media.showOnlyImages = false
                 media.showOnlyVideos = false
                 Task {
@@ -121,7 +121,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         ])
 
         let viewFolderMedia = UIMenu(title: "", options: .displayInline, children: [
-            UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(named: "folder"), handler: { _ in
+            UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(imageName: "folder"), handler: { _ in
                 guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCSelect else { return }
                 viewController.delegate = media
@@ -133,12 +133,12 @@ class NCMediaNavigationController: NCMainNavigationController {
             })
         ])
 
-        let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
+        let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(imageName: "play.circle")) { _ in
             guard let controller = self.controller else { return }
             media.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: media)
         }
 
-        let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(named: "link")) { _ in
+        let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(imageName: "link")) { _ in
             let alert = UIAlertController(title: NSLocalizedString("_valid_video_url_", comment: ""), message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
             alert.addTextField(configurationHandler: { textField in

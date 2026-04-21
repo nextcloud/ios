@@ -22,7 +22,7 @@ class NCContextMenuTrash: NSObject {
 
         let restoreAction = UIAction(
             title: NSLocalizedString("_restore_", comment: ""),
-            image: utility.loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
         ) { [self] _ in
             Task {
                 await trashController.restoreItem(with: objectId)
@@ -32,7 +32,7 @@ class NCContextMenuTrash: NSObject {
 
         let deleteAction = UIAction(
             title: NSLocalizedString("_delete_", comment: ""),
-            image: utility.loadImage(named: "trash", colors: [.red]),
+            image: utility.loadImage(imageName: "trash", colors: [.red]),
             attributes: .destructive
         ) { [self] _ in
             Task {

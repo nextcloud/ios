@@ -84,7 +84,7 @@ class NCViewerMedia: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
         if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
+            statusViewImage.image = utility.loadImage(imageName: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             statusLabel.text = "LIVE"
         } else {
             statusViewImage.image = nil
@@ -290,7 +290,7 @@ class NCViewerMedia: UIViewController {
             self.imageVideoContainer.image = self.image
             return
         } else if metadata.isAudio {
-            let image = utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
+            let image = utility.loadImage(imageName: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
             self.image = image
             self.imageVideoContainer.image = self.image
             return
@@ -303,7 +303,7 @@ class NCViewerMedia: UIViewController {
                     self.image = image
                     self.imageVideoContainer.image = self.image
                 } else {
-                    self.image = self.utility.loadImage(named: "photo.badge.arrow.down", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.image = self.utility.loadImage(imageName: "photo.badge.arrow.down", colors: [NCBrandColor.shared.iconImageColor2])
                     self.imageVideoContainer.image = self.image
                 }
                 return
@@ -327,7 +327,7 @@ class NCViewerMedia: UIViewController {
                     return
                 } catch {
                     print("Unsupported image format: \(error.localizedDescription)")
-                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.image = self.utility.loadImage(imageName: "photo", colors: [NCBrandColor.shared.iconImageColor2])
                     self.imageVideoContainer.image = self.image
                 }
                 return
@@ -362,7 +362,7 @@ class NCViewerMedia: UIViewController {
                     self.image = image
                     self.imageVideoContainer.image = self.image
                 } else {
-                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.image = self.utility.loadImage(imageName: "photo", colors: [NCBrandColor.shared.iconImageColor2])
                     self.imageVideoContainer.image = self.image
                 }
             }

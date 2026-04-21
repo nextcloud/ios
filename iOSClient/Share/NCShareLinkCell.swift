@@ -64,7 +64,7 @@ class NCShareLinkCell: UITableViewCell {
         if isInternalLink {
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
-            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
+            imageItem.image = NCUtility().loadImage(imageName: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
 
@@ -82,8 +82,8 @@ class NCShareLinkCell: UITableViewCell {
                 menuButton.accessibilityIdentifier = "addShareLink"
             }
 
-            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare?.account)])
-            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+            imageItem.image = NCUtility().loadImage(imageName: "link.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare?.account)])
+            menuButton.setImage(NCUtility().loadImage(imageName: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor
@@ -106,13 +106,13 @@ class NCShareLinkCell: UITableViewCell {
 
             if tableShare.shareType == NKShare.ShareType.email.rawValue {
                 labelTitle.text = tableShare.shareWithDisplayname
-                imageItem.image = NCUtility().loadImage(named: "envelope.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare.account)])
+                imageItem.image = NCUtility().loadImage(imageName: "envelope.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare.account)])
             }
         }
 
         statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
         labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
+        imageDownArrow.image = utility.loadImage(imageName: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
 
         menuButton.menu = nil
         menuButton.showsMenuAsPrimaryAction = true

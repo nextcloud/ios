@@ -215,7 +215,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             }
         }
         if image == nil {
-            image = utility.loadImage(named: file.iconName, useTypeIconFile: true, account: file.account)
+            image = utility.loadImage(imageName: file.iconName, useTypeIconFile: true, account: file.account)
             useTypeIconFile = true
         }
 

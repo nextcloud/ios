@@ -31,7 +31,7 @@ class NCContextMenuNavigation: NSObject {
         var showRecommendedFiles: UIAction?
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
-                              image: utility.loadImage(named: "checkmark.circle")) { _ in
+                              image: utility.loadImage(imageName: "checkmark.circle")) { _ in
             Task {
                 if !collectionViewCommon.dataSource.isEmpty() {
                     await collectionViewCommon.setEditMode(true)
@@ -41,7 +41,7 @@ class NCContextMenuNavigation: NSObject {
         }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""),
-                            image: utility.loadImage(named: "list.bullet"),
+                            image: utility.loadImage(imageName: "list.bullet"),
                             state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
             Task {
                 layoutForView.layout = global.layoutList
@@ -51,7 +51,7 @@ class NCContextMenuNavigation: NSObject {
         }
 
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""),
-                            image: utility.loadImage(named: "square.grid.2x2"),
+                            image: utility.loadImage(imageName: "square.grid.2x2"),
                             state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
             Task {
                 layoutForView.layout = global.layoutGrid
@@ -61,7 +61,7 @@ class NCContextMenuNavigation: NSObject {
         }
 
         let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""),
-                                   image: utility.loadImage(named: "square.grid.3x3"),
+                                   image: utility.loadImage(imageName: "square.grid.3x3"),
                                    state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
             Task {
                 layoutForView.layout = global.layoutPhotoSquare
@@ -71,7 +71,7 @@ class NCContextMenuNavigation: NSObject {
         }
 
         let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""),
-                                  image: utility.loadImage(named: "rectangle.grid.3x2"),
+                                  image: utility.loadImage(imageName: "rectangle.grid.3x2"),
                                   state: layoutForView.layout == global.layoutPhotoRatio ? .on : .off) { _ in
             Task {
                 layoutForView.layout = global.layoutPhotoRatio
@@ -83,7 +83,7 @@ class NCContextMenuNavigation: NSObject {
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
 
         let ascending = layoutForView.ascending
-        let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
+        let ascendingChevronImage = utility.loadImage(imageName: ascending ? "chevron.up" : "chevron.down")
         let isName = layoutForView.sort == "fileName"
         let isDate = layoutForView.sort == "date"
         let isSize = layoutForView.sort == "size"
@@ -167,7 +167,7 @@ class NCContextMenuNavigation: NSObject {
 
         let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: session.account)
         let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""),
-                                               image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors),
+                                               image: utility.loadImage(imageName: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors),
                                                state: personalFilesOnly ? .on : .off) { _ in
             Task {
                 NCPreferences().setPersonalFilesOnly(account: session.account, value: !personalFilesOnly)
@@ -222,7 +222,7 @@ class NCContextMenuNavigation: NSObject {
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
-                              image: utility.loadImage(named: "checkmark.circle")) { _ in
+                              image: utility.loadImage(imageName: "checkmark.circle")) { _ in
             if let datasource = trashViewController.datasource,
                !datasource.isEmpty {
                 trashViewController.setEditMode(true)
@@ -230,7 +230,7 @@ class NCContextMenuNavigation: NSObject {
             }
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""),
-                            image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]),
+                            image: utility.loadImage(imageName: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]),
                             state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
             Task {
                 trashViewController.onListSelected()
@@ -238,7 +238,7 @@ class NCContextMenuNavigation: NSObject {
             }
         }
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""),
-                            image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]),
+                            image: utility.loadImage(imageName: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]),
                             state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
             Task {
                 trashViewController.onGridSelected()
@@ -247,7 +247,7 @@ class NCContextMenuNavigation: NSObject {
         }
 
         let emptyTrash = UIAction(title: NSLocalizedString("_empty_trash_", comment: ""),
-                                  image: utility.loadImage(named: "trash", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                  image: utility.loadImage(imageName: "trash", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             Task {
                 await trashViewController.emptyTrash()
             }

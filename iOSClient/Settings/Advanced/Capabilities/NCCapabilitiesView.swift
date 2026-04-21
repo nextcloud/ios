@@ -39,7 +39,7 @@ struct NCCapabilitiesView: View {
                     }
                 }
                 Section {
-                    CapabilityName(text: $model.homeServer, image: Image(uiImage: NCUtility().loadImage(named: "house")), resize: false)
+                    CapabilityName(text: $model.homeServer, image: Image(uiImage: NCUtility().loadImage(imageName: "house")), resize: false)
                 }
             }
         }

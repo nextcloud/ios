@@ -16,7 +16,7 @@ class NCShareToggleCell: UITableViewCell {
             self.accessoryType = isOn ? .checkmark : .none
             return
         }
-        let image = NCUtility().loadImage(named: iconName, colors: [NCBrandColor.shared.customer], size: self.frame.height - 26)
+        let image = NCUtility().loadImage(imageName: iconName, colors: [NCBrandColor.shared.customer], size: self.frame.height - 26)
         self.accessoryView = UIImageView(image: image)
     }
 

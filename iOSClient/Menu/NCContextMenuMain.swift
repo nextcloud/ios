@@ -92,7 +92,7 @@ class NCContextMenuMain: NSObject {
     private func makeDetailAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_details_", comment: ""),
-            image: utility.loadImage(named: "info.circle.fill")
+            image: utility.loadImage(imageName: "info.circle.fill")
         ) { _ in
             NCCreate().createShare(controller: self.controller,
                                    metadata: metadata,
@@ -106,7 +106,7 @@ class NCContextMenuMain: NSObject {
             NSLocalizedString("_remove_favorites_", comment: "") :
                 NSLocalizedString("_add_favorites_", comment: ""),
             image: utility.loadImage(
-                named: metadata.favorite ? "star.slash.fill" : "star.fill",
+                imageName: metadata.favorite ? "star.slash.fill" : "star.fill",
                 colors: [NCBrandColor.shared.yellowFavorite]
             )
         ) { _ in
@@ -119,7 +119,7 @@ class NCContextMenuMain: NSObject {
     private func makeShareAction() -> UIAction {
         return UIAction(
             title: NSLocalizedString("_share_", comment: ""),
-            image: utility.loadImage(named: "square.and.arrow.up.fill")
+            image: utility.loadImage(imageName: "square.and.arrow.up.fill")
         ) { _ in
             Task { @MainActor in
                 await NCCreate().createActivityViewController(
@@ -234,7 +234,7 @@ class NCContextMenuMain: NSObject {
     private func makeSetFolderE2EEAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-            image: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "lock", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
                 let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(
@@ -253,7 +253,7 @@ class NCContextMenuMain: NSObject {
     private func makeUnsetFolderE2EEAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-            image: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "lock", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
                 let results = await NextcloudKit.shared.markE2EEFolderAsync(
@@ -295,7 +295,7 @@ class NCContextMenuMain: NSObject {
     private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_livephoto_save_", comment: ""),
-            image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
         }
@@ -304,7 +304,7 @@ class NCContextMenuMain: NSObject {
     private func makeSaveAsScanAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_save_as_scan_", comment: ""),
-            image: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -337,7 +337,7 @@ class NCContextMenuMain: NSObject {
     private func makeRenameAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_rename_", comment: ""),
-            image: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "text.cursor", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task { @MainActor in
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
@@ -374,7 +374,7 @@ class NCContextMenuMain: NSObject {
     private func makeModifyWithQuickLookAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_modify_", comment: ""),
-            image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
                 if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -407,7 +407,7 @@ class NCContextMenuMain: NSObject {
     private func makeColorFolderAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_change_color_", comment: ""),
-            image: utility.loadImage(named: "paintpalette", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "paintpalette", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil)
                 .instantiateInitialViewController() as? NCColorPicker {
@@ -444,7 +444,7 @@ class NCContextMenuMain: NSObject {
 
         let deleteSubMenu = UIMenu(
             title: NSLocalizedString("_delete_", comment: ""),
-            image: utility.loadImage(named: "trash"),
+            image: utility.loadImage(imageName: "trash"),
             options: .destructive,
             children: [deleteConfirmLocal, deleteConfirmFile]
         )
@@ -465,7 +465,7 @@ class NCContextMenuMain: NSObject {
                 metadata.directory ? "_delete_folder_" : "_delete_file_",
                 comment: ""
             ),
-            image: utility.loadImage(named: "trash"),
+            image: utility.loadImage(imageName: "trash"),
             attributes: .destructive
         ) { _ in
             if self.viewController is NCCollectionViewCommon {
@@ -509,7 +509,7 @@ class NCContextMenuMain: NSObject {
     private func makeDeleteLocalAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_remove_local_file_", comment: ""),
-            image: utility.loadImage(named: "document.on.trash")
+            image: utility.loadImage(imageName: "document.on.trash")
         ) { _ in
             Task { @MainActor in
                 var token: Int?

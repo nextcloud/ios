@@ -11,7 +11,7 @@ import CoreMedia
 import Photos
 
 extension NCUtility {
-    func loadImage(named imageName: String,
+    func loadImage(imageName: String,
                    colors: [UIColor]? = nil,
                    size: CGFloat? = nil,
                    useTypeIconFile: Bool = false,
@@ -85,7 +85,7 @@ extension NCUtility {
         } else if let displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
         } else {
-            return loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
+            return loadImage(imageName: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
     }
 

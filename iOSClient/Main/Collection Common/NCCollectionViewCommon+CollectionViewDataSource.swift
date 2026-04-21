@@ -117,7 +117,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 var emptyTitle: String?
 
                 if isSearchingMode {
-                    emptyImage = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                    emptyImage = utility.loadImage(imageName: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
                     if self.searchTask?.state == .running {
                         emptyTitle = NSLocalizedString("_search_in_progress_", comment: "")
                     } else {
@@ -125,20 +125,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     emptyDescription = NSLocalizedString("_search_instruction_", comment: "")
                 } else if self.searchTask?.state == .running || !self.dataSource.getGetServerData() {
-                    emptyImage = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                    emptyImage = utility.loadImage(imageName: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
                     emptyTitle = NSLocalizedString("_request_in_progress_", comment: "")
                     emptyDescription = ""
                 } else {
                     if serverUrl.isEmpty {
                         if let emptyImageName {
-                            emptyImage = utility.loadImage(named: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
+                            emptyImage = utility.loadImage(imageName: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
                         } else {
                             emptyImage = imageCache.getFolder(account: session.account)
                         }
                         emptyTitle = NSLocalizedString(self.emptyTitle, comment: "")
                         emptyDescription = NSLocalizedString(emptyDescription, comment: "")
                     } else if self.metadataFolder?.status == global.metadataStatusWaitCreateFolder {
-                        emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                        emptyImage = utility.loadImage(imageName: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
                         emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
                         emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")
                     } else if let metadataFolder, !metadataFolder.isCreatable {

@@ -114,7 +114,7 @@ class NCContextMenuViewer: NSObject {
             title: metadata.favorite
                 ? NSLocalizedString("_remove_favorites_", comment: "")
                 : NSLocalizedString("_add_favorites_", comment: ""),
-            image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
+            image: utility.loadImage(imageName: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
         ) { _ in
             Task {
                 await NCNetworking.shared.setStatusWaitFavorite(metadata)
@@ -146,7 +146,7 @@ class NCContextMenuViewer: NSObject {
     private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_livephoto_save_", comment: ""),
-            image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            image: utility.loadImage(imageName: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
         }

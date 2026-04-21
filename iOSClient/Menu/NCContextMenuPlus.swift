@@ -44,7 +44,7 @@ class NCContextMenuPlus: NSObject {
         // ------------------------------- ACTION
 
         menuActionElement.append(UIAction(title: NSLocalizedString("_upload_photos_videos_", comment: ""),
-                                          image: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                          image: utility.loadImage(imageName: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                 if hasPermission {
                     DispatchQueue.main.async {
@@ -55,21 +55,21 @@ class NCContextMenuPlus: NSObject {
         })
 
         menuActionElement.append(UIAction(title: NSLocalizedString("_upload_file_", comment: ""),
-                                          image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                          image: utility.loadImage(imageName: "doc", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             DispatchQueue.main.async {
                 controller.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: false, allowsMultipleSelection: true)
             }
         })
 
         menuActionElement.append(UIAction(title: NSLocalizedString("_scans_document_", comment: ""),
-                                          image: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                          image: utility.loadImage(imageName: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             DispatchQueue.main.async {
                 NCDocumentCamera.shared.openScannerDocument(viewController: controller)
             }
         })
 
         menuActionElement.append(UIAction(title: NSLocalizedString("_create_voice_memo_", comment: ""),
-                                          image: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                          image: utility.loadImage(imageName: "mic", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                 if hasPermission {
                     DispatchQueue.main.async {
@@ -138,7 +138,7 @@ class NCContextMenuPlus: NSObject {
            !isDirectoryE2EE,
            isNetworkReachable {
             menuTextElement.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
-                                            image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                            image: utility.loadImage(imageName: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 Task { @MainActor in
                     let richWorkspaceCommon = NCRichWorkspaceCommon()
                     if let viewController = controller.currentViewController() {
@@ -160,7 +160,7 @@ class NCContextMenuPlus: NSObject {
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
            !isDirectoryE2EE {
             menuTextElement.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
-                                            image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                                            image: utility.loadImage(imageName: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 Task {
                     let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
                     let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -178,7 +178,7 @@ class NCContextMenuPlus: NSObject {
             // ------------------------------- COLLABORA
             if capabilities.richDocumentsEnabled {
                 menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                                        image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
+                                                        image: utility.loadImage(imageName: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
@@ -190,7 +190,7 @@ class NCContextMenuPlus: NSObject {
                 })
 
                 menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
-                                                        image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
+                                                        image: utility.loadImage(imageName: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
@@ -202,7 +202,7 @@ class NCContextMenuPlus: NSObject {
                 })
 
                 menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
-                                                        image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
+                                                        image: utility.loadImage(imageName: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
@@ -218,7 +218,7 @@ class NCContextMenuPlus: NSObject {
 
             if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_docx"}) {
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                                      image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor])) { _ in
+                                                      image: utility.loadImage(imageName: "doc.text", colors: [NCBrandColor.shared.documentIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "document", account: session.account)
@@ -232,7 +232,7 @@ class NCContextMenuPlus: NSObject {
 
             if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_xlsx"}) {
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
-                                                      image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
+                                                      image: utility.loadImage(imageName: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "spreadsheet", account: session.account)
@@ -247,7 +247,7 @@ class NCContextMenuPlus: NSObject {
 
             if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_pptx"}) {
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
-                                                      image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
+                                                      image: utility.loadImage(imageName: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "presentation", account: session.account)

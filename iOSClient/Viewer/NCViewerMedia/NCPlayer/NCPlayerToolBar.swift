@@ -58,13 +58,13 @@ class NCPlayerToolBar: UIView {
 
         self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
 
-        fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", colors: [.white]), for: .normal)
+        fullscreenButton.setImage(utility.loadImage(imageName: "arrow.up.left.and.arrow.down.right", colors: [.white]), for: .normal)
 
-        subtitleButton.setImage(utility.loadImage(named: "captions.bubble", colors: [.white]), for: .normal)
+        subtitleButton.setImage(utility.loadImage(imageName: "captions.bubble", colors: [.white]), for: .normal)
         subtitleButton.isEnabled = false
         subtitleButton.showsMenuAsPrimaryAction = true
 
-        audioButton.setImage(utility.loadImage(named: "speaker.zzz", colors: [.white]), for: .normal)
+        audioButton.setImage(utility.loadImage(imageName: "speaker.zzz", colors: [.white]), for: .normal)
         audioButton.isEnabled = false
         audioButton.showsMenuAsPrimaryAction = true
 
@@ -91,7 +91,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
-        repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
+        repeatButton.setImage(utility.loadImage(imageName: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
@@ -250,9 +250,9 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapFullscreen(_ sender: Any) {
         isFullscreen = !isFullscreen
         if isFullscreen {
-            fullscreenButton.setImage(utility.loadImage(named: "arrow.down.right.and.arrow.up.left", colors: [.white]), for: .normal)
+            fullscreenButton.setImage(utility.loadImage(imageName: "arrow.down.right.and.arrow.up.left", colors: [.white]), for: .normal)
         } else {
-            fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", colors: [.white]), for: .normal)
+            fullscreenButton.setImage(utility.loadImage(imageName: "arrow.up.left.and.arrow.down.right", colors: [.white]), for: .normal)
         }
         viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
@@ -328,10 +328,10 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapRepeat(_ sender: Any) {
         if playRepeat {
             playRepeat = false
-            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
+            repeatButton.setImage(utility.loadImage(imageName: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
         } else {
             playRepeat = true
-            repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.white]), for: .normal)
+            repeatButton.setImage(utility.loadImage(imageName: "repeat", colors: [.white]), for: .normal)
         }
     }
 }

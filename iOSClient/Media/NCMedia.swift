@@ -34,8 +34,8 @@ class NCMedia: UIViewController {
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-    let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
-    let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
+    let livePhotoImage = NCUtility().loadImage(imageName: "livephoto", colors: [.white])
+    let playImage = NCUtility().loadImage(imageName: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
     var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()

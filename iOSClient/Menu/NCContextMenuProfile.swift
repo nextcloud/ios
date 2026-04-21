@@ -98,7 +98,7 @@ class NCContextMenuProfile: NSObject {
 
     private func makeActionItem(from action: NKHovercard.Action) -> UIAction {
         // Placeholder
-        let placeholder = utility.loadImage(named: "person", colors: [NCBrandColor.shared.iconImageColor])
+        let placeholder = utility.loadImage(imageName: "person", colors: [NCBrandColor.shared.iconImageColor])
         let uiAction = UIAction(
             title: action.title,
             image: placeholder,

@@ -92,8 +92,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             segmentControlFilter.selectedSegmentIndex = 1
         }
 
-        add.setImage(utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
-        transferDown.setImage(utility.loadImage(named: "arrow.down", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+        add.setImage(utility.loadImage(imageName: "plus", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+        transferDown.setImage(utility.loadImage(imageName: "arrow.down", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         collectionViewSource.addGestureRecognizer(longPressRecognizer)
@@ -128,8 +128,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        add.setImage(utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
-        transferDown.setImage(utility.loadImage(named: "arrow.down", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+        add.setImage(utility.loadImage(imageName: "plus", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+        transferDown.setImage(utility.loadImage(imageName: "arrow.down", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
     }
 
     override var canBecomeFirstResponder: Bool { return true }

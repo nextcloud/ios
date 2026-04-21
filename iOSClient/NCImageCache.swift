@@ -192,31 +192,31 @@ final class NCImageCache: @unchecked Sendable {
     // MARK: -
 
     func getImageFile(colors: [UIColor] = [NCBrandColor.shared.iconImageColor2]) -> UIImage {
-        return utility.loadImage(named: "doc", colors: colors)
+        return utility.loadImage(imageName: "doc", colors: colors)
     }
 
     func getImageShared(colors: [UIColor] = NCBrandColor.shared.iconImageMultiColors) -> UIImage {
-        return utility.loadImage(named: "person.fill.badge.plus", colors: colors)
+        return utility.loadImage(imageName: "person.fill.badge.plus", colors: colors)
     }
 
     func getImageCanShare(colors: [UIColor] = NCBrandColor.shared.iconImageMultiColors) -> UIImage {
-        return utility.loadImage(named: "person.fill.badge.plus", colors: colors)
+        return utility.loadImage(imageName: "person.fill.badge.plus", colors: colors)
     }
 
     func getImageShareByLink(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "link", colors: colors)
+        return utility.loadImage(imageName: "link", colors: colors)
     }
 
     func getImageFavorite(colors: [UIColor] = [NCBrandColor.shared.yellowFavorite]) -> UIImage {
-        return utility.loadImage(named: "star.fill", colors: colors)
+        return utility.loadImage(imageName: "star.fill", colors: colors)
     }
 
     func getImageOfflineFlag(colors: [UIColor] = [.systemGreen]) -> UIImage {
-        return utility.loadImage(named: "arrow.down.circle.fill", colors: colors)
+        return utility.loadImage(imageName: "arrow.down.circle.fill", colors: colors)
     }
 
     func getImageLocal(colors: [UIColor] = [.systemGreen]) -> UIImage {
-        return utility.loadImage(named: "checkmark.circle.fill", colors: colors)
+        return utility.loadImage(imageName: "checkmark.circle.fill", colors: colors)
     }
 
     func getImageCheckedYes(color: UIColor) -> UIImage? {
@@ -232,15 +232,15 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func getImageButtonMore(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "ellipsis", colors: colors)
+        return utility.loadImage(imageName: "ellipsis", colors: colors)
     }
 
     func getImageButtonStop(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "stop.circle", colors: colors)
+        return utility.loadImage(imageName: "stop.circle", colors: colors)
     }
 
     func getImageButtonMoreLock(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "lock.fill", colors: colors)
+        return utility.loadImage(imageName: "lock.fill", colors: colors)
     }
 
     func getFolder(account: String) -> UIImage {

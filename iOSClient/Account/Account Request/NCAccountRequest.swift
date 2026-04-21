@@ -151,7 +151,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
         if indexPath.row == accounts.count {
 
-            avatarImage?.image = utility.loadImage(named: "plus", colors: [.systemBlue])
+            avatarImage?.image = utility.loadImage(imageName: "plus", colors: [.systemBlue])
             avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             userLabel?.textColor = .systemBlue
@@ -171,7 +171,7 @@ extension NCAccountRequest: UITableViewDataSource {
             }
 
             if account.active {
-                activeImage?.image = utility.loadImage(named: "checkmark", colors: [.systemBlue])
+                activeImage?.image = utility.loadImage(imageName: "checkmark", colors: [.systemBlue])
             } else {
                 activeImage?.image = nil
             }

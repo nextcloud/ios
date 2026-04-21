@@ -21,7 +21,7 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
         context.coordinator.viewController = controller
 
         let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(context.coordinator.dismiss))
-        let buttonCrop = UIBarButtonItem(image: NCUtility().loadImage(named: "crop"), style: .plain, target: context.coordinator, action: #selector(context.coordinator.crop))
+        let buttonCrop = UIBarButtonItem(image: NCUtility().loadImage(imageName: "crop"), style: .plain, target: context.coordinator, action: #selector(context.coordinator.crop))
         controller.navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
 
         model.startTimer(navigationItem: controller.navigationItem)
@@ -164,11 +164,11 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
 
     class CropToolbarIcon: CropToolbarIconProvider {
         func getCropIcon() -> UIImage? {
-            return NCUtility().loadImage(named: "checkmark.circle")
+            return NCUtility().loadImage(imageName: "checkmark.circle")
         }
 
         func getCancelIcon() -> UIImage? {
-            return NCUtility().loadImage(named: "xmark.circle")
+            return NCUtility().loadImage(imageName: "xmark.circle")
         }
     }
 }

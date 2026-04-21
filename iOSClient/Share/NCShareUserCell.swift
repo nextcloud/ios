@@ -88,7 +88,7 @@ class NCShareUserCell: UITableViewCell {
         imageItem.contentMode = .scaleAspectFill
 
         if tableShare.shareType == NKShare.ShareType.team.rawValue {
-            imageItem.image = utility.loadImage(named: "person.3.fill", colors: [NCBrandColor.shared.iconImageColor2])
+            imageItem.image = utility.loadImage(imageName: "person.3.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
         } else {
@@ -138,7 +138,7 @@ class NCShareUserCell: UITableViewCell {
         avatarButton.showsMenuAsPrimaryAction = true
 
         labelQuickStatus.textColor = NCBrandColor.shared.customer
-        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
+        imageDownArrow.image = utility.loadImage(imageName: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
     }
 
     @IBAction func touchUpInsideMenu(_ sender: Any) {

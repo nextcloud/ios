@@ -42,7 +42,7 @@ extension NCShareExtension: UICollectionViewDelegate {
             let session = NCShareExtensionData.shared.getSession()
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
-                header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                header.emptyImage.image = utility.loadImage(imageName: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
@@ -99,7 +99,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
 
         if metadata.isLivePhoto {
-            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
+            cell.imageStatus.image = utility.loadImage(imageName: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
         }
 
         cell.setTags(tags: Array(metadata.tags))

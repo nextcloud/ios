@@ -46,34 +46,34 @@ extension NCCollectionViewCommon {
                         metadata: tableMetadata,
                         a11yValues: inout [String]) {
         if metadata.isLivePhoto {
-            cell.statusImg?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            cell.statusImg?.image = utility.loadImage(imageName: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.statusImg?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
+            cell.statusImg?.image = utility.loadImage(imageName: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
         }
 
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
-            cell.statusImg?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.infoLbl?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
         case global.metadataStatusWaitFavorite:
-            cell.statusImg?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.infoLbl?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
         case global.metadataStatusWaitCopy:
-            cell.statusImg?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.infoLbl?.text = NSLocalizedString("_status_wait_copy_", comment: "")
         case global.metadataStatusWaitMove:
-            cell.statusImg?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.infoLbl?.text = NSLocalizedString("_status_wait_move_", comment: "")
         case global.metadataStatusWaitRename:
-            cell.statusImg?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.infoLbl?.text = NSLocalizedString("_status_wait_rename_", comment: "")
         case global.metadataStatusWaitDownload:
-            cell.statusImg?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloading:
-            cell.statusImg?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            cell.statusImg?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.statusImg?.image = utility.loadImage(imageName: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         default:
             break
         }
@@ -138,30 +138,30 @@ extension NCCollectionViewCommon {
                 if metadata.iconName.isEmpty {
                     cell.previewImg?.image = NCImageCache.shared.getImageFile()
                 } else {
-                    cell.previewImg?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                    cell.previewImg?.image = utility.loadImage(imageName: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 }
             }
         } else {
             // APP NAME - UNIFIED SEARCH
             switch metadata.iconName {
             case let str where str.contains("contacts"):
-                cell.previewImg?.image = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
             case let str where str.contains("conversation"):
                 cell.previewImg?.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.getElement(account: metadata.account))
             case let str where str.contains("calendar"):
-                cell.previewImg?.image = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "calendar", colors: [NCBrandColor.shared.iconImageColor])
             case let str where str.contains("deck"):
-                cell.previewImg?.image = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
             case let str where str.contains("mail"):
-                cell.previewImg?.image = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "mail", colors: [NCBrandColor.shared.iconImageColor])
             case let str where str.contains("talk"):
                 cell.previewImg?.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.getElement(account: metadata.account))
             case let str where str.contains("confirm"):
-                cell.previewImg?.image = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
             case let str where str.contains("pages"):
-                cell.previewImg?.image = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
             default:
-                cell.previewImg?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
+                cell.previewImg?.image = utility.loadImage(imageName: "doc", colors: [NCBrandColor.shared.iconImageColor])
             }
             if !metadata.iconUrl.isEmpty {
                 if let ownerId = getAvatarFromIconUrl(metadata: metadata) {

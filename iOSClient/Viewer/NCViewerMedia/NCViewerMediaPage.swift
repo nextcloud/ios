@@ -53,7 +53,7 @@ class NCViewerMediaPage: UIViewController {
             }
         ]))
 
-    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail(_:)))
+    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(imageName: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail(_:)))
 
     // swiftlint:disable force_cast
     var pageViewController: UIPageViewController {
@@ -552,11 +552,11 @@ extension UIPageViewController {
 extension NCViewerMediaPage: NCViewerMediaViewDelegate {
     func didOpenDetail() {
         changeScreenMode(mode: .normal)
-        imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle.fill")
+        imageDetailNavigationItem.image = NCUtility().loadImage(imageName: "info.circle.fill")
     }
 
     func didCloseDetail() {
-        imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle")
+        imageDetailNavigationItem.image = NCUtility().loadImage(imageName: "info.circle")
     }
 }
 

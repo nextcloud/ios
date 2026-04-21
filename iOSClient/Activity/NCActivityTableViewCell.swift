@@ -150,7 +150,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.imageView.image = image
                         cell.imageView?.contentMode = .scaleAspectFill
                     } else {
-                        cell.imageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
+                        cell.imageView?.image = utility.loadImage(imageName: "doc", colors: [NCBrandColor.shared.iconImageColor])
                         cell.imageView?.contentMode = .scaleAspectFit
                         cell.fileId = activityPreview.fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
