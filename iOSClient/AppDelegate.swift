@@ -242,50 +242,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
        }
     }
 
+    // Executes the background synchronization flow for Auto Upload.
+    //
+    // The function:
+    // - discovers new Auto Upload items,
+    // - fetches pending metadata,
+    // - creates missing folders when required,
+    // - checks server-side existence,
+    // - expands seeds into concrete metadata items,
+    // - queues uploads sequentially.
+    //
+    // The flow is cooperative with BGTask expiration and stops as soon as expiration is detected.
+    //
+    // - Parameter task: Optional background task used to observe expiration.
     func backgroundSync(task: BGTask? = nil) async {
-        defer {
-            // Update badge safely at the end of the background sync
-            Task { @MainActor in
-                do {
-                    let count = await NCManageDatabase.shared.getMetadatasInWaitingCountAsync()
-                    try await UNUserNotificationCenter.current().setBadgeCount(count)
-                } catch { }
+        let expirationState = BackgroundSyncExpirationState()
+
+        task?.expirationHandler = {
+            Task {
+                await expirationState.markExpired()
             }
         }
 
-        // BGTask expiration flag
-        var expired = false
-        task?.expirationHandler = {
-            expired = true
-        }
-
-        // Discover new items for Auto Upload
+        // Discover new items for Auto Upload.
         let numAutoUpload = await NCAutoUpload.shared.initAutoUpload()
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload found \(numAutoUpload) new items")
-        guard !expired else { return }
 
-        // Fetch METADATAS
-        let metadatas = await NCManageDatabase.shared.getMetadataProcess()
-        guard !metadatas.isEmpty, !expired else {
+        guard !(await expirationState.isExpired()) else {
             return
         }
 
-        // Create all pending Auto Upload folders (fail-fast)
+        // Fetch pending metadata.
+        let metadatas = await NCManageDatabase.shared.getMetadataProcess()
+        guard !metadatas.isEmpty, !(await expirationState.isExpired()) else {
+            return
+        }
+
+        // Create all pending Auto Upload folders (fail-fast).
         let pendingCreateFolders = metadatas.lazy.filter {
             $0.status == self.global.metadataStatusWaitCreateFolder &&
             $0.sessionSelector == self.global.selectorUploadAutoUpload
         }
 
-        // Get accounts -> Capabilities
+        // Resolve capabilities once per account.
         let accounts = Array(Set(pendingCreateFolders.map { $0.account }))
         var capabilitiesByAccount: [String: NKCapabilities.Capabilities] = [:]
+
         for account in accounts {
+            guard !(await expirationState.isExpired()) else {
+                return
+            }
+
             let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
             capabilitiesByAccount[account] = capabilities
         }
 
         for metadata in pendingCreateFolders {
-            guard !expired else { return }
+            guard !(await expirationState.isExpired()) else {
+                return
+            }
 
             // If server supports auto MKCOL (Nextcloud >= 33), skip manual folder creation.
             if let capabilities = capabilitiesByAccount[metadata.account] {
@@ -294,24 +309,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     continue
                 }
             }
-            // Create folder
+
             let err = await NCNetworking.shared.createFolderForAutoUpload(
                 serverUrlFileName: metadata.serverUrlFileName,
                 account: metadata.account
             )
-            // Fail-fast: abort the whole sync on first failure
+
+            // Fail-fast: abort the whole sync on first failure.
             if err != .success {
-                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Create folder '\(metadata.serverUrlFileName)' failed: \(err.errorCode) – aborting sync")
+                nkLog(
+                    tag: self.global.logTagBgSync,
+                    emoji: .error,
+                    message: "Create folder '\(metadata.serverUrlFileName)' failed: \(err.errorCode) – aborting sync"
+                )
                 return
             }
         }
 
-        // Capacity computation
+        // Compute available capacity.
         let downloading = metadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
         let uploading = metadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
         let availableProcess = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
 
-        // Start Auto Uploads
+        // Select Auto Upload candidates.
         let metadatasToUpload = Array(
             metadatas.lazy.filter {
                 $0.status == self.global.metadataStatusWaitUpload &&
@@ -324,36 +344,68 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let cameraRoll = NCCameraRoll()
 
         for metadata in metadatasToUpload {
-            guard !expired else { return }
+            guard !(await expirationState.isExpired()) else {
+                return
+            }
 
-            // File exists? skip it
-            let existsResult = await NCNetworking.shared.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            // Check whether the file already exists remotely.
+            let existsResult = await NCNetworking.shared.fileExists(
+                serverUrlFileName: metadata.serverUrlFileName,
+                account: metadata.account
+            )
+
             if existsResult == .success {
-                // File exists → delete from local metadata and skip
+                // File exists remotely: remove local metadata and continue.
                 await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                 continue
-            } else if existsResult.errorCode == 404 {
-                // 404 Not Found → directory does not exist
-                // Proceed
-            } else {
-                // Any other error (423 locked, 401 auth, 403 forbidden, 5xx, etc.)
+            } else if existsResult.errorCode != 404 {
+                // Ignore transient or server-side errors and continue with the next item.
                 continue
             }
 
-            // Expand seed into concrete metadatas (e.g., Live Photo pair)
-            let extracted = await cameraRoll.extractCameraRoll(from: metadata)
-            guard !expired else { return }
+            // Expand the seed into concrete metadata entries (for example, Live Photo pairs).
+            let extractedMetadatas = await cameraRoll.extractCameraRoll(from: metadata)
 
-            for metadata in extracted {
-                // Sequential await keeps ordering and simplifies backpressure
-                let err = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
-                if err == .success {
-                    nkLog(tag: self.global.logTagBgSync, message: "In queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
-                } else {
-                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) -> \(metadata.serverUrl) [\(err.errorDescription)]")
-                }
-                guard !expired else { return }
+            guard !(await expirationState.isExpired()) else {
+                return
             }
+
+            for extractedMetadata in extractedMetadatas {
+                guard !(await expirationState.isExpired()) else {
+                    return
+                }
+
+                let err = await NCNetworking.shared.uploadFileInBackground(
+                    metadata: extractedMetadata.detachedCopy()
+                )
+
+                if err == .success {
+                    nkLog(
+                        tag: self.global.logTagBgSync,
+                        message: "In queued upload \(extractedMetadata.fileName) -> \(extractedMetadata.serverUrl)"
+                    )
+                } else {
+                    nkLog(
+                        tag: self.global.logTagBgSync,
+                        emoji: .error,
+                        message: "Upload failed \(extractedMetadata.fileName) -> \(extractedMetadata.serverUrl) [\(err.errorDescription)]"
+                    )
+                }
+            }
+        }
+    }
+
+    actor BackgroundSyncExpirationState {
+        private var expired = false
+
+        // Marks the background sync as expired.
+        func markExpired() {
+            expired = true
+        }
+
+        // Returns whether the background sync has expired.
+        func isExpired() -> Bool {
+            expired
         }
     }
 
