@@ -81,7 +81,9 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                    let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath),
                    metadata.directory {
                     DragDropHover.shared.cleanPushDragDropHover()
-                    self.pushMetadata(metadata)
+                    Task {
+                        await self.pushMetadata(metadata)
+                    }
                 }
             }
         }

@@ -86,7 +86,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         if metadata.directory {
-            pushMetadata(metadata)
+            await pushMetadata(metadata)
         } else {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
             let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)

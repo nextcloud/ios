@@ -22,6 +22,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal let networking = NCNetworking.shared
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
+    private var isNavigatingMetadata = false
 
     internal var autoUploadFileName = ""
     internal var autoUploadDirectory = ""
@@ -728,30 +729,71 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     // MARK: - Push metadata
 
-    func pushMetadata(_ metadata: tableMetadata) {
-        guard let navigationCollectionViewCommon = self.controller?.navigationCollectionViewCommon else {
+    /// Pushes or reuses the folder view controller associated with the provided metadata.
+    ///
+    /// - Parameter metadata: The metadata representing the selected folder.
+    @MainActor
+    func pushMetadata(_ metadata: tableMetadata) async {
+        guard !isNavigatingMetadata,
+              let navigationController = self.navigationController,
+              let navigationCollectionViewCommon = self.controller?.navigationCollectionViewCommon else {
             return
         }
-        let serverUrlPush = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
-        // Set Last Opening Date
-        Task {
+        isNavigatingMetadata = true
+        defer {
+            isNavigatingMetadata = false
+        }
+
+        let serverUrlPush = utilityFileSystem.createServerUrl(
+            serverUrl: metadata.serverUrl,
+            fileName: metadata.fileName
+        )
+
+        // Update the last opening date without blocking the main flow.
+        Task.detached(priority: .utility) { [database] in
             await database.setDirectoryLastOpeningDateAsync(ocId: metadata.ocId)
         }
 
-        if let viewController = navigationCollectionViewCommon.first(where: { $0.navigationController == self.navigationController && $0.serverUrl == serverUrlPush})?.viewController, viewController.isViewLoaded {
-            navigationController?.pushViewController(viewController, animated: true)
-        } else {
-            if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                viewController.serverUrl = serverUrlPush
-                viewController.titlePreviusFolder = navigationItem.title
-                viewController.titleCurrentFolder = metadata.fileNameView
-
-                navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: self.navigationController, viewController: viewController))
-
-                navigationController?.pushViewController(viewController, animated: true)
-            }
+        guard navigationController.transitionCoordinator == nil else {
+            return
         }
+
+        if let existingEntry = navigationCollectionViewCommon.first(where: {
+            $0.navigationController === navigationController && $0.serverUrl == serverUrlPush
+        }) {
+            let viewController = existingEntry.viewController
+
+            if navigationController.topViewController === viewController {
+                return
+            }
+
+            if navigationController.viewControllers.contains(where: { $0 === viewController }) {
+                navigationController.popToViewController(viewController, animated: true)
+                return
+            }
+
+            navigationController.pushViewController(viewController, animated: true)
+            return
+        }
+
+        guard let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else {
+            return
+        }
+
+        viewController.serverUrl = serverUrlPush
+        viewController.titlePreviusFolder = navigationItem.title
+        viewController.titleCurrentFolder = metadata.fileNameView
+
+        navigationCollectionViewCommon.append(
+            NavigationCollectionViewCommon(
+                serverUrl: serverUrlPush,
+                navigationController: navigationController,
+                viewController: viewController
+            )
+        )
+
+        navigationController.pushViewController(viewController, animated: true)
     }
 
     // MARK: - Header size
@@ -910,7 +952,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                     if metadata.e2eEncrypted {
                         await self.reloadDataSource()
                     } else {
-                        self.pushMetadata(metadata)
+                        await self.pushMetadata(metadata)
                     }
                 }
             default:
