@@ -6,9 +6,9 @@ import UIKit
 import SwiftUI
 
 protocol NCMediaSelectTabBarDelegate: AnyObject {
-    func delete()
     func move()
     func share()
+    func delete()
 }
 
 class NCMediaSelectTabBar: ObservableObject {
