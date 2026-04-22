@@ -75,6 +75,30 @@ extension NCMedia {
 }
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
+    func move() {
+        Task {
+            let ocIds = self.fileSelect.map { $0 }
+            let metadatas = await database.getMetadatasFromOcIdsAsync(ocIds)
+
+            setEditMode(false)
+
+            NCSelectOpen.shared.openView(items: metadatas, controller: self.controller)
+        }
+    }
+
+    func share() {
+        Task {
+            let ocIds = self.fileSelect.map { $0 }
+            let metadatas = await database.getMetadatasFromOcIdsAsync(ocIds)
+
+            setEditMode(false)
+            await NCCreate().createActivityViewController(
+                selectedMetadata: metadatas,
+                controller: self.controller,
+                sender: nil)
+        }
+    }
+
     func delete() {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
@@ -140,5 +164,4 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             }
         }
     }
-
 }

@@ -1004,6 +1004,22 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns detached (unmanaged) copies of `tableMetadata` objects matching the provided ocIds.
+    ///
+    /// - Parameter ocIds: Array of ocId strings used to fetch corresponding metadata.
+    /// - Returns: An array of detached `tableMetadata` objects. Empty if no matches are found.
+    func getMetadatasFromOcIdsAsync(_ ocIds: [String]) async -> [tableMetadata] {
+        guard !ocIds.isEmpty else { return [] }
+
+        return await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .where {
+                    $0.ocId.in(ocIds)
+                }
+                .map { $0.detachedCopy() }
+        } ?? []
+    }
+
     func getMetadataFromOcIdAndocIdTransferAsync(_ ocId: String?) async -> tableMetadata? {
         guard let ocId else {
             return nil
