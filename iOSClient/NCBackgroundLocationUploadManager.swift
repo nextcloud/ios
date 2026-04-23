@@ -113,7 +113,6 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             return
         }
 
-        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         let location = locations.last
         nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 

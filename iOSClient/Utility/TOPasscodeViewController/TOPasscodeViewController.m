@@ -341,10 +341,10 @@
     }
 
     CGFloat pointSize = 17.0f;
-    if (width < TOPasscodeViewContentSizeMedium) {
+    if (width < (CGFloat)TOPasscodeViewContentSizeMedium) {
         pointSize = 14.0f;
     }
-    else if (width < TOPasscodeViewContentSizeDefault) {
+    else if (width < (CGFloat)TOPasscodeViewContentSizeDefault) {
         pointSize = 16.0f;
     }
 
@@ -361,10 +361,10 @@
     CGFloat width = MIN(size.width, size.height);
 
     CGFloat verticalInset = 44.0f;
-    if (width < TOPasscodeViewContentSizeMedium) {
+    if (width < (CGFloat)TOPasscodeViewContentSizeMedium) {
         verticalInset = 20.0f;
     }
-    else if (width < TOPasscodeViewContentSizeDefault) {
+    else if (width < (CGFloat)TOPasscodeViewContentSizeDefault) {
         verticalInset = 30.0f;
     }
     
@@ -400,10 +400,10 @@
     CGFloat buttonInset = self.passcodeView.keypadButtonInset;
     CGFloat width = MIN(size.width, size.height);
     CGFloat verticalInset = 35.0f;
-    if (width < TOPasscodeViewContentSizeMedium) {
+    if (width < (CGFloat)TOPasscodeViewContentSizeMedium) {
         verticalInset = 30.0f;
     }
-    else if (width < TOPasscodeViewContentSizeDefault) {
+    else if (width < (CGFloat)TOPasscodeViewContentSizeDefault) {
         verticalInset = 35.0f;
     }
 
@@ -708,3 +708,4 @@
 }
 
 @end
+
