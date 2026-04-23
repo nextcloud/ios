@@ -92,6 +92,13 @@ class NCShareExtension: UIViewController {
 
         NCBrandColor.shared.createUserColors()
 
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, _) in
+            guard !self.maintenanceMode else {
+                return
+            }
+            self.updateAppearance()
+        }
+
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
             if NCPreferences().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
@@ -167,13 +174,9 @@ class NCShareExtension: UIViewController {
         }
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        if !maintenanceMode {
-            collectionView.reloadData()
-            tableView.reloadData()
-        }
+    private func updateAppearance() {
+        collectionView.visibleCells.forEach { $0.setNeedsLayout() }
+        tableView.visibleCells.forEach { $0.setNeedsLayout() }
     }
 
     // MARK: -
