@@ -51,7 +51,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal let utility = NCUtility()
     internal let database = NCManageDatabase.shared
     internal var filter: NCGlobal.TypeFilterScanDocument = NCPreferences().typeFilterScanDocument
+
     private var editMenuInteraction: UIEditMenuInteraction?
+    private var traitRegistration: UITraitChangeRegistration?
 
     @MainActor
     internal var session: NCSession.Session {
@@ -71,6 +73,10 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         let interaction = UIEditMenuInteraction(delegate: self)
         view.addInteraction(interaction)
         self.editMenuInteraction = interaction
+
+        traitRegistration = registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, _) in
+            self.updateIcons()
+        }
 
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
@@ -131,9 +137,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     // MARK: -
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
+    private func updateIcons() {
         add.setImage(utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
         transferDown.setImage(utility.loadImage(named: "arrow.down", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
     }
