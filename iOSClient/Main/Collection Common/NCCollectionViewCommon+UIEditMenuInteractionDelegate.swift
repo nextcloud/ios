@@ -8,6 +8,42 @@ import RealmSwift
 import LucidBanner
 
 extension NCCollectionViewCommon: UIEditMenuInteractionDelegate {
+    func editMenuInteraction(_ interaction: UIEditMenuInteraction, menuFor configuration: UIEditMenuConfiguration, suggestedActions: [UIMenuElement]) -> UIMenu? {
+        var actions: [UIMenuElement] = []
+
+        if configuration.identifier as? String == dragDropMenuIdentifier {
+            let copyAction = UIAction(title: NSLocalizedString("_copy_", comment: "")) { [weak self] _ in
+                self?.performCopyDragDropMenuAction()
+            }
+
+            let moveAction = UIAction(title: NSLocalizedString("_move_", comment: "")) { [weak self] _ in
+                self?.performMoveDragDropMenuAction()
+            }
+
+            actions.append(copyAction)
+            actions.append(moveAction)
+            return UIMenu(children: actions)
+        }
+
+        if !UIPasteboard.general.items.isEmpty,
+           !(metadataFolder?.e2eEncrypted ?? false) {
+            let pasteAction = UIAction(
+                title: NSLocalizedString("_paste_file_", comment: "")
+            ) { [weak self] _ in
+                self?.performPasteMenuAction()
+            }
+            actions.append(pasteAction)
+        }
+
+        return actions.isEmpty ? nil : UIMenu(children: actions)
+    }
+
+    func editMenuInteraction(_ interaction: UIEditMenuInteraction, targetRectFor configuration: UIEditMenuConfiguration) -> CGRect {
+        CGRect(x: currentMenuPoint.x, y: currentMenuPoint.y, width: 1, height: 1)
+    }
+
+    // MARK: Paste Menu
+
     func openMenuItems(with objectId: String?, gestureRecognizer: UILongPressGestureRecognizer) {
         guard gestureRecognizer.state == .began else { return }
         guard !serverUrl.isEmpty else { return }
@@ -22,27 +58,7 @@ extension NCCollectionViewCommon: UIEditMenuInteractionDelegate {
         editMenuInteraction.presentEditMenu(with: configuration)
     }
 
-    func editMenuInteraction(_ interaction: UIEditMenuInteraction, menuFor configuration: UIEditMenuConfiguration, suggestedActions: [UIMenuElement]) -> UIMenu? {
-        var actions: [UIMenuElement] = []
-
-        if !UIPasteboard.general.items.isEmpty,
-           !(metadataFolder?.e2eEncrypted ?? false) {
-            let pasteAction = UIAction(
-                title: NSLocalizedString("_paste_file_", comment: "")
-            ) { [weak self] _ in
-                self?.pasteFilesMenu()
-            }
-            actions.append(pasteAction)
-        }
-
-        return actions.isEmpty ? nil : UIMenu(children: actions)
-    }
-
-    func editMenuInteraction(_ interaction: UIEditMenuInteraction, targetRectFor configuration: UIEditMenuConfiguration) -> CGRect {
-        CGRect(x: currentMenuPoint.x, y: currentMenuPoint.y, width: 1, height: 1)
-    }
-
-    @objc func pasteFilesMenu() {
+    private func performPasteMenuAction() {
         Task {@MainActor in
             guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) else {
                 return
@@ -122,4 +138,59 @@ extension NCCollectionViewCommon: UIEditMenuInteractionDelegate {
         }
     }
 
+    // MARK: Drag&Drop Menu
+
+    func openDragDropMenuItems(location: CGPoint) {
+        guard let editMenuInteraction else { return }
+
+        currentMenuPoint = location
+        currentMenuObjectId = nil
+
+        let configuration = UIEditMenuConfiguration(
+            identifier: dragDropMenuIdentifier as NSString,
+            sourcePoint: location
+        )
+
+        editMenuInteraction.presentEditMenu(with: configuration)
+    }
+
+    private func performCopyDragDropMenuAction() {
+        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
+        var destination: String = self.serverUrl
+
+        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+            destination = utilityFileSystem.createServerUrl(
+                serverUrl: destinationMetadata.serverUrl,
+                fileName: destinationMetadata.fileName
+            )
+        }
+
+        Task {
+            await NCDragDrop().copyFile(
+                metadatas: sourceMetadatas,
+                destination: destination,
+                controller: self.controller
+            )
+        }
+    }
+
+    private func performMoveDragDropMenuAction() {
+        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
+        var destination: String = self.serverUrl
+
+        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
+            destination = utilityFileSystem.createServerUrl(
+                serverUrl: destinationMetadata.serverUrl,
+                fileName: destinationMetadata.fileName
+            )
+        }
+
+        Task {
+            await NCDragDrop().moveFile(
+                metadatas: sourceMetadatas,
+                destination: destination,
+                controller: self.controller
+            )
+        }
+    }
 }

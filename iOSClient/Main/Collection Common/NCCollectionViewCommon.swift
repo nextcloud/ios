@@ -55,7 +55,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var tipViewAccounts: EasyTipView?
     internal var syncMetadatasTask: Task<Void, Never>?
 
+    // Edit Menu
     //
+    internal let dragDropMenuIdentifier = "dragdrop"
     internal var editMenuInteraction: UIEditMenuInteraction?
     internal var currentMenuObjectId: String?
     internal var currentMenuPoint: CGPoint = .zero

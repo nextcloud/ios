@@ -104,7 +104,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 }
             } else {
                 DragDropHover.shared.sourceMetadatas = metadatas
-                openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
+                openDragDropMenuItems(location: coordinator.session.location(in: collectionView))
             }
         }
     }
@@ -115,41 +115,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
         DragDropHover.shared.cleanPushDragDropHover()
-    }
-
-    // MARK: -
-
-    private func openMenu(collectionView: UICollectionView, location: CGPoint) {
-        var listMenuItems: [UIMenuItem] = []
-
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile(_:))))
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile(_:))))
-        UIMenuController.shared.menuItems = listMenuItems
-        UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
-    }
-
-    @objc func copyMenuFile(_ sender: Any?) {
-        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        var destination: String = self.serverUrl
-
-        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            destination = utilityFileSystem.createServerUrl(serverUrl: destinationMetadata.serverUrl, fileName: destinationMetadata.fileName)
-        }
-        Task {
-            await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
-        }
-    }
-
-    @objc func moveMenuFile(_ sender: Any?) {
-        guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        var destination: String = self.serverUrl
-
-        if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            destination = utilityFileSystem.createServerUrl(serverUrl: destinationMetadata.serverUrl, fileName: destinationMetadata.fileName)
-        }
-        Task {
-            await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination, controller: self.controller)
-        }
     }
 }
 
