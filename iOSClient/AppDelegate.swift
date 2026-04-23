@@ -51,11 +51,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
 
-        #if !DEBUG
         if !NCPreferences().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
-        #endif
 
         NCBrandColor.shared.createUserColors()
 

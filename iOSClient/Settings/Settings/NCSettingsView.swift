@@ -5,6 +5,7 @@
 
 import SwiftUI
 import NextcloudKit
+import FirebaseCrashlytics
 
 /// Settings view for Nextcloud
 struct NCSettingsView: View {
@@ -275,6 +276,26 @@ struct NCSettingsView: View {
                     }
                 }
             })
+#if DEBUG
+            Section(header: Text("Debug").font(.headline), content: {
+                Button(action: {
+                    Crashlytics.crashlytics().log("Test crash triggered")
+                    fatalError("🔥 Crash test")
+                }, label: {
+                    HStack {
+                        Image(systemName: "flame.fill")
+                            .font(.icon())
+                            .foregroundColor(.red)
+                            .frame(width: 39)
+
+                        Text("Test crash triggered")
+                            .font(.body)
+                    }
+                })
+                .tint(Color(NCBrandColor.shared.textColor))
+            })
+#endif
+
             // `Watermark` Section
             Section(content: {
             }, footer: {
