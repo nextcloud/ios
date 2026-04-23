@@ -246,8 +246,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFooterDeleg
             }
 
             if isNewShare {
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-
                 if share.shareType != NKShare.ShareType.publicLink.rawValue, metadata.e2eEncrypted {
 
                     if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
