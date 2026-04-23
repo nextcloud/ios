@@ -55,6 +55,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var tipViewAccounts: EasyTipView?
     internal var syncMetadatasTask: Task<Void, Never>?
 
+    //
+    internal var editMenuInteraction: UIEditMenuInteraction?
+    internal var currentMenuObjectId: String?
+    internal var currentMenuPoint: CGPoint = .zero
+
     // Search
     //
     internal var isSearchingMode: Bool = false
@@ -203,6 +208,10 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             navigationItem.hidesSearchBarWhenScrolling = false
             navigationItem.preferredSearchBarPlacement = .inline
         }
+
+        let interaction = UIEditMenuInteraction(delegate: self)
+        collectionView.addInteraction(interaction)
+        self.editMenuInteraction = interaction
 
         // Cell
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -590,120 +599,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }, actionProvider: { _ in
             return nil
         })
-    }
-
-    func openMenuItems(with objectId: String?, gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state != .began { return }
-
-        var listMenuItems: [UIMenuItem] = []
-        let touchPoint = gestureRecognizer.location(in: collectionView)
-
-        becomeFirstResponder()
-
-        if !serverUrl.isEmpty {
-            listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu(_:))))
-        }
-
-        if !listMenuItems.isEmpty {
-            UIMenuController.shared.menuItems = listMenuItems
-            UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
-        }
-    }
-
-    // MARK: - Menu Item
-
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if #selector(pasteFilesMenu(_:)) == action {
-            if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
-                return true
-            }
-        } else if #selector(copyMenuFile(_:)) == action {
-            return true
-        } else if #selector(moveMenuFile(_:)) == action {
-            return true
-        }
-
-        return false
-    }
-
-    @objc func pasteFilesMenu(_ sender: Any?) {
-        Task {@MainActor in
-            guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) else {
-                return
-            }
-            let bannerResults = showHudBanner(
-                windowScene: windowScene,
-                title: "_upload_in_progress_")
-
-            for (index, items) in UIPasteboard.general.items.enumerated() {
-                for item in items {
-                    let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-                    let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
-                    guard let data = UIPasteboard.general.data(forPasteboardType: item.key,
-                                                               inItemSet: IndexSet([index]))?.first
-                    else {
-                        continue
-                    }
-                    let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
-                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
-                    let ocIdUpload = UUID().uuidString
-                    let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(
-                        ocIdUpload,
-                        fileName: fileName,
-                        userId: tblAccount.userId,
-                        urlBase: tblAccount.urlBase
-                    )
-                    do {
-                        try data.write(to: URL(fileURLWithPath: fileNameLocalPath))
-                    } catch {
-                        continue
-                    }
-
-                    let resultsUpload = await NCNetworking.shared.uploadFile(account: session.account,
-                                                                             fileNameLocalPath: fileNameLocalPath,
-                                                                             serverUrlFileName: serverUrlFileName) { _ in
-                    } progressHandler: { _, _, fractionCompleted in
-                        Task {@MainActor in
-                            bannerResults.banner?.update(
-                                payload: LucidBannerPayload.Update(progress: fractionCompleted),
-                                for: bannerResults.token
-                            )
-                        }
-                    }
-
-                    if resultsUpload.error == .success,
-                       let etag = resultsUpload.etag,
-                       let ocId = resultsUpload.ocId {
-                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(
-                            ocId,
-                            fileName: fileName,
-                            userId: tblAccount.userId,
-                            urlBase: tblAccount.urlBase)
-                        self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                        NCManageDatabase.shared.addLocalFile(
-                            account: session.account,
-                            etag: etag,
-                            ocId: ocId,
-                            fileName: fileName)
-                        Task {
-                            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                delegate.transferReloadDataSource(serverUrl: self.serverUrl, requestData: true, status: nil)
-                            }
-                        }
-                    } else {
-                        Task {
-                            await showErrorBanner(windowScene: windowScene,
-                                                  text: resultsUpload.error.errorDescription,
-                                                  errorCode: resultsUpload.error.errorCode)
-                        }
-                    }
-                }
-            }
-
-            if let banner = bannerResults.banner {
-                banner.dismiss()
-            }
-        }
     }
 
     // MARK: - DataSource

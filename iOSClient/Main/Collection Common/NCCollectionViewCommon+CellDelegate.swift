@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate {
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
