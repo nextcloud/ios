@@ -14,9 +14,6 @@ var isAppInBackground: Bool = true
 // Global flag indicating whether the app is in maintenanceMode.
 var maintenanceMode: Bool = false
 
-// Global error code
-var shownErrors: Set<Int> = []
-
 /// Singleton responsible for monitoring and managing app state transitions.
 ///
 /// This class observes system notifications related to app lifecycle events and updates global flags accordingly:
@@ -52,11 +49,6 @@ final class NCAppStateManager {
             //
             appDelegate?.pushSubscriptionTask?.cancel()
             appDelegate?.pushSubscriptionTask = nil
-
-            //
-            // Clear the errors
-            //
-            shownErrors.removeAll()
 
             nkLog(debug: "Application did enter in background")
         }

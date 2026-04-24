@@ -29,8 +29,11 @@ func showErrorBanner(windowScene: UIWindowScene?,
     }
 
 #if !EXTENSION
-    guard !bannerContainsError(errorCode: errorCode, afError: afError) else {
-        return
+    if let errorCode,
+       let controller = SceneManager.shared.getController(scene: windowScene) {
+        if await !ErrorBannerGate.shared.shouldShow(errorCode: errorCode, account: controller.account) {
+            return
+        }
     }
 #endif
 

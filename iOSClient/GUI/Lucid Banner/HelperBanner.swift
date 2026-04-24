@@ -124,41 +124,67 @@ func horizontalLayoutBanner(bounds: CGRect,
     }
 }
 
-#if !EXTENSION
+/// Prevents the same error banner from being shown repeatedly in a short time.
+/// Uses a per-error (and optional account) cooldown to avoid UI spam.
+/// Call `shouldShow(...)` before presenting a banner.
+actor ErrorBannerGate {
+    static let shared = ErrorBannerGate()
 
-// Error 401 (maintenance mode)
-// Error 423 (locked)
-// Error 507 (insufficient storage)
-// Error -1009 (NSURLErrorNotConnectedToInternet)
-// Error -1003 (NSURLError​Cannot​Find​Host)
+    private var lastShownByKey: [String: Date] = [:]
+    private let maxEntryAge: TimeInterval = 120
 
-func bannerContainsError(errorCode: Int?, afError: AFError? = nil) -> Bool {
-    guard let errorCode else {
-        return false
-    }
-    // List of errors not to be displayed
-    if errorCode == -999 || errorCode == 423 {
-        return true
-    }
-    if let afError, case .explicitlyCancelled = afError {
-        return true
-    }
-    // Prevent repeated display of the same user-facing error during the current foreground session.
-    // If this error code has already been shown, do nothing.
-    // Otherwise, record it and allow the UX notification to be displayed once.
-    if shownErrors.contains(errorCode) {
-        return true
-    } else {
-        // Coalesce user-facing errors across the current foreground session.
-        // The same error code is shown to the user only once.
-        if errorCode == 401 ||
-            errorCode == 423 ||
-            errorCode == 507 ||
-            errorCode == NSURLErrorNotConnectedToInternet ||
-            errorCode == NSURLErrorCannotFindHost {
-            shownErrors.insert(errorCode)
+    private init() {}
+
+    func shouldShow(errorCode: Int, account: String? = nil) -> Bool {
+        cleanupOldEntries()
+
+        let key = makeKey(errorCode: errorCode, account: account)
+        let now = Date()
+        let cooldown = cooldownInterval(for: errorCode)
+
+        if let lastShown = lastShownByKey[key],
+           now.timeIntervalSince(lastShown) < cooldown {
+            return false
         }
-        return false
+
+        lastShownByKey[key] = now
+        return true
+    }
+
+    // MARK: - Private
+
+    private func makeKey(errorCode: Int, account: String?) -> String {
+        "\(errorCode)|\(account ?? "-")"
+    }
+
+    private func cooldownInterval(for errorCode: Int) -> TimeInterval {
+        switch errorCode {
+
+        case NSURLErrorNotConnectedToInternet:
+            return 30 // No internet connection (persistent until network changes)
+
+        case NSURLErrorCannotFindHost:
+            return 30 // Host/DNS not reachable (likely server down or misconfigured URL)
+
+        case 401:
+            return 30 // Unauthorized (server maintenance)
+
+        case 423:
+            return 20 // Resource locked (temporary server-side condition)
+
+        case 507:
+            return 30 // Insufficient storage (server quota exceeded, persistent)
+
+        default:
+            return 5  // Transient or unknown error
+        }
+    }
+
+    private func cleanupOldEntries() {
+        let now = Date()
+
+        lastShownByKey = lastShownByKey.filter { _, lastShown in
+            now.timeIntervalSince(lastShown) < maxEntryAge
+        }
     }
 }
-#endif
