@@ -35,7 +35,6 @@ class NCSharePaging: UIViewController {
     private let pagingViewController = NCShareHeaderViewController()
     private weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var currentVC: NCSharePagingContent?
-    private let applicationHandle = NCApplicationHandle()
 
     var metadata = tableMetadata()
     var controller: NCMainTabBarController?
@@ -226,7 +225,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.controller = controller
             return viewController
         } else {
-            return applicationHandle.pagingViewController(pagingViewController, viewControllerAt: index, metadata: metadata, topHeight: height)
+            return UIViewController()
         }
     }
 
@@ -237,7 +236,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
         } else if pages[index] == .sharing {
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
         } else {
-            return applicationHandle.pagingViewController(pagingViewController, pagingItemAt: index)
+            return PagingIndexItem(index: index, title: "")
         }
     }
 

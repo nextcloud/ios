@@ -204,10 +204,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-        guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data)
-        else {
-            return
-        }
         let account = data["account"] as? String ?? "unavailable"
         let app = data["app"] as? String
 
@@ -307,8 +303,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Universal Links
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        let applicationHandle = NCApplicationHandle()
-        return applicationHandle.applicationOpenUserActivity(userActivity)
+        return false
     }
 }
 

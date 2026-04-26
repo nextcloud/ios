@@ -38,7 +38,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var externalSiteMenu: [NKExternalSite] = []
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
-    private let applicationHandle = NCApplicationHandle()
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
     private let database = NCManageDatabase.shared
@@ -188,9 +187,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.url = "segueTrash"
         item.order = 80
         functionMenu.append(item)
-
-        // ITEM : HANDLE
-        applicationHandle.loadItems(functionMenu: &functionMenu)
 
         // ORDER ITEM
         functionMenu = functionMenu.sorted(by: { $0.order < $1.order })
@@ -438,8 +434,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let settingsController = UIHostingController(rootView: settingsView)
             settingsController.title = NSLocalizedString("_settings_", comment: "")
             navigationController?.pushViewController(settingsController, animated: true)
-        } else {
-            applicationHandle.didSelectItem(item, viewController: self)
-        }
+        } 
     }
 }

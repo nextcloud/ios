@@ -97,7 +97,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let notification = NCApplicationHandle().didSelectNotification(notifications[indexPath.row], viewController: self) else { return }
+        let notification = notifications[indexPath.row]
 
         do {
             if let subjectRichParameters = notification.subjectRichParameters,

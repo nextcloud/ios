@@ -178,7 +178,6 @@ class NCCreate: NSObject {
         guard let controller else {
             return
         }
-        var page = page
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, file, error in
@@ -214,8 +213,6 @@ class NCCreate: NSObject {
                     if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
                         pages.remove(at: idx)
                     }
-
-                    (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
                     shareViewController?.pages = pages
                     shareViewController?.metadata = metadata
