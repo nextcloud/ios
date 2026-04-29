@@ -47,45 +47,9 @@ class NCMainTabBarController: UITabBarController {
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
-        // File
-        if let item = tabBar.items?[0] {
-            item.title = NSLocalizedString("_home_", comment: "")
-            item.image = UIImage(systemName: "folder.fill")
-            item.selectedImage = item.image
-            item.tag = 100
-        }
-
-        // Favorite
-        if let item = tabBar.items?[1] {
-            item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(systemName: "star.fill")
-            item.selectedImage = item.image
-            item.tag = 101
-        }
-
-        // Media
-        if let item = tabBar.items?[2] {
-            item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(systemName: "photo.fill")
-            item.selectedImage = item.image
-            item.tag = 102
-        }
-
-        // Activity
-        if let item = tabBar.items?[3] {
-            item.title = NSLocalizedString("_activity_", comment: "")
-            item.image = UIImage(systemName: "bolt.fill")
-            item.selectedImage = item.image
-            item.tag = 103
-        }
-
-        // More
-        if let item = tabBar.items?[4] {
-            item.title = NSLocalizedString("_more_", comment: "")
-            item.image = UIImage(systemName: "ellipsis.circle.fill")
-            item.selectedImage = item.image
-            item.tag = 104
-        }
+        configureMoreController()
+        configureTabBarItems()
+        configureTabBarAppearance()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
@@ -128,6 +92,78 @@ class NCMainTabBarController: UITabBarController {
 
             present(vc, animated: true)
         }
+    }
+
+    private func configureTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+    }
+
+    private func configureMoreController() {
+        guard var controllers = viewControllers else { return }
+
+        controllers.append(makeMoreNavigationController())
+        viewControllers = controllers
+    }
+
+    private func makeMoreNavigationController() -> UIViewController {
+        let moreView = NCMoreView(account: account, controller: self)
+        let hostingController = UIHostingController(rootView: moreView)
+
+        hostingController.title = NSLocalizedString("_more_", comment: "")
+
+        let navigationController = NCMoreNavigationController(rootViewController: hostingController)
+        return navigationController
+    }
+
+    private func configureTabBarItems() {
+        configureTabBarItem(
+            at: 0,
+            title: "_home_",
+            imageName: "folder.fill",
+            tag: 100
+        )
+
+        configureTabBarItem(
+            at: 1,
+            title: "_favorites_",
+            imageName: "star.fill",
+            tag: 101
+        )
+
+        configureTabBarItem(
+            at: 2,
+            title: "_media_",
+            imageName: "photo.fill",
+            tag: 102
+        )
+
+        configureTabBarItem(
+            at: 3,
+            title: "_activity_",
+            imageName: "bolt.fill",
+            tag: 103
+        )
+
+        configureTabBarItem(
+            at: 4,
+            title: "_more_",
+            imageName: "ellipsis.circle.fill",
+            tag: 104
+        )
+    }
+
+    private func configureTabBarItem(at index: Int, title: String, imageName: String, tag: Int) {
+        guard let items = tabBar.items, items.indices.contains(index) else { return }
+
+        let item = items[index]
+        item.title = NSLocalizedString(title, comment: "")
+        item.image = UIImage(systemName: imageName)
+        item.selectedImage = item.image
+        item.tag = tag
     }
 
     @MainActor
