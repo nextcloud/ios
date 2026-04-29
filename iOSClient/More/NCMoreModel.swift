@@ -6,6 +6,28 @@ import Foundation
 import SwiftUI
 import NextcloudKit
 
+/// View model used by `NCMoreView` to build and handle the content of the More tab.
+///
+/// `NCMoreModel` replaces the old storyboard-driven `NCMore` controller logic with a
+/// SwiftUI-friendly data model. It is responsible for:
+///
+/// - Building the visible sections of the More screen.
+/// - Loading account quota information.
+/// - Loading available feature entries based on server capabilities.
+/// - Loading configured external sites.
+/// - Describing each row through a generic `Destination`.
+/// - Executing the selected destination using UIKit navigation.
+///
+/// The model intentionally keeps each menu item declarative. Instead of storing legacy
+/// segue identifiers, each `Item` contains a `Destination` that describes how the row
+/// should be opened. This allows the SwiftUI view to remain simple and only call
+/// `model.perform(item.destination)` when a row is selected.
+///
+/// The actual navigation is still UIKit-based because the More tab is hosted inside
+/// `NCMoreNavigationController`.
+///
+/// - Important: This model is `@MainActor` because it updates SwiftUI state and performs
+///   UIKit navigation operations.
 @MainActor
 final class NCMoreModel: ObservableObject {
     @Published var sections: [Section] = []
@@ -17,7 +39,6 @@ final class NCMoreModel: ObservableObject {
     let account: String
 
     private weak var controller: NCMainTabBarController?
-
     private let database = NCManageDatabase.shared
     private let utilityFileSystem = NCUtilityFileSystem()
 
@@ -26,6 +47,12 @@ final class NCMoreModel: ObservableObject {
         self.controller = controller
     }
 
+    /// A visible section in the More screen.
+    ///
+    /// Sections are rendered by `NCMoreView` as either:
+    ///
+    /// - `moreApps`: the app suggestion shortcut area.
+    /// - `regular`: a standard rounded list section.
     struct Section: Identifiable {
         let identifier = UUID()
         let type: SectionType
@@ -36,11 +63,21 @@ final class NCMoreModel: ObservableObject {
         }
     }
 
+    /// Describes the visual style and semantic role of a More screen section.
     enum SectionType {
+        /// Section used for Nextcloud app suggestions.
         case moreApps
+        /// Standard menu section with tappable rows.
         case regular
     }
 
+    /// A single row or shortcut displayed in the More screen.
+    ///
+    /// Each item contains only presentation data and a destination:
+    ///
+    /// - `titleKey`: localization key used for the visible title.
+    /// - `systemImage`: SF Symbol name used as row icon.
+    /// - `destination`: generic navigation target executed by `perform(_:)`.
     struct Item {
         let identifier = UUID()
         let titleKey: String
@@ -48,38 +85,68 @@ final class NCMoreModel: ObservableObject {
         let destination: Destination
     }
 
+    /// Generic navigation destination for an item in the More screen.
+    ///
+    /// This avoids hard-coding legacy segue identifiers in the SwiftUI view.
+    /// Each case represents a type of action, not a specific menu entry.
     enum Destination {
+        /// Opens the initial view controller of a storyboard.
+        ///
+        /// - Parameters:
+        ///   - name: Storyboard file name without `.storyboard`.
+        ///   - presentation: Presentation mode used to open the destination.
+        ///   - configure: Optional closure used to configure the destination before presentation.
         case storyboard(
             name: String,
             presentation: Presentation,
-            configuration: StoryboardConfiguration = .none
+            configure: (@MainActor (_ destinationController: UIViewController, _ controller: NCMainTabBarController) -> Void)? = nil
         )
 
+        /// Opens an external or internal web URL using `NCBrowserWeb`.
+        ///
+        /// - Parameters:
+        ///   - url: URL string to open.
+        ///   - title: Browser title.
         case browser(
             url: String,
             title: String
         )
 
+        /// Opens the SwiftUI settings screen.
         case settings
+
+        /// Placeholder destination for the app suggestions area.
         case moreApps
+
+        /// No-op destination.
         case none
     }
 
+    /// Presentation style used for storyboard-based destinations.
     enum Presentation {
+        /// Pushes the destination on the current navigation controller.
         case push
+
+        /// Presents the destination modally using `.pageSheet`.
         case modalPageSheet
     }
 
-    enum StoryboardConfiguration {
-        case none
-        case scan
-    }
-
+    /// Loads all More screen items for the current account.
+    ///
+    /// This method rebuilds the full screen state:
+    ///
+    /// - Clears existing sections.
+    /// - Reads the current account from the local database.
+    /// - Reads server capabilities from `NCNetworking`.
+    /// - Adds feature rows such as Recent, Shares, Offline, Scan, Trash.
+    /// - Adds Settings.
+    /// - Loads quota information.
+    /// - Loads external sites when enabled by branding options and server capabilities.
+    ///
+    /// The resulting sections are published through `sections` and rendered by `NCMoreView`.
     func loadItems() async {
-        guard let tableAccount = database.getTableAccount(
-            predicate: NSPredicate(format: "account == %@", account)
-        ),
-        let capabilities = NCNetworking.shared.capabilities[tableAccount.account] else {
+        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let capabilities = NCNetworking.shared.capabilities[tableAccount.account] else {
             return
         }
 
@@ -157,7 +224,11 @@ final class NCMoreModel: ObservableObject {
                 destination: .storyboard(
                     name: "NCScan",
                     presentation: .modalPageSheet,
-                    configuration: .scan
+                    configure: { destinationController, controller in
+                        if let scanController = destinationController.topMostViewController() as? NCScan {
+                            scanController.controller = controller
+                        }
+                    }
                 )
             )
         )
@@ -182,10 +253,8 @@ final class NCMoreModel: ObservableObject {
         )
 
         configureQuota(tableAccount: tableAccount)
-        loadExternalSites(
-            sessionAccount: tableAccount.account,
-            externalSiteItems: &externalSiteItems
-        )
+
+        loadExternalSites(sessionAccount: tableAccount.account, externalSiteItems: &externalSiteItems)
 
         if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             sections.append(
@@ -230,20 +299,19 @@ final class NCMoreModel: ObservableObject {
         }
     }
 
+    /// Executes the selected destination.
+    ///
+    /// The SwiftUI view calls this method when the user taps a row or shortcut.
+    /// The method dispatches the destination to the correct UIKit navigation helper.
+    ///
+    /// - Parameter destination: The destination associated with the selected item.
     func perform(_ destination: Destination) {
         switch destination {
-        case let .storyboard(name, presentation, configuration):
-            openStoryboard(
-                name: name,
-                presentation: presentation,
-                configuration: configuration
-            )
+        case let .storyboard(name, presentation, configure):
+            openStoryboard(name: name, presentation: presentation, configure: configure)
 
         case let .browser(url, title):
-            openBrowser(
-                url: url,
-                title: title
-            )
+            openBrowser(url: url, title: title)
 
         case .settings:
             openSettings()
@@ -256,6 +324,16 @@ final class NCMoreModel: ObservableObject {
         }
     }
 
+    /// Configures the visible quota text and progress value for the account.
+    ///
+    /// The quota text follows the same behavior as the old UIKit implementation:
+    ///
+    /// - `-1`: displayed as `0`.
+    /// - `-2`: displayed as unknown quota.
+    /// - `-3`: displayed as unlimited quota.
+    /// - Any other value: formatted as a file size.
+    ///
+    /// - Parameter tableAccount: Account database object containing quota values.
     private func configureQuota(tableAccount: tableAccount) {
         if tableAccount.quotaRelative > 0 {
             quotaProgress = Double(tableAccount.quotaRelative) / 100
@@ -288,10 +366,18 @@ final class NCMoreModel: ObservableObject {
         )
     }
 
-    private func loadExternalSites(
-        sessionAccount: String,
-        externalSiteItems: inout [Item]
-    ) {
+    /// Loads external site entries configured for the account.
+    ///
+    /// External sites are shown only when:
+    ///
+    /// - Branding options do not disable them.
+    /// - Server capabilities report external sites support.
+    /// - The database contains valid external site records.
+    ///
+    /// - Parameters:
+    ///   - sessionAccount: Account identifier used to read capabilities and database records.
+    ///   - externalSiteItems: Destination array where valid external site items are appended.
+    private func loadExternalSites(sessionAccount: String, externalSiteItems: inout [Item]) {
         guard let capabilities = NCNetworking.shared.capabilities[sessionAccount],
               !NCBrandOptions.shared.disable_more_external_site,
               capabilities.externalSites,
@@ -307,23 +393,24 @@ final class NCMoreModel: ObservableObject {
             }
 
             externalSiteItems.append(
-                Item(
-                    titleKey: externalSite.name,
-                    systemImage: externalSite.type == "settings" ? "gear" : "network",
-                    destination: .browser(
-                        url: urlEncoded,
-                        title: externalSite.name
-                    )
+                Item(titleKey: externalSite.name,
+                     systemImage: externalSite.type == "settings" ? "gear" : "network",
+                     destination: .browser(url: urlEncoded, title: externalSite.name)
                 )
             )
         }
     }
 
-    private func openStoryboard(
-        name: String,
-        presentation: Presentation,
-        configuration: StoryboardConfiguration
-    ) {
+    /// Opens a storyboard-based destination.
+    ///
+    /// The method instantiates the initial view controller from the provided storyboard,
+    /// optionally configures it, and then either pushes or presents it.
+    ///
+    /// - Parameters:
+    ///   - name: Storyboard file name without `.storyboard`.
+    ///   - presentation: Presentation mode used for the destination.
+    ///   - configure: Optional closure used to configure the destination before opening.
+    private func openStoryboard(name: String, presentation: Presentation,configure: (@MainActor (_ destinationController: UIViewController, _ controller: NCMainTabBarController) -> Void)?) {
         guard let controller,
               let destinationController = UIStoryboard(
                 name: name,
@@ -332,10 +419,7 @@ final class NCMoreModel: ObservableObject {
             return
         }
 
-        configureStoryboardController(
-            destinationController,
-            configuration: configuration
-        )
+        configure?(destinationController, controller)
 
         switch presentation {
         case .push:
@@ -351,29 +435,15 @@ final class NCMoreModel: ObservableObject {
         }
     }
 
-    private func configureStoryboardController(
-        _ destinationController: UIViewController,
-        configuration: StoryboardConfiguration
-    ) {
-        guard let controller else {
-            return
-        }
-
-        switch configuration {
-        case .none:
-            break
-
-        case .scan:
-            if let scanController = destinationController.topMostViewController() as? NCScan {
-                scanController.controller = controller
-            }
-        }
-    }
-
-    private func openBrowser(
-        url: String,
-        title: String
-    ) {
+    /// Opens a URL using `NCBrowserWeb`.
+    ///
+    /// The browser is pushed on the current navigation controller and configured to hide
+    /// the exit button, matching the old More screen behavior.
+    ///
+    /// - Parameters:
+    ///   - url: URL string to open.
+    ///   - title: Browser title.
+    private func openBrowser(url: String, title: String) {
         guard let controller,
               let navigationController = controller.currentNavigationController(),
               url.contains("//"),
@@ -392,6 +462,10 @@ final class NCMoreModel: ObservableObject {
         navigationController.navigationBar.isHidden = false
     }
 
+    /// Opens the SwiftUI settings screen.
+    ///
+    /// The settings view is created with `NCSettingsModel` and pushed on the current
+    /// navigation controller.
     private func openSettings() {
         guard let controller,
               let navigationController = controller.currentNavigationController() else {
