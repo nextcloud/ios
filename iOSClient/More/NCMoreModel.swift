@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import UIKit
 import SwiftUI
 import NextcloudKit
 
@@ -15,6 +16,7 @@ import NextcloudKit
 /// - Loading account quota information.
 /// - Loading available feature entries based on server capabilities.
 /// - Loading configured external sites.
+/// - Building the app suggestion shortcut section.
 /// - Describing each row through a generic `Destination`.
 /// - Executing the selected destination using UIKit navigation.
 ///
@@ -66,6 +68,7 @@ final class NCMoreModel: ObservableObject {
     /// Describes the visual style and semantic role of a More screen section.
     enum SectionType {
         /// Section used for Nextcloud app suggestions.
+
         case moreApps
         /// Standard menu section with tappable rows.
         case regular
@@ -112,11 +115,23 @@ final class NCMoreModel: ObservableObject {
             title: String
         )
 
+        /// Opens an app using a custom URL scheme, with a fallback URL if the app is not installed.
+        ///
+        /// - Parameters:
+        ///   - schemeUrl: App URL scheme.
+        ///   - fallbackUrl: Fallback URL opened when the app scheme cannot be handled.
+        case openApp(
+            schemeUrl: String,
+            fallbackUrl: String
+        )
+
+        /// Opens an external URL using `UIApplication`.
+        ///
+        /// - Parameter url: URL string to open.
+        case openUrl(String)
+
         /// Opens the SwiftUI settings screen.
         case settings
-
-        /// Placeholder destination for the app suggestions area.
-        case moreApps
 
         /// No-op destination.
         case none
@@ -169,13 +184,33 @@ final class NCMoreModel: ObservableObject {
             )
         )
 
-        if capabilities.assistantEnabled,
-           NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
-            functionItems.append(
-                Item(
-                    titleKey: "_assistant_",
-                    systemImage: "sparkles",
-                    destination: .moreApps
+        if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+            sections.append(
+                Section(
+                    type: .moreApps,
+                    items: [
+                        Item(
+                            titleKey: "Talk",
+                            systemImage: "magnifyingglass",
+                            destination: .openApp(
+                                schemeUrl: NCGlobal.shared.talkSchemeUrl,
+                                fallbackUrl: NCGlobal.shared.talkAppStoreUrl
+                            )
+                        ),
+                        Item(
+                            titleKey: "Notes",
+                            systemImage: "pencil",
+                            destination: .openApp(
+                                schemeUrl: NCGlobal.shared.notesSchemeUrl,
+                                fallbackUrl: NCGlobal.shared.notesAppStoreUrl
+                            )
+                        ),
+                        Item(
+                            titleKey: "More apps",
+                            systemImage: "square.grid.2x2.fill",
+                            destination: .openUrl(NCGlobal.shared.moreAppsUrl)
+                        )
+                    ]
                 )
             )
         }
@@ -256,21 +291,6 @@ final class NCMoreModel: ObservableObject {
 
         loadExternalSites(sessionAccount: tableAccount.account, externalSiteItems: &externalSiteItems)
 
-        if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
-            sections.append(
-                Section(
-                    type: .moreApps,
-                    items: [
-                        Item(
-                            titleKey: "_more_apps_",
-                            systemImage: "square.grid.2x2.fill",
-                            destination: .moreApps
-                        )
-                    ]
-                )
-            )
-        }
-
         if !functionItems.isEmpty {
             sections.append(
                 Section(
@@ -313,11 +333,14 @@ final class NCMoreModel: ObservableObject {
         case let .browser(url, title):
             openBrowser(url: url, title: title)
 
+        case let .openApp(schemeUrl, fallbackUrl):
+            openApp(schemeUrl: schemeUrl, fallbackUrl: fallbackUrl)
+
+        case let .openUrl(url):
+            openUrl(url)
+
         case .settings:
             openSettings()
-
-        case .moreApps:
-            break
 
         case .none:
             break
@@ -393,9 +416,13 @@ final class NCMoreModel: ObservableObject {
             }
 
             externalSiteItems.append(
-                Item(titleKey: externalSite.name,
-                     systemImage: externalSite.type == "settings" ? "gear" : "network",
-                     destination: .browser(url: urlEncoded, title: externalSite.name)
+                Item(
+                    titleKey: externalSite.name,
+                    systemImage: externalSite.type == "settings" ? "gear" : "network",
+                    destination: .browser(
+                        url: urlEncoded,
+                        title: externalSite.name
+                    )
                 )
             )
         }
@@ -410,7 +437,7 @@ final class NCMoreModel: ObservableObject {
     ///   - name: Storyboard file name without `.storyboard`.
     ///   - presentation: Presentation mode used for the destination.
     ///   - configure: Optional closure used to configure the destination before opening.
-    private func openStoryboard(name: String, presentation: Presentation,configure: (@MainActor (_ destinationController: UIViewController, _ controller: NCMainTabBarController) -> Void)?) {
+    private func openStoryboard(name: String, presentation: Presentation, configure: (@MainActor (_ destinationController: UIViewController, _ controller: NCMainTabBarController) -> Void)?) {
         guard let controller,
               let destinationController = UIStoryboard(
                 name: name,
@@ -480,5 +507,35 @@ final class NCMoreModel: ObservableObject {
         settingsController.title = NSLocalizedString("_settings_", comment: "")
 
         navigationController.pushViewController(settingsController, animated: true)
+    }
+
+    /// Opens an app using a custom URL scheme.
+    ///
+    /// If the app is not installed or the scheme cannot be handled, the fallback URL is opened.
+    ///
+    /// - Parameters:
+    ///   - schemeUrl: App URL scheme.
+    ///   - fallbackUrl: Fallback URL opened when the app scheme cannot be handled.
+    private func openApp(schemeUrl: String, fallbackUrl: String) {
+        guard let appUrl = URL(string: schemeUrl) else {
+            return
+        }
+
+        if UIApplication.shared.canOpenURL(appUrl) {
+            UIApplication.shared.open(appUrl)
+        } else if let fallbackUrl = URL(string: fallbackUrl) {
+            UIApplication.shared.open(fallbackUrl)
+        }
+    }
+
+    /// Opens an external URL using `UIApplication`.
+    ///
+    /// - Parameter url: URL string to open.
+    private func openUrl(_ url: String) {
+        guard let url = URL(string: url) else {
+            return
+        }
+
+        UIApplication.shared.open(url)
     }
 }

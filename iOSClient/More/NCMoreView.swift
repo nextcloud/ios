@@ -5,8 +5,15 @@
 import SwiftUI
 import NextcloudKit
 
+/// SwiftUI implementation of the More tab content.
+///
+/// `NCMoreView` renders the sections provided by `NCMoreModel`.
+/// Navigation is delegated to the model through `Destination`, because the view is hosted
+/// inside the UIKit-based `NCMoreNavigationController`.
 struct NCMoreView: View {
     @StateObject private var model: NCMoreModel
+    private let loadItemsOnAppear: Bool
+    private let shortcutIconColor = Color(red: 0, green: 130 / 255, blue: 201 / 255)
 
     init(account: String, controller: NCMainTabBarController?) {
         _model = StateObject(
@@ -15,6 +22,12 @@ struct NCMoreView: View {
                 controller: controller
             )
         )
+        loadItemsOnAppear = true
+    }
+
+    init(model: NCMoreModel) {
+        _model = StateObject(wrappedValue: model)
+        loadItemsOnAppear = false
     }
 
     var body: some View {
@@ -28,17 +41,19 @@ struct NCMoreView: View {
             }
         }
         .task {
+            guard loadItemsOnAppear else { return }
             await model.loadItems()
         }
     }
 
+    /// Main scrollable content of the More tab.
     private var content: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 18) {
                 ForEach(model.sections) { section in
                     switch section.type {
                     case .moreApps:
-                        moreAppsSection
+                        moreAppsSection(items: section.items)
 
                     case .regular:
                         menuSection(items: section.items)
@@ -46,60 +61,52 @@ struct NCMoreView: View {
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 24)
+            .padding(.top, 18)
+            .padding(.bottom, 20)
         }
     }
 
-    private var moreAppsSection: some View {
+    /// Renders the app suggestion shortcut section.
+    ///
+    /// - Parameter items: Shortcut items displayed as cards.
+    private func moreAppsSection(items: [NCMoreModel.Item]) -> some View {
         HStack(spacing: 14) {
-            shortcutButton(
-                title: "Talk",
-                systemImage: "magnifyingglass",
-                destination: .moreApps
-            )
-
-            shortcutButton(
-                title: "Notes",
-                systemImage: "pencil",
-                destination: .moreApps
-            )
-
-            shortcutButton(
-                title: NSLocalizedString("_more_apps_", comment: ""),
-                systemImage: "square.grid.2x2.fill",
-                destination: .moreApps
-            )
+            ForEach(Array(items.enumerated()), id: \.element.identifier) { _, item in
+                shortcutButton(item)
+            }
         }
     }
 
-    private func shortcutButton(
-        title: String,
-        systemImage: String,
-        destination: NCMoreModel.Destination
-    ) -> some View {
+    /// Creates a tappable shortcut card.
+    ///
+    /// - Parameter item: Item containing title, icon and destination.
+    private func shortcutButton(_ item: NCMoreModel.Item) -> some View {
         Button {
-            model.perform(destination)
+            model.perform(item.destination)
         } label: {
-            VStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+            VStack(spacing: 6) {
+                Image(systemName: item.systemImage)
+                    .font(.icon())
+                    .foregroundColor(shortcutIconColor)
 
-                Text(title)
+                Text(NSLocalizedString(item.titleKey, comment: ""))
                     .font(.body)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
+                    .tint(.primary)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 94)
+            .frame(height: 72)
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
     }
 
+    /// Renders a rounded menu section containing multiple rows.
+    ///
+    /// - Parameter items: Items displayed in the section.
     private func menuSection(items: [NCMoreModel.Item]) -> some View {
         VStack(spacing: 0) {
             ForEach(Array(items.enumerated()), id: \.element.identifier) { index, item in
@@ -114,48 +121,56 @@ struct NCMoreView: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
+    /// Renders a single menu row.
+    ///
+    /// - Parameter item: Item containing title, icon and destination.
     private func menuRow(_ item: NCMoreModel.Item) -> some View {
         Button {
             model.perform(item.destination)
         } label: {
-            HStack(spacing: 22) {
+            HStack(spacing: 16) {
                 Image(systemName: item.systemImage)
-                    .font(.system(size: 24, weight: .regular))
-                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                    .frame(width: 34)
+                    .font(.icon())
+                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                    .frame(width: 26)
 
                 Text(NSLocalizedString(item.titleKey, comment: ""))
                     .font(.body)
-                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                    .foregroundColor(Color(NCBrandColor.shared.textColor))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                    .tint(.primary)
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color(.tertiaryLabel))
+                    .font(.caption)
+                    .foregroundColor(Color(.tertiaryLabel))
             }
-            .padding(.horizontal, 18)
-            .frame(height: 50)
+            .padding(.horizontal, 16)
+            .frame(height: 54)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
+    /// Divider used between menu rows.
     private var divider: some View {
         Rectangle()
             .fill(Color(.separator).opacity(0.45))
             .frame(height: 0.5)
-            .padding(.leading, 74)
+            .padding(.leading, 58)
     }
 
+    /// Bottom quota area showing used storage and quota progress.
     private var quotaSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !model.quotaDescription.isEmpty {
                 Text(model.quotaDescription)
                     .font(.footnote)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
                     .lineLimit(2)
+                    .tint(.primary)
 
                 ProgressView(value: model.quotaProgress)
                     .progressViewStyle(.linear)
@@ -175,13 +190,97 @@ struct NCMoreView: View {
                     Text(model.quotaExternalSiteTitle)
                         .font(.footnote)
                         .lineLimit(1)
+                        .tint(.primary)
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 10)
-        .padding(.bottom, 18)
+        .padding(.top, 8)
+        .padding(.bottom, 16)
         .background(Color(.systemGroupedBackground))
     }
+}
+
+#if DEBUG
+extension NCMoreModel {
+    static var preview: NCMoreModel {
+        let model = NCMoreModel(
+            account: "preview@nextcloud.local",
+            controller: nil
+        )
+
+        model.sections = [
+            Section(
+                type: .moreApps,
+                items: [
+                    Item(
+                        titleKey: "Talk",
+                        systemImage: "magnifyingglass",
+                        destination: .none
+                    ),
+                    Item(
+                        titleKey: "Notes",
+                        systemImage: "pencil",
+                        destination: .none
+                    ),
+                    Item(
+                        titleKey: "_more_apps_",
+                        systemImage: "square.grid.2x2.fill",
+                        destination: .none
+                    )
+                ]
+            ),
+            Section(
+                type: .regular,
+                items: [
+                    Item(
+                        titleKey: "_recent_",
+                        systemImage: "clock.arrow.circlepath",
+                        destination: .none
+                    ),
+                    Item(
+                        titleKey: "_list_shares_",
+                        systemImage: "person.badge.plus",
+                        destination: .none
+                    ),
+                    Item(
+                        titleKey: "_manage_file_offline_",
+                        systemImage: "icloud.and.arrow.down",
+                        destination: .none
+                    ),
+                    Item(
+                        titleKey: "_scanned_images_",
+                        systemImage: "doc.text.viewfinder",
+                        destination: .none
+                    ),
+                    Item(
+                        titleKey: "_trash_view_",
+                        systemImage: "trash",
+                        destination: .none
+                    )
+                ]
+            ),
+            Section(
+                type: .regular,
+                items: [
+                    Item(
+                        titleKey: "_settings_",
+                        systemImage: "gear",
+                        destination: .none
+                    )
+                ]
+            )
+        ]
+
+        model.quotaDescription = "Stai utilizzando 919,31 GB di Illimitata"
+        model.quotaProgress = 0.42
+
+        return model
+    }
+}
+#endif
+
+#Preview {
+    NCMoreView(model: .preview)
 }
