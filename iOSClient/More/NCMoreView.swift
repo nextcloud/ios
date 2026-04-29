@@ -230,7 +230,7 @@ extension NCMoreModel {
                         destination: .none
                     ),
                     Item(
-                        titleKey: "_more_apps_",
+                        titleKey: "More apps",
                         systemImage: "square.grid.2x2.fill",
                         destination: .none
                     )
