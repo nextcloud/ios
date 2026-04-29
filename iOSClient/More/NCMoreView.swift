@@ -90,18 +90,17 @@ struct NCMoreView: View {
         } label: {
             VStack(spacing: 6) {
                 Image(systemName: item.systemImage)
-                    .font(.icon())
+                    .font(.icon(20, weight: .bold))
                     .foregroundColor(shortcutIconColor)
 
                 Text(NSLocalizedString(item.titleKey, comment: ""))
-                    .font(.body)
+                    .font(.system(size: 17))
                     .foregroundColor(.primary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
                     .tint(.primary)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 72)
+            .frame(height: 62)
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
