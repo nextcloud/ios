@@ -81,16 +81,19 @@ struct NCMoreView: View {
         }
     }
 
-    /// Creates a tappable shortcut card.
+    /// Creates a tappable shortcut nextcloud card.
     ///
-    /// - Parameter item: Item containing title, icon and destination.
+    /// - Parameter item: Item containing title, image and destination.
     private func shortcutButton(_ item: NCMoreModel.Item) -> some View {
         Button {
             model.perform(item.destination)
         } label: {
             VStack(spacing: 6) {
-                Image(systemName: item.systemImage)
-                    .font(.icon(20, weight: .bold))
+                Image(item.image)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
                     .foregroundColor(shortcutIconColor)
 
                 Text(NSLocalizedString(item.titleKey, comment: ""))
@@ -132,7 +135,7 @@ struct NCMoreView: View {
             model.perform(item.destination)
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: item.systemImage)
+                Image(systemName: item.image)
                     .font(.icon())
                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     .frame(width: 26)
@@ -165,7 +168,6 @@ struct NCMoreView: View {
             .padding(.leading, 58)
     }
 
-    /// Bottom quota area showing used storage and quota progress.
     private var quotaSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !model.quotaDescription.isEmpty {
@@ -244,17 +246,17 @@ extension NCMoreModel {
                 items: [
                     Item(
                         titleKey: "Talk",
-                        systemImage: "magnifyingglass",
+                        image: "talk-template",
                         destination: .none
                     ),
                     Item(
                         titleKey: "Notes",
-                        systemImage: "pencil",
+                        image: "notes-template",
                         destination: .none
                     ),
                     Item(
                         titleKey: "More apps",
-                        systemImage: "square.grid.2x2.fill",
+                        image: "more-apps-template",
                         destination: .none
                     )
                 ]
@@ -264,27 +266,27 @@ extension NCMoreModel {
                 items: [
                     Item(
                         titleKey: "_recent_",
-                        systemImage: "clock.arrow.circlepath",
+                        image: "clock.arrow.circlepath",
                         destination: .none
                     ),
                     Item(
                         titleKey: "_list_shares_",
-                        systemImage: "person.badge.plus",
+                        image: "person.badge.plus",
                         destination: .none
                     ),
                     Item(
                         titleKey: "_manage_file_offline_",
-                        systemImage: "icloud.and.arrow.down",
+                        image: "icloud.and.arrow.down",
                         destination: .none
                     ),
                     Item(
                         titleKey: "_scanned_images_",
-                        systemImage: "doc.text.viewfinder",
+                        image: "doc.text.viewfinder",
                         destination: .none
                     ),
                     Item(
                         titleKey: "_trash_view_",
-                        systemImage: "trash",
+                        image: "trash",
                         destination: .none
                     )
                 ]
@@ -294,14 +296,14 @@ extension NCMoreModel {
                 items: [
                     Item(
                         titleKey: "_settings_",
-                        systemImage: "gear",
+                        image: "gear",
                         destination: .none
                     )
                 ]
             )
         ]
 
-        model.quotaDescription = "Stai utilizzando 919,31 GB di Illimitata"
+        model.quotaDescription = "You are using 919,31 GB of Unlimited"
         model.quotaProgress = 0.42
 
         return model

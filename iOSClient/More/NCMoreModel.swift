@@ -80,12 +80,12 @@ final class NCMoreModel: ObservableObject {
     /// Each item contains only presentation data and a destination:
     ///
     /// - `titleKey`: localization key used for the visible title.
-    /// - `systemImage`: SF Symbol name used as row icon.
+    /// - `image`: name used as row icon.
     /// - `destination`: generic navigation target executed by `perform(_:)`.
     struct Item {
         let identifier = UUID()
         let titleKey: String
-        let systemImage: String
+        let image: String
         let destination: Destination
     }
 
@@ -177,7 +177,7 @@ final class NCMoreModel: ObservableObject {
         functionItems.append(
             Item(
                 titleKey: "_recent_",
-                systemImage: "clock.arrow.circlepath",
+                image: "clock.arrow.circlepath",
                 destination: .storyboard(
                     name: "NCRecent",
                     presentation: .push
@@ -192,7 +192,7 @@ final class NCMoreModel: ObservableObject {
                     items: [
                         Item(
                             titleKey: "Talk",
-                            systemImage: "magnifyingglass",
+                            image: "talk-template",
                             destination: .openApp(
                                 schemeUrl: NCGlobal.shared.talkSchemeUrl,
                                 fallbackUrl: NCGlobal.shared.talkAppStoreUrl
@@ -200,7 +200,7 @@ final class NCMoreModel: ObservableObject {
                         ),
                         Item(
                             titleKey: "Notes",
-                            systemImage: "pencil",
+                            image: "notes-template",
                             destination: .openApp(
                                 schemeUrl: NCGlobal.shared.notesSchemeUrl,
                                 fallbackUrl: NCGlobal.shared.notesAppStoreUrl
@@ -208,7 +208,7 @@ final class NCMoreModel: ObservableObject {
                         ),
                         Item(
                             titleKey: "More apps",
-                            systemImage: "square.grid.2x2.fill",
+                            image: "more-apps-template",
                             destination: .openUrl(NCGlobal.shared.moreAppsUrl)
                         )
                     ]
@@ -220,7 +220,7 @@ final class NCMoreModel: ObservableObject {
             functionItems.append(
                 Item(
                     titleKey: "_list_shares_",
-                    systemImage: "person.badge.plus",
+                    image: "person.badge.plus",
                     destination: .storyboard(
                         name: "NCShares",
                         presentation: .push
@@ -232,7 +232,7 @@ final class NCMoreModel: ObservableObject {
         functionItems.append(
             Item(
                 titleKey: "_manage_file_offline_",
-                systemImage: "icloud.and.arrow.down",
+                image: "icloud.and.arrow.down",
                 destination: .storyboard(
                     name: "NCOffline",
                     presentation: .push
@@ -244,7 +244,7 @@ final class NCMoreModel: ObservableObject {
             functionItems.append(
                 Item(
                     titleKey: "_group_folders_",
-                    systemImage: "person.2",
+                    image: "person.2",
                     destination: .storyboard(
                         name: "NCGroupfolders",
                         presentation: .push
@@ -256,7 +256,7 @@ final class NCMoreModel: ObservableObject {
         functionItems.append(
             Item(
                 titleKey: "_scanned_images_",
-                systemImage: "doc.text.viewfinder",
+                image: "doc.text.viewfinder",
                 destination: .storyboard(
                     name: "NCScan",
                     presentation: .modalPageSheet,
@@ -272,7 +272,7 @@ final class NCMoreModel: ObservableObject {
         functionItems.append(
             Item(
                 titleKey: "_trash_view_",
-                systemImage: "trash",
+                image: "trash",
                 destination: .storyboard(
                     name: "NCTrash",
                     presentation: .push
@@ -283,7 +283,7 @@ final class NCMoreModel: ObservableObject {
         settingsItems.append(
             Item(
                 titleKey: "_settings_",
-                systemImage: "gear",
+                image: "gear",
                 destination: .settings
             )
         )
@@ -419,7 +419,7 @@ final class NCMoreModel: ObservableObject {
             externalSiteItems.append(
                 Item(
                     titleKey: externalSite.name,
-                    systemImage: externalSite.type == "settings" ? "gear" : "network",
+                    image: externalSite.type == "settings" ? "gear" : "network",
                     destination: .browser(
                         url: urlEncoded,
                         title: externalSite.name
