@@ -13,7 +13,7 @@ import NextcloudKit
 struct NCMoreView: View {
     @StateObject private var model: NCMoreModel
     private let loadItemsOnAppear: Bool
-    private let shortcutIconColor = Color(red: 0, green: 130 / 255, blue: 201 / 255)
+    private let shortcutIconColor = Color(red: 0, green: 130 / 255, blue: 201 / 255) // Nextcloud Color
 
     init(account: String, controller: NCMainTabBarController?) {
         _model = StateObject(
