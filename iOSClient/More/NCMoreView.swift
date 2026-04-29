@@ -30,6 +30,11 @@ struct NCMoreView: View {
         loadItemsOnAppear = false
     }
 
+    @MainActor
+    func perform(_ destination: NCMoreModel.Destination) {
+        model.perform(destination)
+    }
+
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
