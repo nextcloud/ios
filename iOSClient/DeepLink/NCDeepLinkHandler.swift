@@ -126,10 +126,7 @@ class NCDeepLinkHandler {
 
         navigationController.popToRootViewController(animated: false)
 
-        let model = NCMoreModel(
-            account: controller.account,
-            controller: controller
-        )
+        let model = NCMoreModel(controller: controller)
 
         model.perform(destination)
     }

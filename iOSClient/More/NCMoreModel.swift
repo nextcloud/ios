@@ -38,14 +38,15 @@ final class NCMoreModel: ObservableObject {
     @Published var quotaExternalSiteTitle: String = ""
     @Published var quotaExternalSiteUrl: String?
 
-    let account: String
-
     private weak var controller: NCMainTabBarController?
+    var account: String {
+        controller?.account ?? ""
+    }
+
     private let database = NCManageDatabase.shared
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    init(account: String, controller: NCMainTabBarController?) {
-        self.account = account
+    init(controller: NCMainTabBarController?) {
         self.controller = controller
     }
 

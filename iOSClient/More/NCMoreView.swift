@@ -18,7 +18,6 @@ struct NCMoreView: View {
     init(account: String, controller: NCMainTabBarController?) {
         _model = StateObject(
             wrappedValue: NCMoreModel(
-                account: account,
                 controller: controller
             )
         )
@@ -177,9 +176,7 @@ struct NCMoreView: View {
                     .lineLimit(2)
                     .tint(.primary)
 
-                ProgressView(value: model.quotaProgress)
-                    .progressViewStyle(.linear)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.account)))
+                quotaProgressView
             }
 
             if !model.quotaExternalSiteTitle.isEmpty,
@@ -205,15 +202,42 @@ struct NCMoreView: View {
         .padding(.bottom, 16)
         .background(Color(.systemGroupedBackground))
     }
+
+    private var normalizedQuotaProgress: Double {
+        min(max(model.quotaProgress, 0), 1)
+    }
+
+    private var quotaProgressView: some View {
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let progress = normalizedQuotaProgress
+            let warningThreshold = 0.90
+            let brandColor = Color(NCBrandColor.shared.getElement(account: model.account))
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color(.systemGray5))
+
+                Capsule()
+                    .fill(brandColor)
+                    .frame(width: width * min(progress, warningThreshold))
+
+                if progress > warningThreshold {
+                    Capsule()
+                        .fill(Color.red)
+                        .frame(width: width * (progress - warningThreshold))
+                        .offset(x: width * warningThreshold)
+                }
+            }
+        }
+        .frame(height: 4)
+    }
 }
 
 #if DEBUG
 extension NCMoreModel {
     static var preview: NCMoreModel {
-        let model = NCMoreModel(
-            account: "preview@nextcloud.local",
-            controller: nil
-        )
+        let model = NCMoreModel(controller: nil)
 
         model.sections = [
             Section(
