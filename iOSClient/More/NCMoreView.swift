@@ -8,11 +8,13 @@ import NextcloudKit
 struct NCMoreView: View {
     @StateObject private var model: NCMoreModel
 
-    private weak var controller: NCMainTabBarController?
-
     init(account: String, controller: NCMainTabBarController?) {
-        _model = StateObject(wrappedValue: NCMoreModel(account: account))
-        self.controller = controller
+        _model = StateObject(
+            wrappedValue: NCMoreModel(
+                account: account,
+                controller: controller
+            )
+        )
     }
 
     var body: some View {
@@ -54,19 +56,19 @@ struct NCMoreView: View {
             shortcutButton(
                 title: "Talk",
                 systemImage: "magnifyingglass",
-                action: .moreApps
+                destination: .moreApps
             )
 
             shortcutButton(
                 title: "Notes",
                 systemImage: "pencil",
-                action: .moreApps
+                destination: .moreApps
             )
 
             shortcutButton(
                 title: NSLocalizedString("_more_apps_", comment: ""),
                 systemImage: "square.grid.2x2.fill",
-                action: .moreApps
+                destination: .moreApps
             )
         }
     }
@@ -74,12 +76,10 @@ struct NCMoreView: View {
     private func shortcutButton(
         title: String,
         systemImage: String,
-        action: NCMoreModel.Action
+        destination: NCMoreModel.Destination
     ) -> some View {
         Button {
-            Task { @MainActor in
-                action.perform(controller: controller)
-            }
+            model.perform(destination)
         } label: {
             VStack(spacing: 8) {
                 Image(systemName: systemImage)
@@ -116,9 +116,7 @@ struct NCMoreView: View {
 
     private func menuRow(_ item: NCMoreModel.Item) -> some View {
         Button {
-            Task { @MainActor in
-                item.action.perform(controller: controller)
-            }
+            model.perform(item.destination)
         } label: {
             HStack(spacing: 22) {
                 Image(systemName: item.systemImage)
@@ -167,12 +165,12 @@ struct NCMoreView: View {
             if !model.quotaExternalSiteTitle.isEmpty,
                let url = model.quotaExternalSiteUrl {
                 Button {
-                    Task { @MainActor in
-                        NCMoreModel.Action.browser(
+                    model.perform(
+                        .browser(
                             url: url,
                             title: model.quotaExternalSiteTitle
-                        ).perform(controller: controller)
-                    }
+                        )
+                    )
                 } label: {
                     Text(model.quotaExternalSiteTitle)
                         .font(.footnote)

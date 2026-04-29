@@ -16,11 +16,14 @@ final class NCMoreModel: ObservableObject {
 
     let account: String
 
+    private weak var controller: NCMainTabBarController?
+
     private let database = NCManageDatabase.shared
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    init(account: String) {
+    init(account: String, controller: NCMainTabBarController?) {
         self.account = account
+        self.controller = controller
     }
 
     struct Section: Identifiable {
@@ -42,75 +45,34 @@ final class NCMoreModel: ObservableObject {
         let identifier = UUID()
         let titleKey: String
         let systemImage: String
-        let action: Action
+        let destination: Destination
     }
 
-    enum Action {
-        case moreApps
-        case segue(String)
-        case storyboard(String)
-        case browser(url: String, title: String)
+    enum Destination {
+        case storyboard(
+            name: String,
+            presentation: Presentation,
+            configuration: StoryboardConfiguration = .none
+        )
+
+        case browser(
+            url: String,
+            title: String
+        )
+
         case settings
-        case logout
+        case moreApps
+        case none
+    }
 
-        @MainActor
-        func perform(controller: NCMainTabBarController?) {
-            guard let controller,
-                  let navigationController = controller.currentNavigationController() else {
-                return
-            }
+    enum Presentation {
+        case push
+        case modalPageSheet
+    }
 
-            switch self {
-            case .moreApps:
-                break
-
-            case let .segue(identifier):
-                navigationController.performSegue(withIdentifier: identifier, sender: controller)
-
-            case let .storyboard(name):
-                let storyboard = UIStoryboard(name: name, bundle: nil)
-
-                guard let presentedController = storyboard.instantiateInitialViewController() else {
-                    return
-                }
-
-                if let scanController = presentedController.topMostViewController() as? NCScan {
-                    scanController.controller = controller
-                }
-
-                presentedController.modalPresentationStyle = .pageSheet
-                controller.present(presentedController, animated: true)
-
-            case let .browser(url, title):
-                guard url.contains("//"),
-                      let browserWebController = UIStoryboard(
-                        name: "NCBrowserWeb",
-                        bundle: nil
-                      ).instantiateInitialViewController() as? NCBrowserWeb else {
-                    return
-                }
-
-                browserWebController.urlBase = url
-                browserWebController.isHiddenButtonExit = true
-                browserWebController.titleBrowser = title
-
-                navigationController.pushViewController(browserWebController, animated: true)
-                navigationController.navigationBar.isHidden = false
-
-            case .settings:
-                let settingsView = NCSettingsView(
-                    model: NCSettingsModel(controller: controller)
-                )
-
-                let settingsController = UIHostingController(rootView: settingsView)
-                settingsController.title = NSLocalizedString("_settings_", comment: "")
-
-                navigationController.pushViewController(settingsController, animated: true)
-
-            case .logout:
-                break
-            }
-        }
+    enum StoryboardConfiguration {
+        case none
+        case scan
     }
 
     func loadItems() async {
@@ -133,7 +95,10 @@ final class NCMoreModel: ObservableObject {
             Item(
                 titleKey: "_recent_",
                 systemImage: "clock.arrow.circlepath",
-                action: .segue("segueRecent")
+                destination: .storyboard(
+                    name: "NCRecent",
+                    presentation: .push
+                )
             )
         )
 
@@ -143,7 +108,7 @@ final class NCMoreModel: ObservableObject {
                 Item(
                     titleKey: "_assistant_",
                     systemImage: "sparkles",
-                    action: .moreApps
+                    destination: .moreApps
                 )
             )
         }
@@ -153,7 +118,10 @@ final class NCMoreModel: ObservableObject {
                 Item(
                     titleKey: "_list_shares_",
                     systemImage: "person.badge.plus",
-                    action: .segue("segueShares")
+                    destination: .storyboard(
+                        name: "NCShares",
+                        presentation: .push
+                    )
                 )
             )
         }
@@ -162,7 +130,10 @@ final class NCMoreModel: ObservableObject {
             Item(
                 titleKey: "_manage_file_offline_",
                 systemImage: "icloud.and.arrow.down",
-                action: .segue("segueOffline")
+                destination: .storyboard(
+                    name: "NCOffline",
+                    presentation: .push
+                )
             )
         )
 
@@ -171,7 +142,10 @@ final class NCMoreModel: ObservableObject {
                 Item(
                     titleKey: "_group_folders_",
                     systemImage: "person.2",
-                    action: .segue("segueGroupfolders")
+                    destination: .storyboard(
+                        name: "NCGroupfolders",
+                        presentation: .push
+                    )
                 )
             )
         }
@@ -180,7 +154,11 @@ final class NCMoreModel: ObservableObject {
             Item(
                 titleKey: "_scanned_images_",
                 systemImage: "doc.text.viewfinder",
-                action: .storyboard("NCScan")
+                destination: .storyboard(
+                    name: "NCScan",
+                    presentation: .modalPageSheet,
+                    configuration: .scan
+                )
             )
         )
 
@@ -188,7 +166,10 @@ final class NCMoreModel: ObservableObject {
             Item(
                 titleKey: "_trash_view_",
                 systemImage: "trash",
-                action: .segue("segueTrash")
+                destination: .storyboard(
+                    name: "NCTrash",
+                    presentation: .push
+                )
             )
         )
 
@@ -196,34 +177,15 @@ final class NCMoreModel: ObservableObject {
             Item(
                 titleKey: "_settings_",
                 systemImage: "gear",
-                action: .settings
+                destination: .settings
             )
         )
 
         configureQuota(tableAccount: tableAccount)
-
-        if !NCBrandOptions.shared.disable_more_external_site,
-           capabilities.externalSites,
-           let externalSites = database.getAllExternalSites(account: account) {
-            for externalSite in externalSites {
-                guard !externalSite.name.isEmpty,
-                      !externalSite.url.isEmpty,
-                      let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                    continue
-                }
-
-                externalSiteItems.append(
-                    Item(
-                        titleKey: externalSite.name,
-                        systemImage: externalSite.type == "settings" ? "gear" : "network",
-                        action: .browser(
-                            url: urlEncoded,
-                            title: externalSite.name
-                        )
-                    )
-                )
-            }
-        }
+        loadExternalSites(
+            sessionAccount: tableAccount.account,
+            externalSiteItems: &externalSiteItems
+        )
 
         if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             sections.append(
@@ -233,7 +195,7 @@ final class NCMoreModel: ObservableObject {
                         Item(
                             titleKey: "_more_apps_",
                             systemImage: "square.grid.2x2.fill",
-                            action: .moreApps
+                            destination: .moreApps
                         )
                     ]
                 )
@@ -268,6 +230,32 @@ final class NCMoreModel: ObservableObject {
         }
     }
 
+    func perform(_ destination: Destination) {
+        switch destination {
+        case let .storyboard(name, presentation, configuration):
+            openStoryboard(
+                name: name,
+                presentation: presentation,
+                configuration: configuration
+            )
+
+        case let .browser(url, title):
+            openBrowser(
+                url: url,
+                title: title
+            )
+
+        case .settings:
+            openSettings()
+
+        case .moreApps:
+            break
+
+        case .none:
+            break
+        }
+    }
+
     private func configureQuota(tableAccount: tableAccount) {
         if tableAccount.quotaRelative > 0 {
             quotaProgress = Double(tableAccount.quotaRelative) / 100
@@ -298,5 +286,125 @@ final class NCMoreModel: ObservableObject {
             quotaUsed,
             quota
         )
+    }
+
+    private func loadExternalSites(
+        sessionAccount: String,
+        externalSiteItems: inout [Item]
+    ) {
+        guard let capabilities = NCNetworking.shared.capabilities[sessionAccount],
+              !NCBrandOptions.shared.disable_more_external_site,
+              capabilities.externalSites,
+              let externalSites = database.getAllExternalSites(account: sessionAccount) else {
+            return
+        }
+
+        for externalSite in externalSites {
+            guard !externalSite.name.isEmpty,
+                  !externalSite.url.isEmpty,
+                  let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+                continue
+            }
+
+            externalSiteItems.append(
+                Item(
+                    titleKey: externalSite.name,
+                    systemImage: externalSite.type == "settings" ? "gear" : "network",
+                    destination: .browser(
+                        url: urlEncoded,
+                        title: externalSite.name
+                    )
+                )
+            )
+        }
+    }
+
+    private func openStoryboard(
+        name: String,
+        presentation: Presentation,
+        configuration: StoryboardConfiguration
+    ) {
+        guard let controller,
+              let destinationController = UIStoryboard(
+                name: name,
+                bundle: nil
+              ).instantiateInitialViewController() else {
+            return
+        }
+
+        configureStoryboardController(
+            destinationController,
+            configuration: configuration
+        )
+
+        switch presentation {
+        case .push:
+            guard let navigationController = controller.currentNavigationController() else {
+                return
+            }
+
+            navigationController.pushViewController(destinationController, animated: true)
+
+        case .modalPageSheet:
+            destinationController.modalPresentationStyle = .pageSheet
+            controller.present(destinationController, animated: true)
+        }
+    }
+
+    private func configureStoryboardController(
+        _ destinationController: UIViewController,
+        configuration: StoryboardConfiguration
+    ) {
+        guard let controller else {
+            return
+        }
+
+        switch configuration {
+        case .none:
+            break
+
+        case .scan:
+            if let scanController = destinationController.topMostViewController() as? NCScan {
+                scanController.controller = controller
+            }
+        }
+    }
+
+    private func openBrowser(
+        url: String,
+        title: String
+    ) {
+        guard let controller,
+              let navigationController = controller.currentNavigationController(),
+              url.contains("//"),
+              let browserWebController = UIStoryboard(
+                name: "NCBrowserWeb",
+                bundle: nil
+              ).instantiateInitialViewController() as? NCBrowserWeb else {
+            return
+        }
+
+        browserWebController.urlBase = url
+        browserWebController.isHiddenButtonExit = true
+        browserWebController.titleBrowser = title
+
+        navigationController.pushViewController(browserWebController, animated: true)
+        navigationController.navigationBar.isHidden = false
+    }
+
+    private func openSettings() {
+        guard let controller,
+              let navigationController = controller.currentNavigationController() else {
+            return
+        }
+
+        let settingsView = NCSettingsView(
+            model: NCSettingsModel(controller: controller)
+        )
+
+        let settingsController = UIHostingController(rootView: settingsView)
+        settingsController.title = NSLocalizedString("_settings_", comment: "")
+
+        navigationController.pushViewController(settingsController, animated: true)
     }
 }
