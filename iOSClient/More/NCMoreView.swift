@@ -160,7 +160,6 @@ struct NCMoreView: View {
         .buttonStyle(.plain)
     }
 
-    /// Divider used between menu rows.
     private var divider: some View {
         Rectangle()
             .fill(Color(.separator).opacity(0.45))
