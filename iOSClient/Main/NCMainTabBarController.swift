@@ -47,9 +47,56 @@ class NCMainTabBarController: UITabBarController {
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
-        configureMoreController()
-        configureTabBarItems()
-        configureTabBarAppearance()
+        // File
+        if let item = tabBar.items?[0] {
+            item.title = NSLocalizedString("_home_", comment: "")
+            item.image = UIImage(named: "home") // UIImage(systemName: "folder.fill")
+            item.selectedImage = item.image
+            item.tag = 100
+        }
+
+        // Favorite
+        if let item = tabBar.items?[1] {
+            item.title = NSLocalizedString("_favorites_", comment: "")
+            item.image = UIImage(named: "star") // UIImage(systemName: "star.fill")
+//            item.image = UIImage(systemName: "star.fill")
+            item.selectedImage = item.image
+            item.tag = 101
+        }
+
+        // Media
+        if let item = tabBar.items?[2] {
+            item.title = NSLocalizedString("_media_", comment: "")
+            item.image = UIImage(named: "media") // UIImage(systemName: "photo")
+            item.selectedImage = item.image
+            item.tag = 102
+        }
+
+        // Activity
+//        if let item = tabBar.items?[3] {
+//            item.title = NSLocalizedString("_activity_", comment: "")
+//            item.image = UIImage(systemName: "bolt")
+//            item.selectedImage = item.image
+//            item.tag = 103
+//        }
+
+        // Album
+        if let item = tabBar.items?[3] {
+            item.title = NSLocalizedString("_albums_", comment: "")
+            item.image = UIImage(named: "album")?.image(color: NCBrandColor.shared.textColor, size: 25)
+//            item.isEnabled = true
+            item.selectedImage = item.image
+            item.tag = 103
+        }
+        
+        // More
+//        if let item = tabBar.items?[3] {
+        if let item = tabBar.items?[4] {
+            item.title = NSLocalizedString("_more_", comment: "")
+            item.image = UIImage(named: "more") // UIImage(systemName: "ellipsis")
+            item.selectedImage = item.image
+            item.tag = 104
+        }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
@@ -80,103 +127,61 @@ class NCMainTabBarController: UITabBarController {
                 }
             }
         }
+        
+        Task { @MainActor in
+            let session = NCSession.shared.getSession(controller: self)
+            // Option 1: Use a preloader service
+//            await NCMediaPreloader.shared.preload(for: session)
+            
+            // Option 2: If you can access the media VC instance directly:
+            if let mediaNav = self.viewControllers?.first(where: { ($0 as? UINavigationController)?.topViewController is NCMedia }) as? UINavigationController,
+               let mediaVC = mediaNav.topViewController as? NCMedia {
+                await mediaVC.loadDataSource()
+                await mediaVC.searchMediaUI(true)
+            }
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        // Re-evaluate in-app messages after viewDidAppear
+        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
+
         previousIndex = selectedIndex
 
         if NCBrandOptions.shared.enforce_passcode_lock && NCPreferences().passcode.isEmptyOrNil {
-            let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false), controller: self))
+            let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false)))
             vc.isModalInPresentation = true
 
             present(vc, animated: true)
         }
     }
 
-    private func configureTabBarAppearance() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithDefaultBackground()
-
-        tabBar.standardAppearance = appearance
-        tabBar.scrollEdgeAppearance = appearance
-    }
-
-    private func configureMoreController() {
-        guard var controllers = viewControllers else { return }
-
-        controllers.append(makeMoreNavigationController())
-        viewControllers = controllers
-    }
-
-    private func makeMoreNavigationController() -> UIViewController {
-        let moreView = NCMoreView(account: account, controller: self)
-        let hostingController = UIHostingController(rootView: moreView)
-
-        hostingController.title = NSLocalizedString("_more_", comment: "")
-
-        let navigationController = NCMoreNavigationController(rootViewController: hostingController)
-        return navigationController
-    }
-
-    private func configureTabBarItems() {
-        configureTabBarItem(
-            at: 0,
-            title: "_home_",
-            imageName: "folder.fill",
-            tag: 100
-        )
-
-        configureTabBarItem(
-            at: 1,
-            title: "_favorites_",
-            imageName: "star.fill",
-            tag: 101
-        )
-
-        configureTabBarItem(
-            at: 2,
-            title: "_media_",
-            imageName: "photo.fill",
-            tag: 102
-        )
-
-        configureTabBarItem(
-            at: 3,
-            title: "_activity_",
-            imageName: "bolt.fill",
-            tag: 103
-        )
-
-        configureTabBarItem(
-            at: 4,
-            title: "_more_",
-            imageName: "ellipsis.circle.fill",
-            tag: 104
-        )
-    }
-
-    private func configureTabBarItem(at index: Int, title: String, imageName: String, tag: Int) {
-        guard let items = tabBar.items, items.indices.contains(index) else { return }
-
-        let item = items[index]
-        item.title = NSLocalizedString(title, comment: "")
-        item.image = UIImage(systemName: imageName)
-        item.selectedImage = item.image
-        item.tag = tag
-    }
-
     @MainActor
     private func timerCheck() async {
+        let nanoseconds: UInt64 = 3_000_000_000
+
         while !Task.isCancelled {
-            try? await Task.sleep(for: .seconds(3))
+            try? await Task.sleep(nanoseconds: nanoseconds)
 
             guard isViewLoaded, view.window != nil else {
                 continue
             }
 
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
+
             // Check error
             await NCNetworking.shared.checkServerError(account: self.account, controller: self)
+
+            // Update right bar button item
+            if let navigationController = self.selectedViewController as? NCMainNavigationController {
+                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
+            }
+            // Update Activity tab bar
+//            if let item = self.tabBar.items?[3] {
+//                item.isEnabled = capabilities.activityEnabled
+//            }
         }
     }
 
