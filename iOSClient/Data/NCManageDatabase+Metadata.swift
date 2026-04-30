@@ -563,6 +563,19 @@ extension NCManageDatabase {
             realm.delete(results)
         }
     }
+    
+    func deleteMetadataOcIds(_ ocIds: [String]) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter("ocId IN %@", ocIds)
+                realm.delete(results)
+            }
+        } catch let error as NSError {
+            nkLog(error: "Could not access database: \(error)")
+
+        }
+    }
 
     func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal) async {
         await core.performRealmWriteAsync { realm in

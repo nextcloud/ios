@@ -10,6 +10,7 @@ import SwiftUI
 import UIKit
 import NextcloudKit
 import Alamofire
+import Queuer
 
 protocol ClientCertificateDelegate: AnyObject {
     func onIncorrectPassword()
@@ -97,6 +98,10 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 #if !EXTENSION
     let metadataDownloadTranfersSuccess = NCMetadataDownloadTranfersSuccess()
     let metadataUploadTranfersSuccess = NCMetadataUploadTranfersSuccess()
+    // OPERATIONQUEUE
+    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let fileExistsQueue = Queuer(name: "fileExistsQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+
 #endif
 
     // MARK: - init

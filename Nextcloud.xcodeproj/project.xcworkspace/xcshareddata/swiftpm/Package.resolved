@@ -1,5 +1,5 @@
 {
-  "originHash" : "b092e04dd25276db24ca02e5c41e732c10cb4045264d961e3b6b734943656553",
+  "originHash" : "7469c05123aba0f9840cde21fab497a4fe2a407cec50291aa5828e8dd1ceffb8",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -233,6 +233,15 @@
       "state" : {
         "revision" : "5020b5a47199d8ba80c83a4b4fafd70e9dc9dc7f",
         "version" : "10.1.1"
+      }
+    },
+    {
+      "identity" : "queuer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FabrizioBrancati/Queuer",
+      "state" : {
+        "revision" : "9ae00b0da125f127f1bbf2e92d8e1fbb0994427e",
+        "version" : "4.0.0"
       }
     },
     {
