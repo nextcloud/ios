@@ -23,8 +23,10 @@
 //
 
 import UIKit
+import SwiftUI
 import Parchment
 import NextcloudKit
+import SwiftNextcloudUI
 import TagListView
 
 protocol NCSharePagingContent {
@@ -57,7 +59,10 @@ class NCSharePaging: UIViewController {
 
         let moreButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: nil, action: nil)
         moreButton.menu = UIMenu(children: [manageTagsAction])
-        navigationItem.rightBarButtonItem = moreButton
+
+        let addShareButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
+        addShareButton.accessibilityLabel = NSLocalizedString("_share_", comment: "")
+        navigationItem.rightBarButtonItems = [addShareButton, moreButton]
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -168,6 +173,18 @@ class NCSharePaging: UIViewController {
 
     @objc func exitTapped(_ sender: Any?) {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    @objc private func addShareTapped(_ sender: UIBarButtonItem) {
+        let viewController = UIHostingController(rootView: UnifiedShareView())
+        viewController.modalPresentationStyle = .pageSheet
+
+        if let sheet = viewController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        present(viewController, animated: true)
     }
 
     @objc func editTagsTapped(_ sender: Any?) {
