@@ -149,7 +149,7 @@
 "_settings_account_request_" = "Request account at startup";
 "_alias_"                   = "Alias";
 "_alias_placeholder_"       = "Write alias";
-"_alias_footer_"            = "Give your accounts a descriptive name such as Home, Office, School…";
+"_alias_footer_"            = "Give your accounts a descriptive name such as Home, Office, School\u00A0…";
 "_privacy_legal_"           = "Privacy and Legal Policy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
@@ -168,7 +168,7 @@
 "_wait_file_preparation_" = "Preparing file upload. Please wait …";
 "_keep_active_for_upload_" = "Keep application active until upload is completed …";
 "_keep_active_for_transfers_" = "Keep application active until the transfers are completed …";
-"_wait_file_encryption_"  = "Please wait, encrypting file…";
+"_wait_file_encryption_"  = "Please wait, encrypting file\u00A0…";
 "_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
@@ -390,7 +390,7 @@
 "_good_evening_"                = "Good evening";
 "_good_night_"                  = "Good night";
 "_servers_"                     = "Servers";
-"_select_server_"               = "Please select a server...";
+"_select_server_"               = "Please select a server\u00A0…";
 
 // MARK: Share
 
@@ -726,7 +726,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_retry_response_generation_"    = "Retry response generation";
 "_conversations_"                = "Conversations";
 "_new_conversation_"             = "New conversation";
-"_type_message_"                 = "Type a message...";
+"_type_message_"                 = "Type a message\u00A0…";
 "_assistant_chat_"               = "Assistant Chat";
 "_assistant_error_send_message_"  = "Could not send message. Please try again.";
 "_assistant_error_load_messages_" = "Could not load messages. Please try again.";
