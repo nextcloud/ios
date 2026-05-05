@@ -47,6 +47,7 @@
 		AAFC0D042F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */; };
 		AAFC0D052F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */; };
 		AAFC0D062F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */; };
+		AAFC0D092F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D082F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift */; };
 		AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000002F60000100FE2775 /* NCTagEditorModel.swift */; };
 		AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCTagEditorView.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
@@ -1213,6 +1214,7 @@
 		AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadIntroView.swift; sourceTree = "<group>"; };
 		AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadProgressView.swift; sourceTree = "<group>"; };
 		AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadScreenDimmer.swift; sourceTree = "<group>"; };
+		AAFC0D082F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadCloudAnimation.swift; sourceTree = "<group>"; };
 		AB6000002F60000100FE2775 /* NCTagEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorModel.swift; sourceTree = "<group>"; };
 		AB6000022F60000200FE2775 /* NCTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorView.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -2628,6 +2630,7 @@
 				AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */,
 				AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */,
 				AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */,
+				AAFC0D082F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift */,
 			);
 			path = AutoUpload;
 			sourceTree = "<group>";
@@ -4701,6 +4704,7 @@
 				AAFC0D042F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift in Sources */,
 				AAFC0D052F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift in Sources */,
 				AAFC0D062F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift in Sources */,
+				AAFC0D092F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift in Sources */,
 				F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F75D19E325EFE09000D74598 /* NCContextMenuTrash.swift in Sources */,

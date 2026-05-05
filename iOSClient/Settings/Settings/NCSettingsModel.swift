@@ -22,6 +22,8 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var privacyScreen: Bool = false
     // State to control
     @Published var resetWrongAttempts: Bool = false
+    // State to control the auto upload status indicator
+    @Published var autoUploadStart: Bool = false
     // Request account on start
     @Published var accountRequest: Bool = false
     // Root View Controller
@@ -52,6 +54,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         lockScreen = !keychain.requestPasscodeAtStart
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
+        autoUploadStart = NCManageDatabase.shared.getTableAccount(account: session.account)?.autoUploadStart ?? false
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionBuild()) + "\n\n"
         footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.serverVersion) + "\n"

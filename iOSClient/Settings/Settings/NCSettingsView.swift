@@ -34,9 +34,12 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
                 }) {
                     HStack {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .font(.icon())
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        NCFocusedAutoUploadCloudAnimation(size: 44,
+                                                          cloudColor: Color(NCBrandColor.shared.iconImageColor),
+                                                          arrowColor: Color(UIColor.systemBackground),
+                                                          ringColor: Color(NCBrandColor.shared.iconImageColor),
+                                                          showsRing: model.autoUploadStart,
+                                                          isAnimated: model.autoUploadStart)
                             .frame(width: 39)
 
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
