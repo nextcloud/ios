@@ -44,6 +44,9 @@
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
+		AAFC0D042F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */; };
+		AAFC0D052F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */; };
+		AAFC0D062F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */; };
 		AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000002F60000100FE2775 /* NCTagEditorModel.swift */; };
 		AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCTagEditorView.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
@@ -503,9 +506,6 @@
 		F76882302C0DD1E7001CF441 /* NCFileNameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882192C0DD1E7001CF441 /* NCFileNameModel.swift */; };
 		F76882312C0DD1E7001CF441 /* NCFileNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821A2C0DD1E7001CF441 /* NCFileNameView.swift */; };
 		F76882322C0DD1E7001CF441 /* NCAutoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */; };
-		AAFC0D042F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */; };
-		AAFC0D052F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */; };
-		AAFC0D062F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */; };
 		F76882332C0DD1E7001CF441 /* NCDisplayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821D2C0DD1E7001CF441 /* NCDisplayModel.swift */; };
 		F76882342C0DD1E7001CF441 /* NCDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768821E2C0DD1E7001CF441 /* NCDisplayView.swift */; };
 		F76882352C0DD1E7001CF441 /* NCWebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882202C0DD1E7001CF441 /* NCWebBrowserView.swift */; };
@@ -1210,6 +1210,9 @@
 		AACCAB632CFE04F700DA1786 /* lo */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lo; path = lo.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AACCAB642CFE04F700DA1786 /* lo */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lo; path = lo.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNavigationTitleSetting.swift; sourceTree = "<group>"; };
+		AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadIntroView.swift; sourceTree = "<group>"; };
+		AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadProgressView.swift; sourceTree = "<group>"; };
+		AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadScreenDimmer.swift; sourceTree = "<group>"; };
 		AB6000002F60000100FE2775 /* NCTagEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorModel.swift; sourceTree = "<group>"; };
 		AB6000022F60000200FE2775 /* NCTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorView.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -1478,9 +1481,6 @@
 		F76882192C0DD1E7001CF441 /* NCFileNameModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileNameModel.swift; sourceTree = "<group>"; };
 		F768821A2C0DD1E7001CF441 /* NCFileNameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileNameView.swift; sourceTree = "<group>"; };
 		F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAutoUploadView.swift; sourceTree = "<group>"; };
-		AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadIntroView.swift; sourceTree = "<group>"; };
-		AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadProgressView.swift; sourceTree = "<group>"; };
-		AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFocusedAutoUploadScreenDimmer.swift; sourceTree = "<group>"; };
 		F768821D2C0DD1E7001CF441 /* NCDisplayModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDisplayModel.swift; sourceTree = "<group>"; };
 		F768821E2C0DD1E7001CF441 /* NCDisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDisplayView.swift; sourceTree = "<group>"; };
 		F76882202C0DD1E7001CF441 /* NCWebBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCWebBrowserView.swift; sourceTree = "<group>"; };
