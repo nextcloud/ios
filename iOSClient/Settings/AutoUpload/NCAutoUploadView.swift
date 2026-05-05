@@ -15,6 +15,9 @@ struct NCAutoUploadView: View {
     @State private var showUploadFolder = false
     @State private var showSelectAlbums = false
     @State private var showUploadAllPhotosWarning = false
+    @State private var showFocusedAutoUploadIntro = false
+    @State private var showFocusedAutoUploadProgress = false
+    @State private var openFocusedAutoUploadAfterIntro = false
     @State private var startAutoUpload = false
 
     var body: some View {
@@ -48,6 +51,28 @@ struct NCAutoUploadView: View {
         .sheet(isPresented: $showUploadAllPhotosWarning) {
             ConfirmAutoUploadSheet(model: model, isPresented: $showUploadAllPhotosWarning)
             .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showFocusedAutoUploadIntro, onDismiss: {
+            guard openFocusedAutoUploadAfterIntro else { return }
+
+            openFocusedAutoUploadAfterIntro = false
+            showFocusedAutoUploadProgress = true
+        }) {
+            NCFocusedAutoUploadIntroView {
+                openFocusedAutoUploadAfterIntro = true
+                showFocusedAutoUploadIntro = false
+            }
+            .presentationDetents([.large])
+        }
+        .fullScreenCover(isPresented: $showFocusedAutoUploadProgress) {
+            NCFocusedAutoUploadProgressView(isPresented: $showFocusedAutoUploadProgress)
+        }
+        .onChange(of: model.autoUploadStart) { _, newValue in
+            if !newValue {
+                showFocusedAutoUploadIntro = false
+                showFocusedAutoUploadProgress = false
+                openFocusedAutoUploadAfterIntro = false
+            }
         }
     }
 
@@ -207,6 +232,36 @@ struct NCAutoUploadView: View {
                 })
             }
             .disabled(model.autoUploadStart)
+
+            if model.autoUploadStart {
+                Section(content: {
+                    Button {
+                        showFocusedAutoUploadIntro = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "moon")
+                                .font(.icon())
+                                .frame(width: 26)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+
+                            Text(NSLocalizedString("_focused_auto_upload_", comment: ""))
+                                .font(.body)
+                                .foregroundStyle(.primary)
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.footnote)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }, footer: {
+                    Text(NSLocalizedString("_focused_auto_upload_settings_footer_", comment: ""))
+                        .font(.footnote)
+                })
+            }
         }
         .safeAreaInset(edge: .bottom) {
             autoUploadStartButton
