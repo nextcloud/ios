@@ -36,9 +36,9 @@ struct NCSettingsView: View {
                     HStack {
                         NCFocusedAutoUploadCloudAnimation(size: 44,
                                                           cloudColor: Color(NCBrandColor.shared.iconImageColor),
-                                                          arrowColor: Color(UIColor.systemBackground),
-                                                          ringColor: Color(NCBrandColor.shared.iconImageColor),
-                                                          showsRing: model.autoUploadStart,
+                                                          arrowColor: model.autoUploadStart
+                                                          ? Color(UIColor.systemBackground)
+                                                          : Color(NCBrandColor.shared.iconImageColor),
                                                           isAnimated: model.autoUploadStart)
                             .frame(width: 39)
 

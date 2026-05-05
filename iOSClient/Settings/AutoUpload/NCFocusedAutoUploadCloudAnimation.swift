@@ -8,21 +8,15 @@ struct NCFocusedAutoUploadCloudAnimation: View {
     let size: CGFloat
     let cloudColor: Color
     let arrowColor: Color
-    let ringColor: Color
-    let showsRing: Bool
     let isAnimated: Bool
 
     init(size: CGFloat = 176,
          cloudColor: Color = .white,
          arrowColor: Color = .black.opacity(0.82),
-         ringColor: Color = .white,
-         showsRing: Bool = true,
          isAnimated: Bool = true) {
         self.size = size
         self.cloudColor = cloudColor
         self.arrowColor = arrowColor
-        self.ringColor = ringColor
-        self.showsRing = showsRing
         self.isAnimated = isAnimated
     }
 
@@ -50,25 +44,16 @@ struct NCFocusedAutoUploadCloudAnimation: View {
 
     private func cloud(progress: Double, includesMotion: Bool) -> some View {
         ZStack {
-            if showsRing {
-                Circle()
-                    .stroke(ringColor.opacity(0.75), lineWidth: max(2, size * 0.018))
-                    .frame(width: size * 0.84, height: size * 0.84)
-                    .scaleEffect(interpolate(from: 0.88, to: 1.08, progress: progress))
-                    .opacity(interpolate(from: 0.85, to: 0.45, progress: progress))
-            }
-
-            Image(systemName: "icloud.fill")
+            Image(systemName: includesMotion ? "icloud.fill" : "icloud")
                 .font(.system(size: size * 0.53, weight: .regular))
                 .foregroundStyle(cloudColor)
-                .shadow(color: ringColor.opacity(includesMotion ? interpolate(from: 0.12, to: 0.28, progress: progress) : 0),
-                        radius: includesMotion && showsRing ? size * 0.1 : 0)
+                .scaleEffect(includesMotion ? interpolate(from: 0.96, to: 1.03, progress: progress) : 1)
                 .offset(y: includesMotion ? interpolate(from: size * 0.03, to: -size * 0.03, progress: progress) : 0)
 
             Image(systemName: "arrow.up")
-                .font(.system(size: size * 0.17, weight: .bold))
+                .font(.system(size: includesMotion ? size * 0.17 : size * 0.22, weight: .bold))
                 .foregroundStyle(arrowColor)
-                .offset(y: includesMotion ? interpolate(from: -size * 0.02, to: -size * 0.09, progress: progress) : -size * 0.055)
+                .offset(y: includesMotion ? interpolate(from: -size * 0.02, to: -size * 0.09, progress: progress) : 0)
         }
     }
 
