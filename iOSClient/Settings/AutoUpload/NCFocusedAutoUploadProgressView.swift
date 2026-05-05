@@ -9,7 +9,13 @@ struct NCFocusedAutoUploadProgressView: View {
     @Binding var isPresented: Bool
     @Environment(\.scenePhase) private var scenePhase
 
+    let account: String
+    let urlBase: String
+    let userId: String
+
     @State private var countdownTask: Task<Void, Never>?
+    @State private var uploadCountTask: Task<Void, Never>?
+    @State private var autoUploadCount = 0
     @State private var secondsUntilDim = 10
     @State private var isScreenDimmed = false
 
@@ -31,11 +37,18 @@ struct NCFocusedAutoUploadProgressView: View {
                         .background(Color.white.opacity(0.15))
                         .padding(.horizontal, 36)
 
-                    Text(NSLocalizedString("_focused_auto_upload_backing_up_", comment: ""))
-                        .font(.largeTitle)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
+                    VStack(spacing: 6) {
+                        Text(NSLocalizedString("_focused_auto_upload_backing_up_", comment: ""))
+                            .font(.largeTitle)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+
+                        Text(uploadCountMessage)
+                            .font(.title3)
+                            .foregroundStyle(.white.opacity(0.9))
+                            .multilineTextAlignment(.center)
+                    }
                 }
 
                 Spacer()
@@ -98,12 +111,17 @@ struct NCFocusedAutoUploadProgressView: View {
         return String(format: NSLocalizedString("_focused_auto_upload_countdown_", comment: ""), secondsUntilDim)
     }
 
+    private var uploadCountMessage: String {
+        return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_photos_to_back_up_", comment: ""), autoUploadCount)
+    }
+
     private func startFocusedMode() {
         countdownTask?.cancel()
         secondsUntilDim = dimDelay
         isScreenDimmed = false
 
         NCFocusedAutoUploadScreenDimmer.shared.startKeepingScreenAwake()
+        startUploadCountPolling()
 
         countdownTask = Task { @MainActor in
             while secondsUntilDim > 0 {
@@ -120,6 +138,8 @@ struct NCFocusedAutoUploadProgressView: View {
     private func stopFocusedMode() {
         countdownTask?.cancel()
         countdownTask = nil
+        uploadCountTask?.cancel()
+        uploadCountTask = nil
         isScreenDimmed = false
         NCFocusedAutoUploadScreenDimmer.shared.restoreScreen()
     }
@@ -127,5 +147,23 @@ struct NCFocusedAutoUploadProgressView: View {
     private func wakeFocusedScreen() {
         stopFocusedMode()
         startFocusedMode()
+    }
+
+    private func startUploadCountPolling() {
+        uploadCountTask?.cancel()
+
+        uploadCountTask = Task { @MainActor in
+            let autoUploadServerUrlBase = await NCManageDatabase.shared.getAccountAutoUploadServerUrlBaseAsync(account: account,
+                                                                                                               urlBase: urlBase,
+                                                                                                               userId: userId)
+
+            while !Task.isCancelled {
+                let transfersSuccess = await NCNetworking.shared.metadataTranfersSuccess.getAll()
+                autoUploadCount = await NCManageDatabase.shared.countAutoUploadMetadatasAsync(account: account,
+                                                                                              autoUploadServerUrlBase: autoUploadServerUrlBase,
+                                                                                              transfersSuccess: transfersSuccess)
+                try? await Task.sleep(for: .seconds(2))
+            }
+        }
     }
 }

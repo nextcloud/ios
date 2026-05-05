@@ -42,7 +42,9 @@ struct NCSettingsView: View {
                                                           isAnimated: model.autoUploadStart)
                             .frame(width: 39)
 
-                        Text(NSLocalizedString("_settings_autoupload_", comment: ""))
+                        Text(model.autoUploadStart
+                             ? model.autoUploadCountMessage
+                             : NSLocalizedString("_settings_autoupload_", comment: ""))
                             .font(.body)
                     }
                 }
@@ -314,6 +316,9 @@ struct NCSettingsView: View {
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
+        .task(id: model.autoUploadStart) {
+            await model.pollAutoUploadCount()
+        }
     }
 }
 

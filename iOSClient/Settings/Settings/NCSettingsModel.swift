@@ -24,6 +24,8 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var resetWrongAttempts: Bool = false
     // State to control the auto upload status indicator
     @Published var autoUploadStart: Bool = false
+    // State to control the auto upload queue count
+    @Published var autoUploadCount: Int = 0
     // Request account on start
     @Published var accountRequest: Bool = false
     // Root View Controller
@@ -55,13 +57,43 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
         autoUploadStart = NCManageDatabase.shared.getTableAccount(account: session.account)?.autoUploadStart ?? false
+        if !autoUploadStart {
+            autoUploadCount = 0
+        }
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionBuild()) + "\n\n"
         footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.serverVersion) + "\n"
         footerSlogan = capabilities.themingName + " - " + capabilities.themingSlogan + "\n\n"
     }
 
+    var autoUploadCountMessage: String {
+        return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_items_left_", comment: ""), autoUploadCount)
+    }
+
     // MARK: - All functions
+
+    @MainActor
+    func pollAutoUploadCount() async {
+        guard autoUploadStart else {
+            autoUploadCount = 0
+            return
+        }
+
+        let account = session.account
+        let urlBase = session.urlBase
+        let userId = session.userId
+        let autoUploadServerUrlBase = await NCManageDatabase.shared.getAccountAutoUploadServerUrlBaseAsync(account: account,
+                                                                                                           urlBase: urlBase,
+                                                                                                           userId: userId)
+
+        while autoUploadStart && !Task.isCancelled {
+            let transfersSuccess = await NCNetworking.shared.metadataTranfersSuccess.getAll()
+            autoUploadCount = await NCManageDatabase.shared.countAutoUploadMetadatasAsync(account: account,
+                                                                                          autoUploadServerUrlBase: autoUploadServerUrlBase,
+                                                                                          transfersSuccess: transfersSuccess)
+            try? await Task.sleep(for: .seconds(2))
+        }
+    }
 
     /// Function to update Touch ID / Face ID setting
     func updateTouchIDSetting() {

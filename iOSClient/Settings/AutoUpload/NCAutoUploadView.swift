@@ -65,7 +65,10 @@ struct NCAutoUploadView: View {
             .presentationDetents([.large])
         }
         .fullScreenCover(isPresented: $showFocusedAutoUploadProgress) {
-            NCFocusedAutoUploadProgressView(isPresented: $showFocusedAutoUploadProgress)
+            NCFocusedAutoUploadProgressView(isPresented: $showFocusedAutoUploadProgress,
+                                            account: model.session.account,
+                                            urlBase: model.session.urlBase,
+                                            userId: model.session.userId)
         }
         .onChange(of: model.autoUploadStart) { _, newValue in
             if !newValue {

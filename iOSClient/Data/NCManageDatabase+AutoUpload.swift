@@ -106,6 +106,39 @@ extension NCManageDatabase {
         }
     }
 
+    func countAutoUploadMetadatasAsync(account: String,
+                                       autoUploadServerUrlBase: String,
+                                       transfersSuccess: [tableMetadata] = []) async -> Int {
+        let global = NCGlobal.shared
+        let excludedIds = Set(transfersSuccess.compactMap { metadata -> String? in
+            guard metadata.account == account,
+                  metadata.sessionSelector == global.selectorUploadAutoUpload,
+                  metadata.autoUploadServerUrlBase == autoUploadServerUrlBase,
+                  !metadata.ocIdTransfer.isEmpty else {
+                return nil
+            }
+
+            return metadata.ocIdTransfer
+        })
+
+        return await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND directory == false AND sessionSelector == %@ AND status IN %@",
+                        account,
+                        autoUploadServerUrlBase,
+                        global.selectorUploadAutoUpload,
+                        global.metadataStatusUploadingAllMode)
+
+            guard !excludedIds.isEmpty else {
+                return results.count
+            }
+
+            return results
+                .filter("NOT (ocIdTransfer IN %@)", Array(excludedIds))
+                .count
+        } ?? 0
+    }
+
     func existsAutoUpload(account: String,
                           autoUploadServerUrlBase: String) -> Bool {
         return core.performRealmRead { realm in
