@@ -197,6 +197,8 @@ class FileProviderData: NSObject {
                         etag: String?,
                         date: Date?,
                         size: Int64,
+                        ownerId: String?,
+                        permissions: String?,
                         task: URLSessionTask,
                         error: NKError) async {
         guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
@@ -229,6 +231,9 @@ class FileProviderData: NSObject {
             if let fileId = fileProviderUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
+            await NCNetworking.shared.applyUploadResponseMetadata(to: metadata,
+                                                                  ownerId: ownerId,
+                                                                  permissions: permissions)
 
             metadata.sceneIdentifier = nil
             metadata.session = ""

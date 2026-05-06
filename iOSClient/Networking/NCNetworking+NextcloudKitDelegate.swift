@@ -10,6 +10,30 @@ import LucidBanner
 
 extension NCNetworking {
 
+    func applyUploadResponseMetadata(to metadata: tableMetadata,
+                                     ownerId: String? = nil,
+                                     permissions: String? = nil) async {
+        let capabilities: NKCapabilities.Capabilities
+        if let cachedCapabilities = self.capabilities[metadata.account] {
+            capabilities = cachedCapabilities
+        } else {
+            capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        }
+        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 34, 0, 0) else {
+            return
+        }
+
+        if let ownerId, !ownerId.isEmpty {
+            metadata.ownerId = ownerId
+            if metadata.ownerDisplayName.isEmpty {
+                metadata.ownerDisplayName = ownerId
+            }
+        }
+        if let permissions, !permissions.isEmpty {
+            metadata.permissions = permissions
+        }
+    }
+
 #if !EXTENSION
     func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
         if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
@@ -125,6 +149,8 @@ extension NCNetworking {
                         etag: String?,
                         date: Date?,
                         size: Int64,
+                        ownerId: String?,
+                        permissions: String?,
                         task: URLSessionTask,
                         error: NKError) {
         Task {
@@ -137,6 +163,8 @@ extension NCNetworking {
                                                              etag: etag,
                                                              date: date,
                                                              size: size,
+                                                             ownerId: ownerId,
+                                                             permissions: permissions,
                                                              task: task,
                                                              error: error)
 
@@ -152,14 +180,18 @@ extension NCNetworking {
                         await self.uploadSuccess(withMetadata: metadata,
                                                  ocId: ocId,
                                                  etag: etag,
-                                                 date: date)
+                                                 date: date,
+                                                 ownerId: ownerId,
+                                                 permissions: permissions)
                     } else {
 #if !EXTENSION
                         await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)
                         await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
                                                                                  ocId: ocId,
                                                                                  date: date,
-                                                                                 etag: etag)
+                                                                                 etag: etag,
+                                                                                 ownerId: ownerId,
+                                                                                 permissions: permissions)
 #endif
                     }
                 } else {

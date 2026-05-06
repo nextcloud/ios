@@ -25,7 +25,12 @@ actor NCMetadataTranfersSuccess {
         delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
     }
 
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
+    func append(metadata: tableMetadata,
+                ocId: String,
+                date: Date?,
+                etag: String?,
+                ownerId: String? = nil,
+                permissions: String? = nil) async {
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -34,6 +39,9 @@ actor NCMetadataTranfersSuccess {
         if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
+        await NCNetworking.shared.applyUploadResponseMetadata(to: metadata,
+                                                             ownerId: ownerId,
+                                                             permissions: permissions)
 
         metadata.session = ""
         metadata.sessionError = ""

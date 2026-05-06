@@ -25,7 +25,8 @@ extension NCNetworking {
               etag: String?,
               date: Date?,
               size: Int64,
-              response: AFDataResponse<Data>?,
+              ownerId: String?,
+              permissions: String?,
               error: NKError) {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
@@ -47,8 +48,14 @@ extension NCNetworking {
         } progressHandler: { progress in
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }
-
-        return results
+        return (results.account,
+                results.ocId,
+                results.etag,
+                results.date,
+                results.size,
+                results.ownerId,
+                results.permissions,
+                results.error)
     }
 
     // MARK: - Upload chunk file in foreground
@@ -148,7 +155,12 @@ extension NCNetworking {
                                                             directory: directory)
 
             if performPostProcessing, let file {
-                await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
+                await uploadSuccess(withMetadata: metadata,
+                                    ocId: file.ocId,
+                                    etag: file.etag,
+                                    date: file.date,
+                                    ownerId: file.ownerId,
+                                    permissions: file.permissions)
             }
 
             backupFile = file
@@ -232,7 +244,9 @@ extension NCNetworking {
     func uploadSuccess(withMetadata metadata: tableMetadata,
                        ocId: String,
                        etag: String?,
-                       date: Date?) async {
+                       date: Date?,
+                       ownerId: String? = nil,
+                       permissions: String? = nil) async {
         nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
 
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -243,6 +257,9 @@ extension NCNetworking {
         if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
+        await applyUploadResponseMetadata(to: metadata,
+                                          ownerId: ownerId,
+                                          permissions: permissions)
 
         metadata.session = ""
         metadata.sessionError = ""
