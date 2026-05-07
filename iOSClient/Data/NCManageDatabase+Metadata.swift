@@ -259,8 +259,8 @@ extension tableMetadata {
            directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if directEditingEditors.contains("nextcloud text") || directEditingEditors.contains("onlyoffice") {
-            // DirectEditing: Nextcloud Text - OnlyOffice
+        } else if directEditingEditors.contains("nextcloud text") || directEditingEditors.contains("onlyoffice") || directEditingEditors.contains("whiteboard") {
+            // DirectEditing: Nextcloud Text - OnlyOffice - Whiteboard
            return true
         }
         return false
@@ -284,7 +284,7 @@ extension tableMetadata {
         }
         let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType).map { $0.lowercased() }
 
-        if editors.contains("nextcloud text") || editors.contains("onlyoffice") {
+        if editors.contains("nextcloud text") || editors.contains("onlyoffice") || editors.contains("whiteboard") {
             return true
         }
         return false

@@ -6,7 +6,7 @@ import UIKit
 import NextcloudKit
 @preconcurrency import WebKit
 
-class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
+class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var link: String = ""
@@ -223,7 +223,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 }
 
-extension NCViewerNextcloudText: UINavigationControllerDelegate {
+extension NCViewerDirectEditing: UINavigationControllerDelegate {
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 
@@ -237,7 +237,7 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
     }
 }
 
-extension NCViewerNextcloudText: NCTransferDelegate {
+extension NCViewerDirectEditing: NCTransferDelegate {
     func transferReloadData(serverUrl: String?) { }
 
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }

@@ -109,12 +109,14 @@ class NCViewer: NSObject {
                     return vc
                 }
             }
-            // DirectEditing: Nextcloud Text - OnlyOffice
+
+            // DirectEditing: Nextcloud Text - OnlyOffice - Whiteboard
             if metadata.isAvailableDirectEditingEditorView {
                 var options = NKRequestOptions()
                 var editor = ""
                 var editorViewController = ""
                 let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
+
                 if editors.contains("nextcloud text") {
                     editor = "text"
                     editorViewController = "nextcloud text"
@@ -123,7 +125,11 @@ class NCViewer: NSObject {
                     editor = "onlyoffice"
                     editorViewController = "onlyoffice"
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
+                } else if editors.contains("whiteboard") {
+                    editor = "whiteboard"
+                    editorViewController = "whiteboard"
                 }
+
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
@@ -144,7 +150,7 @@ class NCViewer: NSObject {
                         return nil
                     }
 
-                    let vc = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+                    let vc = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil).instantiateInitialViewController() as? NCViewerDirectEditing
 
                     vc?.metadata = metadata
                     vc?.editor = editorViewController
@@ -154,7 +160,7 @@ class NCViewer: NSObject {
 
                     return vc
                 } else {
-                    let vc = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+                    let vc = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil).instantiateInitialViewController() as? NCViewerDirectEditing
 
                     vc?.metadata = metadata
                     vc?.editor = editorViewController

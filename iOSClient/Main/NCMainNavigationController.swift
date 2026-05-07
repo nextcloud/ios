@@ -294,7 +294,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
               !(topViewController is NCViewerMediaPage),
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichDocument),
-              !(topViewController is NCViewerNextcloudText)
+              !(topViewController is NCViewerDirectEditing)
         else {
             return
         }
