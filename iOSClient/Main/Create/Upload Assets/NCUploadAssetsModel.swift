@@ -9,16 +9,6 @@ import TLPhotoPicker
 import Photos
 import QuickLook
 
-
-// MARK: - CameraAssets helper
-enum CameraAssets {
-    struct TempAsset {
-        let fileURL: URL
-        let fileName: String
-        let isVideo: Bool
-    }
-}
-
 // MARK: - PreviewStore
 struct PreviewStore {
     var id: String
@@ -66,8 +56,9 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             createProcessUploads()
         }
     }
-    
 
+    // Saving to camera roll is deferred until after upload confirmation
+    // to avoid storing media that the user cancels.
     private func saveTempAssetsToCameraRoll() {
         for url in tempAssets {
             let ext = url.pathExtension.lowercased()
@@ -109,13 +100,13 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
-    
+
     var capabilities: NKCapabilities.Capabilities {
         NCNetworking.shared.capabilities[controller?.account ?? ""] ?? NKCapabilities.Capabilities()
     }
-    
+
     // MARK: - Initializers
-    
+
     init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?) {
         self.assets = assets
         self.serverUrl = serverUrl
@@ -177,8 +168,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         self.hiddenSave = false
     }
-    
-    
+
     // MARK: - Timer (QuickLook)
     func startTimer(navigationItem: UINavigationItem) {
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
@@ -257,7 +247,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
         return (serverUrl as NSString).lastPathComponent
     }
-    
+
     func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
         Task { @MainActor in
 
@@ -351,6 +341,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 }
             }
 
+            // Camera assets are stored as temporary files rather than PHAssets,
+            // so they must be copied directly from the temp URL to the upload destination.
             for item in previewStore where item.tempURL != nil {
 
                 guard let url = item.tempURL else { continue }

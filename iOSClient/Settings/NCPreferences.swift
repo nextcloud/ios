@@ -206,7 +206,7 @@ final class NCPreferences: NSObject {
 
     var saveCameraMediaToCameraRoll: Bool {
         get {
-            return getBoolPreference(key: "saveCameraMediaToCameraRoll", defaultValue: false)
+            return getBoolPreference(key: "saveCameraMediaToCameraRoll", defaultValue: true)
         }
         set {
             setUserDefaults(newValue, forKey: "saveCameraMediaToCameraRoll")
