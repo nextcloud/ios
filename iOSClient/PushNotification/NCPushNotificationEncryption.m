@@ -109,14 +109,14 @@
     // Decrypt the message
     unsigned char *decrypted = (unsigned char *) malloc(4096);
 
-    // Try decrypting with RSA PKCS#1 v1.5 padding
-    int decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
+    // Try decrypting with RSA OAEP padding
+    int decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_OAEP_PADDING);
     NSString *decryptString = decrypted_length == -1 ? nil : [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
 
-    // Try decrypting with RSA OAEP padding
+    // Try decrypting with RSA PKCS#1 v1.5 padding
     if(decrypted_length == -1 || decryptString == nil) {
         ERR_clear_error();
-        decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_OAEP_PADDING);
+        decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
         decryptString = decrypted_length == -1 ? nil : [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
     }
 
