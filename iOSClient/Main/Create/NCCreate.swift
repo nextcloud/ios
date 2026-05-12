@@ -25,12 +25,8 @@ class NCCreate: NSObject {
         var options = NKRequestOptions()
         let serverUrl = controller.currentServerUrl()
 
-        if let creatorId, editorId == "text" || editorId == "onlyoffice" {
-            if editorId == "onlyoffice" {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
-            } else if editorId == "text" {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
-            }
+        if let creatorId, let adapter = NCDirectEditorAdapter.resolve(from: [editorId]) {
+            options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
             let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
@@ -94,13 +90,8 @@ class NCCreate: NSObject {
         var selectedTemplate = NKEditorTemplate()
         var ext: String = ""
 
-        if editorId == "text" || editorId == "onlyoffice" {
-            var options = NKRequestOptions()
-            if editorId == "onlyoffice" {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
-            } else if editorId == "text" {
-                options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
-            }
+        if let adapter = NCDirectEditorAdapter.resolve(from: [editorId]) {
+            let options = NKRequestOptions(customUserAgent: adapter.userAgent(NCUtility()))
 
             let results = await NextcloudKit.shared.textGetListOfTemplatesAsync(account: account, options: options) { task in
                 Task {
@@ -128,15 +119,7 @@ class NCCreate: NSObject {
             if templates.isEmpty {
                 var temp = NKEditorTemplate()
                 temp.identifier = ""
-                if editorId == "text" {
-                    temp.ext = "md"
-                } else if editorId == "onlyoffice" && templateId == "document" {
-                    temp.ext = "docx"
-                } else if editorId == "onlyoffice" && templateId == "spreadsheet" {
-                    temp.ext = "xlsx"
-                } else if editorId == "onlyoffice" && templateId == "presentation" {
-                    temp.ext = "pptx"
-                }
+                temp.ext = adapter.defaultExt(templateId)
                 temp.name = "Empty"
                 temp.preview = ""
                 templates.append(temp)

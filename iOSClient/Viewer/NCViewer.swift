@@ -111,19 +111,14 @@ class NCViewer: NSObject {
             }
             // DirectEditing: Nextcloud Text - OnlyOffice
             if metadata.isAvailableDirectEditingEditorView {
-                var options = NKRequestOptions()
-                var editor = ""
-                var editorViewController = ""
                 let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
-                if editors.contains("nextcloud text") {
-                    editor = "text"
-                    editorViewController = "nextcloud text"
-                    options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
-                } else if editors.contains("onlyoffice") {
-                    editor = "onlyoffice"
-                    editorViewController = "onlyoffice"
-                    options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
+                guard let editorAdapter = NCDirectEditorAdapter.resolve(from: editors) else {
+                    self.QLPreview(metadata: metadata, delegate: delegate)
+                    return nil
                 }
+                let editor = editorAdapter.apiKey
+                let editorViewController = editorAdapter.viewControllerEditor
+                let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
