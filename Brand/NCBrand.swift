@@ -84,7 +84,7 @@ final class NCBrandOptions: @unchecked Sendable {
 
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {
-        case activity, sharing
+        case activity, sharing, details
     }
 
     init() {

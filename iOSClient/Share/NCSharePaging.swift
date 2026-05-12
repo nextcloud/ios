@@ -87,6 +87,9 @@ class NCSharePaging: UIViewController {
 
         pagingViewController.borderOptions = .visible(height: 1, zIndex: Int.max, insets: .zero)
 
+        // Distribute tabs evenly across the menu width so all fit on screen.
+        pagingViewController.menuItemSize = .sizeToFit(minWidth: 50, height: 50)
+
         // Contrain the paging view to all edges.
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -224,6 +227,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.height = height
             viewController.controller = controller
             return viewController
+        } else if pages[index] == .details {
+            return NCShareDetailsViewController()
         } else {
             return UIViewController()
         }
@@ -235,6 +240,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
             return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
         } else if pages[index] == .sharing {
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
+        } else if pages[index] == .details {
+            return PagingIndexItem(index: index, title: NSLocalizedString("_details_", comment: ""))
         } else {
             return PagingIndexItem(index: index, title: "")
         }

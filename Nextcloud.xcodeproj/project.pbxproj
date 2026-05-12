@@ -74,6 +74,7 @@
 		AF93471227E2341B002537EE /* NCContextMenuShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471127E2341B002537EE /* NCContextMenuShare.swift */; };
 		AF93471927E2361E002537EE /* NCShareAdvancePermissionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */; };
 		AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471527E2361E002537EE /* NCShareHeader.swift */; };
+		AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000012F70000100FE2776 /* NCShareDetailsView.swift */; };
 		AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */; };
 		AF93471C27E2361E002537EE /* NCShareHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF93471727E2361E002537EE /* NCShareHeader.xib */; };
 		AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */; };
@@ -1227,6 +1228,7 @@
 		AF93471127E2341B002537EE /* NCContextMenuShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuShare.swift; sourceTree = "<group>"; };
 		AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareAdvancePermissionFooter.xib; sourceTree = "<group>"; };
 		AF93471527E2361E002537EE /* NCShareHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareHeader.swift; sourceTree = "<group>"; };
+		AB7000012F70000100FE2776 /* NCShareDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareDetailsView.swift; sourceTree = "<group>"; };
 		AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAdvancePermission.swift; sourceTree = "<group>"; };
 		AF93471727E2361E002537EE /* NCShareHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareHeader.xib; sourceTree = "<group>"; };
 		AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareAdvancePermissionFooter.swift; sourceTree = "<group>"; };
@@ -2361,6 +2363,7 @@
 				AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */,
 				AF93471727E2361E002537EE /* NCShareHeader.xib */,
 				AF93471527E2361E002537EE /* NCShareHeader.swift */,
+				AB7000012F70000100FE2776 /* NCShareDetailsView.swift */,
 				AFCE353827E5DE0400FEA6C2 /* Shareable.swift */,
 				AA8E03D92D2ED83300E7E89C /* TransientShare.swift */,
 			);
@@ -4478,6 +4481,7 @@
 				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
+				AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */,
 				F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F74D50352C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */,
 				F7802B322BD5584F00D74270 /* NCMedia+DragDrop.swift in Sources */,
