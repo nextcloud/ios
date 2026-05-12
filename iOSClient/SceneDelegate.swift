@@ -336,7 +336,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         /*
-         Example: nextcloud://assistant/shared-text text
+         Example: nextcloud://assistant/shared-text
          */
 
         if scheme == global.appScheme,
@@ -348,9 +348,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             nkLog(debug: "Assistant shared text received: \(text)")
 
-            let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: controller), chatModel: NCAssistantChatModel(controller: controller), conversationsModel: NCAssistantChatConversationsModel(controller: controller))
-            let hostingController = UIHostingController(rootView: assistant)
-            controller.present(hostingController, animated: true, completion: nil)
+            Task { @MainActor in
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
+                if capabilities.assistantEnabled {
+                    let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: controller), chatModel: NCAssistantChatModel(controller: controller), conversationsModel: NCAssistantChatConversationsModel(controller: controller))
+                    let hostingController = UIHostingController(rootView: assistant)
+                    controller.present(hostingController, animated: true, completion: nil)
+                }
+            }
 
             return
         }
