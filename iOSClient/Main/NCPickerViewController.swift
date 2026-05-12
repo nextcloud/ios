@@ -107,6 +107,17 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 
     // MARK: - Lifecycle
 
+    override func makeUI() {
+        super.makeUI()
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
+        if #available(iOS 26.0, *) {
+            doneButton.image = UIImage(systemName: "checkmark")
+            cancelButton.image = UIImage(systemName: "xmark")
+            navigationBarTopConstraint.constant = self.navigationBarTopConstraint.constant + 10
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         applyCustomButtons()
