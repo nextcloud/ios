@@ -39,32 +39,32 @@ final class NCUtility: NSObject, Sendable {
     }
 
     func editorsDirectEditing(account: String, contentType: String) -> [String] {
-        var names: [String] = []
+        var identifiers: [String] = []
         let capabilities = NCNetworking.shared.capabilities[account]
 
         capabilities?.directEditingEditors.forEach { editor in
             editor.mimetypes.forEach { mimetype in
                 if mimetype == contentType {
-                    names.append(editor.name)
+                    identifiers.append(editor.identifier)
                 }
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
-                    names.append(editor.name)
+                    identifiers.append(editor.identifier)
                 }
                 if contentType == "text/html" {
-                    names.append(editor.name)
+                    identifiers.append(editor.identifier)
                 }
             }
 
             editor.optionalMimetypes.forEach { mimetype in
                 if mimetype == contentType {
-                    names.append(editor.name)
+                    identifiers.append(editor.identifier)
                 }
             }
         }
 
-        return Array(Set(names))
+        return Array(Set(identifiers))
     }
 
     func getCustomUserAgentNCText() -> String {
