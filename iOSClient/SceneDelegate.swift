@@ -339,9 +339,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://assistant/shared-text
          */
 
-        if scheme == global.appScheme,
-           action == "assistant",
-           url.path == "/shared-text" {
+        if scheme == global.appScheme, action == "assistant", url.path == "/shared-text" {
             guard let text = NCAssistantSharedTextStore.loadAndClear() else {
                 return
             }
