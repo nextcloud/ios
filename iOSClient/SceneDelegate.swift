@@ -336,6 +336,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         /*
+         Example: nextcloud://assistant/shared-text
+         */
+
+        if scheme == global.appScheme,
+           action == "assistant",
+           url.path == "/shared-text" {
+            guard let text = NCAssistantSharedTextStore.loadAndClear() else {
+                nkLog(error: "Assistant shared text deep link received but no text was found")
+                return
+            }
+
+            nkLog(debug: "Assistant shared text received: \(text)")
+            return
+        }
+
+        /*
          Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 

@@ -928,6 +928,7 @@
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 		F7FFFCA02FB300440015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
 		F7FFFCA22FB300600015441E /* NCAssistantSharedTextStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */; };
+		F7FFFCA42FB3088E0015441E /* NCShareExtension+Assistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FFFCA32FB3088D0015441E /* NCShareExtension+Assistant.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1832,6 +1833,7 @@
 		F7FDFF592E437E55000D7688 /* NCAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccount.swift; sourceTree = "<group>"; };
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAssistantSharedTextStore.swift; sourceTree = "<group>"; };
+		F7FFFCA32FB3088D0015441E /* NCShareExtension+Assistant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+Assistant.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -3385,6 +3387,7 @@
 			isa = PBXGroup;
 			children = (
 				F7FFFC9D2FB300440015441E /* NCAssistantSharedTextStore.swift */,
+				F7FFFCA32FB3088D0015441E /* NCShareExtension+Assistant.swift */,
 			);
 			path = Assistant;
 			sourceTree = "<group>";
@@ -4311,6 +4314,7 @@
 				F763412D2EBE255B0056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F72FD3B8297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */,
+				F7FFFCA42FB3088E0015441E /* NCShareExtension+Assistant.swift in Sources */,
 				F3E173C32C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F711A4E52AF9310500095DD8 /* NCUtility+Image.swift in Sources */,
 				F73EF7AA2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
