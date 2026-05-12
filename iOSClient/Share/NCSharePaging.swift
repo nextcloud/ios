@@ -26,6 +26,7 @@ import UIKit
 import Parchment
 import NextcloudKit
 import TagListView
+import SwiftUI
 
 protocol NCSharePagingContent {
     var textField: UIView? { get }
@@ -35,6 +36,9 @@ class NCSharePaging: UIViewController {
     private let pagingViewController = NCShareHeaderViewController()
     private weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var currentVC: NCSharePagingContent?
+    private let tabModel = NCSharePagingTabModel()
+    private var tabPickerHost: UIHostingController<NCSharePagingTabPicker>?
+    private var isSyncingPickerFromParchment = false
 
     var metadata = tableMetadata()
     var controller: NCMainTabBarController?
@@ -87,9 +91,6 @@ class NCSharePaging: UIViewController {
 
         pagingViewController.borderOptions = .visible(height: 1, zIndex: Int.max, insets: .zero)
 
-        // Distribute tabs evenly across the menu width so all fit on screen.
-        pagingViewController.menuItemSize = .sizeToFit(minWidth: 50, height: 50)
-
         // Contrain the paging view to all edges.
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -102,13 +103,57 @@ class NCSharePaging: UIViewController {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
 
-        if page.rawValue < pages.count {
-            pagingViewController.select(index: page.rawValue)
-        } else {
-            pagingViewController.select(index: 0)
-        }
+        let initialIndex = (page.rawValue < pages.count) ? page.rawValue : 0
+        tabModel.selection = initialIndex
+        pagingViewController.select(index: initialIndex)
 
         pagingViewController.reloadMenu()
+
+        setupTabPicker()
+    }
+
+    private func setupTabPicker() {
+        // Hide Parchment's built-in tab strip; we drive selection from a SwiftUI segmented Picker instead.
+        pagingViewController.collectionView.isHidden = true
+
+        let titles = pages.map(titleForTab(_:))
+        let pickerView = NCSharePagingTabPicker(
+            titles: titles,
+            model: tabModel,
+            onChange: { [weak self] index in
+                self?.handlePickerChange(to: index)
+            }
+        )
+        let host = UIHostingController(rootView: pickerView)
+        host.view.backgroundColor = .systemBackground
+
+        addChild(host)
+        view.addSubview(host.view)
+        host.didMove(toParent: self)
+        host.view.translatesAutoresizingMaskIntoConstraints = false
+
+        let collectionView = pagingViewController.collectionView
+        NSLayoutConstraint.activate([
+            host.view.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+            host.view.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+            host.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
+            host.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)
+        ])
+
+        self.tabPickerHost = host
+    }
+
+    private func titleForTab(_ tab: NCBrandOptions.NCInfoPagingTab) -> String {
+        switch tab {
+        case .activity: return NSLocalizedString("_activity_", comment: "")
+        case .sharing: return NSLocalizedString("_sharing_", comment: "")
+        case .details: return NSLocalizedString("_details_", comment: "")
+        }
+    }
+
+    private func handlePickerChange(to index: Int) {
+        guard !isSyncingPickerFromParchment else { return }
+        pagingViewController.select(index: index)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -198,7 +243,19 @@ extension NCSharePaging: PagingViewControllerDelegate {
     func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
 
         currentVC?.textField?.resignFirstResponder()
+    }
+
+    func pagingViewController(_ pagingViewController: PagingViewController, didScrollToItem pagingItem: PagingItem, startingViewController: UIViewController?, destinationViewController: UIViewController, transitionSuccessful: Bool) {
+
+        guard transitionSuccessful else { return }
+
         self.currentVC = destinationViewController as? NCSharePagingContent
+
+        if let item = pagingItem as? PagingIndexItem {
+            isSyncingPickerFromParchment = true
+            tabModel.selection = item.index
+            isSyncingPickerFromParchment = false
+        }
     }
 }
 
@@ -320,5 +377,32 @@ class NCSharePagingView: PagingView {
             pageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             pageView.topAnchor.constraint(equalTo: headerView.bottomAnchor)
         ])
+    }
+}
+
+// MARK: - SwiftUI segmented tab picker
+
+@Observable
+final class NCSharePagingTabModel {
+    var selection: Int = 0
+}
+
+struct NCSharePagingTabPicker: View {
+    let titles: [String]
+    @Bindable var model: NCSharePagingTabModel
+    var onChange: (Int) -> Void
+
+    var body: some View {
+        Picker("", selection: $model.selection) {
+            ForEach(Array(titles.enumerated()), id: \.offset) { index, title in
+                Text(title).tag(index)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .onChange(of: model.selection) { _, newValue in
+            onChange(newValue)
+        }
     }
 }
