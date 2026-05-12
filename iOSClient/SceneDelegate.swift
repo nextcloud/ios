@@ -343,7 +343,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            action == "assistant",
            url.path == "/shared-text" {
             guard let text = NCAssistantSharedTextStore.loadAndClear() else {
-                nkLog(error: "Assistant shared text deep link received but no text was found")
                 return
             }
 

@@ -151,10 +151,17 @@ class NCShareExtension: UIViewController {
             return
         }
 
+        // Keep the Share extension visually hidden until we know whether this is
+        // an Assistant text handoff or a normal file upload flow. This avoids the
+        // visible open-and-close flash when the extension only needs to redirect text.
+        view.alpha = 0
+
         Task { @MainActor in
             if await handleAssistantSharedTextIfNeeded(inputItems: inputItems) {
                 return
             }
+
+            self.view.alpha = 1
 
             NCFilesExtensionHandler(items: inputItems) { fileNames in
                 self.filesName = fileNames
