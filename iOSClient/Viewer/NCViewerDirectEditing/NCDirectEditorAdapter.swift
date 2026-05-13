@@ -47,6 +47,12 @@ struct NCDirectEditorAdapter {
             viewControllerEditor: "onlyoffice",
             userAgent: { $0.getCustomUserAgentOnlyOffice() },
             defaultExt: officeDefaultExt
+        ),
+        "whiteboard": NCDirectEditorAdapter(
+            apiKey: "whiteboard",
+            viewControllerEditor: "onlyoffice",
+            userAgent: { $0.getCustomUserAgentOnlyOffice() },
+            defaultExt: { _ in "whiteboard" }
         )
     ]
 }
