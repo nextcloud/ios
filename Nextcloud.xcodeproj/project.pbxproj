@@ -2442,6 +2442,7 @@
 		F73D11FF253C5F5400DF9BEC /* NCViewerDirectEditing */ = {
 			isa = PBXGroup;
 			children = (
+				5C9B877A546641A9B7741DB5 /* NCDirectEditorAdapter.swift */,
 				F72D404823D2082500A97FD0 /* NCViewerDirectEditing.swift */,
 				F73D11F9253C5F4800DF9BEC /* NCViewerDirectEditing.storyboard */,
 			);
@@ -2802,7 +2803,6 @@
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				5C9B877A546641A9B7741DB5 /* NCDirectEditorAdapter.swift */,
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
 				F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */,
 				F79018B1240962C7007C9B6D /* NCViewerMedia */,
