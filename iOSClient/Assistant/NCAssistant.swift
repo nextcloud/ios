@@ -90,7 +90,7 @@ struct NCAssistant: View {
 
 #Preview {
     @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
-    let model = NCAssistantModel(controller: nil)
+    let model = NCAssistantModel(controller: nil, inputText: "")
     let conversationsModel = NCAssistantChatConversationsModel(controller: nil)
 
     NCAssistant(assistantModel: model, chatModel: chatModel, conversationsModel: conversationsModel)

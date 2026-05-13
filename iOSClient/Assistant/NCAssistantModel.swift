@@ -26,7 +26,7 @@ class NCAssistantModel {
     @ObservationIgnored private let chatTypeId = "core:text2text:chat"
     @ObservationIgnored var isSelectedTypeChat: Bool { selectedType?.id == chatTypeId }
 
-    init(controller: NCMainTabBarController?) {
+    init(controller: NCMainTabBarController?, inputText: String = "") {
         self.controller = controller
         session = NCSession.shared.getSession(controller: controller)
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
