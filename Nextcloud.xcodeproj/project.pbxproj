@@ -2050,7 +2050,6 @@
 			isa = PBXGroup;
 			children = (
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
-				CC1234562F600000007A222C /* NCDirectEditorAdapterTests.swift */,
 				AA52EB452D42AC5A0089C348 /* Placeholder.swift */,
 			);
 			path = NextcloudUnitTests;
@@ -4127,7 +4126,6 @@
 			files = (
 				AA52EB472D42AC9E0089C348 /* Placeholder.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
-				CC1234572F600000007A222C /* NCDirectEditorAdapterTests.swift in Sources */,
 				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
 				F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */,
 			);
@@ -4597,7 +4595,6 @@
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
 				F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */,
 				F70557BD2ED44F1800135623 /* UploadBannerView.swift in Sources */,
-				AA5520A1921A4A299B9C4968 /* NCDirectEditorAdapter.swift in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,
