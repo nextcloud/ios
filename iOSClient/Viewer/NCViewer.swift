@@ -58,6 +58,7 @@ class NCViewer: NSObject {
         // DOCUMENTS
         else if metadata.classFile == NKTypeClassFile.document.rawValue,
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
+
             // PDF
             if metadata.isPDF {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
@@ -68,68 +69,17 @@ class NCViewer: NSObject {
 
                 return vc
             }
-            // RichDocument: Collabora
-            if metadata.isAvailableRichDocumentEditorView {
-                if metadata.url.isEmpty {
 
-                    NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                        path: metadata.fileId,
-                                                                                                        name: "createUrlRichdocuments")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    NCActivityIndicator.shared.stop()
-
-                    guard results.error == .success, let url = results.url else {
-                        let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
-                        await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                        return nil
-                    }
-
-                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
-
-                    vc?.metadata = metadata
-                    vc?.link = url
-                    vc?.imageIcon = image
-                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
-                    return vc
-
-                } else {
-                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
-
-                    vc?.metadata = metadata
-                    vc?.link = metadata.url
-                    vc?.imageIcon = image
-                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
-                    return vc
-                }
-            }
-
-            // DirectEditing: Nextcloud Text - OnlyOffice - Whiteboard
+            // DirectEditing
             if metadata.isAvailableDirectEditingEditorView {
-                var options = NKRequestOptions()
-                var editor = ""
-                var editorViewController = ""
                 let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
-
-                if editors.contains("nextcloud text") {
-                    editor = "text"
-                    editorViewController = "nextcloud text"
-                    options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
-                } else if editors.contains("onlyoffice") {
-                    editor = "onlyoffice"
-                    editorViewController = "onlyoffice"
-                    options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
-                } else if editors.contains("whiteboard") {
-                    editor = "whiteboard"
-                    editorViewController = "whiteboard"
+                guard let editorAdapter = NCDirectEditorAdapter.resolve(from: editors) else {
+                    self.QLPreview(metadata: metadata, delegate: delegate)
+                    return nil
                 }
-
+                let editor = editorAdapter.apiKey
+                let editorViewController = editorAdapter.viewControllerEditor
+                let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
@@ -170,12 +120,52 @@ class NCViewer: NSObject {
 
                     return vc
                 }
-            } else {
-                self.QLPreview(metadata: metadata, delegate: delegate)
             }
-        } else {
-            self.QLPreview(metadata: metadata, delegate: delegate)
+
+            // RichDocument: Collabora
+            if metadata.isAvailableRichDocumentEditorView {
+                if metadata.url.isEmpty {
+                    NCActivityIndicator.shared.start(backgroundView: delegate?.view)
+                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: metadata.fileId,
+                                                                                                        name: "createUrlRichdocuments")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
+                    NCActivityIndicator.shared.stop()
+
+                    guard results.error == .success, let url = results.url else {
+                        let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
+                        await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+                        return nil
+                    }
+
+                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+
+                    vc?.metadata = metadata
+                    vc?.link = url
+                    vc?.imageIcon = image
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
+
+                    return vc
+
+                } else {
+                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+
+                    vc?.metadata = metadata
+                    vc?.link = metadata.url
+                    vc?.imageIcon = image
+                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
+
+                    return vc
+                }
+            }
         }
+
+        // iOS QL-Preview
+        self.QLPreview(metadata: metadata, delegate: delegate)
 
         return nil
     }

@@ -8,6 +8,13 @@ import NextcloudKit
 
 @MainActor
 class NCContextMenuPlus: NSObject {
+    struct CreatorMenuInfo {
+        let titleKey: String
+        let templateId: String
+        let icon: String
+        let sortOrder: Int
+    }
+
     let menuToolbar: UIToolbar?
     let controller: NCMainTabBarController?
 
@@ -18,6 +25,19 @@ class NCContextMenuPlus: NSObject {
     init(menuToolbar: UIToolbar?, controller: NCMainTabBarController?) {
         self.menuToolbar = menuToolbar
         self.controller = controller
+    }
+
+    nonisolated static func menuInfo(for ext: String) -> CreatorMenuInfo? {
+        switch ext.lowercased() {
+        case "docx":
+            return CreatorMenuInfo(titleKey: "_create_new_document_", templateId: "document", icon: "doc.text", sortOrder: 0)
+        case "xlsx":
+            return CreatorMenuInfo(titleKey: "_create_new_spreadsheet_", templateId: "spreadsheet", icon: "tablecells", sortOrder: 1)
+        case "pptx":
+            return CreatorMenuInfo(titleKey: "_create_new_presentation_", templateId: "presentation", icon: "play.rectangle", sortOrder: 2)
+        default:
+            return nil
+        }
     }
 
     func create(session: NCSession.Session) async {
@@ -38,7 +58,7 @@ class NCContextMenuPlus: NSObject {
         var menuActionElement: [UIMenuElement] = []
         var menuE2EEElement: [UIMenuElement] = []
         var menuTextElement: [UIMenuElement] = []
-        var menuOnlyOfficeElement: [UIMenuElement] = []
+        var menuDirectEditingElement: [UIMenuElement] = []
         var menuRichDocumentElement: [UIMenuElement] = []
 
         // ------------------------------- ACTION
@@ -214,59 +234,53 @@ class NCContextMenuPlus: NSObject {
                 })
             }
 
-            // ------------------------------- ONLY OFFICE
+            // ------------------------------- DIRECT EDITING CREATORS (onlyoffice, eurooffice, …)
 
-            if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_docx"}) {
-                menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                                      image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor])) { _ in
-                    Task { @MainActor in
-                        let createDocument = NCCreate()
-                        let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "document", account: session.account)
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+            let creatorsByEditor = Dictionary(grouping: capabilities.directEditingCreators, by: \.editor)
+            for editorId in creatorsByEditor.keys.sorted() {
+                guard NCDirectEditorAdapter.resolve(from: [editorId]) != nil,
+                      editorId != "text" else { continue }
 
-                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "onlyoffice", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
+                let sortedCreators = creatorsByEditor[editorId]!
+                    .compactMap { creator -> (NKEditorDetailsCreator, CreatorMenuInfo)? in
+                        guard let info = NCContextMenuPlus.menuInfo(for: creator.ext) else { return nil }
+                        return (creator, info)
                     }
-                })
-            }
+                    .sorted { $0.1.sortOrder < $1.1.sortOrder }
 
-            if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_xlsx"}) {
-                menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
-                                                      image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
-                    Task { @MainActor in
-                        let createDocument = NCCreate()
-                        let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "spreadsheet", account: session.account)
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
-
-                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "onlyoffice", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
-                    }
-
-                })
-            }
-
-            if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_pptx"}) {
-                menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
-                                                      image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
-                    Task { @MainActor in
-                        let createDocument = NCCreate()
-                        let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "presentation", account: session.account)
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
-
-                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "onlyoffice", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
-                    }
-                })
+                for (creator, info) in sortedCreators {
+                    menuDirectEditingElement.append(UIAction(
+                        title: NSLocalizedString(info.titleKey, comment: ""),
+                        image: utility.loadImage(named: info.icon, colors: [info.iconColor])
+                    ) { _ in
+                        Task { @MainActor in
+                            let createDocument = NCCreate()
+                            let fileExt: String
+                            let templateIdentifier: String
+                            if creator.templates {
+                                let result = await createDocument.getTemplate(editorId: editorId, templateId: info.templateId, account: session.account)
+                                fileExt = result.ext
+                                templateIdentifier = result.selectedTemplate.identifier
+                            } else {
+                                fileExt = creator.ext
+                                templateIdentifier = ""
+                            }
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + fileExt, account: session.account, serverUrl: serverUrl)
+                            let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+                            await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: editorId, creatorId: creator.identifier, templateId: templateIdentifier, account: session.account)
+                        }
+                    })
+                }
             }
         }
 
         let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
         let menuText = UIMenu(title: "", options: .displayInline, children: menuTextElement)
         let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
-        let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
+        let menuDirectEditing = UIMenu(title: "", options: .displayInline, children: menuDirectEditingElement)
         let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
 
-        let plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuOnlyOffice])
+        let plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuDirectEditing])
 
         let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
         let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
@@ -339,6 +353,17 @@ class NCContextMenuPlus: NSObject {
             UIView.animate(withDuration: 0.3, animations: update)
         } else {
             update()
+        }
+    }
+}
+
+@MainActor
+extension NCContextMenuPlus.CreatorMenuInfo {
+    var iconColor: UIColor {
+        switch templateId {
+        case "spreadsheet": return NCBrandColor.shared.spreadsheetIconColor
+        case "presentation": return NCBrandColor.shared.presentationIconColor
+        default: return NCBrandColor.shared.documentIconColor
         }
     }
 }
