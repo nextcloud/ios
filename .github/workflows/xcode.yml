@@ -19,6 +19,7 @@ env:
   PROJECT: Nextcloud.xcodeproj
   DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.5
   SCHEME: Nextcloud
+  XCODE_VERSION: '26.0.1'
   SERVER_BRANCH: stable30
   PHP_VERSION: 8.3
 
@@ -37,7 +38,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
       with:
-        xcode-version: '26.0.1'
+        xcode-version: ${{ env.XCODE_VERSION }}
 
     - name: Run Xcode Build
       run: |
@@ -64,6 +65,11 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+      with:
+        xcode-version: ${{ env.XCODE_VERSION }}
 
     - name: Prepare PHP ${{ env.PHP_VERSION }}
       uses: shivammathur/setup-php@v2

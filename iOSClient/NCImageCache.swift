@@ -138,21 +138,55 @@ final class NCImageCache: @unchecked Sendable {
                            mediaPath: String,
                            showOnlyImages: Bool,
                            showOnlyVideos: Bool) -> NSPredicate {
-        var predicate = NSPredicate()
         let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
-        let showBothPredicate = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
-        let showOnlyPredicateImage = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == 'image' AND NOT (status IN %@)"
-        let showOnlyPredicateVideo = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == 'video' AND livePhotoFile == '' AND NOT (status IN %@)"
+
+        let showBothPredicate = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        mediaSearch == true AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateImage = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        mediaSearch == true AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateVideo = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        mediaSearch == true AND
+        hasPreview == true AND
+        classFile == 'video' AND
+        NOT (status IN %@)
+        """
 
         if showOnlyImages {
-            predicate = NSPredicate(format: showOnlyPredicateImage, session.account, startServerUrl, global.metadataStatusHideInView)
+            return NSPredicate(format: showOnlyPredicateImage,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
         } else if showOnlyVideos {
-            predicate = NSPredicate(format: showOnlyPredicateVideo, session.account, startServerUrl, global.metadataStatusHideInView)
+            return NSPredicate(format: showOnlyPredicateVideo,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
         } else {
-            predicate = NSPredicate(format: showBothPredicate, session.account, startServerUrl, global.metadataStatusHideInView)
+            return NSPredicate(format: showBothPredicate,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
         }
-
-        return predicate
     }
 
     // MARK: -
@@ -185,12 +219,16 @@ final class NCImageCache: @unchecked Sendable {
         return utility.loadImage(named: "checkmark.circle.fill", colors: colors)
     }
 
-    func getImageCheckedYes(colors: [UIColor] = [NCBrandColor.shared.iconImageColor2]) -> UIImage {
-        return utility.loadImage(named: "checkmark.circle.fill", colors: colors)
+    func getImageCheckedYes(color: UIColor) -> UIImage? {
+        let config = UIImage.SymbolConfiguration(paletteColors: [.white, color])
+        return UIImage(systemName: "checkmark.circle.fill", withConfiguration: config)
     }
 
-    func getImageCheckedNo(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "circle", colors: colors)
+    func getImageCheckedNo(color: UIColor) -> UIImage? {
+        let weightConfig = UIImage.SymbolConfiguration(weight: .light)
+        let colorConfig = UIImage.SymbolConfiguration(paletteColors: [color])
+        let config = weightConfig.applying(colorConfig)
+        return UIImage(systemName: "circle", withConfiguration: config)
     }
 
     func getImageButtonMore(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {

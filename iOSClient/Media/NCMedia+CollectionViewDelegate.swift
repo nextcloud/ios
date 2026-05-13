@@ -15,10 +15,10 @@ extension NCMedia: UICollectionViewDelegate {
             if isEditMode {
                 if let index = fileSelect.firstIndex(of: metadata.ocId) {
                     fileSelect.remove(at: index)
-                    cell.selected(false)
+                    cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
                 } else {
                     fileSelect.append(metadata.ocId)
-                    cell.selected(true)
+                    cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
                 }
                 tabBarSelect.selectCount = fileSelect.count
             } else if let metadata = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {

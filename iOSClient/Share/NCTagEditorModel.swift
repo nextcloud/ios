@@ -11,20 +11,16 @@ import NextcloudKit
     var searchText: String = ""
     private(set) var tags: [NKTag] = []
     private(set) var selectedTagIDs: Set<String> = []
-    private(set) var pendingNewTagNames: Set<String> = []
     private(set) var isLoading = false
     private(set) var isSaving = false
     private(set) var isUpdatingTagColor = false
-    private(set) var hasLoaded = false
 
     private let metadata: tableMetadata
-    private let initialTagTokens: Set<String>
     private let windowScene: UIWindowScene?
     private var initialAssignedTagIDs: Set<String> = []
 
-    init(metadata: tableMetadata, initialTags: [String], windowScene: UIWindowScene?) {
+    init(metadata: tableMetadata, windowScene: UIWindowScene?) {
         self.metadata = metadata
-        self.initialTagTokens = Set(initialTags)
         self.windowScene = windowScene
     }
 
@@ -55,22 +51,14 @@ import NextcloudKit
         if hasExistingTag {
             return nil
         }
-
-        let alreadyPending = pendingNewTagNames.contains {
-            $0.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
-        }
-
-        return alreadyPending ? nil : trimmed
+        return trimmed
     }
 
     func isSelected(_ tag: NKTag) -> Bool {
         selectedTagIDs.contains(tag.id)
     }
 
-    func loadTagsIfNeeded() async {
-        guard !hasLoaded else {
-            return
-        }
+    func loadTags() async {
         _ = await reloadTags(keepCurrentSelection: false)
     }
 
@@ -103,15 +91,38 @@ import NextcloudKit
         presenter.present(popup, animated: true)
     }
 
-    func addCreateCandidateToSelection() {
-        guard let candidate = createCandidateName else {
-            return
+    func createCandidateTagAndSelect() async -> String? {
+        guard !isSaving, let candidate = createCandidateName else {
+            return nil
         }
-        pendingNewTagNames.insert(candidate)
-        tags.append(NKTag(id: candidate, name: candidate, color: nil))
-        tags.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        selectedTagIDs.insert(candidate)
+
+        isSaving = true
+        defer { isSaving = false }
+
+        let createResult = await NextcloudKit.shared.createTag(name: candidate, account: metadata.account)
+        guard createResult.error == .success else {
+            await showErrorBanner(windowScene: windowScene, text: "_create_tag_error_", errorCode: createResult.error.errorCode)
+            return nil
+        }
+
+        guard await reloadTags(keepCurrentSelection: true) else {
+            return nil
+        }
+
+        guard let createdTag = tags.first(where: {
+            $0.name.compare(candidate, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
+        }) else {
+            await showErrorBanner(
+                windowScene: windowScene,
+                text: "_error_occurred_",
+                errorCode: NCGlobal.shared.errorInternalError
+            )
+            return nil
+        }
+
+        selectedTagIDs.insert(createdTag.id)
         searchText = ""
+        return createdTag.name
     }
 
     var selectedTags: [NKTag] {
@@ -132,30 +143,6 @@ import NextcloudKit
 
         isSaving = true
         defer { isSaving = false }
-
-        let hasNewTags = !pendingNewTagNames.isEmpty
-
-        if hasNewTags {
-            for name in pendingNewTagNames.sorted() {
-                let createResult = await NextcloudKit.shared.createTag(name: name, account: metadata.account)
-                if createResult.error != .success {
-                    await showErrorBanner(windowScene: windowScene, error: createResult.error)
-                    return nil
-                }
-            }
-
-            guard await reloadTags(keepCurrentSelection: true) else {
-                return nil
-            }
-
-            for pendingName in pendingNewTagNames {
-                if let tag = tags.first(where: {
-                    $0.name.compare(pendingName, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
-                }) {
-                    selectedTagIDs.insert(tag.id)
-                }
-            }
-        }
 
         let tagsToAdd = selectedTagIDs.subtracting(initialAssignedTagIDs)
         let tagsToRemove = initialAssignedTagIDs.subtracting(selectedTagIDs)
@@ -189,7 +176,6 @@ import NextcloudKit
         }
 
         initialAssignedTagIDs = selectedTagIDs
-        pendingNewTagNames.removeAll()
 
         return selectedTags
     }
@@ -208,7 +194,6 @@ import NextcloudKit
 
         defer {
             isLoading = false
-            hasLoaded = true
         }
 
         let result = await NextcloudKit.shared.getTags(account: metadata.account)
@@ -225,8 +210,12 @@ import NextcloudKit
             return true
         }
 
-        let assignedIDs = Set(tags.filter { tag in
-            initialTagTokens.contains(tag.id) || initialTagTokens.contains(tag.name)
+        let initialMetadataTags = metadata.tags.map(\.nkTag)
+        let assignedIDs = Set(tags.filter { serverTag in
+            initialMetadataTags.contains { initialTag in
+                (!initialTag.id.isEmpty && initialTag.id == serverTag.id) ||
+                initialTag.name.compare(serverTag.name, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
+            }
         }.map(\.id))
 
         initialAssignedTagIDs = assignedIDs

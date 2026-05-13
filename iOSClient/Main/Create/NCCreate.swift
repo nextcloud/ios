@@ -157,15 +157,14 @@ class NCCreate: NSObject {
         return (templates, selectedTemplate, ext)
     }
 
-    func createShare(viewController: UIViewController, controller: NCMainTabBarController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
-        var page = page
+    func createShare(controller: NCMainTabBarController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
+        guard let controller else {
+            return
+        }
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
-        NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, file, error in
             Task { @MainActor in
-                NCActivityIndicator.shared.stop()
-
                 if let metadata = metadata, let file = file, error == .success {
                     // Remove all known download limits from shares related to the given file.
                     // This avoids obsolete download limit objects to stay around.
@@ -198,8 +197,6 @@ class NCCreate: NSObject {
                         pages.remove(at: idx)
                     }
 
-                    (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
-
                     shareViewController?.pages = pages
                     shareViewController?.metadata = metadata
                     shareViewController?.controller = controller
@@ -214,7 +211,7 @@ class NCCreate: NSObject {
 
                     shareNavigationController?.modalPresentationStyle = .formSheet
                     if let shareNavigationController = shareNavigationController {
-                        viewController.present(shareNavigationController, animated: true, completion: nil)
+                        controller.present(shareNavigationController, animated: true, completion: nil)
                     }
                 }
             }

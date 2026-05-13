@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate {
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
@@ -18,7 +22,7 @@ extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate {
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
             guard let metadata else { return }
-            NCCreate().createShare(viewController: self, controller: self.controller, metadata: metadata, page: .sharing)
+            NCCreate().createShare(controller: self.controller, metadata: metadata, page: .sharing)
         }
     }
 }

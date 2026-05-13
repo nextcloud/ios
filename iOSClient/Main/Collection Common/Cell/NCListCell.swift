@@ -104,16 +104,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         imageStatus.image = nil
         imageFavorite.image = nil
         imageLocal.image = nil
-        imageSelect.image = nil
 
-        labelTitle.text = ""
-        labelExtension.text = ""
-        labelExtension.isHidden = true
-        labelInfo.text = ""
-        labelSubinfo.text = ""
-        tag1.text = ""
-        tag2.text = ""
-        tagMore.text = ""
+        buttonShared.setImage(nil, for: .normal)
+        buttonShared.imageEdgeInsets = .zero
+
+        buttonMore.setImage(nil, for: .normal)
+        buttonMore.menu = nil
+        buttonMore.showsMenuAsPrimaryAction = true
+
+        shareContainer.isHidden = false
+        moreContainer.isHidden = false
+
+        imageItemLeftConstraint.constant = 10
+        separatorHeightConstraint.constant = 0.5
 
         // Dynamic Type Font Configuration
         //
@@ -141,40 +144,38 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         // adjustsFontForContentSizeCategory:
         //     Enables live updates when accessibility settings change.
         //
+        labelTitle.text = ""
         labelTitle.font = .callout()
         labelTitle.adjustsFontForContentSizeCategory = true
 
+        labelExtension.text = ""
+        labelExtension.isHidden = true
         labelExtension.font = .callout()
         labelExtension.adjustsFontForContentSizeCategory = true
 
+        labelInfo.text = ""
         labelInfo.font = .footnote()
         labelInfo.adjustsFontForContentSizeCategory = true
 
         labelInfoSeparator.font = .footnote()
         labelInfoSeparator.adjustsFontForContentSizeCategory = true
 
+        labelSubinfo.text = ""
         labelSubinfo.font = .footnote()
         labelSubinfo.adjustsFontForContentSizeCategory = true
 
+        tag1.text = ""
+        tag2.text = ""
+
         tag1.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         tag2.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
         tag1.setContentHuggingPriority(.defaultLow, for: .horizontal)
         tag2.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        tagMore.text = ""
         tagMore.setContentCompressionResistancePriority(.required, for: .horizontal)
         tagMore.setContentHuggingPriority(.required, for: .horizontal)
-
-        buttonShared.setImage(nil, for: .normal)
-        buttonShared.imageEdgeInsets = .zero
-
-        buttonMore.setImage(nil, for: .normal)
-        buttonMore.menu = nil
-        buttonMore.showsMenuAsPrimaryAction = true
-
-        shareContainer.isHidden = false
-        moreContainer.isHidden = false
-
-        imageItemLeftConstraint.constant = 10
-        separatorHeightConstraint.constant = 0.5
     }
 
     func setSharedAvatarImage(_ image: UIImage) {
@@ -221,7 +222,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
         moreContainer.isHidden = hidden
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
@@ -245,11 +246,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellMainP
             blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes(color: color)
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCImageCache.shared.getImageCheckedNo()
+            imageSelect.image = NCImageCache.shared.getImageCheckedNo(color: color)
             backgroundView = nil
             separator.isHidden = false
         }
@@ -535,10 +536,10 @@ extension NCCollectionViewCommon {
 
         // Edit mode
         if fileSelect.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode)
+            cell.selected(true, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
             a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selected(false, isEditMode: isEditMode)
+            cell.selected(false, isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
         // Accessibility
@@ -550,10 +551,18 @@ extension NCCollectionViewCommon {
 
         if isSearchingMode,
            let searchResultStore,
+           !searchResultStore.isEmpty,
            let title = cell.labelTitle?.text {
-            let longestWordRange = (title.lowercased() as NSString).range(of: searchResultStore)
             let attributedString = NSMutableAttributedString(string: title)
-            attributedString.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
+            let nsTitle = title as NSString
+            let range = nsTitle.range(of: searchResultStore, options: [.caseInsensitive])
+            let color = NCBrandColor.shared.getElement(account: session.account)
+
+            if range.location != NSNotFound,
+               NSMaxRange(range) <= nsTitle.length {
+                attributedString.addAttribute(.foregroundColor, value: color, range: range)
+            }
+
             cell.labelTitle?.attributedText = attributedString
         }
 

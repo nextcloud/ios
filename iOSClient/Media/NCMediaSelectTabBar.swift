@@ -6,6 +6,8 @@ import UIKit
 import SwiftUI
 
 protocol NCMediaSelectTabBarDelegate: AnyObject {
+    func move()
+    func share()
     func delete()
 }
 
@@ -86,21 +88,27 @@ struct MediaTabBarSelectView: View {
     var body: some View {
         VStack {
             Spacer().frame(height: sizeClass == .compact ? 5 : 10)
+
             HStack {
-                Spacer().frame(maxWidth: .infinity)
-                Group {
-                    if tabBarSelect.selectCount == 0 {
-                        Text(NSLocalizedString("_select_photos_", comment: ""))
-                            .cappedFont(.body, maxDynamicType: .accessibility2)
-                    } else if tabBarSelect.selectCount == 1 {
-                        Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
-                            .cappedFont(.body, maxDynamicType: .accessibility2)
-                    } else {
-                        Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
-                            .cappedFont(.body, maxDynamicType: .accessibility2)
-                    }
+                Button {
+                  tabBarSelect.delegate?.share()
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.icon())
                 }
-                .frame(minWidth: 250, maxWidth: .infinity)
+                .tint(Color(NCBrandColor.shared.iconImageColor))
+                .frame(maxWidth: .infinity)
+                .disabled(tabBarSelect.selectCount == 0)
+
+                Button {
+                    tabBarSelect.delegate?.move()
+                } label: {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.icon())
+                }
+                .tint(Color(NCBrandColor.shared.iconImageColor))
+                .frame(maxWidth: .infinity)
+                .disabled(tabBarSelect.selectCount == 0)
 
                 Button {
                     tabBarSelect.delegate?.delete()
@@ -109,8 +117,8 @@ struct MediaTabBarSelectView: View {
                         .font(.icon())
                 }
                 .tint(.red)
-                .disabled(tabBarSelect.selectCount == 0)
                 .frame(maxWidth: .infinity)
+                .disabled(tabBarSelect.selectCount == 0)
             }
             .frame(maxWidth: .infinity)
         }

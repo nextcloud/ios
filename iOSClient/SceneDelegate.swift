@@ -467,13 +467,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
         } else {
-            let applicationHandle = NCApplicationHandle()
-            let isHandled = applicationHandle.applicationOpenURL(url)
-            if isHandled {
-                return
-            } else {
-                scene.open(url, options: nil)
-            }
+            scene.open(url, options: nil)
         }
     }
 

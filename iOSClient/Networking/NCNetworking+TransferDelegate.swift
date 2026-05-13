@@ -197,8 +197,7 @@ extension NCNetworking: NCTransferDelegate {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
 
             default:
-                let applicationHandle = NCApplicationHandle()
-                applicationHandle.downloadedFile(selector: metadata.sessionSelector, metadata: metadata)
+               break
             }
         }
     }

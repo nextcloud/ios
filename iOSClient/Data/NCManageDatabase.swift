@@ -211,6 +211,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableMetadataTag.self)
         self.clearTable(tableRecommendedFiles.self)
         self.clearTable(tableShare.self)
+        self.clearTable(tableTrash.self)
     }
 
     func clearDatabase(account: String) {
@@ -361,40 +362,50 @@ final class NCManageDatabase: @unchecked Sendable {
         return Array(sorted)
     }
 
+    /// Filters metadata entries and normalizes Live Photo relationships.
+    ///
+    /// Behavior:
+    /// - Keeps image items as the canonical representation of a Live Photo.
+    /// - Removes video items that belong to a Live Photo.
+    /// - Clears broken Live Photo references on image items when the paired file is missing.
+    /// - Removes orphan Live Photo video items when the paired image is missing.
+    ///
+    /// - Parameter metadatas: Detached metadata objects to normalize.
+    /// - Returns: A cleaned array without duplicated or orphaned Live Photo video entries.
     func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata]) -> [tableMetadata] {
-        // Get all fileIds from the detached metadata list
-        let allFileIds: Set<String> = Set(metadatas.map { $0.fileId })
+        // Build a fast lookup set containing all available file identifiers.
+        let allFileIds = Set(metadatas.map(\.fileId))
 
-        // Process based on classFile (image vs video) LivePhoto
-        let cleanedMetadatas: [tableMetadata] = metadatas.compactMap { metadata in
-            let livePhotoFileId = metadata.livePhotoFile
-            let hasLivePhotoLink = !livePhotoFileId.isEmpty
-            let targetExists = allFileIds.contains(livePhotoFileId)
+        return metadatas.compactMap { metadata in
+            let linkedFileId = metadata.livePhotoFile
+            let hasLivePhotoLink = !linkedFileId.isEmpty
+            let linkedTargetExists = allFileIds.contains(linkedFileId)
 
             switch metadata.classFile {
+
             case NKTypeClassFile.image.rawValue:
-                if hasLivePhotoLink,
-                   !targetExists {
-                    metadata.livePhotoFile = "" // Clear broken reference
+                // Keep the image as the canonical Live Photo item.
+                // If the paired file is missing, clear the broken reference.
+                if hasLivePhotoLink && !linkedTargetExists {
+                    metadata.livePhotoFile = ""
                 }
                 return metadata
 
             case NKTypeClassFile.video.rawValue:
-                if hasLivePhotoLink,
-                   targetExists {
-                    return nil // Remove video if it's paired with an existing image
-                } else if hasLivePhotoLink,
-                          !targetExists {
-                    metadata.livePhotoFile = "" // Clear broken reference
+                // Remove every Live Photo video:
+                // - if the paired image exists, it is a duplicate representation
+                // - if the paired image does not exist, it is an orphan and should not be shown
+                if hasLivePhotoLink {
+                    return nil
                 }
+
+                // Keep normal standalone videos.
                 return metadata
 
             default:
                 return metadata
             }
         }
-
-        return cleanedMetadatas
     }
 
     func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata], completion: @escaping ([tableMetadata]) -> Void) {

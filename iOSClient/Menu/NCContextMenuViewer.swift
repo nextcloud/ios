@@ -40,7 +40,7 @@ class NCContextMenuViewer: NSObject {
 
         // DETAIL
         if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-            menuElements.append(makeDetailAction(metadata: metadata))
+            menuElements.append(makeDetailAction(metadata: metadata, controller: controller))
         }
 
         // VIEW IN FOLDER
@@ -85,14 +85,12 @@ class NCContextMenuViewer: NSObject {
 
     // MARK: - Private Action Makers
 
-    private func makeDetailAction(metadata: tableMetadata) -> UIAction {
+    private func makeDetailAction(metadata: tableMetadata, controller: NCMainTabBarController) -> UIAction {
         UIAction(
             title: NSLocalizedString("_details_", comment: ""),
             image: UIImage(systemName: "info")
-        ) { [weak self] _ in
-            guard let controller = self?.controller else { return }
-            NCCreate().createShare(viewController: controller,
-                                   controller: self?.controller,
+        ) { _ in
+            NCCreate().createShare(controller: controller,
                                    metadata: metadata,
                                    page: .activity)
         }

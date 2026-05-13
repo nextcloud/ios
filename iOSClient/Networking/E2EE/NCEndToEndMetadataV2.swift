@@ -282,7 +282,7 @@ extension NCEndToEndMetadata {
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                               errorDescription: NSLocalizedString("_e2ee_no_user_found_", comment: ""))
+                               errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
             }
 
             // SIGNATURE CHECK
@@ -351,7 +351,7 @@ extension NCEndToEndMetadata {
             guard let keyChecksums = jsonCiphertextMetadata.keyChecksums, !keyChecksums.isEmpty else {
                 return NKError(
                     errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                    errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: ""))
+                    errorDescription: NSLocalizedString("_e2ee_key_no_checksums_found_", comment: ""))
             }
             guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
                   keyChecksums.contains(hash) else {

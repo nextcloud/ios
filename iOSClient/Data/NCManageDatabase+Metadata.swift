@@ -335,6 +335,10 @@ extension tableMetadata {
         CGSize(width: width, height: height)
     }
 
+    var tagNames: [String] {
+        tags.map(\.name)
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
@@ -342,26 +346,38 @@ extension tableMetadata {
 
     /// Returns a detached (unmanaged) deep copy of the current `tableMetadata` object.
     ///
-    /// - Note: Primitive list properties (e.g., `shareType`) are copied automatically by `init(value:)`.
-    ///         For `List` containing Realm objects (e.g., `exifPhotos`, `tags`) this method creates new instances
-    ///         to ensure the copy is fully detached and safe to use outside of a Realm context.
+    /// - Note: Primitive properties and lists of primitive values (for example `shareType`)
+    ///   are copied automatically by `init(value:)`.
+    ///   For `List` properties containing Realm objects (for example `exifPhotos` and `tags`),
+    ///   this method recreates each element explicitly to ensure the resulting copy is fully
+    ///   detached and safe to use across Realm contexts.
     ///
     /// - Returns: A new `tableMetadata` instance fully detached from Realm.
     func detachedCopy() -> tableMetadata {
-        // Use Realm's built-in copy constructor for primitive properties and List of primitives
+        // Use Realm's built-in copy constructor for primitive properties and lists of primitive values.
         let detached = tableMetadata(value: self)
 
-        // Deep copy of List of Realm objects (exifPhotos and tags)
+        // Deep copy of List of Realm objects
         detached.exifPhotos.removeAll()
-        detached.exifPhotos.append(objectsIn: self.exifPhotos.map { NCKeyValue(value: $0) })
+        detached.exifPhotos.append(objectsIn: self.exifPhotos.map {
+            let copy = NCKeyValue()
+            copy.key = $0.key
+            copy.value = $0.value
+            return copy
+        })
+
         detached.tags.removeAll()
-        detached.tags.append(objectsIn: self.tags.map { tableMetadataTag(value: $0) })
+        detached.tags.append(objectsIn: self.tags.map {
+            let copy = tableMetadataTag()
+            copy.primaryKey = $0.primaryKey
+            copy.account = $0.account
+            copy.id = $0.id
+            copy.name = $0.name
+            copy.color = $0.color
+            return copy
+        })
 
         return detached
-    }
-
-    var tagNames: [String] {
-        tags.map(\.name)
     }
 }
 
@@ -466,16 +482,6 @@ extension NCManageDatabase {
 
         await core.performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
-        }
-    }
-
-    func addMetadataIfNotExistsAsync(_ metadata: tableMetadata) async {
-        let detached = metadata.detachedCopy()
-
-        await core.performRealmWriteAsync { realm in
-            if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
-                realm.add(detached)
-            }
         }
     }
 
@@ -993,6 +999,22 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns detached (unmanaged) copies of `tableMetadata` objects matching the provided ocIds.
+    ///
+    /// - Parameter ocIds: Array of ocId strings used to fetch corresponding metadata.
+    /// - Returns: An array of detached `tableMetadata` objects. Empty if no matches are found.
+    func getMetadatasFromOcIdsAsync(_ ocIds: [String]) async -> [tableMetadata] {
+        guard !ocIds.isEmpty else { return [] }
+
+        return await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .where {
+                    $0.ocId.in(ocIds)
+                }
+                .map { $0.detachedCopy() }
+        } ?? []
+    }
+
     func getMetadataFromOcIdAndocIdTransferAsync(_ ocId: String?) async -> tableMetadata? {
         guard let ocId else {
             return nil
@@ -1340,6 +1362,31 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first != nil
         } ?? false
+    }
+
+    // MARK: - helpers
+
+    /// Extracts the relative DAV folder path and filename from metadata.
+    ///
+    /// - Parameter metadata: The metadata object containing DAV URLs.
+    /// - Returns: A tuple containing the relative path and filename.
+    func relativeDavComponents(for metadata: tableMetadata) -> (path: String, fileName: String) {
+        let fullPath = metadata.serverUrlFileName
+        let prefix = NKDav.homeURLStringNoSlash(urlBase: metadata.urlBase, userId: metadata.userId)
+
+        guard fullPath.hasPrefix(prefix) else {
+            return (path: "", fileName: metadata.fileName)
+        }
+
+        let relative = String(fullPath.dropFirst(prefix.count))
+
+        // Split into path + filename
+        let url = URL(fileURLWithPath: relative)
+
+        let fileName = url.lastPathComponent
+        let path = url.deletingLastPathComponent().path
+
+        return (path, fileName)
     }
 }
 

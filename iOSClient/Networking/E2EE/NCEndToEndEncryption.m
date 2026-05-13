@@ -32,7 +32,7 @@
 
 #define AES_KEY_128_LENGTH          16
 #define AES_KEY_256_LENGTH          32
-#define AES_IVEC_LENGTH             16
+#define AES_IVEC_LENGTH             12
 #define AES_GCM_TAG_LENGTH          16
 #define AES_SALT_LENGTH             40
 #define AES_TAG_LENGTH              16

@@ -181,8 +181,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
 
             if message.body as? String == "share" {
-                NCCreate().createShare(viewController: self,
-                                       controller: self.controller,
+                NCCreate().createShare(controller: self.controller,
                                        metadata: metadata,
                                        page: .sharing)
             }

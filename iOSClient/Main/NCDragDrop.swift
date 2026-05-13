@@ -195,21 +195,21 @@ class NCDragDrop: NSObject {
     }
 
     @MainActor
-    func transfers(collectionViewCommon: NCCollectionViewCommon, destination: String, session: NCSession.Session) async {
+    func transfers(windowScene: UIWindowScene?, destination: String?, session: NCSession.Session) async {
         var token: Int?
         var banner: LucidBanner?
         defer {
             banner?.dismiss()
         }
         guard let metadatas = DragDropHover.shared.sourceMetadatas,
-              let window = SceneManager.shared.getWindow(sceneIdentifier: collectionViewCommon.controller?.sceneIdentifier) else {
+              let windowScene else {
             return
         }
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
         let payload = LucidBannerPayload(blocksTouches: false,
                                          draggable: false)
-        (banner, token) = showUploadBanner(windowScene: window.windowScene,
+        (banner, token) = showUploadBanner(windowScene: windowScene,
                                            payload: payload,
                                            allowMinimizeOnTap: false,
                                            onButtonTap: {
@@ -242,7 +242,7 @@ class NCDragDrop: NSObject {
                     downloadRequest = request
                 }
                 guard results.nkError == .success else {
-                    await showErrorBanner(windowScene: window.windowScene,
+                    await showErrorBanner(windowScene: windowScene,
                                           text: results.nkError.errorDescription,
                                           errorCode: results.nkError.errorCode)
                     break
@@ -254,9 +254,18 @@ class NCDragDrop: NSObject {
                                                                                       fileName: metadata.fileName,
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
+            var serverUrlFileName = ""
 
-            let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
-            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
+            if let destination {
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
+                serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
+            } else {
+                let home = NCUtilityFileSystem().getHomeServer(session: session)
+                let (path, _) = database.relativeDavComponents(for: metadata)
+                let serverUrl = home + path
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: serverUrl)
+                serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+            }
 
             let results = await NCNetworking.shared.uploadFile(account: session.account,
                                                                fileNameLocalPath: fileNameLocalPath,
@@ -266,7 +275,7 @@ class NCDragDrop: NSObject {
                 uploadRequest = request
             }
             guard results.error == .success else {
-                await showErrorBanner(windowScene: window.windowScene,
+                await showErrorBanner(windowScene: windowScene,
                                       text: results.error.errorDescription, errorCode: results.error.errorCode)
                 break
             }
@@ -276,7 +285,9 @@ class NCDragDrop: NSObject {
                 for: token)
         }
 
-        await collectionViewCommon.getServerData(forced: true)
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferReloadData(serverUrl: nil)
+        }
     }
 }
 

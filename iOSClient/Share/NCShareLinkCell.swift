@@ -114,7 +114,6 @@ class NCShareLinkCell: UITableViewCell {
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
 
-        contentView.bringSubviewToFront(menuButton)
         menuButton.menu = nil
         menuButton.showsMenuAsPrimaryAction = true
     }

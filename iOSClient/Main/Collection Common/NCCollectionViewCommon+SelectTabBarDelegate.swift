@@ -126,7 +126,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
             NCSelectOpen.shared.openView(items: metadatas, controller: self.controller)
         }
-
     }
 
     func share() {

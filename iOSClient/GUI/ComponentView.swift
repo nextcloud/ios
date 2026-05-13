@@ -13,7 +13,7 @@ struct ButtonRounded: ButtonStyle {
             .padding(.horizontal, 40)
             .padding(.vertical, 10)
             .background(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.getElement(account: account)))
-            .foregroundColor(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.getText(account: account)))
+            .foregroundColor(disabled ? Color(UIColor.lightGray) : .white)
             .clipShape(Capsule())
             .opacity(configuration.isPressed ? 0.5 : 1.0)
     }
