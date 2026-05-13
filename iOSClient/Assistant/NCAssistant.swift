@@ -89,14 +89,15 @@ struct NCAssistant: View {
 }
 
 #Preview {
-    @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
-    let model = NCAssistantModel(controller: nil)
+    @Previewable @State var chatModel = NCAssistantChatModel(controller: nil, inputModel: NCAssistantInputModel())
+
+    let model = NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel())
     let conversationsModel = NCAssistantChatConversationsModel(controller: nil)
 
     NCAssistant(assistantModel: model, chatModel: chatModel, conversationsModel: conversationsModel)
-        .onAppear {
-            model.loadDummyData()
-        }
+    .onAppear {
+        model.loadDummyData()
+    }
 }
 
 struct TaskList: View {

@@ -15,8 +15,15 @@ class NCAssistantChatModel {
     var showRetryResponseGenerationButton = false
     var showMessageNotSentError: Bool = false
 
-    var text: String = ""
-    var inputText: String
+    var text: String {
+        get { inputModel.text }
+        set { inputModel.text = newValue }
+    }
+
+    var inputText: String {
+        get { inputModel.initialText }
+        set { inputModel.initialText = newValue }
+    }
 
     public private(set) var selectedConversation: AssistantConversation?
 
@@ -26,16 +33,17 @@ class NCAssistantChatModel {
     private var pollingTask: Task<Void, Never>?
 
     @ObservationIgnored var controller: NCMainTabBarController?
+    @ObservationIgnored let inputModel: NCAssistantInputModel
     @ObservationIgnored private var chatMessageTaskId: Int?
     @ObservationIgnored var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
     }
 
-    init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = [], inputText: String = "") {
+    init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = [], inputModel: NCAssistantInputModel) {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
         self.messages = messages
-        self.inputText = inputText
+        self.inputModel = inputModel
     }
 
     func startPollingForResponse(interval: TimeInterval = 4.0) {
@@ -190,5 +198,5 @@ extension NCAssistantChatModel {
             role: "assistant",
             content: "Based on the text you provided, here's a concise summary: The document discusses the classic Lorem Ipsum placeholder text, which has been used in the printing and typesetting industry for centuries as a standard dummy text.",
             timestamp: Int(Date().addingTimeInterval(-120).timeIntervalSince1970 * 1000)
-        )])
+        )], inputModel: NCAssistantInputModel())
 }

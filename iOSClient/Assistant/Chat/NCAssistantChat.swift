@@ -209,15 +209,15 @@ struct EmptyChatView: View {
 #Preview {
     NavigationStack {
         NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
-            .environment(NCAssistantChatModel(controller: nil))
-            .environment(NCAssistantModel(controller: nil))
+            .environment(NCAssistantChatModel(controller: nil, inputModel: NCAssistantInputModel()))
+            .environment(NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel()))
     }
 }
 
-#Preview("With Messages") {
+#Preview("With Messages") {    
     NavigationStack {
         NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
-            .environment(NCAssistantChatModel.example)
-            .environment(NCAssistantModel(controller: nil))
+            .environment(NCAssistantChatModel(controller: nil, inputModel: NCAssistantInputModel()))
+            .environment(NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel()))
     }
 }

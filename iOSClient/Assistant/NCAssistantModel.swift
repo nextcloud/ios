@@ -14,8 +14,15 @@ class NCAssistantModel {
     var selectedType: TaskTypeData?
     var selectedTask: AssistantTask?
 
-    var text: String = ""
-    var inputText: String
+    var text: String {
+        get { inputModel.text }
+        set { inputModel.text = newValue }
+    }
+
+    var inputText: String {
+        get { inputModel.initialText }
+        set { inputModel.initialText = newValue }
+    }
 
     var hasError: Bool = false
     var isLoading: Bool = false
@@ -23,16 +30,17 @@ class NCAssistantModel {
     var scrollTypeListToTop: Bool = false
 
     @ObservationIgnored let controller: NCMainTabBarController?
+    @ObservationIgnored let inputModel: NCAssistantInputModel
     @ObservationIgnored private var tasks: [AssistantTask] = []
     @ObservationIgnored private let session: NCSession.Session
     @ObservationIgnored private let useV2: Bool
     @ObservationIgnored private let chatTypeId = "core:text2text:chat"
     @ObservationIgnored var isSelectedTypeChat: Bool { selectedType?.id == chatTypeId }
 
-    init(controller: NCMainTabBarController?, inputText: String = "") {
+    init(controller: NCMainTabBarController?, inputModel: NCAssistantInputModel) {
         self.controller = controller
-        self.inputText = inputText
-        session = NCSession.shared.getSession(controller: controller)
+        self.inputModel = inputModel
+        self.session = NCSession.shared.getSession(controller: controller)
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         useV2 = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion30
