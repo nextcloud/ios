@@ -58,6 +58,7 @@ class NCViewer: NSObject {
         // DOCUMENTS
         else if metadata.classFile == NKTypeClassFile.document.rawValue,
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
+
             // PDF
             if metadata.isPDF {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
