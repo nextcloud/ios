@@ -344,8 +344,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 return
             }
 
-            nkLog(debug: "Assistant shared text received: \(text)")
-
             Task { @MainActor in
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
                 if capabilities.assistantEnabled {
