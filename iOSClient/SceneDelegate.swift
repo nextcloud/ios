@@ -347,7 +347,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             Task { @MainActor in
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
                 if capabilities.assistantEnabled {
-                    let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: controller, inputText: text), chatModel: NCAssistantChatModel(controller: controller), conversationsModel: NCAssistantChatConversationsModel(controller: controller))
+                    let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: controller, inputText: text), chatModel: NCAssistantChatModel(controller: controller, inputText: text), conversationsModel: NCAssistantChatConversationsModel(controller: controller))
                     let hostingController = UIHostingController(rootView: assistant)
                     controller.present(hostingController, animated: true, completion: nil)
                 }

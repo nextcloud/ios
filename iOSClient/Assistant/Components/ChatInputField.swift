@@ -11,8 +11,8 @@ struct ChatInputField: View {
     @Binding var isDisabled: Bool
     var onSend: ((_ input: String) -> Void)?
 
-    init(input: String = "", isLoading: Binding<Bool> = .constant(false), isDisabled: Binding<Bool> = .constant(false), onSend: ((_: String) -> Void)? = nil) {
-        _text = State(initialValue: input)
+    init(inputText: String = "", isLoading: Binding<Bool> = .constant(false), isDisabled: Binding<Bool> = .constant(false), onSend: ((_: String) -> Void)? = nil) {
+        _text = State(initialValue: inputText)
         _isLoading = isLoading
         _isDisabled = isDisabled
         self.onSend = onSend
@@ -61,6 +61,6 @@ struct ChatInputField: View {
 }
 
 #Preview {
-    ChatInputField(input: "Text received from outside", isLoading: .constant(false))
-    ChatInputField(input: "Loading text", isLoading: .constant(true))
+    ChatInputField(inputText: "Text received from outside", isLoading: .constant(false))
+    ChatInputField(inputText: "Loading text", isLoading: .constant(true))
 }

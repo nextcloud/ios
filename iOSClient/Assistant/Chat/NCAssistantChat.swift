@@ -23,7 +23,7 @@ struct NCAssistantChat: View {
 
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField(isLoading: $chatModel.isSending, isDisabled: $chatModel.isSendingDisabled) { input in
+            ChatInputField(inputText: chatModel.inputText, isLoading: $chatModel.isSending, isDisabled: $chatModel.isSendingDisabled) { input in
                 if chatModel.selectedConversation != nil {
                     chatModel.sendMessage(input: input)
                 } else {

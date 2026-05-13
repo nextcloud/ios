@@ -182,7 +182,7 @@ struct TaskList: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField(isLoading: $assistantModel.isLoading) { input in
+            ChatInputField(inputText: assistantModel.inputText, isLoading: $assistantModel.isLoading) { input in
                 assistantModel.scheduleTask(input: input)
             }
         }

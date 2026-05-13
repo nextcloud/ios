@@ -8,6 +8,7 @@ import NextcloudKit
 @Observable
 class NCAssistantChatModel {
     var messages: [AssistantChatMessage] = []
+    var inputText: String = ""
     var isSending: Bool = false
     var isThinking: Bool = false
     var isSendingDisabled = false
@@ -28,10 +29,11 @@ class NCAssistantChatModel {
         SceneManager.shared.getWindowScene(controller: controller)
     }
 
-    init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = []) {
+    init(controller: NCMainTabBarController?, messages: [AssistantChatMessage] = [], inputText: String = "") {
         self.controller = controller
         self.ncSession = NCSession.shared.getSession(controller: controller)
         self.messages = messages
+        self.inputText = inputText
     }
 
     func startPollingForResponse(interval: TimeInterval = 4.0) {

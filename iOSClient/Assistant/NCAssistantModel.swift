@@ -18,6 +18,7 @@ class NCAssistantModel {
     var isLoading: Bool = false
     var isRefreshing: Bool = false
     var scrollTypeListToTop: Bool = false
+    var inputText: String = ""
 
     @ObservationIgnored let controller: NCMainTabBarController?
     @ObservationIgnored private var tasks: [AssistantTask] = []
@@ -28,6 +29,7 @@ class NCAssistantModel {
 
     init(controller: NCMainTabBarController?, inputText: String = "") {
         self.controller = controller
+        self.inputText = inputText
         session = NCSession.shared.getSession(controller: controller)
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
