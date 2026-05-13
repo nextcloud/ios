@@ -14,11 +14,13 @@ class NCAssistantModel {
     var selectedType: TaskTypeData?
     var selectedTask: AssistantTask?
 
+    var text: String = ""
+    var inputText: String
+
     var hasError: Bool = false
     var isLoading: Bool = false
     var isRefreshing: Bool = false
     var scrollTypeListToTop: Bool = false
-    var inputText: String = ""
 
     @ObservationIgnored let controller: NCMainTabBarController?
     @ObservationIgnored private var tasks: [AssistantTask] = []

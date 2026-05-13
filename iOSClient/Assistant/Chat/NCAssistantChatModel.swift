@@ -8,13 +8,15 @@ import NextcloudKit
 @Observable
 class NCAssistantChatModel {
     var messages: [AssistantChatMessage] = []
-    var inputText: String = ""
     var isSending: Bool = false
     var isThinking: Bool = false
     var isSendingDisabled = false
     var hasError: Bool = false
     var showRetryResponseGenerationButton = false
     var showMessageNotSentError: Bool = false
+
+    var text: String = ""
+    var inputText: String
 
     public private(set) var selectedConversation: AssistantConversation?
 

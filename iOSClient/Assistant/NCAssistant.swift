@@ -90,7 +90,7 @@ struct NCAssistant: View {
 
 #Preview {
     @Previewable @State var chatModel = NCAssistantChatModel(controller: nil)
-    let model = NCAssistantModel(controller: nil, inputText: "")
+    let model = NCAssistantModel(controller: nil)
     let conversationsModel = NCAssistantChatConversationsModel(controller: nil)
 
     NCAssistant(assistantModel: model, chatModel: chatModel, conversationsModel: conversationsModel)
@@ -182,7 +182,7 @@ struct TaskList: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField(inputText: assistantModel.inputText, isLoading: $assistantModel.isLoading) { input in
+            ChatInputField(text: $assistantModel.text, initialText: $assistantModel.inputText, isLoading: $assistantModel.isLoading) { input in
                 assistantModel.scheduleTask(input: input)
             }
         }

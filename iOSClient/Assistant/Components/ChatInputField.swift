@@ -6,13 +6,24 @@ import SwiftUI
 
 struct ChatInputField: View {
     @FocusState private var isInputFocused: Bool
-    @State var text: String = ""
+    @State private var hasAppliedInitialText = false
+
+    @Binding var text: String
+    @Binding var initialText: String
     @Binding var isLoading: Bool
     @Binding var isDisabled: Bool
+
     var onSend: ((_ input: String) -> Void)?
 
-    init(inputText: String = "", isLoading: Binding<Bool> = .constant(false), isDisabled: Binding<Bool> = .constant(false), onSend: ((_: String) -> Void)? = nil) {
-        _text = State(initialValue: inputText)
+    init(
+        text: Binding<String> = .constant(""),
+        initialText: Binding<String> = .constant(""),
+        isLoading: Binding<Bool> = .constant(false),
+        isDisabled: Binding<Bool> = .constant(false),
+        onSend: ((_: String) -> Void)? = nil
+    ) {
+        _text = text
+        _initialText = initialText
         _isLoading = isLoading
         _isDisabled = isDisabled
         self.onSend = onSend
@@ -57,10 +68,42 @@ struct ChatInputField: View {
         .padding(.top, 16)
         .padding(.bottom, 16)
         .background(.background)
+        .task {
+            applyInitialTextIfNeeded()
+        }
+    }
+
+    private func applyInitialTextIfNeeded() {
+        guard !hasAppliedInitialText else {
+            return
+        }
+
+        hasAppliedInitialText = true
+
+        guard text.isEmpty, !initialText.isEmpty else {
+            return
+        }
+
+        text = initialText
+        initialText = ""
     }
 }
 
 #Preview {
-    ChatInputField(inputText: "Text received from outside", isLoading: .constant(false))
-    ChatInputField(inputText: "Loading text", isLoading: .constant(true))
+    @Previewable @State var text = ""
+    @Previewable @State var initialText = "Text received from outside"
+
+    VStack(spacing: 16) {
+        ChatInputField(
+            text: $text,
+            initialText: $initialText,
+            isLoading: .constant(false)
+        )
+
+        ChatInputField(
+            text: .constant("Loading state"),
+            initialText: .constant(""),
+            isLoading: .constant(true)
+        )
+    }
 }
