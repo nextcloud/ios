@@ -214,7 +214,7 @@ struct EmptyChatView: View {
     }
 }
 
-#Preview("With Messages") {    
+#Preview("With Messages") {
     NavigationStack {
         NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
             .environment(NCAssistantChatModel(controller: nil, inputModel: NCAssistantInputModel()))
