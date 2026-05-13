@@ -100,7 +100,7 @@ class NCViewer: NSObject {
                         return nil
                     }
 
-                    let vc = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+                    let vc = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil).instantiateInitialViewController() as? NCViewerDirectEditing
 
                     vc?.metadata = metadata
                     vc?.editor = editorViewController
@@ -110,7 +110,7 @@ class NCViewer: NSObject {
 
                     return vc
                 } else {
-                    let vc = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+                    let vc = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil).instantiateInitialViewController() as? NCViewerDirectEditing
 
                     vc?.metadata = metadata
                     vc?.editor = editorViewController
@@ -120,14 +120,11 @@ class NCViewer: NSObject {
 
                     return vc
                 }
-            } else {
-                self.QLPreview(metadata: metadata, delegate: delegate)
             }
 
             // RichDocument: Collabora
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
-
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
                         Task {
@@ -165,9 +162,10 @@ class NCViewer: NSObject {
                     return vc
                 }
             }
-        } else {
-            self.QLPreview(metadata: metadata, delegate: delegate)
         }
+
+        // iOS QL-Preview
+        self.QLPreview(metadata: metadata, delegate: delegate)
 
         return nil
     }
