@@ -4,6 +4,7 @@
 
 import UIKit
 import SwiftUI
+import UniformTypeIdentifiers
 import RealmSwift
 import NextcloudKit
 import EasyTipView
