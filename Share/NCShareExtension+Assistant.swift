@@ -7,12 +7,8 @@ import UniformTypeIdentifiers
 import NextcloudKit
 
 extension NCShareExtension {
-    /// Handles selected text shared from another app and redirects it to the Assistant flow.
-    ///
-    /// - Parameter inputItems: Extension input items received from the host application.
-    /// - Returns: `true` when text was handled and the normal file upload flow must stop.
     func handleAssistantSharedTextIfNeeded(inputItems: [NSExtensionItem]) async -> Bool {
-        guard let text = await loadAssistantSharedText(from: inputItems),
+        guard let text = await loadText(from: inputItems),
               !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return false
         }
@@ -23,19 +19,26 @@ extension NCShareExtension {
         return true
     }
 
-    /// Loads the first valid text payload from the extension input items.
-    ///
-    /// - Parameter inputItems: Extension input items received from the host application.
-    /// - Returns: Shared text when available, otherwise `nil`.
-    private func loadAssistantSharedText(from inputItems: [NSExtensionItem]) async -> String? {
+    private func loadText(from inputItems: [NSExtensionItem]) async -> String? {
         for item in inputItems {
             guard let attachments = item.attachments else {
                 continue
             }
 
             for provider in attachments {
-                if let text = await loadAssistantText(from: provider) {
-                    return text
+                let plainTextIdentifier = UTType.plainText.identifier
+                let textIdentifier = UTType.text.identifier
+
+                if provider.hasItemConformingToTypeIdentifier(plainTextIdentifier) {
+                    return await loadText(from: provider, typeIdentifier: plainTextIdentifier)
+                }
+
+                if provider.hasItemConformingToTypeIdentifier(textIdentifier) {
+                    return await loadText(from: provider, typeIdentifier: textIdentifier)
+                }
+
+                if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
+                    return await loadText(from: provider, typeIdentifier: UTType.text.identifier)
                 }
             }
         }
@@ -43,65 +46,29 @@ extension NCShareExtension {
         return nil
     }
 
-    /// Loads text from an item provider when it exposes a supported text representation.
-    ///
-    /// - Parameter provider: Item provider received from the host application.
-    /// - Returns: Text content when the provider supports a text type.
-    private func loadAssistantText(from provider: NSItemProvider) async -> String? {
-        let plainTextIdentifier = UTType.plainText.identifier
-        let textIdentifier = UTType.text.identifier
-
-        if provider.hasItemConformingToTypeIdentifier(plainTextIdentifier) {
-            return await loadAssistantString(from: provider, typeIdentifier: plainTextIdentifier)
-        }
-
-        if provider.hasItemConformingToTypeIdentifier(textIdentifier) {
-            return await loadAssistantString(from: provider, typeIdentifier: textIdentifier)
-        }
-
-        if provider.canLoadObject(ofClass: NSString.self) {
-            return await loadAssistantNSString(from: provider)
-        }
-
-        return nil
-    }
-
-    /// Loads a string payload using a specific uniform type identifier.
-    ///
-    /// - Parameters:
-    ///   - provider: Item provider received from the host application.
-    ///   - typeIdentifier: Uniform type identifier to load.
-    /// - Returns: String representation of the payload, when available.
-    private func loadAssistantString(from provider: NSItemProvider, typeIdentifier: String) async -> String? {
+    private func loadText(from provider: NSItemProvider, typeIdentifier: String) async -> String? {
         await withCheckedContinuation { continuation in
             provider.loadItem(forTypeIdentifier: typeIdentifier, options: nil) { item, _ in
-                if let text = item as? String {
-                    continuation.resume(returning: text)
-                } else if let data = item as? Data,
-                          let text = String(data: data, encoding: .utf8) {
-                    continuation.resume(returning: text)
-                } else if let url = item as? URL,
-                          let text = try? String(contentsOf: url, encoding: .utf8) {
-                    continuation.resume(returning: text)
-                } else {
-                    continuation.resume(returning: nil)
-                }
-            }
-        }
-    }
+                let text: String?
 
-    /// Loads an NSString object from the provided item provider.
-    ///
-    /// - Parameter provider: Item provider received from the host application.
-    /// - Returns: String value when NSString loading succeeds.
-    private func loadAssistantNSString(from provider: NSItemProvider) async -> String? {
-        await withCheckedContinuation { continuation in
-            provider.loadObject(ofClass: NSString.self) { object, _ in
-                if let string = object as? NSString {
-                    continuation.resume(returning: string as String)
+                if let string = item as? String {
+                    text = string
+                } else if let attributedString = item as? NSAttributedString {
+                    text = attributedString.string
+                } else if let data = item as? Data {
+                    text = String(data: data, encoding: .utf8)
+                } else if let url = item as? URL {
+                    text = try? String(contentsOf: url, encoding: .utf8)
                 } else {
-                    continuation.resume(returning: nil)
+                    text = nil
                 }
+
+                guard let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                continuation.resume(returning: text)
             }
         }
     }
