@@ -7,17 +7,17 @@
 //
 
 import UIKit
+import NextcloudKit
 import UniformTypeIdentifiers
 
 final class ActionViewController: UIViewController {
-    @IBOutlet weak var imageView: UIImageView!
-    private let callbackURL = URL(string: "nextcloud://assistant/shared-text")!
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Keep the action visually neutral because it only forwards the selected text.
+        view.isHidden = true
+        view.alpha = 0
         view.backgroundColor = .clear
+        preferredContentSize = .zero
 
         Task {
             await handleAction()
@@ -25,16 +25,16 @@ final class ActionViewController: UIViewController {
     }
 
     private func handleAction() async {
-        guard let text = await loadSelectedText() else {
-            complete()
+        guard let text = await loadText() else {
+            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
             return
         }
 
         NCAssistantSharedTextStore.save(text)
-        openMainApp()
+        openMainAppForAssistantSharedText()
     }
 
-    private func loadSelectedText() async -> String? {
+    private func loadText() async -> String? {
         guard let extensionItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             return nil
         }
@@ -89,13 +89,60 @@ final class ActionViewController: UIViewController {
         }
     }
 
-    private func openMainApp() {
-        extensionContext?.open(callbackURL) { [weak self] _ in
-            self?.complete()
+    private func openMainAppForAssistantSharedText() {
+        guard let url = URL(string: "nextcloud://assistant/shared-text") else {
+            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+            return
+        }
+
+        openAssistantSharedTextURLThroughResponderChain(url)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
         }
     }
 
-    private func complete() {
-        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+    /// Opens the Assistant shared-text deep link from the Share extension.
+    ///
+    /// Share extensions cannot use `UIApplication.shared` directly because it is not
+    /// extension-safe. This method walks the responder chain until it finds the hidden
+    /// `UIApplication` responder and invokes the modern `open(_:options:completionHandler:)`
+    /// Objective-C selector dynamically.
+    ///
+    /// This is intentionally isolated because it relies on Objective-C runtime dispatch.
+    ///
+    /// - Parameter url: Deep link URL to open in the containing application.
+    private func openAssistantSharedTextURLThroughResponderChain(_ url: URL) {
+        let selector = NSSelectorFromString("openURL:options:completionHandler:")
+        let applicationClass: AnyClass? = NSClassFromString("UIApplication")
+        var responder: UIResponder? = self
+
+        while let currentResponder = responder {
+            guard let applicationClass,
+                  currentResponder.isKind(of: applicationClass),
+                  currentResponder.responds(to: selector),
+                  let implementation = currentResponder.method(for: selector) else {
+                responder = currentResponder.next
+                continue
+            }
+
+            typealias CompletionBlock = @convention(block) (Bool) -> Void
+            typealias OpenURLFunction = @convention(c) (AnyObject, Selector, NSURL, NSDictionary, CompletionBlock?) -> Void
+
+            let openURL = unsafeBitCast(implementation, to: OpenURLFunction.self)
+
+            let completion: CompletionBlock = { success in
+                if success {
+                    nkLog(debug: "Assistant shared text deep link performed through modern responder chain")
+                } else {
+                    nkLog(error: "Assistant shared text deep link modern responder chain returned false")
+                }
+            }
+
+            openURL(currentResponder, selector, url as NSURL, NSDictionary(), completion)
+            return
+        }
+
+        nkLog(error: "Assistant shared text deep link failed because no UIApplication responder can open URL")
     }
 }
