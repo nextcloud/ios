@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "sparkler.png",
+      "filename" : "Senza titolo.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "sparkler 1.png",
+      "filename" : "Senza titolo 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "sparkler 2.png",
+      "filename" : "Senza titolo 2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
