@@ -10,6 +10,7 @@ import UIKit
 import UniformTypeIdentifiers
 
 final class ActionViewController: UIViewController {
+    @IBOutlet weak var imageView: UIImageView!
     private let callbackURL = URL(string: "nextcloud://assistant/shared-text")!
 
     override func viewDidLoad() {

@@ -13,8 +13,8 @@
             <string>TRUEPREDICATE</string>
         </dict>
 
-        <key>NSExtensionPrincipalClass</key>
-        <string>$(PRODUCT_MODULE_NAME).ActionViewController</string>
+        <key>NSExtensionMainStoryboard</key>
+        <string>MainInterface</string>
 
         <key>NSExtensionPointIdentifier</key>
         <string>com.apple.ui-services</string>

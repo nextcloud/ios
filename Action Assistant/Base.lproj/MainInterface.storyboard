@@ -11,7 +11,7 @@
         <!--Image-->
         <scene sceneID="7MM-of-jgj">
             <objects>
-                <viewController title="Image" id="ObA-dk-sSI" customClass="ActionViewController" customModule="Action_Assistant" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Image" id="ObA-dk-sSI" customClass="ActionViewController" customModule="Action_Assistant" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zMn-AG-sqS">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="528"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
