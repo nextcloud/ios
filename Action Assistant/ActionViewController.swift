@@ -11,7 +11,6 @@ import UniformTypeIdentifiers
 
 final class ActionViewController: UIViewController {
     private let callbackURL = URL(string: "nextcloud://assistant/shared-text")!
-    private let debugPrefix = "[ActionAssistant]"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,48 +18,32 @@ final class ActionViewController: UIViewController {
         // Keep the action visually neutral because it only forwards the selected text.
         view.backgroundColor = .clear
 
-        print("\(debugPrefix) viewDidLoad")
-
         Task {
             await handleAction()
         }
     }
 
     private func handleAction() async {
-        print("\(debugPrefix) handleAction started")
-
         guard let text = await loadSelectedText() else {
-            print("\(debugPrefix) no selected text found")
             complete()
             return
         }
 
-        print("\(debugPrefix) selected text length: \(text.count)")
-
         NCAssistantSharedTextStore.save(text)
-        print("\(debugPrefix) text saved to shared store")
-
         openMainApp()
     }
 
     private func loadSelectedText() async -> String? {
         guard let extensionItems = extensionContext?.inputItems as? [NSExtensionItem] else {
-            print("\(debugPrefix) extensionContext inputItems missing")
             return nil
         }
 
-        print("\(debugPrefix) extension items count: \(extensionItems.count)")
-
         for extensionItem in extensionItems {
             guard let attachments = extensionItem.attachments else {
-                print("\(debugPrefix) extension item without attachments")
                 continue
             }
 
-            print("\(debugPrefix) attachments count: \(attachments.count)")
-
             for provider in attachments {
-                print("\(debugPrefix) registered types: \(provider.registeredTypeIdentifiers)")
                 if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
                     return await loadText(from: provider, typeIdentifier: UTType.plainText.identifier)
                 }
@@ -80,13 +63,7 @@ final class ActionViewController: UIViewController {
 
     private func loadText(from provider: NSItemProvider, typeIdentifier: String) async -> String? {
         await withCheckedContinuation { continuation in
-            print("\(self.debugPrefix) loading type identifier: \(typeIdentifier)")
-
-            provider.loadItem(forTypeIdentifier: typeIdentifier, options: nil) { item, error in
-                if let error {
-                    print("\(self.debugPrefix) loadItem error: \(error)")
-                }
-
+            provider.loadItem(forTypeIdentifier: typeIdentifier, options: nil) { item, _ in
                 let text: String?
 
                 if let string = item as? String {
@@ -98,11 +75,6 @@ final class ActionViewController: UIViewController {
                 } else if let url = item as? URL {
                     text = try? String(contentsOf: url, encoding: .utf8)
                 } else {
-                    if let item {
-                        print("\(self.debugPrefix) unsupported item type: \(type(of: item))")
-                    } else {
-                        print("\(self.debugPrefix) loaded item is nil")
-                    }
                     text = nil
                 }
 
@@ -117,18 +89,12 @@ final class ActionViewController: UIViewController {
     }
 
     private func openMainApp() {
-        print("\(debugPrefix) opening main app with URL: \(callbackURL.absoluteString)")
-
-        extensionContext?.open(callbackURL) { [weak self] success in
-            guard let self else { return }
-
-            print("\(self.debugPrefix) open main app result: \(success)")
-            self.complete()
+        extensionContext?.open(callbackURL) { [weak self] _ in
+            self?.complete()
         }
     }
 
     private func complete() {
-        print("\(debugPrefix) complete")
         extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }
