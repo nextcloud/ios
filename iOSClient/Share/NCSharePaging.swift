@@ -113,7 +113,10 @@ class NCSharePaging: UIViewController {
             model: tabModel,
             tint: Color(NCBrandColor.shared.getElement(account: metadata.account)),
             titles: pages.map(titleForTab(_:)),
-            pageVCs: pageVCs
+            pageVCs: pageVCs,
+            onSelectionChange: { [weak self] _ in
+                self?.view.endEditing(true)
+            }
         )
         let host = UIHostingController(rootView: content)
         host.view.backgroundColor = .systemBackground
@@ -135,7 +138,9 @@ class NCSharePaging: UIViewController {
     }
 
     private func makeViewController(for tab: NCBrandOptions.NCInfoPagingTab) -> UIViewController {
-        let height: CGFloat = 50
+        // The old Parchment menu floated over the child view, so children inset by menuHeight (50).
+        // The new SwiftUI layout places the picker above the content, so no inset is needed.
+        let height: CGFloat = 0
 
         switch tab {
         case .activity:
@@ -254,6 +259,7 @@ struct NCSharePagingContentView: View {
     let tint: Color
     let titles: [String]
     let pageVCs: [UIViewController]
+    var onSelectionChange: (Int) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -274,6 +280,9 @@ struct NCSharePagingContentView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+        }
+        .onChange(of: model.selection) { _, newValue in
+            onSelectionChange(newValue)
         }
     }
 }
