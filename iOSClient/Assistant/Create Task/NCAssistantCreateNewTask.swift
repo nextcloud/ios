@@ -60,7 +60,7 @@ struct NCAssistantCreateNewTask: View {
 }
 
 #Preview {
-    let model = NCAssistantModel(controller: nil)
+    let model = NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel())
 
     NCAssistantCreateNewTask()
         .environment(model)
