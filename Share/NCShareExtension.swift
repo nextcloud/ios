@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import UniformTypeIdentifiers
 import NextcloudKit
 import LucidBanner
 import SwiftUI
@@ -150,20 +151,33 @@ class NCShareExtension: UIViewController {
             return
         }
 
-        NCFilesExtensionHandler(items: inputItems) { fileNames in
-            self.filesName = fileNames
-            DispatchQueue.main.async {
-                self.setCommandView()
-            }
-        }
+        // Keep the Share extension visually hidden until we know whether this is
+        // an Assistant text handoff or a normal file upload flow. This avoids the
+        // visible open-and-close flash when the extension only needs to redirect text.
+        view.alpha = 0
 
-        if NCPreferences().presentPasscode {
-            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-                NCPasscode.shared.enableTouchFaceID()
+        Task { @MainActor in
+            if await handleAssistantSharedTextIfNeeded(inputItems: inputItems) {
+                return
             }
-        }
 
-        self.collectionView.reloadData()
+            self.view.alpha = 1
+
+            NCFilesExtensionHandler(items: inputItems) { fileNames in
+                self.filesName = fileNames
+                DispatchQueue.main.async {
+                    self.setCommandView()
+                }
+            }
+
+            if NCPreferences().presentPasscode {
+                NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
+            }
+
+            self.collectionView.reloadData()
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

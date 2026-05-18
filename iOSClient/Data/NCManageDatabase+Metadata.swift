@@ -259,9 +259,8 @@ extension tableMetadata {
            directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if directEditingEditors.contains("nextcloud text") || directEditingEditors.contains("onlyoffice") {
-            // DirectEditing: Nextcloud Text - OnlyOffice
-           return true
+        } else if !directEditingEditors.isEmpty {
+            return true
         }
         return false
     }
@@ -282,12 +281,8 @@ extension tableMetadata {
         guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType).map { $0.lowercased() }
-
-        if editors.contains("nextcloud text") || editors.contains("onlyoffice") {
-            return true
-        }
-        return false
+        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
+        return !editors.isEmpty
     }
 
     var isPDF: Bool {
