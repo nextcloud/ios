@@ -90,7 +90,7 @@ class FileProviderData: NSObject {
             return isPaginated
         } else if serverUrl == NCUtilityFileSystem().getHomeServer(session: session),
                   let capabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account).capabilities,
-                  NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
+                  NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v32_0_2) {
             isPaginated = true
             return true
         }

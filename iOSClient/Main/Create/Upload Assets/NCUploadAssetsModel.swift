@@ -172,7 +172,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             self.uploadInProgress.toggle()
             return
         }
-        let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
+        let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
 
         func createProcessUploads() {
             if !self.dismissView {

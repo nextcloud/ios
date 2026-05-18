@@ -21,7 +21,7 @@ extension NCNetworking {
         } else {
             capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
         }
-        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: NCGlobal.shared.nextcloudVersion34, 0, 0) else {
+        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v34) else {
             return
         }
 

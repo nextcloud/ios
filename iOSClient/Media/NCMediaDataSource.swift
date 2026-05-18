@@ -11,17 +11,11 @@ extension NCMedia {
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", self.session.account)) else {
             return
         }
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
         let mediaPredicate = self.imageCache.getMediaPredicate(session: self.session,
                                                                mediaPath: tblAccount.mediaPath,
                                                                showOnlyImages: self.showOnlyImages,
                                                                showOnlyVideos: self.showOnlyVideos)
-        var sortedByKeyPath: String
-        if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
-            sortedByKeyPath = "datePhotosOriginal"
-        } else {
-            sortedByKeyPath = "date"
-        }
+        let sortedByKeyPath = "date"
 
         if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: sortedByKeyPath, ascending: false) {
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
@@ -180,13 +174,6 @@ extension NCMedia {
                 mediaPredicate
             ])
 
-            if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
-                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                    NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
-                    mediaPredicate
-                ])
-            }
-
             let localMetadatas = await self.database.getMetadatasAsync(predicate: predicate)
 
             await MainActor.run {
@@ -258,12 +245,7 @@ public class NCMediaDataSource: NSObject {
 
     private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
-        let date: Date
-        if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
-            date = metadata.datePhotosOriginal as Date
-        } else {
-            date = metadata.date as Date
-        }
+        let date = metadata.date as Date
         return Metadata(date: date,
                         etag: metadata.etag,
                         imageSize: CGSize(width: metadata.width, height: metadata.height),
