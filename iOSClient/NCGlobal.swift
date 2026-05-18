@@ -54,6 +54,7 @@ final class NCGlobal: Sendable {
     let nextcloudVersion31: Int                     = 31
     let nextcloudVersion32: Int                     = 32
     let nextcloudVersion33: Int                     = 33
+    let nextcloudVersion34: Int                     = 34
     let nextcloudVersionFuture: Int                 = 99999
 
 
