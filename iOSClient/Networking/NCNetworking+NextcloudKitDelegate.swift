@@ -9,31 +9,6 @@ import Alamofire
 import LucidBanner
 
 extension NCNetworking {
-
-    func applyUploadResponseMetadata(to metadata: tableMetadata,
-                                     ownerId: String? = nil,
-                                     permissions: String? = nil) async {
-        let capabilities: NKCapabilities.Capabilities
-        if let cachedCapabilities = self.capabilities[metadata.account] {
-            capabilities = cachedCapabilities
-        } else {
-            capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-        }
-        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 34, 0, 0) else {
-            return
-        }
-
-        if let ownerId, !ownerId.isEmpty {
-            metadata.ownerId = ownerId
-            if metadata.ownerDisplayName.isEmpty {
-                metadata.ownerDisplayName = ownerId
-            }
-        }
-        if let permissions, !permissions.isEmpty {
-            metadata.permissions = permissions
-        }
-    }
-
 #if !EXTENSION
     func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
         if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
