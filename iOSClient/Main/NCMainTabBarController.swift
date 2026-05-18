@@ -113,9 +113,17 @@ class NCMainTabBarController: UITabBarController {
         let moreView = NCMoreView(account: account, controller: self)
         let hostingController = UIHostingController(rootView: moreView)
 
-        hostingController.title = NSLocalizedString("_more_", comment: "")
+        hostingController.navigationItem.title = NSLocalizedString("_more_", comment: "")
 
         let navigationController = NCMoreNavigationController(rootViewController: hostingController)
+
+        navigationController.tabBarItem = UITabBarItem(
+            title: NSLocalizedString("_more_", comment: ""),
+            image: UIImage(systemName: "ellipsis.circle.fill"),
+            selectedImage: UIImage(systemName: "ellipsis.circle.fill")
+        )
+        navigationController.tabBarItem.tag = 104
+
         return navigationController
     }
 
@@ -146,13 +154,6 @@ class NCMainTabBarController: UITabBarController {
             title: "_activity_",
             imageName: "bolt.fill",
             tag: 103
-        )
-
-        configureTabBarItem(
-            at: 4,
-            title: "_more_",
-            imageName: "ellipsis.circle.fill",
-            tag: 104
         )
     }
 
