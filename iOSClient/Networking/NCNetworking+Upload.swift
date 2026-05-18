@@ -257,9 +257,7 @@ extension NCNetworking {
         if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
-        await applyUploadResponseMetadata(to: metadata,
-                                          ownerId: ownerId,
-                                          permissions: permissions)
+        await applyUploadResponse(to: metadata, ownerId: ownerId, permissions: permissions)
 
         metadata.session = ""
         metadata.sessionError = ""
@@ -522,36 +520,4 @@ extension NCNetworking {
         return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
 
-    /// Applies upload metadata returned by Nextcloud 34+ PUT responses.
-    ///
-    /// Servers older than 34.0.0 do not return per-file owner and permission metadata after upload, so this intentionally does nothing for them and preserves the previous client behavior.
-    /// Non-empty values overwrite the local metadata that was initially created from the upload target folder.
-    ///
-    /// - Parameters:
-    ///   - metadata: Local metadata row for the uploaded file.
-    ///   - ownerId: Value parsed from the `X-NC-OwnerId` upload response header.
-    ///   - permissions: Value parsed from the `X-NC-Permissions` upload response header.
-    func applyUploadResponseMetadata(to metadata: tableMetadata,
-                                     ownerId: String? = nil,
-                                     permissions: String? = nil) async {
-        let capabilities: NKCapabilities.Capabilities
-        if let cachedCapabilities = self.capabilities[metadata.account] {
-            capabilities = cachedCapabilities
-        } else {
-            capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-        }
-        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 34, 0, 0) else {
-            return
-        }
-
-        if let ownerId, !ownerId.isEmpty {
-            metadata.ownerId = ownerId
-            if metadata.ownerDisplayName.isEmpty {
-                metadata.ownerDisplayName = ownerId
-            }
-        }
-        if let permissions, !permissions.isEmpty {
-            metadata.permissions = permissions
-        }
-    }
 }
