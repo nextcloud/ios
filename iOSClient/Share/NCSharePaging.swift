@@ -68,7 +68,7 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         title = NSLocalizedString("_details_", comment: "")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(exitTapped(_:)))
@@ -96,7 +96,7 @@ class NCSharePaging: UIViewController {
     private func setupHeader() {
         guard let headerView = Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader else { return }
         self.headerView = headerView
-        headerView.backgroundColor = .systemBackground
+        headerView.backgroundColor = .systemGroupedBackground
         headerView.setupUI(with: metadata)
 
         view.addSubview(headerView)
@@ -119,7 +119,7 @@ class NCSharePaging: UIViewController {
             }
         )
         let host = UIHostingController(rootView: content)
-        host.view.backgroundColor = .systemBackground
+        host.view.backgroundColor = .systemGroupedBackground
 
         addChild(host)
         view.addSubview(host.view)
@@ -153,6 +153,7 @@ class NCSharePaging: UIViewController {
             viewController.metadata = metadata
             viewController.objectType = "files"
             viewController.account = metadata.account
+            viewController.usesGroupedBackground = true
             return viewController
         case .sharing:
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {
@@ -163,7 +164,7 @@ class NCSharePaging: UIViewController {
             viewController.controller = controller
             return viewController
         case .details:
-            return NCShareDetailsViewController()
+            return NCShareDetailsViewController(metadata: metadata)
         }
     }
 

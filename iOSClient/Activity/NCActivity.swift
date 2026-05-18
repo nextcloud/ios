@@ -15,6 +15,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var height: CGFloat = 0
     var metadata: tableMetadata?
     var showComments: Bool = false
+    var usesGroupedBackground: Bool = false
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -55,13 +56,13 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewDidLoad()
 
         navigationController?.setNavigationBarAppearance()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
 
         if showComments {
             setupComments()
@@ -164,25 +165,25 @@ extension NCActivity: UITableViewDelegate {
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
 
-        let blur = UIBlurEffect(style: .systemMaterial)
-        let blurredEffectView = UIVisualEffectView(effect: blur)
-        blurredEffectView.layer.cornerRadius = 11
-        blurredEffectView.layer.masksToBounds = true
+        let pill = UIView()
+        pill.backgroundColor = .systemGray5
+        pill.layer.cornerRadius = 11
+        pill.layer.masksToBounds = true
 
-        view.addSubview(blurredEffectView)
+        view.addSubview(pill)
         view.addSubview(label)
 
-        blurredEffectView.translatesAutoresizingMaskIntoConstraints = false
+        pill.translatesAutoresizingMaskIntoConstraints = false
         label.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            blurredEffectView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurredEffectView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            blurredEffectView.widthAnchor.constraint(equalToConstant: label.intrinsicContentSize.width + 30),
-            blurredEffectView.heightAnchor.constraint(equalToConstant: 22),
+            pill.topAnchor.constraint(equalTo: view.topAnchor),
+            pill.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pill.widthAnchor.constraint(equalToConstant: label.intrinsicContentSize.width + 30),
+            pill.heightAnchor.constraint(equalToConstant: 22),
             label.topAnchor.constraint(equalTo: view.topAnchor),
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: blurredEffectView.centerYAnchor)
+            label.centerYAnchor.constraint(equalTo: pill.centerYAnchor)
         ])
 
         return view

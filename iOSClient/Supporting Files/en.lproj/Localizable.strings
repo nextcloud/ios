@@ -808,3 +808,11 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_setup_store_privatekey_" = "Private key generation returned no usable key";
 "_e2ee_setup_verify_publickey_" = "Public key does not match the certificate";
 "_e2ee_setup_generate_passphrase_" = "Unable to generate a passphrase";
+
+// Share details — Governance
+"_governance_"                      = "Governance";
+"_sensitivity_label_"               = "Sensitivity label";
+"_file_retention_"                  = "File retention";
+"_public_"                          = "Public";
+"_internal_use_only_"               = "Internal use only";
+"_restricted_"                      = "Restricted";
