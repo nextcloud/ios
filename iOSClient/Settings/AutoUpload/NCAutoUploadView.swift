@@ -82,6 +82,38 @@ struct NCAutoUploadView: View {
     @ViewBuilder
     var autoUploadOnView: some View {
         Form {
+            if model.autoUploadStart {
+                Section(content: {
+                    Button {
+                        showFocusedAutoUploadIntro = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "moon")
+                                .font(.icon())
+                                .frame(width: 26)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+
+                            Text(NSLocalizedString("_focused_auto_upload_", comment: ""))
+                                .font(.body)
+                                .foregroundStyle(.primary)
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.footnote)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }, footer: {
+                    Text(NSLocalizedString("_focused_auto_upload_settings_footer_", comment: ""))
+                        .font(.footnote)
+                })
+            }
+
             Group {
                 Section(content: {
                     Button(action: {
@@ -235,36 +267,6 @@ struct NCAutoUploadView: View {
                 })
             }
             .disabled(model.autoUploadStart)
-
-            if model.autoUploadStart {
-                Section(content: {
-                    Button {
-                        showFocusedAutoUploadIntro = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "moon")
-                                .font(.icon())
-                                .frame(width: 26)
-                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-
-                            Text(NSLocalizedString("_focused_auto_upload_", comment: ""))
-                                .font(.body)
-                                .foregroundStyle(.primary)
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.footnote)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }, footer: {
-                    Text(NSLocalizedString("_focused_auto_upload_settings_footer_", comment: ""))
-                        .font(.footnote)
-                })
-            }
         }
         .safeAreaInset(edge: .bottom) {
             autoUploadStartButton

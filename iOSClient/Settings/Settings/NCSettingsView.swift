@@ -42,10 +42,16 @@ struct NCSettingsView: View {
                                                           isAnimated: model.autoUploadStart)
                             .frame(width: 39)
 
-                        Text(model.autoUploadStart
-                             ? model.autoUploadCountMessage
-                             : NSLocalizedString("_settings_autoupload_", comment: ""))
-                            .font(.body)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(NSLocalizedString("_settings_autoupload_", comment: ""))
+                                .font(.body)
+
+                            if model.autoUploadStart {
+                                Text(model.autoUploadCountMessage)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
                 }
             }, footer: {
