@@ -28,7 +28,7 @@ actor NCNetworkingProcess {
 
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
-    private var inWaitingCount: Int = 0
+    private var inWaitDownloadUploadCount: Int = 0
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -128,14 +128,10 @@ actor NCNetworkingProcess {
 
     private func inWaitingDownloadUploadCount() async -> Int {
         let countTransferDownloadingUploadingSuccess = await NCNetworking.shared.metadataTranfersSuccess.count(statuses: NCGlobal.shared.metadatasStatusDownloadingUploading)
-        let totalNonNormal = await NCManageDatabase.shared.getMetadatasInWaitingCountDownloadUploadAsync()
-        let count = max(0, totalNonNormal - countTransferDownloadingUploadingSuccess)
+        let countWaitingDownloadUpload = await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: NCGlobal.shared.metadatasStatusInWaitingDownloadUpload)
+        let count = max(0, countWaitingDownloadUpload - countTransferDownloadingUploadingSuccess)
 
         return count
-    }
-
-    func getInWaitingCount() async -> Int {
-        return inWaitingCount
     }
 
     func startTimer(interval: TimeInterval) async {
@@ -205,8 +201,8 @@ actor NCNetworkingProcess {
             // UPDATE INWAIT DOWNLOAD UPLOAD & BADGE
             //
             let count = await inWaitingDownloadUploadCount()
-            if count != inWaitingCount {
-                inWaitingCount = count
+            if count != inWaitDownloadUploadCount {
+                inWaitDownloadUploadCount = count
                 Task { @MainActor in
                     if let controller = getRootController(),
                        let files = controller.tabBar.items?.first {
