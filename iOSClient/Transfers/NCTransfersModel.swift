@@ -61,7 +61,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
 
                 // inProgressCount
                 inProgressCount = metadatas.compactMap(\.status)
-                    .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
+                    .filter { NCGlobal.shared.metadatasStatusDownloadingUploading.contains($0) }
                     .count
 
                 // inErrorCount
