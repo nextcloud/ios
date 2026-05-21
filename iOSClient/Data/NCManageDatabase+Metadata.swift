@@ -1348,10 +1348,10 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getMetadatasInWaitingCountAsync() async -> Int {
+    func getMetadatasStatusCountAsync(status: [Int]) async -> Int {
         await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
-                .filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting)
+                .filter("status IN %@", status)
                 .count
         } ?? 0
     }
