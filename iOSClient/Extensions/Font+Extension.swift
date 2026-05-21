@@ -34,7 +34,7 @@ extension Font {
     //
     // Returns:
     // A SwiftUI Font configured for symbol rendering.
-    static func icon(_ size: CGFloat = 26, weight: Weight = .regular) -> Font {
+    static func icon(_ size: CGFloat = 21, weight: Weight = .regular) -> Font {
         .system(size: size, weight: weight)
     }
 }

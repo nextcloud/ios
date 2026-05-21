@@ -136,7 +136,7 @@ struct NCMoreView: View {
         } label: {
             HStack(spacing: 16) {
                 Image(systemName: item.image)
-                    .font(.icon(21))
+                    .font(.icon())
                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     .frame(width: 26)
 
