@@ -7,22 +7,6 @@ import NextcloudKit
 
 // MARK: - Video Viewer Content View
 
-/// Displays a video using the shared video playback controller.
-///
-/// This view does not own the AVPlayer directly.
-/// AVFoundation playback is presented as a separate UIKit-only controller through
-/// `NCVideoAVPlayerPresenter`, outside the SwiftUI paging hierarchy.
-/// VLC playback is presented as a separate UIKit-only controller through
-/// `NCVideoVLCPresenter`, outside the SwiftUI paging hierarchy.
-///
-/// Loading rules:
-/// - If a valid local URL is already available, it is used directly.
-/// - The remote resolver is used only when no local URL is available.
-/// - If the same video is already loaded, the existing player is reused.
-/// - If the page is not selected, the view does not load a new video.
-/// - AVFoundation is presented outside SwiftUI when selected.
-/// - VLC is presented outside SwiftUI when selected.
-/// - Real global stop events are handled through `.ncMediaViewerStopPlayback`.
 struct NCVideoViewerContentView: View {
     let metadata: tableMetadata
     let localURL: URL?
@@ -169,9 +153,7 @@ struct NCVideoViewerContentView: View {
             stopPlaybackForDeselection()
         }
         .onDisappear {
-            // Do not stop or hide the player here.
-            // SwiftUI can call onDisappear during rotation or layout rebuilds.
-            // Real playback stops are driven by `.ncMediaViewerStopPlayback`.
+            // Ignore layout-driven disappear events.
         }
     }
 
@@ -202,11 +184,6 @@ struct NCVideoViewerContentView: View {
 
     // MARK: - Loading
 
-    /// Stops fullscreen video playback when this video page is no longer selected.
-    ///
-    /// This is intentionally not done from `onDisappear`, because SwiftUI may call
-    /// `onDisappear` during rotation or layout rebuilds. A transition from selected
-    /// to not selected is instead a real page change.
     @MainActor
     private func stopPlaybackForDeselection() {
         presentedAVPlayerURL = nil
@@ -223,12 +200,7 @@ struct NCVideoViewerContentView: View {
         return "\(metadata.ocId)|\(metadata.etag)|\(localIdentifier)"
     }
 
-    /// Loads or reveals the video only when this page is still selected and stable.
-    ///
-    /// This is the single entry point for selected video loading.
-    /// It is used by both `.task(id:)` and `isSelected` changes because SwiftUI may
-    /// create a video page before it becomes selected, and `.task(id:)` may not run
-    /// again when the same page later becomes selected.
+    // Single entry point for selected video loading.
     @MainActor
     private func loadVideoIfSelected() async {
         let expectedTaskIdentifier = taskIdentifier
@@ -254,16 +226,7 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    /// Waits briefly before allowing a selected video page to resolve or load playback.
-    ///
-    /// Fast swipe gestures can make intermediate video pages selected for a very short time.
-    /// This gate keeps those transient pages as preview-only without slowing image paging,
-    /// because it exists only inside the video viewer.
-    ///
-    /// - Parameters:
-    ///   - expectedTaskIdentifier: Task identity captured before the delay.
-    ///   - expectedLoadGeneration: Load generation captured before the delay.
-    /// - Returns: True if the page is still selected and still represents the same load request.
+    // Avoid loading transient pages during fast swipes.
     @MainActor
     private func waitForStableSelection(
         expectedTaskIdentifier: String,
@@ -294,13 +257,6 @@ struct NCVideoViewerContentView: View {
         return isSelected
     }
 
-    /// Resolves the playable video URL and loads it into the shared playback controller.
-    ///
-    /// Local URLs are loaded directly and have priority over remote resolution.
-    ///
-    /// - Parameters:
-    ///   - expectedTaskIdentifier: Task identity captured before starting async resolution.
-    ///   - expectedLoadGeneration: Load generation captured before starting async resolution.
     @MainActor
     private func resolveAndLoadVideo(
         expectedTaskIdentifier: String,
@@ -392,14 +348,6 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    /// Loads a resolved video URL into the shared playback controller.
-    ///
-    /// - Parameters:
-    ///   - url: Local or remote playable URL.
-    ///   - autoplay: Whether the resolved URL requests autoplay.
-    ///   - expectedTaskIdentifier: Task identity used to ignore stale async work.
-    ///   - expectedLoadGeneration: Load generation used to ignore stale async work.
-    ///   - source: Debug source label used in logs.
     @MainActor
     private func loadResolvedVideo(
         url: URL,
@@ -457,12 +405,6 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    /// Returns HTTP headers for remote video playback.
-    ///
-    /// Local file URLs do not need HTTP headers.
-    ///
-    /// - Parameter url: Resolved video URL.
-    /// - Returns: HTTP headers for AVFoundation remote playback.
     private func httpHeaders(for url: URL) -> [String: String] {
         guard !url.isFileURL else {
             return [:]
@@ -480,15 +422,7 @@ struct NCVideoViewerContentView: View {
 
     // MARK: - Playback Selection
 
-    /// Returns whether this page already owns an active playback engine.
-    ///
-    /// Local videos require an exact URL match.
-    /// Remote videos can only be checked by metadata because the direct-download URL
-    /// is resolved lazily when the selected page loads.
-    ///
-    /// The playback engine must already be renderable. A loading or failed engine is
-    /// not considered reusable, otherwise a cached video page could remain stuck as a
-    /// plain preview when it becomes selected again.
+    // Loading or failed engines are not reusable.
     private func isCurrentPlaybackVideo() -> Bool {
         switch playback.engine {
         case .avFoundation,
@@ -514,10 +448,7 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    /// Reveals the current playback engine without changing the playback state.
-    ///
-    /// This is used when SwiftUI rebuilds the selected page, for example during
-    /// rotation. It must not call `play()` because the user may have paused the video.
+    // Reveal without changing play/pause state.
     @MainActor
     private func revealCurrentPlaybackIfNeeded() {
         switch playback.engine {
@@ -533,9 +464,6 @@ struct NCVideoViewerContentView: View {
         }
     }
 
-    /// Presents the UIKit-only AVPlayer viewer when this page is selected.
-    ///
-    /// - Parameter url: Local or remote playable URL selected by AVFoundation probing.
     @MainActor
     private func presentAVPlayerIfSelected(url: URL) {
         guard isSelected else {
@@ -562,7 +490,6 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    /// Moves to the previous media item from the UIKit-only AVPlayer controller.
     @MainActor
     private func goToPreviousPageFromAVPlayer() {
         presentedAVPlayerURL = nil
@@ -570,7 +497,6 @@ struct NCVideoViewerContentView: View {
         onPreviousPage?()
     }
 
-    /// Moves to the next media item from the UIKit-only AVPlayer controller.
     @MainActor
     private func goToNextPageFromAVPlayer() {
         presentedAVPlayerURL = nil
@@ -578,9 +504,6 @@ struct NCVideoViewerContentView: View {
         onNextPage?()
     }
 
-    /// Closes the full media viewer from a fullscreen video controller.
-    ///
-    /// - Parameter ocId: Optional Nextcloud file identifier of the fullscreen video being closed.
     @MainActor
     private func closeFromFullscreenVideo(ocId: String?) {
         presentedAVPlayerURL = nil
@@ -589,9 +512,6 @@ struct NCVideoViewerContentView: View {
         onClose?(ocId)
     }
 
-    /// Presents the UIKit-only VLC fallback viewer when this page is selected.
-    ///
-    /// - Parameter url: Local or remote playable URL.
     @MainActor
     private func presentVLCIfSelected(url: URL) {
         guard isSelected else {
@@ -618,7 +538,6 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    /// Moves to the previous media item from the UIKit-only VLC controller.
     @MainActor
     private func goToPreviousPageFromVLC() {
         presentedVLCURL = nil
@@ -626,7 +545,6 @@ struct NCVideoViewerContentView: View {
         onPreviousPage?()
     }
 
-    /// Moves to the next media item from the UIKit-only VLC controller.
     @MainActor
     private func goToNextPageFromVLC() {
         presentedVLCURL = nil
@@ -636,16 +554,7 @@ struct NCVideoViewerContentView: View {
 
     // MARK: - In-Flight Resolution Cache
 
-    /// Resolves a video URL through a shared in-flight task cache.
-    ///
-    /// SwiftUI can temporarily create multiple video page views for the same page while
-    /// the selected state transitions from prefetched preview to selected video state.
-    /// A shared task lets duplicated views await the same direct-link resolution instead
-    /// of starting duplicate requests or skipping resolution while the original view is
-    /// being cancelled.
-    ///
-    /// - Parameter taskIdentifier: Stable video task identity.
-    /// - Returns: Resolved video URL, autoplay preference, and Nextcloud error.
+    // Share direct-link resolution between duplicated SwiftUI page instances.
     @MainActor
     private func resolvedVideoURL(
         taskIdentifier: String
@@ -668,10 +577,7 @@ struct NCVideoViewerContentView: View {
 
     // MARK: - Helpers
 
-    /// Delay used only for selected video pages before resolving or loading playback.
-    ///
-    /// This protects fast swipe gestures from starting remote resolution or VLC/AVPlayer
-    /// for transient video pages, without affecting image paging responsiveness.
+    // Prevent transient video pages from starting playback work.
     private static let videoSelectionSettleDelayNanoseconds: UInt64 = 150_000_000
 
     private var resolvedFileName: String {
@@ -685,11 +591,6 @@ struct NCVideoViewerContentView: View {
 
 // MARK: - Video Preview Placeholder
 
-/// Displays a static, non-interactive preview for video pages.
-///
-/// Video previews are shown only when a local preview image is already available.
-/// When no preview is available, the view keeps a stable black background to avoid
-/// extra icon-to-preview-to-player transitions.
 private struct NCVideoPreviewPlaceholderView: View {
     let previewURL: URL?
 
@@ -719,19 +620,9 @@ private struct NCVideoPreviewPlaceholderView: View {
 
 // MARK: - Video URL Resolution
 
-/// Resolves the playable URL for a video item.
-///
-/// Resolution order:
-/// - Explicit metadata URL.
-/// - Local provider storage file.
-/// - Nextcloud direct download URL.
 struct NCVideoURLResolver {
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    /// Resolves the playable URL for a video metadata object.
-    ///
-    /// - Parameter metadata: Video metadata.
-    /// - Returns: Resolved video URL, autoplay preference, and Nextcloud error.
     func getVideoURL(
         metadata: tableMetadata
     ) async -> (url: URL?, autoplay: Bool, error: NKError) {
@@ -769,10 +660,6 @@ struct NCVideoURLResolver {
         return await getDirectDownloadURL(metadata: metadata)
     }
 
-    /// Resolves a direct download URL from Nextcloud.
-    ///
-    /// - Parameter metadata: Video metadata.
-    /// - Returns: Direct download URL, autoplay preference, and Nextcloud error.
     private func getDirectDownloadURL(
         metadata: tableMetadata
     ) async -> (url: URL?, autoplay: Bool, error: NKError) {

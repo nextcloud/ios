@@ -6,37 +6,16 @@ import UIKit
 import NextcloudKit
 
 // MARK: - AVPlayer Presenter
-
-/// Presents one UIKit-only AVPlayer viewer outside the SwiftUI paging hierarchy.
-///
-/// This presenter guarantees that only one AVPlayer viewer is presented at a time.
 @MainActor
 enum NCVideoAVPlayerPresenter {
 
     // MARK: - State
-
     private static weak var currentViewController: NCVideoAVPlayerViewController?
     private static var currentURL: URL?
     private static var isPresenting = false
 
     // MARK: - Public API
-
-    /// Presents the AVPlayer viewer from the current top view controller.
-    ///
-    /// Repeated calls with the same URL are ignored to avoid multiple AVPlayer instances
-    /// during SwiftUI recomposition or device rotation.
-    ///
-    /// - Parameters:
-    ///   - metadata: Video metadata used for logging and player title.
-    ///   - url: Local or remote playable URL.
-    ///   - previewURL: Optional local preview image URL shown until the first video frame is ready.
-    ///   - userAgent: Optional HTTP User-Agent for remote playback.
-    ///   - contextMenuController: Main tab bar controller used by context menu actions.
-    ///   - canGoPrevious: Whether the previous-page gesture/action is currently available.
-    ///   - canGoNext: Whether the next-page gesture/action is currently available.
-    ///   - onPrevious: Callback invoked when AVPlayer receives a previous-page action.
-    ///   - onNext: Callback invoked when AVPlayer receives a next-page action.
-    ///   - onClose: Callback invoked with the current media ocId when AVPlayer closes the fullscreen media viewer.
+    // Presents or updates the single AVPlayer fullscreen controller.
     static func present(
         metadata: tableMetadata,
         url: URL,
@@ -159,11 +138,6 @@ enum NCVideoAVPlayerPresenter {
         }
     }
 
-    /// Clears the current AVPlayer presentation state.
-    ///
-    /// Call this from `NCVideoAVPlayerViewController` when it closes.
-    ///
-    /// - Parameter viewController: AVPlayer view controller being closed.
     static func clearCurrent(
         _ viewController: NCVideoAVPlayerViewController
     ) {
@@ -176,7 +150,6 @@ enum NCVideoAVPlayerPresenter {
         isPresenting = false
     }
 
-    /// Dismisses the current AVPlayer viewer if one is currently presented.
     static func dismissCurrent() {
         guard let currentViewController else {
             return
@@ -187,19 +160,11 @@ enum NCVideoAVPlayerPresenter {
         }
     }
 
-    /// Dismisses the current AVPlayer viewer if one is currently presented.
-    ///
-    /// This short alias is used by video-page navigation callbacks before moving
-    /// the SwiftUI media viewer to the previous or next page.
     static func dismiss() {
         dismissCurrent()
     }
 
     // MARK: - Private
-
-    /// Resolves the top-most visible view controller.
-    ///
-    /// - Returns: Top-most visible view controller, if available.
     private static func topViewController() -> UIViewController? {
         let windowScene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -213,10 +178,6 @@ enum NCVideoAVPlayerPresenter {
         return visibleViewController(from: rootViewController)
     }
 
-    /// Recursively resolves the visible view controller.
-    ///
-    /// - Parameter viewController: Root or intermediate view controller.
-    /// - Returns: Top-most visible view controller.
     private static func visibleViewController(
         from viewController: UIViewController?
     ) -> UIViewController? {

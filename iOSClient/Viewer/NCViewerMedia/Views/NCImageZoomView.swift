@@ -7,12 +7,6 @@ import UIKit
 import VisionKit
 
 // MARK: - Image Zoom View
-
-/// UIKit-backed image zoom view.
-///
-/// This view uses `UIScrollView` because it provides native, smooth pinch-to-zoom
-/// and pan behavior, which is more reliable than SwiftUI `MagnifyGesture` when
-/// hosted inside a paging container.
 struct NCImageZoomView: UIViewRepresentable {
     let image: UIImage
     let backgroundStyle: NCViewerBackgroundStyle
@@ -22,11 +16,6 @@ struct NCImageZoomView: UIViewRepresentable {
     private let maximumZoomScale: CGFloat = 5
     private let doubleTapZoomScale: CGFloat = 2.5
 
-    /// Creates an image zoom view.
-    ///
-    /// - Parameters:
-    ///   - image: Image rendered inside the zoomable scroll view.
-    ///   - backgroundStyle: Viewer background style.
     init(
         image: UIImage,
         backgroundStyle: NCViewerBackgroundStyle = .system,
@@ -38,7 +27,6 @@ struct NCImageZoomView: UIViewRepresentable {
     }
 
     // MARK: - UIViewRepresentable
-
     func makeUIView(context: Context) -> NCZoomScrollView {
         let scrollView = NCZoomScrollView()
 
@@ -145,10 +133,8 @@ struct NCImageZoomView: UIViewRepresentable {
     }
 
     // MARK: - Scroll View
-
     final class NCZoomScrollView: UIScrollView {
         var onLayoutSubviews: (() -> Void)?
-
         override func layoutSubviews() {
             super.layoutSubviews()
             onLayoutSubviews?()
@@ -156,7 +142,6 @@ struct NCImageZoomView: UIViewRepresentable {
     }
 
     // MARK: - Coordinator
-
     final class Coordinator: NSObject, UIScrollViewDelegate {
         weak var scrollView: UIScrollView?
         weak var imageView: UIImageView?
@@ -170,7 +155,6 @@ struct NCImageZoomView: UIViewRepresentable {
         private var lastBoundsSize: CGSize = .zero
 
         // MARK: - UIScrollViewDelegate
-
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
             imageView
         }
@@ -180,13 +164,10 @@ struct NCImageZoomView: UIViewRepresentable {
         }
 
         // MARK: - Layout
-
-        /// Resets cached bounds tracking so the next layout pass refits the image.
         func resetBoundsTracking() {
             lastBoundsSize = .zero
         }
 
-        /// Lays out the image view and resets zoom to the fitted image.
         func layoutImageViewResettingZoom() {
             guard let scrollView,
                   let imageView,
@@ -223,10 +204,7 @@ struct NCImageZoomView: UIViewRepresentable {
             centerImageView()
         }
 
-        /// Lays out the image view when the container size changes.
-        ///
-        /// The zoom is reset on bounds changes because rotation, iPad resizing,
-        /// and Stage Manager can otherwise leave stale offsets or invalid content sizes.
+        // Reset zoom on size changes to avoid stale offsets.
         func layoutImageViewResettingOnBoundsChange() {
             guard let scrollView,
                   let imageView,
@@ -268,7 +246,6 @@ struct NCImageZoomView: UIViewRepresentable {
             centerImageView()
         }
 
-        /// Centers the image view inside the scroll view when the image is smaller than the viewport.
         private func centerImageView() {
             guard let scrollView,
                   let imageView else {
@@ -293,7 +270,6 @@ struct NCImageZoomView: UIViewRepresentable {
             }
         }
 
-        /// Returns whether the current image and container sizes can be used for layout.
         private func isValidLayout(
             imageSize: CGSize,
             boundsSize: CGSize
@@ -304,7 +280,6 @@ struct NCImageZoomView: UIViewRepresentable {
             boundsSize.height > 0
         }
 
-        /// Returns the aspect-fit size of an image inside a container.
         private func fittedImageSize(
             imageSize: CGSize,
             containerSize: CGSize
@@ -320,8 +295,6 @@ struct NCImageZoomView: UIViewRepresentable {
         }
 
         // MARK: - Gestures
-
-        /// Handles double tap zoom and reset.
         @objc
         func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
             guard let scrollView,
@@ -346,7 +319,6 @@ struct NCImageZoomView: UIViewRepresentable {
             scrollView.zoom(to: zoomRect, animated: true)
         }
 
-        /// Builds the zoom rect used by double tap.
         private func zoomRect(
             for scrollView: UIScrollView,
             scale: CGFloat,
@@ -367,16 +339,7 @@ struct NCImageZoomView: UIViewRepresentable {
     }
 
     // MARK: - Image Analysis
-
-    /// Adds VisionKit image analysis to the displayed image when supported.
-    ///
-    /// Existing analysis interactions are removed before installing a new one,
-    /// so stale analysis results are not reused after an image change.
-    ///
-    /// - Parameters:
-    ///   - image: Image to analyze.
-    ///   - imageView: Image view that renders the image.
-    ///   - coordinator: Coordinator used to validate that the image is still current.
+    // Rebuild analysis to avoid stale VisionKit results after image changes.
     @MainActor
     private func analyzeImageIfAvailable(
         image: UIImage,
@@ -423,9 +386,6 @@ struct NCImageZoomView: UIViewRepresentable {
         }
     }
 
-    /// Removes VisionKit image analysis interactions from the image view.
-    ///
-    /// - Parameter imageView: Image view from which analysis interactions should be removed.
     @MainActor
     private func removeImageAnalysisInteractions(from imageView: UIImageView) {
         imageView.interactions

@@ -4,10 +4,6 @@
 
 import UIKit
 
-/// Floating title view used by media viewer controllers.
-///
-/// The view renders only primary and secondary text without any visual material,
-/// background, glass, blur, or border decoration.
 final class NCViewerFloatingTitleView: UIView {
     private let primaryLabel = UILabel()
     private let secondaryLabel = UILabel()
@@ -30,15 +26,7 @@ final class NCViewerFloatingTitleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// Attaches the floating title view to the provided navigation bar.
-    ///
-    /// The title is installed as a navigation bar subview and can then align itself
-    /// against the real visible bar button containers.
-    ///
-    /// - Parameters:
-    ///   - navigationBar: Navigation bar that owns the floating title view.
-    ///   - widthMultiplier: Maximum title width relative to the navigation bar width.
-    ///   - verticalOffset: Vertical adjustment applied to the navigation bar top edge.
+    // Attach directly to the navigation bar to match real button layout.
     func attach(
         to navigationBar: UINavigationBar,
         widthMultiplier: CGFloat = 0.36,
@@ -70,12 +58,10 @@ final class NCViewerFloatingTitleView: UIView {
         updateHorizontalAlignment()
     }
 
-    /// Resets the horizontal title position to the navigation bar center.
     func updateHorizontalAlignment() {
         centerXConstraint?.constant = 0
     }
 
-    /// Updates the title height using the visible navigation item height.
     func updateNavigationItemHeight() {
         guard let navigationBar else {
             return
@@ -84,10 +70,7 @@ final class NCViewerFloatingTitleView: UIView {
         heightConstraint?.constant = navigationItemHeight(in: navigationBar)
     }
 
-    /// Returns the best visible navigation item height for the provided navigation bar.
-    ///
-    /// - Parameter navigationBar: Navigation bar containing the title and bar button items.
-    /// - Returns: Height used by visible navigation items, falling back to `44` points.
+    // Use visible bar item height when possible.
     private func navigationItemHeight(in navigationBar: UINavigationBar) -> CGFloat {
         let heights = navigationBar.subviews.flatMap { subview in
             navigationItemHeights(
@@ -99,12 +82,6 @@ final class NCViewerFloatingTitleView: UIView {
         return heights.max() ?? navigationBar.bounds.height
     }
 
-    /// Recursively collects visible navigation item heights from the navigation bar hierarchy.
-    ///
-    /// - Parameters:
-    ///   - view: Current hierarchy node.
-    ///   - navigationBar: Navigation bar used as coordinate target.
-    /// - Returns: Visible item heights in navigation bar coordinates.
     private func navigationItemHeights(
         from view: UIView,
         in navigationBar: UINavigationBar
@@ -139,12 +116,6 @@ final class NCViewerFloatingTitleView: UIView {
         return childHeights
     }
 
-    /// Updates the visible title content.
-    ///
-    /// - Parameters:
-    ///   - primaryText: Main title text displayed on the first line.
-    ///   - secondaryText: Optional subtitle text displayed on the second line.
-    ///   - textColor: Text color selected by the caller according to the current viewer background.
     func update(
         primaryText: String?,
         secondaryText: String?,
@@ -168,7 +139,6 @@ final class NCViewerFloatingTitleView: UIView {
             .joined(separator: ", ")
     }
 
-    /// Clears the visible title content.
     func clear() {
         update(
             primaryText: nil,
@@ -177,7 +147,6 @@ final class NCViewerFloatingTitleView: UIView {
         )
     }
 
-    /// Configures the visual container.
     private func configureView() {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .clear
@@ -185,7 +154,6 @@ final class NCViewerFloatingTitleView: UIView {
         isAccessibilityElement = true
     }
 
-    /// Configures the primary and secondary labels.
     private func configureLabels() {
         primaryLabel.font = .preferredFont(forTextStyle: .subheadline)
         primaryLabel.textColor = .white
@@ -202,7 +170,6 @@ final class NCViewerFloatingTitleView: UIView {
         secondaryLabel.numberOfLines = 1
     }
 
-    /// Configures the vertical label stack.
     private func configureStackView() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical

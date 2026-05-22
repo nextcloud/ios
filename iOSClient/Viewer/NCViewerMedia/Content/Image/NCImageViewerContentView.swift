@@ -7,13 +7,6 @@ import UIKit
 
 // MARK: - Image Viewer Content View
 
-/// Displays an image page using an optional preview and an optional full-size image.
-///
-/// The preview is decoded first when available.
-/// The full image replaces the preview only after it has been decoded.
-/// Animated GIF files are decoded as animated `UIImage` instances.
-/// SVG files are rasterized into `UIImage` instances before rendering.
-/// All decoded images are rendered through the same zoom pipeline.
 struct NCImageViewerContentView: View {
     let identifier: String
     let previewURL: URL?
@@ -109,7 +102,7 @@ struct NCImageViewerContentView: View {
 
     // MARK: - Loading
 
-    /// Loads the best available image for the current URLs.
+    // Decode preview first, then replace it with the full image when ready.
     @MainActor
     private func loadBestAvailableImage() async {
         let expectedIdentifier = identifier
@@ -186,18 +179,7 @@ struct NCImageViewerContentView: View {
         }
     }
 
-    /// Decodes and prepares a local standard image file for display.
-    ///
-    /// `UIImage(contentsOfFile:)` can return a lazy image whose bitmap is decoded only
-    /// when UIKit first draws it. Complex or large images can therefore produce a short
-    /// blank frame before becoming visible.
-    ///
-    /// This method synchronously prepares the image for display in a detached task
-    /// before publishing it to SwiftUI, so the viewer replaces the preview only when
-    /// the image is really ready.
-    ///
-    /// - Parameter url: Local file URL.
-    /// - Returns: Display-prepared image if possible.
+    // Prepare the full image before replacing the preview.
     private func decodeImageIfPossible(url: URL) async -> UIImage? {
         guard isValidLocalFile(url: url) else {
             return nil
@@ -216,14 +198,6 @@ struct NCImageViewerContentView: View {
         }.value
     }
 
-    /// Decodes a local preview image file as quickly as possible.
-    ///
-    /// Preview images are intentionally not display-prepared here.
-    /// They are small temporary placeholders and should become visible before the
-    /// full image starts its heavier display preparation.
-    ///
-    /// - Parameter url: Local preview file URL.
-    /// - Returns: Preview image if possible.
     private func decodePreviewImageIfPossible(url: URL) async -> UIImage? {
         guard isValidLocalFile(url: url) else {
             return nil
@@ -238,10 +212,6 @@ struct NCImageViewerContentView: View {
         }.value
     }
 
-    /// Decodes a local GIF file as an animated `UIImage`.
-    ///
-    /// - Parameter url: Local GIF file URL.
-    /// - Returns: Animated image if the GIF can be decoded.
     private func decodeGIFImageIfPossible(url: URL) async -> UIImage? {
         guard isValidLocalFile(url: url) else {
             return nil
@@ -254,12 +224,7 @@ struct NCImageViewerContentView: View {
         }.value
     }
 
-    /// Decodes a local SVG file by rasterizing it into a `UIImage`.
-    ///
-    /// `NCSVGRenderer` is WKWebView-backed, so this method must run on the main actor.
-    ///
-    /// - Parameter url: Local SVG file URL.
-    /// - Returns: Rasterized SVG image if possible.
+    // SVG rendering uses WKWebView and must stay on the main actor.
     @MainActor
     private func decodeSVGImageIfPossible(url: URL) async -> UIImage? {
         guard isValidLocalFile(url: url) else {
@@ -276,26 +241,14 @@ struct NCImageViewerContentView: View {
         )
     }
 
-    /// Returns whether the URL points to a GIF file.
-    ///
-    /// - Parameter url: Optional file URL.
-    /// - Returns: True when the path extension is `gif`.
     private func isGIF(_ url: URL?) -> Bool {
         url?.pathExtension.lowercased() == "gif"
     }
 
-    /// Returns whether the URL points to an SVG file.
-    ///
-    /// - Parameter url: Optional file URL.
-    /// - Returns: True when the path extension is `svg`.
     private func isSVG(_ url: URL?) -> Bool {
         url?.pathExtension.lowercased() == "svg"
     }
 
-    /// Returns the proper decode failure message for a local image URL.
-    ///
-    /// - Parameter url: Local file URL.
-    /// - Returns: User-facing decode failure message.
     private func imageDecodeFailedMessage(for url: URL) -> String {
         if isGIF(url) {
             return "GIF file could not be decoded."
@@ -308,10 +261,6 @@ struct NCImageViewerContentView: View {
         return "UIImage could not decode this file."
     }
 
-    /// Checks whether a local file exists and has a non-zero size.
-    ///
-    /// - Parameter url: Local file URL.
-    /// - Returns: True when the file exists and is not empty.
     private func isValidLocalFile(url: URL) -> Bool {
         let path = url.path
 
@@ -328,10 +277,6 @@ struct NCImageViewerContentView: View {
         return true
     }
 
-    /// Returns whether VisionKit image analysis should be enabled for the current image.
-    ///
-    /// Image analysis is enabled only for normal static images.
-    /// GIF and SVG are excluded because they are rendered through special decoding paths.
     private var allowsImageAnalysis: Bool {
         let url = fullURL ?? previewURL
 

@@ -7,12 +7,6 @@ import SwiftUI
 // MARK: - Media Viewer View
 
 /// Main SwiftUI media viewer.
-///
-/// This view owns the `NCMediaViewerModel` as a `StateObject`.
-/// Paging is handled by `NCMediaViewerPagingView`, which is backed by
-/// `UICollectionView` to support large virtualized media lists.
-///
-/// Navigation buttons and title are provided by `NCMediaViewerHostingController`.
 struct NCMediaViewerView: View {
     @StateObject private var model: NCMediaViewerModel
     let contextMenuController: NCMainTabBarController?
@@ -21,13 +15,6 @@ struct NCMediaViewerView: View {
     let onClose: (_ ocId: String?) -> Void
 
     /// Creates the media viewer view.
-    ///
-    /// - Parameters:
-    ///   - model: Media viewer model containing page state and loading logic.
-    ///   - contextMenuController: Optional controller used to present context menu actions.
-    ///   - navigationBar: Optional navigation bar reference used by video controls for top action positioning.
-    ///   - onVisibleMetadataChanged: Callback invoked when the visually visible page metadata and background color change.
-    ///   - onClose: Callback invoked with the current media ocId when the media viewer should close.
     init(
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController? = nil,

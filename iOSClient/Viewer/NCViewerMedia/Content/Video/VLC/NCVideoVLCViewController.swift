@@ -11,10 +11,6 @@ import UniformTypeIdentifiers
 
 // MARK: - VLC View Controller
 
-/// UIKit-only VLC video controller.
-///
-/// This controller is intentionally outside the SwiftUI paging hierarchy.
-/// It owns one stable drawable view, one VLCMediaPlayer, and one shared controls view.
 final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Input
@@ -225,16 +221,6 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Public API
 
-    /// Updates the current VLC input.
-    ///
-    /// If the URL changes, the current media is stopped and the new media is prepared.
-    /// The context menu is refreshed for the new metadata.
-    ///
-    /// - Parameters:
-    ///   - metadata: Updated video metadata.
-    ///   - url: Updated playable URL.
-    ///   - previewURL: Optional local preview image URL shown until VLC starts rendering.
-    ///   - userAgent: Optional HTTP User-Agent.
     func update(
         metadata: tableMetadata,
         url: URL,
@@ -268,7 +254,6 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Navigation
 
-    /// Configures the navigation bar items.
     private func configureNavigationItem() {
         title = nil
         navigationItem.title = nil
@@ -287,7 +272,6 @@ final class NCVideoVLCViewController: UIViewController {
         ]
     }
 
-    /// Configures the floating title view inside the navigation bar chrome.
     private func configureFloatingTitleViewIfNeeded() {
         guard let navigationBar = navigationController?.navigationBar else {
             return
@@ -296,9 +280,6 @@ final class NCVideoVLCViewController: UIViewController {
         floatingTitleView.attach(to: navigationBar)
     }
 
-    /// Updates the floating title view using the provided video metadata.
-    ///
-    /// - Parameter metadata: Video metadata used to build the visible title content.
     private func updateTitleLabel(metadata: tableMetadata) {
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName
@@ -311,23 +292,15 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    /// Builds the secondary floating title text for the provided metadata.
-    ///
-    /// - Parameter metadata: Video metadata used to derive the secondary title line.
-    /// - Returns: Secondary title text shown below the main title.
     private func floatingTitleSecondaryText(for metadata: tableMetadata) -> String? {
         floatingTitleDateFormatter.string(from: metadata.date as Date)
     }
 
-    /// Rebuilds the More menu using the current metadata.
     private func refreshMoreMenu() {
         moreNavigationItem.menu = makeMoreMenu()
     }
 
-    /// Builds the VLC-specific More menu.
-    ///
-    /// The menu uses `sender: self`, so menu actions present from the visible
-    /// VLC controller instead of the SwiftUI viewer underneath.
+    // Use this controller as sender so actions present above VLC.
     private func makeMoreMenu() -> UIMenu {
         UIMenu(title: "", children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
@@ -361,11 +334,6 @@ final class NCVideoVLCViewController: UIViewController {
         presentDetailView(animated: true)
     }
 
-    /// Presents the media metadata detail panel for the current video.
-    ///
-    /// Video metadata usually has no EXIF payload, so the detail view receives an empty EXIF model.
-    ///
-    /// - Parameter animated: Whether presentation should be animated.
     private func presentDetailView(animated: Bool) {
         let detailView = NCMediaViewerDetailView(
             metadata: metadata,
@@ -417,7 +385,6 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Swipe Navigation
 
-    /// Configures UIKit swipe gestures for media navigation and viewer closing.
     private func configureSwipeGestures() {
         let swipeLeft = UISwipeGestureRecognizer(
             target: self,
@@ -444,7 +411,6 @@ final class NCVideoVLCViewController: UIViewController {
         view.addGestureRecognizer(closePanGesture)
     }
 
-    /// Configures a single tap gesture to toggle VLC playback controls.
     private func configureTapGesture() {
         let tapGesture = UITapGestureRecognizer(
             target: self,
@@ -456,12 +422,7 @@ final class NCVideoVLCViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
     }
 
-    /// Handles single taps by toggling the VLC playback controls.
-    ///
-    /// Taps are ignored while playback is not running because controls and the
-    /// navigation bar must remain visible in prepared, paused, and stopped states.
-    ///
-    /// - Parameter gesture: Source tap gesture recognizer.
+    // Keep controls visible when playback is not running.
     @objc
     private func handleSingleTap(_ gesture: UITapGestureRecognizer) {
         guard !shouldKeepControlsVisible else {
@@ -484,14 +445,6 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Handles horizontal VLC swipe gestures.
-    ///
-    /// Left moves to the next media item when available.
-    /// Right moves to the previous media item when available.
-    /// The controller itself does not know the media list; it only forwards the intent
-    /// through callbacks owned by the presenter/viewer layer.
-    ///
-    /// - Parameter gesture: Source swipe gesture recognizer.
     @objc
     private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         guard !isScrubbing else {
@@ -515,13 +468,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Handles downward pan gestures by closing the VLC viewer.
-    ///
-    /// This mirrors the common media viewer drag-to-close behavior: a short downward
-    /// drag or a quick downward flick is enough, while horizontal paging still wins
-    /// when the gesture is mostly horizontal.
-    ///
-    /// - Parameter gesture: Source pan gesture recognizer.
+    // Close only when downward movement wins over horizontal paging.
     @objc
     private func handleClosePan(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: view)
@@ -554,7 +501,6 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Playback
 
-    /// Prepares VLC playback without starting it automatically.
     private func start() {
         attachDrawable()
         showPreviewImage()
@@ -583,7 +529,6 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    /// Stops VLC playback and releases resources.
     private func stop() {
         mediaPlayer.stop()
         mediaPlayer.media = nil
@@ -596,7 +541,6 @@ final class NCVideoVLCViewController: UIViewController {
         clearVLCTrackMenuItems()
     }
 
-    /// Attaches the drawable view to VLC.
     private func attachDrawable() {
         guard drawableView.bounds.width > 0,
               drawableView.bounds.height > 0 else {
@@ -609,7 +553,6 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Handles VLC playback state changes.
     private func handleMediaPlayerStateChange() {
         updatePlayPauseButton()
         updateProgressControls()
@@ -624,11 +567,7 @@ final class NCVideoVLCViewController: UIViewController {
         scheduleControlsHideIfNeededAfterPlaybackStart()
     }
 
-    /// Arms the controls auto-hide timer when VLC is confirmed to be playing.
-    ///
-    /// VLC state notifications and `isPlaying` may not become true at exactly the same
-    /// time. This helper is safe to call from both state and time callbacks because it
-    /// does not restart an already scheduled timer.
+    // Safe to call from both state and time callbacks.
     private func scheduleControlsHideIfNeededAfterPlaybackStart() {
         guard !shouldKeepControlsVisible else {
             return
@@ -648,19 +587,16 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - VLC Track Menus
 
-    /// Refreshes the SwiftUI track menus using the current VLC player state.
     func refreshVLCTrackMenuItems() {
         controlsView.setSubtitleTrackMenuItems(makeSubtitleTrackMenuItems())
         controlsView.setAudioTrackMenuItems(makeAudioTrackMenuItems())
     }
 
-    /// Clears the SwiftUI track menus while VLC has not exposed media tracks yet.
     func clearVLCTrackMenuItems() {
         controlsView.setSubtitleTrackMenuItems([])
         controlsView.setAudioTrackMenuItems([])
     }
 
-    /// Refreshes the SwiftUI track menus only when VLC is active enough to expose tracks.
     func refreshVLCTrackMenuItemsWhenPlayerIsActive() {
         switch mediaPlayer.state {
         case .opening, .buffering, .playing, .paused:
@@ -670,9 +606,6 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Selects a VLC subtitle track and persists the selection for the current metadata.
-    ///
-    /// - Parameter index: VLC subtitle track index selected by the user.
     func selectSubtitleTrack(index: Int32) {
         mediaPlayer.currentVideoSubTitleIndex = index
         NCManageDatabase.shared.addVideo(
@@ -682,9 +615,6 @@ final class NCVideoVLCViewController: UIViewController {
         refreshVLCTrackMenuItems()
     }
 
-    /// Selects a VLC audio track and persists the selection for the current metadata.
-    ///
-    /// - Parameter index: VLC audio track index selected by the user.
     func selectAudioTrack(index: Int32) {
         mediaPlayer.currentAudioTrackIndex = index
         NCManageDatabase.shared.addVideo(
@@ -694,7 +624,6 @@ final class NCVideoVLCViewController: UIViewController {
         refreshVLCTrackMenuItems()
     }
 
-    /// Presents a document picker that lets the user select an external subtitle file for VLC playback.
     func presentExternalSubtitlePicker() {
         let picker = UIDocumentPickerViewController(
             forOpeningContentTypes: [.item],
@@ -705,10 +634,6 @@ final class NCVideoVLCViewController: UIViewController {
         present(picker, animated: true)
     }
 
-    /// Returns whether the selected file extension is supported as an external subtitle.
-    ///
-    /// - Parameter url: File URL selected by the user.
-    /// - Returns: True when VLC should try to load the file as an external subtitle.
     private func isSupportedExternalSubtitleURL(_ url: URL) -> Bool {
         let supportedExtensions: Set<String> = [
             "srt",
@@ -721,9 +646,6 @@ final class NCVideoVLCViewController: UIViewController {
         return supportedExtensions.contains(url.pathExtension.lowercased())
     }
 
-    /// Loads an external subtitle file into the current VLC media player.
-    ///
-    /// - Parameter url: Local subtitle file URL selected by the user.
     private func loadExternalSubtitle(url: URL) {
         guard isSupportedExternalSubtitleURL(url) else {
             nkLog(
@@ -757,10 +679,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Copies the selected subtitle to a stable temporary file that VLC can read.
-    ///
-    /// - Parameter url: Security-scoped or temporary document picker URL.
-    /// - Returns: Local temporary file URL used by VLC.
+    // Copy to a stable temporary file readable by VLC.
     private func copyExternalSubtitleToTemporaryDirectory(from url: URL) throws -> URL {
         let didStartAccessing = url.startAccessingSecurityScopedResource()
         defer {
@@ -795,7 +714,6 @@ final class NCVideoVLCViewController: UIViewController {
         return destinationURL
     }
 
-    /// Refreshes VLC subtitle tracks after VLC has had time to register the external subtitle file.
     private func refreshExternalSubtitleTracksAfterLoad() {
         refreshVLCTrackMenuItems()
 
@@ -805,9 +723,6 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Builds subtitle menu items from VLC subtitle tracks.
-    ///
-    /// - Returns: Subtitle menu items rendered by the shared SwiftUI controls.
     private func makeSubtitleTrackMenuItems() -> [NCVideoTrackMenuItem] {
         makeTrackMenuItems(
             titles: mediaPlayer.videoSubTitlesNames,
@@ -816,9 +731,6 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    /// Builds audio menu items from VLC audio tracks.
-    ///
-    /// - Returns: Audio menu items rendered by the shared SwiftUI controls.
     private func makeAudioTrackMenuItems() -> [NCVideoTrackMenuItem] {
         makeTrackMenuItems(
             titles: mediaPlayer.audioTrackNames,
@@ -827,9 +739,6 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    /// Returns the persisted subtitle track index, falling back to VLC's current subtitle track index.
-    ///
-    /// - Returns: Current subtitle track index used to mark the selected menu item.
     private func currentSubtitleTrackIndex() -> Int? {
         if let data = NCManageDatabase.shared.getVideo(metadata: metadata),
            let currentVideoSubTitleIndex = data.currentVideoSubTitleIndex {
@@ -839,9 +748,6 @@ final class NCVideoVLCViewController: UIViewController {
         return Int(mediaPlayer.currentVideoSubTitleIndex)
     }
 
-    /// Returns the persisted audio track index, falling back to VLC's current audio track index.
-    ///
-    /// - Returns: Current audio track index used to mark the selected menu item.
     private func currentAudioTrackIndex() -> Int? {
         if let data = NCManageDatabase.shared.getVideo(metadata: metadata),
            let currentAudioTrackIndex = data.currentAudioTrackIndex {
@@ -851,13 +757,6 @@ final class NCVideoVLCViewController: UIViewController {
         return Int(mediaPlayer.currentAudioTrackIndex)
     }
 
-    /// Builds SwiftUI menu items from VLC track names and indexes.
-    ///
-    /// - Parameters:
-    ///   - titles: VLC track titles.
-    ///   - indexes: VLC track indexes.
-    ///   - currentIndex: Currently selected VLC track index.
-    /// - Returns: Track menu items with selection state.
     private func makeTrackMenuItems(
         titles: [Any],
         indexes: [Any],
@@ -877,12 +776,6 @@ final class NCVideoVLCViewController: UIViewController {
         }
     }
 
-    /// Normalizes a VLC track index to Int32.
-    ///
-    /// - Parameters:
-    ///   - indexes: VLC track indexes returned by MobileVLCKit.
-    ///   - index: Position to read.
-    /// - Returns: Normalized VLC track index, if available.
     private func normalizedTrackIndex(
         _ indexes: [Any],
         at index: Int
@@ -905,7 +798,6 @@ final class NCVideoVLCViewController: UIViewController {
 
     // MARK: - Helpers
 
-    /// Updates the fullscreen preview image shown before VLC starts rendering video.
     private func updatePreviewImage() {
         guard let previewURL,
               previewURL.isFileURL else {
@@ -919,7 +811,6 @@ final class NCVideoVLCViewController: UIViewController {
         previewImageView.alpha = 1
     }
 
-    /// Shows the preview image while VLC prepares the first rendered frame.
     private func showPreviewImage() {
         guard previewImageView.image != nil else {
             previewImageView.isHidden = true
@@ -931,7 +822,6 @@ final class NCVideoVLCViewController: UIViewController {
         previewImageView.isHidden = false
     }
 
-    /// Hides the preview image after VLC starts rendering playback.
     private func hidePreviewImage() {
         guard !previewImageView.isHidden else {
             return
@@ -942,15 +832,10 @@ final class NCVideoVLCViewController: UIViewController {
         previewImageView.isHidden = true
     }
 
-    /// Updates the shared controls top actions reference using the real navigation bar.
     private func updateControlsNavigationBar() {
         controlsView.setTopActionsNavigationBar(navigationController?.navigationBar)
     }
 
-    /// Returns whether a point is inside one of the visible controls areas.
-    ///
-    /// - Parameter location: Point in this controller's root view coordinate space.
-    /// - Returns: True when the point is inside top action, center, or bottom controls.
     private func controlsHitFramesContain(_ location: CGPoint) -> Bool {
         let topActionsFrame = controlsView.topActionsView.convert(
             controlsView.topActionsView.bounds,
@@ -970,7 +855,6 @@ final class NCVideoVLCViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
-    /// Configures the audio session for movie playback.
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -1015,12 +899,7 @@ extension NCVideoVLCViewController: VLCMediaPlayerDelegate {
 // MARK: - Gesture Delegate
 
 extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
-    /// Allows tap and swipe gestures to coexist with VLC's drawable view and UIKit controls.
-    ///
-    /// - Parameters:
-    ///   - gestureRecognizer: Gesture recognizer asking for simultaneous recognition.
-    ///   - otherGestureRecognizer: Other gesture recognizer involved in the decision.
-    /// - Returns: True to avoid VLC/touch handling from suppressing viewer gestures.
+    // Keep VLC drawable touches compatible with viewer gestures.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
@@ -1028,12 +907,7 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
         true
     }
 
-    /// Prevents the background tap recognizer from stealing touches that begin on controls.
-    ///
-    /// - Parameters:
-    ///   - gestureRecognizer: Gesture recognizer asking whether it should receive the touch.
-    ///   - touch: Source touch.
-    /// - Returns: False for visible playback controls, true otherwise.
+    // Do not let background taps steal control touches.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
@@ -1051,10 +925,6 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
         return true
     }
 
-    /// Allows the close pan to start only when the gesture is mainly downward.
-    ///
-    /// - Parameter gestureRecognizer: Gesture recognizer asking whether it should begin.
-    /// - Returns: True for non-pan gestures or downward-dominant pan gestures.
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer is UIPanGestureRecognizer else {
             return true
@@ -1077,11 +947,6 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
 // MARK: - Document Picker Delegate
 
 extension NCVideoVLCViewController: UIDocumentPickerDelegate {
-    /// Handles the selected external subtitle file and attaches it to the VLC player.
-    ///
-    /// - Parameters:
-    ///   - controller: Document picker controller.
-    ///   - urls: Selected file URLs.
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else {
             return
@@ -1091,9 +956,6 @@ extension NCVideoVLCViewController: UIDocumentPickerDelegate {
         showControls(animated: true)
     }
 
-    /// Handles document picker cancellation.
-    ///
-    /// - Parameter controller: Document picker controller.
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         showControls(animated: true)
     }

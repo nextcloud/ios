@@ -10,10 +10,6 @@ import NextcloudKit
 
 // MARK: - AVPlayer Layer View
 
-/// UIView backed directly by an AVPlayerLayer.
-///
-/// This is the AVPlayer equivalent of VLC's drawable view:
-/// the fullscreen controller owns one stable video surface and attaches the player to it.
 final class NCVideoAVPlayerLayerView: UIView {
     override static var layerClass: AnyClass {
         AVPlayerLayer.self
@@ -35,11 +31,6 @@ final class NCVideoAVPlayerLayerView: UIView {
 
 // MARK: - AVPlayer View Controller
 
-/// UIKit-only AVPlayer video controller.
-///
-/// This controller is intentionally outside the SwiftUI paging hierarchy.
-/// It owns one stable AVPlayerLayer-backed view, one AVPlayer, one optional PiP controller,
-/// and one shared controls view.
 final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Input
@@ -259,16 +250,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Public API
 
-    /// Updates the current AVPlayer input.
-    ///
-    /// If the URL changes, the current item is stopped and the new item is prepared.
-    /// The context menu is refreshed for the new metadata.
-    ///
-    /// - Parameters:
-    ///   - metadata: Updated video metadata.
-    ///   - url: Updated playable URL.
-    ///   - userAgent: Optional HTTP User-Agent.
-    ///   - contextMenuController: Updated context menu controller.
     func update(
         metadata: tableMetadata,
         url: URL,
@@ -302,7 +283,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Navigation
 
-    /// Configures the navigation bar items.
     private func configureNavigationItem() {
         title = nil
         navigationItem.title = nil
@@ -321,7 +301,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         ]
     }
 
-    /// Configures the floating title view inside the navigation bar chrome.
     private func configureFloatingTitleViewIfNeeded() {
         guard let navigationBar = navigationController?.navigationBar else {
             return
@@ -330,9 +309,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         floatingTitleView.attach(to: navigationBar)
     }
 
-    /// Updates the floating title view using the provided video metadata.
-    ///
-    /// - Parameter metadata: Video metadata used to build the visible title content.
     private func updateTitleLabel(metadata: tableMetadata) {
         let primaryTitle = metadata.fileNameView.isEmpty
             ? metadata.fileName
@@ -345,23 +321,15 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
     }
 
-    /// Builds the secondary floating title text for the provided metadata.
-    ///
-    /// - Parameter metadata: Video metadata used to derive the secondary title line.
-    /// - Returns: Secondary title text shown below the main title.
     private func floatingTitleSecondaryText(for metadata: tableMetadata) -> String? {
         floatingTitleDateFormatter.string(from: metadata.date as Date)
     }
 
-    /// Rebuilds the More menu using the current metadata.
     private func refreshMoreMenu() {
         moreNavigationItem.menu = makeMoreMenu()
     }
 
-    /// Builds the AVPlayer-specific More menu.
-    ///
-    /// The menu uses `sender: self`, so menu actions present from the visible
-    /// AVPlayer controller instead of the SwiftUI viewer underneath.
+    // Use this controller as sender so actions present above AVPlayer.
     private func makeMoreMenu() -> UIMenu {
         UIMenu(title: "", children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
@@ -395,11 +363,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         presentDetailView(animated: true)
     }
 
-    /// Presents the media metadata detail panel for the current video.
-    ///
-    /// Video metadata usually has no EXIF payload, so the detail view receives an empty EXIF model.
-    ///
-    /// - Parameter animated: Whether presentation should be animated.
     private func presentDetailView(animated: Bool) {
         let detailView = NCMediaViewerDetailView(
             metadata: metadata,
@@ -449,7 +412,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Swipe Navigation
 
-    /// Configures swipe gestures for page navigation and close behavior.
     private func configureSwipeGestures() {
         let previousGesture = UISwipeGestureRecognizer(
             target: self,
@@ -475,9 +437,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         view.addGestureRecognizer(closePanGesture)
     }
 
-    /// Handles page navigation and close swipe gestures.
-    ///
-    /// - Parameter gesture: Source swipe gesture recognizer.
     @objc
     private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         guard gesture.state == .ended else {
@@ -510,13 +469,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Handles downward pan gestures by closing the AVPlayer viewer.
-    ///
-    /// This mirrors the common media viewer drag-to-close behavior: a short downward
-    /// drag or a quick downward flick is enough, while horizontal paging still wins
-    /// when the gesture is mostly horizontal.
-    ///
-    /// - Parameter gesture: Source pan gesture recognizer.
+    // Close only when downward movement wins over horizontal paging.
     @objc
     private func handleClosePan(_ gesture: UIPanGestureRecognizer) {
         guard !isPictureInPictureActive else {
@@ -553,7 +506,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Gesture Handling
 
-    /// Configures a single tap gesture to toggle AVPlayer playback controls.
     private func configureTapGesture() {
         let tapGesture = UITapGestureRecognizer(
             target: self,
@@ -565,12 +517,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
     }
 
-    /// Handles single taps by toggling AVPlayer playback controls.
-    ///
-    /// Taps are ignored while playback is not running because controls and the
-    /// navigation bar must remain visible in prepared, paused, and stopped states.
-    ///
-    /// - Parameter gesture: Source tap gesture recognizer.
+    // Keep controls visible when playback is not running.
     @objc
     private func handleSingleTap(_ gesture: UITapGestureRecognizer) {
         guard !isPictureInPictureActive else {
@@ -599,7 +546,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Playback
 
-    /// Prepares AVPlayer playback without starting it automatically.
     private func start() {
         guard preparedURL != url else {
             updatePlayPauseButton()
@@ -630,7 +576,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
     }
 
-    /// Stops AVPlayer playback and releases resources.
     private func stop() {
         preparedURL = nil
         player.pause()
@@ -644,7 +589,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         updateProgressControls()
     }
 
-    /// Creates the AVFoundation asset for the current URL.
     private func makeAsset() -> AVURLAsset {
         guard let userAgent,
               !userAgent.isEmpty,
@@ -662,13 +606,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
     }
 
-    /// Configures the visible AVPlayerLayer used by fullscreen playback.
     private func configurePlayerLayer() {
         playerContainerView.playerLayer.videoGravity = .resizeAspect
         playerContainerView.player = player
     }
 
-    /// Configures Picture in Picture from the visible AVPlayerLayer.
     private func configurePictureInPicture() {
         guard AVPictureInPictureController.isPictureInPictureSupported() else {
             controlsView.setTopActionsMode(.none)
@@ -689,12 +631,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
         controlsView.setTopActionsMode(.pictureInPicture)
     }
 
-    /// Updates Picture in Picture layout without changing playback state.
     private func updatePictureInPictureLayout() {
         playerContainerView.playerLayer.frame = playerContainerView.bounds
     }
 
-    /// Toggles Picture in Picture if available.
     func togglePictureInPicture() {
         guard let pictureInPictureController else {
             return
@@ -707,7 +647,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Configures AVPlayer observers.
     private func configureObservers() {
         cleanupObservers()
 
@@ -752,7 +691,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Releases AVPlayer observers owned by this controller.
     private func cleanupObservers() {
         itemStatusObservation?.invalidate()
         timeControlStatusObservation?.invalidate()
@@ -771,7 +709,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Handles AVPlayer item status changes.
     private func handleCurrentItemStatusChange() {
         updateProgressControls()
         updatePlayPauseButton()
@@ -788,7 +725,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Handles AVPlayer playback state changes.
     private func handleTimeControlStatusChange() {
         updatePlayPauseButton()
 
@@ -805,7 +741,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Updates the fullscreen preview image shown before the first video frame is ready.
     private func updatePreviewImage() {
         guard let previewURL,
               previewURL.isFileURL else {
@@ -819,7 +754,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         previewImageView.alpha = 1
     }
 
-    /// Shows the preview image while the AVPlayer item is preparing.
     private func showPreviewImage() {
         guard previewImageView.image != nil else {
             previewImageView.isHidden = true
@@ -831,7 +765,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         previewImageView.isHidden = false
     }
 
-    /// Hides the preview image after AVPlayer actually starts playback.
     private func hidePreviewImage() {
         guard !previewImageView.isHidden else {
             return
@@ -842,22 +775,16 @@ final class NCVideoAVPlayerViewController: UIViewController {
         previewImageView.isHidden = true
     }
 
-    /// Handles playback reaching the end.
     private func handlePlaybackEnded() {
         updatePlayPauseButton()
         updateProgressControls()
         showControls(animated: true)
     }
 
-    /// Updates the shared controls top actions reference using the real navigation bar.
     private func updateControlsNavigationBar() {
         controlsView.setTopActionsNavigationBar(navigationController?.navigationBar)
     }
 
-    /// Returns whether a point is inside one of the visible controls areas.
-    ///
-    /// - Parameter location: Point in this controller's root view coordinate space.
-    /// - Returns: True when the point is inside center or bottom controls.
     internal func controlsHitFramesContain(_ location: CGPoint) -> Bool {
         let topActionsFrame = controlsView.topActionsView.convert(
             controlsView.topActionsView.bounds,
@@ -877,7 +804,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
-    /// Configures the audio session for movie playback.
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -897,14 +823,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
-    /// Updates the shared controls play/pause state.
     internal func updatePlayPauseButton() {
         controlsView.updatePlayPauseButton(
             isPlaying: player.timeControlStatus == .playing
         )
     }
 
-    /// Updates the shared controls progress state.
     internal func updateProgressControls() {
         let currentTime = player.currentTime().seconds
         let duration = player.currentItem?.duration.seconds ?? 0
@@ -930,7 +854,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
     }
 
-    /// Updates whether seek controls are enabled.
     internal func updateSeekingState() {
         controlsView.setSeekingEnabled(
             player.currentItem?.duration.seconds.isFinite == true
@@ -1028,12 +951,7 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
 
 extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
 
-    /// Allows tap gestures to coexist with AVPlayer's view and UIKit controls.
-    ///
-    /// - Parameters:
-    ///   - gestureRecognizer: Gesture recognizer asking for simultaneous recognition.
-    ///   - otherGestureRecognizer: Other gesture recognizer involved in the decision.
-    /// - Returns: True to avoid AVPlayer/touch handling from suppressing viewer gestures.
+    // Keep AVPlayer touches compatible with viewer gestures.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
@@ -1041,12 +959,7 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
         true
     }
 
-    /// Prevents the background tap recognizer from stealing touches that begin on controls.
-    ///
-    /// - Parameters:
-    ///   - gestureRecognizer: Gesture recognizer asking whether it should receive the touch.
-    ///   - touch: Source touch.
-    /// - Returns: False for visible playback controls, true otherwise.
+    // Do not let background taps steal control touches.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
@@ -1068,10 +981,6 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
         return true
     }
 
-    /// Allows the close pan to start only when the gesture is mainly downward.
-    ///
-    /// - Parameter gestureRecognizer: Gesture recognizer asking whether it should begin.
-    /// - Returns: True for non-pan gestures or downward-dominant pan gestures.
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer is UIPanGestureRecognizer else {
             return true

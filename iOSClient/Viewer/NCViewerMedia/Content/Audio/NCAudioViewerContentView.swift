@@ -8,11 +8,6 @@ import NextcloudKit
 
 // MARK: - Audio Viewer View
 
-/// Displays and plays a local audio file.
-///
-/// The playback model is retrieved from `NCAudioViewerPlaybackRegistry` so the
-/// underlying `AVPlayer` survives SwiftUI view rebuilds caused by rotation,
-/// layout invalidation, or cell refreshes.
 struct NCAudioViewerContentView: View {
     let metadata: tableMetadata
     let localURL: URL
@@ -163,7 +158,6 @@ struct NCAudioViewerContentView: View {
         return metadata.fileName
     }
 
-    /// Starts playback when this page receives an auto-play request.
     @MainActor
     private func consumeAutoPlayIfNeeded() {
         guard shouldAutoPlay else {
@@ -194,11 +188,7 @@ struct NCAudioViewerContentView: View {
 
 // MARK: - Audio Viewer Playback Registry
 
-/// Keeps audio playback models alive across SwiftUI view rebuilds.
-///
-/// The media viewer can rebuild cells during rotation or layout changes.
-/// This registry prevents the audio player from being destroyed just because
-/// the SwiftUI page view was recreated.
+// Keeps audio models alive across SwiftUI rebuilds.
 @MainActor
 final class NCAudioViewerPlaybackRegistry {
     static let shared = NCAudioViewerPlaybackRegistry()
@@ -207,10 +197,6 @@ final class NCAudioViewerPlaybackRegistry {
 
     private init() { }
 
-    /// Returns a stable audio model for the given media item.
-    ///
-    /// - Parameter ocId: Stable Nextcloud media identifier.
-    /// - Returns: Existing or newly created audio playback model.
     func model(for ocId: String) -> NCAudioViewerModel {
         if let model = modelsByOcId[ocId] {
             return model
@@ -221,11 +207,7 @@ final class NCAudioViewerPlaybackRegistry {
         return model
     }
 
-    /// Stops all cached audio models without removing them.
-    ///
-    /// SwiftUI pages may still hold `@StateObject` references to these models.
-    /// Removing them while views are alive can create duplicate playback models for
-    /// the same `ocId` after a later cell refresh or rebuild.
+    // Do not remove models while SwiftUI pages may still hold them.
     func stopAll() {
         modelsByOcId.values.forEach { $0.stop() }
     }
@@ -233,10 +215,6 @@ final class NCAudioViewerPlaybackRegistry {
 
 // MARK: - Audio Viewer Model
 
-/// Lightweight audio playback model backed by `AVPlayer`.
-///
-/// The model observes playback time and item completion, exposes SwiftUI-friendly
-/// state, and performs cleanup when playback is explicitly stopped.
 @MainActor
 final class NCAudioViewerModel: ObservableObject {
 
@@ -257,11 +235,6 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Public API
 
-    /// Loads a local audio file.
-    ///
-    /// If the same URL is already loaded, the existing player is reused.
-    ///
-    /// - Parameter url: Local audio file URL.
     func load(url: URL) async {
         guard currentURL != url else {
             return
@@ -304,7 +277,6 @@ final class NCAudioViewerModel: ObservableObject {
         addEndObserver(for: item, player: player)
     }
 
-    /// Starts audio playback.
     func play() {
         guard let player else {
             guard let loadedURL else {
@@ -329,7 +301,6 @@ final class NCAudioViewerModel: ObservableObject {
         isPlaying = true
     }
 
-    /// Toggles audio playback.
     func togglePlayback() {
         if isPlaying {
             pause()
@@ -338,12 +309,10 @@ final class NCAudioViewerModel: ObservableObject {
         }
     }
 
-    /// Toggles loop playback.
     func toggleLoop() {
         isLoopEnabled.toggle()
     }
 
-    /// Restarts playback from the beginning.
     func restart() {
         seek(to: 0)
 
@@ -352,9 +321,6 @@ final class NCAudioViewerModel: ObservableObject {
         }
     }
 
-    /// Seeks to a specific playback time.
-    ///
-    /// - Parameter seconds: Target playback position in seconds.
     func seek(to seconds: Double) {
         guard let player else {
             return
@@ -379,13 +345,11 @@ final class NCAudioViewerModel: ObservableObject {
         )
     }
 
-    /// Pauses playback without releasing the player.
     func pause() {
         player?.pause()
         isPlaying = false
     }
 
-    /// Stops playback and releases the player.
     func stop() {
         if let player {
             player.pause()
@@ -412,7 +376,6 @@ final class NCAudioViewerModel: ObservableObject {
 
     // MARK: - Private
 
-    /// Configures the audio session for media playback.
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -432,9 +395,6 @@ final class NCAudioViewerModel: ObservableObject {
         }
     }
 
-    /// Adds a periodic time observer to update SwiftUI playback state.
-    ///
-    /// - Parameter player: Player to observe.
     private func addTimeObserver(to player: AVPlayer) {
         let interval = CMTime(
             seconds: 0.25,
@@ -459,11 +419,6 @@ final class NCAudioViewerModel: ObservableObject {
         }
     }
 
-    /// Observes the end of playback and restarts the item when loop is enabled.
-    ///
-    /// - Parameters:
-    ///   - item: Player item to observe.
-    ///   - player: Player that owns the item.
     private func addEndObserver(
         for item: AVPlayerItem,
         player: AVPlayer

@@ -9,13 +9,6 @@ import NextcloudKit
 
 // MARK: - Media Viewer Paging View
 
-/// UIKit-backed horizontal paging view for the media viewer.
-///
-/// This replaces SwiftUI `TabView(.page)` because `TabView` is not suitable for
-/// very large virtualized media lists and can flicker when its page array changes.
-///
-/// The paging view uses a `UICollectionView` with reusable cells.
-/// Each cell hosts a SwiftUI `NCMediaViewerPageView`.
 struct NCMediaViewerPagingView: UIViewRepresentable {
     @ObservedObject var model: NCMediaViewerModel
     let contextMenuController: NCMainTabBarController?
@@ -106,11 +99,6 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
 
 // MARK: - Media Viewer Collection View
 
-/// Collection view subclass used to detect bounds changes reliably.
-///
-/// This is needed because rotation, iPad split view resizing, and floating window
-/// resizing can change the collection view bounds without SwiftUI immediately
-/// rebuilding the representable.
 final class NCMediaViewerCollectionView: UICollectionView {
     var onLayoutSubviews: (() -> Void)?
 
@@ -122,11 +110,6 @@ final class NCMediaViewerCollectionView: UICollectionView {
 
 // MARK: - Media Viewer Paging Coordinator
 
-/// Coordinator for the UIKit paging collection view.
-///
-/// It acts as:
-/// - collection view data source
-/// - collection view delegate flow layout
 @MainActor
 final class NCMediaViewerPagingCoordinator: NSObject,
                                             UICollectionViewDataSource,
@@ -173,10 +156,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - Layout
 
-    /// Updates the paging layout after bounds changes.
-    ///
-    /// This keeps the selected page centered after rotation, split view resizing,
-    /// or iPad floating window resizing.
     func updateLayoutAfterBoundsChangeIfNeeded() {
         guard let collectionView else {
             return
@@ -196,13 +175,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         relayoutAndKeepCurrentIndex(size: boundsSize)
     }
 
-    /// Invalidates the paging layout while preserving the current selected page.
-    ///
-    /// During bounds changes, the collection view content offset can temporarily be
-    /// expressed using the old page width. This method prevents those intermediate
-    /// offsets from being interpreted as real page changes.
-    ///
-    /// - Parameter size: New page size to apply to the flow layout.
     func relayoutAndKeepCurrentIndex(size: CGSize) {
         guard let collectionView else {
             return
@@ -212,7 +184,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
               size.height > 0 else {
             return
         }
-
+        // Ignore intermediate offsets while the layout is being resized.
         lastCollectionViewBoundsSize = size
         isAdjustingLayout = true
 
@@ -241,10 +213,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - Background
 
-    /// Returns the UIKit background color for the given page.
-    ///
-    /// Audio and video use black because their player surfaces are dark.
-    /// Images use the viewer background style unless chrome is hidden.
     private func backgroundColor(for page: NCMediaViewerPageModel?) -> UIColor {
         guard !model.isChromeHidden else {
             return .black
@@ -266,7 +234,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
     }
 
-    /// Applies the current page background to the collection view.
     func updateCollectionBackground(for index: Int? = nil) {
         let pageIndex = index ?? model.selectedIndex
         let page = model.pageModel(at: pageIndex)
@@ -275,14 +242,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         collectionView?.backgroundColor = color
     }
 
-    /// Sends the metadata of the currently selected page to the hosting controller title view.
     func updateVisibleMetadataTitleForCurrentPage() {
         updateVisibleMetadataTitle(for: model.selectedIndex)
     }
 
-    /// Sends the metadata of the currently visible page to the hosting controller title view.
-    ///
-    /// - Parameter index: Page index currently closest to the collection view center.
     private func updateVisibleMetadataTitle(for index: Int) {
         guard index >= 0,
               index < model.numberOfPages else {
@@ -299,9 +262,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - Initial Scroll
 
-    /// Scrolls to the initial selected page once.
-    ///
-    /// - Parameter animated: Whether the scroll should be animated.
     func scrollToInitialIndexIfNeeded(animated: Bool) {
         guard !didScrollToInitialIndex else {
             return
@@ -337,12 +297,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         refreshVisibleCells()
     }
 
-    /// Scrolls to the current selected index.
-    ///
-    /// This is used after layout size changes, for example after rotation or
-    /// iPad window resizing.
-    ///
-    /// - Parameter animated: Whether the scroll should be animated.
     func scrollToCurrentIndex(animated: Bool) {
         scrollToIndex(
             model.selectedIndex,
@@ -350,11 +304,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
-    /// Scrolls to a specific page index without changing the selected model index.
-    ///
-    /// - Parameters:
-    ///   - index: Page index to center.
-    ///   - animated: Whether the scroll should be animated.
     private func scrollToIndex(
         _ index: Int,
         animated: Bool
@@ -388,7 +337,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - Visible Cell Refresh
 
-    /// Refreshes currently visible cells using the latest page models and selected index.
     func refreshVisibleCells() {
         guard let collectionView else {
             return
@@ -410,14 +358,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - Page Navigation
 
-    /// Moves to the previous or next page using the paging collection view.
-    ///
-    /// The target page becomes selected only after the scrolling animation finishes.
-    /// This keeps programmatic navigation consistent with manual swipe navigation.
-    ///
-    /// - Parameters:
-    ///   - offset: Relative page offset. Use `-1` for previous and `1` for next.
-    ///   - shouldAutoPlay: Whether the target page should autoplay after selection.
     private func moveToPage(
         offset: Int,
         shouldAutoPlay: Bool
@@ -441,7 +381,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         if shouldAutoPlay {
             model.requestAutoPlay(at: targetIndex)
         }
-
+        // Selection is finalized when the scroll animation ends.
         isUserPaging = true
         lastVisibleIndex = targetIndex
 
@@ -456,11 +396,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
-    /// Configures a paging cell with all callbacks required by the hosted SwiftUI page.
-    ///
-    /// - Parameters:
-    ///   - cell: Cell to configure.
-    ///   - page: Page model to render.
     private func configure(
         cell: NCMediaViewerPagingCell,
         page: NCMediaViewerPageModel
@@ -587,10 +522,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         refreshVisibleCells()
     }
 
-    /// Returns the nearest page index for the current horizontal scroll position.
-    ///
-    /// - Parameter scrollView: Source scroll view.
-    /// - Returns: Rounded page index if it is inside the media range.
     private func pageIndex(for scrollView: UIScrollView) -> Int? {
         pageIndex(
             forContentOffsetX: scrollView.contentOffset.x,
@@ -598,14 +529,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
-    /// Returns the nearest page index for the provided horizontal content offset.
-    ///
-    /// This is used to predict the final page before deceleration finishes.
-    ///
-    /// - Parameters:
-    ///   - contentOffsetX: Horizontal content offset to evaluate.
-    ///   - width: Current page width.
-    /// - Returns: Rounded page index if it is inside the media range.
     private func pageIndex(
         forContentOffsetX contentOffsetX: CGFloat,
         width: CGFloat
@@ -666,12 +589,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
     }
 
-    /// Updates the selected page index after paging has settled.
-    ///
-    /// This is the only place where a finished swipe becomes the real selected page.
-    /// During dragging, visible pages are tracked for background updates, but they are not considered selected.
-    ///
-    /// - Parameter scrollView: Source scroll view.
     private func updateSelectedIndexFromScrollView(_ scrollView: UIScrollView) {
         guard !isAdjustingLayout else {
             return
@@ -680,7 +597,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         guard let index = pageIndex(for: scrollView) else {
             return
         }
-
+        // The settled page is now the selected page.
         isUserPaging = false
         lastVisibleIndex = index
 
@@ -697,7 +614,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
 // MARK: - Media Viewer Paging Cell
 
-/// Collection view cell hosting one SwiftUI media viewer page.
 final class NCMediaViewerPagingCell: UICollectionViewCell {
     static let reuseIdentifier = "NCMediaViewerPagingCell"
 
@@ -742,21 +658,6 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
 
     // MARK: - Configuration
 
-    /// Configures the cell with a media viewer page.
-    ///
-    /// - Parameters:
-    ///   - page: Page model to render.
-    ///   - isSelected: Whether this cell represents the currently selected page.
-    ///   - isChromeHidden: Whether viewer chrome is currently hidden.
-    ///   - backgroundColor: Background color matching the currently rendered page.
-    ///   - canGoPrevious: Whether the page can navigate to a previous item.
-    ///   - canGoNext: Whether the page can navigate to a next item.
-    ///   - shouldAutoPlay: Whether hosted audio content should start playback automatically.
-    ///   - onToggleChrome: Callback used by image pages to show or hide chrome.
-    ///   - onPreviousPage: Callback used by inline controls to move to previous page.
-    ///   - onNextPage: Callback used by inline controls to move to next page.
-    ///   - onClose: Callback used by fullscreen video controllers to close the media viewer with the current media ocId.
-    ///   - onAutoPlayConsumed: Callback invoked after the hosted page consumes the auto-play request.
     func configure(
         page: NCMediaViewerPageModel,
         isSelected: Bool,
@@ -822,9 +723,6 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         }
     }
 
-    /// Configures the cell as an empty page.
-    ///
-    /// - Parameter backgroundColor: Background color to apply to the empty page.
     func configureEmpty(backgroundColor: UIColor = .black) {
         self.backgroundColor = backgroundColor
         contentView.backgroundColor = backgroundColor

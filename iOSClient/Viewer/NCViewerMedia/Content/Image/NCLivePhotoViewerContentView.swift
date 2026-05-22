@@ -10,12 +10,6 @@ import NextcloudKit
 
 // MARK: - Live Photo Viewer Content View
 
-/// Displays a Live Photo using a paired full image file and video file.
-///
-/// The still image is rendered through `NCImageViewerContentView`, so preview,
-/// full image replacement, zoom, and pan keep the same behavior as normal images.
-/// The `PHLivePhotoView` is mounted only during playback and is dismantled as soon
-/// as playback ends, the page changes, or the view disappears.
 struct NCLivePhotoViewerContentView: View {
     let identifier: String
     let previewURL: URL?
@@ -108,7 +102,6 @@ struct NCLivePhotoViewerContentView: View {
         )
     }
 
-    /// Badge shown below the navigation bar on the leading side. (color)
     private var livePhotoBadgeBackground: Color {
         switch backgroundStyle {
         case .black:
@@ -145,7 +138,6 @@ struct NCLivePhotoViewerContentView: View {
         }
     }
 
-    /// Badge shown below the navigation bar on the leading side.
     private var livePhotoBadge: some View {
         GeometryReader { proxy in
             let isLandscape = proxy.size.width > proxy.size.height
@@ -226,10 +218,7 @@ struct NCLivePhotoViewerContentView: View {
 
     // MARK: - Loading
 
-    /// Loads the Live Photo only when both full image and paired video resources are available.
-    ///
-    /// Missing resources are not treated as a visual failure because the viewer can
-    /// still render the still image through the normal image pipeline.
+    // Keep the still image visible when Live Photo resources are missing.
     @MainActor
     private func loadLivePhotoIfNeeded() async {
         if loadedTaskIdentifier != taskIdentifier {
@@ -279,19 +268,12 @@ struct NCLivePhotoViewerContentView: View {
         livePhoto = loadedLivePhoto
     }
 
-    /// Stops the current Live Photo playback and removes the temporary playback view.
     @MainActor
     private func stopLivePhotoPlayback() {
         isPlayingLivePhoto = false
     }
 
-    /// Requests a `PHLivePhoto` from the provided photo and video resource URLs.
-    ///
-    /// The Photos framework can invoke the result handler more than once.
-    /// This wrapper waits for the non-degraded Live Photo and resumes the continuation only once.
-    ///
-    /// - Parameter resourceURLs: Local resource URLs required to build the Live Photo.
-    /// - Returns: A playable `PHLivePhoto` when the request succeeds, otherwise `nil`.
+    // Photos may call the handler more than once; resume only once.
     @MainActor
     private func requestLivePhoto(resourceURLs: [URL]) async -> PHLivePhoto? {
         guard resourceURLs.count >= 2 else {
@@ -365,10 +347,6 @@ struct NCLivePhotoViewerContentView: View {
 
 // MARK: - Live Photo View Representable
 
-/// UIKit wrapper for `PHLivePhotoView`.
-///
-/// The wrapper starts Live Photo playback when it is mounted.
-/// Playback is stopped explicitly when SwiftUI dismantles the UIKit view.
 private struct NCLivePhotoViewRepresentable: UIViewRepresentable {
     let livePhoto: PHLivePhoto
     let backgroundStyle: NCViewerBackgroundStyle

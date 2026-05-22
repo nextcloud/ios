@@ -8,39 +8,16 @@ import NextcloudKit
 
 // MARK: - Video Playback Engine
 
-/// Describes the currently rendered video playback engine.
-///
-/// The engine is owned by `NCVideoPlaybackController`.
-/// Views only render the selected engine; they do not own AVFoundation playback resources.
-/// VLC playback is rendered by a dedicated legacy-style UIKit VLC view.
 enum NCVideoPlaybackEngine {
-    /// No playable engine is currently ready.
     case loading
-
-    /// Native AVFoundation playback using a resolved playable URL.
-    ///
-    /// The real fullscreen AVPlayer is owned by `NCVideoAVPlayerViewController`.
     case avFoundation(url: URL)
-
-    /// VLC fallback playback using a resolved playable URL.
-    ///
-    /// The VLC player itself is owned by `NCVideoVLCViewerContentView`, not by this controller.
     case vlc(url: URL)
-
-    /// Playback could not be prepared.
     case failed(message: String)
 }
 
 // MARK: - Video Playback Controller
 
-/// Shared video playback controller used by the SwiftUI media viewer.
-///
-/// This controller owns AVFoundation playback resources and resolves whether
-/// a video should be rendered through AVFoundation or VLC.
-///
-/// VLC is intentionally not owned here. The VLC renderer uses a legacy-style
-/// UIKit controller with a stable `UIImageView` drawable, matching the old
-/// media viewer behavior.
+// Resolves AVFoundation playback or VLC fallback for video pages.
 @MainActor
 final class NCVideoPlaybackController: ObservableObject {
     static let shared = NCVideoPlaybackController()
@@ -68,17 +45,6 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - Public API
 
-    /// Returns whether the requested metadata and URL already match the current video.
-    ///
-    /// This check is used for local videos, where the playable file URL is known before
-    /// loading. It prevents unnecessary reloads while still allowing the viewer to switch
-    /// from a remote URL to a newly available local file URL.
-    ///
-    /// - Parameters:
-    ///   - ocId: Nextcloud file identifier.
-    ///   - etag: Metadata ETag.
-    ///   - url: Expected local or remote playable URL.
-    /// - Returns: True when the current loaded media matches the supplied identity and URL.
     func isCurrentVideo(
         ocId: String,
         etag: String,
@@ -88,20 +54,7 @@ final class NCVideoPlaybackController: ObservableObject {
         currentEtag == etag &&
         currentURL == url
     }
-
-    /// Returns whether the requested metadata already matches the current video.
-    ///
-    /// This check is used for remote videos where the resolved playback URL is not
-    /// known before the resolver runs. It prevents SwiftUI rebuilds, such as rotation,
-    /// from resolving and loading the same remote video again.
-    ///
-    /// Local videos should use the URL-based overload so the viewer can still switch
-    /// from a remote URL to a newly available local file URL.
-    ///
-    /// - Parameters:
-    ///   - ocId: Nextcloud file identifier.
-    ///   - etag: Metadata ETag.
-    /// - Returns: True when the current loaded media matches the supplied metadata.
+    // Used for remote videos before the final playback URL is known.
     func isCurrentVideo(
         ocId: String,
         etag: String
@@ -110,20 +63,7 @@ final class NCVideoPlaybackController: ObservableObject {
         currentEtag == etag &&
         currentURL != nil
     }
-
-    /// Loads a video URL if it is not already loaded.
-    ///
-    /// Calling this method again for the same `ocId`, `etag`, and URL is idempotent.
-    /// It does not stop, recreate, or restart the existing AV player. For VLC,
-    /// it keeps the same engine URL so the VLC view can reuse its own controller.
-    ///
-    /// - Parameters:
-    ///   - metadata: Video metadata used as playback identity.
-    ///   - url: Local or remote playable URL.
-    ///   - fileName: Original metadata file name used to detect legacy formats.
-    ///   - userAgent: Optional User-Agent used by VLC for remote playback.
-    ///   - httpHeaders: Optional HTTP headers used by AVFoundation for remote playback.
-    ///   - shouldAutoPlay: Whether playback should start automatically.
+    // Reuses the current player when the requested video is already loaded.
     func loadVideo(
         metadata: tableMetadata,
         url: URL,
@@ -192,9 +132,6 @@ final class NCVideoPlaybackController: ObservableObject {
         )
     }
 
-    /// Stops the current video only if the supplied page owns playback.
-    ///
-    /// - Parameter ocId: Page file identifier.
     func stopIfCurrent(ocId: String) {
         guard currentOcId == ocId else {
             return
@@ -202,11 +139,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
         stop()
     }
-
-    /// Stops current playback state and releases AVFoundation resources.
-    ///
-    /// VLC playback is stopped by `NCVideoVLCViewerContentView` through
-    /// `.ncMediaViewerStopPlayback`, because the VLC player is owned by that view.
+    // Releases AVFoundation resources; VLC is owned by its view controller.
     func stop() {
         loadToken = UUID()
 
@@ -230,7 +163,6 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - AVFoundation
 
-    /// Prepares an AVFoundation player item and observes its readiness.
     private func prepareAVFoundation(
         metadata: tableMetadata,
         url: URL,
@@ -303,13 +235,6 @@ final class NCVideoPlaybackController: ObservableObject {
         }
     }
 
-    /// Selects AVFoundation as the active rendering engine.
-    ///
-    /// - Parameters:
-    ///   - url: The resolved playable URL.
-    ///   - player: Prepared AVFoundation player.
-    ///   - shouldAutoPlay: Whether playback should start after AVFoundation becomes ready.
-    ///   - token: Load token used to ignore stale callbacks.
     private func resolveWithAVFoundation(
         url: URL,
         player: AVPlayer,
@@ -334,7 +259,7 @@ final class NCVideoPlaybackController: ObservableObject {
         )
     }
 
-    /// Starts a timeout after which VLC is selected if AVFoundation is still loading.
+    // Fall back to VLC if AVFoundation does not become ready quickly.
     private func startFallbackTimeout(
         url: URL,
         token: UUID
@@ -369,10 +294,6 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - VLC
 
-    /// Selects VLC as the active rendering engine.
-    ///
-    /// This does not create or own the VLC player. It only exposes the URL to
-    /// `NCVideoVLCViewerContentView`, which owns its legacy-style VLC controller.
     private func resolveWithVLC(
         url: URL,
         reason: String,
@@ -407,7 +328,6 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - State Helpers
 
-    /// Returns whether the supplied media request is already loaded.
     private func isSameLoadedVideo(
         metadata: tableMetadata,
         url: URL
@@ -417,7 +337,6 @@ final class NCVideoPlaybackController: ObservableObject {
         currentURL == url
     }
 
-    /// Returns whether a callback belongs to the current load request.
     private func isCurrentLoad(
         url: URL,
         token: UUID
@@ -425,9 +344,6 @@ final class NCVideoPlaybackController: ObservableObject {
         loadToken == token && currentURL == url
     }
 
-    /// Resumes the current AV player if requested.
-    ///
-    /// VLC auto-play is handled by `NCVideoVLCViewerContentView`.
     private func resumeCurrentPlaybackIfNeeded(shouldAutoPlay: Bool) {
         guard shouldAutoPlay else {
             return
@@ -446,7 +362,6 @@ final class NCVideoPlaybackController: ObservableObject {
 
     // MARK: - Private Helpers
 
-    /// Configures the audio session for video playback.
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -466,7 +381,7 @@ final class NCVideoPlaybackController: ObservableObject {
         }
     }
 
-    /// Returns whether a video format should bypass AVFoundation and use VLC directly.
+    // Legacy formats go directly to VLC.
     private func shouldUseVLCWithoutAVFoundation(
         url: URL,
         fileName: String
@@ -489,7 +404,6 @@ final class NCVideoPlaybackController: ObservableObject {
         return legacyVideoExtensions.contains(pathExtension)
     }
 
-    /// Resolves the best available video extension.
     private func resolvedVideoExtension(
         url: URL,
         fileName: String
@@ -505,7 +419,6 @@ final class NCVideoPlaybackController: ObservableObject {
         return url.pathExtension.lowercased()
     }
 
-    /// Checks whether a local file exists and has a non-zero size.
     private func isValidLocalFile(url: URL) -> Bool {
         let path = url.path
 

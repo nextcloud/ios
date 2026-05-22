@@ -7,16 +7,7 @@ import UIKit
 
 // MARK: - Media Viewer Presenter
 
-/// Presents the media viewer as a fullscreen overlay above the current window.
-///
-/// The presenter installs a dedicated `UINavigationController` directly on the
-/// active window instead of pushing into the app navigation stack. This keeps the
-/// viewer independent from the current screen while still allowing the viewer to
-/// use a real navigation bar for title, close, and menu actions.
-///
-/// When a transition source is provided, the presenter animates the visible
-/// thumbnail into the fullscreen viewer and animates the currently selected media
-/// item back into its matching thumbnail frame on dismissal.
+/// Presents the media viewer as a fullscreen overlay with optional thumbnail transitions.
 @MainActor
 final class NCMediaViewerPresenter: NSObject {
     static let shared = NCMediaViewerPresenter()
@@ -44,13 +35,6 @@ final class NCMediaViewerPresenter: NSObject {
     // MARK: - Presentation
 
     /// Shows the media viewer above the current window.
-    ///
-    /// - Parameters:
-    ///   - model: Media viewer model used to render and page through media items.
-    ///   - viewerTransitionSource: Optional thumbnail source used for the opening animation.
-    ///   - sourceView: Optional view used to resolve the current window. When nil, the active foreground key window is used.
-    ///   - contextMenuController: Controller used by the viewer context menu.
-    ///   - closingTransitionSourceProvider: Optional provider used to resolve the current thumbnail source on dismissal.
     func show(
         model: NCMediaViewerModel,
         viewerTransitionSource: NCViewerTransitionSource?,
@@ -123,8 +107,6 @@ final class NCMediaViewerPresenter: NSObject {
     }
 
     /// Dismisses the current media viewer overlay.
-    ///
-    /// - Parameter animated: Whether dismissal should be animated.
     func dismiss(animated: Bool = true) {
         guard !isDismissing else {
             return
@@ -172,13 +154,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     // MARK: - Navigation Appearance
 
-    /// Configures the dedicated navigation controller used by the viewer.
-    ///
-    /// The navigation bar is transparent and overlays the SwiftUI content, allowing
-    /// media pages to remain fullscreen while still using standard UIKit navigation
-    /// items.
-    ///
-    /// - Parameter navigationController: Viewer navigation controller.
+    /// Configures the transparent navigation bar used by the viewer.
     private func configureNavigationController(_ navigationController: UINavigationController) {
         navigationController.setNavigationBarHidden(false, animated: false)
         navigationController.navigationBar.isTranslucent = true
@@ -202,12 +178,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     // MARK: - Dismiss Pan Gesture
 
-    /// Installs the swipe-down dismiss gesture on the fullscreen viewer container.
-    ///
-    /// The gesture is attached at presenter level, above the paging implementation,
-    /// so it does not require custom logic inside collection view cells or SwiftUI pages.
-    ///
-    /// - Parameter view: Viewer container view.
+    /// Installs the swipe-down gesture used to close the viewer.
     private func installDismissPanGesture(on view: UIView) {
         removeDismissPanGesture()
 
@@ -237,10 +208,7 @@ final class NCMediaViewerPresenter: NSObject {
         isTrackingDismissPan = false
     }
 
-    /// Handles swipe-down dismissal from the fullscreen viewer container.
-    ///
-    /// The gesture dismisses when downward movement clearly wins over horizontal paging,
-    /// using permissive thresholds similar to a photo viewer drag-to-close interaction.
+    /// Handles swipe-down dismissal when vertical movement wins over paging.
     @objc
     private func handleDismissPanGesture(_ gesture: UIPanGestureRecognizer) {
         guard !isDismissing,
@@ -301,15 +269,6 @@ final class NCMediaViewerPresenter: NSObject {
     // MARK: - Opening Animation
 
     /// Animates the source thumbnail into the fullscreen viewer.
-    ///
-    /// The real viewer is kept hidden until the temporary transition image reaches
-    /// its destination frame. This prevents seeing both the viewer image and the
-    /// transition image at the same time.
-    ///
-    /// - Parameters:
-    ///   - viewerTransitionSource: Source thumbnail data.
-    ///   - window: Window that contains the overlay transition views.
-    ///   - viewerView: Real viewer container view to reveal at the end.
     private func animateOpening(
         viewerTransitionSource: NCViewerTransitionSource,
         in window: UIWindow,
@@ -357,15 +316,6 @@ final class NCMediaViewerPresenter: NSObject {
     // MARK: - Closing Animation
 
     /// Animates the fullscreen viewer back into the current thumbnail frame.
-    ///
-    /// The real viewer is hidden immediately and replaced by a temporary transition
-    /// image, avoiding double-image artifacts during the zoom-out animation.
-    ///
-    /// - Parameters:
-    ///   - viewerTransitionSource: Current thumbnail data used as closing destination.
-    ///   - closingImage: Image currently displayed by the viewer, used during the closing transition.
-    ///   - window: Window that contains the overlay transition views.
-    ///   - viewerView: Real viewer container view to dismiss.
     private func animateClosing(
         viewerTransitionSource: NCViewerTransitionSource,
         closingImage: UIImage,
@@ -403,13 +353,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     // MARK: - Closing Source
 
-    /// Returns the transition source for the currently selected media item.
-    ///
-    /// The source controller knows how to map the current `ocId` to the visible
-    /// thumbnail frame. If no current source can be resolved, the presenter closes
-    /// without a thumbnail transition.
-    ///
-    /// - Returns: Current transition source if available.
+    /// Returns the transition source for the currently selected item.
     private func currentClosingTransitionSource() -> NCViewerTransitionSource? {
         let ocId = forcedClosingOcId ?? currentModel?.selectedOcId
 
@@ -420,14 +364,7 @@ final class NCMediaViewerPresenter: NSObject {
         return closingTransitionSourceProvider?(ocId)
     }
 
-    /// Returns the best currently displayed image for the closing transition.
-    ///
-    /// The full local image is preferred when available.
-    /// If the full image is not available yet, the preview image is used.
-    /// If no current image can be resolved, the caller should fall back to the
-    /// transition source image.
-    ///
-    /// - Returns: Current image suitable for the closing transition.
+    /// Returns the best available image for the closing transition.
     private func currentClosingImage() -> UIImage? {
         guard let page = currentModel?.selectedPageModel() else {
             return nil
@@ -500,9 +437,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     // MARK: - Helpers
 
-    /// Returns the current active foreground key window.
-    ///
-    /// - Returns: Active foreground key window if available.
+    /// Returns the active foreground key window.
     private func activeWindow() -> UIWindow? {
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -511,12 +446,7 @@ final class NCMediaViewerPresenter: NSObject {
             .first { $0.isKeyWindow }
     }
 
-    /// Computes the aspect-fit frame for an image inside the fullscreen container.
-    ///
-    /// - Parameters:
-    ///   - imageSize: Source image size.
-    ///   - containerSize: Window size.
-    /// - Returns: Aspect-fit destination frame.
+    /// Computes the aspect-fit frame for an image inside the container.
     private func aspectFitFrame(
         imageSize: CGSize,
         containerSize: CGSize

@@ -7,10 +7,6 @@ import UIKit
 
 // MARK: - Video Controls View Delegate
 
-/// Receives user actions from the shared video controls view.
-///
-/// The controls view is playback-engine agnostic.
-/// AVFoundation and VLC controllers translate these callbacks into their own player APIs.
 protocol NCVideoControlsViewDelegate: AnyObject {
     func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView)
@@ -27,44 +23,20 @@ protocol NCVideoControlsViewDelegate: AnyObject {
 }
 
 extension NCVideoControlsViewDelegate {
-    /// Handles the Picture in Picture action when implemented by a playback controller.
-    ///
-    /// - Parameter controlsView: Shared controls view that emitted the action.
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) { }
 
-    /// Handles the subtitle track action when implemented by a playback controller.
-    ///
-    /// - Parameter controlsView: Shared controls view that emitted the action.
     func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView) { }
 
-    /// Handles the audio track action when implemented by a playback controller.
-    ///
-    /// - Parameter controlsView: Shared controls view that emitted the action.
     func videoControlsDidTapAudio(_ controlsView: NCVideoControlsView) { }
 
-    /// Handles the external subtitle import action when implemented by a playback controller.
-    ///
-    /// - Parameter controlsView: Shared controls view that emitted the action.
     func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView) { }
 
-    /// Handles subtitle track selection when implemented by a playback controller.
-    ///
-    /// - Parameters:
-    ///   - controlsView: Shared controls view that emitted the action.
-    ///   - index: VLC subtitle track index selected by the user.
     func videoControls(_ controlsView: NCVideoControlsView, didSelectSubtitleTrackIndex index: Int32) { }
 
-    /// Handles audio track selection when implemented by a playback controller.
-    ///
-    /// - Parameters:
-    ///   - controlsView: Shared controls view that emitted the action.
-    ///   - index: VLC audio track index selected by the user.
     func videoControls(_ controlsView: NCVideoControlsView, didSelectAudioTrackIndex index: Int32) { }
 }
 
 // MARK: - Video Controls Top Actions Mode
-
-/// Describes the engine-specific actions rendered in the top controls area.
 
 enum NCVideoControlsTopActionsMode: Equatable {
     case none
@@ -74,7 +46,6 @@ enum NCVideoControlsTopActionsMode: Equatable {
 
 // MARK: - Video Track Menu Item
 
-/// Represents a selectable VLC track rendered by the shared SwiftUI controls menu.
 struct NCVideoTrackMenuItem: Identifiable, Equatable {
     let index: Int32
     let title: String
@@ -87,11 +58,6 @@ struct NCVideoTrackMenuItem: Identifiable, Equatable {
 
 // MARK: - Video Controls View
 
-/// Shared UIKit wrapper used by video engines.
-///
-/// AVPlayer and VLC still receive a regular `UIView`, while the visual controls are rendered
-/// by SwiftUI through an embedded hosting controller. This keeps playback integration stable
-/// and makes the custom UI easy to preview and iterate.
 final class NCVideoControlsView: UIView {
 
     // MARK: - Public
@@ -142,20 +108,11 @@ final class NCVideoControlsView: UIView {
 
     // MARK: - Public Updates
 
-    /// Updates the play/pause icon.
-    ///
-    /// - Parameter isPlaying: True when playback is currently active.
     func updatePlayPauseButton(isPlaying: Bool) {
         state.isPlaying = isPlaying
         updateHostedView()
     }
 
-    /// Updates slider and time labels.
-    ///
-    /// - Parameters:
-    ///   - progress: Normalized playback progress between 0 and 1.
-    ///   - elapsedText: Formatted elapsed time.
-    ///   - remainingText: Formatted remaining time.
     func updateProgress(
         progress: Float,
         elapsedText: String,
@@ -167,31 +124,19 @@ final class NCVideoControlsView: UIView {
         updateHostedView()
     }
 
-    /// Enables or disables seeking controls.
-    ///
-    /// - Parameter isEnabled: True when the current engine supports seeking.
     func setSeekingEnabled(_ isEnabled: Bool) {
         state.isSeekingEnabled = isEnabled
         updateHostedView()
     }
 
-    /// Shows or hides the Picture in Picture action.
-    ///
-    /// - Parameter isVisible: True when the current playback engine supports Picture in Picture.
     func setPictureInPictureVisible(_ isVisible: Bool) {
         setTopActionsMode(isVisible ? .pictureInPicture : .none)
     }
 
-    /// Shows or hides the VLC subtitle and audio track actions.
-    ///
-    /// - Parameter isVisible: True when the VLC playback engine should expose track controls.
     func setVLCTrackControlsVisible(_ isVisible: Bool) {
         setTopActionsMode(isVisible ? .vlcTracks : .none)
     }
 
-    /// Updates the engine-specific actions rendered in the top controls area.
-    ///
-    /// - Parameter mode: Top actions mode requested by the current playback engine.
     func setTopActionsMode(_ mode: NCVideoControlsTopActionsMode) {
         let didChangeMode = state.topActionsMode != mode
         var didResetTrackItems = false
@@ -212,9 +157,6 @@ final class NCVideoControlsView: UIView {
         updateHostedView()
     }
 
-    /// Updates the subtitle track menu items rendered by the VLC controls.
-    ///
-    /// - Parameter items: Available subtitle tracks with selection state.
     func setSubtitleTrackMenuItems(_ items: [NCVideoTrackMenuItem]) {
         guard state.subtitleTrackItems != items else {
             return
@@ -224,9 +166,6 @@ final class NCVideoControlsView: UIView {
         updateHostedView()
     }
 
-    /// Updates the audio track menu items rendered by the VLC controls.
-    ///
-    /// - Parameter items: Available audio tracks with selection state.
     func setAudioTrackMenuItems(_ items: [NCVideoTrackMenuItem]) {
         guard state.audioTrackItems != items else {
             return
@@ -236,13 +175,7 @@ final class NCVideoControlsView: UIView {
         updateHostedView()
     }
 
-    /// Updates the navigation bar reference used by the top actions area.
-    ///
-    /// The controls view converts the real navigation bar frame into its own coordinate space
-    /// so top actions remain aligned below the actual viewer chrome across iPhone, iPad,
-    /// rotation, and compact/regular layouts.
-    ///
-    /// - Parameter navigationBar: Navigation bar used as vertical reference for top actions.
+    // Keeps top actions aligned below the real navigation bar.
     func setTopActionsNavigationBar(_ navigationBar: UINavigationBar?) {
         self.navigationBar = navigationBar
         updateTopActionsPosition()

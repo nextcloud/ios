@@ -7,10 +7,6 @@ import MapKit
 import NextcloudKit
 
 // MARK: - Media Viewer Detail View
-
-/// SwiftUI detail panel for media viewer metadata.
-///
-/// It renders file information, optional EXIF information, and optional location data.
 struct NCMediaViewerDetailView: View {
     let metadata: tableMetadata
     let exif: ExifData

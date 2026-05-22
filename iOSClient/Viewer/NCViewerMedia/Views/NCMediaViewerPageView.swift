@@ -7,10 +7,6 @@ import NextcloudKit
 
 // MARK: - Media Viewer Page View
 
-/// Renders a single media viewer page.
-///
-/// This view is pure rendering logic.
-/// It does not load metadata, check local files, read Realm, or start downloads.
 struct NCMediaViewerPageView: View {
 
     // MARK: - Rendered Kind
@@ -116,18 +112,11 @@ struct NCMediaViewerPageView: View {
         }
     }
 
-    /// Returns whether this page should consume an auto-play request.
-    ///
-    /// Auto-play is valid only for the currently selected page.
-    /// Neighbor pages can be prefetched and rendered, but they must not start playback
-    /// or consume a pending auto-play request.
+    // Neighbor pages must not consume auto-play.
     private var effectiveShouldAutoPlay: Bool {
         isSelected && shouldAutoPlay
     }
 
-    /// Moves to the previous page using the coordinator callback.
-    ///
-    /// - Parameter requestedAutoPlay: Whether the hosted content requests auto-play on the target page.
     private func goToPreviousPage(_ requestedAutoPlay: Bool) {
         guard canGoPrevious else {
             return
@@ -138,9 +127,6 @@ struct NCMediaViewerPageView: View {
         )
     }
 
-    /// Moves to the next page using the coordinator callback.
-    ///
-    /// - Parameter requestedAutoPlay: Whether the hosted content requests auto-play on the target page.
     private func goToNextPage(_ requestedAutoPlay: Bool) {
         guard canGoNext else {
             return
@@ -151,7 +137,6 @@ struct NCMediaViewerPageView: View {
         )
     }
 
-    /// Consumes the pending auto-play request only when this page is selected.
     private func consumeAutoPlayIfNeeded() {
         guard isSelected else {
             return
@@ -160,20 +145,11 @@ struct NCMediaViewerPageView: View {
         onAutoPlayConsumed()
     }
 
-    /// Moves to the previous page from video-specific controls or VLC swipe.
-    ///
-    /// Boundary validation is delegated to the paging coordinator so callbacks coming
-    /// from the UIKit-only VLC controller do not depend on potentially stale SwiftUI
-    /// `canGoPrevious` values captured when VLC was presented.
+    // Video controllers delegate boundary checks to the paging coordinator.
     private func goToPreviousPageFromVideo() {
         onPreviousPage(false)
     }
 
-    /// Moves to the next page from video-specific controls or VLC swipe.
-    ///
-    /// Boundary validation is delegated to the paging coordinator so callbacks coming
-    /// from the UIKit-only VLC controller do not depend on potentially stale SwiftUI
-    /// `canGoNext` values captured when VLC was presented.
     private func goToNextPageFromVideo() {
         onNextPage(false)
     }
@@ -412,9 +388,7 @@ struct NCMediaViewerPageView: View {
         .padding()
     }
 
-    /// Returns the tap gesture used to toggle the viewer chrome.
-    ///
-    /// Double tap is ignored here so image zoom can keep using it.
+    // Keep double tap reserved for image zoom.
     private func chromeToggleGesture() -> some Gesture {
         TapGesture(count: 2)
             .exclusively(

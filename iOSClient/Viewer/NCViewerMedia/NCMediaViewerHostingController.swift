@@ -9,10 +9,7 @@ import NextcloudKit
 
 // MARK: - Media Viewer Hosting Controller
 
-/// UIKit hosting controller used by the media viewer.
-///
-/// This controller embeds the SwiftUI media viewer and provides standard UIKit
-/// navigation items for the title, close button, context menu button, and detail button.
+/// Hosts the SwiftUI media viewer inside a UIKit controller.
 @MainActor
 final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerView>, UIAdaptivePresentationControllerDelegate {
     private let model: NCMediaViewerModel
@@ -71,11 +68,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     )
 
     /// Creates a media viewer hosting controller.
-    ///
-    /// - Parameters:
-    ///   - model: Media viewer model used to render and page through media items.
-    ///   - contextMenuController: Main tab bar controller used to build viewer context menus.
-    ///   - onClose: Closure called when the viewer should close, optionally with the media ocId that initiated the close.
     init(
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController?,
@@ -172,9 +164,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Builds the SwiftUI media viewer root view.
-    ///
-    /// - Parameter navigationBar: Current navigation bar used by hosted media pages.
-    /// - Returns: Configured media viewer root view.
     private func makeRootView(navigationBar: UINavigationBar?) -> NCMediaViewerView {
         NCMediaViewerView(
             model: model,
@@ -203,8 +192,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Closes the viewer.
-    ///
-    /// - Parameter ocId: Optional Nextcloud file identifier that initiated the close.
     func close(ocId: String? = nil) {
         stop()
         onClose(ocId)
@@ -250,11 +237,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         floatingTitleView.attach(to: navigationBar)
     }
 
-    /// Updates the floating title view using the provided media metadata and background color.
-    ///
-    /// - Parameters:
-    ///   - metadata: Media metadata used to build the visible title content.
-    ///   - backgroundColor: Current visible page background color used to choose a readable title color.
+    /// Updates the floating title using the current media metadata.
     private func updateTitleLabel(
         metadata: tableMetadata?,
         backgroundColor: UIColor
@@ -275,10 +258,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         )
     }
 
-    /// Returns a readable title text color for the provided background color.
-    ///
-    /// - Parameter backgroundColor: Current visible page background color.
-    /// - Returns: White text on dark backgrounds, black text on light backgrounds.
+    /// Returns a readable title color for the current background.
     private func floatingTitleTextColor(for backgroundColor: UIColor) -> UIColor {
         let resolvedColor = backgroundColor.resolvedColor(with: traitCollection)
         var red: CGFloat = 0
@@ -299,19 +279,12 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         return luminance < 0.5 ? .white : .black
     }
 
-    /// Builds the secondary floating title text for the provided metadata.
-    ///
-    /// - Parameter metadata: Media metadata used to derive the secondary title line.
-    /// - Returns: Secondary title text shown below the main title.
+    /// Builds the secondary floating title text.
     private func floatingTitleSecondaryText(for metadata: tableMetadata) -> String? {
         floatingTitleDateFormatter.string(from: metadata.date as Date)
     }
 
     /// Shows or hides the viewer chrome.
-    ///
-    /// - Parameters:
-    ///   - hidden: Whether the chrome should be hidden.
-    ///   - animated: Whether the transition should be animated.
     private func setChromeHidden(_ hidden: Bool, animated: Bool) {
         navigationController?.setNavigationBarHidden(
             hidden,
@@ -358,9 +331,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         return false
     }
 
-    /// Opens or closes the media detail panel for the currently selected media item.
-    ///
-    /// - Parameter animated: Whether the presentation should be animated.
+    /// Opens or closes the media detail panel.
     private func openDetail(animated: Bool = true) {
         guard !isShowingDetail else {
             closeDetail(animated: animated)
@@ -391,12 +362,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Presents the SwiftUI media detail panel.
-    ///
-    /// - Parameters:
-    ///   - metadata: Current selected media metadata.
-    ///   - index: Page index associated with the metadata.
-    ///   - exif: EXIF information resolved for the selected media.
-    ///   - animated: Whether presentation should be animated.
     private func presentDetailView(
         metadata: tableMetadata,
         index: Int,
@@ -426,8 +391,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     }
 
     /// Closes the media detail panel.
-    ///
-    /// - Parameter animated: Whether dismissal should be animated.
     private func closeDetail(animated: Bool = true) {
         guard let detailHostingController else {
             isShowingDetail = false
@@ -446,10 +409,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         isShowingDetail = false
     }
 
-    /// Marks the currently selected media item as deleted in the viewer.
-    ///
-    /// This is used immediately after the user confirms a delete action, before the
-    /// asynchronous transfer delegate reports the delete completion.
+    /// Marks the selected media item as deleted.
     @MainActor
     func markCurrentItemAsDeleted() {
         guard let metadata = model.selectedMetadata else {
@@ -459,9 +419,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         model.markPageAsDeleted(ocId: metadata.ocId)
     }
 
-    /// Marks a specific media item as deleted in the viewer.
-    ///
-    /// - Parameter ocId: Deleted file identifier.
+    /// Marks a specific media item as deleted.
     @MainActor
     func markItemAsDeleted(ocId: String) {
         model.markPageAsDeleted(ocId: ocId)
@@ -471,9 +429,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 // MARK: - Media Viewer Transfer Delegate
 
 /// Bridges transfer events into the MainActor-isolated media viewer controller.
-///
-/// `NCTransferDelegate` is not MainActor-isolated, so `NCMediaViewerHostingController`
-/// must not conform to it directly in Swift 6.
 final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
     private let onDeletedOcId: @MainActor (_ ocId: String) -> Void
     let sceneIdentifier: String = ""

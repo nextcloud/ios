@@ -6,16 +6,6 @@ import Foundation
 import NextcloudKit
 
 // MARK: - Media Viewer Loader
-
-/// Concrete media viewer loader for the Nextcloud app.
-///
-/// This object is responsible for:
-/// - resolving detached metadata from `ocId`
-/// - checking if the full media file exists locally
-/// - returning or downloading a preview file
-/// - downloading the full media file when needed
-///
-/// It must always return detached `tableMetadata` objects.
 final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
@@ -23,17 +13,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let fileManager = FileManager.default
 
     // MARK: - NCMediaViewerLoading
-
-    /// Resolves detached metadata from an `ocId`.
-    ///
-    /// The primary lookup uses the local Realm database.
-    /// If the metadata is not available locally, the numeric fileId is extracted
-    /// from the `ocId` and the file is resolved from the server.
-    ///
-    /// - Parameters:
-    ///   - ocId: Nextcloud file identifier.
-    ///   - account: Account used to scope the remote fileId lookup.
-    /// - Returns: Detached metadata if available.
     func metadata(for ocId: String, account: String, mediaSearch: Bool) async -> tableMetadata? {
         if let metadata = await database.getMetadataFromOcIdAsync(ocId) {
             return metadata
@@ -59,14 +38,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return metadata
     }
 
-    /// Returns a local preview URL.
-    ///
-    /// This method first checks the local preview cache. If no preview exists,
-    /// it downloads one from the server and stores it using the existing app
-    /// preview cache pipeline.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local preview URL if available.
     func previewURL(for metadata: tableMetadata, index: Int) async -> URL? {
         let localPath = previewLocalPath(for: metadata)
 
@@ -101,12 +72,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    /// Returns the local full media URL if the file is already available.
-    ///
-    /// This method never performs network requests.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local full media URL if available.
     func localMediaURL(for metadata: tableMetadata, index: Int) async -> URL? {
         let localPath = fullLocalPath(for: metadata)
 
@@ -119,10 +84,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    /// Downloads the full media file if needed.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local full media URL after completion.
     func downloadMedia(for metadata: tableMetadata, index: Int) async throws -> URL {
         if let localURL = await localMediaURL(for: metadata, index: index) {
             nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "FULL resolve \(index)", consoleOnly: true)
@@ -161,12 +122,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         throw NCMediaViewerLoaderError.localFileUnavailable
     }
 
-    /// Returns the local Live Photo paired media URL if available.
-    ///
-    /// - Parameters:
-    ///   - metadata: Detached metadata for the main Live Photo image.
-    ///   - index: Page index used for debug logs.
-    /// - Returns: Local paired Live Photo media URL if available.
     func localLivePhotoURL(for metadata: tableMetadata, index: Int) async -> URL? {
         guard metadata.isLivePhoto else {
             return nil
@@ -188,15 +143,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    /// Downloads the Live Photo paired media if needed.
-    ///
-    /// This method is optional by design. If the paired media cannot be found or
-    /// downloaded, the viewer should continue to behave like a normal image viewer.
-    ///
-    /// - Parameters:
-    ///   - metadata: Detached metadata for the main Live Photo image.
-    ///   - index: Page index used for debug logs.
-    /// - Returns: Local paired Live Photo media URL if available.
+    // Live Photo fallback is optional; the image viewer can continue without it.
     func downloadLivePhotoMedia(for metadata: tableMetadata, index: Int) async -> URL? {
         guard metadata.isLivePhoto else {
             return nil
@@ -250,11 +197,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     // MARK: - Private Helpers
-
-    /// Builds the expected full local file path.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local full media file path.
     private func fullLocalPath(for metadata: tableMetadata) -> String {
         utilityFileSystem.getDirectoryProviderStorageOcId(
             metadata.ocId,
@@ -264,10 +206,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         )
     }
 
-    /// Builds the expected local preview file path.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local preview file path.
     private func previewLocalPath(for metadata: tableMetadata) -> String {
         utilityFileSystem.getDirectoryProviderStorageImageOcId(
             metadata.ocId,
@@ -278,10 +216,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         )
     }
 
-    /// Checks whether a local file exists and has a non-zero size.
-    ///
-    /// - Parameter path: Local file path.
-    /// - Returns: True when the file exists and is not empty.
     private func isValidLocalFile(path: String) -> Bool {
         guard !path.isEmpty else {
             return false
@@ -301,9 +235,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 }
 
-// MARK: - Loader Error
-
-/// Errors thrown by the media viewer loader.
 enum NCMediaViewerLoaderError: LocalizedError {
     case localFileUnavailable
 
@@ -315,49 +246,16 @@ enum NCMediaViewerLoaderError: LocalizedError {
     }
 }
 
-// MARK: - Media Viewer Loading
-
-/// Defines the loading operations required by the media viewer.
 protocol NCMediaViewerLoading: Sendable {
-    /// Resolves detached metadata from an `ocId`.
-    ///
-    /// - Parameter ocId: Nextcloud file identifier.
-    /// - Returns: Detached metadata if available.
     func metadata(for ocId: String, account: String, mediaSearch: Bool) async -> tableMetadata?
 
-    /// - Parameters:
-    ///   - metadata: Detached metadata for the media file.
-    ///   - index: Page index used for debug logs.
-    /// - Returns: Local full media URL if available.
     func localMediaURL(for metadata: tableMetadata, index: Int) async -> URL?
 
-    /// Returns a local preview URL.
-    ///
-    /// The implementation can return a cached preview or download one if needed.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local preview URL if available.
     func previewURL(for metadata: tableMetadata, index: Int) async -> URL?
 
-    /// Downloads the full media file if needed.
-    ///
-    /// - Parameter metadata: Detached metadata for the media file.
-    /// - Returns: Local full media URL after completion.
     func downloadMedia(for metadata: tableMetadata, index: Int) async throws -> URL
 
-    /// Returns the local Live Photo paired media URL if available.
-    ///
-    /// - Parameters:
-    ///   - metadata: Detached metadata for the main Live Photo image.
-    ///   - index: Page index used for debug logs.
-    /// - Returns: Local paired Live Photo media URL if available.
     func localLivePhotoURL(for metadata: tableMetadata, index: Int) async -> URL?
 
-    /// Downloads the Live Photo paired media if needed.
-    ///
-    /// - Parameters:
-    ///   - metadata: Detached metadata for the main Live Photo image.
-    ///   - index: Page index used for debug logs.
-    /// - Returns: Local paired Live Photo media URL if available.
     func downloadLivePhotoMedia(for metadata: tableMetadata, index: Int) async -> URL?
 }

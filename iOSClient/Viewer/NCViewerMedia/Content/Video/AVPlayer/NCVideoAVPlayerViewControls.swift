@@ -190,11 +190,9 @@ extension NCVideoAVPlayerViewController {
 
 extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
     func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView) {
-        // AVPlayer does not expose VLC subtitle track controls.
     }
 
     func videoControlsDidTapAudio(_ controlsView: NCVideoControlsView) {
-        // AVPlayer does not expose VLC audio track controls.
     }
 
     func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
