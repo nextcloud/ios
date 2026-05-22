@@ -54,7 +54,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
         DispatchQueue.main.async {
             context.coordinator.scrollToInitialIndexIfNeeded(animated: false)
             context.coordinator.updateCollectionBackground()
-            context.coordinator.updateVisibleMetadataTitleForCurrentPage()
+            context.coordinator.updateVisibleMetadataTitle(for: context.coordinator.model.selectedIndex)
         }
 
         return collectionView
@@ -148,9 +148,13 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         self.cancellable = model.$revision
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                self?.refreshVisibleCells()
-                self?.updateCollectionBackground()
-                self?.updateVisibleMetadataTitleForCurrentPage()
+                guard let self else {
+                    return
+                }
+
+                self.refreshVisibleCells()
+                self.updateCollectionBackground()
+                self.updateVisibleMetadataTitle(for: self.model.selectedIndex)
             }
     }
 
@@ -242,11 +246,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         collectionView?.backgroundColor = color
     }
 
-    func updateVisibleMetadataTitleForCurrentPage() {
-        updateVisibleMetadataTitle(for: model.selectedIndex)
-    }
-
-    private func updateVisibleMetadataTitle(for index: Int) {
+    func updateVisibleMetadataTitle(for index: Int) {
         guard index >= 0,
               index < model.numberOfPages else {
             return

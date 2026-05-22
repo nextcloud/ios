@@ -503,11 +503,13 @@ private struct NCVideoControlsSwiftUIView: View {
                 EmptyView()
 
             case .pictureInPicture:
-                topActionButton(
-                    systemName: "pip.enter",
-                    pointSize: 18,
-                    action: onPictureInPicture
-                )
+                Button(action: onPictureInPicture) {
+                    topActionIcon(
+                        systemName: "pip.enter",
+                        pointSize: 18
+                    )
+                }
+                .buttonStyle(.plain)
 
             case .vlcTracks:
                 subtitleActionMenu(
@@ -515,7 +517,6 @@ private struct NCVideoControlsSwiftUIView: View {
                     pointSize: 17,
                     items: state.subtitleTrackItems,
                     emptyTitle: "_no_subtitles_available_",
-                    onOpen: onSubtitle,
                     onSelect: onSubtitleTrackSelected,
                     onAddExternalSubtitle: onAddExternalSubtitle
                 )
@@ -525,7 +526,6 @@ private struct NCVideoControlsSwiftUIView: View {
                     pointSize: 17,
                     items: state.audioTrackItems,
                     emptyTitle: "_no_audio_tracks_available_",
-                    onOpen: onAudio,
                     onSelect: onAudioTrackSelected
                 )
             }
@@ -537,7 +537,6 @@ private struct NCVideoControlsSwiftUIView: View {
         pointSize: CGFloat,
         items: [NCVideoTrackMenuItem],
         emptyTitle: String,
-        onOpen: @escaping () -> Void,
         onSelect: @escaping (_ index: Int32) -> Void,
         onAddExternalSubtitle: @escaping () -> Void
     ) -> some View {
@@ -578,27 +577,11 @@ private struct NCVideoControlsSwiftUIView: View {
         }
         .buttonStyle(.plain)
     }
-
-    private func topActionButton(
-        systemName: String,
-        pointSize: CGFloat,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            topActionIcon(
-                systemName: systemName,
-                pointSize: pointSize
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
     private func topActionMenu(
         systemName: String,
         pointSize: CGFloat,
         items: [NCVideoTrackMenuItem],
         emptyTitle: String,
-        onOpen: @escaping () -> Void,
         onSelect: @escaping (_ index: Int32) -> Void
     ) -> some View {
         return Menu {

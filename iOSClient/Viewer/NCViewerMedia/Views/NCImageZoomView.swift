@@ -310,31 +310,19 @@ struct NCImageZoomView: UIViewRepresentable {
             let point = gesture.location(in: imageView)
             let targetScale = min(doubleTapZoomScale, maximumZoomScale)
 
-            let zoomRect = zoomRect(
-                for: scrollView,
-                scale: targetScale,
-                center: point
+            let zoomSize = CGSize(
+                width: scrollView.bounds.width / targetScale,
+                height: scrollView.bounds.height / targetScale
+            )
+
+            let zoomRect = CGRect(
+                x: point.x - zoomSize.width * 0.5,
+                y: point.y - zoomSize.height * 0.5,
+                width: zoomSize.width,
+                height: zoomSize.height
             )
 
             scrollView.zoom(to: zoomRect, animated: true)
-        }
-
-        private func zoomRect(
-            for scrollView: UIScrollView,
-            scale: CGFloat,
-            center: CGPoint
-        ) -> CGRect {
-            let size = CGSize(
-                width: scrollView.bounds.width / scale,
-                height: scrollView.bounds.height / scale
-            )
-
-            return CGRect(
-                x: center.x - size.width * 0.5,
-                y: center.y - size.height * 0.5,
-                width: size.width,
-                height: size.height
-            )
         }
     }
 

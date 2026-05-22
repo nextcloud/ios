@@ -9,14 +9,6 @@ import NextcloudKit
 
 struct NCMediaViewerPageView: View {
 
-    // MARK: - Rendered Kind
-
-    private enum NCMediaViewerRenderedKind {
-        case image
-        case video
-        case audio
-    }
-
     // MARK: - Properties
 
     let page: NCMediaViewerPageModel
@@ -250,16 +242,8 @@ struct NCMediaViewerPageView: View {
         previewURL: URL?
     ) -> some View {
         if let metadata = page.metadata {
-            switch mediaKind(for: metadata) {
-            case .image:
-                imageContentView(
-                    previewURL: previewURL,
-                    localURL: localURL,
-                    livePhotoURL: nil,
-                    backgroundStyle: backgroundStyle
-                )
-
-            case .video:
+            switch metadata.classFile {
+            case NKTypeClassFile.video.rawValue:
                 NCVideoViewerContentView(
                     metadata: metadata,
                     localURL: localURL,
@@ -276,7 +260,7 @@ struct NCMediaViewerPageView: View {
                 .id("\(page.ocId)-local-\(localURL.absoluteString)")
                 .background(Color.ncViewerBackground(backgroundStyle))
 
-            case .audio:
+            case NKTypeClassFile.audio.rawValue:
                 NCAudioViewerContentView(
                     metadata: metadata,
                     localURL: localURL,
@@ -288,6 +272,14 @@ struct NCMediaViewerPageView: View {
                     onAutoPlayConsumed: consumeAutoPlayIfNeeded
                 )
                 .background(Color.black)
+
+            default:
+                imageContentView(
+                    previewURL: previewURL,
+                    localURL: localURL,
+                    livePhotoURL: nil,
+                    backgroundStyle: backgroundStyle
+                )
             }
         } else {
             metadataMissingView
@@ -454,21 +446,5 @@ struct NCMediaViewerPageView: View {
         }
 
         return metadata.fileName
-    }
-
-    private func mediaKind(for metadata: tableMetadata) -> NCMediaViewerRenderedKind {
-        switch metadata.classFile {
-        case NKTypeClassFile.image.rawValue:
-            return .image
-
-        case NKTypeClassFile.video.rawValue:
-            return .video
-
-        case NKTypeClassFile.audio.rawValue:
-            return .audio
-
-        default:
-            return .image
-        }
     }
 }

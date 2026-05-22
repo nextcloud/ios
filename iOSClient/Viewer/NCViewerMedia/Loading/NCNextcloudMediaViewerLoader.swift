@@ -8,7 +8,6 @@ import NextcloudKit
 // MARK: - Media Viewer Loader
 final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let database = NCManageDatabase.shared
-    private let global = NCGlobal.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let fileManager = FileManager.default
 
@@ -39,7 +38,13 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     }
 
     func previewURL(for metadata: tableMetadata, index: Int) async -> URL? {
-        let localPath = previewLocalPath(for: metadata)
+        let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(
+            metadata.ocId,
+            etag: metadata.etag,
+            ext: NCGlobal.shared.previewExt1024,
+            userId: metadata.userId,
+            urlBase: metadata.urlBase
+        )
 
         if isValidLocalFile(path: localPath) {
             nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "PREVIEW local \(index)", consoleOnly: true)
@@ -201,16 +206,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         utilityFileSystem.getDirectoryProviderStorageOcId(
             metadata.ocId,
             fileName: metadata.fileNameView,
-            userId: metadata.userId,
-            urlBase: metadata.urlBase
-        )
-    }
-
-    private func previewLocalPath(for metadata: tableMetadata) -> String {
-        utilityFileSystem.getDirectoryProviderStorageImageOcId(
-            metadata.ocId,
-            etag: metadata.etag,
-            ext: global.previewExt1024,
             userId: metadata.userId,
             urlBase: metadata.urlBase
         )

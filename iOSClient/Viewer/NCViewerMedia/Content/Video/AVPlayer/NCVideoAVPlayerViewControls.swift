@@ -9,37 +9,6 @@ import UIKit
 
 extension NCVideoAVPlayerViewController {
 
-    func seekBackwardTapped() {
-        seek(bySeconds: -10)
-    }
-
-    func playPauseTapped() {
-        switch player.timeControlStatus {
-        case .playing:
-            player.pause()
-
-        case .paused,
-             .waitingToPlayAtSpecifiedRate:
-            if let duration = player.currentItem?.duration.seconds,
-               duration.isFinite,
-               player.currentTime().seconds >= duration - 0.2 {
-                player.seek(to: .zero)
-            }
-
-            player.play()
-
-        @unknown default:
-            player.play()
-        }
-
-        updatePlayPauseButton()
-        scheduleControlsHide()
-    }
-
-    func seekForwardTapped() {
-        seek(bySeconds: 10)
-    }
-
     private func seek(bySeconds seconds: Double) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
@@ -196,15 +165,34 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
     }
 
     func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
-        seekBackwardTapped()
+        seek(bySeconds: -10)
     }
 
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
-        playPauseTapped()
+        switch player.timeControlStatus {
+        case .playing:
+            player.pause()
+
+        case .paused,
+             .waitingToPlayAtSpecifiedRate:
+            if let duration = player.currentItem?.duration.seconds,
+               duration.isFinite,
+               player.currentTime().seconds >= duration - 0.2 {
+                player.seek(to: .zero)
+            }
+
+            player.play()
+
+        @unknown default:
+            player.play()
+        }
+
+        updatePlayPauseButton()
+        scheduleControlsHide()
     }
 
     func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView) {
-        seekForwardTapped()
+        seek(bySeconds: 10)
     }
 
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) {

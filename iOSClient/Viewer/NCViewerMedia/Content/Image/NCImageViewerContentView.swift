@@ -175,7 +175,13 @@ struct NCImageViewerContentView: View {
         }
 
         if currentImage == nil {
-            failedMessage = imageDecodeFailedMessage(for: expectedFullURL)
+            if isGIF(expectedFullURL) {
+                failedMessage = "GIF file could not be decoded."
+            } else if isSVG(expectedFullURL) {
+                failedMessage = "SVG file could not be rendered."
+            } else {
+                failedMessage = "UIImage could not decode this file."
+            }
         }
     }
 
@@ -247,18 +253,6 @@ struct NCImageViewerContentView: View {
 
     private func isSVG(_ url: URL?) -> Bool {
         url?.pathExtension.lowercased() == "svg"
-    }
-
-    private func imageDecodeFailedMessage(for url: URL) -> String {
-        if isGIF(url) {
-            return "GIF file could not be decoded."
-        }
-
-        if isSVG(url) {
-            return "SVG file could not be rendered."
-        }
-
-        return "UIImage could not decode this file."
     }
 
     private func isValidLocalFile(url: URL) -> Bool {

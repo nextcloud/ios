@@ -4,36 +4,6 @@ import MobileVLCKit
 // MARK: - Playback Controls
 
 extension NCVideoVLCViewController {
-    @objc
-    func seekBackwardTapped() {
-        showControls(animated: true)
-        scheduleControlsHide()
-        seek(byMilliseconds: -10_000)
-    }
-
-    @objc
-    func playPauseTapped() {
-        showControls(animated: true)
-
-        if mediaPlayer.isPlaying {
-            mediaPlayer.pause()
-            showControls(animated: false)
-            stopControlsHideTimer()
-        } else {
-            mediaPlayer.play()
-        }
-
-        updatePlayPauseButton()
-        updateProgressControls()
-    }
-
-    @objc
-    func seekForwardTapped() {
-        showControls(animated: true)
-        scheduleControlsHide()
-        seek(byMilliseconds: 10_000)
-    }
-
     func seek(byMilliseconds deltaMilliseconds: Int32) {
         let duration = mediaPlayer.media?.length.intValue ?? 0
         guard duration > 0 else {
@@ -199,15 +169,30 @@ extension NCVideoVLCViewController {
 // MARK: - Shared Controls Delegate
 extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
     func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
-        seekBackwardTapped()
+        showControls(animated: true)
+        scheduleControlsHide()
+        seek(byMilliseconds: -10_000)
     }
 
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
-        playPauseTapped()
+        showControls(animated: true)
+
+        if mediaPlayer.isPlaying {
+            mediaPlayer.pause()
+            showControls(animated: false)
+            stopControlsHideTimer()
+        } else {
+            mediaPlayer.play()
+        }
+
+        updatePlayPauseButton()
+        updateProgressControls()
     }
 
     func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView) {
-        seekForwardTapped()
+        showControls(animated: true)
+        scheduleControlsHide()
+        seek(byMilliseconds: 10_000)
     }
 
     // VLC does not expose Picture in Picture controls.

@@ -67,7 +67,7 @@ struct NCVideoViewerContentView: View {
             Color.black
                 .ignoresSafeArea()
 
-            previewPlaceholderView
+            NCVideoPreviewPlaceholderView(previewURL: previewURL)
 
             if let errorMessage {
                 failedView(errorMessage)
@@ -155,13 +155,6 @@ struct NCVideoViewerContentView: View {
         .onDisappear {
             // Ignore layout-driven disappear events.
         }
-    }
-
-    // MARK: - Views
-
-    @ViewBuilder
-    private var previewPlaceholderView: some View {
-        NCVideoPreviewPlaceholderView(previewURL: previewURL)
     }
 
     private func failedView(_ message: String) -> some View {

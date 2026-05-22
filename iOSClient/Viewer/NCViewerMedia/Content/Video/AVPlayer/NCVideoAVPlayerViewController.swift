@@ -316,13 +316,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         floatingTitleView.update(
             primaryText: primaryTitle,
-            secondaryText: floatingTitleSecondaryText(for: metadata),
+            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date),
             textColor: .white
         )
-    }
-
-    private func floatingTitleSecondaryText(for metadata: tableMetadata) -> String? {
-        floatingTitleDateFormatter.string(from: metadata.date as Date)
     }
 
     private func refreshMoreMenu() {

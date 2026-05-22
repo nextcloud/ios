@@ -420,7 +420,7 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if isImage(metadata), let previewURL {
+        if metadata.classFile == NKTypeClassFile.image.rawValue, let previewURL {
             setState(
                 .image(
                     previewURL: previewURL,
@@ -432,7 +432,7 @@ final class NCMediaViewerModel: ObservableObject {
             )
         }
 
-        if isVideo(metadata) {
+        if metadata.classFile == NKTypeClassFile.video.rawValue {
             setState(
                 .video(previewURL: previewURL),
                 for: ocId
@@ -445,7 +445,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         do {
-            if isAudio(metadata) {
+            if metadata.classFile == NKTypeClassFile.audio.rawValue {
                 setState(
                     .downloading(
                         previewURL: previewURL,
@@ -578,7 +578,7 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if isImage(metadata), let previewURL {
+        if metadata.classFile == NKTypeClassFile.image.rawValue, let previewURL {
             setState(
                 .image(
                     previewURL: previewURL,
@@ -591,7 +591,7 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if isVideo(metadata) {
+        if metadata.classFile == NKTypeClassFile.video.rawValue {
             setState(
                 .downloading(
                     previewURL: previewURL,
@@ -602,7 +602,7 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if isAudio(metadata) {
+        if metadata.classFile == NKTypeClassFile.audio.rawValue {
             setState(
                 .downloading(
                     previewURL: previewURL,
@@ -626,14 +626,6 @@ final class NCMediaViewerModel: ObservableObject {
 
     private func pageState(for ocId: String) -> NCMediaViewerPageState {
         cachedPagesByOcId[ocId]?.state ?? .idle
-    }
-
-    private func isAudio(_ metadata: tableMetadata) -> Bool {
-        metadata.classFile == NKTypeClassFile.audio.rawValue
-    }
-
-    private func isVideo(_ metadata: tableMetadata) -> Bool {
-        metadata.classFile == NKTypeClassFile.video.rawValue
     }
 
     private func currentPreviewURL(for ocId: String) -> URL? {
@@ -683,7 +675,7 @@ final class NCMediaViewerModel: ObservableObject {
         for ocId: String,
         index: Int
     ) async {
-        if isImage(metadata) {
+        if metadata.classFile == NKTypeClassFile.image.rawValue {
             let livePhotoURL: URL?
 
             if metadata.isLivePhoto {
@@ -747,9 +739,6 @@ final class NCMediaViewerModel: ObservableObject {
         loadingTasksByOcId[ocId] = nil
     }
 
-    private func isImage(_ metadata: tableMetadata) -> Bool {
-        metadata.classFile == NKTypeClassFile.image.rawValue
-    }
 }
 
 // MARK: - NCMediaViewerPageState Helpers

@@ -16,7 +16,11 @@ final class NCViewerFloatingTitleView: UIView {
     init() {
         super.init(frame: .zero)
 
-        configureView()
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .clear
+        layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        isAccessibilityElement = true
+
         configureLabels()
         configureStackView()
     }
@@ -145,13 +149,6 @@ final class NCViewerFloatingTitleView: UIView {
             secondaryText: nil,
             textColor: .white
         )
-    }
-
-    private func configureView() {
-        translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = .clear
-        layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        isAccessibilityElement = true
     }
 
     private func configureLabels() {
