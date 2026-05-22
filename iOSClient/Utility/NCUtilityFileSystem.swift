@@ -849,4 +849,20 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let parent = url.deletingLastPathComponent().lastPathComponent
         return parent == "f" ? id : nil
     }
+
+    /// Extracts the numeric fileId prefix from a Nextcloud ocId.
+    ///
+    /// - Parameter ocId: Nextcloud ocId, usually composed by a numeric fileId prefix and an instance suffix.
+    /// - Returns: Numeric fileId string if available.
+    func extractFileId(from ocId: String) -> String? {
+        let prefix = ocId.prefix { character in
+            character.isNumber
+        }
+
+        guard !prefix.isEmpty else {
+            return nil
+        }
+
+        return String(Int(prefix) ?? 0)
+    }
 }

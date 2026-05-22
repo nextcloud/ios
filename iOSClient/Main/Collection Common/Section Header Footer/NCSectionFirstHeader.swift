@@ -8,7 +8,7 @@ import NextcloudKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
-    func tapRecommendations(with metadata: tableMetadata)
+    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCViewerTransitionSource?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -232,11 +232,13 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 extension NCSectionFirstHeader: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let recommendedFiles = self.recommendations[indexPath.row]
-        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id) else {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id),
+            let cell = collectionView.cellForItem(at: indexPath) as? NCRecommendationsCell else {
             return
         }
+        let viewerTransitionSource = cell.viewerTransitionSource()
 
-        self.delegate?.tapRecommendations(with: metadata)
+        self.delegate?.tapRecommendations(with: metadata, viewerTransitionSource: viewerTransitionSource)
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

@@ -11,6 +11,7 @@ import NextcloudKit
 class NCContextMenuViewer: NSObject {
     let metadata: tableMetadata
     let controller: NCMainTabBarController?
+    let viewController: UIViewController?
     let webView: Bool
     let sender: Any?
     private let database = NCManageDatabase.shared
@@ -20,9 +21,14 @@ class NCContextMenuViewer: NSObject {
        SceneManager.shared.getWindowScene(controller: controller)
     }
 
-    init(metadata: tableMetadata, controller: NCMainTabBarController?, webView: Bool, sender: Any?) {
+    init(metadata: tableMetadata,
+         controller: NCMainTabBarController?,
+         viewController: UIViewController?,
+         webView: Bool,
+         sender: Any?) {
         self.metadata = metadata
         self.controller = controller
+        self.viewController = viewController
         self.webView = webView
         self.sender = sender
     }
@@ -40,12 +46,12 @@ class NCContextMenuViewer: NSObject {
 
         // DETAIL
         if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-            menuElements.append(makeDetailAction(metadata: metadata, controller: controller))
+            menuElements.append(makeDetailAction(metadata: metadata, controller: controller, viewController: viewController))
         }
 
         // VIEW IN FOLDER
         if !webView {
-            menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller))
+            menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller, viewController: viewController))
         }
 
         // FAVORITE
@@ -85,26 +91,42 @@ class NCContextMenuViewer: NSObject {
 
     // MARK: - Private Action Makers
 
-    private func makeDetailAction(metadata: tableMetadata, controller: NCMainTabBarController) -> UIAction {
+    private func makeDetailAction(metadata: tableMetadata, controller: NCMainTabBarController, viewController: UIViewController?) -> UIAction {
         UIAction(
             title: NSLocalizedString("_details_", comment: ""),
             image: UIImage(systemName: "info")
         ) { _ in
             NCCreate().createShare(controller: controller,
+                                   viewController: viewController,
                                    metadata: metadata,
                                    page: .activity)
         }
     }
 
-    private func makeViewInFolderAction(metadata: tableMetadata, controller: NCMainTabBarController) -> UIAction {
+    private func makeViewInFolderAction(metadata: tableMetadata, controller: NCMainTabBarController, viewController: UIViewController?) -> UIAction {
         UIAction(
             title: NSLocalizedString("_view_in_folder_", comment: ""),
             image: UIImage(systemName: "questionmark.folder")
         ) { _ in
             Task {
-                await NCNetworking.shared.blinkInFolder(serverUrl: metadata.serverUrl,
-                                                        fileName: metadata.fileName,
-                                                        sceneIdentifier: controller.sceneIdentifier)
+                if let files = await NCNetworking.shared.moveInFolder(serverUrl: metadata.serverUrl,
+                                                                      sceneIdentifier: controller.sceneIdentifier) {
+
+                    files.loadViewIfNeeded()
+                    files.view.layoutIfNeeded()
+                    files.collectionView.layoutIfNeeded()
+
+                    if let mediaViewer = viewController as? NCMediaViewerHostingController {
+                        mediaViewer.close()
+                    } else if let mediaViewer = viewController as? NCVideoVLCViewController {
+                        mediaViewer.closeImmediately()
+                    } else if let mediaViewer = viewController as? NCVideoAVPlayerViewController {
+                        mediaViewer.closeImmediately()
+                    }
+
+                    try? await Task.sleep(for: .seconds(0.6))
+                    files.blinkItem(ocId: metadata.ocId)
+                }
             }
         }
     }

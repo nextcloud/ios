@@ -292,7 +292,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func tapRichWorkspace(_ sender: Any) { }
-    func tapRecommendations(with metadata: tableMetadata) { }
+    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCViewerTransitionSource?) { }
 
     // MARK: - Push metadata
 

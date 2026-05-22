@@ -22,7 +22,7 @@ extension NCCollectionViewCommon: NCListCellDelegate, NCGridCellDelegate {
     func tapShareListItem(with metadata: tableMetadata?, button: UIButton, sender: Any) {
         Task {
             guard let metadata else { return }
-            NCCreate().createShare(controller: self.controller, metadata: metadata, page: .sharing)
+            NCCreate().createShare(controller: self.controller, viewController: self.controller, metadata: metadata, page: .sharing)
         }
     }
 }

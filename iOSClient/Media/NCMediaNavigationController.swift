@@ -159,7 +159,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                         sceneIdentifier: self.controller?.sceneIdentifier)
                     await self.database.addMetadataAsync(metadata)
 
-                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self, viewerTransitionSource: nil) {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 }

@@ -1,0 +1,500 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+import NextcloudKit
+
+// MARK: - Media Viewer Page View
+
+/// Renders a single media viewer page.
+///
+/// This view is pure rendering logic.
+/// It does not load metadata, check local files, read Realm, or start downloads.
+struct NCMediaViewerPageView: View {
+
+    // MARK: - Rendered Kind
+
+    private enum NCMediaViewerRenderedKind {
+        case image
+        case video
+        case audio
+    }
+
+    // MARK: - Properties
+
+    let page: NCMediaViewerPageModel
+    let isChromeHidden: Bool
+    let onToggleChrome: () -> Void
+    let isSelected: Bool
+
+    let canGoPrevious: Bool
+    let canGoNext: Bool
+    let shouldAutoPlay: Bool
+    let onPreviousPage: (_ shouldAutoPlay: Bool) -> Void
+    let onNextPage: (_ shouldAutoPlay: Bool) -> Void
+    let onClose: (_ ocId: String?) -> Void
+    let onAutoPlayConsumed: () -> Void
+
+    let contextMenuController: NCMainTabBarController?
+    let navigationBar: UINavigationBar?
+
+    // MARK: - Body
+
+    var body: some View {
+        ZStack {
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
+
+            switch page.state {
+            case .idle,
+                 .loadingMetadata,
+                 .checkingLocalFile:
+                Color.ncViewerBackground(backgroundStyle)
+                    .ignoresSafeArea()
+
+            case .metadataMissing:
+                metadataMissingView
+
+            case .image(let previewURL, let localURL, let livePhotoURL, _):
+                imageStateView(
+                    previewURL: previewURL,
+                    localURL: localURL,
+                    livePhotoURL: livePhotoURL
+                )
+
+            case .video(let previewURL):
+                videoStateView(previewURL: previewURL)
+
+            case .downloading(let previewURL, let progress):
+                downloadingStateView(
+                    previewURL: previewURL,
+                    progress: progress
+                )
+
+            case .ready(let localURL, let previewURL):
+                readyStateView(
+                    localURL: localURL,
+                    previewURL: previewURL
+                )
+
+            case .deleted:
+                deletedView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .gesture(chromeToggleGesture())
+
+            case .failed(let previewURL, let message):
+                failedStateView(
+                    previewURL: previewURL,
+                    message: message
+                )
+            }
+        }
+        .background(Color.ncViewerBackground(backgroundStyle))
+        .ignoresSafeArea()
+    }
+
+    // MARK: - Computed Properties
+
+    private var backgroundStyle: NCViewerBackgroundStyle {
+        if isChromeHidden {
+            return .black
+        }
+
+        guard let metadata = page.metadata else {
+            return .system
+        }
+
+        switch metadata.classFile {
+        case NKTypeClassFile.audio.rawValue,
+             NKTypeClassFile.video.rawValue:
+            return .black
+
+        default:
+            return ncViewerBackgroundStyle(for: metadata)
+        }
+    }
+
+    /// Returns whether this page should consume an auto-play request.
+    ///
+    /// Auto-play is valid only for the currently selected page.
+    /// Neighbor pages can be prefetched and rendered, but they must not start playback
+    /// or consume a pending auto-play request.
+    private var effectiveShouldAutoPlay: Bool {
+        isSelected && shouldAutoPlay
+    }
+
+    /// Moves to the previous page using the coordinator callback.
+    ///
+    /// - Parameter requestedAutoPlay: Whether the hosted content requests auto-play on the target page.
+    private func goToPreviousPage(_ requestedAutoPlay: Bool) {
+        guard canGoPrevious else {
+            return
+        }
+
+        onPreviousPage(
+            isSelected && requestedAutoPlay
+        )
+    }
+
+    /// Moves to the next page using the coordinator callback.
+    ///
+    /// - Parameter requestedAutoPlay: Whether the hosted content requests auto-play on the target page.
+    private func goToNextPage(_ requestedAutoPlay: Bool) {
+        guard canGoNext else {
+            return
+        }
+
+        onNextPage(
+            isSelected && requestedAutoPlay
+        )
+    }
+
+    /// Consumes the pending auto-play request only when this page is selected.
+    private func consumeAutoPlayIfNeeded() {
+        guard isSelected else {
+            return
+        }
+
+        onAutoPlayConsumed()
+    }
+
+    /// Moves to the previous page from video-specific controls or VLC swipe.
+    ///
+    /// Boundary validation is delegated to the paging coordinator so callbacks coming
+    /// from the UIKit-only VLC controller do not depend on potentially stale SwiftUI
+    /// `canGoPrevious` values captured when VLC was presented.
+    private func goToPreviousPageFromVideo() {
+        onPreviousPage(false)
+    }
+
+    /// Moves to the next page from video-specific controls or VLC swipe.
+    ///
+    /// Boundary validation is delegated to the paging coordinator so callbacks coming
+    /// from the UIKit-only VLC controller do not depend on potentially stale SwiftUI
+    /// `canGoNext` values captured when VLC was presented.
+    private func goToNextPageFromVideo() {
+        onNextPage(false)
+    }
+
+    // MARK: - State Views
+
+    private var metadataMissingView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "photo.badge.exclamationmark")
+                .font(.system(size: 44, weight: .regular))
+
+            Text("Media not available")
+                .font(.headline)
+        }
+        .foregroundStyle(primaryForegroundStyle)
+        .multilineTextAlignment(.center)
+        .padding()
+    }
+
+    private var deletedView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "trash")
+                .font(.system(size: 44, weight: .regular))
+
+            Text("Media no longer available")
+                .font(.headline)
+
+            Text("This item has been deleted.")
+                .font(.caption)
+                .foregroundStyle(secondaryForegroundStyle)
+        }
+        .foregroundStyle(primaryForegroundStyle)
+        .multilineTextAlignment(.center)
+        .padding(24)
+    }
+
+    @ViewBuilder
+    private func imageStateView(
+        previewURL: URL?,
+        localURL: URL?,
+        livePhotoURL: URL?
+    ) -> some View {
+        if previewURL != nil || localURL != nil {
+            imageContentView(
+                previewURL: previewURL,
+                localURL: localURL,
+                livePhotoURL: livePhotoURL,
+                backgroundStyle: backgroundStyle
+            )
+        } else {
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
+        }
+    }
+
+    @ViewBuilder
+    private func videoStateView(previewURL: URL?) -> some View {
+        if let metadata = page.metadata {
+            NCVideoViewerContentView(
+                metadata: metadata,
+                localURL: nil,
+                previewURL: previewURL,
+                isSelected: isSelected,
+                contextMenuController: contextMenuController,
+                navigationBar: navigationBar,
+                canGoPrevious: canGoPrevious,
+                canGoNext: canGoNext,
+                onPreviousPage: goToPreviousPageFromVideo,
+                onNextPage: goToNextPageFromVideo,
+                onClose: onClose
+            )
+            .id("\(page.ocId)-remote")
+            .background(Color.ncViewerBackground(backgroundStyle))
+        } else {
+            metadataMissingView
+        }
+    }
+
+    @ViewBuilder
+    private func downloadingStateView(
+        previewURL: URL?,
+        progress: Double?
+    ) -> some View {
+        if page.metadata?.classFile == NKTypeClassFile.video.rawValue,
+           isSelected {
+            videoStateView(previewURL: previewURL)
+        } else if let previewURL {
+            previewOnlyView(previewURL: previewURL)
+        } else {
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
+        }
+    }
+
+    @ViewBuilder
+    private func readyStateView(
+        localURL: URL,
+        previewURL: URL?
+    ) -> some View {
+        if let metadata = page.metadata {
+            switch mediaKind(for: metadata) {
+            case .image:
+                imageContentView(
+                    previewURL: previewURL,
+                    localURL: localURL,
+                    livePhotoURL: nil,
+                    backgroundStyle: backgroundStyle
+                )
+
+            case .video:
+                NCVideoViewerContentView(
+                    metadata: metadata,
+                    localURL: localURL,
+                    previewURL: previewURL,
+                    isSelected: isSelected,
+                    contextMenuController: contextMenuController,
+                    navigationBar: navigationBar,
+                    canGoPrevious: canGoPrevious,
+                    canGoNext: canGoNext,
+                    onPreviousPage: goToPreviousPageFromVideo,
+                    onNextPage: goToNextPageFromVideo,
+                    onClose: onClose
+                )
+                .id("\(page.ocId)-local-\(localURL.absoluteString)")
+                .background(Color.ncViewerBackground(backgroundStyle))
+
+            case .audio:
+                NCAudioViewerContentView(
+                    metadata: metadata,
+                    localURL: localURL,
+                    canGoPrevious: canGoPrevious,
+                    canGoNext: canGoNext,
+                    shouldAutoPlay: effectiveShouldAutoPlay,
+                    onPrevious: goToPreviousPage,
+                    onNext: goToNextPage,
+                    onAutoPlayConsumed: consumeAutoPlayIfNeeded
+                )
+                .background(Color.black)
+            }
+        } else {
+            metadataMissingView
+        }
+    }
+
+    @ViewBuilder
+    private func failedStateView(
+        previewURL: URL?,
+        message: String
+    ) -> some View {
+        ZStack {
+            if let previewURL {
+                previewOnlyView(previewURL: previewURL)
+            } else {
+                Color.ncViewerBackground(backgroundStyle)
+                    .ignoresSafeArea()
+            }
+
+            failedOverlay(
+                fileName: displayFileName(from: page.metadata),
+                message: message
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func imageContentView(
+        previewURL: URL?,
+        localURL: URL?,
+        livePhotoURL: URL?,
+        backgroundStyle: NCViewerBackgroundStyle
+    ) -> some View {
+        if page.metadata?.isLivePhoto == true {
+            NCLivePhotoViewerContentView(
+                identifier: page.ocId,
+                previewURL: previewURL,
+                fullURL: localURL,
+                videoURL: livePhotoURL,
+                backgroundStyle: backgroundStyle,
+                topOverlayInset: livePhotoTopOverlayInset
+            )
+            .background(Color.ncViewerBackground(backgroundStyle))
+            .contentShape(Rectangle())
+            .gesture(chromeToggleGesture())
+        } else {
+            NCImageViewerContentView(
+                identifier: page.ocId,
+                previewURL: previewURL,
+                fullURL: localURL,
+                backgroundStyle: backgroundStyle
+            )
+            .contentShape(Rectangle())
+            .gesture(chromeToggleGesture())
+        }
+    }
+
+    @ViewBuilder
+    private func previewOnlyView(previewURL: URL) -> some View {
+        NCImageViewerContentView(
+            identifier: page.ocId,
+            previewURL: previewURL,
+            fullURL: nil,
+            backgroundStyle: backgroundStyle
+        )
+        .contentShape(Rectangle())
+        .gesture(chromeToggleGesture())
+    }
+
+    private func failedOverlay(fileName: String?, message: String) -> some View {
+        VStack(spacing: 12) {
+            Image(systemName: "icloud.slash")
+                .font(.system(size: 44, weight: .regular))
+
+            Text("Download failed")
+                .font(.headline)
+
+            if let fileName, !fileName.isEmpty {
+                Text(fileName)
+                    .font(.footnote)
+                    .foregroundStyle(.white.opacity(0.65))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+
+            if !message.isEmpty {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.55))
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        .padding(16)
+        .background(.black.opacity(0.45))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding()
+    }
+
+    /// Returns the tap gesture used to toggle the viewer chrome.
+    ///
+    /// Double tap is ignored here so image zoom can keep using it.
+    private func chromeToggleGesture() -> some Gesture {
+        TapGesture(count: 2)
+            .exclusively(
+                before: TapGesture(count: 1)
+            )
+            .onEnded { value in
+                switch value {
+                case .first:
+                    break
+
+                case .second:
+                    onToggleChrome()
+                }
+            }
+    }
+
+    // MARK: - Appearance Helpers
+
+    private var primaryForegroundStyle: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.85)
+
+        case .system,
+             .white,
+             .custom:
+            return .primary
+        }
+    }
+
+    private var secondaryForegroundStyle: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.85)
+
+        case .system,
+             .white,
+             .custom:
+            return .secondary
+        }
+    }
+
+    // MARK: - Helpers
+
+    private var livePhotoTopOverlayInset: CGFloat {
+        let windowScene = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+
+        let window = windowScene?.windows.first { $0.isKeyWindow }
+        let safeTop = window?.safeAreaInsets.top ?? 0
+
+        return safeTop + 44 + 8
+    }
+
+    private func displayFileName(from metadata: tableMetadata?) -> String? {
+        guard let metadata else {
+            return nil
+        }
+
+        if !metadata.fileNameView.isEmpty {
+            return metadata.fileNameView
+        }
+
+        return metadata.fileName
+    }
+
+    private func mediaKind(for metadata: tableMetadata) -> NCMediaViewerRenderedKind {
+        switch metadata.classFile {
+        case NKTypeClassFile.image.rawValue:
+            return .image
+
+        case NKTypeClassFile.video.rawValue:
+            return .video
+
+        case NKTypeClassFile.audio.rawValue:
+            return .audio
+
+        default:
+            return .image
+        }
+    }
+}

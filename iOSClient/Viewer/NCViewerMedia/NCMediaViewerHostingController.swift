@@ -1,0 +1,520 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+import UIKit
+import Combine
+import NextcloudKit
+
+// MARK: - Media Viewer Hosting Controller
+
+/// UIKit hosting controller used by the media viewer.
+///
+/// This controller embeds the SwiftUI media viewer and provides standard UIKit
+/// navigation items for the title, close button, context menu button, and detail button.
+@MainActor
+final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerView>, UIAdaptivePresentationControllerDelegate {
+    private let model: NCMediaViewerModel
+    private let onClose: (_ ocId: String?) -> Void
+    private weak var contextMenuController: NCMainTabBarController?
+
+    private var detailHostingController: UIHostingController<NCMediaViewerDetailView>?
+    private var isShowingDetail = false
+    private var cancellables = Set<AnyCancellable>()
+    private var transferDelegate: NCMediaViewerTransferDelegate?
+    private weak var currentNavigationBar: UINavigationBar?
+    private let floatingTitleView = NCViewerFloatingTitleView()
+
+    private lazy var floatingTitleDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
+    private lazy var moreNavigationItem = UIBarButtonItem(
+        image: NCImageCache.shared.getImageButtonMore(),
+        primaryAction: nil,
+        menu: UIMenu(title: "", children: [
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                guard let self,
+                      let metadata = self.model.selectedMetadata else {
+                    completion([])
+                    return
+                }
+
+                if let menu = NCContextMenuViewer(
+                    metadata: metadata,
+                    controller: self.contextMenuController,
+                    viewController: self,
+                    webView: false,
+                    sender: self
+                ).viewMenu() {
+                    completion(menu.children)
+                } else {
+                    completion([])
+                }
+            }
+        ])
+    )
+
+    private lazy var mediaDetailNavigationItem = UIBarButtonItem(
+        image: NCUtility().loadImage(
+            named: "info.circle",
+            colors: [NCBrandColor.shared.iconImageColor]
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(mediaDetailButtonTapped)
+    )
+
+    /// Creates a media viewer hosting controller.
+    ///
+    /// - Parameters:
+    ///   - model: Media viewer model used to render and page through media items.
+    ///   - contextMenuController: Main tab bar controller used to build viewer context menus.
+    ///   - onClose: Closure called when the viewer should close, optionally with the media ocId that initiated the close.
+    init(
+        model: NCMediaViewerModel,
+        contextMenuController: NCMainTabBarController?,
+        onClose: @escaping (_ ocId: String?) -> Void
+    ) {
+        self.model = model
+        self.contextMenuController = contextMenuController
+        self.onClose = onClose
+
+        super.init(
+            rootView: NCMediaViewerView(
+                model: model,
+                contextMenuController: contextMenuController,
+                navigationBar: nil,
+                onVisibleMetadataChanged: { _, _ in },
+                onClose: { _ in }
+            )
+        )
+
+        rootView = makeRootView(navigationBar: nil)
+
+        transferDelegate = NCMediaViewerTransferDelegate { [weak self] deletedOcId in
+            guard let self else {
+                return
+            }
+
+            self.model.markPageAsDeleted(ocId: deletedOcId)
+        }
+
+        view.backgroundColor = .ncViewerBackground(.system)
+        edgesForExtendedLayout = [.all]
+        extendedLayoutIncludesOpaqueBars = true
+        additionalSafeAreaInsets = .zero
+
+        configureNavigationItem()
+        observeModel()
+    }
+
+    @MainActor
+    @available(*, unavailable)
+    dynamic required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        updateTitleLabel(
+            metadata: model.selectedMetadata,
+            backgroundColor: .ncViewerBackground(.system)
+        )
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        guard let transferDelegate else {
+            return
+        }
+
+        Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(transferDelegate)
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        guard let transferDelegate else {
+            return
+        }
+
+        Task {
+            await NCNetworking.shared.transferDispatcher.removeDelegate(transferDelegate)
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateRootViewNavigationBarIfNeeded()
+        configureFloatingTitleViewIfNeeded()
+    }
+
+    private func updateRootViewNavigationBarIfNeeded() {
+        let navigationBar = navigationController?.navigationBar
+
+        guard currentNavigationBar !== navigationBar else {
+            return
+        }
+
+        currentNavigationBar = navigationBar
+        rootView = makeRootView(navigationBar: navigationBar)
+    }
+
+    /// Builds the SwiftUI media viewer root view.
+    ///
+    /// - Parameter navigationBar: Current navigation bar used by hosted media pages.
+    /// - Returns: Configured media viewer root view.
+    private func makeRootView(navigationBar: UINavigationBar?) -> NCMediaViewerView {
+        NCMediaViewerView(
+            model: model,
+            contextMenuController: contextMenuController,
+            navigationBar: navigationBar,
+            onVisibleMetadataChanged: { [weak self] metadata, backgroundColor in
+                self?.updateTitleLabel(
+                    metadata: metadata,
+                    backgroundColor: backgroundColor
+                )
+            },
+            onClose: { [weak self] ocId in
+                self?.close(ocId: ocId)
+            }
+        )
+    }
+
+    // MARK: - Closing
+
+    /// Stops media playback before the viewer is closed.
+    private func stop() {
+        NotificationCenter.default.post(
+            name: .ncMediaViewerStopPlayback,
+            object: nil
+        )
+    }
+
+    /// Closes the viewer.
+    ///
+    /// - Parameter ocId: Optional Nextcloud file identifier that initiated the close.
+    func close(ocId: String? = nil) {
+        stop()
+        onClose(ocId)
+    }
+
+    // MARK: - Navigation
+
+    /// Configures the navigation item used by the viewer.
+    private func configureNavigationItem() {
+        navigationItem.largeTitleDisplayMode = .never
+        navigationItem.title = nil
+        navigationItem.titleView = nil
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(closeButtonTapped)
+        )
+
+        navigationItem.rightBarButtonItems = [
+            moreNavigationItem,
+            mediaDetailNavigationItem
+        ]
+    }
+
+    /// Observes model changes and refreshes navigation UI.
+    private func observeModel() {
+        model.$isChromeHidden
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isHidden in
+                self?.setChromeHidden(isHidden, animated: true)
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Configures the floating title view inside the navigation bar chrome.
+    private func configureFloatingTitleViewIfNeeded() {
+        guard let navigationBar = navigationController?.navigationBar else {
+            return
+        }
+
+        floatingTitleView.attach(to: navigationBar)
+    }
+
+    /// Updates the floating title view using the provided media metadata and background color.
+    ///
+    /// - Parameters:
+    ///   - metadata: Media metadata used to build the visible title content.
+    ///   - backgroundColor: Current visible page background color used to choose a readable title color.
+    private func updateTitleLabel(
+        metadata: tableMetadata?,
+        backgroundColor: UIColor
+    ) {
+        guard let metadata else {
+            floatingTitleView.clear()
+            return
+        }
+
+        let primaryTitle = metadata.fileNameView.isEmpty
+            ? metadata.fileName
+            : metadata.fileNameView
+
+        floatingTitleView.update(
+            primaryText: primaryTitle,
+            secondaryText: floatingTitleSecondaryText(for: metadata),
+            textColor: floatingTitleTextColor(for: backgroundColor)
+        )
+    }
+
+    /// Returns a readable title text color for the provided background color.
+    ///
+    /// - Parameter backgroundColor: Current visible page background color.
+    /// - Returns: White text on dark backgrounds, black text on light backgrounds.
+    private func floatingTitleTextColor(for backgroundColor: UIColor) -> UIColor {
+        let resolvedColor = backgroundColor.resolvedColor(with: traitCollection)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        guard resolvedColor.getRed(
+            &red,
+            green: &green,
+            blue: &blue,
+            alpha: &alpha
+        ) else {
+            return .white
+        }
+
+        let luminance = (0.299 * red) + (0.587 * green) + (0.114 * blue)
+        return luminance < 0.5 ? .white : .black
+    }
+
+    /// Builds the secondary floating title text for the provided metadata.
+    ///
+    /// - Parameter metadata: Media metadata used to derive the secondary title line.
+    /// - Returns: Secondary title text shown below the main title.
+    private func floatingTitleSecondaryText(for metadata: tableMetadata) -> String? {
+        floatingTitleDateFormatter.string(from: metadata.date as Date)
+    }
+
+    /// Shows or hides the viewer chrome.
+    ///
+    /// - Parameters:
+    ///   - hidden: Whether the chrome should be hidden.
+    ///   - animated: Whether the transition should be animated.
+    private func setChromeHidden(_ hidden: Bool, animated: Bool) {
+        navigationController?.setNavigationBarHidden(
+            hidden,
+            animated: animated
+        )
+
+        UIView.animate(
+            withDuration: animated ? 0.2 : 0,
+            delay: 0,
+            options: [.curveEaseInOut]
+        ) {
+            self.view.backgroundColor = hidden
+                ? .black
+                : .ncViewerBackground(.system)
+            self.floatingTitleView.alpha = hidden ? 0 : 1
+        }
+    }
+
+    @objc
+    private func closeButtonTapped() {
+        close()
+    }
+
+    @objc
+    private func mediaDetailButtonTapped() {
+        guard !isSelectedPageDeleted else {
+            return
+        }
+
+        openDetail(animated: true)
+    }
+
+    // MARK: - Detail
+
+    private var isSelectedPageDeleted: Bool {
+        guard let page = model.selectedPageModel() else {
+            return false
+        }
+
+        if case .deleted = page.state {
+            return true
+        }
+
+        return false
+    }
+
+    /// Opens or closes the media detail panel for the currently selected media item.
+    ///
+    /// - Parameter animated: Whether the presentation should be animated.
+    private func openDetail(animated: Bool = true) {
+        guard !isShowingDetail else {
+            closeDetail(animated: animated)
+            return
+        }
+
+        guard let metadata = model.selectedMetadata else {
+            return
+        }
+
+        let index = model.selectedIndex
+        isShowingDetail = true
+
+        NCUtility().getExif(metadata: metadata) { [weak self] exif in
+            Task { @MainActor in
+                guard let self else {
+                    return
+                }
+
+                self.presentDetailView(
+                    metadata: metadata,
+                    index: index,
+                    exif: exif,
+                    animated: animated
+                )
+            }
+        }
+    }
+
+    /// Presents the SwiftUI media detail panel.
+    ///
+    /// - Parameters:
+    ///   - metadata: Current selected media metadata.
+    ///   - index: Page index associated with the metadata.
+    ///   - exif: EXIF information resolved for the selected media.
+    ///   - animated: Whether presentation should be animated.
+    private func presentDetailView(
+        metadata: tableMetadata,
+        index: Int,
+        exif: ExifData,
+        animated: Bool
+    ) {
+        let detailView = NCMediaViewerDetailView(
+            metadata: metadata,
+            exif: exif
+        )
+
+        let hostingController = UIHostingController(rootView: detailView)
+        hostingController.modalPresentationStyle = .pageSheet
+
+        if let sheetPresentationController = hostingController.sheetPresentationController {
+            sheetPresentationController.detents = [.medium(), .large()]
+            sheetPresentationController.prefersGrabberVisible = true
+            sheetPresentationController.preferredCornerRadius = 24
+            sheetPresentationController.prefersEdgeAttachedInCompactHeight = true
+            sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = false
+        }
+
+        detailHostingController = hostingController
+        hostingController.presentationController?.delegate = self
+
+        present(hostingController, animated: animated)
+    }
+
+    /// Closes the media detail panel.
+    ///
+    /// - Parameter animated: Whether dismissal should be animated.
+    private func closeDetail(animated: Bool = true) {
+        guard let detailHostingController else {
+            isShowingDetail = false
+            return
+        }
+
+        detailHostingController.dismiss(animated: animated) { [weak self] in
+            self?.detailHostingController = nil
+            self?.isShowingDetail = false
+        }
+    }
+
+    /// Resets the detail state when the sheet is dismissed interactively.
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        detailHostingController = nil
+        isShowingDetail = false
+    }
+
+    /// Marks the currently selected media item as deleted in the viewer.
+    ///
+    /// This is used immediately after the user confirms a delete action, before the
+    /// asynchronous transfer delegate reports the delete completion.
+    @MainActor
+    func markCurrentItemAsDeleted() {
+        guard let metadata = model.selectedMetadata else {
+            return
+        }
+
+        model.markPageAsDeleted(ocId: metadata.ocId)
+    }
+
+    /// Marks a specific media item as deleted in the viewer.
+    ///
+    /// - Parameter ocId: Deleted file identifier.
+    @MainActor
+    func markItemAsDeleted(ocId: String) {
+        model.markPageAsDeleted(ocId: ocId)
+    }
+}
+
+// MARK: - Media Viewer Transfer Delegate
+
+/// Bridges transfer events into the MainActor-isolated media viewer controller.
+///
+/// `NCTransferDelegate` is not MainActor-isolated, so `NCMediaViewerHostingController`
+/// must not conform to it directly in Swift 6.
+final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
+    private let onDeletedOcId: @MainActor (_ ocId: String) -> Void
+    let sceneIdentifier: String = ""
+
+    init(onDeletedOcId: @escaping @MainActor (_ ocId: String) -> Void) {
+        self.onDeletedOcId = onDeletedOcId
+    }
+
+    func transferReloadData(serverUrl: String?) { }
+
+    func transferReloadDataSource(
+        serverUrl: String?,
+        requestData: Bool,
+        status: Int?
+    ) { }
+
+    func transferProgressDidUpdate(
+        progress: Float,
+        totalBytes: Int64,
+        totalBytesExpected: Int64,
+        fileName: String,
+        serverUrl: String
+    ) { }
+
+    func transferChange(
+        status: String,
+        account: String,
+        fileName: String,
+        serverUrl: String,
+        selector: String?,
+        ocId: String,
+        destination: String?,
+        error: NKError
+    ) {
+        guard status == NCGlobal.shared.networkingStatusDelete,
+              error == .success else {
+            return
+        }
+
+        Task { @MainActor in
+            onDeletedOcId(ocId)
+        }
+    }
+}

@@ -95,7 +95,7 @@ extension NCNetworking: NCTransferDelegate {
                     if let viewController = controller.currentViewController() {
                         let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
                         Task {
-                            if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: viewController) {
+                            if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: viewController, viewerTransitionSource: nil) {
                                 viewController.navigationController?.pushViewController(vc, animated: true)
                             }
                         }
@@ -215,7 +215,7 @@ extension NCNetworking: NCTransferDelegate {
                 )
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
-                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                         viewController.navigationController?.pushViewController(vc, animated: true)
                     }
                     return
@@ -255,7 +255,7 @@ extension NCNetworking: NCTransferDelegate {
         )
 
         if metadata.isAudioOrVideo {
-            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
             return
@@ -290,7 +290,7 @@ extension NCNetworking: NCTransferDelegate {
 
         if download.nkError == .success {
             await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
-            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -313,52 +313,71 @@ extension NCNetworking: NCTransferDelegate {
     }
 
     @MainActor
-    func blinkInFolder(serverUrl: String,
-                       fileName: String,
-                       sceneIdentifier: String) async {
+    func moveInFolder(serverUrl: String, sceneIdentifier: String) async -> NCFiles? {
         guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
-        else { return }
+        else {
+            return nil
+        }
+
         let session = NCSession.shared.getSession(controller: controller)
-        var serverUrlPush = self.utilityFileSystem.getHomeServer(session: session)
+        var serverUrlPush = utilityFileSystem.getHomeServer(session: session)
 
         navigationController.popToRootViewController(animated: false)
         controller.selectedIndex = 0
+
         if serverUrlPush == serverUrl,
-            let viewController = navigationController.topViewController as? NCFiles {
-            Task {
-                viewController.blinkCell(fileName: fileName)
-            }
-            return
+           let files = navigationController.topViewController as? NCFiles {
+            return files
         }
 
-        let diffDirectory = serverUrl.replacingOccurrences(of: serverUrlPush, with: "")
+        guard serverUrl.hasPrefix(serverUrlPush) else {
+            return nil
+        }
+
+        let diffDirectory = String(serverUrl.dropFirst(serverUrlPush.count))
         var subDirs = diffDirectory.split(separator: "/")
 
+        var lastFilesViewController: NCFiles?
+
         while serverUrlPush != serverUrl, !subDirs.isEmpty {
-            guard let dir = subDirs.first else {
-                return
-            }
-            serverUrlPush = self.utilityFileSystem.createServerUrl(serverUrl: serverUrlPush, fileName: String(dir))
+            let dir = String(subDirs.removeFirst())
 
-            if let viewController = controller.navigationCollectionViewCommon.first(where: { $0.navigationController == navigationController && $0.serverUrl == serverUrlPush})?.viewController as? NCFiles, viewController.isViewLoaded {
-                viewController.fileNameBlink = fileName
+            serverUrlPush = utilityFileSystem.createServerUrl(
+                serverUrl: serverUrlPush,
+                fileName: dir
+            )
+
+            if let viewController = controller.navigationCollectionViewCommon.first(where: {
+                $0.navigationController == navigationController &&
+                $0.serverUrl == serverUrlPush
+            })?.viewController as? NCFiles {
+
                 navigationController.pushViewController(viewController, animated: false)
+                lastFilesViewController = viewController
+
+            } else if let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
+
+                viewController.serverUrl = serverUrlPush
+                viewController.titleCurrentFolder = dir
+                viewController.navigationItem.backButtonTitle = dir
+
+                controller.navigationCollectionViewCommon.append(
+                    NavigationCollectionViewCommon(
+                        serverUrl: serverUrlPush,
+                        navigationController: navigationController,
+                        viewController: viewController
+                    )
+                )
+
+                navigationController.pushViewController(viewController, animated: false)
+                lastFilesViewController = viewController
+
             } else {
-                if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                    viewController.serverUrl = serverUrlPush
-                    viewController.titleCurrentFolder = String(dir)
-                    viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
-
-                    controller.navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: navigationController, viewController: viewController))
-
-                    if serverUrlPush == serverUrl {
-                        viewController.fileNameBlink = fileName
-                    }
-                    navigationController.pushViewController(viewController, animated: false)
-                }
+                return nil
             }
-            subDirs.remove(at: 0)
         }
+
+        return serverUrlPush == serverUrl ? lastFilesViewController : nil
     }
 }

@@ -5,6 +5,7 @@
 import UIKit
 import NextcloudKit
 import QuickLook
+import SwiftUI
 
 class NCViewer: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -13,7 +14,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
 
     @MainActor
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCViewerTransitionSource?) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
         await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
@@ -41,18 +42,26 @@ class NCViewer: NSObject {
 
         // IMAGE AUDIO VIDEO
         else if metadata.isImage || metadata.isAudioOrVideo {
-            let viewerMediaPageContainer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage
+            let mediaOcIds = ocIds ?? [metadata.ocId]
+            let mediaSearch = delegate is NCMedia
+            let model = NCMediaViewerModel(currentMetadata: metadata, ocIds: mediaOcIds, session: session, mediaSearch: mediaSearch, loader: NCMediaViewerLoader())
 
-            viewerMediaPageContainer?.delegateViewController = delegate
-            if let ocIds {
-                viewerMediaPageContainer?.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
-                viewerMediaPageContainer?.ocIds = ocIds
-            } else {
-                viewerMediaPageContainer?.currentIndex = 0
-                viewerMediaPageContainer?.ocIds = [metadata.ocId]
-            }
-
-            return viewerMediaPageContainer
+            NCMediaViewerPresenter.shared.show(
+                model: model,
+                viewerTransitionSource: viewerTransitionSource,
+                from: delegate?.view,
+                contextMenuController: delegate?.tabBarController as? NCMainTabBarController,
+                closingTransitionSourceProvider: { ocId in
+                    if let provider = delegate as? NCCollectionViewCommon {
+                        return provider.viewerTransitionSource(for: ocId)
+                    } else if let provider = delegate as? NCMedia {
+                        return provider.viewerTransitionSource(for: ocId)
+                    } else {
+                        return nil
+                    }
+                }
+            )
+            return nil
         }
 
         // DOCUMENTS

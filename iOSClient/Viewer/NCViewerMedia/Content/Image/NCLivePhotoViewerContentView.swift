@@ -1,0 +1,454 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+import UIKit
+import Photos
+import PhotosUI
+import NextcloudKit
+
+// MARK: - Live Photo Viewer Content View
+
+/// Displays a Live Photo using a paired full image file and video file.
+///
+/// The still image is rendered through `NCImageViewerContentView`, so preview,
+/// full image replacement, zoom, and pan keep the same behavior as normal images.
+/// The `PHLivePhotoView` is mounted only during playback and is dismantled as soon
+/// as playback ends, the page changes, or the view disappears.
+struct NCLivePhotoViewerContentView: View {
+    let identifier: String
+    let previewURL: URL?
+    let fullURL: URL?
+    let videoURL: URL?
+    let backgroundStyle: NCViewerBackgroundStyle
+    let topOverlayInset: CGFloat
+
+    @State private var livePhoto: PHLivePhoto?
+    @State private var failedMessage: String?
+    @State private var isPlayingLivePhoto = false
+    @State private var loadedTaskIdentifier: String?
+
+    init(
+        identifier: String,
+        previewURL: URL?,
+        fullURL: URL?,
+        videoURL: URL?,
+        backgroundStyle: NCViewerBackgroundStyle = .system,
+        topOverlayInset: CGFloat = 0
+    ) {
+        self.identifier = identifier
+        self.previewURL = previewURL
+        self.fullURL = fullURL
+        self.videoURL = videoURL
+        self.backgroundStyle = backgroundStyle
+        self.topOverlayInset = topOverlayInset
+    }
+
+    var body: some View {
+        ZStack {
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
+
+            stillImageView
+
+            if isPlayingLivePhoto, let livePhoto {
+                NCLivePhotoViewRepresentable(
+                    livePhoto: livePhoto,
+                    backgroundStyle: backgroundStyle,
+                    isPlaying: $isPlayingLivePhoto
+                )
+                .id(playbackViewIdentifier)
+                .ignoresSafeArea()
+            }
+
+            livePhotoBadge
+
+            if let failedMessage {
+                failedOverlay(failedMessage)
+            }
+        }
+        .background(Color.ncViewerBackground(backgroundStyle))
+        .task(id: taskIdentifier) {
+            await loadLivePhotoIfNeeded()
+        }
+        .highPriorityGesture(
+            LongPressGesture(minimumDuration: 0.25)
+                .onEnded { _ in
+                    guard livePhoto != nil else {
+                        return
+                    }
+
+                    isPlayingLivePhoto = true
+                }
+        )
+        .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
+            stopLivePhotoPlayback()
+        }
+        .onChange(of: identifier) { _, _ in
+            stopLivePhotoPlayback()
+        }
+        .onChange(of: taskIdentifier) { _, _ in
+            stopLivePhotoPlayback()
+        }
+        .onDisappear {
+            stopLivePhotoPlayback()
+        }
+    }
+
+    // MARK: - Views
+
+    @ViewBuilder
+    private var stillImageView: some View {
+        NCImageViewerContentView(
+            identifier: identifier,
+            previewURL: previewURL,
+            fullURL: fullURL,
+            backgroundStyle: backgroundStyle
+        )
+    }
+
+    /// Badge shown below the navigation bar on the leading side. (color)
+    private var livePhotoBadgeBackground: Color {
+        switch backgroundStyle {
+        case .black:
+            return .gray.opacity(0.32)
+
+        case .system,
+             .white,
+             .custom:
+            return .white.opacity(0.72)
+        }
+    }
+
+    private var livePhotoBadgeForeground: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.88)
+
+        case .system,
+             .white,
+             .custom:
+            return .gray
+        }
+    }
+
+    private var livePhotoBadgeStroke: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.16)
+
+        case .system,
+             .white,
+             .custom:
+            return .gray.opacity(0.22)
+        }
+    }
+
+    /// Badge shown below the navigation bar on the leading side.
+    private var livePhotoBadge: some View {
+        GeometryReader { proxy in
+            let isLandscape = proxy.size.width > proxy.size.height
+            let isPad = UIDevice.current.userInterfaceIdiom == .pad
+            let topInset = isLandscape && !isPad ? max(topOverlayInset, 76) : topOverlayInset
+
+            VStack {
+                HStack {
+                    HStack(spacing: 5) {
+                        Image(systemName: "livephoto")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(livePhotoBadgeForeground)
+
+                        Text("LIVE")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(livePhotoBadgeForeground)
+                    }
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
+                    .background(livePhotoBadgeBackground)
+                    .overlay(
+                        Capsule()
+                            .stroke(livePhotoBadgeStroke, lineWidth: 1)
+                    )
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
+                    .padding(.leading, 12)
+                    .padding(.top, topInset)
+
+                    Spacer()
+                }
+
+                Spacer()
+            }
+        }
+        .allowsHitTesting(false)
+    }
+
+    private func failedOverlay(_ message: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: "livephoto.slash")
+                .font(.system(size: 24, weight: .regular))
+
+            Text(message)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+        }
+        .foregroundStyle(primaryForegroundStyle)
+        .padding(12)
+        .background(.black.opacity(0.35))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding()
+    }
+
+    // MARK: - Appearance
+
+    private var primaryForegroundStyle: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white
+
+        case .system,
+             .white,
+             .custom:
+            return .primary
+        }
+    }
+
+    // MARK: - Identifiers
+
+    private var taskIdentifier: String {
+        "\(identifier)|\(fullURL?.absoluteString ?? "")|\(videoURL?.absoluteString ?? "")"
+    }
+
+    private var playbackViewIdentifier: String {
+        "\(taskIdentifier)|playback"
+    }
+
+    // MARK: - Loading
+
+    /// Loads the Live Photo only when both full image and paired video resources are available.
+    ///
+    /// Missing resources are not treated as a visual failure because the viewer can
+    /// still render the still image through the normal image pipeline.
+    @MainActor
+    private func loadLivePhotoIfNeeded() async {
+        if loadedTaskIdentifier != taskIdentifier {
+            livePhoto = nil
+            failedMessage = nil
+            isPlayingLivePhoto = false
+            loadedTaskIdentifier = taskIdentifier
+        }
+
+        guard livePhoto == nil else {
+            return
+        }
+
+        failedMessage = nil
+
+        guard let fullURL,
+              let videoURL else {
+            return
+        }
+
+        guard FileManager.default.fileExists(atPath: fullURL.path),
+              FileManager.default.fileExists(atPath: videoURL.path) else {
+            return
+        }
+
+        let resourceURLs = [
+            fullURL,
+            videoURL
+        ]
+
+        let loadedLivePhoto = await requestLivePhoto(resourceURLs: resourceURLs)
+
+        guard !Task.isCancelled else {
+            return
+        }
+
+        guard loadedTaskIdentifier == taskIdentifier else {
+            return
+        }
+
+        guard let loadedLivePhoto else {
+            failedMessage = "PHLivePhoto could not load these resources."
+            return
+        }
+
+        failedMessage = nil
+        livePhoto = loadedLivePhoto
+    }
+
+    /// Stops the current Live Photo playback and removes the temporary playback view.
+    @MainActor
+    private func stopLivePhotoPlayback() {
+        isPlayingLivePhoto = false
+    }
+
+    /// Requests a `PHLivePhoto` from the provided photo and video resource URLs.
+    ///
+    /// The Photos framework can invoke the result handler more than once.
+    /// This wrapper waits for the non-degraded Live Photo and resumes the continuation only once.
+    ///
+    /// - Parameter resourceURLs: Local resource URLs required to build the Live Photo.
+    /// - Returns: A playable `PHLivePhoto` when the request succeeds, otherwise `nil`.
+    @MainActor
+    private func requestLivePhoto(resourceURLs: [URL]) async -> PHLivePhoto? {
+        guard resourceURLs.count >= 2 else {
+            return nil
+        }
+
+        return await withCheckedContinuation { continuation in
+            final class ResumeBox {
+                private var didResume = false
+                private let lock = NSLock()
+
+                func resumeOnce(
+                    _ continuation: CheckedContinuation<PHLivePhoto?, Never>,
+                    returning livePhoto: PHLivePhoto?
+                ) {
+                    lock.lock()
+                    defer { lock.unlock() }
+
+                    guard !didResume else {
+                        return
+                    }
+
+                    didResume = true
+                    continuation.resume(returning: livePhoto)
+                }
+            }
+
+            let resumeBox = ResumeBox()
+
+            PHLivePhoto.request(
+                withResourceFileURLs: resourceURLs,
+                placeholderImage: nil,
+                targetSize: .zero,
+                contentMode: .aspectFit
+            ) { livePhoto, info in
+                if let cancelled = info[PHLivePhotoInfoCancelledKey] as? Bool,
+                   cancelled {
+                    resumeBox.resumeOnce(
+                        continuation,
+                        returning: nil
+                    )
+                    return
+                }
+
+                if info[PHLivePhotoInfoErrorKey] != nil {
+                    resumeBox.resumeOnce(
+                        continuation,
+                        returning: nil
+                    )
+                    return
+                }
+
+                let isDegraded = (info[PHLivePhotoInfoIsDegradedKey] as? Bool) == true
+
+                if isDegraded {
+                    return
+                }
+
+                guard let livePhoto else {
+                    return
+                }
+
+                resumeBox.resumeOnce(
+                    continuation,
+                    returning: livePhoto
+                )
+            }
+        }
+    }
+}
+
+// MARK: - Live Photo View Representable
+
+/// UIKit wrapper for `PHLivePhotoView`.
+///
+/// The wrapper starts Live Photo playback when it is mounted.
+/// Playback is stopped explicitly when SwiftUI dismantles the UIKit view.
+private struct NCLivePhotoViewRepresentable: UIViewRepresentable {
+    let livePhoto: PHLivePhoto
+    let backgroundStyle: NCViewerBackgroundStyle
+    @Binding var isPlaying: Bool
+
+    func makeUIView(context: Context) -> PHLivePhotoView {
+        let view = PHLivePhotoView()
+
+        view.backgroundColor = .ncViewerBackground(backgroundStyle)
+        view.contentMode = .scaleAspectFit
+        view.clipsToBounds = true
+        view.livePhoto = livePhoto
+        view.isMuted = false
+        view.delegate = context.coordinator
+
+        context.coordinator.livePhotoView = view
+        context.coordinator.isPlaying = $isPlaying
+
+        DispatchQueue.main.async {
+            guard context.coordinator.livePhotoView === view else {
+                return
+            }
+
+            guard isPlaying else {
+                return
+            }
+
+            view.startPlayback(with: .full)
+        }
+
+        return view
+    }
+
+    func updateUIView(_ view: PHLivePhotoView, context: Context) {
+        view.backgroundColor = .ncViewerBackground(backgroundStyle)
+
+        context.coordinator.livePhotoView = view
+        context.coordinator.isPlaying = $isPlaying
+        view.delegate = context.coordinator
+
+        if view.livePhoto !== livePhoto {
+            view.stopPlayback()
+            view.livePhoto = livePhoto
+        }
+
+        if isPlaying {
+            view.startPlayback(with: .full)
+        } else {
+            view.stopPlayback()
+        }
+    }
+
+    static func dismantleUIView(
+        _ view: PHLivePhotoView,
+        coordinator: Coordinator
+    ) {
+        view.stopPlayback()
+        view.delegate = nil
+        view.livePhoto = nil
+
+        coordinator.livePhotoView = nil
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(isPlaying: $isPlaying)
+    }
+
+    final class Coordinator: NSObject, PHLivePhotoViewDelegate {
+        weak var livePhotoView: PHLivePhotoView?
+        var isPlaying: Binding<Bool>
+
+        init(isPlaying: Binding<Bool>) {
+            self.isPlaying = isPlaying
+        }
+
+        func livePhotoView(
+            _ livePhotoView: PHLivePhotoView,
+            didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle
+        ) {
+            isPlaying.wrappedValue = false
+        }
+    }
+}

@@ -292,7 +292,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
-              !(topViewController is NCViewerMediaPage),
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichDocument),
               !(topViewController is NCViewerDirectEditing)
