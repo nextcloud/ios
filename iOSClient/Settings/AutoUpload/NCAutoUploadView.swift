@@ -7,6 +7,7 @@ import SwiftUI
 import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
+@MainActor
 struct NCAutoUploadView: View {
     @State private var reachedAnchor = false
 
@@ -19,6 +20,7 @@ struct NCAutoUploadView: View {
     @State private var showFocusedAutoUploadProgress = false
     @State private var openFocusedAutoUploadAfterIntro = false
     @State private var startAutoUpload = false
+    @Environment(NCAutoUploadCounter.self) private var autoUploadCounter
 
     var body: some View {
         ZStack {
@@ -30,8 +32,26 @@ struct NCAutoUploadView: View {
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 0) {
+                    Text(NSLocalizedString("_auto_upload_folder_", comment: ""))
+                        .font(.headline)
+
+                    if model.autoUploadStart && autoUploadCounter.isLoaded {
+                        Text(autoUploadCounter.itemsLeftMessage)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
         .onAppear {
             model.onViewAppear()
+            updateAutoUploadCounterSubscription()
+        }
+        .onDisappear {
+            stopAutoUploadCounterSubscription()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             model.checkPermission()
@@ -56,6 +76,8 @@ struct NCAutoUploadView: View {
             guard openFocusedAutoUploadAfterIntro else { return }
 
             openFocusedAutoUploadAfterIntro = false
+            guard autoUploadCounter.hasItemsToUpload else { return }
+
             showFocusedAutoUploadProgress = true
         }) {
             NCFocusedAutoUploadIntroView {
@@ -69,6 +91,7 @@ struct NCAutoUploadView: View {
                                             account: model.session.account,
                                             urlBase: model.session.urlBase,
                                             userId: model.session.userId)
+                .environment(autoUploadCounter)
         }
         .onChange(of: model.autoUploadStart) { _, newValue in
             if !newValue {
@@ -76,13 +99,14 @@ struct NCAutoUploadView: View {
                 showFocusedAutoUploadProgress = false
                 openFocusedAutoUploadAfterIntro = false
             }
+            updateAutoUploadCounterSubscription()
         }
     }
 
     @ViewBuilder
     var autoUploadOnView: some View {
         Form {
-            if model.autoUploadStart {
+            if model.autoUploadStart && autoUploadCounter.hasItemsToUpload {
                 Section(content: {
                     Button {
                         showFocusedAutoUploadIntro = true
@@ -304,6 +328,17 @@ struct NCAutoUploadView: View {
             }
         })
     }
+
+    private func updateAutoUploadCounterSubscription() {
+        autoUploadCounter.start(account: model.session.account,
+                                urlBase: model.session.urlBase,
+                                userId: model.session.userId,
+                                autoUploadStart: model.autoUploadStart)
+    }
+
+    private func stopAutoUploadCounterSubscription() {
+        autoUploadCounter.stop()
+    }
 }
 
 @ViewBuilder
@@ -437,4 +472,5 @@ struct ConfirmAutoUploadSheet: View {
 
 #Preview {
     NCAutoUploadView(model: NCAutoUploadModel(controller: nil), albumModel: AlbumModel(controller: nil))
+        .environment(NCAutoUploadCounter())
 }

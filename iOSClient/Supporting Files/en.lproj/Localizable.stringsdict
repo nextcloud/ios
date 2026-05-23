@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d photo to back up</string>
+			<string>You have %d item to back up</string>
 			<key>other</key>
-			<string>You have %d photos to back up</string>
+			<string>You have %d items to back up</string>
 		</dict>
 	</dict>
 </dict>

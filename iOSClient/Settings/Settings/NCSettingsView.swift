@@ -8,6 +8,7 @@ import NextcloudKit
 import FirebaseCrashlytics
 
 /// Settings view for Nextcloud
+@MainActor
 struct NCSettingsView: View {
     // State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
@@ -21,6 +22,7 @@ struct NCSettingsView: View {
     @State private var showSourceCode = false
     // Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
+    @State private var autoUploadCounter = NCAutoUploadCounter()
 
     var capabilities: NKCapabilities.Capabilities {
         NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
@@ -32,6 +34,7 @@ struct NCSettingsView: View {
             Section(content: {
                 NavigationLink(destination: LazyView {
                     NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
+                        .environment(autoUploadCounter)
                 }) {
                     HStack {
                         NCFocusedAutoUploadCloudAnimation(size: 44,
@@ -46,8 +49,8 @@ struct NCSettingsView: View {
                             Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                                 .font(.body)
 
-                            if model.autoUploadStart {
-                                Text(model.autoUploadCountMessage)
+                            if model.autoUploadStart && autoUploadCounter.isLoaded {
+                                Text(autoUploadCounter.itemsLeftMessage)
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
                             }
@@ -322,9 +325,28 @@ struct NCSettingsView: View {
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
-        .task(id: model.autoUploadStart) {
-            await model.pollAutoUploadCount()
+        .onAppear {
+            updateAutoUploadCounterSubscription()
         }
+        .onDisappear {
+            stopAutoUploadCounterSubscription()
+        }
+        .onChange(of: model.autoUploadStart) {
+            updateAutoUploadCounterSubscription()
+        }
+    }
+
+    private func updateAutoUploadCounterSubscription() {
+        let session = model.session
+
+        autoUploadCounter.start(account: session.account,
+                                urlBase: session.urlBase,
+                                userId: session.userId,
+                                autoUploadStart: model.autoUploadStart)
+    }
+
+    private func stopAutoUploadCounterSubscription() {
+        autoUploadCounter.stop()
     }
 }
 
