@@ -10,7 +10,6 @@ import NextcloudKit
 struct NCVideoViewerContentView: View {
     let metadata: tableMetadata
     let localURL: URL?
-    let previewURL: URL?
     let userAgent: String?
     let isSelected: Bool
     let contextMenuController: NCMainTabBarController?
@@ -37,7 +36,6 @@ struct NCVideoViewerContentView: View {
     init(
         metadata: tableMetadata,
         localURL: URL?,
-        previewURL: URL? = nil,
         userAgent: String? = nil,
         isSelected: Bool = true,
         contextMenuController: NCMainTabBarController? = nil,
@@ -50,7 +48,6 @@ struct NCVideoViewerContentView: View {
     ) {
         self.metadata = metadata
         self.localURL = localURL
-        self.previewURL = previewURL
         self.userAgent = userAgent
         self.isSelected = isSelected
         self.contextMenuController = contextMenuController
@@ -66,8 +63,6 @@ struct NCVideoViewerContentView: View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
-
-            NCVideoPreviewPlaceholderView(previewURL: previewURL)
 
             if let errorMessage {
                 failedView(errorMessage)
@@ -472,7 +467,6 @@ struct NCVideoViewerContentView: View {
         NCVideoAVPlayerPresenter.present(
             metadata: metadata,
             url: url,
-            previewURL: previewURL,
             userAgent: userAgent,
             contextMenuController: contextMenuController,
             canGoPrevious: canGoPrevious,
@@ -520,7 +514,6 @@ struct NCVideoViewerContentView: View {
         NCVideoVLCPresenter.present(
             metadata: metadata,
             url: url,
-            previewURL: previewURL,
             userAgent: userAgent,
             contextMenuController: contextMenuController,
             canGoPrevious: canGoPrevious,
@@ -579,35 +572,6 @@ struct NCVideoViewerContentView: View {
         }
 
         return metadata.fileName
-    }
-}
-
-// MARK: - Video Preview Placeholder
-
-private struct NCVideoPreviewPlaceholderView: View {
-    let previewURL: URL?
-
-    var body: some View {
-        ZStack {
-            Color.black
-                .ignoresSafeArea()
-
-            if let image = previewImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .allowsHitTesting(false)
-            }
-        }
-    }
-
-    private var previewImage: UIImage? {
-        guard let previewURL,
-              previewURL.isFileURL else {
-            return nil
-        }
-
-        return UIImage(contentsOfFile: previewURL.path)
     }
 }
 

@@ -203,7 +203,6 @@ struct NCMediaViewerPageView: View {
             NCVideoViewerContentView(
                 metadata: metadata,
                 localURL: nil,
-                previewURL: previewURL,
                 isSelected: isSelected,
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar,
@@ -247,7 +246,6 @@ struct NCMediaViewerPageView: View {
                 NCVideoViewerContentView(
                     metadata: metadata,
                     localURL: localURL,
-                    previewURL: previewURL,
                     isSelected: isSelected,
                     contextMenuController: contextMenuController,
                     navigationBar: navigationBar,

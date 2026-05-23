@@ -577,6 +577,7 @@ private struct NCVideoControlsSwiftUIView: View {
         }
         .buttonStyle(.plain)
     }
+
     private func topActionMenu(
         systemName: String,
         pointSize: CGFloat,
@@ -681,7 +682,6 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
         let controlsView = NCVideoControlsView()
         controlsView.translatesAutoresizingMaskIntoConstraints = false
         controlsView.setTopActionsMode(.pictureInPicture)
-        // controlsView.setTopActionsMode(.vlcTracks)
         controlsView.updatePlayPauseButton(isPlaying: true)
         controlsView.updateProgress(
             progress: 0.42,

@@ -2842,8 +2842,8 @@
 				F78448A32FB1BE9000F2909A /* NCVideoPlaybackController.swift */,
 				F78448A82FB1BE9000F2909A /* NCVideoViewerContentView.swift */,
 				F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */,
-				F78448C02FB1C79A00F2909A /* VLC */,
 				F78448BF2FB1C78900F2909A /* AVPlayer */,
+				F78448C02FB1C79A00F2909A /* VLC */,
 			);
 			path = Video;
 			sourceTree = "<group>";

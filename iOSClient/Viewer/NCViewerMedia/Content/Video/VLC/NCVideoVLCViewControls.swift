@@ -195,10 +195,6 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
         seek(byMilliseconds: 10_000)
     }
 
-    // VLC does not expose Picture in Picture controls.
-    func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) {
-    }
-
     func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
         showControls(animated: true)
         stopControlsHideTimer()

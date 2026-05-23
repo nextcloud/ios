@@ -19,7 +19,6 @@ enum NCVideoVLCPresenter {
     static func present(
         metadata: tableMetadata,
         url: URL,
-        previewURL: URL?,
         userAgent: String?,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
@@ -33,7 +32,6 @@ enum NCVideoVLCPresenter {
             currentViewController.update(
                 metadata: metadata,
                 url: url,
-                previewURL: previewURL,
                 userAgent: userAgent,
                 contextMenuController: contextMenuController
             )
@@ -65,7 +63,6 @@ enum NCVideoVLCPresenter {
             currentViewController.update(
                 metadata: metadata,
                 url: url,
-                previewURL: previewURL,
                 userAgent: userAgent,
                 contextMenuController: contextMenuController
             )
@@ -103,7 +100,6 @@ enum NCVideoVLCPresenter {
         let viewController = NCVideoVLCViewController(
             metadata: metadata,
             url: url,
-            previewURL: previewURL,
             userAgent: userAgent,
             contextMenuController: contextMenuController
         )

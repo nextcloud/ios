@@ -158,11 +158,6 @@ extension NCVideoAVPlayerViewController {
 // MARK: - Shared Controls Delegate
 
 extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
-    func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView) {
-    }
-
-    func videoControlsDidTapAudio(_ controlsView: NCVideoControlsView) {
-    }
 
     func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView) {
         seek(bySeconds: -10)
