@@ -31,15 +31,12 @@ final class NCVideoPlaybackController: ObservableObject {
     private var avProbePlayer: AVPlayer?
     private var avProbeItem: AVPlayerItem?
     private var statusObservation: NSKeyValueObservation?
-    private var timeoutTask: Task<Void, Never>?
 
     private var currentOcId: String?
     private var currentEtag: String?
     private var currentURL: URL?
     private var currentFileName: String?
     private var loadToken = UUID()
-
-    private let fallbackTimeoutMilliseconds = 1_500
 
     private init() { }
 
@@ -125,11 +122,6 @@ final class NCVideoPlaybackController: ObservableObject {
             shouldAutoPlay: shouldAutoPlay,
             token: token
         )
-
-        startFallbackTimeout(
-            url: url,
-            token: token
-        )
     }
 
     func stopIfCurrent(ocId: String) {
@@ -142,9 +134,6 @@ final class NCVideoPlaybackController: ObservableObject {
     // Releases AVFoundation resources; VLC is owned by its view controller.
     func stop() {
         loadToken = UUID()
-
-        timeoutTask?.cancel()
-        timeoutTask = nil
 
         statusObservation?.invalidate()
         statusObservation = nil
@@ -246,9 +235,6 @@ final class NCVideoPlaybackController: ObservableObject {
             return
         }
 
-        timeoutTask?.cancel()
-        timeoutTask = nil
-
         engine = .avFoundation(url: url)
 
         nkLog(
@@ -257,39 +243,6 @@ final class NCVideoPlaybackController: ObservableObject {
             message: "VIDEO engine AVFoundation ready autoplay disabled requested \(shouldAutoPlay)",
             consoleOnly: true
         )
-    }
-
-    // Fall back to VLC if AVFoundation does not become ready quickly.
-    private func startFallbackTimeout(
-        url: URL,
-        token: UUID
-    ) {
-        timeoutTask = Task { [weak self] in
-            guard let self else {
-                return
-            }
-
-            try? await Task.sleep(
-                for: .milliseconds(self.fallbackTimeoutMilliseconds)
-            )
-
-            await MainActor.run {
-                guard self.isCurrentLoad(
-                    url: url,
-                    token: token
-                ) else {
-                    return
-                }
-
-                if case .loading = self.engine {
-                    self.resolveWithVLC(
-                        url: url,
-                        reason: "AVFoundation timeout.",
-                        token: token
-                    )
-                }
-            }
-        }
     }
 
     // MARK: - VLC
@@ -305,9 +258,6 @@ final class NCVideoPlaybackController: ObservableObject {
         ) else {
             return
         }
-
-        timeoutTask?.cancel()
-        timeoutTask = nil
 
         statusObservation?.invalidate()
         statusObservation = nil
