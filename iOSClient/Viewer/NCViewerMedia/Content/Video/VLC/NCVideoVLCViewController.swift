@@ -130,7 +130,6 @@ final class NCVideoVLCViewController: UIViewController {
         drawableView.clipsToBounds = true
         drawableView.translatesAutoresizingMaskIntoConstraints = false
 
-
         controlsView.delegate = self
         controlsView.setTopActionsMode(.vlcTracks)
         controlsView.alpha = 0
