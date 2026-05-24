@@ -140,11 +140,11 @@ final class NCVideoControlsView: UIView {
     func setTopActionsMode(_ mode: NCVideoControlsTopActionsMode) {
         let didChangeMode = state.topActionsMode != mode
         var didResetTrackItems = false
+        let hasTrackItems = !state.subtitleTrackItems.isEmpty || !state.audioTrackItems.isEmpty
 
         state.topActionsMode = mode
 
-        if mode != .vlcTracks,
-           (!state.subtitleTrackItems.isEmpty || !state.audioTrackItems.isEmpty) {
+        if mode != .vlcTracks, hasTrackItems {
             state.subtitleTrackItems = []
             state.audioTrackItems = []
             didResetTrackItems = true

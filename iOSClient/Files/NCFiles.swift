@@ -126,10 +126,6 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-
     // MARK: - DataSource
 
     override func reloadDataSource() async {
