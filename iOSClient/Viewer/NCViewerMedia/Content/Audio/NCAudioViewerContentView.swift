@@ -50,77 +50,91 @@ struct NCAudioViewerContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: 28) {
-            artworkView
+        GeometryReader { proxy in
+            let isLandscape = proxy.size.width > proxy.size.height
+            let artworkSize: CGFloat = isLandscape ? 110 : 180
+            let mainSpacing: CGFloat = isLandscape ? 18 : 28
+            let titleHorizontalPadding: CGFloat = 24
+            let sliderHorizontalPadding: CGFloat = isLandscape ? 90 : 32
+            let topPadding: CGFloat = isLandscape ? 72 : 0
+            let buttonSpacing: CGFloat = isLandscape ? 24 : 28
+            let sideButtonSize: CGFloat = isLandscape ? 30 : 34
+            let playButtonSize: CGFloat = isLandscape ? 64 : 72
 
-            VStack(spacing: 8) {
-                Text(displayFileName)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
+            VStack(spacing: mainSpacing) {
+                artworkView(size: artworkSize)
+                if !isLandscape {
+                    VStack(spacing: 8) {
+                        Text(displayFileName)
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
 
-                Text(metadata.contentType.isEmpty ? "Audio" : metadata.contentType)
-                    .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.55))
-                    .lineLimit(1)
+                        Text(metadata.contentType.isEmpty ? "Audio" : metadata.contentType)
+                            .font(.footnote)
+                            .foregroundStyle(.white.opacity(0.55))
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, titleHorizontalPadding)
+                }
+
+                VStack(spacing: 10) {
+                    Slider(
+                        value: Binding(
+                            get: { model.currentTime },
+                            set: { model.seek(to: $0) }
+                        ),
+                        in: 0...max(model.duration, 1)
+                    )
+                    .disabled(model.duration <= 0)
+
+                    HStack {
+                        Text(formatTime(model.currentTime))
+
+                        Spacer()
+
+                        Text(formatTime(model.duration))
+                    }
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.white.opacity(0.6))
+                }
+                .padding(.horizontal, sliderHorizontalPadding)
+
+                HStack(spacing: buttonSpacing) {
+                    Button {
+                        model.toggleLoop()
+                    } label: {
+                        Image(systemName: model.isLoopEnabled ? "repeat.circle.fill" : "repeat.circle")
+                            .font(.system(size: sideButtonSize, weight: .regular))
+                            .foregroundStyle(model.isLoopEnabled ? .white : .white.opacity(0.45))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        model.togglePlayback()
+                    } label: {
+                        Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                            .font(.system(size: playButtonSize, weight: .regular))
+                            .foregroundStyle(.white)
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        model.restart()
+                    } label: {
+                        Image(systemName: "gobackward")
+                            .font(.system(size: sideButtonSize, weight: .regular))
+                            .foregroundStyle(.white.opacity(0.45))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(model.duration <= 0)
+                }
             }
-            .padding(.horizontal, 24)
-
-            VStack(spacing: 10) {
-                Slider(
-                    value: Binding(
-                        get: { model.currentTime },
-                        set: { model.seek(to: $0) }
-                    ),
-                    in: 0...max(model.duration, 1)
-                )
-                .disabled(model.duration <= 0)
-
-                HStack {
-                    Text(formatTime(model.currentTime))
-
-                    Spacer()
-
-                    Text(formatTime(model.duration))
-                }
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.white.opacity(0.6))
-            }
-            .padding(.horizontal, 32)
-
-            HStack(spacing: 28) {
-                Button {
-                    model.toggleLoop()
-                } label: {
-                    Image(systemName: model.isLoopEnabled ? "repeat.circle.fill" : "repeat.circle")
-                        .font(.system(size: 34, weight: .regular))
-                        .foregroundStyle(model.isLoopEnabled ? .white : .white.opacity(0.45))
-                }
-                .buttonStyle(.plain)
-
-                Button {
-                    model.togglePlayback()
-                } label: {
-                    Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 72, weight: .regular))
-                        .foregroundStyle(.white)
-                }
-                .buttonStyle(.plain)
-
-                Button {
-                    model.restart()
-                } label: {
-                    Image(systemName: "gobackward")
-                        .font(.system(size: 34, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.45))
-                }
-                .buttonStyle(.plain)
-                .disabled(model.duration <= 0)
-            }
+            .padding(.top, topPadding)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
         .task(id: localURL) {
             await model.load(url: localURL)
             consumeAutoPlayIfNeeded()
@@ -139,18 +153,18 @@ struct NCAudioViewerContentView: View {
 
     // MARK: - Views
 
-    private var artworkView: some View {
+    private func artworkView(size: CGFloat) -> some View {
         ZStack {
             if let previewImage {
                 Image(uiImage: previewImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 180, height: 180)
+                    .frame(width: size, height: size)
                     .clipShape(RoundedRectangle(cornerRadius: 24))
             } else {
                 Circle()
                     .fill(.white.opacity(0.08))
-                    .frame(width: 180, height: 180)
+                    .frame(width: size, height: size)
 
                 Image(systemName: "waveform")
                     .font(.system(size: 76, weight: .regular))
@@ -275,26 +289,29 @@ final class NCAudioViewerModel: ObservableObject {
 
         self.player = player
 
-        let loadedDuration: Double
-
-        if let duration = try? await asset.load(.duration),
-           duration.seconds.isFinite {
-            loadedDuration = duration.seconds
-        } else {
-            loadedDuration = 0
-        }
-
-        guard !Task.isCancelled,
-              currentURL == url,
-              self.player === player else {
-            player.pause()
-            return
-        }
-
-        self.duration = loadedDuration
-
         addTimeObserver(to: player)
         addEndObserver(for: item, player: player)
+
+        Task { [weak self] in
+            let loadedDuration: Double
+
+            if let duration = try? await asset.load(.duration),
+               duration.seconds.isFinite {
+                loadedDuration = duration.seconds
+            } else {
+                loadedDuration = 0
+            }
+
+            await MainActor.run {
+                guard let self,
+                      self.currentURL == url,
+                      self.player === player else {
+                    return
+                }
+
+                self.duration = loadedDuration
+            }
+        }
     }
 
     func play() {

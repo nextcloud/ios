@@ -387,6 +387,25 @@ final class NCMediaViewerModel: ObservableObject {
                 return
             }
 
+            if metadata.classFile == NKTypeClassFile.audio.rawValue {
+                await setReadyState(
+                    metadata: metadata,
+                    previewURL: previewURL,
+                    localURL: localURL,
+                    for: ocId,
+                    index: index
+                )
+
+                await loadAudioPreviewIfNeeded(
+                    metadata: metadata,
+                    localURL: localURL,
+                    currentPreviewURL: previewURL,
+                    for: ocId,
+                    index: index
+                )
+                return
+            }
+
             if previewURL == nil {
                 previewURL = await loader.previewURL(
                     for: metadata,
@@ -412,7 +431,8 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if previewURL == nil {
+        if metadata.classFile != NKTypeClassFile.audio.rawValue,
+           previewURL == nil {
             previewURL = await loader.previewURL(for: metadata, index: index)
         }
 
@@ -471,6 +491,16 @@ final class NCMediaViewerModel: ObservableObject {
                 for: ocId,
                 index: index
             )
+
+            if metadata.classFile == NKTypeClassFile.audio.rawValue {
+                await loadAudioPreviewIfNeeded(
+                    metadata: metadata,
+                    localURL: downloadedURL,
+                    currentPreviewURL: previewURL,
+                    for: ocId,
+                    index: index
+                )
+            }
         } catch is CancellationError {
             return
         } catch {
@@ -705,6 +735,41 @@ final class NCMediaViewerModel: ObservableObject {
                 for: ocId
             )
         }
+    }
+
+    private func loadAudioPreviewIfNeeded(
+        metadata: tableMetadata,
+        localURL: URL,
+        currentPreviewURL: URL?,
+        for ocId: String,
+        index: Int
+    ) async {
+        guard currentPreviewURL == nil else {
+            return
+        }
+
+        let previewURL = await loader.previewURL(
+            for: metadata,
+            index: index
+        )
+
+        guard !Task.isCancelled,
+              let previewURL else {
+            return
+        }
+
+        guard case .ready(let readyLocalURL, _) = pageState(for: ocId),
+              readyLocalURL == localURL else {
+            return
+        }
+
+        setState(
+            .ready(
+                localURL: localURL,
+                previewURL: previewURL
+            ),
+            for: ocId
+        )
     }
 
     private func updatePage(
