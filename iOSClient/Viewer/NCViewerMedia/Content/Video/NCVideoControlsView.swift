@@ -74,9 +74,9 @@ final class NCVideoControlsView: UIView {
 
     fileprivate static let centerControlsWidth: CGFloat = 220
     fileprivate static let centerControlsHeight: CGFloat = 76
-    fileprivate static let bottomControlsHeight: CGFloat = 64
+    fileprivate static let bottomControlsHeight: CGFloat = 46
     fileprivate static let bottomControlsHorizontalInset: CGFloat = 28
-    fileprivate static let bottomControlsBottomInset: CGFloat = 18
+    fileprivate static let bottomControlsBottomInset: CGFloat = 28
     fileprivate static let topActionsHeight: CGFloat = 46
     fileprivate static let topActionsHorizontalInset: CGFloat = 28
     fileprivate static let topActionsButtonSize: CGFloat = 38
@@ -494,6 +494,16 @@ private struct NCVideoControlsSwiftUIView: View {
         .background(.white.opacity(0.92))
         .clipShape(Capsule())
         .shadow(color: .black.opacity(0.16), radius: 18, x: 0, y: 5)
+        .contentShape(Capsule())
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    onScrubBegan()
+                }
+                .onEnded { _ in
+                    onScrubEnded(state.progress)
+                }
+        )
     }
 
     private var topActions: some View {
