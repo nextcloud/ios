@@ -495,7 +495,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         refreshVisibleCells()
     }
 
-
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,

@@ -166,10 +166,10 @@ struct NCMediaViewerPageView: View {
             Image(systemName: "trash")
                 .font(.system(size: 44, weight: .regular))
 
-            Text("Media no longer available")
+            Text(NSLocalizedString("_media_no_longer_available_", comment: ""))
                 .font(.headline)
 
-            Text("This item has been deleted.")
+            Text(NSLocalizedString("_this_item_has_been_deleted_", comment: ""))
                 .font(.caption)
                 .foregroundStyle(secondaryForegroundStyle)
         }
@@ -352,7 +352,7 @@ struct NCMediaViewerPageView: View {
             Image(systemName: "icloud.slash")
                 .font(.system(size: 44, weight: .regular))
 
-            Text("Download failed")
+            Text(NSLocalizedString("_download_failed_", comment: ""))
                 .font(.headline)
 
             if let fileName, !fileName.isEmpty {
