@@ -227,6 +227,9 @@ struct NCMediaViewerPageView: View {
         if page.metadata?.classFile == NKTypeClassFile.video.rawValue,
            isSelected {
             videoStateView(previewURL: previewURL)
+        } else if page.metadata?.classFile == NKTypeClassFile.audio.rawValue {
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
         } else if let previewURL {
             previewOnlyView(previewURL: previewURL)
         } else {
