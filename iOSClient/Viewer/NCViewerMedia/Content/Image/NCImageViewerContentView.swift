@@ -18,6 +18,7 @@ struct NCImageViewerContentView: View {
     @State private var loadedFullURL: URL?
     @State private var loadedIdentifier: String?
     @State private var failedMessage: String?
+    @State private var isShowingFullImage = false
 
     private var taskIdentifier: String {
         "\(identifier)|\(previewURL?.absoluteString ?? "")|\(fullURL?.absoluteString ?? "")"
@@ -114,6 +115,7 @@ struct NCImageViewerContentView: View {
             loadedPreviewURL = nil
             loadedFullURL = nil
             failedMessage = nil
+            isShowingFullImage = false
             loadedIdentifier = expectedIdentifier
         }
 
@@ -131,6 +133,7 @@ struct NCImageViewerContentView: View {
 
                 loadedPreviewURL = expectedPreviewURL
                 failedMessage = nil
+                isShowingFullImage = false
                 currentImage = previewImage
 
                 await Task.yield()
@@ -148,6 +151,7 @@ struct NCImageViewerContentView: View {
         if loadedPreviewURL == expectedFullURL,
            currentImage != nil {
             loadedFullURL = expectedFullURL
+            isShowingFullImage = true
             return
         }
 
@@ -170,6 +174,7 @@ struct NCImageViewerContentView: View {
         if let fullImage {
             loadedFullURL = expectedFullURL
             failedMessage = nil
+            isShowingFullImage = true
             currentImage = fullImage
             return
         }
@@ -272,17 +277,16 @@ struct NCImageViewerContentView: View {
     }
 
     private var allowsImageAnalysis: Bool {
-        let url = fullURL ?? previewURL
-
-        guard let url else {
+        guard isShowingFullImage,
+              let fullURL else {
             return false
         }
 
-        if isGIF(url) {
+        if isGIF(fullURL) {
             return false
         }
 
-        if isSVG(url) {
+        if isSVG(fullURL) {
             return false
         }
 
