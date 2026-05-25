@@ -340,7 +340,6 @@ struct NCMediaViewerPageView: View {
         .gesture(chromeToggleGesture())
     }
 
-
     // Keep double tap reserved for image zoom.
     private func chromeToggleGesture() -> some Gesture {
         TapGesture(count: 2)

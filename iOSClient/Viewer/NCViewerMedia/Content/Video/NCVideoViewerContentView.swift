@@ -263,7 +263,6 @@ struct NCVideoViewerContentView: View {
             return
         }
 
-
         let result = await resolvedVideoURL(
             taskIdentifier: expectedTaskIdentifier
         )

@@ -159,7 +159,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return await localLivePhotoURL(for: metadata, index: index)
         }
 
-
         guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
             ocId: livePhotoMetadata.ocId,
             session: NCNetworking.shared.sessionDownload,
