@@ -47,11 +47,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         )
 
         if isValidLocalFile(path: localPath) {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "PREVIEW local \(index)", consoleOnly: true)
             return URL(fileURLWithPath: localPath)
         }
-
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "PREVIEW request \(index)", consoleOnly: true)
 
         let result = await NextcloudKit.shared.downloadPreviewAsync(
             fileId: metadata.fileId,
@@ -72,8 +69,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "PREVIEW ready \(index)", consoleOnly: true)
-
         return URL(fileURLWithPath: localPath)
     }
 
@@ -84,18 +79,13 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "FULL local \(index)", consoleOnly: true)
-
         return URL(fileURLWithPath: localPath)
     }
 
     func downloadMedia(for metadata: tableMetadata, index: Int) async throws -> URL {
         if let localURL = await localMediaURL(for: metadata, index: index) {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "FULL resolve \(index)", consoleOnly: true)
             return localURL
         }
-
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "FULL network request \(index)", consoleOnly: true)
 
         guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(
             ocId: metadata.ocId,
@@ -118,7 +108,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         if let localURL = await localMediaURL(for: metadata, index: index) {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "FULL ready \(index)", consoleOnly: true)
             return localURL
         }
 
@@ -143,8 +132,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE local \(index)", consoleOnly: true)
-
         return URL(fileURLWithPath: localPath)
     }
 
@@ -155,7 +142,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         if let localURL = await localLivePhotoURL(for: metadata, index: index) {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE resolve \(index)", consoleOnly: true)
             return localURL
         }
 
@@ -173,7 +159,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return await localLivePhotoURL(for: metadata, index: index)
         }
 
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE network request \(index)", consoleOnly: true)
 
         guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
             ocId: livePhotoMetadata.ocId,
@@ -192,7 +177,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         if let localURL = await localLivePhotoURL(for: metadata, index: index) {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE ready \(index)", consoleOnly: true)
             return localURL
         }
 
