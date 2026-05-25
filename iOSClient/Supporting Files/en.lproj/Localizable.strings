@@ -671,7 +671,7 @@
 "_delete_in_progress_"      = "Delete in progress …";
 "_download_in_progress_"    = "Download in progress …";
 "_upload_in_progress_"      = "Upload in progress …";
-"_transfer_in_progress_"    = "Transfer in progress …"; 
+"_transfer_in_progress_"    = "Transfer in progress …";
 "_in_waiting_"              = "In waiting";
 "_in_progress_"             = "In progress";
 "_in_error_"                = "In error";
@@ -684,6 +684,16 @@
 "_in_this_folder_"          = "In this folder";
 "_media_no_longer_available_" = "Media no longer available";
 "_this_item_has_been_deleted_" = "This item has been deleted.";
+"_video_not_available_" = "Video not available";
+"_disable_" = "Disable";
+"_no_subtitles_available_" = "No subtitles available";
+"_no_audio_tracks_available_" = "No audio tracks available";
+"_add_external_subtitle_" = "Add external subtitle";
+"_image_load_failed_" = "Image load failed";
+"_image_load_failed_" = "Image load failed";
+"_gif_file_could_not_be_decoded_" = "GIF file could not be decoded.";
+"_svg_file_could_not_be_rendered_" = "SVG file could not be rendered.";
+"_image_file_could_not_be_decoded_" = "Image file could not be decoded.";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

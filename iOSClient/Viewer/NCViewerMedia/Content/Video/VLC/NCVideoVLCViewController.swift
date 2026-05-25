@@ -497,12 +497,6 @@ final class NCVideoVLCViewController: UIViewController {
         showControls(animated: false)
         stopControlsHideTimer()
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO VLC UIKit prepared without autoplay ocId \(metadata.ocId), url \(url.absoluteString)",
-            consoleOnly: true
-        )
     }
 
     private func stop() {

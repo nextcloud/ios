@@ -544,12 +544,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         updateProgressControls()
         updateSeekingState()
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO AVPlayer UIKit prepared without autoplay ocId \(metadata.ocId), url \(url.absoluteString)",
-            consoleOnly: true
-        )
     }
 
     private func stop() {
@@ -814,12 +808,6 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
     func pictureInPictureControllerWillStartPictureInPicture(
         _ pictureInPictureController: AVPictureInPictureController
     ) {
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO AVPlayer PiP will start",
-            consoleOnly: true
-        )
 
         stopControlsHideTimer()
         hideControls(animated: false)
@@ -828,12 +816,6 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
     func pictureInPictureControllerDidStartPictureInPicture(
         _ pictureInPictureController: AVPictureInPictureController
     ) {
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO AVPlayer PiP did start",
-            consoleOnly: true
-        )
 
         stopControlsHideTimer()
         hideControls(animated: false)
@@ -842,23 +824,11 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
     func pictureInPictureControllerWillStopPictureInPicture(
         _ pictureInPictureController: AVPictureInPictureController
     ) {
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO AVPlayer PiP will stop",
-            consoleOnly: true
-        )
     }
 
     func pictureInPictureControllerDidStopPictureInPicture(
         _ pictureInPictureController: AVPictureInPictureController
     ) {
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO AVPlayer PiP did stop",
-            consoleOnly: true
-        )
 
         updatePlayPauseButton()
         updateProgressControls()

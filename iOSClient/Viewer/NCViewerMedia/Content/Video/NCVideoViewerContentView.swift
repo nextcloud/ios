@@ -157,7 +157,7 @@ struct NCVideoViewerContentView: View {
             Image(systemName: "video.slash")
                 .font(.system(size: 44, weight: .regular))
 
-            Text("Video not available")
+            Text(NSLocalizedString("_video_not_available_", comment: ""))
                 .font(.headline)
 
             Text(message)
@@ -263,54 +263,24 @@ struct NCVideoViewerContentView: View {
             return
         }
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO resolve start ocId \(metadata.ocId), fileName \(metadata.fileNameView), fileId \(metadata.fileId)",
-            consoleOnly: true
-        )
 
         let result = await resolvedVideoURL(
             taskIdentifier: expectedTaskIdentifier
         )
 
         guard !Task.isCancelled else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO resolve cancelled ocId \(metadata.ocId)",
-                consoleOnly: true
-            )
             return
         }
 
         guard expectedTaskIdentifier == taskIdentifier else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO resolve ignored stale task ocId \(metadata.ocId)",
-                consoleOnly: true
-            )
             return
         }
 
         guard expectedLoadGeneration == loadGeneration else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO resolve ignored stale generation ocId \(metadata.ocId)",
-                consoleOnly: true
-            )
             return
         }
 
         guard isSelected else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO resolve skipped final not selected ocId \(metadata.ocId), fileName \(metadata.fileNameView)",
-                consoleOnly: true
-            )
             return
         }
 
@@ -345,41 +315,16 @@ struct NCVideoViewerContentView: View {
         source: String
     ) {
         guard expectedTaskIdentifier == taskIdentifier else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO load ignored stale task ocId \(metadata.ocId), source \(source), url \(url.absoluteString)",
-                consoleOnly: true
-            )
             return
         }
 
         guard expectedLoadGeneration == loadGeneration else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO load ignored stale generation ocId \(metadata.ocId), source \(source), url \(url.absoluteString)",
-                consoleOnly: true
-            )
             return
         }
 
         guard isSelected else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO load skipped not selected ocId \(metadata.ocId), source \(source), url \(url.absoluteString)",
-                consoleOnly: true
-            )
             return
         }
-
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO load \(source) url \(url.absoluteString), isFileURL \(url.isFileURL), fileName \(resolvedFileName)",
-            consoleOnly: true
-        )
 
         resolvedVideoURL = url
 

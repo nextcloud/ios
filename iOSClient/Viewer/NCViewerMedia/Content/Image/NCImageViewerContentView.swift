@@ -62,7 +62,7 @@ struct NCImageViewerContentView: View {
             Image(systemName: "photo.badge.exclamationmark")
                 .font(.system(size: 44, weight: .regular))
 
-            Text("Image load failed")
+            Text(NSLocalizedString("_image_load_failed_", comment: ""))
                 .font(.headline)
 
             Text(message)
@@ -176,11 +176,11 @@ struct NCImageViewerContentView: View {
 
         if currentImage == nil {
             if isGIF(expectedFullURL) {
-                failedMessage = "GIF file could not be decoded."
+                failedMessage = NSLocalizedString("_gif_file_could_not_be_decoded_", comment: "")
             } else if isSVG(expectedFullURL) {
-                failedMessage = "SVG file could not be rendered."
+                failedMessage = NSLocalizedString("_svg_file_could_not_be_rendered_", comment: "")
             } else {
-                failedMessage = "UIImage could not decode this file."
+                failedMessage = NSLocalizedString("_image_file_could_not_be_decoded_", comment: "")
             }
         }
     }
@@ -282,11 +282,9 @@ struct NCImageViewerContentView: View {
             return false
         }
 
-        /* for now disable (marino)
         if isSVG(url) {
             return false
         }
-        */
 
         return true
     }

@@ -40,22 +40,10 @@ enum NCVideoVLCPresenter {
             currentViewController.onClose = onClose
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO VLC presenter ignored duplicate URL \(url.absoluteString)",
-                consoleOnly: true
-            )
             return
         }
 
         if isPresenting {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO VLC presenter ignored while presentation is in progress",
-                consoleOnly: true
-            )
             return
         }
 

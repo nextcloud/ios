@@ -289,18 +289,11 @@ struct NCMediaViewerPageView: View {
         previewURL: URL?,
         message: String
     ) -> some View {
-        ZStack {
-            if let previewURL {
-                previewOnlyView(previewURL: previewURL)
-            } else {
-                Color.ncViewerBackground(backgroundStyle)
-                    .ignoresSafeArea()
-            }
-
-            failedOverlay(
-                fileName: displayFileName(from: page.metadata),
-                message: message
-            )
+        if let previewURL {
+            previewOnlyView(previewURL: previewURL)
+        } else {
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
         }
     }
 
@@ -347,36 +340,6 @@ struct NCMediaViewerPageView: View {
         .gesture(chromeToggleGesture())
     }
 
-    private func failedOverlay(fileName: String?, message: String) -> some View {
-        VStack(spacing: 12) {
-            Image(systemName: "icloud.slash")
-                .font(.system(size: 44, weight: .regular))
-
-            Text(NSLocalizedString("_download_failed_", comment: ""))
-                .font(.headline)
-
-            if let fileName, !fileName.isEmpty {
-                Text(fileName)
-                    .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.65))
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-            }
-
-            if !message.isEmpty {
-                Text(message)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.55))
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .foregroundStyle(.white)
-        .multilineTextAlignment(.center)
-        .padding(16)
-        .background(.black.opacity(0.45))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding()
-    }
 
     // Keep double tap reserved for image zoom.
     private func chromeToggleGesture() -> some Gesture {
@@ -432,17 +395,5 @@ struct NCMediaViewerPageView: View {
         let safeTop = window?.safeAreaInsets.top ?? 0
 
         return safeTop + 44 + 8
-    }
-
-    private func displayFileName(from metadata: tableMetadata?) -> String? {
-        guard let metadata else {
-            return nil
-        }
-
-        if !metadata.fileNameView.isEmpty {
-            return metadata.fileNameView
-        }
-
-        return metadata.fileName
     }
 }

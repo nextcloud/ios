@@ -699,7 +699,7 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
             remainingText: "−2:31"
         )
         controlsView.setSubtitleTrackMenuItems([
-            NCVideoTrackMenuItem(index: -1, title: "Disable", isSelected: true),
+            NCVideoTrackMenuItem(index: -1, title: NSLocalizedString("_disable_", comment: ""), isSelected: true),
             NCVideoTrackMenuItem(index: 0, title: "English", isSelected: false)
         ])
         controlsView.setAudioTrackMenuItems([

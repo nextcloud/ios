@@ -74,14 +74,6 @@ final class NCVideoPlaybackController: ObservableObject {
             url: url
         ) {
             resumeCurrentPlaybackIfNeeded(shouldAutoPlay: shouldAutoPlay)
-
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO controller reuse existing player ocId \(metadata.ocId)",
-                consoleOnly: true
-            )
-
             return
         }
 
@@ -236,13 +228,6 @@ final class NCVideoPlaybackController: ObservableObject {
         }
 
         engine = .avFoundation(url: url)
-
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO engine AVFoundation ready autoplay disabled requested \(shouldAutoPlay)",
-            consoleOnly: true
-        )
     }
 
     // MARK: - VLC
@@ -267,13 +252,6 @@ final class NCVideoPlaybackController: ObservableObject {
         avProbeItem = nil
 
         engine = .vlc(url: url)
-
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "VIDEO engine VLC: \(reason)",
-            consoleOnly: true
-        )
     }
 
     // MARK: - State Helpers

@@ -19,7 +19,6 @@ struct NCLivePhotoViewerContentView: View {
     let topOverlayInset: CGFloat
 
     @State private var livePhoto: PHLivePhoto?
-    @State private var failedMessage: String?
     @State private var isPlayingLivePhoto = false
     @State private var loadedTaskIdentifier: String?
 
@@ -57,10 +56,6 @@ struct NCLivePhotoViewerContentView: View {
             }
 
             livePhotoBadge
-
-            if let failedMessage {
-                failedOverlay(failedMessage)
-            }
         }
         .background(Color.ncViewerBackground(backgroundStyle))
         .task(id: taskIdentifier) {
@@ -176,36 +171,6 @@ struct NCLivePhotoViewerContentView: View {
         .allowsHitTesting(false)
     }
 
-    private func failedOverlay(_ message: String) -> some View {
-        VStack(spacing: 8) {
-            Image(systemName: "livephoto.slash")
-                .font(.system(size: 24, weight: .regular))
-
-            Text(message)
-                .font(.caption)
-                .multilineTextAlignment(.center)
-        }
-        .foregroundStyle(primaryForegroundStyle)
-        .padding(12)
-        .background(.black.opacity(0.35))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding()
-    }
-
-    // MARK: - Appearance
-
-    private var primaryForegroundStyle: Color {
-        switch backgroundStyle {
-        case .black:
-            return .white
-
-        case .system,
-             .white,
-             .custom:
-            return .primary
-        }
-    }
-
     // MARK: - Identifiers
 
     private var taskIdentifier: String {
@@ -223,7 +188,6 @@ struct NCLivePhotoViewerContentView: View {
     private func loadLivePhotoIfNeeded() async {
         if loadedTaskIdentifier != taskIdentifier {
             livePhoto = nil
-            failedMessage = nil
             isPlayingLivePhoto = false
             loadedTaskIdentifier = taskIdentifier
         }
@@ -231,8 +195,6 @@ struct NCLivePhotoViewerContentView: View {
         guard livePhoto == nil else {
             return
         }
-
-        failedMessage = nil
 
         guard let fullURL,
               let videoURL else {
@@ -260,11 +222,9 @@ struct NCLivePhotoViewerContentView: View {
         }
 
         guard let loadedLivePhoto else {
-            failedMessage = "PHLivePhoto could not load these resources."
             return
         }
 
-        failedMessage = nil
         livePhoto = loadedLivePhoto
     }
 

@@ -41,22 +41,10 @@ enum NCVideoAVPlayerPresenter {
             currentViewController.onNext = onNext
             currentViewController.onClose = onClose
 
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO AVPlayer presenter ignored duplicate URL \(url.absoluteString)",
-                consoleOnly: true
-            )
             return
         }
 
         if isPresenting {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .debug,
-                message: "VIDEO AVPlayer presenter ignored while presentation is in progress",
-                consoleOnly: true
-            )
             return
         }
 
