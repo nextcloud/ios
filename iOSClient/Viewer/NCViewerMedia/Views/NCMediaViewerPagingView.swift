@@ -495,12 +495,13 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         refreshVisibleCells()
     }
 
+
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
-        guard !isAdjustingLayout else {
+        guard isScrollGeometryStable(scrollView) else {
             return
         }
 
@@ -520,6 +521,21 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
+    }
+
+    private func isScrollGeometryStable(_ scrollView: UIScrollView) -> Bool {
+        guard !isAdjustingLayout else {
+            return false
+        }
+
+        let boundsSize = scrollView.bounds.size
+
+        guard boundsSize.width > 0,
+              boundsSize.height > 0 else {
+            return false
+        }
+
+        return boundsSize == lastCollectionViewBoundsSize
     }
 
     private func pageIndex(for scrollView: UIScrollView) -> Int? {
@@ -549,7 +565,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard !isAdjustingLayout else {
+        guard isScrollGeometryStable(scrollView) else {
             return
         }
 
@@ -590,7 +606,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     private func updateSelectedIndexFromScrollView(_ scrollView: UIScrollView) {
-        guard !isAdjustingLayout else {
+        guard isScrollGeometryStable(scrollView) else {
             return
         }
 
