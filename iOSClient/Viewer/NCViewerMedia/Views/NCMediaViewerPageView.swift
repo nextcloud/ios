@@ -262,6 +262,7 @@ struct NCMediaViewerPageView: View {
                 NCAudioViewerContentView(
                     metadata: metadata,
                     localURL: localURL,
+                    previewURL: previewURL,
                     canGoPrevious: canGoPrevious,
                     canGoNext: canGoNext,
                     shouldAutoPlay: effectiveShouldAutoPlay,

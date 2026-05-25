@@ -11,6 +11,7 @@ import NextcloudKit
 struct NCAudioViewerContentView: View {
     let metadata: tableMetadata
     let localURL: URL
+    let previewURL: URL?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
@@ -23,6 +24,7 @@ struct NCAudioViewerContentView: View {
     init(
         metadata: tableMetadata,
         localURL: URL,
+        previewURL: URL? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
@@ -32,6 +34,7 @@ struct NCAudioViewerContentView: View {
     ) {
         self.metadata = metadata
         self.localURL = localURL
+        self.previewURL = previewURL
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay
@@ -138,14 +141,31 @@ struct NCAudioViewerContentView: View {
 
     private var artworkView: some View {
         ZStack {
-            Circle()
-                .fill(.white.opacity(0.08))
-                .frame(width: 180, height: 180)
+            if let previewImage {
+                Image(uiImage: previewImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 180, height: 180)
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+            } else {
+                Circle()
+                    .fill(.white.opacity(0.08))
+                    .frame(width: 180, height: 180)
 
-            Image(systemName: "waveform")
-                .font(.system(size: 76, weight: .regular))
-                .foregroundStyle(.white.opacity(0.9))
+                Image(systemName: "waveform")
+                    .font(.system(size: 76, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.9))
+            }
         }
+    }
+
+    private var previewImage: UIImage? {
+        guard let previewURL,
+              previewURL.isFileURL else {
+            return nil
+        }
+
+        return UIImage(contentsOfFile: previewURL.path)
     }
 
     // MARK: - Private
