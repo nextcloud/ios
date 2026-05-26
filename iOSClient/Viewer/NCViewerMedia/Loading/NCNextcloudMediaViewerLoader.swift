@@ -65,7 +65,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         guard isValidLocalFile(path: localPath) else {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "PREVIEW failed \(index)", consoleOnly: true)
             return nil
         }
 
@@ -122,7 +121,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE metadata missing \(index)", consoleOnly: true)
             return nil
         }
 
@@ -146,12 +144,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         guard NCNetworking.shared.isOnline else {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE offline \(index)", consoleOnly: true)
             return nil
         }
 
         guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE metadata missing \(index)", consoleOnly: true)
             return nil
         }
 
@@ -164,22 +160,18 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             session: NCNetworking.shared.sessionDownload,
             selector: ""
         ) else {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE session error \(index)", consoleOnly: true)
             return nil
         }
 
         let result = await NCNetworking.shared.downloadFile(metadata: downloadMetadata)
 
         if result.afError != nil || result.nkError != .success {
-            nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE error \(index)", consoleOnly: true)
             return nil
         }
 
         if let localURL = await localLivePhotoURL(for: metadata, index: index) {
             return localURL
         }
-
-        nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "LIVE unavailable after download \(index)", consoleOnly: true)
 
         return nil
     }

@@ -225,7 +225,7 @@ struct NCVideoViewerContentView: View {
         }
 
         do {
-            try await Task.sleep(nanoseconds: Self.videoSelectionSettleDelayNanoseconds)
+            try await Task.sleep(for: .milliseconds(150))
         } catch {
             return false
         }
@@ -519,9 +519,6 @@ struct NCVideoViewerContentView: View {
     }
 
     // MARK: - Helpers
-
-    // Prevent transient video pages from starting playback work.
-    private static let videoSelectionSettleDelayNanoseconds: UInt64 = 150_000_000
 
     private var resolvedFileName: String {
         if !metadata.fileNameView.isEmpty {
