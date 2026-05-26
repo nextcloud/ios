@@ -419,20 +419,26 @@ struct NCVideoViewerContentView: View {
             onNext: goToNextPageFromAVPlayer,
             onClose: closeFromFullscreenVideo
         )
+
+        NCVideoFullscreenTransitionOverlay.hide()
     }
 
     @MainActor
     private func goToPreviousPageFromAVPlayer() {
+        NCVideoFullscreenTransitionOverlay.show()
         presentedAVPlayerURL = nil
         NCVideoAVPlayerPresenter.dismiss()
         onPreviousPage?()
+        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
     }
 
     @MainActor
     private func goToNextPageFromAVPlayer() {
+        NCVideoFullscreenTransitionOverlay.show()
         presentedAVPlayerURL = nil
         NCVideoAVPlayerPresenter.dismiss()
         onNextPage?()
+        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
     }
 
     @MainActor
@@ -440,6 +446,7 @@ struct NCVideoViewerContentView: View {
         presentedAVPlayerURL = nil
         presentedVLCURL = nil
         playback.stop()
+        NCVideoFullscreenTransitionOverlay.hide()
         onClose?(ocId)
     }
 
@@ -466,20 +473,26 @@ struct NCVideoViewerContentView: View {
             onNext: goToNextPageFromVLC,
             onClose: closeFromFullscreenVideo
         )
+
+        NCVideoFullscreenTransitionOverlay.hide()
     }
 
     @MainActor
     private func goToPreviousPageFromVLC() {
+        NCVideoFullscreenTransitionOverlay.show()
         presentedVLCURL = nil
         NCVideoVLCPresenter.dismiss()
         onPreviousPage?()
+        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
     }
 
     @MainActor
     private func goToNextPageFromVLC() {
+        NCVideoFullscreenTransitionOverlay.show()
         presentedVLCURL = nil
         NCVideoVLCPresenter.dismiss()
         onNextPage?()
+        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
     }
 
     // MARK: - In-Flight Resolution Cache
@@ -516,6 +529,65 @@ struct NCVideoViewerContentView: View {
         }
 
         return metadata.fileName
+    }
+}
+
+// MARK: - Fullscreen Video Transition Overlay
+
+@MainActor
+private enum NCVideoFullscreenTransitionOverlay {
+    private static weak var overlayView: UIView?
+    private static var hideTask: Task<Void, Never>?
+
+    static func show() {
+        hideTask?.cancel()
+
+        guard let window = keyWindow else {
+            return
+        }
+
+        let overlayView = overlayView ?? makeOverlayView(in: window)
+        window.bringSubviewToFront(overlayView)
+        overlayView.frame = window.bounds
+        overlayView.alpha = 1
+        overlayView.isHidden = false
+    }
+
+    static func hide() {
+        hideTask?.cancel()
+        hideTask = nil
+
+        overlayView?.removeFromSuperview()
+        overlayView = nil
+    }
+
+    static func hideAfterDelay() {
+        hideTask?.cancel()
+        hideTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(100))
+            hide()
+        }
+    }
+
+    private static func makeOverlayView(in window: UIWindow) -> UIView {
+        let view = UIView(frame: window.bounds)
+        view.backgroundColor = .black
+        view.isUserInteractionEnabled = false
+        view.autoresizingMask = [
+            .flexibleWidth,
+            .flexibleHeight
+        ]
+        window.addSubview(view)
+        overlayView = view
+        return view
+    }
+
+    private static var keyWindow: UIWindow? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
     }
 }
 
