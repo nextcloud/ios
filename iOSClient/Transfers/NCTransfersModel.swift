@@ -57,11 +57,13 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
                 }
 
                 // inWaitingCount
-                inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
+                let countTransfersSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+                let countWaiting = await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: NCGlobal.shared.metadatasStatusInWaiting)
+                inWaitingCount = max(0, countWaiting - countTransfersSuccess)
 
                 // inProgressCount
                 inProgressCount = metadatas.compactMap(\.status)
-                    .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
+                    .filter { NCGlobal.shared.metadatasStatusDownloadingUploading.contains($0) }
                     .count
 
                 // inErrorCount

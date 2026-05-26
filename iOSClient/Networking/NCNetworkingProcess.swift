@@ -28,7 +28,7 @@ actor NCNetworkingProcess {
 
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
-    private var inWaitingCount: Int = 0
+    private var inWaitDownloadUploadCount: Int = 0
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -70,7 +70,7 @@ actor NCNetworkingProcess {
             guard let self else { return }
 
             Task {
-                let count = await self.inWaitingCount()
+                let count = await self.inWaitingDownloadUploadCount()
                 try? await UNUserNotificationCenter.current().setBadgeCount(count)
 
                 await self.stopTimer()
@@ -126,16 +126,12 @@ actor NCNetworkingProcess {
         currentAccount = account
     }
 
-    private func inWaitingCount() async -> Int {
-        let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
-        let totalNonNormal = await NCManageDatabase.shared.getMetadatasInWaitingCountAsync()
-        let count = max(0, totalNonNormal - countTransferSuccess)
+    private func inWaitingDownloadUploadCount() async -> Int {
+        let countTransferDownloadingUploadingSuccess = await NCNetworking.shared.metadataTranfersSuccess.count(statuses: NCGlobal.shared.metadatasStatusDownloadingUploading)
+        let countWaitingDownloadUpload = await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: NCGlobal.shared.metadatasStatusInWaitingDownloadUpload)
+        let count = max(0, countWaitingDownloadUpload - countTransferDownloadingUploadingSuccess)
 
         return count
-    }
-
-    func getInWaitingCount() async -> Int {
-        return inWaitingCount
     }
 
     func startTimer(interval: TimeInterval) async {
@@ -202,11 +198,11 @@ actor NCNetworkingProcess {
                 return
             }
 
-            // UPDATE INWAIT & BADGE
+            // UPDATE INWAIT DOWNLOAD UPLOAD & BADGE
             //
-            let count = await inWaitingCount()
-            if count != inWaitingCount {
-                inWaitingCount = count
+            let count = await inWaitingDownloadUploadCount()
+            if count != inWaitDownloadUploadCount {
+                inWaitDownloadUploadCount = count
                 Task { @MainActor in
                     if let controller = getRootController(),
                        let files = controller.tabBar.items?.first {
@@ -222,7 +218,7 @@ actor NCNetworkingProcess {
             // TRANSFERS SUCCESS
             //
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
-            let countProgress = metadatas.filter { global.metadatasStatusInProgress.contains($0.status) }.count
+            let countProgress = metadatas.filter { global.metadatasStatusDownloadingUploading.contains($0.status) }.count
             let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
             if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
                 await NCNetworking.shared.metadataTranfersSuccess.flush()
