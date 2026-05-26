@@ -112,7 +112,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         nkLog(tag: NCGlobal.shared.logTagViewer, emoji: .debug, message: "FULL unavailable after download \(index)", consoleOnly: true)
 
-        throw NCMediaViewerLoaderError.localFileUnavailable
+        throw NSError(domain: "Download Media", code: 2)
     }
 
     func localLivePhotoURL(for metadata: tableMetadata, index: Int) async -> URL? {
@@ -202,17 +202,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         }
 
         return true
-    }
-}
-
-enum NCMediaViewerLoaderError: LocalizedError {
-    case localFileUnavailable
-
-    var errorDescription: String? {
-        switch self {
-        case .localFileUnavailable:
-            return "The local file is not available."
-        }
     }
 }
 

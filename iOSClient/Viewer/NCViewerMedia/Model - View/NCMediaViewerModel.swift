@@ -501,7 +501,7 @@ final class NCMediaViewerModel: ObservableObject {
             setState(
                 .failed(
                     previewURL: previewURL,
-                    message: error.localizedDescription
+                    message: ""
                 ),
                 for: ocId
             )
