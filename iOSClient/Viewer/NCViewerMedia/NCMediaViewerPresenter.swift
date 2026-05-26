@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import NextcloudKit
 import UIKit
 
 // MARK: - Media Viewer Presenter
@@ -372,42 +373,25 @@ final class NCMediaViewerPresenter: NSObject {
 
         switch page.state {
         case .image(let previewURL, let localURL, _, _):
-            if let localURL,
-               let image = UIImage(contentsOfFile: localURL.path) {
-                return image
-            }
+            return imageFromURL(localURL) ?? imageFromURL(previewURL)
 
-            if let previewURL {
-                return UIImage(contentsOfFile: previewURL.path)
-            }
+        case .audio(_, let previewURL):
+            return imageFromURL(previewURL)
 
+        case .video:
             return nil
-
-        case .video(let previewURL):
-            guard let previewURL else {
-                return nil
-            }
-
-            return UIImage(contentsOfFile: previewURL.path)
 
         case .ready(let localURL, let previewURL):
-            if let image = UIImage(contentsOfFile: localURL.path) {
-                return image
-            }
-
-            if let previewURL {
-                return UIImage(contentsOfFile: previewURL.path)
-            }
-
-            return nil
+            return imageFromURL(localURL) ?? imageFromURL(previewURL)
 
         case .downloading(let previewURL, _),
              .failed(let previewURL, _):
-            guard let previewURL else {
+            guard page.metadata?.classFile != NKTypeClassFile.audio.rawValue,
+                  page.metadata?.classFile != NKTypeClassFile.video.rawValue else {
                 return nil
             }
 
-            return UIImage(contentsOfFile: previewURL.path)
+            return imageFromURL(previewURL)
 
         case .deleted,
              .idle,
@@ -416,6 +400,14 @@ final class NCMediaViewerPresenter: NSObject {
              .checkingLocalFile:
             return nil
         }
+    }
+
+    private func imageFromURL(_ url: URL?) -> UIImage? {
+        guard let url else {
+            return nil
+        }
+
+        return UIImage(contentsOfFile: url.path)
     }
 
     // MARK: - Cleanup

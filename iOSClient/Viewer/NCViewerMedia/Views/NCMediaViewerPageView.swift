@@ -51,17 +51,23 @@ struct NCMediaViewerPageView: View {
                     livePhotoURL: livePhotoURL
                 )
 
-            case .video(let previewURL):
-                videoStateView(previewURL: previewURL)
+            case .video:
+                videoStateView()
+
+            case .audio(let localURL, let previewURL):
+                audioStateView(
+                    localURL: localURL,
+                    previewURL: previewURL
+                )
 
             case .downloading(let previewURL, let progress):
                 downloadingStateView(
                     previewURL: previewURL,
-                    progress: progress
+                    progress
                 )
 
             case .ready(let localURL, let previewURL):
-                readyStateView(
+                genericReadyStateView(
                     localURL: localURL,
                     previewURL: previewURL
                 )
@@ -75,15 +81,13 @@ struct NCMediaViewerPageView: View {
             case .failed(let previewURL, let message):
                 failedStateView(
                     previewURL: previewURL,
-                    message: message
+                    message
                 )
             }
         }
         .background(Color.ncViewerBackground(backgroundStyle))
         .ignoresSafeArea()
     }
-
-    // MARK: - Computed Properties
 
     private var backgroundStyle: NCViewerBackgroundStyle {
         if isChromeHidden {
@@ -153,7 +157,7 @@ struct NCMediaViewerPageView: View {
             Image(systemName: "photo.badge.exclamationmark")
                 .font(.system(size: 44, weight: .regular))
 
-            Text("Media not available")
+            Text(NSLocalizedString("_media_not_available_", comment: ""))
                 .font(.headline)
         }
         .foregroundStyle(primaryForegroundStyle)
@@ -198,7 +202,7 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func videoStateView(previewURL: URL?) -> some View {
+    private func videoStateView() -> some View {
         if let metadata = page.metadata {
             NCVideoViewerContentView(
                 metadata: metadata,
@@ -220,69 +224,68 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func downloadingStateView(
-        previewURL: URL?,
-        progress: Double?
-    ) -> some View {
-        if page.metadata?.classFile == NKTypeClassFile.video.rawValue,
-           isSelected {
-            videoStateView(previewURL: previewURL)
-        } else if page.metadata?.classFile == NKTypeClassFile.audio.rawValue {
-            Color.ncViewerBackground(backgroundStyle)
-                .ignoresSafeArea()
-        } else if let previewURL {
-            previewOnlyView(previewURL: previewURL)
-        } else {
-            Color.ncViewerBackground(backgroundStyle)
-                .ignoresSafeArea()
-        }
-    }
-
-    @ViewBuilder
-    private func readyStateView(
+    private func audioStateView(
         localURL: URL,
         previewURL: URL?
     ) -> some View {
         if let metadata = page.metadata {
-            switch metadata.classFile {
-            case NKTypeClassFile.video.rawValue:
-                NCVideoViewerContentView(
-                    metadata: metadata,
-                    localURL: localURL,
-                    isSelected: isSelected,
-                    contextMenuController: contextMenuController,
-                    navigationBar: navigationBar,
-                    canGoPrevious: canGoPrevious,
-                    canGoNext: canGoNext,
-                    onPreviousPage: goToPreviousPageFromVideo,
-                    onNextPage: goToNextPageFromVideo,
-                    onClose: onClose
-                )
-                .id("\(page.ocId)-local-\(localURL.absoluteString)")
-                .background(Color.ncViewerBackground(backgroundStyle))
+            NCAudioViewerContentView(
+                metadata: metadata,
+                localURL: localURL,
+                previewURL: previewURL,
+                canGoPrevious: canGoPrevious,
+                canGoNext: canGoNext,
+                shouldAutoPlay: effectiveShouldAutoPlay,
+                onPrevious: goToPreviousPage,
+                onNext: goToNextPage,
+                onAutoPlayConsumed: consumeAutoPlayIfNeeded
+            )
+            .background(Color.black)
+        } else {
+            metadataMissingView
+        }
+    }
 
-            case NKTypeClassFile.audio.rawValue:
-                NCAudioViewerContentView(
-                    metadata: metadata,
-                    localURL: localURL,
-                    previewURL: previewURL,
-                    canGoPrevious: canGoPrevious,
-                    canGoNext: canGoNext,
-                    shouldAutoPlay: effectiveShouldAutoPlay,
-                    onPrevious: goToPreviousPage,
-                    onNext: goToNextPage,
-                    onAutoPlayConsumed: consumeAutoPlayIfNeeded
-                )
-                .background(Color.black)
-
-            default:
-                imageContentView(
-                    previewURL: previewURL,
-                    localURL: localURL,
-                    livePhotoURL: nil,
-                    backgroundStyle: backgroundStyle
-                )
+    @ViewBuilder
+    private func downloadingStateView(
+        previewURL: URL?,
+        _ progress: Double?
+    ) -> some View {
+        switch page.metadata?.classFile {
+        case NKTypeClassFile.video.rawValue:
+            if isSelected {
+                videoStateView()
+            } else {
+                Color.ncViewerBackground(backgroundStyle)
+                    .ignoresSafeArea()
             }
+
+        case NKTypeClassFile.audio.rawValue:
+            Color.ncViewerBackground(backgroundStyle)
+                .ignoresSafeArea()
+
+        default:
+            if let previewURL {
+                previewOnlyView(previewURL: previewURL)
+            } else {
+                Color.ncViewerBackground(backgroundStyle)
+                    .ignoresSafeArea()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func genericReadyStateView(
+        localURL: URL,
+        previewURL: URL?
+    ) -> some View {
+        if page.metadata != nil {
+            imageContentView(
+                previewURL: previewURL,
+                localURL: localURL,
+                livePhotoURL: nil,
+                backgroundStyle: backgroundStyle
+            )
         } else {
             metadataMissingView
         }
@@ -291,7 +294,7 @@ struct NCMediaViewerPageView: View {
     @ViewBuilder
     private func failedStateView(
         previewURL: URL?,
-        message: String
+        _ message: String
     ) -> some View {
         if let previewURL {
             previewOnlyView(previewURL: previewURL)

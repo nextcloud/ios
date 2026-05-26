@@ -13,7 +13,8 @@ enum NCMediaViewerPageState {
     case metadataMissing
     case checkingLocalFile
     case image(previewURL: URL?, localURL: URL?, livePhotoURL: URL?, progress: Double?)
-    case video(previewURL: URL?)
+    case audio(localURL: URL, previewURL: URL?)
+    case video
     case downloading(previewURL: URL?, progress: Double?)
     case ready(localURL: URL, previewURL: URL?)
     case deleted
@@ -359,13 +360,6 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "LOAD PAGE \(index)",
-            consoleOnly: true
-        )
-
         let ocId = ocIds[index]
         let metadata = await resolvedMetadata(for: ocId)
 
@@ -431,7 +425,7 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if metadata.classFile != NKTypeClassFile.audio.rawValue,
+        if metadata.classFile == NKTypeClassFile.image.rawValue,
            previewURL == nil {
             previewURL = await loader.previewURL(for: metadata, index: index)
         }
@@ -454,7 +448,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         if metadata.classFile == NKTypeClassFile.video.rawValue {
             setState(
-                .video(previewURL: previewURL),
+                .video,
                 for: ocId
             )
             return
@@ -579,13 +573,6 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        nkLog(
-            tag: NCGlobal.shared.logTagViewer,
-            emoji: .debug,
-            message: "LOAD PREFETCH \(index)",
-            consoleOnly: true
-        )
-
         let ocId = ocIds[index]
         let metadata = await resolvedMetadata(for: ocId)
 
@@ -599,10 +586,17 @@ final class NCMediaViewerModel: ObservableObject {
 
         setMetadata(metadata, for: ocId)
 
-        let previewURL = await loader.previewURL(
-            for: metadata,
-            index: index
-        )
+        let previewURL: URL?
+
+        if metadata.classFile == NKTypeClassFile.image.rawValue ||
+           metadata.classFile == NKTypeClassFile.audio.rawValue {
+            previewURL = await loader.previewURL(
+                for: metadata,
+                index: index
+            )
+        } else {
+            previewURL = nil
+        }
 
         guard !Task.isCancelled else {
             return
@@ -667,19 +661,18 @@ final class NCMediaViewerModel: ObservableObject {
         case .image(let previewURL, _, _, _):
             return previewURL
 
-        case .video(let previewURL):
-            return previewURL
-
         case .downloading(let previewURL, _):
             return previewURL
 
-        case .ready(_, let previewURL),
+        case .audio(_, let previewURL),
+             .ready(_, let previewURL),
              .failed(let previewURL, _):
             return previewURL
 
         case .idle,
              .loadingMetadata,
              .metadataMissing,
+             .video,
              .deleted,
              .checkingLocalFile:
             return nil
@@ -726,6 +719,14 @@ final class NCMediaViewerModel: ObservableObject {
                 ),
                 for: ocId
             )
+        } else if metadata.classFile == NKTypeClassFile.audio.rawValue {
+            setState(
+                .audio(
+                    localURL: localURL,
+                    previewURL: previewURL
+                ),
+                for: ocId
+            )
         } else {
             setState(
                 .ready(
@@ -758,13 +759,13 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        guard case .ready(let readyLocalURL, _) = pageState(for: ocId),
+        guard case .audio(let readyLocalURL, _) = pageState(for: ocId),
               readyLocalURL == localURL else {
             return
         }
 
         setState(
-            .ready(
+            .audio(
                 localURL: localURL,
                 previewURL: previewURL
             ),
@@ -818,6 +819,7 @@ private extension NCMediaViewerPageState {
              .metadataMissing,
              .checkingLocalFile,
              .image,
+             .audio,
              .video,
              .downloading,
              .ready,
@@ -839,6 +841,7 @@ private extension NCMediaViewerPageState {
             return true
 
         case .image(_, .some, _, _),
+             .audio,
              .video,
              .loadingMetadata,
              .metadataMissing,

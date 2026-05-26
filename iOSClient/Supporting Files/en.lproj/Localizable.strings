@@ -691,9 +691,10 @@
 "_add_external_subtitle_" = "Add external subtitle";
 "_image_load_failed_" = "Image load failed";
 "_image_load_failed_" = "Image load failed";
-"_gif_file_could_not_be_decoded_" = "GIF file could not be decoded.";
-"_svg_file_could_not_be_rendered_" = "SVG file could not be rendered.";
-"_image_file_could_not_be_decoded_" = "Image file could not be decoded.";
+"_gif_file_could_not_be_decoded_" = "GIF file could not be decoded";
+"_svg_file_could_not_be_rendered_" = "SVG file could not be rendered";
+"_image_file_could_not_be_decoded_" = "Image file could not be decoded";
+"_media_not_available_" = "Media not available";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
