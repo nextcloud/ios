@@ -74,9 +74,9 @@ final class NCVideoControlsView: UIView {
 
     fileprivate static let centerControlsWidth: CGFloat = 220
     fileprivate static let centerControlsHeight: CGFloat = 76
-    fileprivate static let bottomControlsHeight: CGFloat = 46
+    fileprivate static let bottomControlsHeight: CGFloat = 52
     fileprivate static let bottomControlsHorizontalInset: CGFloat = 28
-    fileprivate static let bottomControlsBottomInset: CGFloat = 28
+    fileprivate static let bottomControlsBottomInset: CGFloat = 30
     fileprivate static let topActionsHeight: CGFloat = 46
     fileprivate static let topActionsHorizontalInset: CGFloat = 28
     fileprivate static let topActionsButtonSize: CGFloat = 38
@@ -383,6 +383,8 @@ private struct NCVideoControlsSwiftUIView: View {
     let onAddExternalSubtitle: () -> Void
     let onAudioTrackSelected: (_ index: Int32) -> Void
 
+    @State private var currentScrubProgress: Double?
+
     var body: some View {
         GeometryReader { proxy in
             ZStack {
@@ -469,15 +471,23 @@ private struct NCVideoControlsSwiftUIView: View {
 
             Slider(
                 value: Binding(
-                    get: { Double(state.progress) },
-                    set: { onScrubChanged(Float($0)) }
+                    get: {
+                        currentScrubProgress ?? Double(state.progress)
+                    },
+                    set: { progress in
+                        currentScrubProgress = progress
+                        onScrubChanged(Float(progress))
+                    }
                 ),
                 in: 0...1,
                 onEditingChanged: { isEditing in
                     if isEditing {
+                        currentScrubProgress = Double(state.progress)
                         onScrubBegan()
                     } else {
-                        onScrubEnded(state.progress)
+                        let progress = Float(currentScrubProgress ?? Double(state.progress))
+                        currentScrubProgress = nil
+                        onScrubEnded(progress)
                     }
                 }
             )
