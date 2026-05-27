@@ -648,7 +648,7 @@
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichDocument.swift */; };
-		F79377052FBD86AF00DE56DE /* NCViewerFloatingTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79377042FBD86AE00DE56DE /* NCViewerFloatingTitleView.swift */; };
+		F79377052FBD86AF00DE56DE /* NCMediaViewerFloatingTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */; };
 		F793E59D28B761E7005E4B02 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */; };
 		F7948DE92FBAEC5400253D1C /* NCVideoAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */; };
@@ -1622,7 +1622,7 @@
 		F790110D21415BF600D7B136 /* NCViewerRichDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichDocument.swift; sourceTree = "<group>"; };
 		F79131C628AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F79131C728AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F79377042FBD86AE00DE56DE /* NCViewerFloatingTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerFloatingTitleView.swift; sourceTree = "<group>"; };
+		F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleView.swift; sourceTree = "<group>"; };
 		F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerPresenter.swift; sourceTree = "<group>"; };
 		F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerViewController.swift; sourceTree = "<group>"; };
 		F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
@@ -2389,9 +2389,9 @@
 		F716DA682FA5F137006A6703 /* Content */ = {
 			isa = PBXGroup;
 			children = (
-				F78448AE2FB1BE9000F2909A /* Video */,
-				F74E3EE52FB07F3000252FA0 /* Audio */,
 				F74E3EE42FB07F2500252FA0 /* Image */,
+				F74E3EE52FB07F3000252FA0 /* Audio */,
+				F78448AE2FB1BE9000F2909A /* Video */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -2519,13 +2519,13 @@
 			path = NCViewerDirectEditing;
 			sourceTree = "<group>";
 		};
-		F749ED342FAF0EE200CE8DFA /* Model - View */ = {
+		F749ED342FAF0EE200CE8DFA /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				F7CDB5BB2FA33CA300F72306 /* NCMediaViewerView.swift */,
 				F7CDB5B82FA33CA300F72306 /* NCMediaViewerModel.swift */,
 			);
-			path = "Model - View";
+			path = Core;
 			sourceTree = "<group>";
 		};
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
@@ -2556,6 +2556,7 @@
 			isa = PBXGroup;
 			children = (
 				F7CDB5B62FA33CA300F72306 /* NCImageViewerContentView.swift */,
+				F716DA642FA4E878006A6703 /* NCImageZoomView.swift */,
 				F7EDBB4A2FA89F6500098C42 /* NCLivePhotoViewerContentView.swift */,
 			);
 			path = Image;
@@ -2839,8 +2840,8 @@
 		F78448AE2FB1BE9000F2909A /* Video */ = {
 			isa = PBXGroup;
 			children = (
-				F78448A32FB1BE9000F2909A /* NCVideoPlaybackController.swift */,
 				F78448A82FB1BE9000F2909A /* NCVideoViewerContentView.swift */,
+				F78448A32FB1BE9000F2909A /* NCVideoPlaybackController.swift */,
 				F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */,
 				F78448BF2FB1C78900F2909A /* AVPlayer */,
 				F78448C02FB1C79A00F2909A /* VLC */,
@@ -3186,7 +3187,7 @@
 			children = (
 				F7EDBB5B2FA8DBE600098C42 /* NCMediaViewerPresenter.swift */,
 				F7EDBB512FA8CACA00098C42 /* NCMediaViewerHostingController.swift */,
-				F749ED342FAF0EE200CE8DFA /* Model - View */,
+				F749ED342FAF0EE200CE8DFA /* Core */,
 				F7CDB5CE2FA33DED00F72306 /* Loading */,
 				F7CDB5D02FA33E3500F72306 /* Views */,
 				F716DA682FA5F137006A6703 /* Content */,
@@ -3208,8 +3209,7 @@
 			children = (
 				F716DA662FA5F019006A6703 /* NCMediaViewerPagingView.swift */,
 				F7CDB5B92FA33CA300F72306 /* NCMediaViewerPageView.swift */,
-				F716DA642FA4E878006A6703 /* NCImageZoomView.swift */,
-				F79377042FBD86AE00DE56DE /* NCViewerFloatingTitleView.swift */,
+				F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */,
 				F749ED302FADD62400CE8DFA /* NCMediaViewerDetailView.swift */,
 			);
 			path = Views;
@@ -4732,7 +4732,7 @@
 				F7CDB5C62FA33CA300F72306 /* NCMediaViewerView.swift in Sources */,
 				F7CDB5CC2FA33CA300F72306 /* NCNextcloudMediaViewerLoader.swift in Sources */,
 				F76341182EBE0BC60056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
-				F79377052FBD86AF00DE56DE /* NCViewerFloatingTitleView.swift in Sources */,
+				F79377052FBD86AF00DE56DE /* NCMediaViewerFloatingTitleView.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */,
 				F34E1AD92ECC839100FA10C3 /* EmojiTextField.swift in Sources */,

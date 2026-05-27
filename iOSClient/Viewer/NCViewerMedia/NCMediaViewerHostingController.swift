@@ -21,7 +21,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private var cancellables = Set<AnyCancellable>()
     private var transferDelegate: NCMediaViewerTransferDelegate?
     private weak var currentNavigationBar: UINavigationBar?
-    private let floatingTitleView = NCViewerFloatingTitleView()
+    private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()

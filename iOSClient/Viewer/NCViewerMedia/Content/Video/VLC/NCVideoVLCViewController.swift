@@ -33,7 +33,7 @@ final class NCVideoVLCViewController: UIViewController {
     internal let drawableView = UIView()
     internal let controlsView = NCVideoControlsView()
 
-    private let floatingTitleView = NCViewerFloatingTitleView()
+    private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()

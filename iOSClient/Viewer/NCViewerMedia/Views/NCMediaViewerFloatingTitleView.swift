@@ -4,7 +4,7 @@
 
 import UIKit
 
-final class NCViewerFloatingTitleView: UIView {
+final class NCMediaViewerFloatingTitleView: UIView {
     private let primaryLabel = UILabel()
     private let secondaryLabel = UILabel()
     private let stackView = UIStackView()

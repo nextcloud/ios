@@ -8,6 +8,86 @@ import UIKit
 
 // MARK: - Media Viewer Presenter
 
+/// Media viewer flow legend.
+///
+/// This file is the UIKit entry point for the media viewer flow.
+///
+/// Source order and responsibilities:
+///
+/// 1. `NCMediaViewerPresenter`
+///    UIKit entry point. Creates the initial model, builds the hosting controller,
+///    presents the SwiftUI viewer, and manages opening/closing transitions.
+///
+/// 2. `NCMediaViewerHostingController`
+///    UIKit container for the SwiftUI viewer. Owns the navigation bar, toolbar
+///    actions, detail presentation, and close/info buttons.
+///
+/// 3. `NCMediaViewerView`
+///    SwiftUI root view. Hosts the paging view and observes the viewer model.
+///
+/// 4. `NCMediaViewerModel`
+///    Central state coordinator. Owns the selected index, visible page window,
+///    page states, metadata cache, prefetching, and routes media into image,
+///    audio, video, or generic states.
+///
+/// 5. `NCNextcloudMediaViewerLoader`
+///    Loader layer. Resolves metadata, preview URLs, local media URLs, full media
+///    downloads, and Live Photo companion media.
+///
+/// 6. `NCMediaViewerPagingView`
+///    UIKit-backed horizontal pager hosted from SwiftUI. Owns the collection view,
+///    paging coordinator, visible cells, selected index updates, and page navigation.
+///
+/// 7. `NCMediaViewerPageView`
+///    Per-page SwiftUI renderer. Switches on `NCMediaViewerPageState` and routes
+///    each page to the correct content view.
+///
+/// 8. Image flow:
+///    `NCMediaViewerPageView`
+///    -> `NCImageViewerContentView`
+///    -> `NCImageZoomView`
+///    -> `NCLivePhotoViewerContentView` when Live Photo data is available.
+///
+/// 9. Audio flow:
+///    `NCMediaViewerPageView`
+///    -> `NCAudioViewerContentView`.
+///    Audio playback stays inside SwiftUI and uses a local media URL plus an
+///    optional preview image as artwork.
+///
+/// 10. Video flow:
+///     `NCMediaViewerPageView`
+///     -> `NCVideoViewerContentView`
+///     -> `NCVideoPlaybackController`.
+///     The video content view is only the SwiftUI trigger/bridge for fullscreen
+///     playback. It resolves the playback URL and asks the playback controller to
+///     choose the engine.
+///
+/// 11. `NCVideoPlaybackController`
+///     Chooses the playback engine. It tries AVFoundation when possible and falls
+///     back to VLC for unsupported or legacy formats.
+///
+/// 12. AVPlayer flow:
+///     `NCVideoPlaybackController`
+///     -> `NCVideoAVPlayerPresenter`
+///     -> `NCVideoAVPlayerViewController`
+///     -> `NCVideoControlsView` / `NCVideoAVPlayerViewControls`.
+///
+/// 13. VLC flow:
+///     `NCVideoPlaybackController`
+///     -> `NCVideoVLCPresenter`
+///     -> `NCVideoVLCViewController`
+///     -> `NCVideoControlsView` / `NCVideoVLCViewControls`.
+///
+/// 14. Detail flow:
+///     `NCMediaViewerHostingController`
+///     -> `NCMediaViewerDetailView`.
+///     Displays file information, camera/lens metadata, EXIF values, and location.
+///
+/// High-level rule:
+/// `NCMediaViewerPresenter` starts and closes the viewer, but it does not resolve,
+/// download, classify, or play media. Those responsibilities belong to the model,
+/// loader, page view, and dedicated media content flows.
+
 /// Presents the media viewer as a fullscreen overlay with optional thumbnail transitions.
 @MainActor
 final class NCMediaViewerPresenter: NSObject {
@@ -378,7 +458,7 @@ final class NCMediaViewerPresenter: NSObject {
         case .audio(_, let previewURL):
             return imageFromURL(previewURL)
 
-        case .video(_):
+        case .video:
             return nil
 
         case .ready(let localURL, let previewURL):

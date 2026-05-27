@@ -731,7 +731,7 @@ final class NCMediaViewerModel: ObservableObject {
         case .idle,
              .loadingMetadata,
              .metadataMissing,
-             .video(_),
+             .video,
              .deleted,
              .checkingLocalFile:
             return nil
@@ -884,7 +884,7 @@ private extension NCMediaViewerPageState {
              .checkingLocalFile,
              .image,
              .audio,
-             .video(_),
+             .video,
              .downloading,
              .ready,
              .deleted,
@@ -906,7 +906,7 @@ private extension NCMediaViewerPageState {
 
         case .image(_, .some, _, _),
              .audio,
-             .video(_),
+             .video,
              .loadingMetadata,
              .metadataMissing,
              .checkingLocalFile,

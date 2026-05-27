@@ -53,7 +53,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     internal let playerContainerView = NCVideoAVPlayerLayerView()
     internal let controlsView = NCVideoControlsView()
 
-    private let floatingTitleView = NCViewerFloatingTitleView()
+    private let floatingTitleView = NCMediaViewerFloatingTitleView()
 
     private lazy var floatingTitleDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
