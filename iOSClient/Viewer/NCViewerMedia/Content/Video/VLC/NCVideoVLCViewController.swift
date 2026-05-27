@@ -424,9 +424,6 @@ final class NCVideoVLCViewController: UIViewController {
 
     @objc
     private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        guard !isScrubbing else {
-            return
-        }
         switch gesture.direction {
         case .left:
             guard canGoNext else {
@@ -786,22 +783,6 @@ final class NCVideoVLCViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
-    internal func controlsGestureProtectedFrameContains(_ location: CGPoint) -> Bool {
-        let bottomControlsFrame = controlsView.bottomControlsView.convert(
-            controlsView.bottomControlsView.bounds,
-            to: view
-        )
-
-        let protectedFrame = CGRect(
-            x: 0,
-            y: bottomControlsFrame.minY - 12,
-            width: view.bounds.width,
-            height: bottomControlsFrame.height + 24
-        )
-
-        return protectedFrame.contains(location)
-    }
-
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -854,30 +835,17 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
         true
     }
 
-    // Do not let background taps steal control touches.
+    // Allow fullscreen gestures to remain available over the VLC drawable.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
     ) -> Bool {
-        let location = touch.location(in: view)
-
-        if controlsHitFramesContain(location) ||
-           controlsGestureProtectedFrameContains(location) {
-            return false
-        }
-
-        return true
+        true
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer is UIPanGestureRecognizer else {
             return true
-        }
-
-        let location = gestureRecognizer.location(in: view)
-
-        guard !controlsGestureProtectedFrameContains(location) else {
-            return false
         }
 
         let velocity = (gestureRecognizer as? UIPanGestureRecognizer)?.velocity(in: view) ?? .zero

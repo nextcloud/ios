@@ -424,9 +424,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
             return
         }
 
-        guard !isScrubbing else {
-            return
-        }
 
         switch gesture.direction {
         case .left:
@@ -737,21 +734,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
-    internal func controlsGestureProtectedFrameContains(_ location: CGPoint) -> Bool {
-        let bottomControlsFrame = controlsView.bottomControlsView.convert(
-            controlsView.bottomControlsView.bounds,
-            to: view
-        )
-
-        let protectedFrame = CGRect(
-            x: 0,
-            y: bottomControlsFrame.minY - 12,
-            width: view.bounds.width,
-            height: bottomControlsFrame.height + 24
-        )
-
-        return protectedFrame.contains(location)
-    }
 
     private func configureAudioSession() {
         do {
@@ -878,7 +860,6 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
 // MARK: - Gesture Delegate
 
 extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
-
     // Keep AVPlayer touches compatible with viewer gestures.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
@@ -887,23 +868,12 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
         true
     }
 
-    // Do not let background taps steal control touches.
+    // Keep viewer gestures disabled while Picture in Picture is active.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
     ) -> Bool {
-        guard !isPictureInPictureActive else {
-            return false
-        }
-
-        let location = touch.location(in: view)
-
-        if controlsHitFramesContain(location) ||
-           controlsGestureProtectedFrameContains(location) {
-            return false
-        }
-
-        return true
+        !isPictureInPictureActive
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -912,12 +882,6 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
         }
 
         guard !isPictureInPictureActive else {
-            return false
-        }
-
-        let location = gestureRecognizer.location(in: view)
-
-        guard !controlsGestureProtectedFrameContains(location) else {
             return false
         }
 
