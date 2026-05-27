@@ -495,15 +495,6 @@ private struct NCVideoControlsSwiftUIView: View {
         .clipShape(Capsule())
         .shadow(color: .black.opacity(0.16), radius: 18, x: 0, y: 5)
         .contentShape(Capsule())
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    onScrubBegan()
-                }
-                .onEnded { _ in
-                    onScrubEnded(state.progress)
-                }
-        )
     }
 
     private var topActions: some View {

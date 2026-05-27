@@ -786,6 +786,22 @@ final class NCVideoVLCViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
+    internal func controlsGestureProtectedFrameContains(_ location: CGPoint) -> Bool {
+        let bottomControlsFrame = controlsView.bottomControlsView.convert(
+            controlsView.bottomControlsView.bounds,
+            to: view
+        )
+
+        let protectedFrame = CGRect(
+            x: 0,
+            y: bottomControlsFrame.minY - 12,
+            width: view.bounds.width,
+            height: bottomControlsFrame.height + 24
+        )
+
+        return protectedFrame.contains(location)
+    }
+
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -843,13 +859,10 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
     ) -> Bool {
-        guard controlsVisible else {
-            return true
-        }
-
         let location = touch.location(in: view)
 
-        if controlsHitFramesContain(location) {
+        if controlsHitFramesContain(location) ||
+           controlsGestureProtectedFrameContains(location) {
             return false
         }
 
@@ -861,7 +874,9 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
             return true
         }
 
-        guard !isScrubbing else {
+        let location = gestureRecognizer.location(in: view)
+
+        guard !controlsGestureProtectedFrameContains(location) else {
             return false
         }
 
