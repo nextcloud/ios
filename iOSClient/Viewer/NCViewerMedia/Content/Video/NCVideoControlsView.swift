@@ -302,7 +302,6 @@ final class NCVideoControlsView: UIView {
                     return
                 }
                 state.progress = progress
-                updateHostedView()
                 delegate?.videoControls(self, didScrubTo: progress)
             },
             onScrubEnded: { [weak self] progress in
