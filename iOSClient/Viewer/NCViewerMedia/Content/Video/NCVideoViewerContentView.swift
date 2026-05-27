@@ -159,12 +159,6 @@ struct NCVideoViewerContentView: View {
 
             Text(NSLocalizedString("_video_not_available_", comment: ""))
                 .font(.headline)
-
-            Text(message)
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.6))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
         }
         .foregroundStyle(.white)
         .padding(24)
@@ -285,14 +279,7 @@ struct NCVideoViewerContentView: View {
 
         guard result.error == .success,
               let url = result.url else {
-            nkLog(
-                tag: NCGlobal.shared.logTagViewer,
-                emoji: .error,
-                message: "VIDEO resolve failed ocId \(metadata.ocId), error \(result.error.errorDescription)",
-                consoleOnly: true
-            )
-
-            errorMessage = result.error.errorDescription
+            errorMessage = ""
             return
         }
 
