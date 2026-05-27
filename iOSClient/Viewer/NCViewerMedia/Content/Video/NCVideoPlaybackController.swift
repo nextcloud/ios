@@ -89,7 +89,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
         if url.isFileURL,
            !isValidLocalFile(url: url) {
-            engine = .failed(message: "Video file is not available.")
+            engine = .failed(message: "")
             return
         }
 
@@ -101,7 +101,6 @@ final class NCVideoPlaybackController: ObservableObject {
         ) {
             resolveWithVLC(
                 url: url,
-                reason: "direct legacy format \(resolvedVideoExtension(url: url, fileName: fileName))",
                 token: token
             )
             return
@@ -198,7 +197,6 @@ final class NCVideoPlaybackController: ObservableObject {
                 case .failed:
                     self.resolveWithVLC(
                         url: url,
-                        reason: item.error?.localizedDescription ?? "AVFoundation failed.",
                         token: token
                     )
 
@@ -208,7 +206,6 @@ final class NCVideoPlaybackController: ObservableObject {
                 @unknown default:
                     self.resolveWithVLC(
                         url: url,
-                        reason: "AVFoundation returned an unknown status.",
                         token: token
                     )
                 }
@@ -234,7 +231,6 @@ final class NCVideoPlaybackController: ObservableObject {
 
     private func resolveWithVLC(
         url: URL,
-        reason: String,
         token: UUID
     ) {
         guard isCurrentLoad(
