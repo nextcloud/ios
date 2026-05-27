@@ -827,20 +827,37 @@ extension NCVideoVLCViewController: VLCMediaPlayerDelegate {
 // MARK: - Gesture Delegate
 
 extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
-    // Keep VLC drawable touches compatible with viewer gestures.
+    // Keep VLC drawable touches compatible with viewer gestures, but isolate visible controls from global gestures.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
     ) -> Bool {
-        true
+        guard controlsVisible else {
+            return true
+        }
+
+        let firstGestureIsInsideControls = gestureRecognizer.view?.isDescendant(of: controlsView) == true
+        let secondGestureIsInsideControls = otherGestureRecognizer.view?.isDescendant(of: controlsView) == true
+
+        if firstGestureIsInsideControls || secondGestureIsInsideControls {
+            return false
+        }
+
+        return true
     }
 
-    // Allow fullscreen gestures to remain available over the VLC drawable.
+    // Keep global viewer gestures disabled when visible controls receive the touch.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
     ) -> Bool {
-        true
+        guard controlsVisible else {
+            return true
+        }
+
+        let location = touch.location(in: view)
+
+        return !controlsHitFramesContain(location)
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {

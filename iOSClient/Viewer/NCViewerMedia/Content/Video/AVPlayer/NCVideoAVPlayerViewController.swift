@@ -860,20 +860,41 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
 // MARK: - Gesture Delegate
 
 extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
-    // Keep AVPlayer touches compatible with viewer gestures.
+    // Keep AVPlayer touches compatible with viewer gestures, but isolate visible controls from global gestures.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
     ) -> Bool {
-        true
+        guard controlsVisible else {
+            return true
+        }
+
+        let firstGestureIsInsideControls = gestureRecognizer.view?.isDescendant(of: controlsView) == true
+        let secondGestureIsInsideControls = otherGestureRecognizer.view?.isDescendant(of: controlsView) == true
+
+        if firstGestureIsInsideControls || secondGestureIsInsideControls {
+            return false
+        }
+
+        return true
     }
 
-    // Keep viewer gestures disabled while Picture in Picture is active.
+    // Keep global viewer gestures disabled while Picture in Picture is active or when visible controls receive the touch.
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
         shouldReceive touch: UITouch
     ) -> Bool {
-        !isPictureInPictureActive
+        guard !isPictureInPictureActive else {
+            return false
+        }
+
+        guard controlsVisible else {
+            return true
+        }
+
+        let location = touch.location(in: view)
+
+        return !controlsHitFramesContain(location)
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {

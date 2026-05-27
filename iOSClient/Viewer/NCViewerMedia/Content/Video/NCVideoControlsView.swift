@@ -12,8 +12,6 @@ protocol NCVideoControlsViewDelegate: AnyObject {
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView)
-    func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView)
-    func videoControlsDidTapAudio(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView)
     func videoControls(_ controlsView: NCVideoControlsView, didSelectSubtitleTrackIndex index: Int32)
     func videoControls(_ controlsView: NCVideoControlsView, didSelectAudioTrackIndex index: Int32)
@@ -24,10 +22,6 @@ protocol NCVideoControlsViewDelegate: AnyObject {
 
 extension NCVideoControlsViewDelegate {
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) { }
-
-    func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView) { }
-
-    func videoControlsDidTapAudio(_ controlsView: NCVideoControlsView) { }
 
     func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView) { }
 
@@ -318,18 +312,6 @@ final class NCVideoControlsView: UIView {
                 }
                 delegate?.videoControlsDidTapPictureInPicture(self)
             },
-            onSubtitle: { [weak self] in
-                guard let self else {
-                    return
-                }
-                delegate?.videoControlsDidTapSubtitle(self)
-            },
-            onAudio: { [weak self] in
-                guard let self else {
-                    return
-                }
-                delegate?.videoControlsDidTapAudio(self)
-            },
             onSubtitleTrackSelected: { [weak self] index in
                 guard let self else {
                     return
@@ -377,8 +359,6 @@ private struct NCVideoControlsSwiftUIView: View {
     let onScrubChanged: (Float) -> Void
     let onScrubEnded: (Float) -> Void
     let onPictureInPicture: () -> Void
-    let onSubtitle: () -> Void
-    let onAudio: () -> Void
     let onSubtitleTrackSelected: (_ index: Int32) -> Void
     let onAddExternalSubtitle: () -> Void
     let onAudioTrackSelected: (_ index: Int32) -> Void
