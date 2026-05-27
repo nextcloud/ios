@@ -6,8 +6,6 @@ import SwiftUI
 import NextcloudKit
 import UIKit
 
-// MARK: - Media Viewer Presenter
-
 /// Media viewer flow legend.
 ///
 /// This file is the UIKit entry point for the media viewer flow.
@@ -88,7 +86,6 @@ import UIKit
 /// download, classify, or play media. Those responsibilities belong to the model,
 /// loader, page view, and dedicated media content flows.
 
-/// Presents the media viewer as a fullscreen overlay with optional thumbnail transitions.
 @MainActor
 final class NCMediaViewerPresenter: NSObject {
     static let shared = NCMediaViewerPresenter()
