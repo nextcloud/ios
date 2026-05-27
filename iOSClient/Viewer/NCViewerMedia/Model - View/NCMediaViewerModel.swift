@@ -669,8 +669,17 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         if metadata.classFile == NKTypeClassFile.video.rawValue {
+            let localURL = await loader.localMediaURL(
+                for: metadata,
+                index: index
+            )
+
+            guard !Task.isCancelled else {
+                return
+            }
+
             setState(
-                .video(localURL: nil),
+                .video(localURL: localURL),
                 for: ocId
             )
             return
