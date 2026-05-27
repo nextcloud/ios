@@ -17,10 +17,7 @@ struct NCMediaViewerDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 dateSection
-                fileSection
-                cameraSection
-                lensSection
-                exposureSection
+                mediaSummaryCard
                 locationSection
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -30,6 +27,60 @@ struct NCMediaViewerDetailView: View {
         .scrollContentBackground(.hidden)
         .background(Color.ncViewerBackground(.system))
         .presentationBackground(Color.ncViewerBackground(.system))
+    }
+
+    private var mediaSummaryCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(cameraText)
+                    .font(.headline)
+                    .lineLimit(1)
+
+                Spacer(minLength: 8)
+
+                if !metadata.fileExtension.isEmpty {
+                    detailBadge(metadata.fileExtension.uppercased())
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 8)
+            .background(.secondary.opacity(0.10))
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text(lensText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                FlowingDetailValues(values: primaryMediaValues)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+
+            if !exifStripValues.isEmpty {
+                Divider()
+
+                HStack(spacing: 0) {
+                    ForEach(Array(exifStripValues.enumerated()), id: \.offset) { index, value in
+                        Text(value)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity)
+
+                        if index < exifStripValues.count - 1 {
+                            Divider()
+                                .frame(height: 22)
+                        }
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 12)
+            }
+        }
+        .background(.secondary.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
     // MARK: - Sections
@@ -167,20 +218,33 @@ struct NCMediaViewerDetailView: View {
                     .foregroundStyle(.primary)
                 }
 
-                Map(
-                    initialPosition: .region(
-                        MKCoordinateRegion(
-                            center: coordinate,
-                            latitudinalMeters: 500,
-                            longitudinalMeters: 500
+                ZStack {
+                    Map(
+                        initialPosition: .region(
+                            MKCoordinateRegion(
+                                center: coordinate,
+                                latitudinalMeters: 500,
+                                longitudinalMeters: 500
+                            )
                         )
-                    )
-                ) {
-                    Marker("", coordinate: coordinate)
+                    ) {
+                        Marker("", coordinate: coordinate)
+                    }
+                    .allowsHitTesting(false)
+
+                    Button {
+                        openMaps(
+                            coordinate: coordinate,
+                            name: exif.location
+                        )
+                    } label: {
+                        Color.clear
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
                 .frame(height: 180)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                .allowsHitTesting(false)
             }
         } else if let location = exif.location, !location.isEmpty {
             HStack(spacing: 8) {
@@ -196,15 +260,59 @@ struct NCMediaViewerDetailView: View {
 
     private func detailBadge(_ text: String) -> some View {
         Text(text)
-            .font(.footnote)
-            .foregroundStyle(.primary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(.secondary.opacity(0.12))
-            .clipShape(Capsule())
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .padding(.vertical, 2)
     }
 
     // MARK: - Computed Values
+
+    private var primaryMediaValues: [String] {
+        var values: [String] = []
+
+        if let megapixelsText {
+            values.append(megapixelsText)
+        }
+
+        if let resolutionText {
+            values.append(resolutionText)
+        }
+
+        values.append(utilityFileSystem.transformedSize(metadata.size))
+
+        if metadata.isLivePhoto {
+            values.append("LIVE")
+        }
+
+        return values
+    }
+
+    private var exifStripValues: [String] {
+        var values: [String] = []
+
+        if let iso = exif.iso {
+            values.append("ISO \(iso)")
+        }
+
+        if let lensLength = exif.lensLength {
+            values.append("\(lensLength) mm")
+        }
+
+        if let exposureValue = exif.exposureValue {
+            values.append("\(exposureValue) ev")
+        }
+
+        if let apertureValue = exif.apertureValue {
+            values.append("ƒ\(apertureValue)")
+        }
+
+        if let shutterSpeedApex = exif.shutterSpeedApex {
+            values.append("1/\(Int(pow(2, shutterSpeedApex))) s")
+        }
+
+        return values
+    }
 
     private var fileNameWithoutExtension: String {
         (metadata.fileNameView as NSString).deletingPathExtension
@@ -252,8 +360,8 @@ struct NCMediaViewerDetailView: View {
         let megapixels = Double(width * height) / 1_000_000
 
         return megapixels < 1
-            ? String(format: "%.1f MP", megapixels)
-            : "\(Int(megapixels)) MP"
+        ? String(format: "%.1f MP", megapixels)
+        : "\(Int(megapixels)) MP"
     }
 
     private var lensValues: [String] {
@@ -322,5 +430,46 @@ struct NCMediaViewerDetailView: View {
         let mapItem = MKMapItem(placemark: placemark)
         mapItem.name = name
         mapItem.openInMaps()
+    }
+}
+
+// Helper view for flowing detail values
+private struct FlowingDetailValues: View {
+    let values: [String]
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 6) {
+                detailValues
+            }
+
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: 92), spacing: 8)
+                ],
+                alignment: .leading,
+                spacing: 4
+            ) {
+                detailValues
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var detailValues: some View {
+        ForEach(Array(values.enumerated()), id: \.offset) { index, value in
+            HStack(spacing: 6) {
+                Text(value)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                if index < values.count - 1 {
+                    Text("•")
+                        .font(.subheadline)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+        }
     }
 }
