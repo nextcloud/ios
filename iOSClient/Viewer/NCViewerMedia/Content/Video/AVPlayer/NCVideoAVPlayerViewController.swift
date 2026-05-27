@@ -829,11 +829,16 @@ extension NCVideoAVPlayerViewController: AVPictureInPictureControllerDelegate {
     func pictureInPictureControllerDidStopPictureInPicture(
         _ pictureInPictureController: AVPictureInPictureController
     ) {
-
         updatePlayPauseButton()
         updateProgressControls()
         updateSeekingState()
         showControls(animated: false)
+
+        if shouldKeepControlsVisible {
+            stopControlsHideTimer()
+        } else {
+            scheduleControlsHide()
+        }
     }
 
     func pictureInPictureController(
