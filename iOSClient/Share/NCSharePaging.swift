@@ -26,7 +26,6 @@ import UIKit
 import SwiftUI
 import Parchment
 import NextcloudKit
-import SwiftNextcloudUI
 import TagListView
 
 protocol NCSharePagingContent {
