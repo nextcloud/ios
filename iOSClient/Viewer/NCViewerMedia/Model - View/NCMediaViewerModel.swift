@@ -14,7 +14,7 @@ enum NCMediaViewerPageState {
     case checkingLocalFile
     case image(previewURL: URL?, localURL: URL?, livePhotoURL: URL?, progress: Double?)
     case audio(localURL: URL, previewURL: URL?)
-    case video
+    case video(localURL: URL?)
     case downloading(previewURL: URL?, progress: Double?)
     case ready(localURL: URL, previewURL: URL?)
     case deleted
@@ -374,44 +374,14 @@ final class NCMediaViewerModel: ObservableObject {
 
         setMetadata(metadata, for: ocId)
 
-        var previewURL = currentPreviewURL(for: ocId)
+        let previewURL = currentPreviewURL(for: ocId)
 
         if let localURL = await loader.localMediaURL(for: metadata, index: index) {
             guard !Task.isCancelled else {
                 return
             }
 
-            if metadata.classFile == NKTypeClassFile.audio.rawValue {
-                await setReadyState(
-                    metadata: metadata,
-                    previewURL: previewURL,
-                    localURL: localURL,
-                    for: ocId,
-                    index: index
-                )
-
-                await loadAudioPreviewIfNeeded(
-                    metadata: metadata,
-                    localURL: localURL,
-                    currentPreviewURL: previewURL,
-                    for: ocId,
-                    index: index
-                )
-                return
-            }
-
-            if previewURL == nil {
-                previewURL = await loader.previewURL(
-                    for: metadata,
-                    index: index
-                )
-
-                guard !Task.isCancelled else {
-                    return
-                }
-            }
-
-            await setReadyState(
+            await loadLocalPage(
                 metadata: metadata,
                 previewURL: previewURL,
                 localURL: localURL,
@@ -425,50 +395,133 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
+        await loadRemotePage(
+            metadata: metadata,
+            previewURL: previewURL,
+            for: ocId,
+            index: index
+        )
+    }
+
+    private func loadLocalPage(
+        metadata: tableMetadata,
+        previewURL: URL?,
+        localURL: URL,
+        for ocId: String,
+        index: Int
+    ) async {
+        switch metadata.classFile {
+        case NKTypeClassFile.video.rawValue:
+            setState(
+                .video(localURL: localURL),
+                for: ocId
+            )
+
+        case NKTypeClassFile.audio.rawValue:
+            await setReadyState(
+                metadata: metadata,
+                previewURL: previewURL,
+                localURL: localURL,
+                for: ocId,
+                index: index
+            )
+
+            await loadAudioPreviewIfNeeded(
+                metadata: metadata,
+                localURL: localURL,
+                currentPreviewURL: previewURL,
+                for: ocId,
+                index: index
+            )
+
+        case NKTypeClassFile.image.rawValue:
+            var imagePreviewURL = previewURL
+
+            if imagePreviewURL == nil {
+                imagePreviewURL = await loader.previewURL(
+                    for: metadata,
+                    index: index
+                )
+
+                guard !Task.isCancelled else {
+                    return
+                }
+            }
+
+            await setReadyState(
+                metadata: metadata,
+                previewURL: imagePreviewURL,
+                localURL: localURL,
+                for: ocId,
+                index: index
+            )
+
+        default:
+            await setReadyState(
+                metadata: metadata,
+                previewURL: previewURL,
+                localURL: localURL,
+                for: ocId,
+                index: index
+            )
+        }
+    }
+
+    private func loadRemotePage(
+        metadata: tableMetadata,
+        previewURL: URL?,
+        for ocId: String,
+        index: Int
+    ) async {
+        var previewURL = previewURL
+
         if metadata.classFile == NKTypeClassFile.image.rawValue,
            previewURL == nil {
-            previewURL = await loader.previewURL(for: metadata, index: index)
+            previewURL = await loader.previewURL(
+                for: metadata,
+                index: index
+            )
         }
 
         guard !Task.isCancelled else {
             return
         }
 
-        if metadata.classFile == NKTypeClassFile.image.rawValue, let previewURL {
+        switch metadata.classFile {
+        case NKTypeClassFile.video.rawValue:
             setState(
-                .image(
-                    previewURL: previewURL,
-                    localURL: nil,
-                    livePhotoURL: nil,
-                    progress: nil
-                ),
-                for: ocId
-            )
-        }
-
-        if metadata.classFile == NKTypeClassFile.video.rawValue {
-            setState(
-                .video,
+                .video(localURL: nil),
                 for: ocId
             )
             return
-        }
 
-        guard !Task.isCancelled else {
-            return
-        }
-
-        do {
-            if metadata.classFile == NKTypeClassFile.audio.rawValue {
+        case NKTypeClassFile.image.rawValue:
+            if let previewURL {
                 setState(
-                    .downloading(
+                    .image(
                         previewURL: previewURL,
+                        localURL: nil,
+                        livePhotoURL: nil,
                         progress: nil
                     ),
                     for: ocId
                 )
             }
 
+        case NKTypeClassFile.audio.rawValue:
+            setState(
+                .downloading(
+                    previewURL: previewURL,
+                    progress: nil
+                ),
+                for: ocId
+            )
+
+        default:
+            break
+        }
+
+        do {
             let downloadedURL = try await loader.downloadMedia(
                 for: metadata,
                 index: index
@@ -617,10 +670,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         if metadata.classFile == NKTypeClassFile.video.rawValue {
             setState(
-                .downloading(
-                    previewURL: previewURL,
-                    progress: nil
-                ),
+                .video(localURL: nil),
                 for: ocId
             )
             return
@@ -672,7 +722,7 @@ final class NCMediaViewerModel: ObservableObject {
         case .idle,
              .loadingMetadata,
              .metadataMissing,
-             .video,
+             .video(_),
              .deleted,
              .checkingLocalFile:
             return nil
@@ -717,6 +767,11 @@ final class NCMediaViewerModel: ObservableObject {
                     livePhotoURL: livePhotoURL,
                     progress: nil
                 ),
+                for: ocId
+            )
+        } else if metadata.classFile == NKTypeClassFile.video.rawValue {
+            setState(
+                .video(localURL: localURL),
                 for: ocId
             )
         } else if metadata.classFile == NKTypeClassFile.audio.rawValue {
@@ -820,7 +875,7 @@ private extension NCMediaViewerPageState {
              .checkingLocalFile,
              .image,
              .audio,
-             .video,
+             .video(_),
              .downloading,
              .ready,
              .deleted,
@@ -842,7 +897,7 @@ private extension NCMediaViewerPageState {
 
         case .image(_, .some, _, _),
              .audio,
-             .video,
+             .video(_),
              .loadingMetadata,
              .metadataMissing,
              .checkingLocalFile,

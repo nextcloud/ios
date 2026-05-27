@@ -51,8 +51,8 @@ struct NCMediaViewerPageView: View {
                     livePhotoURL: livePhotoURL
                 )
 
-            case .video:
-                videoStateView()
+            case .video(let localURL):
+                videoStateView(localURL: localURL)
 
             case .audio(let localURL, let previewURL):
                 audioStateView(
@@ -202,11 +202,11 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func videoStateView() -> some View {
+    private func videoStateView(localURL: URL?) -> some View {
         if let metadata = page.metadata {
             NCVideoViewerContentView(
                 metadata: metadata,
-                localURL: nil,
+                localURL: localURL,
                 isSelected: isSelected,
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar,
@@ -254,7 +254,7 @@ struct NCMediaViewerPageView: View {
         switch page.metadata?.classFile {
         case NKTypeClassFile.video.rawValue:
             if isSelected {
-                videoStateView()
+                videoStateView(localURL: nil)
             } else {
                 Color.ncViewerBackground(backgroundStyle)
                     .ignoresSafeArea()

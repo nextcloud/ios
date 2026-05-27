@@ -378,7 +378,7 @@ final class NCMediaViewerPresenter: NSObject {
         case .audio(_, let previewURL):
             return imageFromURL(previewURL)
 
-        case .video:
+        case .video(_):
             return nil
 
         case .ready(let localURL, let previewURL):
