@@ -15,7 +15,7 @@ extension NCCollectionViewCommon {
     ///
     /// - Parameter ocId: Nextcloud file identifier of the media item.
     /// - Returns: Transition source if the item can be resolved.
-    func viewerTransitionSource(for ocId: String) -> NCViewerTransitionSource? {
+    func viewerTransitionSource(for ocId: String) -> NCMediaViewerTransitionSource? {
         guard let indexPath = dataSource.getIndexPathMetadata(ocId: ocId),
               let window = collectionView.window else {
             return nil
@@ -41,7 +41,7 @@ extension NCCollectionViewCommon {
                 to: window
             )
 
-            return NCViewerTransitionSource(
+            return NCMediaViewerTransitionSource(
                 image: image,
                 sourceFrame: sourceFrame,
                 cornerRadius: imageView.layer.cornerRadius
@@ -57,7 +57,7 @@ extension NCCollectionViewCommon {
             to: window
         )
 
-        return NCViewerTransitionSource(
+        return NCMediaViewerTransitionSource(
             image: UIImage(),
             sourceFrame: sourceFrame,
             cornerRadius: 6

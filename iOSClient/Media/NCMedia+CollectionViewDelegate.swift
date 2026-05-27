@@ -23,14 +23,14 @@ extension NCMedia: UICollectionViewDelegate {
                 tabBarSelect.selectCount = fileSelect.count
             } else if let metadata = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
                 let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
-                var viewerTransitionSource: NCViewerTransitionSource?
+                var viewerTransitionSource: NCMediaViewerTransitionSource?
                 let ocIds = dataSource.metadatas.map { $0.ocId }
 
                 if let imageView = cell.imageItem,
                    let image = imageView.image,
                    let window = imageView.window {
                     let sourceFrame = imageView.convert(imageView.bounds, to: window)
-                    viewerTransitionSource = NCViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
+                    viewerTransitionSource = NCMediaViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
                 }
 
                 if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: ocIds, image: image, delegate: self, viewerTransitionSource: viewerTransitionSource) {
@@ -50,7 +50,7 @@ extension NCMedia: UICollectionViewDelegate {
     ///
     /// - Parameter ocId: Nextcloud file identifier of the media item.
     /// - Returns: Transition source if the item can be resolved.
-    func viewerTransitionSource(for ocId: String) -> NCViewerTransitionSource? {
+    func viewerTransitionSource(for ocId: String) -> NCMediaViewerTransitionSource? {
         guard let indexPath = self.dataSource.indexPath(forOcId: ocId),
               let window = collectionView.window else {
             return nil
@@ -76,7 +76,7 @@ extension NCMedia: UICollectionViewDelegate {
                 to: window
             )
 
-            return NCViewerTransitionSource(
+            return NCMediaViewerTransitionSource(
                 image: image,
                 sourceFrame: sourceFrame,
                 cornerRadius: imageView.layer.cornerRadius
@@ -92,7 +92,7 @@ extension NCMedia: UICollectionViewDelegate {
             to: window
         )
 
-        return NCViewerTransitionSource(
+        return NCMediaViewerTransitionSource(
             image: UIImage(),
             sourceFrame: sourceFrame,
             cornerRadius: 6

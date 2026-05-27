@@ -14,7 +14,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
 
     @MainActor
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCViewerTransitionSource?) async -> UIViewController? {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCMediaViewerTransitionSource?) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
         await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)

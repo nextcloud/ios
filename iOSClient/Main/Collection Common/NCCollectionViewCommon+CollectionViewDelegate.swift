@@ -10,7 +10,7 @@ import LucidBanner
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     @MainActor
-    func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool, viewerTransitionSource: NCViewerTransitionSource?) async {
+    func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool, viewerTransitionSource: NCMediaViewerTransitionSource?) async {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
         if metadata.e2eEncrypted {
@@ -141,7 +141,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
             return
         }
-        var viewerTransitionSource: NCViewerTransitionSource?
+        var viewerTransitionSource: NCMediaViewerTransitionSource?
 
         if self.isEditMode {
             if let index = self.fileSelect.firstIndex(of: metadata.ocId) {

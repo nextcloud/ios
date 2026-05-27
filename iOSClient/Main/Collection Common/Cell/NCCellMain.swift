@@ -15,7 +15,7 @@ protocol NCCellMainProtocol {
     var infoLbl: UILabel? { get set }
 
     func selected(_ status: Bool, isEditMode: Bool, color: UIColor)
-    func viewerTransitionSource() -> NCViewerTransitionSource?
+    func viewerTransitionSource() -> NCMediaViewerTransitionSource?
 }
 
 extension NCCellMainProtocol {
@@ -40,7 +40,7 @@ extension NCCellMainProtocol {
         set {}
     }
 
-    func viewerTransitionSource() -> NCViewerTransitionSource? {
+    func viewerTransitionSource() -> NCMediaViewerTransitionSource? {
         guard let imageView = previewImg,
               let image = imageView.image,
               let window = imageView.window else {
@@ -48,7 +48,7 @@ extension NCCellMainProtocol {
         }
         let sourceFrame = imageView.convert(imageView.bounds, to: window)
 
-        return NCViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
+        return NCMediaViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
     }
 }
 

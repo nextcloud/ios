@@ -8,7 +8,7 @@ import NextcloudKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
-    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCViewerTransitionSource?)
+    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCMediaViewerTransitionSource?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {

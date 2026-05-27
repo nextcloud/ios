@@ -5,7 +5,7 @@
 import UIKit
 
 // MARK: - Viewer Transition Source
-struct NCViewerTransitionSource {
+struct NCMediaViewerTransitionSource {
     let image: UIImage
 
     let sourceFrame: CGRect

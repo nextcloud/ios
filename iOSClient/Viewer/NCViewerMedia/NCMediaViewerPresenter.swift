@@ -92,10 +92,10 @@ final class NCMediaViewerPresenter: NSObject {
 
     private var navigationController: UINavigationController?
     private weak var viewerContainerView: UIView?
-    private var currentViewerTransitionSource: NCViewerTransitionSource?
+    private var currentViewerTransitionSource: NCMediaViewerTransitionSource?
     private weak var currentModel: NCMediaViewerModel?
 
-    private var closingTransitionSourceProvider: ((_ ocId: String) -> NCViewerTransitionSource?)?
+    private var closingTransitionSourceProvider: ((_ ocId: String) -> NCMediaViewerTransitionSource?)?
     private var forcedClosingOcId: String?
 
     private let openingAnimationDuration: TimeInterval = 0.28
@@ -115,10 +115,10 @@ final class NCMediaViewerPresenter: NSObject {
     /// Shows the media viewer above the current window.
     func show(
         model: NCMediaViewerModel,
-        viewerTransitionSource: NCViewerTransitionSource?,
+        viewerTransitionSource: NCMediaViewerTransitionSource?,
         from sourceView: UIView? = nil,
         contextMenuController: NCMainTabBarController? = nil,
-        closingTransitionSourceProvider: ((_ ocId: String) -> NCViewerTransitionSource?)? = nil
+        closingTransitionSourceProvider: ((_ ocId: String) -> NCMediaViewerTransitionSource?)? = nil
     ) {
         guard let window = sourceView?.window ?? activeWindow() else {
             return
@@ -348,7 +348,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     /// Animates the source thumbnail into the fullscreen viewer.
     private func animateOpening(
-        viewerTransitionSource: NCViewerTransitionSource,
+        viewerTransitionSource: NCMediaViewerTransitionSource,
         in window: UIWindow,
         viewerView: UIView
     ) {
@@ -395,7 +395,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     /// Animates the fullscreen viewer back into the current thumbnail frame.
     private func animateClosing(
-        viewerTransitionSource: NCViewerTransitionSource,
+        viewerTransitionSource: NCMediaViewerTransitionSource,
         closingImage: UIImage,
         in window: UIWindow,
         viewerView: UIView
@@ -432,7 +432,7 @@ final class NCMediaViewerPresenter: NSObject {
     // MARK: - Closing Source
 
     /// Returns the transition source for the currently selected item.
-    private func currentClosingTransitionSource() -> NCViewerTransitionSource? {
+    private func currentClosingTransitionSource() -> NCMediaViewerTransitionSource? {
         let ocId = forcedClosingOcId ?? currentModel?.selectedOcId
 
         guard let ocId else {

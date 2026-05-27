@@ -787,7 +787,7 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
         }
     }
 
-    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCViewerTransitionSource?) {
+    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCMediaViewerTransitionSource?) {
         Task {
             await didSelectMetadata(metadata, withOcIds: false, viewerTransitionSource: viewerTransitionSource)
         }
