@@ -52,6 +52,7 @@ final class NCVideoVLCViewController: UIViewController {
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
     internal var isScrubbing = false
+    private weak var closePanGesture: UIPanGestureRecognizer?
 
     internal var shouldKeepControlsVisible: Bool {
         mediaPlayer.state != .playing && !mediaPlayer.isPlaying
@@ -382,6 +383,7 @@ final class NCVideoVLCViewController: UIViewController {
             action: #selector(handleClosePan(_:))
         )
         closePanGesture.delegate = self
+        self.closePanGesture = closePanGesture
 
         view.addGestureRecognizer(swipeLeft)
         view.addGestureRecognizer(swipeRight)
@@ -861,11 +863,11 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer is UIPanGestureRecognizer else {
+        guard gestureRecognizer === closePanGesture else {
             return true
         }
 
-        let velocity = (gestureRecognizer as? UIPanGestureRecognizer)?.velocity(in: view) ?? .zero
+        let velocity = closePanGesture?.velocity(in: view) ?? .zero
 
         guard velocity.y > 0 else {
             return false

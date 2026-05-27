@@ -70,6 +70,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
     internal var isScrubbing = false
+    private weak var closePanGesture: UIPanGestureRecognizer?
 
     private var pictureInPictureController: AVPictureInPictureController?
     private var itemStatusObservation: NSKeyValueObservation?
@@ -411,6 +412,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             action: #selector(handleClosePan(_:))
         )
         closePanGesture.delegate = self
+        self.closePanGesture = closePanGesture
         view.addGestureRecognizer(closePanGesture)
     }
 
@@ -423,7 +425,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         guard !isPictureInPictureActive else {
             return
         }
-
 
         switch gesture.direction {
         case .left:
@@ -734,7 +735,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
             || bottomControlsFrame.contains(location)
     }
 
-
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -898,7 +898,7 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer is UIPanGestureRecognizer else {
+        guard gestureRecognizer === closePanGesture else {
             return true
         }
 
@@ -906,7 +906,7 @@ extension NCVideoAVPlayerViewController: UIGestureRecognizerDelegate {
             return false
         }
 
-        let velocity = (gestureRecognizer as? UIPanGestureRecognizer)?.velocity(in: view) ?? .zero
+        let velocity = closePanGesture?.velocity(in: view) ?? .zero
 
         guard velocity.y > 0 else {
             return false
