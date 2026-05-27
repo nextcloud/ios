@@ -146,6 +146,9 @@ struct NCAudioViewerContentView: View {
 
             consumeAutoPlayIfNeeded()
         }
+        // Stop all audio playback when the media viewer performs a global playback teardown.
+        // This notification is intentionally viewer-wide and should not be used for normal
+        // audio page-to-page state changes.
         .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
             NCAudioViewerPlaybackRegistry.shared.stopAll()
         }

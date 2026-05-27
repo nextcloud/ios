@@ -251,8 +251,7 @@ struct NCVideoViewerContentView: View {
                 url: localURL,
                 autoplay: true,
                 expectedTaskIdentifier: expectedTaskIdentifier,
-                expectedLoadGeneration: expectedLoadGeneration,
-                source: "local"
+                expectedLoadGeneration: expectedLoadGeneration
             )
             return
         }
@@ -287,8 +286,7 @@ struct NCVideoViewerContentView: View {
             url: url,
             autoplay: result.autoplay,
             expectedTaskIdentifier: expectedTaskIdentifier,
-            expectedLoadGeneration: expectedLoadGeneration,
-            source: "resolved"
+            expectedLoadGeneration: expectedLoadGeneration
         )
     }
 
@@ -297,8 +295,7 @@ struct NCVideoViewerContentView: View {
         url: URL,
         autoplay: Bool,
         expectedTaskIdentifier: String,
-        expectedLoadGeneration: UUID,
-        source: String
+        expectedLoadGeneration: UUID
     ) {
         guard expectedTaskIdentifier == taskIdentifier else {
             return

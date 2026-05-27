@@ -373,6 +373,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
+        // Stop the current media playback before programmatic page navigation.
+        // This is intentionally broad because previous/next can move across image,
+        // audio, AVPlayer, and VLC pages. Keep the fullscreen transition overlay in
+        // sync when this is used for video navigation.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil
@@ -487,6 +491,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         isUserPaging = true
 
+        // Stop the current media playback before programmatic page navigation.
+        // This is intentionally broad because previous/next can move across image,
+        // audio, AVPlayer, and VLC pages. Keep the fullscreen transition overlay in
+        // sync when this is used for video navigation.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil

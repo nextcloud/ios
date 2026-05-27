@@ -163,6 +163,8 @@ final class NCMediaViewerModel: ObservableObject {
 
     @MainActor
     func markPageAsDeleted(ocId: String) {
+        // Stop any active playback before marking the page as deleted.
+        // This is a destructive state change, so the global playback stop is intentional.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil

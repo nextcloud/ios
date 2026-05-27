@@ -491,6 +491,7 @@ final class NCMediaViewerPresenter: NSObject {
 
     /// Clears retained presenter state after the viewer has been removed.
     private func cleanup() {
+        // Stop any remaining media playback before releasing the viewer hierarchy.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil

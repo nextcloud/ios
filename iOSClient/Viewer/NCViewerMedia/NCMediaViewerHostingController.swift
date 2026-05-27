@@ -185,6 +185,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Stops media playback before the viewer is closed.
     private func stop() {
+        // Stop any remaining media playback before releasing the viewer hierarchy.
+        // This notification is intentionally global and should only be used for
+        // viewer-wide teardown, not for normal page-to-page navigation.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil

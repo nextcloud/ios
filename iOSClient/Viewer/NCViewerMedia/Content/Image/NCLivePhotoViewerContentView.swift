@@ -71,6 +71,7 @@ struct NCLivePhotoViewerContentView: View {
                     isPlayingLivePhoto = true
                 }
         )
+        // Stop Live Photo playback when the media viewer requests a global playback stop.
         .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
             stopLivePhotoPlayback()
         }
