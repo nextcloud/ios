@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import UniformTypeIdentifiers
 import NextcloudKit
 import RealmSwift
 import LucidBanner
@@ -70,7 +71,14 @@ extension NCCollectionViewCommon: UIEditMenuInteractionDelegate {
             for (index, items) in UIPasteboard.general.items.enumerated() {
                 for item in items {
                     let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-                    let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
+                    let identifier = item.key
+                    let resolvedType = UTType(mimeType: identifier) ?? UTType(identifier)
+                    let resolvedMimeType = resolvedType?.preferredMIMEType ?? identifier
+                    let resolvedExtension = resolvedType?.preferredFilenameExtension ?? ""
+                    let results = NKFilePropertyResolver().resolve(mimeType: resolvedMimeType,
+                                                                   fileExtension: resolvedExtension,
+                                                                   typeIdentifier: resolvedType?.identifier ?? identifier,
+                                                                   capabilities: capabilities)
                     guard let data = UIPasteboard.general.data(forPasteboardType: item.key,
                                                                inItemSet: IndexSet([index]))?.first
                     else {

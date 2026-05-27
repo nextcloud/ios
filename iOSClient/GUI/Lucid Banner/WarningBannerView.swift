@@ -75,7 +75,7 @@ struct WarningBannerView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: state.payload.systemImage ?? "info.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.icon())
+                        .font(.icon(26))
                         .foregroundStyle(state.payload.imageColor)
 
                     VStack(alignment: .leading, spacing: 7) {

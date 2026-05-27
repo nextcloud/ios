@@ -336,6 +336,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         /*
+         Example: nextcloud://assistant/shared-text
+         */
+
+        if scheme == global.appScheme, action == "assistant", url.path == "/shared-text" {
+            guard let text = NCAssistantSharedTextStore.loadAndClear() else {
+                return
+            }
+
+            Task { @MainActor in
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
+                if capabilities.assistantEnabled {
+                    let inputModel = NCAssistantInputModel(initialText: text)
+                    let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: controller, inputModel: inputModel), chatModel: NCAssistantChatModel(controller: controller, inputModel: inputModel), conversationsModel: NCAssistantChatConversationsModel(controller: controller))
+                    let hostingController = UIHostingController(rootView: assistant)
+                    controller.present(hostingController, animated: true, completion: nil)
+                }
+            }
+
+            return
+        }
+
+        /*
          Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 

@@ -80,7 +80,7 @@ struct UploadBannerView: View {
                 HStack(spacing: 5) {
                     Image(systemName: state.payload.systemImage ?? "arrow.up.circle")
                         .applyBannerAnimation(state.payload.imageAnimation)
-                        .font(.icon())
+                        .font(.icon(26))
                         .foregroundStyle(state.payload.imageColor)
 
                     if let p = state.payload.progress {
@@ -145,7 +145,7 @@ struct UploadBannerView: View {
                         if let systemImage = state.payload.systemImage {
                             Image(systemName: systemImage)
                                 .applyBannerAnimation(state.payload.imageAnimation)
-                                .font(.icon())
+                                .font(.icon(26))
                                 .foregroundStyle(state.payload.imageColor)
                         }
 
