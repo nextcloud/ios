@@ -10,14 +10,17 @@ import NextcloudKit
 struct NCVideoViewerContentView: View {
     let metadata: tableMetadata
     let localURL: URL?
+    let previewURL: URL?
     let userAgent: String?
     let isSelected: Bool
+    let isChromeHidden: Bool
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let onPreviousPage: (() -> Void)?
     let onNextPage: (() -> Void)?
+    let onToggleChrome: (() -> Void)?
     let onClose: ((_ ocId: String?) -> Void)?
 
     @ObservedObject private var playback = NCVideoPlaybackController.shared
@@ -26,6 +29,7 @@ struct NCVideoViewerContentView: View {
     @State private var presentedAVPlayerURL: URL?
     @State private var resolvedVideoURL: URL?
     @State private var presentedVLCURL: URL?
+    @State private var hasRequestedPlayback = false
     @State private var loadGeneration = UUID()
 
     private let resolver = NCVideoURLResolver()
@@ -36,61 +40,67 @@ struct NCVideoViewerContentView: View {
     init(
         metadata: tableMetadata,
         localURL: URL?,
+        previewURL: URL? = nil,
         userAgent: String? = nil,
         isSelected: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController? = nil,
         navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         onPreviousPage: (() -> Void)? = nil,
         onNextPage: (() -> Void)? = nil,
+        onToggleChrome: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil
     ) {
         self.metadata = metadata
         self.localURL = localURL
+        self.previewURL = previewURL
         self.userAgent = userAgent
         self.isSelected = isSelected
+        self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.onPreviousPage = onPreviousPage
         self.onNextPage = onNextPage
+        self.onToggleChrome = onToggleChrome
         self.onClose = onClose
+    }
+    private var videoBackgroundColor: Color {
+        isChromeHidden ? .black : Color.ncViewerBackground(.system)
     }
 
     var body: some View {
         ZStack {
-            Color.black
+            videoBackgroundColor
                 .ignoresSafeArea()
 
             if let errorMessage {
                 failedView(errorMessage)
+            } else if !hasRequestedPlayback {
+                playbackCoverForCurrentEngine()
             } else {
                 switch playback.engine {
                 case .loading:
-                    EmptyView()
+                    videoBackgroundColor
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
 
                 case .avFoundation(let url):
                     if isSelected,
                        isCurrentPlaybackVideo() {
-                        Color.clear
-                            .ignoresSafeArea()
-                            .allowsHitTesting(false)
-                            .onAppear {
-                                presentAVPlayerIfSelected(url: url)
-                            }
-                            .onChange(of: url) { _, newURL in
+                        playbackPresentationPlaceholder(
+                            url: url,
+                            onURLChanged: { newURL in
                                 presentedAVPlayerURL = nil
                                 presentAVPlayerIfSelected(url: newURL)
-                            }
-                            .onChange(of: isSelected) { _, selected in
-                                guard selected else {
-                                    return
-                                }
-
+                            },
+                            onSelectionRestored: {
                                 presentAVPlayerIfSelected(url: url)
                             }
+                        )
                     } else {
                         EmptyView()
                     }
@@ -98,23 +108,16 @@ struct NCVideoViewerContentView: View {
                 case .vlc(let url):
                     if isSelected,
                        isCurrentPlaybackVideo() {
-                        Color.clear
-                            .ignoresSafeArea()
-                            .allowsHitTesting(false)
-                            .onAppear {
-                                presentVLCIfSelected(url: url)
-                            }
-                            .onChange(of: url) { _, newURL in
+                        playbackPresentationPlaceholder(
+                            url: url,
+                            onURLChanged: { newURL in
                                 presentedVLCURL = nil
                                 presentVLCIfSelected(url: newURL)
-                            }
-                            .onChange(of: isSelected) { _, selected in
-                                guard selected else {
-                                    return
-                                }
-
+                            },
+                            onSelectionRestored: {
                                 presentVLCIfSelected(url: url)
                             }
+                        )
                     } else {
                         EmptyView()
                     }
@@ -128,7 +131,7 @@ struct NCVideoViewerContentView: View {
                 }
             }
         }
-        .background(Color.black)
+        .background(videoBackgroundColor)
         .task(id: taskIdentifier) {
             await loadVideoIfSelected()
         }
@@ -136,6 +139,7 @@ struct NCVideoViewerContentView: View {
             loadGeneration = UUID()
 
             guard selected else {
+                hasRequestedPlayback = false
                 stopPlaybackForDeselection()
                 return
             }
@@ -164,6 +168,68 @@ struct NCVideoViewerContentView: View {
         .padding(24)
     }
 
+    @ViewBuilder
+    private func playbackCoverForCurrentEngine() -> some View {
+        switch playback.engine {
+        case .avFoundation(let url):
+            NCVideoPlaybackCoverView(
+                previewURL: previewURL,
+                fileName: resolvedFileName,
+                isPlayEnabled: isSelected && isCurrentPlaybackVideo(),
+                onToggleChrome: onToggleChrome,
+                onPlay: {
+                    requestAVPlayerPresentation(url: url)
+                }
+            )
+
+        case .vlc(let url):
+            NCVideoPlaybackCoverView(
+                previewURL: previewURL,
+                fileName: resolvedFileName,
+                isPlayEnabled: isSelected && isCurrentPlaybackVideo(),
+                onToggleChrome: onToggleChrome,
+                onPlay: {
+                    requestVLCPresentation(url: url)
+                }
+            )
+
+        case .loading:
+            NCVideoPlaybackCoverView(
+                previewURL: previewURL,
+                fileName: resolvedFileName,
+                isPlayEnabled: false,
+                onToggleChrome: onToggleChrome,
+                onPlay: {}
+            )
+
+        case .failed(let message):
+            failedView(message)
+        }
+    }
+
+    private func playbackPresentationPlaceholder(
+        url: URL,
+        onURLChanged: @escaping (_ newURL: URL) -> Void,
+        onSelectionRestored: @escaping () -> Void
+    ) -> some View {
+        videoBackgroundColor
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+            .onAppear {
+                onSelectionRestored()
+            }
+            .onChange(of: url) { _, newURL in
+                onURLChanged(newURL)
+            }
+            .onChange(of: isSelected) { _, selected in
+                guard selected else {
+                    return
+                }
+
+                onSelectionRestored()
+            }
+    }
+
     // MARK: - Loading
 
     @MainActor
@@ -171,6 +237,7 @@ struct NCVideoViewerContentView: View {
         presentedAVPlayerURL = nil
         resolvedVideoURL = nil
         presentedVLCURL = nil
+        hasRequestedPlayback = false
 
         NCVideoAVPlayerPresenter.dismiss()
         NCVideoVLCPresenter.dismiss()
@@ -310,6 +377,7 @@ struct NCVideoViewerContentView: View {
         }
 
         resolvedVideoURL = url
+        hasRequestedPlayback = false
 
         playback.loadVideo(
             metadata: metadata,
@@ -367,6 +435,10 @@ struct NCVideoViewerContentView: View {
     // Reveal without changing play/pause state.
     @MainActor
     private func revealCurrentPlaybackIfNeeded() {
+        guard hasRequestedPlayback else {
+            return
+        }
+
         switch playback.engine {
         case .avFoundation(let url):
             presentAVPlayerIfSelected(url: url)
@@ -378,6 +450,12 @@ struct NCVideoViewerContentView: View {
              .failed:
             break
         }
+    }
+
+    @MainActor
+    private func requestAVPlayerPresentation(url: URL) {
+        hasRequestedPlayback = true
+        presentAVPlayerIfSelected(url: url)
     }
 
     @MainActor
@@ -429,9 +507,16 @@ struct NCVideoViewerContentView: View {
     private func closeFromFullscreenVideo(ocId: String?) {
         presentedAVPlayerURL = nil
         presentedVLCURL = nil
+        hasRequestedPlayback = false
         playback.stop()
         NCVideoFullscreenTransitionOverlay.hide()
         onClose?(ocId)
+    }
+
+    @MainActor
+    private func requestVLCPresentation(url: URL) {
+        hasRequestedPlayback = true
+        presentVLCIfSelected(url: url)
     }
 
     @MainActor
@@ -510,6 +595,77 @@ struct NCVideoViewerContentView: View {
         }
 
         return metadata.fileName
+    }
+}
+
+// MARK: - Video Playback Cover View
+
+private struct NCVideoPlaybackCoverView: View {
+    let previewURL: URL?
+    let fileName: String
+    let isPlayEnabled: Bool
+    let onToggleChrome: (() -> Void)?
+    let onPlay: () -> Void
+
+    var body: some View {
+        ZStack {
+            if let previewURL {
+                AsyncImage(url: previewURL) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFit()
+
+                    case .failure,
+                         .empty:
+                        Color.black
+
+                    @unknown default:
+                        Color.black
+                    }
+                }
+                .ignoresSafeArea()
+            } else {
+                Color.black
+                    .ignoresSafeArea()
+            }
+
+            Color.clear
+                .contentShape(Rectangle())
+                .ignoresSafeArea()
+                .onTapGesture {
+                    onToggleChrome?()
+                }
+
+            VStack(spacing: 18) {
+                if isPlayEnabled {
+                    Button(action: onPlay) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 34, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 82, height: 82)
+                            .background(Color.black.opacity(0.55))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
+                } else {
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(.white)
+                }
+
+                if !fileName.isEmpty {
+                    Text(fileName)
+                        .font(.callout)
+                        .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+            }
+        }
     }
 }
 

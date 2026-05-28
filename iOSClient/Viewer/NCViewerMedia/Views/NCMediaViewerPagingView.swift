@@ -227,9 +227,11 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
 
         switch metadata.classFile {
-        case NKTypeClassFile.audio.rawValue,
-             NKTypeClassFile.video.rawValue:
+        case NKTypeClassFile.audio.rawValue:
             return .black
+
+        case NKTypeClassFile.video.rawValue:
+            return UIColor.ncViewerBackground(.system)
 
         default:
             return UIColor.ncViewerBackground(
