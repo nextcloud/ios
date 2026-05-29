@@ -145,7 +145,6 @@
 		F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A92BAB63EE006B5430 /* MarkdownKit */; };
 		F37208B02BAB63EF006B5430 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AF2BAB63EF006B5430 /* Queuer */; };
 		F37208B22BAB63EF006B5430 /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B12BAB63EF006B5430 /* DropDown */; };
-		F37208B42BAB63EF006B5430 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B32BAB63EF006B5430 /* Parchment */; };
 		F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B52BAB63EF006B5430 /* EasyTipView */; };
 		F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B92BAB63EF006B5430 /* TLPhotoPicker */; };
 		F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BB2BAB63EF006B5430 /* OpenSSL */; };
@@ -725,7 +724,6 @@
 		F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
-		F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7BB7E4627A18C56009B9F29 /* Parchment */; };
 		F7BC287E26663F6C004D46C5 /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */; };
 		F7BD0A002C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BD09FF2C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift */; };
@@ -1916,7 +1914,6 @@
 				F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */,
 				F37208B22BAB63EF006B5430 /* DropDown in Frameworks */,
 				F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */,
-				F37208B42BAB63EF006B5430 /* Parchment in Frameworks */,
 				F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1995,7 +1992,6 @@
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
 				F359A0E72FC75AAD00CB4029 /* NextcloudKit in Frameworks */,
 				F359A0E92FC75AAD00CB4029 /* NextcloudKitUI in Frameworks */,
-				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */,
@@ -3520,7 +3516,6 @@
 				F37208A92BAB63EE006B5430 /* MarkdownKit */,
 				F37208AF2BAB63EF006B5430 /* Queuer */,
 				F37208B12BAB63EF006B5430 /* DropDown */,
-				F37208B32BAB63EF006B5430 /* Parchment */,
 				F37208B52BAB63EF006B5430 /* EasyTipView */,
 				F37208B92BAB63EF006B5430 /* TLPhotoPicker */,
 				F37208BB2BAB63EF006B5430 /* OpenSSL */,
@@ -3696,7 +3691,6 @@
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA968277B77EA0082465B /* DropDown */,
-				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
 				F734B06528E75C0100E180D5 /* TLPhotoPicker */,
 				F77333872927A72100466E35 /* OpenSSL */,
@@ -3903,7 +3897,6 @@
 				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
-				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
 				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */,
@@ -6380,14 +6373,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rechsteiner/Parchment";
-			requirement = {
-				kind = exactVersion;
-				version = 3.3.0;
-			};
-		};
 		F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tylerjonesio/vlckit-spm";
@@ -6566,11 +6551,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */;
 			productName = DropDown;
-		};
-		F37208B32BAB63EF006B5430 /* Parchment */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
-			productName = Parchment;
 		};
 		F37208B52BAB63EF006B5430 /* EasyTipView */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -6811,11 +6791,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7BB7E4627A18C56009B9F29 /* Parchment */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
-			productName = Parchment;
 		};
 		F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */ = {
 			isa = XCSwiftPackageProductDependency;

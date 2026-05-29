@@ -24,7 +24,6 @@
 //
 
 import UIKit
-import Parchment
 import DropDown
 import NextcloudKit
 import ContactsUI
