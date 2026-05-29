@@ -368,28 +368,37 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     func close() {
-        stopControlsHideTimer()
-        stopProgressTimer()
-        stop()
+        let closeCallback = onClose
+        let closingOcId = metadata.ocId
+        let controllerToDismiss = navigationController ?? self
 
         NCVideoVLCPresenter.clearCurrent(self)
 
-        dismiss(animated: false) { [onClose, metadata] in
+        controllerToDismiss.dismiss(animated: false) { [weak self] in
+            self?.stopControlsHideTimer()
+            self?.stopProgressTimer()
+            self?.stop()
+
             DispatchQueue.main.async {
-                onClose?(metadata.ocId)
+                closeCallback?(closingOcId)
             }
         }
     }
 
     func closeImmediately() {
-        stopControlsHideTimer()
-        stopProgressTimer()
-        stop()
+        let closeCallback = onClose
+        let controllerToDismiss = navigationController ?? self
 
         NCVideoVLCPresenter.clearCurrent(self)
 
-        dismiss(animated: false) { [onClose] in
-            onClose?(nil)
+        controllerToDismiss.dismiss(animated: false) { [weak self] in
+            self?.stopControlsHideTimer()
+            self?.stopProgressTimer()
+            self?.stop()
+
+            DispatchQueue.main.async {
+                closeCallback?(nil)
+            }
         }
     }
 

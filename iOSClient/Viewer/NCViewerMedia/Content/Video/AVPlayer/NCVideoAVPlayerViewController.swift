@@ -402,6 +402,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     func close() {
         let closeCallback = onClose
+        let closingOcId = metadata.ocId
         let controllerToDismiss = navigationController ?? self
 
         NCVideoAVPlayerPresenter.clearCurrent(self)
@@ -411,7 +412,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             self?.stop()
 
             DispatchQueue.main.async {
-                closeCallback?(nil)
+                closeCallback?(closingOcId)
             }
         }
     }
