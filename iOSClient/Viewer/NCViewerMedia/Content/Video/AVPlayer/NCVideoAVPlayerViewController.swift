@@ -260,9 +260,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.url = url
         self.userAgent = userAgent
         self.shouldAutoPlay = shouldAutoPlay
-        self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
-        updateViewerBackgroundIfNeeded()
+        updateViewerBackground(isChromeHidden: isChromeHidden)
         updateTitleLabel(metadata: metadata)
 
         refreshMoreMenu()
@@ -284,10 +283,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
     }
 
-    private func updateViewerBackgroundIfNeeded() {
-        guard !controlsVisible else {
-            return
-        }
+    @MainActor
+    internal func updateViewerBackground(isChromeHidden: Bool) {
+        self.isChromeHidden = isChromeHidden
 
         let backgroundColor = viewerBackgroundColor
         view.backgroundColor = backgroundColor

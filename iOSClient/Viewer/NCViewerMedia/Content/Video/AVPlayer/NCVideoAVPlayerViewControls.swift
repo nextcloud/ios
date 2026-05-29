@@ -46,6 +46,7 @@ extension NCVideoAVPlayerViewController {
 
     func showControls(animated: Bool) {
         guard !isPictureInPictureActive else {
+            updateViewerBackground(isChromeHidden: true)
             setControlsVisible(
                 false,
                 animated: false
@@ -56,6 +57,8 @@ extension NCVideoAVPlayerViewController {
             )
             return
         }
+
+        updateViewerBackground(isChromeHidden: false)
 
         setNavigationBarVisible(
             true,
@@ -73,6 +76,8 @@ extension NCVideoAVPlayerViewController {
             stopControlsHideTimer()
             return
         }
+
+        updateViewerBackground(isChromeHidden: true)
 
         setNavigationBarVisible(
             false,
