@@ -210,9 +210,15 @@ final class NCVideoAVPlayerViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        let shouldPreserveHiddenChromeBackground = isChromeHidden
+
         start()
         showControls(animated: false)
         stopControlsHideTimer()
+
+        if shouldPreserveHiddenChromeBackground {
+            updateViewerBackground(isChromeHidden: true)
+        }
     }
 
     override func viewDidLayoutSubviews() {
