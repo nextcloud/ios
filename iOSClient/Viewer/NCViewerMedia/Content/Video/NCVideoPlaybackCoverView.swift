@@ -7,6 +7,7 @@ import SwiftUI
 struct NCVideoPlaybackCoverView: View {
     let previewURL: URL?
     let isPlayEnabled: Bool
+    let isLaunchingPlayback: Bool
     let onToggleChrome: (() -> Void)?
     let onPlay: () -> Void
 
@@ -62,7 +63,10 @@ struct NCVideoPlaybackCoverView: View {
                     )
             }
             .buttonStyle(.plain)
-            .disabled(!isPlayEnabled)
+            .disabled(!isPlayEnabled || isLaunchingPlayback)
+            .opacity(isLaunchingPlayback ? 0 : 1)
+            .scaleEffect(isLaunchingPlayback ? 1.12 : 1)
+            .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
             .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
         }
     }

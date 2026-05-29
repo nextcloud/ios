@@ -2849,9 +2849,9 @@
 			isa = PBXGroup;
 			children = (
 				F78448A82FB1BE9000F2909A /* NCVideoViewerContentView.swift */,
-				F7C2C1302FC95BA7006244BE /* NCVideoURLResolver.swift */,
 				F7C2C12E2FC957F3006244BE /* NCVideoPlaybackCoverView.swift */,
 				F78448A32FB1BE9000F2909A /* NCVideoPlaybackController.swift */,
+				F7C2C1302FC95BA7006244BE /* NCVideoURLResolver.swift */,
 				F7547FE52FB76C1800E372C3 /* NCVideoControlsView.swift */,
 				F78448BF2FB1C78900F2909A /* AVPlayer */,
 				F78448C02FB1C79A00F2909A /* VLC */,

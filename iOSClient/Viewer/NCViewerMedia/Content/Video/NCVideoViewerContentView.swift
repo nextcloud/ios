@@ -29,6 +29,7 @@ struct NCVideoViewerContentView: View {
     @State var presentedAVPlayerURL: URL?
     @State var presentedVLCURL: URL?
     @State var hasRequestedPlayback = false
+    @State var isLaunchingPlayback = false
     @State private var loadGeneration = UUID()
 
     private let resolver = NCVideoURLResolver()
@@ -126,6 +127,7 @@ private extension NCVideoViewerContentView {
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
                 isPlayEnabled: isPlaybackCoverPlayEnabled,
+                isLaunchingPlayback: isLaunchingPlayback,
                 onToggleChrome: onToggleChrome,
                 onPlay: playFromCover
             )
@@ -218,20 +220,27 @@ private extension NCVideoViewerContentView {
 
     @MainActor
     func playFromCover() {
-        guard isPlaybackCoverPlayEnabled else {
+        guard isPlaybackCoverPlayEnabled,
+              !isLaunchingPlayback else {
             return
         }
 
-        switch playback.engine {
-        case .avFoundation(let url):
-            requestAVPlayerPresentation(url: url)
+        isLaunchingPlayback = true
 
-        case .vlc(let url):
-            requestVLCPresentation(url: url)
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(140))
 
-        case .loading,
-             .failed:
-            break
+            switch playback.engine {
+            case .avFoundation(let url):
+                requestAVPlayerPresentation(url: url)
+
+            case .vlc(let url):
+                requestVLCPresentation(url: url)
+
+            case .loading,
+                 .failed:
+                isLaunchingPlayback = false
+            }
         }
     }
 
@@ -490,6 +499,7 @@ extension NCVideoViewerContentView {
         presentedAVPlayerURL = nil
         presentedVLCURL = nil
         hasRequestedPlayback = false
+        isLaunchingPlayback = false
     }
 
     @MainActor
