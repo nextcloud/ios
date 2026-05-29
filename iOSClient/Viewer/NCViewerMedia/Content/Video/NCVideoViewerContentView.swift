@@ -113,27 +113,22 @@ private extension NCVideoViewerContentView {
         if let errorMessage {
             failedView(errorMessage)
         } else if !hasRequestedPlayback {
-            playbackCoverView
+            if case .failed(let message) = playback.engine {
+                failedView(message)
+            } else {
+                NCVideoPlaybackCoverView(
+                    previewURL: previewURL,
+                    isPlayEnabled: isPlaybackCoverPlayEnabled,
+                    isLaunchingPlayback: isLaunchingPlayback,
+                    onToggleChrome: onToggleChrome,
+                    onPlay: playFromCover
+                )
+            }
         } else {
             requestedPlaybackView
         }
     }
-
-    @ViewBuilder
-    var playbackCoverView: some View {
-        if case .failed(let message) = playback.engine {
-            failedView(message)
-        } else {
-            NCVideoPlaybackCoverView(
-                previewURL: previewURL,
-                isPlayEnabled: isPlaybackCoverPlayEnabled,
-                isLaunchingPlayback: isLaunchingPlayback,
-                onToggleChrome: onToggleChrome,
-                onPlay: playFromCover
-            )
-        }
-    }
-
+    
     @ViewBuilder
     var requestedPlaybackView: some View {
         switch playback.engine {
@@ -227,20 +222,16 @@ private extension NCVideoViewerContentView {
 
         isLaunchingPlayback = true
 
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(140))
+        switch playback.engine {
+        case .avFoundation(let url):
+            requestAVPlayerPresentation(url: url)
 
-            switch playback.engine {
-            case .avFoundation(let url):
-                requestAVPlayerPresentation(url: url)
+        case .vlc(let url):
+            requestVLCPresentation(url: url)
 
-            case .vlc(let url):
-                requestVLCPresentation(url: url)
-
-            case .loading,
-                 .failed:
-                isLaunchingPlayback = false
-            }
+        case .loading,
+             .failed:
+            isLaunchingPlayback = false
         }
     }
 
