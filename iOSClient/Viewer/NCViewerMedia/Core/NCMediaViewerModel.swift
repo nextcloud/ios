@@ -14,7 +14,7 @@ enum NCMediaViewerPageState {
     case checkingLocalFile
     case image(previewURL: URL?, localURL: URL?, livePhotoURL: URL?, progress: Double?)
     case audio(localURL: URL, previewURL: URL?)
-    case video(localURL: URL?)
+    case video(localURL: URL?, previewURL: URL?)
     case downloading(previewURL: URL?, progress: Double?)
     case ready(localURL: URL, previewURL: URL?)
     case deleted
@@ -414,8 +414,24 @@ final class NCMediaViewerModel: ObservableObject {
     ) async {
         switch metadata.classFile {
         case NKTypeClassFile.video.rawValue:
+            var videoPreviewURL = previewURL
+
+            if videoPreviewURL == nil {
+                videoPreviewURL = await loader.previewURL(
+                    for: metadata,
+                    index: index
+                )
+
+                guard !Task.isCancelled else {
+                    return
+                }
+            }
+
             setState(
-                .video(localURL: localURL),
+                .video(
+                    localURL: localURL,
+                    previewURL: videoPreviewURL
+                ),
                 for: ocId
             )
 
@@ -477,8 +493,8 @@ final class NCMediaViewerModel: ObservableObject {
     ) async {
         var previewURL = previewURL
 
-        if metadata.classFile == NKTypeClassFile.image.rawValue,
-           previewURL == nil {
+        if previewURL == nil,
+           shouldLoadPreview(for: metadata) {
             previewURL = await loader.previewURL(
                 for: metadata,
                 index: index
@@ -492,7 +508,10 @@ final class NCMediaViewerModel: ObservableObject {
         switch metadata.classFile {
         case NKTypeClassFile.video.rawValue:
             setState(
-                .video(localURL: nil),
+                .video(
+                    localURL: nil,
+                    previewURL: previewURL
+                ),
                 for: ocId
             )
             return
@@ -643,8 +662,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let previewURL: URL?
 
-        if metadata.classFile == NKTypeClassFile.image.rawValue ||
-           metadata.classFile == NKTypeClassFile.audio.rawValue {
+        if shouldLoadPreview(for: metadata) {
             previewURL = await loader.previewURL(
                 for: metadata,
                 index: index
@@ -681,7 +699,10 @@ final class NCMediaViewerModel: ObservableObject {
             }
 
             setState(
-                .video(localURL: localURL),
+                .video(
+                    localURL: localURL,
+                    previewURL: previewURL
+                ),
                 for: ocId
             )
             return
@@ -726,6 +747,7 @@ final class NCMediaViewerModel: ObservableObject {
             return previewURL
 
         case .audio(_, let previewURL),
+             .video(_, let previewURL),
              .ready(_, let previewURL),
              .failed(let previewURL, _):
             return previewURL
@@ -733,10 +755,21 @@ final class NCMediaViewerModel: ObservableObject {
         case .idle,
              .loadingMetadata,
              .metadataMissing,
-             .video,
              .deleted,
              .checkingLocalFile:
             return nil
+        }
+    }
+
+    private func shouldLoadPreview(for metadata: tableMetadata) -> Bool {
+        switch metadata.classFile {
+        case NKTypeClassFile.image.rawValue,
+             NKTypeClassFile.audio.rawValue,
+             NKTypeClassFile.video.rawValue:
+            return true
+
+        default:
+            return false
         }
     }
 
@@ -782,7 +815,10 @@ final class NCMediaViewerModel: ObservableObject {
             )
         } else if metadata.classFile == NKTypeClassFile.video.rawValue {
             setState(
-                .video(localURL: localURL),
+                .video(
+                    localURL: localURL,
+                    previewURL: previewURL
+                ),
                 for: ocId
             )
         } else if metadata.classFile == NKTypeClassFile.audio.rawValue {
@@ -904,6 +940,9 @@ private extension NCMediaViewerPageState {
             return true
 
         case .downloading:
+            return true
+
+        case .video(nil, nil):
             return true
 
         case .image(_, .some, _, _),

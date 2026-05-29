@@ -18,6 +18,8 @@ final class NCVideoVLCViewController: UIViewController {
     private var metadata: tableMetadata
     private var url: URL
     private var userAgent: String?
+    private var shouldAutoPlay: Bool
+    private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
 
     // MARK: - Paging Callbacks
@@ -92,11 +94,15 @@ final class NCVideoVLCViewController: UIViewController {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
+        self.shouldAutoPlay = shouldAutoPlay
+        self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
 
         super.init(
@@ -105,7 +111,6 @@ final class NCVideoVLCViewController: UIViewController {
         )
 
         modalPresentationStyle = .fullScreen
-        modalTransitionStyle = .crossDissolve
     }
 
     required init?(coder: NSCoder) {
@@ -121,12 +126,14 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Lifecycle
 
     override func loadView() {
+        let backgroundColor = viewerBackgroundColor
+
         let rootView = UIView()
-        rootView.backgroundColor = .black
+        rootView.backgroundColor = backgroundColor
         rootView.isOpaque = true
         rootView.clipsToBounds = true
 
-        drawableView.backgroundColor = .black
+        drawableView.backgroundColor = backgroundColor
         drawableView.isOpaque = true
         drawableView.clipsToBounds = true
         drawableView.translatesAutoresizingMaskIntoConstraints = false
@@ -160,7 +167,7 @@ final class NCVideoVLCViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .black
+        view.backgroundColor = viewerBackgroundColor
 
         configureNavigationItem()
         updateTitleLabel(metadata: metadata)
@@ -210,6 +217,8 @@ final class NCVideoVLCViewController: UIViewController {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
         let urlChanged = self.url != url
@@ -221,7 +230,10 @@ final class NCVideoVLCViewController: UIViewController {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
+        self.shouldAutoPlay = shouldAutoPlay
+        self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
+        updateViewerBackgroundIfNeeded()
         updateTitleLabel(metadata: metadata)
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
 
@@ -232,6 +244,25 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         updatePlayPauseButton()
+    }
+
+    private var viewerBackgroundColor: UIColor {
+        UIColor.ncViewerBackground(
+            ncViewerBackgroundStyle(
+                for: metadata,
+                isChromeHidden: isChromeHidden
+            )
+        )
+    }
+
+    private func updateViewerBackgroundIfNeeded() {
+        guard !controlsVisible else {
+            return
+        }
+
+        let backgroundColor = viewerBackgroundColor
+        view.backgroundColor = backgroundColor
+        drawableView.backgroundColor = backgroundColor
     }
 
     // MARK: - Navigation
@@ -489,6 +520,11 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         mediaPlayer.media = media
+
+        if shouldAutoPlay {
+            mediaPlayer.play()
+        }
+
         updatePlayPauseButton()
         updateProgressControls()
         clearVLCTrackMenuItems()
@@ -515,8 +551,14 @@ final class NCVideoVLCViewController: UIViewController {
             return
         }
 
+        if let currentDrawable = mediaPlayer.drawable as? UIView,
+           currentDrawable === drawableView {
+            return
+        }
+
         mediaPlayer.drawable = drawableView
     }
+
 
     private func handleMediaPlayerStateChange() {
         updatePlayPauseButton()

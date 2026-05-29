@@ -218,24 +218,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - Background
 
     private func backgroundColor(for page: NCMediaViewerPageModel?) -> UIColor {
-        guard !model.isChromeHidden else {
-            return .black
-        }
-
-        guard let metadata = page?.metadata else {
-            return UIColor.ncViewerBackground(.system)
-        }
-
-        switch metadata.classFile {
-        case NKTypeClassFile.audio.rawValue,
-             NKTypeClassFile.video.rawValue:
-            return .black
-
-        default:
-            return UIColor.ncViewerBackground(
-                ncViewerBackgroundStyle(for: metadata)
+        UIColor.ncViewerBackground(
+            ncViewerBackgroundStyle(
+                for: page?.metadata,
+                isChromeHidden: model.isChromeHidden
             )
-        }
+        )
     }
 
     func updateCollectionBackground(for index: Int? = nil) {
@@ -375,8 +363,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         // Stop the current media playback before programmatic page navigation.
         // This is intentionally broad because previous/next can move across image,
-        // audio, AVPlayer, and VLC pages. Keep the fullscreen transition overlay in
-        // sync when this is used for video navigation.
+        // audio, AVPlayer, and VLC pages.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil
@@ -491,10 +478,9 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         isUserPaging = true
 
-        // Stop the current media playback before programmatic page navigation.
-        // This is intentionally broad because previous/next can move across image,
-        // audio, AVPlayer, and VLC pages. Keep the fullscreen transition overlay in
-        // sync when this is used for video navigation.
+        // Stop the current media playback before manual page navigation.
+        // This is intentionally broad because dragging can move across image,
+        // audio, AVPlayer, and VLC pages.
         NotificationCenter.default.post(
             name: .ncMediaViewerStopPlayback,
             object: nil

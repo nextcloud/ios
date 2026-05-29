@@ -20,6 +20,8 @@ enum NCVideoVLCPresenter {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -33,6 +35,8 @@ enum NCVideoVLCPresenter {
                 metadata: metadata,
                 url: url,
                 userAgent: userAgent,
+                shouldAutoPlay: shouldAutoPlay,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
             currentViewController.onPrevious = onPrevious
@@ -52,6 +56,8 @@ enum NCVideoVLCPresenter {
                 metadata: metadata,
                 url: url,
                 userAgent: userAgent,
+                shouldAutoPlay: shouldAutoPlay,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
             currentViewController.onPrevious = onPrevious
@@ -89,6 +95,8 @@ enum NCVideoVLCPresenter {
             metadata: metadata,
             url: url,
             userAgent: userAgent,
+            shouldAutoPlay: shouldAutoPlay,
+            isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController
         )
         viewController.onPrevious = onPrevious
@@ -105,7 +113,6 @@ enum NCVideoVLCPresenter {
         )
 
         navigationController.modalPresentationStyle = .fullScreen
-        navigationController.modalTransitionStyle = .crossDissolve
         navigationController.navigationBar.prefersLargeTitles = false
         navigationController.navigationBar.barStyle = .black
         navigationController.navigationBar.tintColor = .white

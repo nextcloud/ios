@@ -51,8 +51,11 @@ struct NCMediaViewerPageView: View {
                     livePhotoURL: livePhotoURL
                 )
 
-            case .video(let localURL):
-                videoStateView(localURL: localURL)
+            case .video(let localURL, let previewURL):
+                videoStateView(
+                    localURL: localURL,
+                    previewURL: previewURL
+                )
 
             case .audio(let localURL, let previewURL):
                 audioStateView(
@@ -90,22 +93,10 @@ struct NCMediaViewerPageView: View {
     }
 
     private var backgroundStyle: NCViewerBackgroundStyle {
-        if isChromeHidden {
-            return .black
-        }
-
-        guard let metadata = page.metadata else {
-            return .system
-        }
-
-        switch metadata.classFile {
-        case NKTypeClassFile.audio.rawValue,
-             NKTypeClassFile.video.rawValue:
-            return .black
-
-        default:
-            return ncViewerBackgroundStyle(for: metadata)
-        }
+        ncViewerBackgroundStyle(
+            for: page.metadata,
+            isChromeHidden: isChromeHidden
+        )
     }
 
     // Neighbor pages must not consume auto-play.
@@ -202,18 +193,24 @@ struct NCMediaViewerPageView: View {
     }
 
     @ViewBuilder
-    private func videoStateView(localURL: URL?) -> some View {
+    private func videoStateView(
+        localURL: URL?,
+        previewURL: URL?
+    ) -> some View {
         if let metadata = page.metadata {
             NCVideoViewerContentView(
                 metadata: metadata,
                 localURL: localURL,
+                previewURL: previewURL,
                 isSelected: isSelected,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 onPreviousPage: goToPreviousPageFromVideo,
                 onNextPage: goToNextPageFromVideo,
+                onToggleChrome: onToggleChrome,
                 onClose: onClose
             )
             .id("\(page.ocId)-remote")
@@ -254,7 +251,10 @@ struct NCMediaViewerPageView: View {
         switch page.metadata?.classFile {
         case NKTypeClassFile.video.rawValue:
             if isSelected {
-                videoStateView(localURL: nil)
+                videoStateView(
+                    localURL: nil,
+                    previewURL: previewURL
+                )
             } else {
                 Color.ncViewerBackground(backgroundStyle)
                     .ignoresSafeArea()
@@ -279,13 +279,28 @@ struct NCMediaViewerPageView: View {
         localURL: URL,
         previewURL: URL?
     ) -> some View {
-        if page.metadata != nil {
-            imageContentView(
-                previewURL: previewURL,
-                localURL: localURL,
-                livePhotoURL: nil,
-                backgroundStyle: backgroundStyle
-            )
+        if let metadata = page.metadata {
+            switch metadata.classFile {
+            case NKTypeClassFile.video.rawValue:
+                videoStateView(
+                    localURL: localURL,
+                    previewURL: previewURL
+                )
+
+            case NKTypeClassFile.audio.rawValue:
+                audioStateView(
+                    localURL: localURL,
+                    previewURL: previewURL
+                )
+
+            default:
+                imageContentView(
+                    previewURL: previewURL,
+                    localURL: localURL,
+                    livePhotoURL: nil,
+                    backgroundStyle: backgroundStyle
+                )
+            }
         } else {
             metadataMissingView
         }
