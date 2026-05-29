@@ -25,8 +25,8 @@ import UIKit
 ///
 /// 4. `NCMediaViewerModel`
 ///    Central state coordinator. Owns the selected index, visible page window,
-///    page states, metadata cache, prefetching, and routes media into image,
-///    audio, video, or generic states.
+///    page states, metadata cache, prefetching, autoplay requests, and routes
+///    media into image, audio, video, or generic states.
 ///
 /// 5. `NCNextcloudMediaViewerLoader`
 ///    Loader layer. Resolves metadata, preview URLs, local media URLs, full media
@@ -34,49 +34,65 @@ import UIKit
 ///
 /// 6. `NCMediaViewerPagingView`
 ///    UIKit-backed horizontal pager hosted from SwiftUI. Owns the collection view,
-///    paging coordinator, visible cells, selected index updates, and page navigation.
+///    paging coordinator, visible cells, selected index updates, page navigation,
+///    and chrome-aware page background updates.
 ///
 /// 7. `NCMediaViewerPageView`
-///    Per-page SwiftUI renderer. Switches on `NCMediaViewerPageState` and routes
-///    each page to the correct content view.
+///    Per-page SwiftUI renderer. Switches on `NCMediaViewerPageState`, applies
+///    the chrome-aware background style, and routes each page to the correct
+///    content view.
 ///
-/// 8. Image flow:
+/// 8. Appearance flow:
+///    `NCMediaViewerAppearance` centralizes viewer background resolution.
+///    The normal viewer background follows the system appearance. When chrome is
+///    hidden, the viewer enters cinema mode and uses a black background.
+///
+/// 9. Image flow:
 ///    `NCMediaViewerPageView`
 ///    -> `NCImageViewerContentView`
 ///    -> `NCImageZoomView`
 ///    -> `NCLivePhotoViewerContentView` when Live Photo data is available.
 ///
-/// 9. Audio flow:
-///    `NCMediaViewerPageView`
-///    -> `NCAudioViewerContentView`.
-///    Audio playback stays inside SwiftUI and uses a local media URL plus an
-///    optional preview image as artwork.
+/// 10. Audio flow:
+///     `NCMediaViewerPageView`
+///     -> `NCAudioViewerContentView`.
+///     Audio playback stays inside SwiftUI and uses a local media URL plus an
+///     optional preview image as artwork.
 ///
-/// 10. Video flow:
+/// 11. Video SwiftUI flow:
 ///     `NCMediaViewerPageView`
 ///     -> `NCVideoViewerContentView`
+///     -> `NCVideoPlaybackCoverView`
+///     -> `NCVideoURLResolver`
 ///     -> `NCVideoPlaybackController`.
-///     The video content view is only the SwiftUI trigger/bridge for fullscreen
-///     playback. It resolves the playback URL and asks the playback controller to
-///     choose the engine.
+///     The video content view is the SwiftUI trigger/bridge for fullscreen
+///     playback. It displays the preview cover, resolves the playback URL, and
+///     asks the playback controller to choose the engine.
 ///
-/// 11. `NCVideoPlaybackController`
+/// 12. `NCVideoPlaybackController`
 ///     Chooses the playback engine. It tries AVFoundation when possible and falls
 ///     back to VLC for unsupported or legacy formats.
 ///
-/// 12. AVPlayer flow:
+/// 13. AVPlayer flow:
 ///     `NCVideoPlaybackController`
+///     -> `NCVideoViewerContentView+AVPlayer`
 ///     -> `NCVideoAVPlayerPresenter`
 ///     -> `NCVideoAVPlayerViewController`
 ///     -> `NCVideoControlsView` / `NCVideoAVPlayerViewControls`.
+///     AVPlayer uses the shared controls view and updates its background according
+///     to chrome visibility: system appearance when controls are visible, black
+///     cinema mode when controls are hidden.
 ///
-/// 13. VLC flow:
+/// 14. VLC flow:
 ///     `NCVideoPlaybackController`
+///     -> `NCVideoViewerContentView+VLC`
 ///     -> `NCVideoVLCPresenter`
 ///     -> `NCVideoVLCViewController`
 ///     -> `NCVideoControlsView` / `NCVideoVLCViewControls`.
+///     VLC uses the same presentation structure as AVPlayer, while the VLC renderer
+///     may still draw its own black surface during playback initialization.
 ///
-/// 14. Detail flow:
+/// 15. Detail flow:
 ///     `NCMediaViewerHostingController`
 ///     -> `NCMediaViewerDetailView`.
 ///     Displays file information, camera/lens metadata, EXIF values, and location.
