@@ -38,6 +38,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var metadata: tableMetadata
     private var url: URL
     private var userAgent: String?
+    private var shouldAutoPlay: Bool
     private weak var contextMenuController: NCMainTabBarController?
 
     // MARK: - Paging Callbacks
@@ -121,11 +122,13 @@ final class NCVideoAVPlayerViewController: UIViewController {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
         contextMenuController: NCMainTabBarController?
     ) {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
+        self.shouldAutoPlay = shouldAutoPlay
         self.contextMenuController = contextMenuController
 
         super.init(
@@ -239,6 +242,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
         contextMenuController: NCMainTabBarController?
     ) {
         let urlChanged = self.url != url
@@ -250,6 +254,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
+        self.shouldAutoPlay = shouldAutoPlay
         self.contextMenuController = contextMenuController
         updateTitleLabel(metadata: metadata)
 
@@ -683,6 +688,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         guard player.currentItem?.status == .readyToPlay else {
             return
+        }
+
+        if shouldAutoPlay,
+           player.timeControlStatus != .playing {
+            player.play()
         }
 
         if !controlsVisible,

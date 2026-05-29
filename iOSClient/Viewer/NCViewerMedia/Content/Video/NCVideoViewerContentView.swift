@@ -638,33 +638,29 @@ private struct NCVideoPlaybackCoverView: View {
                     onToggleChrome?()
                 }
 
-            VStack(spacing: 18) {
-                if isPlayEnabled {
-                    Button(action: onPlay) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 34, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 82, height: 82)
-                            .background(Color.black.opacity(0.55))
-                            .clipShape(Circle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
-                } else {
-                    ProgressView()
-                        .controlSize(.large)
-                        .tint(.white)
+            Button {
+                guard isPlayEnabled else {
+                    return
                 }
 
-                if !fileName.isEmpty {
-                    Text(fileName)
-                        .font(.callout)
-                        .foregroundStyle(.white.opacity(0.85))
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                }
+                onPlay()
+            } label: {
+                Image(systemName: "play.fill")
+                    .font(.system(size: 36, weight: .regular))
+                    .foregroundStyle(isPlayEnabled ? .black : .black.opacity(0.35))
+                    .frame(width: 62, height: 62)
+                    .background(.white.opacity(isPlayEnabled ? 0.92 : 0.45))
+                    .clipShape(Circle())
+                    .shadow(
+                        color: .black.opacity(isPlayEnabled ? 0.16 : 0.08),
+                        radius: 14,
+                        x: 0,
+                        y: 4
+                    )
             }
+            .buttonStyle(.plain)
+            .disabled(!isPlayEnabled)
+            .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
         }
     }
 }
@@ -807,7 +803,7 @@ struct NCVideoURLResolver {
                 continuation.resume(
                     returning: (
                         url: url,
-                        autoplay: false,
+                        autoplay: true,
                         error: error
                     )
                 )

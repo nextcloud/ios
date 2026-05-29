@@ -20,6 +20,7 @@ enum NCVideoVLCPresenter {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -33,6 +34,7 @@ enum NCVideoVLCPresenter {
                 metadata: metadata,
                 url: url,
                 userAgent: userAgent,
+                shouldAutoPlay: shouldAutoPlay,
                 contextMenuController: contextMenuController
             )
             currentViewController.onPrevious = onPrevious
@@ -52,6 +54,7 @@ enum NCVideoVLCPresenter {
                 metadata: metadata,
                 url: url,
                 userAgent: userAgent,
+                shouldAutoPlay: shouldAutoPlay,
                 contextMenuController: contextMenuController
             )
             currentViewController.onPrevious = onPrevious
@@ -89,6 +92,7 @@ enum NCVideoVLCPresenter {
             metadata: metadata,
             url: url,
             userAgent: userAgent,
+            shouldAutoPlay: shouldAutoPlay,
             contextMenuController: contextMenuController
         )
         viewController.onPrevious = onPrevious

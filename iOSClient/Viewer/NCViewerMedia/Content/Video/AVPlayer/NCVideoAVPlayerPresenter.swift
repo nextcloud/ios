@@ -20,6 +20,7 @@ enum NCVideoAVPlayerPresenter {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -33,6 +34,7 @@ enum NCVideoAVPlayerPresenter {
                 metadata: metadata,
                 url: url,
                 userAgent: userAgent,
+                shouldAutoPlay: shouldAutoPlay,
                 contextMenuController: contextMenuController
             )
             currentViewController.canGoPrevious = canGoPrevious
@@ -53,6 +55,7 @@ enum NCVideoAVPlayerPresenter {
                 metadata: metadata,
                 url: url,
                 userAgent: userAgent,
+                shouldAutoPlay: shouldAutoPlay,
                 contextMenuController: contextMenuController
             )
             currentViewController.canGoPrevious = canGoPrevious
@@ -90,6 +93,7 @@ enum NCVideoAVPlayerPresenter {
             metadata: metadata,
             url: url,
             userAgent: userAgent,
+            shouldAutoPlay: shouldAutoPlay,
             contextMenuController: contextMenuController
         )
         viewController.canGoPrevious = canGoPrevious

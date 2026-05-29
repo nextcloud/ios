@@ -18,6 +18,7 @@ final class NCVideoVLCViewController: UIViewController {
     private var metadata: tableMetadata
     private var url: URL
     private var userAgent: String?
+    private var shouldAutoPlay: Bool
     private weak var contextMenuController: NCMainTabBarController?
 
     // MARK: - Paging Callbacks
@@ -92,11 +93,13 @@ final class NCVideoVLCViewController: UIViewController {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
         contextMenuController: NCMainTabBarController?
     ) {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
+        self.shouldAutoPlay = shouldAutoPlay
         self.contextMenuController = contextMenuController
 
         super.init(
@@ -210,6 +213,7 @@ final class NCVideoVLCViewController: UIViewController {
         metadata: tableMetadata,
         url: URL,
         userAgent: String?,
+        shouldAutoPlay: Bool = true,
         contextMenuController: NCMainTabBarController?
     ) {
         let urlChanged = self.url != url
@@ -221,6 +225,7 @@ final class NCVideoVLCViewController: UIViewController {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
+        self.shouldAutoPlay = shouldAutoPlay
         self.contextMenuController = contextMenuController
         updateTitleLabel(metadata: metadata)
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
@@ -489,6 +494,11 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         mediaPlayer.media = media
+
+        if shouldAutoPlay {
+            mediaPlayer.play()
+        }
+
         updatePlayPauseButton()
         updateProgressControls()
         clearVLCTrackMenuItems()
