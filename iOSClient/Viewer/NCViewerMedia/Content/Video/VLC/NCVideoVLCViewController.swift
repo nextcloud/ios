@@ -559,7 +559,6 @@ final class NCVideoVLCViewController: UIViewController {
         mediaPlayer.drawable = drawableView
     }
 
-
     private func handleMediaPlayerStateChange() {
         updatePlayPauseButton()
         updateProgressControls()
