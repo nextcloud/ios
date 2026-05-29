@@ -54,10 +54,11 @@ final class NCVideoVLCViewController: UIViewController {
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
     internal var isScrubbing = false
+    internal var isPlaybackRequested = false
     private weak var closePanGesture: UIPanGestureRecognizer?
 
     internal var shouldKeepControlsVisible: Bool {
-        mediaPlayer.state != .playing && !mediaPlayer.isPlaying
+        mediaPlayer.state != .playing && !mediaPlayer.isPlaying && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(
@@ -509,6 +510,7 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        isPlaybackRequested = shouldAutoPlay
         attachDrawable()
 
         let media = VLCMedia(url: url)
@@ -520,6 +522,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         mediaPlayer.media = media
+        updatePlayPauseButton()
 
         if shouldAutoPlay {
             mediaPlayer.play()
@@ -531,10 +534,11 @@ final class NCVideoVLCViewController: UIViewController {
         startProgressTimer()
         showControls(animated: false)
         stopControlsHideTimer()
-
     }
 
     private func stop() {
+        isPlaybackRequested = false
+
         mediaPlayer.stop()
         mediaPlayer.media = nil
         mediaPlayer.drawable = nil
@@ -560,13 +564,29 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func handleMediaPlayerStateChange() {
+        switch mediaPlayer.state {
+        case .playing:
+            isPlaybackRequested = true
+
+        case .paused,
+             .stopped,
+             .ended,
+             .error:
+            isPlaybackRequested = false
+
+        default:
+            break
+        }
+
         updatePlayPauseButton()
         updateProgressControls()
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
 
         guard mediaPlayer.state == .playing else {
-            showControls(animated: false)
-            stopControlsHideTimer()
+            if !isPlaybackRequested {
+                showControls(animated: false)
+                stopControlsHideTimer()
+            }
             return
         }
 

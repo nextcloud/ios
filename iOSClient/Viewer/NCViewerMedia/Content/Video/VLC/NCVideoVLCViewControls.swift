@@ -24,7 +24,13 @@ extension NCVideoVLCViewController {
     }
 
     func updatePlayPauseButton() {
-        controlsView.updatePlayPauseButton(isPlaying: mediaPlayer.isPlaying)
+        let isPlaying = mediaPlayer.isPlaying ||
+            mediaPlayer.state == .opening ||
+            mediaPlayer.state == .buffering ||
+            mediaPlayer.state == .playing ||
+            isPlaybackRequested
+
+        controlsView.updatePlayPauseButton(isPlaying: isPlaying)
     }
 
     func startProgressTimer() {
@@ -177,15 +183,19 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView) {
         showControls(animated: true)
 
-        if mediaPlayer.isPlaying {
+        if mediaPlayer.isPlaying || mediaPlayer.state == .playing {
+            isPlaybackRequested = false
             mediaPlayer.pause()
+            updatePlayPauseButton()
             showControls(animated: false)
             stopControlsHideTimer()
         } else {
+            isPlaybackRequested = true
+            updatePlayPauseButton()
             mediaPlayer.play()
+            scheduleControlsHide()
         }
 
-        updatePlayPauseButton()
         updateProgressControls()
     }
 
