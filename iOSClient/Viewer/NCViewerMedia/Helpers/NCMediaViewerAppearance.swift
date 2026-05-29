@@ -54,17 +54,7 @@ extension Color {
 
 // MARK: - Viewer Background Resolution
 func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackgroundStyle {
-    guard let metadata else {
-        return .system
-    }
-
-    switch metadata.classFile {
-    case NKTypeClassFile.video.rawValue:
-        return .black
-
-    default:
-        return .system
-    }
+    .system
 }
 
 // MARK: - Viewer Chrome-Aware Background Resolution
@@ -72,19 +62,9 @@ func ncViewerBackgroundStyle(
     for metadata: tableMetadata?,
     isChromeHidden: Bool
 ) -> NCViewerBackgroundStyle {
-    guard !isChromeHidden else {
+    if isChromeHidden {
         return .black
     }
 
-    guard let metadata else {
-        return .system
-    }
-
-    switch metadata.classFile {
-    case NKTypeClassFile.video.rawValue:
-        return .system
-
-    default:
-        return ncViewerBackgroundStyle(for: metadata)
-    }
+    return ncViewerBackgroundStyle(for: metadata)
 }

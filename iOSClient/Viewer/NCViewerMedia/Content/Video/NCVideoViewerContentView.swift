@@ -128,7 +128,7 @@ private extension NCVideoViewerContentView {
             requestedPlaybackView
         }
     }
-    
+
     @ViewBuilder
     var requestedPlaybackView: some View {
         switch playback.engine {

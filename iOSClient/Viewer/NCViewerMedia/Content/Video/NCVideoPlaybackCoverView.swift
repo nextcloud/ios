@@ -6,6 +6,7 @@ import SwiftUI
 
 struct NCVideoPlaybackCoverView: View {
     let previewURL: URL?
+    let backgroundStyle: NCViewerBackgroundStyle = .system
     let isPlayEnabled: Bool
     let isLaunchingPlayback: Bool
     let onToggleChrome: (() -> Void)?
@@ -23,15 +24,15 @@ struct NCVideoPlaybackCoverView: View {
 
                     case .failure,
                          .empty:
-                        Color.black
+                        Color.ncViewerBackground(backgroundStyle)
 
                     @unknown default:
-                        Color.black
+                        Color.ncViewerBackground(backgroundStyle)
                     }
                 }
                 .ignoresSafeArea()
             } else {
-                Color.black
+                Color.ncViewerBackground(backgroundStyle)
                     .ignoresSafeArea()
             }
 
