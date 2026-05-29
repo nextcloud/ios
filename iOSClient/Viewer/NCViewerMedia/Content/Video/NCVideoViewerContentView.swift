@@ -476,7 +476,7 @@ private extension NCVideoViewerContentView {
 extension NCVideoViewerContentView {
     @MainActor
     func closeFromFullscreenVideo(ocId: String?) {
-        resetPlaybackPresentationState()
+        onClose?(ocId)
     }
 
     @MainActor

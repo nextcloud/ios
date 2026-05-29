@@ -401,26 +401,34 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     func close() {
-        stopControlsHideTimer()
-        stop()
+        let closeCallback = onClose
+        let controllerToDismiss = navigationController ?? self
 
         NCVideoAVPlayerPresenter.clearCurrent(self)
 
-        dismiss(animated: false) { [onClose, metadata] in
+        controllerToDismiss.dismiss(animated: false) { [weak self] in
+            self?.stopControlsHideTimer()
+            self?.stop()
+
             DispatchQueue.main.async {
-                onClose?(metadata.ocId)
+                closeCallback?(nil)
             }
         }
     }
 
     func closeImmediately() {
-        stopControlsHideTimer()
-        stop()
+        let closeCallback = onClose
+        let controllerToDismiss = navigationController ?? self
 
         NCVideoAVPlayerPresenter.clearCurrent(self)
 
-        dismiss(animated: false) { [onClose] in
-            onClose?(nil)
+        controllerToDismiss.dismiss(animated: false) { [weak self] in
+            self?.stopControlsHideTimer()
+            self?.stop()
+
+            DispatchQueue.main.async {
+                closeCallback?(nil)
+            }
         }
     }
 
