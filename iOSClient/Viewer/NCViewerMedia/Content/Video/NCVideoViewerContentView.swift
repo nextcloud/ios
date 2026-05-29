@@ -493,8 +493,6 @@ struct NCVideoViewerContentView: View {
             onNext: goToNextPageFromAVPlayer,
             onClose: closeFromFullscreenVideo
         )
-
-        NCVideoFullscreenTransitionOverlay.hide()
     }
 
     @MainActor
@@ -526,7 +524,6 @@ struct NCVideoViewerContentView: View {
         presentedAVPlayerURL = nil
         presentedVLCURL = nil
         hasRequestedPlayback = false
-        NCVideoFullscreenTransitionOverlay.hide()
     }
 
     @MainActor
@@ -576,8 +573,6 @@ struct NCVideoViewerContentView: View {
             onNext: goToNextPageFromVLC,
             onClose: closeFromFullscreenVideo
         )
-
-        NCVideoFullscreenTransitionOverlay.hide()
     }
 
     @MainActor
@@ -635,152 +630,5 @@ struct NCVideoViewerContentView: View {
         }
 
         return metadata.fileName
-    }
-}
-
-// MARK: - Fullscreen Video Transition Overlay
-
-@MainActor
-private enum NCVideoFullscreenTransitionOverlay {
-    private static weak var overlayView: UIView?
-    private static var hideTask: Task<Void, Never>?
-
-    static func show() {
-        hideTask?.cancel()
-
-        guard let window = keyWindow else {
-            return
-        }
-
-        let overlayView = overlayView ?? makeOverlayView(in: window)
-        window.bringSubviewToFront(overlayView)
-        overlayView.frame = window.bounds
-        overlayView.alpha = 1
-        overlayView.isHidden = false
-    }
-
-    static func hide() {
-        hideTask?.cancel()
-        hideTask = nil
-
-        overlayView?.removeFromSuperview()
-        overlayView = nil
-    }
-
-    static func hideAfterDelay() {
-        hideTask?.cancel()
-        hideTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(100))
-            hide()
-        }
-    }
-
-    private static func makeOverlayView(in window: UIWindow) -> UIView {
-        let view = UIView(frame: window.bounds)
-        view.backgroundColor = .black
-        view.isUserInteractionEnabled = false
-        view.autoresizingMask = [
-            .flexibleWidth,
-            .flexibleHeight
-        ]
-        window.addSubview(view)
-        overlayView = view
-        return view
-    }
-
-    private static var keyWindow: UIWindow? {
-        UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .filter { $0.activationState == .foregroundActive }
-            .flatMap { $0.windows }
-            .first { $0.isKeyWindow }
-    }
-}
-
-// MARK: - Video URL Resolution
-
-struct NCVideoURLResolver {
-    private let utilityFileSystem = NCUtilityFileSystem()
-
-    func getVideoURL(
-        metadata: tableMetadata
-    ) async -> (url: URL?, autoplay: Bool, error: NKError) {
-        if !metadata.url.isEmpty {
-            if metadata.url.hasPrefix("/") {
-                return (
-                    url: URL(fileURLWithPath: metadata.url),
-                    autoplay: true,
-                    error: .success
-                )
-            } else {
-                return (
-                    url: URL(string: metadata.url),
-                    autoplay: true,
-                    error: .success
-                )
-            }
-        }
-
-        if utilityFileSystem.fileProviderStorageExists(metadata) {
-            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
-                metadata.ocId,
-                fileName: metadata.fileNameView,
-                userId: metadata.userId,
-                urlBase: metadata.urlBase
-            )
-
-            return (
-                url: URL(fileURLWithPath: localPath),
-                autoplay: true,
-                error: .success
-            )
-        }
-
-        return await getDirectDownloadURL(metadata: metadata)
-    }
-
-    private func getDirectDownloadURL(
-        metadata: tableMetadata
-    ) async -> (url: URL?, autoplay: Bool, error: NKError) {
-        await withCheckedContinuation { continuation in
-            NextcloudKit.shared.getDirectDownload(
-                fileId: metadata.fileId,
-                account: metadata.account
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: metadata.account,
-                        path: metadata.fileId,
-                        name: "getDirectDownload"
-                    )
-
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task
-                    )
-                }
-            } completion: { _, urlString, _, error in
-                guard error == .success,
-                      let urlString,
-                      let url = URL(string: urlString) else {
-                    continuation.resume(
-                        returning: (
-                            url: nil,
-                            autoplay: false,
-                            error: error
-                        )
-                    )
-                    return
-                }
-
-                continuation.resume(
-                    returning: (
-                        url: url,
-                        autoplay: true,
-                        error: error
-                    )
-                )
-            }
-        }
     }
 }
