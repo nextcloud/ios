@@ -80,13 +80,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var playbackEndObserver: NSObjectProtocol?
     private var timeObserverToken: Any?
     private var preparedURL: URL?
+    internal var isPlaybackRequested = false
 
     var isPictureInPictureActive: Bool {
         pictureInPictureController?.isPictureInPictureActive == true
     }
 
     internal var shouldKeepControlsVisible: Bool {
-        player.timeControlStatus != .playing
+        player.timeControlStatus != .playing && !isPlaybackRequested
     }
 
     internal func setNavigationBarVisible(
@@ -551,6 +552,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        isPlaybackRequested = shouldAutoPlay
+
         guard preparedURL != url else {
             updatePlayPauseButton()
             updateProgressControls()
@@ -559,6 +562,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
 
         preparedURL = url
+        updatePlayPauseButton()
 
         let item = AVPlayerItem(asset: makeAsset())
 
@@ -570,17 +574,21 @@ final class NCVideoAVPlayerViewController: UIViewController {
         updatePlayPauseButton()
         updateProgressControls()
         updateSeekingState()
-
     }
 
     private func stop() {
         preparedURL = nil
+        isPlaybackRequested = false
+
         player.pause()
         cleanupObservers()
         player.replaceCurrentItem(with: nil)
+
         playerContainerView.player = nil
+
         pictureInPictureController?.delegate = nil
         pictureInPictureController = nil
+
         updatePlayPauseButton()
         updateProgressControls()
     }
@@ -707,16 +715,20 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     private func handleCurrentItemStatusChange() {
         updateProgressControls()
-        updatePlayPauseButton()
         updateSeekingState()
 
         guard player.currentItem?.status == .readyToPlay else {
+            updatePlayPauseButton()
             return
         }
 
         if shouldAutoPlay,
            player.timeControlStatus != .playing {
+            isPlaybackRequested = true
+            updatePlayPauseButton()
             player.play()
+        } else {
+            updatePlayPauseButton()
         }
 
         if !controlsVisible,
@@ -727,11 +739,29 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func handleTimeControlStatusChange() {
+        switch player.timeControlStatus {
+        case .playing,
+             .waitingToPlayAtSpecifiedRate:
+            isPlaybackRequested = true
+
+        case .paused:
+            if player.currentItem?.status == .readyToPlay ||
+                player.currentItem?.status == .failed ||
+                player.currentItem == nil {
+                isPlaybackRequested = false
+            }
+
+        @unknown default:
+            break
+        }
+
         updatePlayPauseButton()
 
         guard player.timeControlStatus == .playing else {
-            showControls(animated: false)
-            stopControlsHideTimer()
+            if !isPlaybackRequested {
+                showControls(animated: false)
+                stopControlsHideTimer()
+            }
             return
         }
 
@@ -741,6 +771,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func handlePlaybackEnded() {
+        isPlaybackRequested = false
+
         updatePlayPauseButton()
         updateProgressControls()
         showControls(animated: true)
@@ -789,9 +821,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     internal func updatePlayPauseButton() {
-        controlsView.updatePlayPauseButton(
-            isPlaying: player.timeControlStatus == .playing
-        )
+        let isPlaying = player.timeControlStatus == .playing ||
+            player.timeControlStatus == .waitingToPlayAtSpecifiedRate ||
+            isPlaybackRequested
+
+        controlsView.updatePlayPauseButton(isPlaying: isPlaying)
     }
 
     internal func updateProgressControls() {
