@@ -281,7 +281,7 @@ private extension NCVideoViewerContentView {
         let expectedTaskIdentifier = taskIdentifier
         let expectedLoadGeneration = loadGeneration
 
-        guard await waitForStableSelection(
+        guard isStableSelection(
             expectedTaskIdentifier: expectedTaskIdentifier,
             expectedLoadGeneration: expectedLoadGeneration
         ) else {
@@ -302,21 +302,15 @@ private extension NCVideoViewerContentView {
     }
 
     @MainActor
-    func waitForStableSelection(
+    func isStableSelection(
         expectedTaskIdentifier: String,
         expectedLoadGeneration: UUID
-    ) async -> Bool {
-        guard isSelected else {
-            return false
-        }
-
-        do {
-            try await Task.sleep(for: .milliseconds(150))
-        } catch {
-            return false
-        }
-
+    ) -> Bool {
         guard !Task.isCancelled else {
+            return false
+        }
+
+        guard isSelected else {
             return false
         }
 
@@ -328,7 +322,7 @@ private extension NCVideoViewerContentView {
             return false
         }
 
-        return isSelected
+        return true
     }
 
     @MainActor
