@@ -4,14 +4,26 @@
 
 import AVFoundation
 import Foundation
+import MobileVLCKit
 import NextcloudKit
 
 // MARK: - Video Playback Engine
 
+struct NCVideoAVPreparedPlayback {
+    let url: URL
+    let player: AVPlayer
+    let item: AVPlayerItem
+}
+
+struct NCVideoVLCPreparedPlayback {
+    let url: URL
+    let media: VLCMedia
+}
+
 enum NCVideoPlaybackEngine {
     case loading
-    case avFoundation(url: URL)
-    case vlc(url: URL)
+    case avFoundation(preparedPlayback: NCVideoAVPreparedPlayback)
+    case vlc(preparedPlayback: NCVideoVLCPreparedPlayback)
     case failed(message: String)
 }
 
@@ -66,14 +78,12 @@ final class NCVideoPlaybackController: ObservableObject {
         url: URL,
         fileName: String,
         userAgent: String?,
-        httpHeaders: [String: String],
-        shouldAutoPlay: Bool
+        httpHeaders: [String: String]
     ) {
         if isSameLoadedVideo(
             metadata: metadata,
             url: url
         ) {
-            resumeCurrentPlaybackIfNeeded(shouldAutoPlay: shouldAutoPlay)
             return
         }
 
@@ -101,6 +111,7 @@ final class NCVideoPlaybackController: ObservableObject {
         ) {
             resolveWithVLC(
                 url: url,
+                userAgent: userAgent,
                 token: token
             )
             return
@@ -109,8 +120,8 @@ final class NCVideoPlaybackController: ObservableObject {
         prepareAVFoundation(
             metadata: metadata,
             url: url,
+            userAgent: userAgent,
             httpHeaders: url.isFileURL ? [:] : httpHeaders,
-            shouldAutoPlay: shouldAutoPlay,
             token: token
         )
     }
@@ -122,7 +133,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
         stop()
     }
-    // Releases AVFoundation resources; VLC is owned by its view controller.
+    // Releases the current prepared playback state and pending AVFoundation probes.
     func stop() {
         loadToken = UUID()
 
@@ -146,8 +157,8 @@ final class NCVideoPlaybackController: ObservableObject {
     private func prepareAVFoundation(
         metadata: tableMetadata,
         url: URL,
+        userAgent: String?,
         httpHeaders: [String: String],
-        shouldAutoPlay: Bool,
         token: UUID
     ) {
         let assetOptions: [String: Any]? = httpHeaders.isEmpty
@@ -190,13 +201,14 @@ final class NCVideoPlaybackController: ObservableObject {
                     self.resolveWithAVFoundation(
                         url: url,
                         player: player,
-                        shouldAutoPlay: shouldAutoPlay,
+                        item: item,
                         token: token
                     )
 
                 case .failed:
                     self.resolveWithVLC(
                         url: url,
+                        userAgent: userAgent,
                         token: token
                     )
 
@@ -206,6 +218,7 @@ final class NCVideoPlaybackController: ObservableObject {
                 @unknown default:
                     self.resolveWithVLC(
                         url: url,
+                        userAgent: userAgent,
                         token: token
                     )
                 }
@@ -216,21 +229,32 @@ final class NCVideoPlaybackController: ObservableObject {
     private func resolveWithAVFoundation(
         url: URL,
         player: AVPlayer,
-        shouldAutoPlay: Bool,
+        item: AVPlayerItem,
         token: UUID
     ) {
         guard loadToken == token,
-              avProbePlayer === player else {
+              avProbePlayer === player,
+              avProbeItem === item else {
             return
         }
 
-        engine = .avFoundation(url: url)
+        statusObservation?.invalidate()
+        statusObservation = nil
+
+        let preparedPlayback = NCVideoAVPreparedPlayback(
+            url: url,
+            player: player,
+            item: item
+        )
+
+        engine = .avFoundation(preparedPlayback: preparedPlayback)
     }
 
     // MARK: - VLC
 
     private func resolveWithVLC(
         url: URL,
+        userAgent: String?,
         token: UUID
     ) {
         guard isCurrentLoad(
@@ -247,7 +271,20 @@ final class NCVideoPlaybackController: ObservableObject {
         avProbePlayer = nil
         avProbeItem = nil
 
-        engine = .vlc(url: url)
+        let media = VLCMedia(url: url)
+
+        if let userAgent,
+           !userAgent.isEmpty,
+           !url.isFileURL {
+            media.addOption(":http-user-agent=\(userAgent)")
+        }
+
+        let preparedPlayback = NCVideoVLCPreparedPlayback(
+            url: url,
+            media: media
+        )
+
+        engine = .vlc(preparedPlayback: preparedPlayback)
     }
 
     // MARK: - State Helpers
@@ -266,22 +303,6 @@ final class NCVideoPlaybackController: ObservableObject {
         token: UUID
     ) -> Bool {
         loadToken == token && currentURL == url
-    }
-
-    private func resumeCurrentPlaybackIfNeeded(shouldAutoPlay: Bool) {
-        guard shouldAutoPlay else {
-            return
-        }
-
-        switch engine {
-        case .avFoundation:
-            break
-
-        case .vlc,
-             .loading,
-             .failed:
-            break
-        }
     }
 
     // MARK: - Private Helpers

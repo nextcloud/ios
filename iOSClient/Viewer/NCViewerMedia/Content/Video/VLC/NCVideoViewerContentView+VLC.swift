@@ -6,28 +6,28 @@ import Foundation
 
 extension NCVideoViewerContentView {
     @MainActor
-    func requestVLCPresentation(url: URL) {
+    func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) {
         hasRequestedPlayback = true
-        presentVLCIfSelected(url: url)
+        presentVLCIfSelected(preparedPlayback: preparedPlayback)
     }
 
     @MainActor
-    func presentVLCIfSelected(url: URL) {
+    func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) {
         guard isSelected else {
             return
         }
 
-        guard presentedVLCURL != url else {
+        guard presentedVLCURL != preparedPlayback.url else {
             return
         }
 
-        presentedVLCURL = url
+        presentedVLCURL = preparedPlayback.url
 
         NCVideoVLCPresenter.present(
             metadata: metadata,
-            url: url,
+            preparedPlayback: preparedPlayback,
             userAgent: userAgent,
-            shouldAutoPlay: true,
+            shouldAutoPlayOnStart: true,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             canGoPrevious: canGoPrevious,

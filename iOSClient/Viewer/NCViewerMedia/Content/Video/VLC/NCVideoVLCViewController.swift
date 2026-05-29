@@ -16,9 +16,10 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Input
 
     private var metadata: tableMetadata
+    private var preparedPlayback: NCVideoVLCPreparedPlayback
     private var url: URL
     private var userAgent: String?
-    private var shouldAutoPlay: Bool
+    private var shouldAutoPlayOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
 
@@ -93,16 +94,17 @@ final class NCVideoVLCViewController: UIViewController {
 
     init(
         metadata: tableMetadata,
-        url: URL,
+        preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
-        shouldAutoPlay: Bool = true,
+        shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
         self.metadata = metadata
-        self.url = url
+        self.preparedPlayback = preparedPlayback
+        self.url = preparedPlayback.url
         self.userAgent = userAgent
-        self.shouldAutoPlay = shouldAutoPlay
+        self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
 
@@ -216,22 +218,23 @@ final class NCVideoVLCViewController: UIViewController {
 
     func update(
         metadata: tableMetadata,
-        url: URL,
+        preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
-        shouldAutoPlay: Bool = true,
+        shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
-        let urlChanged = self.url != url
+        let urlChanged = self.url != preparedPlayback.url
 
         if urlChanged {
             stop()
+            self.preparedPlayback = preparedPlayback
+            self.url = preparedPlayback.url
         }
 
         self.metadata = metadata
-        self.url = url
         self.userAgent = userAgent
-        self.shouldAutoPlay = shouldAutoPlay
+        self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         updateViewerBackgroundIfNeeded()
@@ -519,21 +522,13 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
-        isPlaybackRequested = shouldAutoPlay
+        isPlaybackRequested = shouldAutoPlayOnStart
         attachDrawable()
 
-        let media = VLCMedia(url: url)
-
-        if let userAgent,
-           !userAgent.isEmpty,
-           !url.isFileURL {
-            media.addOption(":http-user-agent=\(userAgent)")
-        }
-
-        mediaPlayer.media = media
+        mediaPlayer.media = preparedPlayback.media
         updatePlayPauseButton()
 
-        if shouldAutoPlay {
+        if shouldAutoPlayOnStart {
             mediaPlayer.play()
         }
 

@@ -36,9 +36,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Input
 
     private var metadata: tableMetadata
+    private var preparedPlayback: NCVideoAVPreparedPlayback
     private var url: URL
     private var userAgent: String?
-    private var shouldAutoPlay: Bool
+    private var shouldAutoPlayOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
 
@@ -67,7 +68,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - AVPlayer
 
-    internal let player = AVPlayer()
+    internal var player: AVPlayer
 
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
@@ -122,16 +123,18 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     init(
         metadata: tableMetadata,
-        url: URL,
+        preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
-        shouldAutoPlay: Bool = true,
+        shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
         self.metadata = metadata
-        self.url = url
+        self.preparedPlayback = preparedPlayback
+        self.url = preparedPlayback.url
+        self.player = preparedPlayback.player
         self.userAgent = userAgent
-        self.shouldAutoPlay = shouldAutoPlay
+        self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
 
@@ -251,22 +254,24 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     func update(
         metadata: tableMetadata,
-        url: URL,
+        preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
-        shouldAutoPlay: Bool = true,
+        shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
-        let urlChanged = self.url != url
+        let urlChanged = self.url != preparedPlayback.url
 
         if urlChanged {
             stop()
+            self.preparedPlayback = preparedPlayback
+            self.url = preparedPlayback.url
+            self.player = preparedPlayback.player
         }
 
         self.metadata = metadata
-        self.url = url
         self.userAgent = userAgent
-        self.shouldAutoPlay = shouldAutoPlay
+        self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.contextMenuController = contextMenuController
         updateViewerBackground(isChromeHidden: isChromeHidden)
         updateTitleLabel(metadata: metadata)
@@ -567,7 +572,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
-        isPlaybackRequested = shouldAutoPlay
+        isPlaybackRequested = shouldAutoPlayOnStart
 
         guard preparedURL != url else {
             updatePlayPauseButton()
@@ -577,15 +582,17 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
 
         preparedURL = url
-        updatePlayPauseButton()
-
-        let item = AVPlayerItem(asset: makeAsset())
-
-        player.replaceCurrentItem(with: item)
         playerContainerView.player = player
+        updatePlayPauseButton()
 
         configureObservers()
         configurePictureInPicture()
+
+        if shouldAutoPlayOnStart,
+           player.timeControlStatus != .playing {
+            player.play()
+        }
+
         updatePlayPauseButton()
         updateProgressControls()
         updateSeekingState()
@@ -597,7 +604,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         player.pause()
         cleanupObservers()
-        player.replaceCurrentItem(with: nil)
 
         playerContainerView.player = nil
 
@@ -606,23 +612,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         updatePlayPauseButton()
         updateProgressControls()
-    }
-
-    private func makeAsset() -> AVURLAsset {
-        guard let userAgent,
-              !userAgent.isEmpty,
-              !url.isFileURL else {
-            return AVURLAsset(url: url)
-        }
-
-        return AVURLAsset(
-            url: url,
-            options: [
-                "AVURLAssetHTTPHeaderFieldsKey": [
-                    "User-Agent": userAgent
-                ]
-            ]
-        )
     }
 
     private func configurePlayerLayer() {
@@ -737,7 +726,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             return
         }
 
-        if shouldAutoPlay,
+        if shouldAutoPlayOnStart,
            player.timeControlStatus != .playing {
             isPlaybackRequested = true
             updatePlayPauseButton()

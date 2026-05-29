@@ -137,34 +137,34 @@ private extension NCVideoViewerContentView {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-        case .avFoundation(let url):
+        case .avFoundation(let preparedPlayback):
             if isSelected,
                isCurrentPlaybackVideo() {
                 playbackPresentationPlaceholder(
-                    url: url,
-                    onURLChanged: { newURL in
+                    url: preparedPlayback.url,
+                    onURLChanged: { _ in
                         presentedAVPlayerURL = nil
-                        presentAVPlayerIfSelected(url: newURL)
+                        presentAVPlayerIfSelected(preparedPlayback: preparedPlayback)
                     },
                     onSelectionRestored: {
-                        presentAVPlayerIfSelected(url: url)
+                        presentAVPlayerIfSelected(preparedPlayback: preparedPlayback)
                     }
                 )
             } else {
                 EmptyView()
             }
 
-        case .vlc(let url):
+        case .vlc(let preparedPlayback):
             if isSelected,
                isCurrentPlaybackVideo() {
                 playbackPresentationPlaceholder(
-                    url: url,
-                    onURLChanged: { newURL in
+                    url: preparedPlayback.url,
+                    onURLChanged: { _ in
                         presentedVLCURL = nil
-                        presentVLCIfSelected(url: newURL)
+                        presentVLCIfSelected(preparedPlayback: preparedPlayback)
                     },
                     onSelectionRestored: {
-                        presentVLCIfSelected(url: url)
+                        presentVLCIfSelected(preparedPlayback: preparedPlayback)
                     }
                 )
             } else {
@@ -223,11 +223,11 @@ private extension NCVideoViewerContentView {
         isLaunchingPlayback = true
 
         switch playback.engine {
-        case .avFoundation(let url):
-            requestAVPlayerPresentation(url: url)
+        case .avFoundation(let preparedPlayback):
+            requestAVPlayerPresentation(preparedPlayback: preparedPlayback)
 
-        case .vlc(let url):
-            requestVLCPresentation(url: url)
+        case .vlc(let preparedPlayback):
+            requestVLCPresentation(preparedPlayback: preparedPlayback)
 
         case .loading,
              .failed:
@@ -335,7 +335,6 @@ private extension NCVideoViewerContentView {
         if let localURL {
             loadResolvedVideo(
                 url: localURL,
-                autoplay: true,
                 expectedTaskIdentifier: expectedTaskIdentifier,
                 expectedLoadGeneration: expectedLoadGeneration
             )
@@ -370,7 +369,6 @@ private extension NCVideoViewerContentView {
 
         loadResolvedVideo(
             url: url,
-            autoplay: result.autoplay,
             expectedTaskIdentifier: expectedTaskIdentifier,
             expectedLoadGeneration: expectedLoadGeneration
         )
@@ -379,7 +377,6 @@ private extension NCVideoViewerContentView {
     @MainActor
     func loadResolvedVideo(
         url: URL,
-        autoplay: Bool,
         expectedTaskIdentifier: String,
         expectedLoadGeneration: UUID
     ) {
@@ -402,8 +399,7 @@ private extension NCVideoViewerContentView {
             url: url,
             fileName: resolvedFileName,
             userAgent: userAgent,
-            httpHeaders: httpHeaders(for: url),
-            shouldAutoPlay: autoplay
+            httpHeaders: httpHeaders(for: url)
         )
     }
 
@@ -458,11 +454,11 @@ private extension NCVideoViewerContentView {
         }
 
         switch playback.engine {
-        case .avFoundation(let url):
-            presentAVPlayerIfSelected(url: url)
+        case .avFoundation(let preparedPlayback):
+            presentAVPlayerIfSelected(preparedPlayback: preparedPlayback)
 
-        case .vlc(let url):
-            presentVLCIfSelected(url: url)
+        case .vlc(let preparedPlayback):
+            presentVLCIfSelected(preparedPlayback: preparedPlayback)
 
         case .loading,
              .failed:

@@ -18,9 +18,9 @@ enum NCVideoVLCPresenter {
     // Presents or updates the single VLC fullscreen controller.
     static func present(
         metadata: tableMetadata,
-        url: URL,
+        preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
-        shouldAutoPlay: Bool = true,
+        shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
@@ -29,13 +29,14 @@ enum NCVideoVLCPresenter {
         onNext: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil
     ) {
+        let url = preparedPlayback.url
         if currentURL == url,
            let currentViewController {
             currentViewController.update(
                 metadata: metadata,
-                url: url,
+                preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
-                shouldAutoPlay: shouldAutoPlay,
+                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
@@ -54,9 +55,9 @@ enum NCVideoVLCPresenter {
         if let currentViewController {
             currentViewController.update(
                 metadata: metadata,
-                url: url,
+                preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
-                shouldAutoPlay: shouldAutoPlay,
+                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
@@ -93,9 +94,9 @@ enum NCVideoVLCPresenter {
 
         let viewController = NCVideoVLCViewController(
             metadata: metadata,
-            url: url,
+            preparedPlayback: preparedPlayback,
             userAgent: userAgent,
-            shouldAutoPlay: shouldAutoPlay,
+            shouldAutoPlayOnStart: shouldAutoPlayOnStart,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController
         )

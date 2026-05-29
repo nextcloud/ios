@@ -18,9 +18,9 @@ enum NCVideoAVPlayerPresenter {
     // Presents or updates the single AVPlayer fullscreen controller.
     static func present(
         metadata: tableMetadata,
-        url: URL,
+        preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
-        shouldAutoPlay: Bool = true,
+        shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
@@ -29,13 +29,14 @@ enum NCVideoAVPlayerPresenter {
         onNext: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil
     ) {
+        let url = preparedPlayback.url
         if currentURL == url,
            let currentViewController {
             currentViewController.update(
                 metadata: metadata,
-                url: url,
+                preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
-                shouldAutoPlay: shouldAutoPlay,
+                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
@@ -55,9 +56,9 @@ enum NCVideoAVPlayerPresenter {
         if let currentViewController {
             currentViewController.update(
                 metadata: metadata,
-                url: url,
+                preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
-                shouldAutoPlay: shouldAutoPlay,
+                shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
@@ -94,9 +95,9 @@ enum NCVideoAVPlayerPresenter {
 
         let viewController = NCVideoAVPlayerViewController(
             metadata: metadata,
-            url: url,
+            preparedPlayback: preparedPlayback,
             userAgent: userAgent,
-            shouldAutoPlay: shouldAutoPlay,
+            shouldAutoPlayOnStart: shouldAutoPlayOnStart,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController
         )
