@@ -170,37 +170,51 @@ struct NCVideoViewerContentView: View {
 
     @ViewBuilder
     private func playbackCoverForCurrentEngine() -> some View {
+        if case .failed(let message) = playback.engine {
+            failedView(message)
+        } else {
+            NCVideoPlaybackCoverView(
+                previewURL: previewURL,
+                isPlayEnabled: isPlaybackCoverPlayEnabled,
+                onToggleChrome: onToggleChrome,
+                onPlay: playFromCover
+            )
+        }
+    }
+
+    private var isPlaybackCoverPlayEnabled: Bool {
+        guard isSelected,
+              isCurrentPlaybackVideo() else {
+            return false
+        }
+
+        switch playback.engine {
+        case .avFoundation,
+             .vlc:
+            return true
+
+        case .loading,
+             .failed:
+            return false
+        }
+    }
+
+    @MainActor
+    private func playFromCover() {
+        guard isPlaybackCoverPlayEnabled else {
+            return
+        }
+
         switch playback.engine {
         case .avFoundation(let url):
-            NCVideoPlaybackCoverView(
-                previewURL: previewURL,
-                isPlayEnabled: isSelected && isCurrentPlaybackVideo(),
-                onToggleChrome: onToggleChrome,
-                onPlay: {
-                    requestAVPlayerPresentation(url: url)
-                }
-            )
+            requestAVPlayerPresentation(url: url)
 
         case .vlc(let url):
-            NCVideoPlaybackCoverView(
-                previewURL: previewURL,
-                isPlayEnabled: isSelected && isCurrentPlaybackVideo(),
-                onToggleChrome: onToggleChrome,
-                onPlay: {
-                    requestVLCPresentation(url: url)
-                }
-            )
+            requestVLCPresentation(url: url)
 
-        case .loading:
-            NCVideoPlaybackCoverView(
-                previewURL: previewURL,
-                isPlayEnabled: false,
-                onToggleChrome: onToggleChrome,
-                onPlay: {}
-            )
-
-        case .failed(let message):
-            failedView(message)
+        case .loading,
+             .failed:
+            break
         }
     }
 
