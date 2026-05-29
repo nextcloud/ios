@@ -109,7 +109,6 @@ enum NCVideoVLCPresenter {
         )
 
         navigationController.modalPresentationStyle = .fullScreen
-        navigationController.modalTransitionStyle = .crossDissolve
         navigationController.navigationBar.prefersLargeTitles = false
         navigationController.navigationBar.barStyle = .black
         navigationController.navigationBar.tintColor = .white
