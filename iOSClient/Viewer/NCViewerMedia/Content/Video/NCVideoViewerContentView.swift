@@ -174,7 +174,6 @@ struct NCVideoViewerContentView: View {
         case .avFoundation(let url):
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
-                fileName: resolvedFileName,
                 isPlayEnabled: isSelected && isCurrentPlaybackVideo(),
                 onToggleChrome: onToggleChrome,
                 onPlay: {
@@ -185,7 +184,6 @@ struct NCVideoViewerContentView: View {
         case .vlc(let url):
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
-                fileName: resolvedFileName,
                 isPlayEnabled: isSelected && isCurrentPlaybackVideo(),
                 onToggleChrome: onToggleChrome,
                 onPlay: {
@@ -196,7 +194,6 @@ struct NCVideoViewerContentView: View {
         case .loading:
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
-                fileName: resolvedFileName,
                 isPlayEnabled: false,
                 onToggleChrome: onToggleChrome,
                 onPlay: {}
@@ -508,7 +505,6 @@ struct NCVideoViewerContentView: View {
         presentedAVPlayerURL = nil
         presentedVLCURL = nil
         hasRequestedPlayback = false
-        playback.stop()
         NCVideoFullscreenTransitionOverlay.hide()
         onClose?(ocId)
     }
@@ -602,7 +598,6 @@ struct NCVideoViewerContentView: View {
 
 private struct NCVideoPlaybackCoverView: View {
     let previewURL: URL?
-    let fileName: String
     let isPlayEnabled: Bool
     let onToggleChrome: (() -> Void)?
     let onPlay: () -> Void
