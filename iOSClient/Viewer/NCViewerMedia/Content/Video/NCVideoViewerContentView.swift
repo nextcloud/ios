@@ -471,6 +471,7 @@ struct NCVideoViewerContentView: View {
             metadata: metadata,
             url: url,
             userAgent: userAgent,
+            shouldAutoPlay: true,
             contextMenuController: contextMenuController,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
@@ -484,20 +485,26 @@ struct NCVideoViewerContentView: View {
 
     @MainActor
     private func goToPreviousPageFromAVPlayer() {
-        NCVideoFullscreenTransitionOverlay.show()
-        presentedAVPlayerURL = nil
-        NCVideoAVPlayerPresenter.dismiss()
-        onPreviousPage?()
-        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
+        performFullscreenPageTransition(
+            dismissPlayer: {
+                NCVideoAVPlayerPresenter.dismiss()
+            },
+            changePage: {
+                onPreviousPage?()
+            }
+        )
     }
 
     @MainActor
     private func goToNextPageFromAVPlayer() {
-        NCVideoFullscreenTransitionOverlay.show()
-        presentedAVPlayerURL = nil
-        NCVideoAVPlayerPresenter.dismiss()
-        onNextPage?()
-        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
+        performFullscreenPageTransition(
+            dismissPlayer: {
+                NCVideoAVPlayerPresenter.dismiss()
+            },
+            changePage: {
+                onNextPage?()
+            }
+        )
     }
 
     @MainActor
@@ -506,7 +513,23 @@ struct NCVideoViewerContentView: View {
         presentedVLCURL = nil
         hasRequestedPlayback = false
         NCVideoFullscreenTransitionOverlay.hide()
-        onClose?(ocId)
+    }
+
+    @MainActor
+    private func preparePlaybackCoverForPageTransition() {
+        presentedAVPlayerURL = nil
+        presentedVLCURL = nil
+        hasRequestedPlayback = false
+    }
+
+    @MainActor
+    private func performFullscreenPageTransition(
+        dismissPlayer: @escaping () -> Void,
+        changePage: @escaping () -> Void
+    ) {
+        preparePlaybackCoverForPageTransition()
+        dismissPlayer()
+        changePage()
     }
 
     @MainActor
@@ -531,6 +554,7 @@ struct NCVideoViewerContentView: View {
             metadata: metadata,
             url: url,
             userAgent: userAgent,
+            shouldAutoPlay: true,
             contextMenuController: contextMenuController,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
@@ -544,20 +568,26 @@ struct NCVideoViewerContentView: View {
 
     @MainActor
     private func goToPreviousPageFromVLC() {
-        NCVideoFullscreenTransitionOverlay.show()
-        presentedVLCURL = nil
-        NCVideoVLCPresenter.dismiss()
-        onPreviousPage?()
-        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
+        performFullscreenPageTransition(
+            dismissPlayer: {
+                NCVideoVLCPresenter.dismiss()
+            },
+            changePage: {
+                onPreviousPage?()
+            }
+        )
     }
 
     @MainActor
     private func goToNextPageFromVLC() {
-        NCVideoFullscreenTransitionOverlay.show()
-        presentedVLCURL = nil
-        NCVideoVLCPresenter.dismiss()
-        onNextPage?()
-        NCVideoFullscreenTransitionOverlay.hideAfterDelay()
+        performFullscreenPageTransition(
+            dismissPlayer: {
+                NCVideoVLCPresenter.dismiss()
+            },
+            changePage: {
+                onNextPage?()
+            }
+        )
     }
 
     // MARK: - In-Flight Resolution Cache
@@ -591,72 +621,6 @@ struct NCVideoViewerContentView: View {
         }
 
         return metadata.fileName
-    }
-}
-
-// MARK: - Video Playback Cover View
-
-private struct NCVideoPlaybackCoverView: View {
-    let previewURL: URL?
-    let isPlayEnabled: Bool
-    let onToggleChrome: (() -> Void)?
-    let onPlay: () -> Void
-
-    var body: some View {
-        ZStack {
-            if let previewURL {
-                AsyncImage(url: previewURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFit()
-
-                    case .failure,
-                         .empty:
-                        Color.black
-
-                    @unknown default:
-                        Color.black
-                    }
-                }
-                .ignoresSafeArea()
-            } else {
-                Color.black
-                    .ignoresSafeArea()
-            }
-
-            Color.clear
-                .contentShape(Rectangle())
-                .ignoresSafeArea()
-                .onTapGesture {
-                    onToggleChrome?()
-                }
-
-            Button {
-                guard isPlayEnabled else {
-                    return
-                }
-
-                onPlay()
-            } label: {
-                Image(systemName: "play.fill")
-                    .font(.system(size: 36, weight: .regular))
-                    .foregroundStyle(isPlayEnabled ? .black : .black.opacity(0.35))
-                    .frame(width: 62, height: 62)
-                    .background(.white.opacity(isPlayEnabled ? 0.92 : 0.45))
-                    .clipShape(Circle())
-                    .shadow(
-                        color: .black.opacity(isPlayEnabled ? 0.16 : 0.08),
-                        radius: 14,
-                        x: 0,
-                        y: 4
-                    )
-            }
-            .buttonStyle(.plain)
-            .disabled(!isPlayEnabled)
-            .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
-        }
     }
 }
 
