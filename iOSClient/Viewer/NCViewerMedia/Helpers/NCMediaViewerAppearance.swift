@@ -59,24 +59,20 @@ func ncViewerBackgroundStyle(for metadata: tableMetadata?) -> NCViewerBackground
     }
 
     switch metadata.classFile {
-    case NKTypeClassFile.image.rawValue:
-        return .system
     case NKTypeClassFile.video.rawValue:
         return .black
-    case NKTypeClassFile.audio.rawValue:
-        return .system
+
     default:
         return .system
     }
 }
 
 // MARK: - Viewer Chrome-Aware Background Resolution
-
 func ncViewerBackgroundStyle(
     for metadata: tableMetadata?,
     isChromeHidden: Bool
 ) -> NCViewerBackgroundStyle {
-    if isChromeHidden {
+    guard !isChromeHidden else {
         return .black
     }
 
