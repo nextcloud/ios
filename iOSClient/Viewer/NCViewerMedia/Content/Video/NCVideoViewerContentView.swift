@@ -26,10 +26,9 @@ struct NCVideoViewerContentView: View {
     @ObservedObject private var playback = NCVideoPlaybackController.shared
 
     @State private var errorMessage: String?
-    @State private var presentedAVPlayerURL: URL?
-    @State private var resolvedVideoURL: URL?
-    @State private var presentedVLCURL: URL?
-    @State private var hasRequestedPlayback = false
+    @State var presentedAVPlayerURL: URL?
+    @State var presentedVLCURL: URL?
+    @State var hasRequestedPlayback = false
     @State private var loadGeneration = UUID()
 
     private let resolver = NCVideoURLResolver()
@@ -68,68 +67,13 @@ struct NCVideoViewerContentView: View {
         self.onToggleChrome = onToggleChrome
         self.onClose = onClose
     }
-    private var videoBackgroundColor: Color {
-        isChromeHidden ? .black : Color.ncViewerBackground(.system)
-    }
 
     var body: some View {
         ZStack {
             videoBackgroundColor
                 .ignoresSafeArea()
 
-            if let errorMessage {
-                failedView(errorMessage)
-            } else if !hasRequestedPlayback {
-                playbackCoverForCurrentEngine()
-            } else {
-                switch playback.engine {
-                case .loading:
-                    videoBackgroundColor
-                        .ignoresSafeArea()
-                        .allowsHitTesting(false)
-
-                case .avFoundation(let url):
-                    if isSelected,
-                       isCurrentPlaybackVideo() {
-                        playbackPresentationPlaceholder(
-                            url: url,
-                            onURLChanged: { newURL in
-                                presentedAVPlayerURL = nil
-                                presentAVPlayerIfSelected(url: newURL)
-                            },
-                            onSelectionRestored: {
-                                presentAVPlayerIfSelected(url: url)
-                            }
-                        )
-                    } else {
-                        EmptyView()
-                    }
-
-                case .vlc(let url):
-                    if isSelected,
-                       isCurrentPlaybackVideo() {
-                        playbackPresentationPlaceholder(
-                            url: url,
-                            onURLChanged: { newURL in
-                                presentedVLCURL = nil
-                                presentVLCIfSelected(url: newURL)
-                            },
-                            onSelectionRestored: {
-                                presentVLCIfSelected(url: url)
-                            }
-                        )
-                    } else {
-                        EmptyView()
-                    }
-
-                case .failed(let message):
-                    if isSelected {
-                        failedView(message)
-                    } else {
-                        EmptyView()
-                    }
-                }
-            }
+            contentView
         }
         .background(videoBackgroundColor)
         .task(id: taskIdentifier) {
@@ -139,7 +83,6 @@ struct NCVideoViewerContentView: View {
             loadGeneration = UUID()
 
             guard selected else {
-                hasRequestedPlayback = false
                 stopPlaybackForDeselection()
                 return
             }
@@ -155,21 +98,28 @@ struct NCVideoViewerContentView: View {
             // Ignore layout-driven disappear events.
         }
     }
+}
 
-    private func failedView(_ message: String) -> some View {
-        VStack(spacing: 12) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 44, weight: .regular))
+// MARK: - Main Content
 
-            Text(NSLocalizedString("_video_not_available_", comment: ""))
-                .font(.headline)
-        }
-        .foregroundStyle(.white)
-        .padding(24)
+private extension NCVideoViewerContentView {
+    var videoBackgroundColor: Color {
+        isChromeHidden ? .black : Color.ncViewerBackground(.system)
     }
 
     @ViewBuilder
-    private func playbackCoverForCurrentEngine() -> some View {
+    var contentView: some View {
+        if let errorMessage {
+            failedView(errorMessage)
+        } else if !hasRequestedPlayback {
+            playbackCoverView
+        } else {
+            requestedPlaybackView
+        }
+    }
+
+    @ViewBuilder
+    var playbackCoverView: some View {
         if case .failed(let message) = playback.engine {
             failedView(message)
         } else {
@@ -182,7 +132,74 @@ struct NCVideoViewerContentView: View {
         }
     }
 
-    private var isPlaybackCoverPlayEnabled: Bool {
+    @ViewBuilder
+    var requestedPlaybackView: some View {
+        switch playback.engine {
+        case .loading:
+            videoBackgroundColor
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+
+        case .avFoundation(let url):
+            if isSelected,
+               isCurrentPlaybackVideo() {
+                playbackPresentationPlaceholder(
+                    url: url,
+                    onURLChanged: { newURL in
+                        presentedAVPlayerURL = nil
+                        presentAVPlayerIfSelected(url: newURL)
+                    },
+                    onSelectionRestored: {
+                        presentAVPlayerIfSelected(url: url)
+                    }
+                )
+            } else {
+                EmptyView()
+            }
+
+        case .vlc(let url):
+            if isSelected,
+               isCurrentPlaybackVideo() {
+                playbackPresentationPlaceholder(
+                    url: url,
+                    onURLChanged: { newURL in
+                        presentedVLCURL = nil
+                        presentVLCIfSelected(url: newURL)
+                    },
+                    onSelectionRestored: {
+                        presentVLCIfSelected(url: url)
+                    }
+                )
+            } else {
+                EmptyView()
+            }
+
+        case .failed(let message):
+            if isSelected {
+                failedView(message)
+            } else {
+                EmptyView()
+            }
+        }
+    }
+
+    func failedView(_ message: String) -> some View {
+        VStack(spacing: 12) {
+            Image(systemName: "video.slash")
+                .font(.system(size: 44, weight: .regular))
+
+            Text(NSLocalizedString("_video_not_available_", comment: ""))
+                .font(.headline)
+        }
+        .foregroundStyle(.white)
+        .padding(24)
+    }
+}
+
+// MARK: - Playback Cover
+
+private extension NCVideoViewerContentView {
+    var isPlaybackCoverPlayEnabled: Bool {
         guard isSelected,
               isCurrentPlaybackVideo() else {
             return false
@@ -200,7 +217,7 @@ struct NCVideoViewerContentView: View {
     }
 
     @MainActor
-    private func playFromCover() {
+    func playFromCover() {
         guard isPlaybackCoverPlayEnabled else {
             return
         }
@@ -218,7 +235,7 @@ struct NCVideoViewerContentView: View {
         }
     }
 
-    private func playbackPresentationPlaceholder(
+    func playbackPresentationPlaceholder(
         url: URL,
         onURLChanged: @escaping (_ newURL: URL) -> Void,
         onSelectionRestored: @escaping () -> Void
@@ -240,29 +257,27 @@ struct NCVideoViewerContentView: View {
                 onSelectionRestored()
             }
     }
+}
 
-    // MARK: - Loading
+// MARK: - Loading
+
+private extension NCVideoViewerContentView {
+    var taskIdentifier: String {
+        let localIdentifier = localURL?.absoluteString ?? "remote"
+        return "\(metadata.ocId)|\(metadata.etag)|\(localIdentifier)"
+    }
 
     @MainActor
-    private func stopPlaybackForDeselection() {
-        presentedAVPlayerURL = nil
-        resolvedVideoURL = nil
-        presentedVLCURL = nil
-        hasRequestedPlayback = false
+    func stopPlaybackForDeselection() {
+        resetPlaybackPresentationState()
 
         NCVideoAVPlayerPresenter.dismiss()
         NCVideoVLCPresenter.dismiss()
         playback.stop()
     }
 
-    private var taskIdentifier: String {
-        let localIdentifier = localURL?.absoluteString ?? "remote"
-        return "\(metadata.ocId)|\(metadata.etag)|\(localIdentifier)"
-    }
-
-    // Single entry point for selected video loading.
     @MainActor
-    private func loadVideoIfSelected() async {
+    func loadVideoIfSelected() async {
         let expectedTaskIdentifier = taskIdentifier
         let expectedLoadGeneration = loadGeneration
 
@@ -286,9 +301,8 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    // Avoid loading transient pages during fast swipes.
     @MainActor
-    private func waitForStableSelection(
+    func waitForStableSelection(
         expectedTaskIdentifier: String,
         expectedLoadGeneration: UUID
     ) async -> Bool {
@@ -318,7 +332,7 @@ struct NCVideoViewerContentView: View {
     }
 
     @MainActor
-    private func resolveAndLoadVideo(
+    func resolveAndLoadVideo(
         expectedTaskIdentifier: String,
         expectedLoadGeneration: UUID
     ) async {
@@ -369,7 +383,7 @@ struct NCVideoViewerContentView: View {
     }
 
     @MainActor
-    private func loadResolvedVideo(
+    func loadResolvedVideo(
         url: URL,
         autoplay: Bool,
         expectedTaskIdentifier: String,
@@ -387,7 +401,6 @@ struct NCVideoViewerContentView: View {
             return
         }
 
-        resolvedVideoURL = url
         hasRequestedPlayback = false
 
         playback.loadVideo(
@@ -400,7 +413,7 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    private func httpHeaders(for url: URL) -> [String: String] {
+    func httpHeaders(for url: URL) -> [String: String] {
         guard !url.isFileURL else {
             return [:]
         }
@@ -414,11 +427,12 @@ struct NCVideoViewerContentView: View {
             "User-Agent": userAgent
         ]
     }
+}
 
-    // MARK: - Playback Selection
+// MARK: - Playback Selection
 
-    // Loading or failed engines are not reusable.
-    private func isCurrentPlaybackVideo() -> Bool {
+private extension NCVideoViewerContentView {
+    func isCurrentPlaybackVideo() -> Bool {
         switch playback.engine {
         case .avFoundation,
              .vlc:
@@ -443,9 +457,8 @@ struct NCVideoViewerContentView: View {
         )
     }
 
-    // Reveal without changing play/pause state.
     @MainActor
-    private func revealCurrentPlaybackIfNeeded() {
+    func revealCurrentPlaybackIfNeeded() {
         guard hasRequestedPlayback else {
             return
         }
@@ -462,148 +475,39 @@ struct NCVideoViewerContentView: View {
             break
         }
     }
+}
 
+// MARK: - Fullscreen Playback State
+
+extension NCVideoViewerContentView {
     @MainActor
-    private func requestAVPlayerPresentation(url: URL) {
-        hasRequestedPlayback = true
-        presentAVPlayerIfSelected(url: url)
+    func closeFromFullscreenVideo(ocId: String?) {
+        resetPlaybackPresentationState()
     }
 
     @MainActor
-    private func presentAVPlayerIfSelected(url: URL) {
-        guard isSelected else {
-            return
-        }
-
-        guard presentedAVPlayerURL != url else {
-            return
-        }
-
-        presentedAVPlayerURL = url
-
-        NCVideoAVPlayerPresenter.present(
-            metadata: metadata,
-            url: url,
-            userAgent: userAgent,
-            shouldAutoPlay: true,
-            contextMenuController: contextMenuController,
-            canGoPrevious: canGoPrevious,
-            canGoNext: canGoNext,
-            onPrevious: goToPreviousPageFromAVPlayer,
-            onNext: goToNextPageFromAVPlayer,
-            onClose: closeFromFullscreenVideo
-        )
-    }
-
-    @MainActor
-    private func goToPreviousPageFromAVPlayer() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoAVPlayerPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
-    }
-
-    @MainActor
-    private func goToNextPageFromAVPlayer() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoAVPlayerPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
-    }
-
-    @MainActor
-    private func closeFromFullscreenVideo(ocId: String?) {
+    func resetPlaybackPresentationState() {
         presentedAVPlayerURL = nil
         presentedVLCURL = nil
         hasRequestedPlayback = false
     }
 
     @MainActor
-    private func preparePlaybackCoverForPageTransition() {
-        presentedAVPlayerURL = nil
-        presentedVLCURL = nil
-        hasRequestedPlayback = false
-    }
-
-    @MainActor
-    private func performFullscreenPageTransition(
+    func performFullscreenPageTransition(
         dismissPlayer: @escaping () -> Void,
         changePage: @escaping () -> Void
     ) {
-        preparePlaybackCoverForPageTransition()
+        resetPlaybackPresentationState()
         dismissPlayer()
         changePage()
     }
+}
 
+// MARK: - URL Resolution
+
+private extension NCVideoViewerContentView {
     @MainActor
-    private func requestVLCPresentation(url: URL) {
-        hasRequestedPlayback = true
-        presentVLCIfSelected(url: url)
-    }
-
-    @MainActor
-    private func presentVLCIfSelected(url: URL) {
-        guard isSelected else {
-            return
-        }
-
-        guard presentedVLCURL != url else {
-            return
-        }
-
-        presentedVLCURL = url
-
-        NCVideoVLCPresenter.present(
-            metadata: metadata,
-            url: url,
-            userAgent: userAgent,
-            shouldAutoPlay: true,
-            contextMenuController: contextMenuController,
-            canGoPrevious: canGoPrevious,
-            canGoNext: canGoNext,
-            onPrevious: goToPreviousPageFromVLC,
-            onNext: goToNextPageFromVLC,
-            onClose: closeFromFullscreenVideo
-        )
-    }
-
-    @MainActor
-    private func goToPreviousPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
-    }
-
-    @MainActor
-    private func goToNextPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
-    }
-
-    // MARK: - In-Flight Resolution Cache
-
-    // Share direct-link resolution between duplicated SwiftUI page instances.
-    @MainActor
-    private func resolvedVideoURL(
+    func resolvedVideoURL(
         taskIdentifier: String
     ) async -> (url: URL?, autoplay: Bool, error: NKError) {
         if let existingTask = Self.resolvingTasks[taskIdentifier] {
@@ -621,10 +525,12 @@ struct NCVideoViewerContentView: View {
 
         return result
     }
+}
 
-    // MARK: - Helpers
+// MARK: - Helpers
 
-    private var resolvedFileName: String {
+private extension NCVideoViewerContentView {
+    var resolvedFileName: String {
         if !metadata.fileNameView.isEmpty {
             return metadata.fileNameView
         }

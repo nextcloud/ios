@@ -740,6 +740,8 @@
 		F7C1EEA525053A9C00866ACC /* NCCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */; };
 		F7C2C12F2FC957F5006244BE /* NCVideoPlaybackCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C2C12E2FC957F3006244BE /* NCVideoPlaybackCoverView.swift */; };
 		F7C2C1312FC95BAA006244BE /* NCVideoURLResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C2C1302FC95BA7006244BE /* NCVideoURLResolver.swift */; };
+		F7C2C1332FC95CFE006244BE /* NCVideoViewerContentView+AVPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C2C1322FC95CFC006244BE /* NCVideoViewerContentView+AVPlayer.swift */; };
+		F7C2C1352FC95E07006244BE /* NCVideoViewerContentView+VLC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C2C1342FC95E03006244BE /* NCVideoViewerContentView+VLC.swift */; };
 		F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
 		F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */; };
 		F7C30DFA291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */; };
@@ -1759,6 +1761,8 @@
 		F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		F7C2C12E2FC957F3006244BE /* NCVideoPlaybackCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoPlaybackCoverView.swift; sourceTree = "<group>"; };
 		F7C2C1302FC95BA7006244BE /* NCVideoURLResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoURLResolver.swift; sourceTree = "<group>"; };
+		F7C2C1322FC95CFC006244BE /* NCVideoViewerContentView+AVPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCVideoViewerContentView+AVPlayer.swift"; sourceTree = "<group>"; };
+		F7C2C1342FC95E03006244BE /* NCVideoViewerContentView+VLC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCVideoViewerContentView+VLC.swift"; sourceTree = "<group>"; };
 		F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEUpload.swift; sourceTree = "<group>"; };
 		F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EECreateFolder.swift; sourceTree = "<group>"; };
 		F7C30DFC291BD0B80017149B /* NCNetworkingE2EEDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEDelete.swift; sourceTree = "<group>"; };
@@ -2858,6 +2862,7 @@
 		F78448BF2FB1C78900F2909A /* AVPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				F7C2C1322FC95CFC006244BE /* NCVideoViewerContentView+AVPlayer.swift */,
 				F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */,
 				F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */,
 				F7FAAC212FB773CA00DCA45B /* NCVideoAVPlayerViewControls.swift */,
@@ -2869,6 +2874,7 @@
 			isa = PBXGroup;
 			children = (
 				F7635D8C2FB1F81D007F658D /* NCVideoVLCPresenter.swift */,
+				F7C2C1342FC95E03006244BE /* NCVideoViewerContentView+VLC.swift */,
 				F78448BD2FB1C33B00F2909A /* NCVideoVLCViewController.swift */,
 				F7547FE22FB7429200E372C3 /* NCVideoVLCViewControls.swift */,
 			);
@@ -5032,8 +5038,10 @@
 				F75A60552FB4493A00F8247E /* NCDirectEditorAdapter.swift in Sources */,
 				F3A0479A2BD2668800658E7B /* NCAssistantTaskDetail.swift in Sources */,
 				F71D2FB72E09BBD700B751CC /* NCAutoUploadModel.swift in Sources */,
+				F7C2C1332FC95CFE006244BE /* NCVideoViewerContentView+AVPlayer.swift in Sources */,
 				F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareCommentsCell.swift in Sources */,
+				F7C2C1352FC95E07006244BE /* NCVideoViewerContentView+VLC.swift in Sources */,
 				F73EFF9B2DB11EC900FD434C /* NCFiles+UIScrollViewDelegate.swift in Sources */,
 				F7327E202B73A42F00A462C7 /* NCNetworking+Download.swift in Sources */,
 				F76882332C0DD1E7001CF441 /* NCDisplayModel.swift in Sources */,
