@@ -137,7 +137,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         )
 
         modalPresentationStyle = .fullScreen
-        modalTransitionStyle = .crossDissolve
     }
 
     required init?(coder: NSCoder) {
