@@ -21,6 +21,7 @@ enum NCVideoVLCPresenter {
         url: URL,
         userAgent: String?,
         shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -35,6 +36,7 @@ enum NCVideoVLCPresenter {
                 url: url,
                 userAgent: userAgent,
                 shouldAutoPlay: shouldAutoPlay,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
             currentViewController.onPrevious = onPrevious
@@ -55,6 +57,7 @@ enum NCVideoVLCPresenter {
                 url: url,
                 userAgent: userAgent,
                 shouldAutoPlay: shouldAutoPlay,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
             currentViewController.onPrevious = onPrevious
@@ -93,6 +96,7 @@ enum NCVideoVLCPresenter {
             url: url,
             userAgent: userAgent,
             shouldAutoPlay: shouldAutoPlay,
+            isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController
         )
         viewController.onPrevious = onPrevious

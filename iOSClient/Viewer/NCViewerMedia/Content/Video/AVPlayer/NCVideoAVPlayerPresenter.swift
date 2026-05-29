@@ -21,6 +21,7 @@ enum NCVideoAVPlayerPresenter {
         url: URL,
         userAgent: String?,
         shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
@@ -35,6 +36,7 @@ enum NCVideoAVPlayerPresenter {
                 url: url,
                 userAgent: userAgent,
                 shouldAutoPlay: shouldAutoPlay,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
             currentViewController.canGoPrevious = canGoPrevious
@@ -56,6 +58,7 @@ enum NCVideoAVPlayerPresenter {
                 url: url,
                 userAgent: userAgent,
                 shouldAutoPlay: shouldAutoPlay,
+                isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController
             )
             currentViewController.canGoPrevious = canGoPrevious
@@ -94,6 +97,7 @@ enum NCVideoAVPlayerPresenter {
             url: url,
             userAgent: userAgent,
             shouldAutoPlay: shouldAutoPlay,
+            isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController
         )
         viewController.canGoPrevious = canGoPrevious
@@ -110,7 +114,6 @@ enum NCVideoAVPlayerPresenter {
         )
 
         navigationController.modalPresentationStyle = .fullScreen
-        navigationController.modalTransitionStyle = .crossDissolve
         navigationController.navigationBar.prefersLargeTitles = false
         navigationController.navigationBar.barStyle = .black
         navigationController.navigationBar.tintColor = .white

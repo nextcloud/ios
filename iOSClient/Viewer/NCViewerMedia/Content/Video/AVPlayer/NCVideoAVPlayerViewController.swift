@@ -39,6 +39,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var url: URL
     private var userAgent: String?
     private var shouldAutoPlay: Bool
+    private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
 
     // MARK: - Paging Callbacks
@@ -123,12 +124,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
         url: URL,
         userAgent: String?,
         shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
         self.metadata = metadata
         self.url = url
         self.userAgent = userAgent
         self.shouldAutoPlay = shouldAutoPlay
+        self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
 
         super.init(
@@ -153,12 +156,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Lifecycle
 
     override func loadView() {
+        let initialBackgroundColor = viewerBackgroundColor
+
         let rootView = UIView()
-        rootView.backgroundColor = .black
+        rootView.backgroundColor = initialBackgroundColor
         rootView.isOpaque = true
         rootView.clipsToBounds = true
 
-        playerContainerView.backgroundColor = .black
+        playerContainerView.backgroundColor = initialBackgroundColor
         playerContainerView.isOpaque = true
         playerContainerView.clipsToBounds = true
         playerContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -191,7 +196,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .black
+        view.backgroundColor = viewerBackgroundColor
 
         configureNavigationItem()
         updateTitleLabel(metadata: metadata)
@@ -242,6 +247,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         url: URL,
         userAgent: String?,
         shouldAutoPlay: Bool = true,
+        isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?
     ) {
         let urlChanged = self.url != url
@@ -254,7 +260,9 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.url = url
         self.userAgent = userAgent
         self.shouldAutoPlay = shouldAutoPlay
+        self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
+        updateViewerBackgroundIfNeeded()
         updateTitleLabel(metadata: metadata)
 
         refreshMoreMenu()
@@ -265,6 +273,25 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         updatePlayPauseButton()
         updateProgressControls()
+    }
+
+    private var viewerBackgroundColor: UIColor {
+        UIColor.ncViewerBackground(
+            ncViewerBackgroundStyle(
+                for: metadata,
+                isChromeHidden: isChromeHidden
+            )
+        )
+    }
+
+    private func updateViewerBackgroundIfNeeded() {
+        guard !controlsVisible else {
+            return
+        }
+
+        let backgroundColor = viewerBackgroundColor
+        view.backgroundColor = backgroundColor
+        playerContainerView.backgroundColor = backgroundColor
     }
 
     // MARK: - Navigation

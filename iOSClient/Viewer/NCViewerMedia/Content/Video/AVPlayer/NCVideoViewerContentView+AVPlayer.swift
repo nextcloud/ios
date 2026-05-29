@@ -28,6 +28,7 @@ extension NCVideoViewerContentView {
             url: url,
             userAgent: userAgent,
             shouldAutoPlay: true,
+            isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
@@ -61,4 +62,3 @@ extension NCVideoViewerContentView {
         )
     }
 }
-
