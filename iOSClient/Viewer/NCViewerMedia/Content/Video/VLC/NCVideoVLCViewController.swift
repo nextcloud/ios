@@ -637,20 +637,30 @@ final class NCVideoVLCViewController: UIViewController {
 
     func selectSubtitleTrack(index: Int32) {
         mediaPlayer.currentVideoSubTitleIndex = index
+
         NCManageDatabase.shared.addVideo(
             metadata: metadata,
             currentVideoSubTitleIndex: Int(index)
         )
-        refreshVLCTrackMenuItems()
+
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(200))
+            self?.refreshVLCTrackMenuItemsWhenPlayerIsActive()
+        }
     }
 
     func selectAudioTrack(index: Int32) {
         mediaPlayer.currentAudioTrackIndex = index
+
         NCManageDatabase.shared.addVideo(
             metadata: metadata,
             currentAudioTrackIndex: Int(index)
         )
-        refreshVLCTrackMenuItems()
+
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(200))
+            self?.refreshVLCTrackMenuItemsWhenPlayerIsActive()
+        }
     }
 
     func presentExternalSubtitlePicker() {
@@ -769,21 +779,23 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func currentSubtitleTrackIndex() -> Int? {
-        if let data = NCManageDatabase.shared.getVideo(metadata: metadata),
-           let currentVideoSubTitleIndex = data.currentVideoSubTitleIndex {
-            return currentVideoSubTitleIndex
+        let playerIndex = Int(mediaPlayer.currentVideoSubTitleIndex)
+
+        if playerIndex >= 0 {
+            return playerIndex
         }
 
-        return Int(mediaPlayer.currentVideoSubTitleIndex)
+        return NCManageDatabase.shared.getVideo(metadata: metadata)?.currentVideoSubTitleIndex
     }
 
     private func currentAudioTrackIndex() -> Int? {
-        if let data = NCManageDatabase.shared.getVideo(metadata: metadata),
-           let currentAudioTrackIndex = data.currentAudioTrackIndex {
-            return currentAudioTrackIndex
+        let playerIndex = Int(mediaPlayer.currentAudioTrackIndex)
+
+        if playerIndex >= 0 {
+            return playerIndex
         }
 
-        return Int(mediaPlayer.currentAudioTrackIndex)
+        return NCManageDatabase.shared.getVideo(metadata: metadata)?.currentAudioTrackIndex
     }
 
     private func makeTrackMenuItems(
