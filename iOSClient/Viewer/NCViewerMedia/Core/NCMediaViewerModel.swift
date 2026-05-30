@@ -964,17 +964,20 @@ private extension NCMediaViewerPageState {
         case .idle:
             return true
 
-        case .image(_, nil, _, _):
+        case .downloading:
             return true
 
-        case .downloading:
+        case .image(_, nil, _, _):
             return true
 
         case .video(nil, nil):
             return true
 
+        case .audio(_, nil):
+            return true
+
         case .image(_, .some, _, _),
-             .audio,
+             .audio(_, .some),
              .video,
              .loadingMetadata,
              .metadataMissing,
