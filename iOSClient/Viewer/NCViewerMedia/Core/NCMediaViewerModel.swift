@@ -709,12 +709,40 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         if metadata.classFile == NKTypeClassFile.audio.rawValue {
+            let localURL = await loader.localMediaURL(
+                for: metadata,
+                index: index
+            )
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            guard let localURL else {
+                setState(
+                    .downloading(
+                        previewURL: previewURL,
+                        progress: nil
+                    ),
+                    for: ocId
+                )
+                return
+            }
+
             setState(
-                .downloading(
-                    previewURL: previewURL,
-                    progress: nil
+                .audio(
+                    localURL: localURL,
+                    previewURL: previewURL
                 ),
                 for: ocId
+            )
+
+            await loadAudioPreviewIfNeeded(
+                metadata: metadata,
+                localURL: localURL,
+                currentPreviewURL: previewURL,
+                for: ocId,
+                index: index
             )
             return
         }
