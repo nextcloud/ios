@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import AVKit
 import SwiftUI
 import UIKit
 
@@ -403,7 +404,7 @@ private struct NCVideoControlsSwiftUIView: View {
         case .none:
             visibleButtonsCount = 0
         case .pictureInPicture:
-            visibleButtonsCount = 1
+            visibleButtonsCount = 2
         case .vlcTracks:
             visibleButtonsCount = 2
         }
@@ -500,6 +501,15 @@ private struct NCVideoControlsSwiftUIView: View {
                     )
                 }
                 .buttonStyle(.plain)
+
+                NCVideoAirPlayRoutePickerView()
+                    .frame(
+                        width: NCVideoControlsView.topActionsButtonSize,
+                        height: NCVideoControlsView.topActionsButtonSize
+                    )
+                    .background(.white.opacity(0.92))
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.16), radius: 14, x: 0, y: 4)
 
             case .vlcTracks:
                 subtitleActionMenu(
@@ -653,6 +663,24 @@ private struct NCVideoControlsSwiftUIView: View {
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
+}
+
+// MARK: - AirPlay Route Picker
+
+private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
+    func makeUIView(context: Context) -> AVRoutePickerView {
+        let routePickerView = AVRoutePickerView()
+        routePickerView.backgroundColor = .clear
+        routePickerView.tintColor = .black
+        routePickerView.activeTintColor = .black
+        routePickerView.prioritizesVideoDevices = true
+        return routePickerView
+    }
+
+    func updateUIView(
+        _ uiView: AVRoutePickerView,
+        context: Context
+    ) { }
 }
 
 // MARK: - Preview

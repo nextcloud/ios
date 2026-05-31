@@ -585,6 +585,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         playerContainerView.player = player
         updatePlayPauseButton()
 
+        configureExternalPlayback()
         configureObservers()
         configurePictureInPicture()
 
@@ -617,6 +618,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func configurePlayerLayer() {
         playerContainerView.playerLayer.videoGravity = .resizeAspect
         playerContainerView.player = player
+    }
+
+    private func configureExternalPlayback() {
+        player.allowsExternalPlayback = true
+        player.usesExternalPlaybackWhileExternalScreenIsActive = true
     }
 
     private func configurePictureInPicture() {
