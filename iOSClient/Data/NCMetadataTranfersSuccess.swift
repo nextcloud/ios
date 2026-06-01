@@ -36,7 +36,6 @@ actor NCMetadataTranfersSuccess {
                 etag: String?,
                 ownerId: String? = nil,
                 permissions: String? = nil) async {
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
         let status = metadata.status
 
         metadata.ocId = ocId
