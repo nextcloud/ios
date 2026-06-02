@@ -72,10 +72,8 @@ final class NCAutoUploadCounter {
                                                                                                                userId: userId)
 
             while !Task.isCancelled {
-                let transfersSuccess = await NCNetworking.shared.metadataTranfersSuccess.getAll()
                 let counts = await NCManageDatabase.shared.countAutoUploadMetadatasAsync(account: account,
-                                                                                         autoUploadServerUrlBase: autoUploadServerUrlBase,
-                                                                                         transfersSuccess: transfersSuccess)
+                                                                                         autoUploadServerUrlBase: autoUploadServerUrlBase)
 
                 guard !Task.isCancelled else {
                     return

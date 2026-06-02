@@ -107,21 +107,9 @@ extension NCManageDatabase {
     }
 
     func countAutoUploadMetadatasAsync(account: String,
-                                       autoUploadServerUrlBase: String,
-                                       transfersSuccess: [tableMetadata] = []) async -> (pending: Int, failed: Int) {
+                                       autoUploadServerUrlBase: String) async -> (pending: Int, failed: Int) {
         let global = NCGlobal.shared
-        let excludedIds = Set(transfersSuccess.compactMap { metadata -> String? in
-            guard metadata.account == account,
-                  metadata.sessionSelector == global.selectorUploadAutoUpload,
-                  metadata.autoUploadServerUrlBase == autoUploadServerUrlBase,
-                  !metadata.ocIdTransfer.isEmpty else {
-                return nil
-            }
-
-            return metadata.ocIdTransfer
-        })
-
-        let pendingStatuses = [global.metadataStatusWaitUpload, global.metadataStatusUploading]
+        let pendingStatuses = global.metadatasStatusInWaitingDownloadUpload + global.metadatasStatusDownloadingUploading
         let failedStatuses = [global.metadataStatusUploadError]
 
         let result = await core.performRealmReadAsync { realm -> (pending: Int, failed: Int) in
@@ -131,11 +119,7 @@ extension NCManageDatabase {
                         autoUploadServerUrlBase,
                         global.selectorUploadAutoUpload)
 
-            let pendingResults = scope.filter("status IN %@", pendingStatuses)
-            let pendingCount = excludedIds.isEmpty
-                ? pendingResults.count
-                : pendingResults.filter("NOT (ocIdTransfer IN %@)", Array(excludedIds)).count
-
+            let pendingCount = scope.filter("status IN %@", pendingStatuses).count
             let failedCount = scope.filter("status IN %@", failedStatuses).count
 
             return (pending: pendingCount, failed: failedCount)
