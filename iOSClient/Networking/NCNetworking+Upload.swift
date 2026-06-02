@@ -48,13 +48,26 @@ extension NCNetworking {
         } progressHandler: { progress in
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }
+
+        var date: Date?, size: Int64 = 0
+        let allHeaderFields = results.response?.response?.allHeaderFields
+        let nkComm = NextcloudKit.shared.nkCommonInstance
+
+        let ocId = nkComm.findHeader("oc-fileid", allHeaderFields: allHeaderFields)
+        let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
+        let ownerId = nkComm.findHeader("x-nc-ownerid", allHeaderFields: allHeaderFields)
+        let permissions = nkComm.findHeader("x-nc-permissions", allHeaderFields: allHeaderFields)
+        if let dateRaw = nkComm.findHeader("date", allHeaderFields: allHeaderFields) {
+            date = dateRaw.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
+        }
+
         return (results.account,
-                results.ocId,
-                results.etag,
-                results.date,
-                results.size,
-                results.ownerId,
-                results.permissions,
+                ocId,
+                etag,
+                date,
+                size,
+                ownerId,
+                permissions,
                 results.error)
     }
 
@@ -302,7 +315,7 @@ extension NCNetworking {
 
         nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
-        if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
+        if error.errorCode == NSURLErrorCancelled {
             await uploadCancelFile(metadata: metadata)
         } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) && error.errorDescription.localizedCaseInsensitiveContains("virus") {
             await uploadCancelFile(metadata: metadata)
