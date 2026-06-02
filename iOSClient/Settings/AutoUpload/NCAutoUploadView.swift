@@ -39,7 +39,7 @@ struct NCAutoUploadView: View {
                         .font(.headline)
 
                     if model.autoUploadStart && autoUploadCounter.isLoaded {
-                        Text(autoUploadCounter.itemsLeftMessage)
+                        Text(autoUploadCounter.itemsLeftSummary)
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }

@@ -50,7 +50,7 @@ struct NCSettingsView: View {
                                 .font(.body)
 
                             if model.autoUploadStart && autoUploadCounter.isLoaded {
-                                Text(autoUploadCounter.itemsLeftMessage)
+                                Text(autoUploadCounter.itemsLeftSummary)
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
                             }

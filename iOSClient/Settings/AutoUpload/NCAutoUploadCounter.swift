@@ -9,6 +9,7 @@ import Observation
 @Observable
 final class NCAutoUploadCounter {
     private(set) var count = 0
+    private(set) var failedCount = 0
     private(set) var isLoaded = false
 
     var hasItemsToUpload: Bool {
@@ -25,6 +26,22 @@ final class NCAutoUploadCounter {
 
     var photosToBackUpMessage: String {
         return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_photos_to_back_up_", comment: ""), count)
+    }
+
+    var failedMessage: String {
+        return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_failed_", comment: ""), failedCount)
+    }
+
+    var itemsLeftSummary: String {
+        if failedCount == 0 {
+            return itemsLeftMessage
+        }
+
+        if count == 0 {
+            return failedMessage
+        }
+
+        return itemsLeftMessage + " · " + failedMessage
     }
 
     @ObservationIgnored private var pollTask: Task<Void, Never>?
@@ -56,15 +73,16 @@ final class NCAutoUploadCounter {
 
             while !Task.isCancelled {
                 let transfersSuccess = await NCNetworking.shared.metadataTranfersSuccess.getAll()
-                let newCount = await NCManageDatabase.shared.countAutoUploadMetadatasAsync(account: account,
-                                                                                           autoUploadServerUrlBase: autoUploadServerUrlBase,
-                                                                                           transfersSuccess: transfersSuccess)
+                let counts = await NCManageDatabase.shared.countAutoUploadMetadatasAsync(account: account,
+                                                                                         autoUploadServerUrlBase: autoUploadServerUrlBase,
+                                                                                         transfersSuccess: transfersSuccess)
 
                 guard !Task.isCancelled else {
                     return
                 }
 
-                count = newCount
+                count = counts.pending
+                failedCount = counts.failed
                 isLoaded = true
 
                 try? await Task.sleep(for: .seconds(2))
@@ -78,6 +96,7 @@ final class NCAutoUploadCounter {
 
         if reset {
             count = 0
+            failedCount = 0
             isLoaded = false
         }
     }

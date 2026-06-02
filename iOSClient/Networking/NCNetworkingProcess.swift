@@ -130,7 +130,10 @@ actor NCNetworkingProcess {
         let countTransferDownloadingUploadingSuccess = await NCNetworking.shared.metadataTranfersSuccess.count(statuses: NCGlobal.shared.metadatasStatusDownloadingUploading)
         let countWaitingDownloadUpload = await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: NCGlobal.shared.metadatasStatusInWaitingDownloadUpload)
         let count = max(0, countWaitingDownloadUpload - countTransferDownloadingUploadingSuccess)
-
+        print("----")
+        print(countWaitingDownloadUpload - countTransferDownloadingUploadingSuccess)
+        print(countWaitingDownloadUpload - countTransferDownloadingUploadingSuccess)
+        print(countTransferDownloadingUploadingSuccess)
         return count
     }
 

@@ -108,7 +108,7 @@ extension NCManageDatabase {
 
     func countAutoUploadMetadatasAsync(account: String,
                                        autoUploadServerUrlBase: String,
-                                       transfersSuccess: [tableMetadata] = []) async -> Int {
+                                       transfersSuccess: [tableMetadata] = []) async -> (pending: Int, failed: Int) {
         let global = NCGlobal.shared
         let excludedIds = Set(transfersSuccess.compactMap { metadata -> String? in
             guard metadata.account == account,
@@ -121,22 +121,27 @@ extension NCManageDatabase {
             return metadata.ocIdTransfer
         })
 
-        return await core.performRealmReadAsync { realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND directory == false AND sessionSelector == %@ AND status IN %@",
+        let pendingStatuses = [global.metadataStatusWaitUpload, global.metadataStatusUploading]
+        let failedStatuses = [global.metadataStatusUploadError]
+
+        let result = await core.performRealmReadAsync { realm -> (pending: Int, failed: Int) in
+            let scope = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND directory == false AND sessionSelector == %@",
                         account,
                         autoUploadServerUrlBase,
-                        global.selectorUploadAutoUpload,
-                        global.metadataStatusUploadingAllMode)
+                        global.selectorUploadAutoUpload)
 
-            guard !excludedIds.isEmpty else {
-                return results.count
-            }
+            let pendingResults = scope.filter("status IN %@", pendingStatuses)
+            let pendingCount = excludedIds.isEmpty
+                ? pendingResults.count
+                : pendingResults.filter("NOT (ocIdTransfer IN %@)", Array(excludedIds)).count
 
-            return results
-                .filter("NOT (ocIdTransfer IN %@)", Array(excludedIds))
-                .count
-        } ?? 0
+            let failedCount = scope.filter("status IN %@", failedStatuses).count
+
+            return (pending: pendingCount, failed: failedCount)
+        }
+
+        return result ?? (pending: 0, failed: 0)
     }
 
     func existsAutoUpload(account: String,

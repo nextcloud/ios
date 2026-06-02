@@ -52,6 +52,13 @@ struct NCFocusedAutoUploadProgressView: View {
                                 .foregroundStyle(.white.opacity(0.9))
                                 .multilineTextAlignment(.center)
                         }
+
+                        if autoUploadCounter.failedCount > 0 {
+                            Text(autoUploadCounter.failedMessage)
+                                .font(.footnote)
+                                .foregroundStyle(.white.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                        }
                     }
                 }
 
