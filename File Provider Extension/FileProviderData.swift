@@ -147,10 +147,7 @@ class FileProviderData: NSObject {
 
     func downloadComplete(fileName: String,
                           serverUrl: String,
-                          etag: String?,
-                          date: Date?,
-                          dateLastModified: Date?,
-                          length: Int64,
+                          allHeaderFields: [AnyHashable: Any]?,
                           task: URLSessionTask,
                           error: NKError) async {
         let taskIdentifier = task.taskIdentifier
@@ -165,6 +162,7 @@ class FileProviderData: NSObject {
         }
 
         let ocId = metadata.ocId
+        let etag = NextcloudKit.shared.nkCommonInstance.findHeader("oc-etag", allHeaderFields: allHeaderFields)
 
         await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
                                                               session: "",
@@ -196,7 +194,6 @@ class FileProviderData: NSObject {
                         ocId: String?,
                         etag: String?,
                         date: Date?,
-                        size: Int64,
                         ownerId: String?,
                         permissions: String?,
                         task: URLSessionTask,
@@ -227,7 +224,6 @@ class FileProviderData: NSObject {
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
-            metadata.size = size
             if let fileId = fileProviderUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }

@@ -282,7 +282,7 @@ extension NCNetworking: NCTransferDelegate {
         }
 
         let allHeaderFields = results.response?.response?.allHeaderFields
-        let etag = NextcloudKit.shared.nkCommonInstance.findHeader("oc-etag", allHeaderFields: allHeaderFields)
+        let etag = nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields)
 
         await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                               session: "",

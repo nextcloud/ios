@@ -37,24 +37,16 @@ extension NCNetworking {
 
     // MARK: - Download NextcloudKitDelegate
 
-    func downloadComplete(fileName: String,
-                          serverUrl: String,
-                          etag: String?,
-                          date: Date?,
-                          dateLastModified: Date?,
-                          length: Int64,
-                          task: URLSessionTask,
-                          error: NKError) {
+    func downloadComplete(fileName: String, serverUrl: String, allHeaderFields: [AnyHashable: Any]?, task: URLSessionTask, error: NKError) {
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
+
+            let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
 
 #if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(fileName: fileName,
                                                            serverUrl: serverUrl,
-                                                           etag: etag,
-                                                           date: date,
-                                                           dateLastModified: dateLastModified,
-                                                           length: length,
+                                                           allHeaderFields: allHeaderFields,
                                                            task: task,
                                                            error: error)
 #else
@@ -118,18 +110,16 @@ extension NCNetworking {
 
     // MARK: - Upload NextcloudKitDelegate
 
-    func uploadComplete(fileName: String,
-                        serverUrl: String,
-                        ocId: String?,
-                        etag: String?,
-                        date: Date?,
-                        size: Int64,
-                        ownerId: String?,
-                        permissions: String?,
-                        task: URLSessionTask,
-                        error: NKError) {
+    func uploadComplete(fileName: String, serverUrl: String, allHeaderFields: [AnyHashable: Any]?, task: URLSessionTask, error: NKError) {
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
+
+            let ocId = nkComm.findHeader("oc-fileid", allHeaderFields: allHeaderFields)
+            let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
+            let date = nkComm.findHeader("date", allHeaderFields: allHeaderFields)?.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
+            //let dateLastModified = nkComm.findHeader("Last-Modified", allHeaderFields: allHeaderFields)?.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
+            let ownerId = nkComm.findHeader("x-nc-ownerid", allHeaderFields: allHeaderFields)
+            let permissions = nkComm.findHeader("x-nc-permissions", allHeaderFields: allHeaderFields)
 
 #if EXTENSION_FILE_PROVIDER_EXTENSION
                 await FileProviderData.shared.uploadComplete(fileName: fileName,
@@ -137,7 +127,6 @@ extension NCNetworking {
                                                              ocId: ocId,
                                                              etag: etag,
                                                              date: date,
-                                                             size: size,
                                                              ownerId: ownerId,
                                                              permissions: permissions,
                                                              task: task,
