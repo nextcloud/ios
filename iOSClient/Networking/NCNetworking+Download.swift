@@ -21,14 +21,12 @@ extension NCNetworking {
               etag: String?,
               date: Date?,
               length: Int64,
-              headers: [AnyHashable: Any]?,
-              afError: AFError?,
               nkError: NKError ) {
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
-            return(metadata.account, metadata.etag, metadata.date as Date, metadata.size, nil, nil, .success)
+            return(metadata.account, metadata.etag, metadata.date as Date, metadata.size, .success)
         }
 
         let results = await NextcloudKit.shared.downloadAsync(serverUrlFileName: metadata.serverUrlFileName,
@@ -76,22 +74,18 @@ extension NCNetworking {
             progressHandler(progress)
         }
 
-        Task {
-            await progressQuantizer.clear(serverUrlFileName: metadata.serverUrlFileName)
-            var error = NKError()
+        await progressQuantizer.clear(serverUrlFileName: metadata.serverUrlFileName)
+        let nkComm = NextcloudKit.shared.nkCommonInstance
+        let allHeaderFields = results.response?.response?.allHeaderFields
+        let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
 
-            if results.afError?.isExplicitlyCancelledError ?? false || (results.afError?.underlyingError as? URLError)?.code.rawValue == -999 {
-                error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
-            }
-
-            if error == .success {
-                await downloadSuccess(withMetadata: metadata, etag: results.etag)
-            } else {
-                await downloadError(withMetadata: metadata, error: error)
-            }
+        if results.nkError == .success {
+            await downloadSuccess(withMetadata: metadata, etag: etag)
+        } else {
+            await downloadError(withMetadata: metadata, error: results.nkError)
         }
 
-        return results
+        return(metadata.account, etag, metadata.date as Date, metadata.size, results.nkError)
     }
 
     // MARK: - Download file in background
@@ -190,7 +184,7 @@ extension NCNetworking {
 
             await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
             await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-        } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
+        } else if error.errorCode == NSURLErrorCancelled {
             await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                   session: "",
                                                                   sessionTaskIdentifier: 0,

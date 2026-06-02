@@ -125,7 +125,6 @@ final class NCGlobal: Sendable {
 
     // Error
     //
-    let errorRequestExplicityCancelled: Int     = 15
     let errorNotModified: Int                   = 304
     let errorBadRequest: Int                    = 400
     let errorUnauthorized401: Int               = 401

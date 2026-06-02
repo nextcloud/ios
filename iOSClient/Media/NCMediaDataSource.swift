@@ -65,7 +65,6 @@ extension NCMedia {
             return
         }
 
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
         var visibleCells: [NCMediaCell] = []
@@ -169,7 +168,7 @@ extension NCMedia {
                                                                          showOnlyImages: self.showOnlyImages,
                                                                          showOnlyVideos: self.showOnlyVideos)
 
-            var predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                 NSPredicate(format: "date >= %@ AND date <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
                 mediaPredicate
             ])
@@ -244,7 +243,6 @@ public class NCMediaDataSource: NSObject {
     }
 
     private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
-        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
         let date = metadata.date as Date
         return Metadata(date: date,
                         etag: metadata.etag,
