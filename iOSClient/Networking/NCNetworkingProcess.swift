@@ -207,6 +207,8 @@ actor NCNetworkingProcess {
                             files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
                     }
                 }
+
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: global.notificationCenterTransferCountChanged), object: nil)
             }
 
             // METADATAS

@@ -2198,6 +2198,15 @@
 			path = StatusMessage;
 			sourceTree = "<group>";
 		};
+		F3896B062FCF2CF300DA2B18 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */,
+				AAFC0D0A2F9AA10000F0A001 /* NCAutoUploadCounter.swift */,
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
 		F389C9F32CEE381E00049762 /* SelectAlbum */ = {
 			isa = PBXGroup;
 			children = (
@@ -2671,13 +2680,12 @@
 		F76882162C0DD1E7001CF441 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
+				F3896B062FCF2CF300DA2B18 /* Utility */,
 				F39A1EE12D0AF8A200DAD522 /* Albums.swift */,
-				AAFC0D0A2F9AA10000F0A001 /* NCAutoUploadCounter.swift */,
 				F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */,
 				F71D2FB62E09BBD700B751CC /* NCAutoUploadModel.swift */,
 				AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */,
 				AAFC0D022F9AA10000F0A001 /* NCFocusedAutoUploadProgressView.swift */,
-				AAFC0D032F9AA10000F0A001 /* NCFocusedAutoUploadScreenDimmer.swift */,
 				AAFC0D082F9AA10000F0A001 /* NCFocusedAutoUploadCloudAnimation.swift */,
 			);
 			path = AutoUpload;
