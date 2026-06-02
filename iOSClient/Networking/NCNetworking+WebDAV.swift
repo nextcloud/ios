@@ -91,7 +91,7 @@ extension NCNetworking {
     }
 
     func fileExists(serverUrlFileName: String, account: String) async -> NKError {
-        let requestBody = NKDataFileXML(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).getRequestBodyFileExists().data(using: .utf8)
+        let requestBody = NKDataFileXML(nkCommonInstance: nkComm).getRequestBodyFileExists().data(using: .utf8)
 
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
                                                                       depth: "0",

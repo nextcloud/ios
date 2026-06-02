@@ -22,7 +22,7 @@ extension NCNetworking {
               date: Date?,
               length: Int64,
               nkError: NKError ) {
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(queue: nkComm.backgroundQueue)
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
@@ -75,7 +75,6 @@ extension NCNetworking {
         }
 
         await progressQuantizer.clear(serverUrlFileName: metadata.serverUrlFileName)
-        let nkComm = NextcloudKit.shared.nkCommonInstance
         let allHeaderFields = results.response?.response?.allHeaderFields
         let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
 
@@ -175,7 +174,7 @@ extension NCNetworking {
     // MARK: - DOWNLOAD ERROR
 
     func downloadError(withMetadata metadata: tableMetadata, error: NKError) async {
-        await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+        await nkComm.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
         nkLog(error: "Downloaded file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
@@ -227,7 +226,7 @@ extension NCNetworking {
 
     internal func synchronizationDownload(account: String, serverUrl: String, userId: String, urlBase: String, metadatasInDownload: [tableMetadata]?) async {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
-        let options = NKRequestOptions(timeout: 300, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 300, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: nkComm.backgroundQueue)
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Start read infinite folder: \(serverUrl)")
 

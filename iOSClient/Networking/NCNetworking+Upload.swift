@@ -28,7 +28,7 @@ extension NCNetworking {
               ownerId: String?,
               permissions: String?,
               error: NKError) {
-        let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(customHeader: customHeaders, queue: nkComm.backgroundQueue)
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
                                                             fileNameLocalPath: fileNameLocalPath,
                                                             dateCreationFile: creationDate,
@@ -51,7 +51,6 @@ extension NCNetworking {
 
         var date: Date?, size: Int64 = 0
         let allHeaderFields = results.response?.response?.allHeaderFields
-        let nkComm = NextcloudKit.shared.nkCommonInstance
 
         let ocId = nkComm.findHeader("oc-fileid", allHeaderFields: allHeaderFields)
         let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
@@ -92,7 +91,7 @@ extension NCNetworking {
         if networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
             chunkSize = self.global.chunkSizeMBEthernetOrWiFi
         }
-        let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(customHeader: customHeaders, queue: nkComm.backgroundQueue)
         var backupError = NKError()
         var backupFile: NKFile?
 
@@ -311,7 +310,7 @@ extension NCNetworking {
     // MARK: - UPLOAD ERROR
 
     func uploadError(withMetadata metadata: tableMetadata, error: NKError) async {
-        await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+        await nkComm.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
         nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
