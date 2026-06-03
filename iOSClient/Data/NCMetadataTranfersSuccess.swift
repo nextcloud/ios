@@ -47,11 +47,17 @@ actor NCMetadataTranfersSuccess {
         }
         if let ownerId, !ownerId.isEmpty {
             metadata.ownerId = ownerId
-            if metadata.ownerDisplayName.isEmpty {
-                metadata.ownerDisplayName = ownerId
-            }
         }
         if let permissions, !permissions.isEmpty {
+            metadata.permissions = permissions
+        }
+        if let ownerId = ownerId.nonEmpty {
+            metadata.ownerId = ownerId
+            if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                metadata.ownerDisplayName = ownerDisplayName
+            }
+        }
+        if let permissions = permissions.nonEmpty {
             metadata.permissions = permissions
         }
         metadata.session = ""

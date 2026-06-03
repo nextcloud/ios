@@ -263,13 +263,13 @@ extension NCNetworking {
         if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
-        if let ownerId, !ownerId.isEmpty {
+        if let ownerId = ownerId.nonEmpty {
             metadata.ownerId = ownerId
-            if metadata.ownerDisplayName.isEmpty {
-                metadata.ownerDisplayName = ownerId
+            if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                metadata.ownerDisplayName = ownerDisplayName
             }
         }
-        if let permissions, !permissions.isEmpty {
+        if let permissions = permissions.nonEmpty {
             metadata.permissions = permissions
         }
         metadata.session = ""

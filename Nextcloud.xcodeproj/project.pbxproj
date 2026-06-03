@@ -441,6 +441,13 @@
 		F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD767290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
+		F75F4BC02FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F75F4BC12FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F75F4BC22FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F75F4BC32FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F75F4BC42FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F75F4BC52FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F75F4BC62FD008D7009E55ED /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE022AE66EA80027D78A /* KeychainAccess */; };
 		F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE042AE66EBE0027D78A /* KeychainAccess */; };
 		F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F760DE062AE66EC70027D78A /* KeychainAccess */; };
@@ -4163,6 +4170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F73EF7BD2B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
+				F75F4BC62FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F73EF7C52B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
 				F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */,
@@ -4257,6 +4265,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F78E2D6A29AF02DB0024D4F3 /* Database.swift in Sources */,
+				F75F4BC52FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */,
 				F7D61E942EBF1366007F865B /* UIColor+Extension.swift in Sources */,
 				F71F6D0C2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
@@ -4327,6 +4336,7 @@
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
 				F740BEF02A35C2AD00E9B6D5 /* UILabel+Extension.swift in Sources */,
 				F7C30E01291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
+				F75F4BC22FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				AF4BF61A27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				AF4BF615275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
 				F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */,
@@ -4477,6 +4487,7 @@
 				F72EA95228B7BA2A00C88F0C /* DashboardWidgetProvider.swift in Sources */,
 				F77E8C242E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift in Sources */,
 				F76340F72EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
+				F75F4BC02FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F7D496FD2EBFA6D9004F9823 /* String+Extension.swift in Sources */,
 				F7D7A7702DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
 				F72EA95828B7BC4F00C88F0C /* FilesData.swift in Sources */,
@@ -4514,6 +4525,7 @@
 				F3E173C42C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F7D61E932EBF1366007F865B /* UIColor+Extension.swift in Sources */,
 				F76340F42EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
+				F75F4BC42FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F7CAFE212F17A37C00DB35A5 /* NCNetworking+Actor.swift in Sources */,
 				F76340EE2EBDE74C0056F538 /* NCManageDatabase.swift in Sources */,
 				F763410A2EBDFCB10056F538 /* NCManageDatabase+CreateMetadata.swift in Sources */,
@@ -4909,6 +4921,7 @@
 				F7C55C8E2FB5B03D004A974F /* NCGlobal.swift in Sources */,
 				F7C55CC92FB5CE74004A974F /* ActionViewController.swift in Sources */,
 				F7C55C9B2FB5B1A7004A974F /* UIColor+Extension.swift in Sources */,
+				F75F4BC32FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F7C55C8D2FB5B02C004A974F /* NCAssistantSharedTextStore.swift in Sources */,
 				F7C55C9A2FB5B127004A974F /* ThreadSafeDictionary.swift in Sources */,
 			);
@@ -4965,6 +4978,7 @@
 				F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F757CC8429E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F78E2D6729AF02DB0024D4F3 /* Database.swift in Sources */,
+				F75F4BC12FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F77DD6AA2C5CC093009448FB /* NCSession.swift in Sources */,
 				F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */,
 			);
