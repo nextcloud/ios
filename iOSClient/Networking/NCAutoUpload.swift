@@ -87,7 +87,7 @@ class NCAutoUpload: NSObject {
                               assets: [PHAsset],
                               fileNames: [String]) async -> Int {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
-        let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
+        let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
         let session = NCSession.shared.getSession(account: tblAccount.account)
         let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
@@ -306,7 +306,7 @@ class NCAutoUpload: NSObject {
 
             // If server supports auto MKCOL (Nextcloud >= 33), skip manual folder creation.
             if let capabilities = capabilitiesByAccount[metadata.account] {
-                let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
+                let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
                 if autoMkcol {
                     continue
                 }

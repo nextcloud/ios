@@ -98,7 +98,7 @@ extension NCNetworking {
                 }
             // UPLOAD
             } else if metadata.session.contains("upload") {
-                if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
+                if metadata.session == nkComm.identifierSessionUpload {
                     cancelUploadTasks(metadata: metadata)
                 } else {
                     cancelUploadBackgroundTask(metadata: metadata)
@@ -125,7 +125,7 @@ extension NCNetworking {
     }
 
     func cancelAllDataTask() {
-        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+        nkComm.nksessions.forEach { session in
             session.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
                 dataTasks.forEach { task in
                     task.cancel()
@@ -144,7 +144,7 @@ extension NCNetworking {
                                     self.global.metadataStatusDownloadError,
                                     sessionDownload)
         Task {
-            NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            nkComm.nksessions.forEach { session in
                 session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
                     downloadTasks.forEach { task in
                         if targetTaskId == nil || (task.taskIdentifier == targetTaskId) {
@@ -169,7 +169,7 @@ extension NCNetworking {
                                     self.global.metadataStatusDownloadError,
                                     sessionDownloadBackground)
 
-        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+        nkComm.nksessions.forEach { session in
             Task {
                 let tasksBackground = await session.sessionDownloadBackground.tasks
 
@@ -200,7 +200,7 @@ extension NCNetworking {
                                     sessionUpload)
 
         Task {
-            NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
+            nkComm.nksessions.forEach { nkSession in
                 nkSession.sessionData.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
                     uploadTasks.forEach { task in
                         if targetTaskId == nil || (account == nkSession.account && targetTaskId == task.taskIdentifier) {
@@ -227,7 +227,7 @@ extension NCNetworking {
                                     sessionUploadBackgroundWWan,
                                     sessionUploadBackgroundExt)
 
-        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
+        nkComm.nksessions.forEach { nkSession in
             Task {
                 var nkSession = nkSession
                 let tasksBackground = await nkSession.sessionUploadBackground.tasks
@@ -269,7 +269,7 @@ extension NCNetworking {
     // MARK: -
 
     func getAllDataTask() async -> [URLSessionDataTask] {
-        let nkSessions = NextcloudKit.shared.nkCommonInstance.nksessions.all
+        let nkSessions = nkComm.nksessions.all
         var taskArray: [URLSessionDataTask] = []
 
         for nkSession in nkSessions {
@@ -291,7 +291,7 @@ extension NCNetworking {
                                    sessionUpload,
                                    self.global.metadataStatusUploading)) {
             for metadata in metadatas {
-                guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+                guard let nkSession = nkComm.nksessions.session(forAccount: metadata.account) else {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                                            userId: metadata.userId,
@@ -333,7 +333,7 @@ extension NCNetworking {
                                    sessionUploadBackgroundWWan,
                                    self.global.metadataStatusUploading)) {
             for metadata in metadatas {
-                guard var nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+                guard var nkSession = nkComm.nksessions.session(forAccount: metadata.account) else {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                                            userId: metadata.userId,
@@ -384,7 +384,7 @@ extension NCNetworking {
                                    sessionDownload,
                                    self.global.metadataStatusDownloadingAllMode)) {
             for metadata in metadatas {
-                guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+                guard let nkSession = nkComm.nksessions.session(forAccount: metadata.account) else {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                                            userId: metadata.userId,
@@ -417,7 +417,7 @@ extension NCNetworking {
                                    sessionDownloadBackground,
                                    self.global.metadataStatusDownloading)) {
             for metadata in metadatas {
-                guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+                guard let nkSession = nkComm.nksessions.session(forAccount: metadata.account) else {
                     await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                                            userId: metadata.userId,

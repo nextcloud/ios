@@ -30,7 +30,12 @@ actor NCMetadataTranfersSuccess {
         delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
     }
 
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
+    func append(metadata: tableMetadata,
+                ocId: String,
+                date: Date?,
+                etag: String?,
+                ownerId: String? = nil,
+                permissions: String? = nil) async {
         let status = metadata.status
 
         metadata.ocId = ocId
@@ -40,6 +45,17 @@ actor NCMetadataTranfersSuccess {
 
         if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
+        }
+
+        if let ownerId = ownerId.isNotEmpty {
+            metadata.ownerId = ownerId
+            if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                metadata.ownerDisplayName = ownerDisplayName
+            }
+        }
+
+        if let permissions = permissions.isNotEmpty {
+            metadata.permissions = permissions
         }
 
         metadata.session = ""

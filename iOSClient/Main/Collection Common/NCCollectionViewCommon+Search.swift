@@ -29,7 +29,7 @@ extension NCCollectionViewCommon {
         setSearchBarLoading(true)
         networkSearchInProgress = true
 
-        if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
+        if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v20) {
             await unifiedSearch(text: text)
         } else {
             await searchLiteral(text: text)

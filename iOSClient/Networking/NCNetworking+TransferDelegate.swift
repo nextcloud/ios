@@ -261,7 +261,7 @@ extension NCNetworking: NCTransferDelegate {
             return
         }
 
-        let download = await NextcloudKit.shared.downloadAsync(
+        let results = await NextcloudKit.shared.downloadAsync(
             serverUrlFileName: metadata.serverUrlFileName,
             fileNameLocalPath: fileNameLocalPath,
             account: account) { _ in
@@ -281,14 +281,17 @@ extension NCNetworking: NCTransferDelegate {
 
         }
 
+        let allHeaderFields = results.response?.response?.allHeaderFields
+        let etag = nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields)
+
         await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                               session: "",
                                                               sessionTaskIdentifier: 0,
                                                               sessionError: "",
                                                               status: self.global.metadataStatusNormal,
-                                                              etag: download.etag)
+                                                              etag: etag)
 
-        if download.nkError == .success {
+        if results.nkError == .success {
             await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
