@@ -195,13 +195,13 @@ class NCNetworkingE2EEUpload: NSObject {
             if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
-            if let ownerId = resultsSendFile.ownerId.nonEmpty {
+            if let ownerId = resultsSendFile.ownerId.isNotEmpty {
                 metadata.ownerId = ownerId
                 if let ownerDisplayName = await self.database.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
                     metadata.ownerDisplayName = ownerDisplayName
                 }
             }
-            if let permissions = resultsSendFile.permissions.nonEmpty {
+            if let permissions = resultsSendFile.permissions.isNotEmpty {
                 metadata.permissions = permissions
             }
             metadata.chunk = 0

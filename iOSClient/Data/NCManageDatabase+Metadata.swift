@@ -1029,8 +1029,8 @@ extension NCManageDatabase {
     }
 
     func getOwnerDisplayName(account: String?, ownerId: String?) async -> String? {
-        guard let account = account.nonEmpty,
-              let ownerId = ownerId.nonEmpty else {
+        guard let account = account.isNotEmpty,
+              let ownerId = ownerId.isNotEmpty else {
             return nil
         }
 
@@ -1040,7 +1040,7 @@ extension NCManageDatabase {
                 .first?
                 .ownerDisplayName
 
-            return ownerDisplayName.nonEmpty
+            return ownerDisplayName.isNotEmpty
         }
     }
 

@@ -224,18 +224,22 @@ class FileProviderData: NSObject {
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
+
             if let fileId = fileProviderUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
+
             if let ownerId, !ownerId.isEmpty {
                 metadata.ownerId = ownerId
-                if metadata.ownerDisplayName.isEmpty {
-                    metadata.ownerDisplayName = ownerId
+                if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                    metadata.ownerDisplayName = ownerDisplayName
                 }
             }
+
             if let permissions, !permissions.isEmpty {
                 metadata.permissions = permissions
             }
+
             metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionError = ""
