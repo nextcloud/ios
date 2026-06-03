@@ -45,8 +45,11 @@ actor NCMetadataTranfersSuccess {
         if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
-        if let ownerId, !ownerId.isEmpty {
+        if let ownerId = ownerId.nonEmpty {
             metadata.ownerId = ownerId
+            if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                metadata.ownerDisplayName = ownerDisplayName
+            }
         }
         if let permissions, !permissions.isEmpty {
             metadata.permissions = permissions
