@@ -227,8 +227,15 @@ class FileProviderData: NSObject {
             if let fileId = fileProviderUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
-            await NCNetworking.shared.applyUploadResponse(to: metadata, ownerId: ownerId, permissions: permissions)
-
+            if let ownerId, !ownerId.isEmpty {
+                metadata.ownerId = ownerId
+                if metadata.ownerDisplayName.isEmpty {
+                    metadata.ownerDisplayName = ownerId
+                }
+            }
+            if let permissions, !permissions.isEmpty {
+                metadata.permissions = permissions
+            }
             metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionError = ""

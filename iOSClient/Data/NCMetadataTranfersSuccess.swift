@@ -42,12 +42,18 @@ actor NCMetadataTranfersSuccess {
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
         metadata.chunk = 0
-
         if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
-        await NCNetworking.shared.applyUploadResponse(to: metadata, ownerId: ownerId, permissions: permissions)
-
+        if let ownerId, !ownerId.isEmpty {
+            metadata.ownerId = ownerId
+            if metadata.ownerDisplayName.isEmpty {
+                metadata.ownerDisplayName = ownerId
+            }
+        }
+        if let permissions, !permissions.isEmpty {
+            metadata.permissions = permissions
+        }
         metadata.session = ""
         metadata.sessionError = ""
         metadata.sessionTaskIdentifier = 0

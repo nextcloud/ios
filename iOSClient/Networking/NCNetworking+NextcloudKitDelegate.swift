@@ -117,7 +117,6 @@ extension NCNetworking {
             let ocId = nkComm.findHeader("oc-fileid", allHeaderFields: allHeaderFields)
             let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
             let date = nkComm.findHeader("date", allHeaderFields: allHeaderFields)?.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
-            //let dateLastModified = nkComm.findHeader("Last-Modified", allHeaderFields: allHeaderFields)?.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
             let ownerId = nkComm.findHeader("x-nc-ownerid", allHeaderFields: allHeaderFields)
             let permissions = nkComm.findHeader("x-nc-permissions", allHeaderFields: allHeaderFields)
 

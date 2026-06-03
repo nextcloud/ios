@@ -24,7 +24,6 @@ extension NCNetworking {
               ocId: String?,
               etag: String?,
               date: Date?,
-              size: Int64,
               ownerId: String?,
               permissions: String?,
               error: NKError) {
@@ -49,22 +48,18 @@ extension NCNetworking {
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }
 
-        var date: Date?, size: Int64 = 0
         let allHeaderFields = results.response?.response?.allHeaderFields
 
         let ocId = nkComm.findHeader("oc-fileid", allHeaderFields: allHeaderFields)
         let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
+        let date = nkComm.findHeader("date", allHeaderFields: allHeaderFields)?.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
         let ownerId = nkComm.findHeader("x-nc-ownerid", allHeaderFields: allHeaderFields)
         let permissions = nkComm.findHeader("x-nc-permissions", allHeaderFields: allHeaderFields)
-        if let dateRaw = nkComm.findHeader("date", allHeaderFields: allHeaderFields) {
-            date = dateRaw.parsedDate(using: "EEE, dd MMM y HH:mm:ss zzz")
-        }
 
         return (results.account,
                 ocId,
                 etag,
                 date,
-                size,
                 ownerId,
                 permissions,
                 results.error)
@@ -265,12 +260,18 @@ extension NCNetworking {
         metadata.etag = etag ?? ""
         metadata.ocId = ocId
         metadata.chunk = 0
-
         if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
             metadata.fileId = fileId
         }
-        await applyUploadResponse(to: metadata, ownerId: ownerId, permissions: permissions)
-
+        if let ownerId, !ownerId.isEmpty {
+            metadata.ownerId = ownerId
+            if metadata.ownerDisplayName.isEmpty {
+                metadata.ownerDisplayName = ownerId
+            }
+        }
+        if let permissions, !permissions.isEmpty {
+            metadata.permissions = permissions
+        }
         metadata.session = ""
         metadata.sessionError = ""
         metadata.sessionTaskIdentifier = 0

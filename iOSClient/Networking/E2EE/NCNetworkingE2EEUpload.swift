@@ -195,11 +195,16 @@ class NCNetworkingE2EEUpload: NSObject {
             if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
-            await NCNetworking.shared.applyUploadResponse(to: metadata,
-                                                          ownerId: resultsSendFile.ownerId,
-                                                          permissions: resultsSendFile.permissions)
+            if let ownerId = resultsSendFile.ownerId, !ownerId.isEmpty {
+                metadata.ownerId = ownerId
+                if metadata.ownerDisplayName.isEmpty {
+                    metadata.ownerDisplayName = ownerId
+                }
+            }
+            if let permissions = resultsSendFile.permissions, !permissions.isEmpty {
+                metadata.permissions = permissions
+            }
             metadata.chunk = 0
-
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
