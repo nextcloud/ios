@@ -103,11 +103,17 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     // MARK: - Navigation Items
 
-    private lazy var moreNavigationItem = UIBarButtonItem(
-        image: NCImageCache.shared.getImageButtonMore(),
-        primaryAction: nil,
-        menu: makeMoreMenu()
-    )
+    private lazy var moreNavigationItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: NCImageCache.shared.getImageButtonMore(),
+            primaryAction: nil,
+            menu: nil
+        )
+
+        item.menu = makeMoreMenu(sender: item)
+
+        return item
+    }()
 
     private lazy var mediaDetailNavigationItem = UIBarButtonItem(
         image: NCUtility().loadImage(
@@ -345,11 +351,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func refreshMoreMenu() {
-        moreNavigationItem.menu = makeMoreMenu()
+        moreNavigationItem.menu = makeMoreMenu(sender: moreNavigationItem)
     }
 
-    // Use this controller as sender so actions present above AVPlayer.
-    private func makeMoreMenu() -> UIMenu {
+    // Use the real menu anchor as sender so popovers are presented from the correct source.
+    private func makeMoreMenu(sender: Any?) -> UIMenu {
         UIMenu(title: "", children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
                 guard let self else {
@@ -362,7 +368,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
                     controller: self.contextMenuController,
                     viewController: self,
                     webView: false,
-                    sender: self
+                    sender: sender
                 ).viewMenu() {
                     completion(menu.children)
                 } else {

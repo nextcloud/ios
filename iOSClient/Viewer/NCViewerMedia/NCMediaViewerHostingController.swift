@@ -31,11 +31,15 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         return formatter
     }()
 
-    private lazy var moreNavigationItem = UIBarButtonItem(
-        image: NCImageCache.shared.getImageButtonMore(),
-        primaryAction: nil,
-        menu: UIMenu(title: "", children: [
-            UIDeferredMenuElement.uncached { [weak self] completion in
+    private lazy var moreNavigationItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: NCImageCache.shared.getImageButtonMore(),
+            primaryAction: nil,
+            menu: nil
+        )
+
+        item.menu = UIMenu(title: "", children: [
+            UIDeferredMenuElement.uncached { [weak self, weak item] completion in
                 guard let self,
                       let metadata = self.model.selectedMetadata else {
                     completion([])
@@ -47,7 +51,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     controller: self.contextMenuController,
                     viewController: self,
                     webView: false,
-                    sender: self
+                    sender: item
                 ).viewMenu() {
                     completion(menu.children)
                 } else {
@@ -55,7 +59,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 }
             }
         ])
-    )
+
+        return item
+    }()
 
     private lazy var mediaDetailNavigationItem = UIBarButtonItem(
         image: NCUtility().loadImage(

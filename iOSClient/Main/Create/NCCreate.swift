@@ -303,10 +303,17 @@ class NCCreate: NSObject {
 
         // iPad popover configuration
         if let popover = activityViewController.popoverPresentationController {
-            if let view = sender as? UIView {
-                popover.sourceView = view
-                popover.sourceRect = view.bounds
+            if let barButtonItem = sender as? UIBarButtonItem {
+                // Anchor the popover to the bar button item.
+                popover.barButtonItem = barButtonItem
+
+            } else if let sourceView = sender as? UIView {
+                // Anchor the popover to the sender view.
+                popover.sourceView = sourceView
+                popover.sourceRect = sourceView.bounds
+
             } else {
+                // Fallback: anchor the popover to the center of the presenting view.
                 popover.sourceView = presentViewController.view
                 popover.sourceRect = CGRect(
                     x: presentViewController.view.bounds.midX,
