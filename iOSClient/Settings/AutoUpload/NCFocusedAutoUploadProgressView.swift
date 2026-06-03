@@ -47,7 +47,7 @@ struct NCFocusedAutoUploadProgressView: View {
                             .multilineTextAlignment(.center)
 
                         if autoUploadCounter.isLoaded && !isUploadCompleted {
-                            Text(uploadCountMessage)
+                            Text(autoUploadCounter.photosToBackUpMessage)
                                 .font(.title3)
                                 .foregroundStyle(.white.opacity(0.9))
                                 .multilineTextAlignment(.center)
@@ -123,10 +123,6 @@ struct NCFocusedAutoUploadProgressView: View {
 
     private var statusMessage: String {
         return String(format: NSLocalizedString("_focused_auto_upload_countdown_", comment: ""), secondsUntilDim)
-    }
-
-    private var uploadCountMessage: String {
-        return autoUploadCounter.photosToBackUpMessage
     }
 
     private func startFocusedMode() {

@@ -15,9 +15,8 @@ final class NCAutoUploadCounter {
     init() {}
 
 #if DEBUG
-    init(previewCount: Int, failedCount: Int = 0) {
+    init(previewCount: Int) {
         self.count = previewCount
-        self.failedCount = failedCount
         self.isLoaded = true
     }
 #endif
@@ -26,7 +25,7 @@ final class NCAutoUploadCounter {
         return isLoaded && count > 0
     }
 
-    var itemsLeftMessage: String {
+    private var itemsLeftMessage: String {
         if count == 0 {
             return NSLocalizedString("_auto_upload_no_new_items_to_upload_", comment: "")
         }
@@ -38,7 +37,7 @@ final class NCAutoUploadCounter {
         return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_photos_to_back_up_", comment: ""), count)
     }
 
-    var failedMessage: String {
+    private var failedMessage: String {
         return String.localizedStringWithFormat(NSLocalizedString("_focused_auto_upload_failed_", comment: ""), failedCount)
     }
 
