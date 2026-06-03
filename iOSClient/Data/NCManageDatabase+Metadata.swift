@@ -1036,7 +1036,7 @@ extension NCManageDatabase {
 
         return await core.performRealmReadAsync { realm in
             let ownerDisplayName = realm.objects(tableMetadata.self)
-                .filter("account == %@ OR ownerId == %@", account, ownerId)
+                .filter("account == %@ AND ownerId == %@", account, ownerId)
                 .first?
                 .ownerDisplayName
 
