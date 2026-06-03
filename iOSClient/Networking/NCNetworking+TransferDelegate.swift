@@ -88,9 +88,9 @@ extension NCNetworking: NCTransferDelegate {
                 }
 
                 if metadata.contentType.contains("opendocument") && !NCUtility().isTypeFileRichDocument(metadata) {
-                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
                 } else if metadata.classFile == NKTypeClassFile.compress.rawValue || metadata.classFile == NKTypeClassFile.unknow.rawValue {
-                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
                 } else {
                     if let viewController = controller.currentViewController() {
                         let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -108,7 +108,7 @@ extension NCNetworking: NCTransferDelegate {
                     return
                 }
 
-                await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
 
             case NCGlobal.shared.selectorSaveAlbum:
 

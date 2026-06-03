@@ -157,7 +157,7 @@ class NCCreate: NSObject {
         return (templates, selectedTemplate, ext)
     }
 
-    func createShare(controller: NCMainTabBarController?, viewController: UIViewController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
+    func createShare(controller: NCMainTabBarController?, presentViewController: UIViewController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         guard let controller else {
             return
         }
@@ -211,7 +211,7 @@ class NCCreate: NSObject {
 
                     shareNavigationController?.modalPresentationStyle = .formSheet
                     if let shareNavigationController = shareNavigationController {
-                        viewController?.present(shareNavigationController, animated: true, completion: nil)
+                        presentViewController?.present(shareNavigationController, animated: true, completion: nil)
                     }
                 }
             }
@@ -224,8 +224,8 @@ class NCCreate: NSObject {
     ///   - controller: Main tab bar controller used to present the activity view.
     ///   - sender: The UI element that triggered the action (for iPad popover anchoring).
     @MainActor
-    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
-        guard let controller else {
+    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, presentViewController: UIViewController?, sender: Any?) async {
+        guard let controller, let presentViewController else {
             return
         }
 
@@ -307,10 +307,10 @@ class NCCreate: NSObject {
                 popover.sourceView = view
                 popover.sourceRect = view.bounds
             } else {
-                popover.sourceView = controller.view
+                popover.sourceView = presentViewController.view
                 popover.sourceRect = CGRect(
-                    x: controller.view.bounds.midX,
-                    y: controller.view.bounds.midY,
+                    x: presentViewController.view.bounds.midX,
+                    y: presentViewController.view.bounds.midY,
                     width: 0,
                     height: 0
                 )
@@ -318,7 +318,7 @@ class NCCreate: NSObject {
             }
         }
 
-        controller.present(activityViewController, animated: true)
+        presentViewController.present(activityViewController, animated: true)
     }
 
     // MARK: - Private helper

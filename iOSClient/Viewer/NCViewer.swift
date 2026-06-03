@@ -196,7 +196,7 @@ class NCViewer: NSObject {
             // Document Interaction Controller
             if let controller = delegate?.tabBarController as? NCMainTabBarController {
                 Task {
-                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
                 }
             }
         }

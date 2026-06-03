@@ -135,6 +135,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             await NCCreate().createActivityViewController(
                 selectedMetadata: metadatas,
                 controller: self.controller,
+                presentViewController: self,
                 sender: nil)
         }
     }

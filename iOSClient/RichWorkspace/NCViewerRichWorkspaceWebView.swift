@@ -72,7 +72,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
 
             if message.body as? String == "share", metadata != nil {
                 NCCreate().createShare(controller: self.controller,
-                                       viewController: self.controller,
+                                       presentViewController: self.controller,
                                        metadata: metadata!,
                                        page: .sharing)
             }

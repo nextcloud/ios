@@ -96,7 +96,7 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "info.circle.fill")
         ) { _ in
             NCCreate().createShare(controller: self.controller,
-                                   viewController: self.controller,
+                                   presentViewController: self.controller,
                                    metadata: metadata,
                                    page: .activity)
         }
@@ -127,6 +127,7 @@ class NCContextMenuMain: NSObject {
                 await NCCreate().createActivityViewController(
                     selectedMetadata: [self.metadata],
                     controller: self.controller,
+                    presentViewController: self.controller,
                     sender: self.sender
                 )
             }

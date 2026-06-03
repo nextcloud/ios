@@ -176,7 +176,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
 
             if message.body as? String == "share" {
                 NCCreate().createShare(controller: self.controller,
-                                       viewController: self.controller,
+                                       presentViewController: self.controller,
                                        metadata: metadata, page: .sharing)
             }
 

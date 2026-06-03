@@ -95,10 +95,6 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         let result = await NCNetworking.shared.downloadFile(metadata: metadata)
 
-        if let afError = result.afError {
-            throw afError
-        }
-
         if result.nkError != .success {
             throw result.nkError
         }
@@ -160,7 +156,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         let result = await NCNetworking.shared.downloadFile(metadata: downloadMetadata)
 
-        if result.afError != nil || result.nkError != .success {
+        if result.nkError != .success {
             return nil
         }
 

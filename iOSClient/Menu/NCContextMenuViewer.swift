@@ -46,7 +46,7 @@ class NCContextMenuViewer: NSObject {
 
         // DETAIL
         if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-            menuElements.append(makeDetailAction(metadata: metadata, controller: controller, viewController: viewController))
+            menuElements.append(makeDetailAction(metadata: metadata, controller: controller, presentViewController: viewController))
         }
 
         // VIEW IN FOLDER
@@ -73,7 +73,7 @@ class NCContextMenuViewer: NSObject {
 
         // SHARE
         if !webView, metadata.canShare {
-            menuElements.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, sender: sender))
+            menuElements.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, presentViewController: viewController, sender: sender))
         }
 
         // PDF ACTIONS
@@ -91,13 +91,13 @@ class NCContextMenuViewer: NSObject {
 
     // MARK: - Private Action Makers
 
-    private func makeDetailAction(metadata: tableMetadata, controller: NCMainTabBarController, viewController: UIViewController?) -> UIAction {
+    private func makeDetailAction(metadata: tableMetadata, controller: NCMainTabBarController, presentViewController: UIViewController?) -> UIAction {
         UIAction(
             title: NSLocalizedString("_details_", comment: ""),
             image: UIImage(systemName: "info")
         ) { _ in
             NCCreate().createShare(controller: controller,
-                                   viewController: viewController,
+                                   presentViewController: presentViewController,
                                    metadata: metadata,
                                    page: .activity)
         }
