@@ -234,11 +234,11 @@ class NCSharePaging: UIViewController {
     }
 
     @objc private func addShareTapped(_ sender: UIBarButtonItem) {
-        let viewController = UIHostingController(rootView: UnifiedShareView())
+        let viewController = UIHostingController(rootView: UnifiedShareView(fileName: metadata.fileNameView, account: metadata.account))
         viewController.modalPresentationStyle = .pageSheet
 
         if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
+            sheet.detents = [.large()]
             sheet.prefersGrabberVisible = true
         }
 
