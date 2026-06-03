@@ -107,11 +107,12 @@ extension NCMedia: UICollectionViewDelegate {
         }
         let identifier = indexPath as NSCopying
         let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+        let sender = collectionView.cellForItem(at: indexPath) ?? collectionView
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: self, controller: self.controller, sender: collectionView)
+            let contextMenu = NCContextMenuMain(metadata: metadata.detachedCopy(), viewController: self, controller: self.controller, sender: sender)
             return contextMenu.viewMenu()
         })
     }
