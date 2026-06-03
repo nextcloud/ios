@@ -52,13 +52,6 @@ struct NCFocusedAutoUploadProgressView: View {
                                 .foregroundStyle(.white.opacity(0.9))
                                 .multilineTextAlignment(.center)
                         }
-
-                        if autoUploadCounter.failedCount > 0 {
-                            Text(autoUploadCounter.failedMessage)
-                                .font(.footnote)
-                                .foregroundStyle(.white.opacity(0.7))
-                                .multilineTextAlignment(.center)
-                        }
                     }
                 }
 
@@ -137,16 +130,20 @@ struct NCFocusedAutoUploadProgressView: View {
     }
 
     private func startFocusedMode() {
-        guard !isUploadCompleted else {
+        guard !isUploadCompleted, !isXcodeRunningForPreviews else {
             return
         }
 
+        startDimCountdown()
+        updateAutoUploadCounterSubscription()
+    }
+
+    private func startDimCountdown() {
         countdownTask?.cancel()
         secondsUntilDim = dimDelay
         isScreenDimmed = false
 
         NCFocusedAutoUploadScreenDimmer.shared.startKeepingScreenAwake()
-        updateAutoUploadCounterSubscription()
 
         countdownTask = Task { @MainActor in
             while secondsUntilDim > 0 {
@@ -186,12 +183,15 @@ struct NCFocusedAutoUploadProgressView: View {
     }
 
     private func updateFocusedCompletionState() {
-        guard autoUploadCounter.isLoaded,
-              autoUploadCounter.count == 0 else {
+        guard autoUploadCounter.isLoaded else {
             return
         }
 
-        completeFocusedUpload()
+        if autoUploadCounter.count == 0 {
+            completeFocusedUpload()
+        } else if isUploadCompleted {
+            resumeFocusedUpload()
+        }
     }
 
     private func completeFocusedUpload() {
@@ -202,10 +202,24 @@ struct NCFocusedAutoUploadProgressView: View {
         isUploadCompleted = true
         countdownTask?.cancel()
         countdownTask = nil
-        stopAutoUploadCounterSubscription()
 
         if !isScreenDimmed {
             NCFocusedAutoUploadScreenDimmer.shared.restoreScreen()
         }
     }
+
+    private func resumeFocusedUpload() {
+        isUploadCompleted = false
+        startDimCountdown()
+    }
 }
+
+#if DEBUG
+#Preview {
+    NCFocusedAutoUploadProgressView(isPresented: .constant(true),
+                                    account: "preview",
+                                    urlBase: "https://cloud.example.com",
+                                    userId: "preview")
+        .environment(NCAutoUploadCounter(previewCount: 42))
+}
+#endif

@@ -12,6 +12,16 @@ final class NCAutoUploadCounter {
     private(set) var failedCount = 0
     private(set) var isLoaded = false
 
+    init() {}
+
+#if DEBUG
+    init(previewCount: Int, failedCount: Int = 0) {
+        self.count = previewCount
+        self.failedCount = failedCount
+        self.isLoaded = true
+    }
+#endif
+
     var hasItemsToUpload: Bool {
         return isLoaded && count > 0
     }
@@ -58,15 +68,12 @@ final class NCAutoUploadCounter {
             return
         }
 
-        // Transfers badge updates this so the update tick is the same. The subscription
-        // persists across screen changes; only an explicit reset tears it down.
-        if observer == nil {
-            observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterTransferCountChanged),
-                                                              object: nil,
-                                                              queue: .main) { [weak self] _ in
-                Task { @MainActor in
-                    await self?.refresh()
-                }
+        // Transfers badge updates this so the update tick is the same.
+        observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterTransferCountChanged),
+                                                          object: nil,
+                                                          queue: .main) { [weak self] _ in
+            Task { @MainActor in
+                await self?.refresh()
             }
         }
 
@@ -88,16 +95,16 @@ final class NCAutoUploadCounter {
     }
 
     func stop(reset: Bool = false) {
-        guard reset else {
-            return
-        }
-
         task?.cancel()
         task = nil
 
         if let observer {
             NotificationCenter.default.removeObserver(observer)
             self.observer = nil
+        }
+
+        guard reset else {
+            return
         }
 
         account = nil

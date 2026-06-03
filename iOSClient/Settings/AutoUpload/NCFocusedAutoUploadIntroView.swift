@@ -112,3 +112,7 @@ struct NCFocusedAutoUploadIntroView: View {
         }
     }
 }
+
+#Preview {
+    NCFocusedAutoUploadIntroView(onEnable: {})
+}
