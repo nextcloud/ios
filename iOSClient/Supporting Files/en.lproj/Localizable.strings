@@ -317,6 +317,11 @@
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
 "_remove_photo_CameraRoll_desc_"            = "\"Remove from camera roll\" after uploads, a confirmation message will be displayed to delete the uploaded photos or videos from the camera roll. The deleted photos or videos will still be available in the iOS Photos Trash for 30 days.";
+"_save_to_camera_roll_"        = "Save to camera roll";
+"_save_to_camera_roll_desc_"   = "When enabled, photos and videos taken with the in-app camera will also be saved to your iOS camera roll.";
+"_retake_"                     = "Retake";
+"_use_photo_"                  = "Use Photo";
+"_use_video_"                  = "Use Video";
 "_never_"                       = "never";
 "_less_a_minute_"               = "less than a minute ago";
 "_a_minute_ago_"                = "a minute ago";
@@ -732,7 +737,6 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_assistant_error_send_message_"  = "Could not send message. Please try again.";
 "_assistant_error_load_messages_" = "Could not load messages. Please try again.";
 "_assistant_error_generate_response_" = "Could not generate response. Please try again.";
-
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate.";
 "_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
@@ -762,12 +766,14 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_albums_" = "Albums";
 "_new_photos_only_" = "New photos only";
 "_all_photos_" = "All photos";
+//"_back_up_" = "Back up...";
 "_back_up_new_photos_only_" = "Back up new photos/videos only";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
 "_item_with_same_name_already_exists_" = "An item with the same name already exists.";
 
 // MARK: Migration Multi Domains
+
 "_preparing_migration_" = "Preparing migration …";
 "_scanning_files_" = "Scanning files …";
 "_moving_items_to_domain_" = "Moving items to correct domain …";
