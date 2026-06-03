@@ -1028,6 +1028,22 @@ extension NCManageDatabase {
         }
     }
 
+    func getOwnerDisplayName(account: String?, ownerId: String?) async -> String? {
+        guard let account = account.isNotEmpty,
+              let ownerId = ownerId.isNotEmpty else {
+            return nil
+        }
+
+        return await core.performRealmReadAsync { realm in
+            let ownerDisplayName = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND ownerId == %@", account, ownerId)
+                .first?
+                .ownerDisplayName
+
+            return ownerDisplayName.isNotEmpty
+        }
+    }
+
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
     /// Handles the home directory case rootFileName) and detaches the Realm object before returning.
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {

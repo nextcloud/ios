@@ -78,7 +78,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 await banner.dismissAsync()
             }
 
-            if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+            if results.nkError == .success || results.nkError == .cancelled {
                 print("ok")
             } else {
                 await showErrorBanner(windowScene: windowScene, text: results.nkError.errorDescription, errorCode: results.nkError.errorCode)

@@ -20,6 +20,43 @@ let userAgent: String = {
  The codename embodies the concept of dynamic, living matter — reflecting our vision of a platform that is not only powerful and reliable, but also capable of continuous transformation and intelligent adaptation.
  */
 
+struct NextcloudVersion: Comparable {
+    let major: Int
+    let minor: Int
+    let micro: Int
+
+    init(_ major: Int, _ minor: Int = 0, _ micro: Int = 0) {
+        self.major = major
+        self.minor = minor
+        self.micro = micro
+    }
+
+    init(_ capabilities: NKCapabilities.Capabilities) {
+        self.major = capabilities.serverVersionMajor
+        self.minor = capabilities.serverVersionMinor
+        self.micro = capabilities.serverVersionMicro
+    }
+
+    static let v18 = NextcloudVersion(18)
+    static let v20 = NextcloudVersion(20)
+    static let v23 = NextcloudVersion(23)
+    static let v24 = NextcloudVersion(24)
+    static let v25 = NextcloudVersion(25)
+    static let v26 = NextcloudVersion(26)
+    static let v27 = NextcloudVersion(27)
+    static let v28 = NextcloudVersion(28)
+    static let v30 = NextcloudVersion(30)
+    static let v31 = NextcloudVersion(31)
+    static let v32 = NextcloudVersion(32)
+    static let v32_0_2 = NextcloudVersion(32, 0, 2)
+    static let v33 = NextcloudVersion(33)
+    static let v34 = NextcloudVersion(34)
+
+    static func < (lhs: NextcloudVersion, rhs: NextcloudVersion) -> Bool {
+        (lhs.major, lhs.minor, lhs.micro) < (rhs.major, rhs.minor, rhs.micro)
+    }
+}
+
 final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
@@ -129,19 +166,8 @@ final class NCBrandOptions: @unchecked Sendable {
     }
 
     func isServerVersion(_ capabilities: NKCapabilities.Capabilities,
-                         greaterOrEqualTo major: Int,
-                         _ minor: Int,
-                         _ micro: Int) -> Bool {
-
-        let server = (
-            capabilities.serverVersionMajor,
-            capabilities.serverVersionMinor,
-            capabilities.serverVersionMicro
-        )
-
-        let required = (major, minor, micro)
-
-        return server >= required
+                         greaterOrEqualTo version: NextcloudVersion) -> Bool {
+        return NextcloudVersion(capabilities) >= version
     }
 }
 

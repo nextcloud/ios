@@ -18,23 +18,12 @@ extension NCMedia {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return (account, nil, .urlError)
         }
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let files: [NKFile] = []
         let href = "/files/" + nkSession.userId + path
 
-        let elementDate: String
-        var lessDateString: String
-        var greaterDateString: String
-
-        if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
-            elementDate = "nc:metadata-photos-original_date_time"
-            lessDateString = String(lessDate.timeIntervalSince1970)
-            greaterDateString = String(greaterDate.timeIntervalSince1970)
-        } else {
-            elementDate = "d:getlastmodified"
-            lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-            greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        }
+        let elementDate = "d:getlastmodified"
+        let lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
         let httpBodyString = String(format: getRequestBodySearchMedia(
             createProperties: options.createProperties,

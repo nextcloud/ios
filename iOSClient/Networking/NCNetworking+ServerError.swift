@@ -8,13 +8,13 @@ import NextcloudKit
 
 extension NCNetworking {
     func noServerErrorAccount(_ account: String) -> Bool {
-        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
+        guard let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
         else {
             return true
         }
-        let unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-        let unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-        let tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+        let unavailableArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnavailable) as? [String] ?? []
+        let unauthorizedArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnauthorized) as? [String] ?? []
+        let tosArray = groupDefaults.array(forKey: nkComm.groupDefaultsToS) as? [String] ?? []
 
         if unavailableArray.contains(account) || unauthorizedArray.contains(account) || tosArray.contains(account) {
             return false
@@ -24,34 +24,34 @@ extension NCNetworking {
     }
 
     func removeServerErrorAccount(_ account: String) {
-        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
+        guard let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
         else {
             return
         }
-        var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-        var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-        var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+        var unauthorizedArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnauthorized) as? [String] ?? []
+        var unavailableArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnavailable) as? [String] ?? []
+        var tosArray = groupDefaults.array(forKey: nkComm.groupDefaultsToS) as? [String] ?? []
 
         unauthorizedArray.removeAll { $0 == account }
-        groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
+        groupDefaults.set(unauthorizedArray, forKey: nkComm.groupDefaultsUnauthorized)
 
         unavailableArray.removeAll { $0 == account }
-        groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+        groupDefaults.set(unavailableArray, forKey: nkComm.groupDefaultsUnavailable)
 
         tosArray.removeAll { $0 == account }
-        groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
+        groupDefaults.set(tosArray, forKey: nkComm.groupDefaultsToS)
 
         groupDefaults.synchronize()
     }
 
     func checkServerError(account: String, controller: NCMainTabBarController?) async {
-        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
+        guard let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
         else {
             return
         }
-        var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-        let unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-        let tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+        var unavailableArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnavailable) as? [String] ?? []
+        let unauthorizedArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnauthorized) as? [String] ?? []
+        let tosArray = groupDefaults.array(forKey: nkComm.groupDefaultsToS) as? [String] ?? []
 
         // Unavailable
         if unavailableArray.contains(account) {
@@ -65,9 +65,9 @@ extension NCNetworking {
             switch resultsServerStatus.result {
             case .success(let serverInfo):
                 unavailableArray.removeAll { $0 == account }
-                groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+                groupDefaults.set(unavailableArray, forKey: nkComm.groupDefaultsUnavailable)
                 unavailableArray.removeAll { $0 == account }
-                groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+                groupDefaults.set(unavailableArray, forKey: nkComm.groupDefaultsUnavailable)
 
                 if serverInfo.maintenance {
                     Task {

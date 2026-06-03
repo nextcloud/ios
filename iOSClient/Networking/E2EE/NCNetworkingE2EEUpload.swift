@@ -195,8 +195,16 @@ class NCNetworkingE2EEUpload: NSObject {
             if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
+            if let ownerId = resultsSendFile.ownerId.isNotEmpty {
+                metadata.ownerId = ownerId
+                if let ownerDisplayName = await self.database.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                    metadata.ownerDisplayName = ownerDisplayName
+                }
+            }
+            if let permissions = resultsSendFile.permissions.isNotEmpty {
+                metadata.permissions = permissions
+            }
             metadata.chunk = 0
-
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
@@ -238,7 +246,7 @@ class NCNetworkingE2EEUpload: NSObject {
                           tokenBanner: Int?,
                           requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
                           currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
-    async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
+    async -> (ocId: String?, etag: String?, date: Date?, ownerId: String?, permissions: String?, error: NKError) {
         if metadata.chunk > 0 {
             let payload = LucidBannerPayload.Update(
                 title: NSLocalizedString("_wait_file_preparation_", comment: ""),
@@ -289,7 +297,12 @@ class NCNetworkingE2EEUpload: NSObject {
             currentUploadTask(task)
             let results = await task.value
 
-            return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
+            return (results.file?.ocId,
+                    results.file?.etag,
+                    results.file?.date,
+                    results.file?.ownerId,
+                    results.file?.permissions,
+                    results.error)
         } else {
             let payload = LucidBannerPayload.Update(
                 title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
@@ -320,7 +333,12 @@ class NCNetworkingE2EEUpload: NSObject {
                 }
             }
 
-            return (results.ocId, results.etag, results.date, results.error)
+            return (results.ocId,
+                    results.etag,
+                    results.date,
+                    results.ownerId,
+                    results.permissions,
+                    results.error)
         }
     }
 }
