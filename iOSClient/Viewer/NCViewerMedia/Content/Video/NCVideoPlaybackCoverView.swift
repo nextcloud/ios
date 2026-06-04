@@ -52,7 +52,7 @@ struct NCVideoPlaybackCoverView: View {
             } label: {
                 Image(systemName: "play.fill")
                     .font(.system(size: 36, weight: .regular))
-                    .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
+                    .foregroundStyle(isPlayEnabled ? .black.opacity(0.82) : .black.opacity(0.35))
                     .frame(width: 62, height: 62)
                     .coverPlayButtonBackground(isEnabled: isPlayEnabled)
                     .shadow(

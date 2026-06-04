@@ -69,7 +69,7 @@ final class NCVideoControlsView: UIView {
 
     fileprivate static let centerControlsWidth: CGFloat = 220
     fileprivate static let centerControlsHeight: CGFloat = 76
-    fileprivate static let bottomControlsHeight: CGFloat = 52
+    fileprivate static let bottomControlsHeight: CGFloat = 45
     fileprivate static let bottomControlsHorizontalInset: CGFloat = 28
     fileprivate static let bottomControlsBottomInset: CGFloat = 30
     fileprivate static let topActionsHeight: CGFloat = 46
@@ -616,7 +616,7 @@ private struct NCVideoControlsSwiftUIView: View {
     ) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
-            .foregroundStyle(.white)
+            .foregroundStyle(.black.opacity(0.82))
             .frame(
                 width: NCVideoControlsView.topActionsButtonSize,
                 height: NCVideoControlsView.topActionsButtonSize
@@ -641,7 +641,7 @@ private struct NCVideoControlsSwiftUIView: View {
         } label: {
             Image(systemName: systemName)
                 .font(.system(size: pointSize, weight: .regular))
-                .foregroundStyle(.white)
+                .foregroundStyle(.black.opacity(0.82))
                 .frame(width: size, height: size)
                 .controlGlassBackground(shape: Circle())
                 .shadow(color: .black.opacity(0.16), radius: 14, x: 0, y: 4)
@@ -655,7 +655,7 @@ private struct NCVideoControlsSwiftUIView: View {
     private func timeLabel(_ text: String) -> some View {
         Text(text)
             .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.white)
+            .foregroundStyle(.black.opacity(0.82))
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
@@ -667,8 +667,8 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
     func makeUIView(context: Context) -> AVRoutePickerView {
         let routePickerView = AVRoutePickerView()
         routePickerView.backgroundColor = .clear
-        routePickerView.tintColor = .white
-        routePickerView.activeTintColor = .white
+        routePickerView.tintColor = .black
+        routePickerView.activeTintColor = .black
         routePickerView.prioritizesVideoDevices = true
         return routePickerView
     }
