@@ -481,8 +481,7 @@ private struct NCVideoControlsSwiftUIView: View {
         }
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.white.opacity(0.92))
-        .clipShape(Capsule())
+        .controlGlassBackground(shape: Capsule())
         .shadow(color: .black.opacity(0.16), radius: 18, x: 0, y: 5)
         .contentShape(Capsule())
     }
@@ -507,8 +506,7 @@ private struct NCVideoControlsSwiftUIView: View {
                         width: NCVideoControlsView.topActionsButtonSize,
                         height: NCVideoControlsView.topActionsButtonSize
                     )
-                    .background(.white.opacity(0.92))
-                    .clipShape(Circle())
+                    .controlGlassBackground(shape: Circle())
                     .shadow(color: .black.opacity(0.16), radius: 14, x: 0, y: 4)
 
             case .vlcTracks:
@@ -618,13 +616,12 @@ private struct NCVideoControlsSwiftUIView: View {
     ) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
-            .foregroundStyle(.black)
+            .foregroundStyle(.white)
             .frame(
                 width: NCVideoControlsView.topActionsButtonSize,
                 height: NCVideoControlsView.topActionsButtonSize
             )
-            .background(.white.opacity(0.92))
-            .clipShape(Circle())
+            .controlGlassBackground(shape: Circle())
             .shadow(color: .black.opacity(0.16), radius: 14, x: 0, y: 4)
     }
 
@@ -644,10 +641,9 @@ private struct NCVideoControlsSwiftUIView: View {
         } label: {
             Image(systemName: systemName)
                 .font(.system(size: pointSize, weight: .regular))
-                .foregroundStyle(.black)
+                .foregroundStyle(.white)
                 .frame(width: size, height: size)
-                .background(.white.opacity(0.92))
-                .clipShape(Circle())
+                .controlGlassBackground(shape: Circle())
                 .shadow(color: .black.opacity(0.16), radius: 14, x: 0, y: 4)
         }
         .buttonStyle(.plain)
@@ -659,7 +655,7 @@ private struct NCVideoControlsSwiftUIView: View {
     private func timeLabel(_ text: String) -> some View {
         Text(text)
             .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.black.opacity(0.72))
+            .foregroundStyle(.white)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
@@ -671,8 +667,8 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
     func makeUIView(context: Context) -> AVRoutePickerView {
         let routePickerView = AVRoutePickerView()
         routePickerView.backgroundColor = .clear
-        routePickerView.tintColor = .black
-        routePickerView.activeTintColor = .black
+        routePickerView.tintColor = .white
+        routePickerView.activeTintColor = .white
         routePickerView.prioritizesVideoDevices = true
         return routePickerView
     }
@@ -681,6 +677,22 @@ private struct NCVideoAirPlayRoutePickerView: UIViewRepresentable {
         _ uiView: AVRoutePickerView,
         context: Context
     ) { }
+}
+
+private extension View {
+    @ViewBuilder
+    func controlGlassBackground<BackgroundShape: Shape>(
+        shape: BackgroundShape
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            self
+                .glassEffect(.regular, in: shape)
+        } else {
+            self
+                .background(.white.opacity(0.92))
+                .clipShape(shape)
+        }
+    }
 }
 
 // MARK: - Preview
@@ -696,6 +708,12 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let containerView = UIView()
         containerView.backgroundColor = .black
+        containerView.clipsToBounds = true
+
+        let imageView = UIImageView(image: UIImage(named: "testimage"))
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
 
         let controlsView = NCVideoControlsView()
         controlsView.translatesAutoresizingMaskIntoConstraints = false
@@ -715,9 +733,15 @@ private struct NCVideoControlsPreviewView: UIViewRepresentable {
             NCVideoTrackMenuItem(index: 2, title: "English", isSelected: false)
         ])
 
+        containerView.addSubview(imageView)
         containerView.addSubview(controlsView)
 
         NSLayoutConstraint.activate([
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+
             controlsView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             controlsView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             controlsView.topAnchor.constraint(equalTo: containerView.topAnchor),
