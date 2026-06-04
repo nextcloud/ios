@@ -473,7 +473,7 @@ private struct NCVideoControlsSwiftUIView: View {
                 }
             )
             .disabled(!state.isSeekingEnabled)
-            .tint(.black.opacity(0.38))
+            .tint(.gray)
             .opacity(state.isSeekingEnabled ? 1 : 0.45)
 
             timeLabel(state.remainingText)
@@ -655,7 +655,7 @@ private struct NCVideoControlsSwiftUIView: View {
     private func timeLabel(_ text: String) -> some View {
         Text(text)
             .font(.system(size: 15, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(.black.opacity(0.82))
+            .foregroundStyle(.gray)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
     }
