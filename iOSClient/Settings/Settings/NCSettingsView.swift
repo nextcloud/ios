@@ -22,7 +22,6 @@ struct NCSettingsView: View {
     @State private var showSourceCode = false
     // Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
-    @State private var autoUploadCounter = NCAutoUploadCounter()
 
     var capabilities: NKCapabilities.Capabilities {
         NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
@@ -30,38 +29,6 @@ struct NCSettingsView: View {
 
     var body: some View {
         Form {
-            // `Auto Upload` Section
-            Section(content: {
-                NavigationLink(destination: LazyView {
-                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
-                        .environment(autoUploadCounter)
-                }) {
-                    HStack {
-                        NCFocusedAutoUploadCloudAnimation(size: 44,
-                                                          cloudColor: Color(NCBrandColor.shared.iconImageColor),
-                                                          arrowColor: model.autoUploadStart
-                                                          ? Color(UIColor.systemBackground)
-                                                          : Color(NCBrandColor.shared.iconImageColor),
-                                                          isAnimated: model.autoUploadStart)
-                            .frame(width: 39)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(NSLocalizedString("_settings_autoupload_", comment: ""))
-                                .font(.body)
-
-                            if model.autoUploadStart && autoUploadCounter.isLoaded {
-                                Text(autoUploadCounter.itemsLeftSummary)
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                }
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_description_", comment: ""))
-                    .font(.footnote)
-            })
-
             // `Privacy` Section
             Section(content: {
                 Button(action: {
@@ -325,28 +292,6 @@ struct NCSettingsView: View {
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
-        .onAppear {
-            updateAutoUploadCounterSubscription()
-        }
-        .onDisappear {
-            stopAutoUploadCounterSubscription()
-        }
-        .onChange(of: model.autoUploadStart) {
-            updateAutoUploadCounterSubscription()
-        }
-    }
-
-    private func updateAutoUploadCounterSubscription() {
-        let session = model.session
-
-        autoUploadCounter.start(account: session.account,
-                                urlBase: session.urlBase,
-                                userId: session.userId,
-                                autoUploadStart: model.autoUploadStart)
-    }
-
-    private func stopAutoUploadCounterSubscription() {
-        autoUploadCounter.stop()
     }
 }
 

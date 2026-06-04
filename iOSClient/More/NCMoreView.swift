@@ -12,6 +12,7 @@ import NextcloudKit
 /// inside the UIKit-based `NCMoreNavigationController`.
 struct NCMoreView: View {
     @StateObject private var model: NCMoreModel
+    @State private var autoUploadCounter = NCAutoUploadCounter()
     private let loadItemsOnAppear: Bool
     private let shortcutIconColor = Color(red: 0, green: 130 / 255, blue: 201 / 255) // Nextcloud Color
 
@@ -48,26 +49,87 @@ struct NCMoreView: View {
             guard loadItemsOnAppear else { return }
             await model.loadItems()
         }
+        .onAppear {
+            updateAutoUploadCounter()
+        }
+        .onDisappear {
+            autoUploadCounter.stop()
+        }
+        .onChange(of: model.autoUploadStart) {
+            updateAutoUploadCounter()
+        }
+    }
+
+    private func updateAutoUploadCounter() {
+        let session = model.session
+
+        autoUploadCounter.start(account: session.account,
+                                urlBase: session.urlBase,
+                                userId: session.userId,
+                                autoUploadStart: model.autoUploadStart)
     }
 
     /// Main scrollable content of the More tab.
     private var content: some View {
         ScrollView {
             VStack(spacing: 18) {
-                ForEach(model.sections) { section in
-                    switch section.type {
-                    case .moreApps:
-                        moreAppsSection(items: section.items)
+                ForEach(model.sections.filter { $0.type == .moreApps }) { section in
+                    moreAppsSection(items: section.items)
+                }
 
-                    case .regular:
-                        menuSection(items: section.items)
-                    }
+                autoUploadSection
+
+                ForEach(model.sections.filter { $0.type == .regular }) { section in
+                    menuSection(items: section.items)
                 }
             }
             .padding(.horizontal, 20)
             .padding(.top, 18)
             .padding(.bottom, 20)
         }
+    }
+
+    /// Rich Auto Upload row: animated cloud icon plus a live "items left / failed" subtitle.
+    private var autoUploadSection: some View {
+        Button {
+            model.openAutoUpload(counter: autoUploadCounter)
+        } label: {
+            HStack(spacing: 16) {
+                NCFocusedAutoUploadCloudAnimation(size: 44,
+                                                  cloudColor: Color(NCBrandColor.shared.iconImageColor),
+                                                  arrowColor: model.autoUploadStart
+                                                  ? Color(UIColor.systemBackground)
+                                                  : Color(NCBrandColor.shared.iconImageColor),
+                                                  isAnimated: model.autoUploadStart)
+                    .frame(width: 39)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(NSLocalizedString("_settings_autoupload_", comment: ""))
+                        .font(.body)
+                        .foregroundColor(Color(NCBrandColor.shared.textColor))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+
+                    if model.autoUploadStart && autoUploadCounter.isLoaded {
+                        Text(autoUploadCounter.itemsLeftSummary)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(Color(.tertiaryLabel))
+            }
+            .padding(.horizontal, 16)
+            .frame(minHeight: 54)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     /// Renders the app suggestion shortcut section.
