@@ -37,16 +37,21 @@ struct NCMoreView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if let appsSection = model.sections.first(where: { $0.type == .moreApps }) {
-                moreAppsHeader(items: appsSection.items)
-            }
+            ScrollView {
+                VStack(spacing: 18) {
+                    if let appsSection = model.sections.first(where: { $0.type == .moreApps }) {
+                        moreAppsSection(items: appsSection.items)
+                    }
 
-            Form {
-                autoUploadSection
+                    autoUploadSection
 
-                ForEach(model.sections.filter { $0.type == .regular }) { section in
-                    menuSection(items: section.items)
+                    ForEach(model.sections.filter { $0.type == .regular }) { section in
+                        menuSection(items: section.items)
+                    }
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 20)
             }
             .overlay(alignment: .bottom) {
                 // Soften the cut where the scrolling list meets the pinned quota.
@@ -85,9 +90,9 @@ struct NCMoreView: View {
                                 autoUploadStart: model.autoUploadStart)
     }
 
-    /// Auto Upload section: animated cloud icon, a live "items left / failed" subtitle, and a footer description.
+    /// Auto Upload card: animated cloud icon, a live "items left / failed" subtitle, and a description below.
     private var autoUploadSection: some View {
-        Section {
+        VStack(alignment: .leading, spacing: 6) {
             Button {
                 model.openAutoUpload(counter: autoUploadCounter)
             } label: {
@@ -118,27 +123,30 @@ struct NCMoreView: View {
                         .font(.caption)
                         .foregroundColor(Color(.tertiaryLabel))
                 }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 54)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-        } footer: {
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
             Text(NSLocalizedString("_autoupload_description_", comment: ""))
                 .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 16)
         }
     }
 
-    /// Renders the app suggestion shortcut strip shown above the Form.
+    /// Renders the app suggestion shortcut strip; scrolls at the top of the content.
     ///
     /// - Parameter items: Shortcut items displayed as cards.
-    private func moreAppsHeader(items: [NCMoreModel.Item]) -> some View {
+    private func moreAppsSection(items: [NCMoreModel.Item]) -> some View {
         HStack(spacing: 14) {
             ForEach(Array(items.enumerated()), id: \.element.identifier) { _, item in
                 shortcutButton(item)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-        .padding(.bottom, 4)
     }
 
     /// Creates a tappable shortcut card.
@@ -170,15 +178,21 @@ struct NCMoreView: View {
         .buttonStyle(.plain)
     }
 
-    /// Renders a menu section as grouped Form rows.
+    /// Renders a rounded menu card containing multiple rows.
     ///
-    /// - Parameter items: Items displayed in the section.
+    /// - Parameter items: Items displayed in the card.
     private func menuSection(items: [NCMoreModel.Item]) -> some View {
-        Section {
-            ForEach(Array(items.enumerated()), id: \.element.identifier) { _, item in
+        VStack(spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.element.identifier) { index, item in
                 menuRow(item)
+
+                if index < items.count - 1 {
+                    divider
+                }
             }
         }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     /// Renders a single menu row.
@@ -197,6 +211,8 @@ struct NCMoreView: View {
                 Text(NSLocalizedString(item.titleKey, comment: ""))
                     .font(.body)
                     .foregroundColor(Color(NCBrandColor.shared.textColor))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
                     .tint(.primary)
 
                 Spacer()
@@ -205,9 +221,18 @@ struct NCMoreView: View {
                     .font(.caption)
                     .foregroundColor(Color(.tertiaryLabel))
             }
+            .padding(.horizontal, 16)
+            .frame(height: 54)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(Color(.separator).opacity(0.45))
+            .frame(height: 0.5)
+            .padding(.leading, 71)
     }
 
     @ViewBuilder
