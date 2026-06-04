@@ -36,15 +36,22 @@ struct NCMoreView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                content
-                quotaSection
+        VStack(spacing: 0) {
+            if let appsSection = model.sections.first(where: { $0.type == .moreApps }) {
+                moreAppsHeader(items: appsSection.items)
             }
+
+            Form {
+                autoUploadSection
+
+                ForEach(model.sections.filter { $0.type == .regular }) { section in
+                    menuSection(items: section.items)
+                }
+            }
+
+            quotaSection
         }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .task {
             guard loadItemsOnAppear else { return }
             await model.loadItems()
@@ -69,29 +76,9 @@ struct NCMoreView: View {
                                 autoUploadStart: model.autoUploadStart)
     }
 
-    /// Main scrollable content of the More tab.
-    private var content: some View {
-        ScrollView {
-            VStack(spacing: 18) {
-                ForEach(model.sections.filter { $0.type == .moreApps }) { section in
-                    moreAppsSection(items: section.items)
-                }
-
-                autoUploadSection
-
-                ForEach(model.sections.filter { $0.type == .regular }) { section in
-                    menuSection(items: section.items)
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 20)
-        }
-    }
-
-    /// Rich Auto Upload row: animated cloud icon plus a live "items left / failed" subtitle.
+    /// Auto Upload section: animated cloud icon, a live "items left / failed" subtitle, and a footer description.
     private var autoUploadSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        Section {
             Button {
                 model.openAutoUpload(counter: autoUploadCounter)
             } label: {
@@ -108,8 +95,6 @@ struct NCMoreView: View {
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                             .font(.body)
                             .foregroundColor(Color(NCBrandColor.shared.textColor))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.85)
 
                         if model.autoUploadStart && autoUploadCounter.isLoaded {
                             Text(autoUploadCounter.itemsLeftSummary)
@@ -124,33 +109,30 @@ struct NCMoreView: View {
                         .font(.caption)
                         .foregroundColor(Color(.tertiaryLabel))
                 }
-                .padding(.horizontal, 16)
-                .frame(minHeight: 54)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-
+        } footer: {
             Text(NSLocalizedString("_autoupload_description_", comment: ""))
                 .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 16)
         }
     }
 
-    /// Renders the app suggestion shortcut section.
+    /// Renders the app suggestion shortcut strip shown above the Form.
     ///
     /// - Parameter items: Shortcut items displayed as cards.
-    private func moreAppsSection(items: [NCMoreModel.Item]) -> some View {
+    private func moreAppsHeader(items: [NCMoreModel.Item]) -> some View {
         HStack(spacing: 14) {
             ForEach(Array(items.enumerated()), id: \.element.identifier) { _, item in
                 shortcutButton(item)
             }
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .padding(.bottom, 4)
     }
 
-    /// Creates a tappable shortcut nextcloud card.
+    /// Creates a tappable shortcut card.
     ///
     /// - Parameter item: Item containing title, image and destination.
     private func shortcutButton(_ item: NCMoreModel.Item) -> some View {
@@ -179,21 +161,15 @@ struct NCMoreView: View {
         .buttonStyle(.plain)
     }
 
-    /// Renders a rounded menu section containing multiple rows.
+    /// Renders a menu section as grouped Form rows.
     ///
     /// - Parameter items: Items displayed in the section.
     private func menuSection(items: [NCMoreModel.Item]) -> some View {
-        VStack(spacing: 0) {
-            ForEach(Array(items.enumerated()), id: \.element.identifier) { index, item in
+        Section {
+            ForEach(Array(items.enumerated()), id: \.element.identifier) { _, item in
                 menuRow(item)
-
-                if index < items.count - 1 {
-                    divider
-                }
             }
         }
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     /// Renders a single menu row.
@@ -207,13 +183,11 @@ struct NCMoreView: View {
                 Image(systemName: item.image)
                     .font(.icon())
                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                    .frame(width: 26)
+                    .frame(width: 39)
 
                 Text(NSLocalizedString(item.titleKey, comment: ""))
                     .font(.body)
                     .foregroundColor(Color(NCBrandColor.shared.textColor))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.85)
                     .tint(.primary)
 
                 Spacer()
@@ -222,54 +196,47 @@ struct NCMoreView: View {
                     .font(.caption)
                     .foregroundColor(Color(.tertiaryLabel))
             }
-            .padding(.horizontal, 16)
-            .frame(height: 54)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
-    private var divider: some View {
-        Rectangle()
-            .fill(Color(.separator).opacity(0.45))
-            .frame(height: 0.5)
-            .padding(.leading, 58)
-    }
-
+    @ViewBuilder
     private var quotaSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if !model.quotaDescription.isEmpty {
-                Text(model.quotaDescription)
-                    .font(.footnote)
-                    .foregroundColor(.primary)
-                    .lineLimit(2)
-                    .tint(.primary)
-
-                quotaProgressView
-            }
-
-            if !model.quotaExternalSiteTitle.isEmpty,
-               let url = model.quotaExternalSiteUrl {
-                Button {
-                    model.perform(
-                        .browser(
-                            url: url,
-                            title: model.quotaExternalSiteTitle
-                        )
-                    )
-                } label: {
-                    Text(model.quotaExternalSiteTitle)
+        if !model.quotaDescription.isEmpty || !model.quotaExternalSiteTitle.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                if !model.quotaDescription.isEmpty {
+                    Text(model.quotaDescription)
                         .font(.footnote)
-                        .lineLimit(1)
-                        .tint(.primary)
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+
+                    quotaProgressView
                 }
-                .buttonStyle(.plain)
+
+                if !model.quotaExternalSiteTitle.isEmpty,
+                   let url = model.quotaExternalSiteUrl {
+                    Button {
+                        model.perform(
+                            .browser(
+                                url: url,
+                                title: model.quotaExternalSiteTitle
+                            )
+                        )
+                    } label: {
+                        Text(model.quotaExternalSiteTitle)
+                            .font(.footnote)
+                            .lineLimit(1)
+                            .tint(.primary)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 8)
-        .padding(.bottom, 16)
-        .background(Color(.systemGroupedBackground))
     }
 
     private var normalizedQuotaProgress: Double {
