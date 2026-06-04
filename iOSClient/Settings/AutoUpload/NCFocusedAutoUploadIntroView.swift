@@ -54,7 +54,7 @@ struct NCFocusedAutoUploadIntroView: View {
                 VStack(alignment: .leading, spacing: 22) {
                     guidanceRow(systemImage: "wifi", textKey: "_focused_auto_upload_wifi_")
                     guidanceRow(systemImage: "battery.100", textKey: "_focused_auto_upload_charger_")
-                    guidanceRow(systemImage: "logo", textKey: "_focused_auto_upload_do_not_exit_")
+                    guidanceRow(systemImage: "arrow.down.right.and.arrow.up.left", textKey: "_focused_auto_upload_do_not_exit_")
                 }
                 .padding(.top, 10)
             }
@@ -97,19 +97,10 @@ struct NCFocusedAutoUploadIntroView: View {
 
     @ViewBuilder
     private func guidanceIcon(systemImage: String) -> some View {
-        if systemImage == "logo" {
-            Image("logo")
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.secondary)
-                .frame(width: 34, height: 28)
-        } else {
-            Image(systemName: systemImage)
-                .font(.system(size: 28, weight: .regular))
-                .foregroundStyle(.secondary)
-                .frame(width: 34)
-        }
+        Image(systemName: systemImage)
+            .font(.system(size: 28, weight: .regular))
+            .foregroundStyle(.secondary)
+            .frame(width: 34)
     }
 }
 

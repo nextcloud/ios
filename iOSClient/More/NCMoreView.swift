@@ -91,45 +91,52 @@ struct NCMoreView: View {
 
     /// Rich Auto Upload row: animated cloud icon plus a live "items left / failed" subtitle.
     private var autoUploadSection: some View {
-        Button {
-            model.openAutoUpload(counter: autoUploadCounter)
-        } label: {
-            HStack(spacing: 16) {
-                NCFocusedAutoUploadCloudAnimation(size: 44,
-                                                  cloudColor: Color(NCBrandColor.shared.iconImageColor),
-                                                  arrowColor: model.autoUploadStart
-                                                  ? Color(UIColor.systemBackground)
-                                                  : Color(NCBrandColor.shared.iconImageColor),
-                                                  isAnimated: model.autoUploadStart)
-                    .frame(width: 39)
+        VStack(alignment: .leading, spacing: 6) {
+            Button {
+                model.openAutoUpload(counter: autoUploadCounter)
+            } label: {
+                HStack(spacing: 16) {
+                    NCFocusedAutoUploadCloudAnimation(size: 44,
+                                                      cloudColor: Color(NCBrandColor.shared.iconImageColor),
+                                                      arrowColor: model.autoUploadStart
+                                                      ? Color(UIColor.systemBackground)
+                                                      : Color(NCBrandColor.shared.iconImageColor),
+                                                      isAnimated: model.autoUploadStart)
+                        .frame(width: 39)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(NSLocalizedString("_settings_autoupload_", comment: ""))
-                        .font(.body)
-                        .foregroundColor(Color(NCBrandColor.shared.textColor))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.85)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(NSLocalizedString("_settings_autoupload_", comment: ""))
+                            .font(.body)
+                            .foregroundColor(Color(NCBrandColor.shared.textColor))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
 
-                    if model.autoUploadStart && autoUploadCounter.isLoaded {
-                        Text(autoUploadCounter.itemsLeftSummary)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                        if model.autoUploadStart && autoUploadCounter.isLoaded {
+                            Text(autoUploadCounter.itemsLeftSummary)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
                     }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(Color(.tertiaryLabel))
                 }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(Color(.tertiaryLabel))
+                .padding(.horizontal, 16)
+                .frame(minHeight: 54)
+                .contentShape(Rectangle())
             }
-            .padding(.horizontal, 16)
-            .frame(minHeight: 54)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+            Text(NSLocalizedString("_autoupload_description_", comment: ""))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 16)
         }
-        .buttonStyle(.plain)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     /// Renders the app suggestion shortcut section.

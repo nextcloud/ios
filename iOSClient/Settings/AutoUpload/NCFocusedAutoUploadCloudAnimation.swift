@@ -70,3 +70,13 @@ struct NCFocusedAutoUploadCloudAnimation: View {
         start + (end - start) * CGFloat(progress)
     }
 }
+
+#Preview {
+    VStack(spacing: 48) {
+        NCFocusedAutoUploadCloudAnimation(size: 80)
+
+        NCFocusedAutoUploadCloudAnimation(size: 80, isAnimated: false)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.black)
+}
