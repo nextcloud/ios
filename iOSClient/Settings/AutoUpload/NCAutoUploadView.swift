@@ -18,7 +18,7 @@ struct NCAutoUploadView: View {
     @State private var showUploadAllPhotosWarning = false
     @State private var showFocusedAutoUploadIntro = false
     @State private var showFocusedAutoUploadProgress = false
-    @State private var openFocusedAutoUploadAfterIntro = false
+    @State private var openFocusedAutoUploadFinish = false
     @State private var startAutoUpload = false
     @Environment(NCAutoUploadCounter.self) private var autoUploadCounter
 
@@ -73,15 +73,15 @@ struct NCAutoUploadView: View {
             .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showFocusedAutoUploadIntro, onDismiss: {
-            guard openFocusedAutoUploadAfterIntro else { return }
+            guard openFocusedAutoUploadFinish else { return }
 
-            openFocusedAutoUploadAfterIntro = false
+            openFocusedAutoUploadFinish = false
             guard autoUploadCounter.hasItemsToUpload else { return }
 
             showFocusedAutoUploadProgress = true
         }) {
             NCFocusedAutoUploadIntroView {
-                openFocusedAutoUploadAfterIntro = true
+                openFocusedAutoUploadFinish = true
                 showFocusedAutoUploadIntro = false
             }
             .presentationDetents([.large])
@@ -97,7 +97,7 @@ struct NCAutoUploadView: View {
             if !newValue {
                 showFocusedAutoUploadIntro = false
                 showFocusedAutoUploadProgress = false
-                openFocusedAutoUploadAfterIntro = false
+                openFocusedAutoUploadFinish = false
             }
             updateAutoUploadCounterSubscription()
         }
