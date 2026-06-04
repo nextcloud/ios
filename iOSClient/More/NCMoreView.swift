@@ -48,6 +48,15 @@ struct NCMoreView: View {
                     menuSection(items: section.items)
                 }
             }
+            .overlay(alignment: .bottom) {
+                // Soften the cut where the scrolling list meets the pinned quota.
+                LinearGradient(colors: [Color(.systemGroupedBackground).opacity(0),
+                                        Color(.systemGroupedBackground)],
+                               startPoint: .top,
+                               endPoint: .bottom)
+                    .frame(height: 32)
+                    .allowsHitTesting(false)
+            }
 
             quotaSection
         }
