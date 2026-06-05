@@ -44,9 +44,7 @@ extension NCNetworking {
                   account: String,
                   taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                   completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ file: NKFile?, _ error: NKError) -> Void) {
-        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
-
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account) { task in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                             path: serverUrlFileName,
@@ -69,10 +67,8 @@ extension NCNetworking {
     func readFileAsync(serverUrlFileName: String,
                        account: String,
                        taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadata: tableMetadata?, error: NKError) {
-        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
                                                                       depth: "0",
-                                                                      showHiddenFiles: showHiddenFiles,
                                                                       account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
