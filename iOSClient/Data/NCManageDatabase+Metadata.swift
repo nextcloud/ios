@@ -227,7 +227,6 @@ extension tableMetadata {
         return session.isEmpty && !isDirectoryE2EE && !e2eEncrypted
     }
 
-    // Return if is sharable
     func isSharable() -> Bool {
         guard let capabilities = NCNetworking.shared.capabilities[account] else {
             return false
@@ -1398,6 +1397,14 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first != nil
         } ?? false
+    }
+
+    func countMetadatasFor(serverUrl: String) -> Int {
+        core.performRealmRead { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter("serverUrl == %@", serverUrl)
+            return results.count
+        } ?? 0
     }
 
     // MARK: - helpers
