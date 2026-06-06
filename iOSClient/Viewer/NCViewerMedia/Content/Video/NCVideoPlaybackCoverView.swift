@@ -52,15 +52,10 @@ struct NCVideoPlaybackCoverView: View {
             } label: {
                 Image(systemName: "play.fill")
                     .font(.system(size: 36, weight: .regular))
-                    .foregroundStyle(isPlayEnabled ? .black.opacity(0.82) : .black.opacity(0.35))
+                    .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
+                    .videoControlIconShadow()
                     .frame(width: 62, height: 62)
                     .coverPlayButtonBackground(isEnabled: isPlayEnabled)
-                    .shadow(
-                        color: .black.opacity(isPlayEnabled ? 0.16 : 0.08),
-                        radius: 14,
-                        x: 0,
-                        y: 4
-                    )
             }
             .disabled(!isPlayEnabled || isLaunchingPlayback)
             .opacity(isLaunchingPlayback ? 0 : 1)
@@ -77,11 +72,38 @@ private extension View {
         if #available(iOS 26.0, *) {
             self
                 .glassEffect(.regular, in: .circle)
+                .overlay {
+                    Circle()
+                        .stroke(.white.opacity(0.58), lineWidth: 1.2)
+                }
+                .overlay {
+                    Circle()
+                        .stroke(.white.opacity(0.20), lineWidth: 4)
+                        .blur(radius: 2)
+                        .mask(Circle())
+                }
+                .shadow(
+                    color: .black.opacity(0.18),
+                    radius: 14,
+                    x: 0,
+                    y: 4
+                )
         } else {
             self
                 .background(.white.opacity(isEnabled ? 0.92 : 0.45))
                 .clipShape(Circle())
         }
+    }
+}
+
+private extension View {
+    func videoControlIconShadow() -> some View {
+        shadow(
+            color: .black.opacity(0.5),
+            radius: 2.5,
+            x: 0,
+            y: 1
+        )
     }
 }
 
