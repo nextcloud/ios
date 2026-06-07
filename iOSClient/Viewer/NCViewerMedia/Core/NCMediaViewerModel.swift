@@ -143,6 +143,38 @@ final class NCMediaViewerModel: ObservableObject {
         return cachedPagesByOcId[ocId]?.metadata
     }
 
+    func ocId(at index: Int) -> String? {
+        guard ocIds.indices.contains(index) else {
+            return nil
+        }
+
+        return ocIds[index]
+    }
+
+    func metadataForThumbnail(at index: Int) -> tableMetadata? {
+        guard let ocId = ocId(at: index) else {
+            return nil
+        }
+
+        return cachedPagesByOcId[ocId]?.metadata
+    }
+
+    func previewURLForThumbnail(at index: Int) -> URL? {
+        guard let ocId = ocId(at: index) else {
+            return nil
+        }
+
+        return currentPreviewURL(for: ocId)
+    }
+
+    func isCurrentThumbnail(at index: Int) -> Bool {
+        selectedIndex == index
+    }
+
+    func isVideoThumbnail(at index: Int) -> Bool {
+        metadataForThumbnail(at: index)?.classFile == NKTypeClassFile.video.rawValue
+    }
+
     func requestAutoPlay(at index: Int) {
         guard ocIds.indices.contains(index) else {
             return
@@ -349,6 +381,14 @@ final class NCMediaViewerModel: ObservableObject {
 
         await prefetchPageIfNeeded(index: index)
         prefetchNeighborPages(around: index)
+    }
+
+    func prefetchThumbnailIfNeeded(index: Int) async {
+        guard ocIds.indices.contains(index) else {
+            return
+        }
+
+        await prefetchPageIfNeeded(index: index)
     }
 
     func toggleChromeVisibility() {

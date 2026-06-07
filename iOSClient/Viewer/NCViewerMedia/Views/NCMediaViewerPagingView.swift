@@ -83,6 +83,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
             }
         }
 
+        context.coordinator.jumpToSelectedIndexIfNeeded(animated: false)
         context.coordinator.refreshVisibleCells()
     }
 
@@ -188,6 +189,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
               size.height > 0 else {
             return
         }
+
         // Ignore intermediate offsets while the layout is being resized.
         lastCollectionViewBoundsSize = size
         isAdjustingLayout = true
@@ -272,9 +274,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        collectionView.scrollToItem(
-            at: IndexPath(item: index, section: 0),
-            at: .centeredHorizontally,
+        jumpToIndex(
+            index,
             animated: animated
         )
 
@@ -292,6 +293,28 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
+    func jumpToSelectedIndexIfNeeded(animated: Bool) {
+        guard model.numberOfPages > 0 else {
+            return
+        }
+
+        let index = model.selectedIndex
+
+        guard index >= 0,
+              index < model.numberOfPages else {
+            return
+        }
+
+        guard lastVisibleIndex != index else {
+            return
+        }
+
+        scrollToIndex(
+            index,
+            animated: animated
+        )
+    }
+
     private func scrollToIndex(
         _ index: Int,
         animated: Bool
@@ -300,20 +323,13 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        guard let collectionView else {
-            return
-        }
-
-        collectionView.layoutIfNeeded()
-
         guard index >= 0,
               index < model.numberOfPages else {
             return
         }
 
-        collectionView.scrollToItem(
-            at: IndexPath(item: index, section: 0),
-            at: .centeredHorizontally,
+        jumpToIndex(
+            index,
             animated: animated
         )
 
@@ -321,6 +337,39 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
+    }
+
+    private func jumpToIndex(
+        _ index: Int,
+        animated: Bool
+    ) {
+        guard let collectionView else {
+            return
+        }
+
+        collectionView.layoutIfNeeded()
+
+        guard collectionView.bounds.width > 0 else {
+            return
+        }
+
+        if animated {
+            collectionView.scrollToItem(
+                at: IndexPath(item: index, section: 0),
+                at: .centeredHorizontally,
+                animated: true
+            )
+        } else {
+            let targetOffset = CGPoint(
+                x: CGFloat(index) * collectionView.bounds.width,
+                y: 0
+            )
+
+            collectionView.setContentOffset(
+                targetOffset,
+                animated: false
+            )
+        }
     }
 
     // MARK: - Visible Cell Refresh
@@ -372,6 +421,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         if shouldAutoPlay {
             model.requestAutoPlay(at: targetIndex)
         }
+
         // Selection is finalized when the scroll animation ends.
         isUserPaging = true
         lastVisibleIndex = targetIndex
@@ -606,6 +656,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         guard let index = pageIndex(for: scrollView) else {
             return
         }
+
         // The settled page is now the selected page.
         isUserPaging = false
         lastVisibleIndex = index

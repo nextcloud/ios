@@ -42,6 +42,22 @@ struct NCMediaViewerView: View {
                 onClose: onClose
             )
             .ignoresSafeArea()
+
+            if !model.isChromeHidden, model.numberOfPages > 1 {
+                NCMediaViewerThumbnailCollectionView(
+                    model: model,
+                    onSelect: { index in
+                        Task {
+                            await model.displayPage(at: index)
+                        }
+                    }
+                )
+                .frame(height: 78)
+                .padding(.bottom, 30)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .ignoresSafeArea(.container, edges: [.horizontal, .bottom])
+                .zIndex(10)
+            }
         }
         .background(Color.ncViewerBackground(.system))
         .ignoresSafeArea()
