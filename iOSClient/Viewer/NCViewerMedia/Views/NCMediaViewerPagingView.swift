@@ -328,12 +328,13 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
+        lastVisibleIndex = index
+
         jumpToIndex(
             index,
             animated: animated
         )
 
-        lastVisibleIndex = index
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
@@ -406,10 +407,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        guard let collectionView else {
-            return
-        }
-
         // Stop the current media playback before programmatic page navigation.
         // This is intentionally broad because previous/next can move across image,
         // audio, AVPlayer, and VLC pages.
@@ -430,9 +427,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         updateVisibleMetadataTitle(for: targetIndex)
         refreshVisibleCells()
 
-        collectionView.scrollToItem(
-            at: IndexPath(item: targetIndex, section: 0),
-            at: .centeredHorizontally,
+        scrollToIndex(
+            targetIndex,
             animated: true
         )
     }

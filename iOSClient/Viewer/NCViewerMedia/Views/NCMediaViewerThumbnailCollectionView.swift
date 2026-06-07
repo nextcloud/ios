@@ -51,6 +51,7 @@ struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable {
     ) {
         context.coordinator.model = model
         context.coordinator.onSelect = onSelect
+        context.coordinator.syncDisplayedSelectedIndexFromModel()
 
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
@@ -81,6 +82,8 @@ extension NCMediaViewerThumbnailCollectionView {
         private var lastNumberOfPages: Int?
         private var lastCenteredIndex: Int?
         private var lastPrefetchedCenterIndex: Int?
+        private var displayedSelectedIndex: Int?
+        private var pendingSelectedIndex: Int?
         private let imageCache = NSCache<NSString, UIImage>()
 
         init(
@@ -89,6 +92,7 @@ extension NCMediaViewerThumbnailCollectionView {
         ) {
             self.model = model
             self.onSelect = onSelect
+            self.displayedSelectedIndex = model.initialSelectedIndex
             super.init()
 
             imageCache.countLimit = NCMediaViewerThumbnailCollectionLayout.imageCacheLimit
@@ -128,7 +132,26 @@ extension NCMediaViewerThumbnailCollectionView {
             _ collectionView: UICollectionView,
             didSelectItemAt indexPath: IndexPath
         ) {
-            onSelect(indexPath.item)
+            let selectedIndex = indexPath.item
+            let previousSelectedIndex = displayedSelectedIndex
+
+            pendingSelectedIndex = selectedIndex
+            displayedSelectedIndex = selectedIndex
+            lastCenteredIndex = nil
+
+            collectionView.collectionViewLayout.invalidateLayout()
+            collectionView.layoutIfNeeded()
+
+            scrollToSelectedIndexIfNeeded(animated: false)
+
+            if let previousSelectedIndex {
+                reloadThumbnailIfVisible(at: previousSelectedIndex)
+            }
+
+            reloadThumbnailIfVisible(at: selectedIndex)
+            refreshVisibleCells()
+
+            onSelect(selectedIndex)
         }
 
         // MARK: - UICollectionViewDelegateFlowLayout
@@ -139,13 +162,13 @@ extension NCMediaViewerThumbnailCollectionView {
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
             let baseSize = NCMediaViewerThumbnailCollectionLayout.thumbnailSize
-            let extraWidth = model.isCurrentThumbnail(at: indexPath.item)
+            let extraWidth = isDisplayedCurrentThumbnail(at: indexPath.item)
                 ? NCMediaViewerThumbnailCollectionLayout.currentExtraWidth
                 : 0
 
             return CGSize(
                 width: baseSize + extraWidth,
-                height: NCMediaViewerThumbnailCollectionLayout.itemHeight
+                height: NCMediaViewerThumbnailCollectionLayout.itemContainerHeight
             )
         }
 
@@ -161,6 +184,26 @@ extension NCMediaViewerThumbnailCollectionView {
         }
 
         // MARK: - Public Coordinator Updates
+
+        func syncDisplayedSelectedIndexFromModel() {
+            let modelSelectedIndex = model.initialSelectedIndex
+
+            guard modelSelectedIndex >= 0,
+                  modelSelectedIndex < model.numberOfPages else {
+                return
+            }
+
+            if let pendingSelectedIndex {
+                if pendingSelectedIndex == modelSelectedIndex {
+                    self.pendingSelectedIndex = nil
+                    displayedSelectedIndex = modelSelectedIndex
+                }
+
+                return
+            }
+
+            displayedSelectedIndex = modelSelectedIndex
+        }
 
         func reloadCollectionViewIfNeeded() {
             guard let collectionView else {
@@ -184,7 +227,7 @@ extension NCMediaViewerThumbnailCollectionView {
                 return
             }
 
-            let index = model.initialSelectedIndex
+            let index = displayedSelectedIndex ?? model.initialSelectedIndex
 
             guard index >= 0,
                   index < model.numberOfPages else {
@@ -223,7 +266,7 @@ extension NCMediaViewerThumbnailCollectionView {
         }
 
         func prefetchInitialThumbnailWindow() {
-            let selectedIndex = model.initialSelectedIndex
+            let selectedIndex = displayedSelectedIndex ?? model.initialSelectedIndex
 
             guard selectedIndex >= 0,
                   selectedIndex < model.numberOfPages else {
@@ -297,7 +340,7 @@ extension NCMediaViewerThumbnailCollectionView {
             at index: Int
         ) {
             let ocId = model.ocId(at: index)
-            let isCurrent = model.isCurrentThumbnail(at: index)
+            let isCurrent = isDisplayedCurrentThumbnail(at: index)
             let isVideo = model.isVideoThumbnail(at: index)
             let previewURL = model.previewURLForThumbnail(at: index)
 
@@ -311,6 +354,14 @@ extension NCMediaViewerThumbnailCollectionView {
                 isCurrent: isCurrent,
                 isVideo: isVideo
             )
+        }
+
+        private func isDisplayedCurrentThumbnail(at index: Int) -> Bool {
+            if let displayedSelectedIndex {
+                return displayedSelectedIndex == index
+            }
+
+            return model.isCurrentThumbnail(at: index)
         }
 
         private func image(
@@ -386,13 +437,35 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         placeholderView.isHidden = false
         transform = .identity
         layer.zPosition = 0
+        isSelected = false
+        isHighlighted = false
+    }
+
+    override var isSelected: Bool {
+        didSet {
+            super.isSelected = false
+        }
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            super.isHighlighted = false
+        }
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        imageView.frame = contentView.bounds
-        placeholderView.frame = contentView.bounds
+        let thumbnailSize = NCMediaViewerThumbnailCollectionLayout.thumbnailSize
+        let thumbnailFrame = CGRect(
+            x: (contentView.bounds.width - thumbnailSize) / 2,
+            y: (contentView.bounds.height - thumbnailSize) / 2,
+            width: thumbnailSize,
+            height: thumbnailSize
+        )
+
+        imageView.frame = thumbnailFrame
+        placeholderView.frame = thumbnailFrame
 
         placeholderIconView.center = CGPoint(
             x: placeholderView.bounds.midX,
@@ -400,8 +473,8 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         )
 
         playIconView.center = CGPoint(
-            x: contentView.bounds.midX,
-            y: contentView.bounds.midY
+            x: thumbnailFrame.midX,
+            y: thumbnailFrame.midY
         )
     }
 
@@ -425,14 +498,17 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
     }
 
     private func setupViews() {
-        contentView.clipsToBounds = true
-        contentView.layer.cornerRadius = NCMediaViewerThumbnailCollectionLayout.cornerRadius
-        contentView.layer.cornerCurve = .continuous
+        contentView.clipsToBounds = false
 
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = NCMediaViewerThumbnailCollectionLayout.cornerRadius
+        imageView.layer.cornerCurve = .continuous
 
         placeholderView.backgroundColor = UIColor.white.withAlphaComponent(0.16)
+        placeholderView.clipsToBounds = true
+        placeholderView.layer.cornerRadius = NCMediaViewerThumbnailCollectionLayout.cornerRadius
+        placeholderView.layer.cornerCurve = .continuous
 
         placeholderIconView.tintColor = UIColor.white.withAlphaComponent(0.75)
         placeholderIconView.contentMode = .center
@@ -466,7 +542,7 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
 
 private enum NCMediaViewerThumbnailCollectionLayout {
     static let thumbnailSize: CGFloat = 42
-    static let itemHeight: CGFloat = 68
+    static let itemContainerHeight: CGFloat = 68
     static let itemSpacing: CGFloat = 7
     static let currentScale: CGFloat = 1.22
     static let currentExtraWidth: CGFloat = 18
