@@ -31,7 +31,7 @@ private enum NCMediaViewerThumbnailCollectionLayout {
 
     /// Extra horizontal width assigned to the selected item.
     /// This must keep the selected cell wide enough to contain `selectedThumbnailSize`.
-    static let currentExtraWidth: CGFloat = 74
+    static let selectedExtraWidth: CGFloat = 74
 
     /// Corner radius used by the thumbnail image and placeholder.
     static let cornerRadius: CGFloat = 10
@@ -201,10 +201,8 @@ extension NCMediaViewerThumbnailCollectionView {
             lastCenteredIndex = nil
 
             scrollToSelectedIndexIfNeeded(animated: false)
-            refreshVisibleCells()
 
             onSelect(selectedIndex)
-            prefetchThumbnail(at: selectedIndex)
         }
 
         // MARK: - UICollectionViewDelegateFlowLayout
@@ -216,7 +214,7 @@ extension NCMediaViewerThumbnailCollectionView {
         ) -> CGSize {
             let baseWidth = NCMediaViewerThumbnailCollectionLayout.thumbnailSize
             let extraWidth = isDisplayedCurrentThumbnail(at: indexPath.item)
-                ? NCMediaViewerThumbnailCollectionLayout.currentExtraWidth
+                ? NCMediaViewerThumbnailCollectionLayout.selectedExtraWidth
                 : 0
 
             return CGSize(
@@ -262,7 +260,6 @@ extension NCMediaViewerThumbnailCollectionView {
             }
 
             guard lastNumberOfPages != numberOfPages else {
-                refreshVisibleCells()
                 return
             }
 
