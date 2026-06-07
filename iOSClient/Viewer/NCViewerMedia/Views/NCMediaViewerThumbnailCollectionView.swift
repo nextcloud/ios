@@ -16,6 +16,11 @@ private enum NCMediaViewerThumbnailCollectionLayout {
     /// The selected thumbnail uses this value as its square image size.
     static let itemContainerHeight: CGFloat = 108
 
+    /// Preferred SwiftUI container height for the thumbnail strip.
+    static var preferredHeight: CGFloat {
+        itemContainerHeight + 10
+    }
+
     /// Horizontal spacing between thumbnail cells.
     static let itemSpacing: CGFloat = 7
 
@@ -26,7 +31,7 @@ private enum NCMediaViewerThumbnailCollectionLayout {
 
     /// Extra horizontal width assigned to the selected item.
     /// This must keep the selected cell wide enough to contain `selectedThumbnailSize`.
-    static let currentExtraWidth: CGFloat = 200
+    static let currentExtraWidth: CGFloat = 74
 
     /// Corner radius used by the thumbnail image and placeholder.
     static let cornerRadius: CGFloat = 10
@@ -38,10 +43,28 @@ private enum NCMediaViewerThumbnailCollectionLayout {
 // MARK: - Thumbnail Collection View
 
 /// UIKit thumbnail strip used by the media viewer.
-struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable {
-    @ObservedObject var model: NCMediaViewerModel
-
+///
+/// The strip intentionally does not observe the whole media viewer model.
+/// It receives only the selected index and page count from SwiftUI, while using
+/// the model as a stable reference for preview lookup, metadata lookup, and prefetching.
+struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable, Equatable {
+    let model: NCMediaViewerModel
+    let selectedIndex: Int
+    let numberOfPages: Int
     let onSelect: (_ index: Int) -> Void
+
+    static var preferredHeight: CGFloat {
+        NCMediaViewerThumbnailCollectionLayout.preferredHeight
+    }
+
+    static func == (
+        lhs: NCMediaViewerThumbnailCollectionView,
+        rhs: NCMediaViewerThumbnailCollectionView
+    ) -> Bool {
+        lhs.selectedIndex == rhs.selectedIndex &&
+        lhs.numberOfPages == rhs.numberOfPages &&
+        lhs.model === rhs.model
+    }
 
     func makeUIView(context: Context) -> UICollectionView {
         let layout = UICollectionViewFlowLayout()
@@ -79,8 +102,10 @@ struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable {
         context: Context
     ) {
         context.coordinator.model = model
+        context.coordinator.selectedIndex = selectedIndex
+        context.coordinator.numberOfPages = numberOfPages
         context.coordinator.onSelect = onSelect
-        context.coordinator.syncDisplayedSelectedIndexFromModel()
+        context.coordinator.syncDisplayedSelectedIndexFromInput()
 
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
@@ -90,6 +115,8 @@ struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(
             model: model,
+            selectedIndex: selectedIndex,
+            numberOfPages: numberOfPages,
             onSelect: onSelect
         )
     }
@@ -104,6 +131,8 @@ extension NCMediaViewerThumbnailCollectionView {
                              UICollectionViewDelegateFlowLayout,
                              UICollectionViewDataSourcePrefetching {
         var model: NCMediaViewerModel
+        var selectedIndex: Int
+        var numberOfPages: Int
         var onSelect: (_ index: Int) -> Void
 
         weak var collectionView: UICollectionView?
@@ -117,11 +146,15 @@ extension NCMediaViewerThumbnailCollectionView {
 
         init(
             model: NCMediaViewerModel,
+            selectedIndex: Int,
+            numberOfPages: Int,
             onSelect: @escaping (_ index: Int) -> Void
         ) {
             self.model = model
+            self.selectedIndex = selectedIndex
+            self.numberOfPages = numberOfPages
             self.onSelect = onSelect
-            self.displayedSelectedIndex = model.initialSelectedIndex
+            self.displayedSelectedIndex = selectedIndex
             super.init()
 
             imageCache.countLimit = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
@@ -133,7 +166,7 @@ extension NCMediaViewerThumbnailCollectionView {
             _ collectionView: UICollectionView,
             numberOfItemsInSection section: Int
         ) -> Int {
-            model.numberOfPages
+            numberOfPages
         }
 
         func collectionView(
@@ -162,25 +195,16 @@ extension NCMediaViewerThumbnailCollectionView {
             didSelectItemAt indexPath: IndexPath
         ) {
             let selectedIndex = indexPath.item
-            let previousSelectedIndex = displayedSelectedIndex
 
             pendingSelectedIndex = selectedIndex
             displayedSelectedIndex = selectedIndex
             lastCenteredIndex = nil
 
-            collectionView.collectionViewLayout.invalidateLayout()
-            collectionView.layoutIfNeeded()
-
             scrollToSelectedIndexIfNeeded(animated: false)
-
-            if let previousSelectedIndex {
-                reloadThumbnailIfVisible(at: previousSelectedIndex)
-            }
-
-            reloadThumbnailIfVisible(at: selectedIndex)
             refreshVisibleCells()
 
             onSelect(selectedIndex)
+            prefetchThumbnail(at: selectedIndex)
         }
 
         // MARK: - UICollectionViewDelegateFlowLayout
@@ -214,32 +238,28 @@ extension NCMediaViewerThumbnailCollectionView {
 
         // MARK: - Public Coordinator Updates
 
-        func syncDisplayedSelectedIndexFromModel() {
-            let modelSelectedIndex = model.initialSelectedIndex
-
-            guard modelSelectedIndex >= 0,
-                  modelSelectedIndex < model.numberOfPages else {
+        func syncDisplayedSelectedIndexFromInput() {
+            guard selectedIndex >= 0,
+                  selectedIndex < numberOfPages else {
                 return
             }
 
             if let pendingSelectedIndex {
-                if pendingSelectedIndex == modelSelectedIndex {
+                if pendingSelectedIndex == selectedIndex {
                     self.pendingSelectedIndex = nil
-                    displayedSelectedIndex = modelSelectedIndex
+                    displayedSelectedIndex = selectedIndex
                 }
 
                 return
             }
 
-            displayedSelectedIndex = modelSelectedIndex
+            displayedSelectedIndex = selectedIndex
         }
 
         func reloadCollectionViewIfNeeded() {
             guard let collectionView else {
                 return
             }
-
-            let numberOfPages = model.numberOfPages
 
             guard lastNumberOfPages != numberOfPages else {
                 refreshVisibleCells()
@@ -252,14 +272,14 @@ extension NCMediaViewerThumbnailCollectionView {
 
         func scrollToSelectedIndexIfNeeded(animated: Bool) {
             guard let collectionView,
-                  model.numberOfPages > 0 else {
+                  numberOfPages > 0 else {
                 return
             }
 
-            let index = displayedSelectedIndex ?? model.initialSelectedIndex
+            let index = displayedSelectedIndex ?? selectedIndex
 
             guard index >= 0,
-                  index < model.numberOfPages else {
+                  index < numberOfPages else {
                 return
             }
 
@@ -268,7 +288,6 @@ extension NCMediaViewerThumbnailCollectionView {
                 return
             }
 
-            let previousCenteredIndex = lastCenteredIndex
             lastCenteredIndex = index
 
             collectionView.collectionViewLayout.invalidateLayout()
@@ -279,38 +298,58 @@ extension NCMediaViewerThumbnailCollectionView {
                 section: 0
             )
 
-            collectionView.scrollToItem(
-                at: indexPath,
-                at: .centeredHorizontally,
+            guard let attributes = collectionView.layoutAttributesForItem(at: indexPath) else {
+                collectionView.scrollToItem(
+                    at: indexPath,
+                    at: .centeredHorizontally,
+                    animated: animated
+                )
+                refreshVisibleCells()
+                prefetchThumbnail(at: index)
+                return
+            }
+
+            let targetOffsetX = attributes.center.x - collectionView.bounds.width / 2
+            let minOffsetX = -collectionView.adjustedContentInset.left
+            let maxOffsetX = max(
+                minOffsetX,
+                collectionView.contentSize.width - collectionView.bounds.width + collectionView.adjustedContentInset.right
+            )
+
+            let clampedOffsetX = min(
+                max(targetOffsetX, minOffsetX),
+                maxOffsetX
+            )
+
+            collectionView.setContentOffset(
+                CGPoint(
+                    x: clampedOffsetX,
+                    y: 0
+                ),
                 animated: animated
             )
 
             refreshVisibleCells()
-
-            if let previousCenteredIndex {
-                reloadThumbnailIfVisible(at: previousCenteredIndex)
-            }
-
-            reloadThumbnailIfVisible(at: index)
+            prefetchThumbnail(at: index)
         }
 
         func prefetchInitialThumbnailWindow() {
-            let selectedIndex = displayedSelectedIndex ?? model.initialSelectedIndex
+            let currentIndex = displayedSelectedIndex ?? selectedIndex
 
-            guard selectedIndex >= 0,
-                  selectedIndex < model.numberOfPages else {
+            guard currentIndex >= 0,
+                  currentIndex < numberOfPages else {
                 return
             }
 
-            guard lastPrefetchedCenterIndex != selectedIndex else {
+            guard lastPrefetchedCenterIndex != currentIndex else {
                 return
             }
 
-            lastPrefetchedCenterIndex = selectedIndex
+            lastPrefetchedCenterIndex = currentIndex
 
             let radius = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
-            let lowerBound = max(0, selectedIndex - radius)
-            let upperBound = min(model.numberOfPages - 1, selectedIndex + radius)
+            let lowerBound = max(0, currentIndex - radius)
+            let upperBound = min(numberOfPages - 1, currentIndex + radius)
 
             guard lowerBound <= upperBound else {
                 return
@@ -318,7 +357,7 @@ extension NCMediaViewerThumbnailCollectionView {
 
             let indexes = (lowerBound...upperBound)
                 .sorted {
-                    abs($0 - selectedIndex) < abs($1 - selectedIndex)
+                    abs($0 - currentIndex) < abs($1 - currentIndex)
                 }
 
             for index in indexes {
@@ -345,7 +384,7 @@ extension NCMediaViewerThumbnailCollectionView {
             }
         }
 
-        private func reloadThumbnailIfVisible(at index: Int) {
+        private func refreshThumbnailIfVisible(at index: Int) {
             guard let collectionView else {
                 return
             }
@@ -355,11 +394,15 @@ extension NCMediaViewerThumbnailCollectionView {
                 section: 0
             )
 
-            guard collectionView.indexPathsForVisibleItems.contains(indexPath) else {
+            guard collectionView.indexPathsForVisibleItems.contains(indexPath),
+                  let cell = collectionView.cellForItem(at: indexPath) as? NCMediaViewerThumbnailUICollectionCell else {
                 return
             }
 
-            collectionView.reloadItems(at: [indexPath])
+            configure(
+                cell,
+                at: index
+            )
         }
 
         // MARK: - Cell Configuration
@@ -390,7 +433,7 @@ extension NCMediaViewerThumbnailCollectionView {
                 return displayedSelectedIndex == index
             }
 
-            return model.isCurrentThumbnail(at: index)
+            return selectedIndex == index
         }
 
         private func image(
@@ -431,7 +474,7 @@ extension NCMediaViewerThumbnailCollectionView {
                 await self.model.prefetchThumbnailIfNeeded(index: index)
 
                 await MainActor.run {
-                    self.reloadThumbnailIfVisible(at: index)
+                    self.refreshThumbnailIfVisible(at: index)
                 }
             }
         }
