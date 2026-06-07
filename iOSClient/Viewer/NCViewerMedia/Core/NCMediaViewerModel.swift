@@ -418,7 +418,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let previewURL = currentPreviewURL(for: ocId)
 
-        if let localURL = await loader.localMediaURL(for: metadata, index: index) {
+        if let localURL = await loader.localMediaURL(for: metadata) {
             guard !Task.isCancelled else {
                 return
             }
@@ -459,7 +459,7 @@ final class NCMediaViewerModel: ObservableObject {
             if videoPreviewURL == nil {
                 videoPreviewURL = await loader.previewURL(
                     for: metadata,
-                    index: index
+                    ext: NCGlobal.shared.previewExt1024
                 )
 
                 guard !Task.isCancelled else {
@@ -498,7 +498,7 @@ final class NCMediaViewerModel: ObservableObject {
             if imagePreviewURL == nil {
                 imagePreviewURL = await loader.previewURL(
                     for: metadata,
-                    index: index
+                    ext: NCGlobal.shared.previewExt1024
                 )
 
                 guard !Task.isCancelled else {
@@ -537,7 +537,7 @@ final class NCMediaViewerModel: ObservableObject {
            shouldLoadPreview(for: metadata) {
             previewURL = await loader.previewURL(
                 for: metadata,
-                index: index
+                ext: NCGlobal.shared.previewExt1024
             )
         }
 
@@ -585,7 +585,6 @@ final class NCMediaViewerModel: ObservableObject {
         do {
             let downloadedURL = try await loader.downloadMedia(
                 for: metadata,
-                index: index
             )
 
             guard !Task.isCancelled else {
@@ -705,7 +704,7 @@ final class NCMediaViewerModel: ObservableObject {
         if shouldLoadPreview(for: metadata) {
             previewURL = await loader.previewURL(
                 for: metadata,
-                index: index
+                ext: NCGlobal.shared.previewExt1024
             )
         } else {
             previewURL = nil
@@ -731,7 +730,6 @@ final class NCMediaViewerModel: ObservableObject {
         if metadata.classFile == NKTypeClassFile.video.rawValue {
             let localURL = await loader.localMediaURL(
                 for: metadata,
-                index: index
             )
 
             guard !Task.isCancelled else {
@@ -751,7 +749,6 @@ final class NCMediaViewerModel: ObservableObject {
         if metadata.classFile == NKTypeClassFile.audio.rawValue {
             let localURL = await loader.localMediaURL(
                 for: metadata,
-                index: index
             )
 
             guard !Task.isCancelled else {
@@ -866,7 +863,6 @@ final class NCMediaViewerModel: ObservableObject {
             if metadata.isLivePhoto {
                 livePhotoURL = await loader.downloadLivePhotoMedia(
                     for: metadata,
-                    index: index
                 )
             } else {
                 livePhotoURL = nil
@@ -921,7 +917,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let previewURL = await loader.previewURL(
             for: metadata,
-            index: index
+            ext: NCGlobal.shared.previewExt1024
         )
 
         guard !Task.isCancelled,

@@ -139,7 +139,9 @@ extension NCMediaViewerThumbnailCollectionView {
 
         private var lastNumberOfPages: Int?
         private var lastCenteredIndex: Int?
-        private var lastPrefetchedCenterIndex: Int?
+        private var prefetchedLowerBound: Int?
+        private var prefetchedUpperBound: Int?
+        private var pendingPrefetchIndexes = Set<Int>()
         private var displayedSelectedIndex: Int?
         private var pendingSelectedIndex: Int?
         private let imageCache = NSCache<NSString, UIImage>()
@@ -264,6 +266,9 @@ extension NCMediaViewerThumbnailCollectionView {
             }
 
             lastNumberOfPages = numberOfPages
+            prefetchedLowerBound = nil
+            prefetchedUpperBound = nil
+            pendingPrefetchIndexes.removeAll()
             collectionView.reloadData()
         }
 
@@ -338,12 +343,6 @@ extension NCMediaViewerThumbnailCollectionView {
                 return
             }
 
-            guard lastPrefetchedCenterIndex != currentIndex else {
-                return
-            }
-
-            lastPrefetchedCenterIndex = currentIndex
-
             let radius = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
             let lowerBound = max(0, currentIndex - radius)
             let upperBound = min(numberOfPages - 1, currentIndex + radius)
@@ -351,6 +350,16 @@ extension NCMediaViewerThumbnailCollectionView {
             guard lowerBound <= upperBound else {
                 return
             }
+
+            if let prefetchedLowerBound,
+               let prefetchedUpperBound,
+               currentIndex >= prefetchedLowerBound,
+               currentIndex <= prefetchedUpperBound {
+                return
+            }
+
+            prefetchedLowerBound = lowerBound
+            prefetchedUpperBound = upperBound
 
             let indexes = (lowerBound...upperBound)
                 .sorted {
@@ -413,6 +422,10 @@ extension NCMediaViewerThumbnailCollectionView {
             let isVideo = model.isVideoThumbnail(at: index)
             let previewURL = model.previewURLForThumbnail(at: index)
 
+            if previewURL == nil {
+                prefetchThumbnail(at: index)
+            }
+
             let image = image(
                 for: previewURL,
                 ocId: ocId
@@ -463,6 +476,17 @@ extension NCMediaViewerThumbnailCollectionView {
         // MARK: - Prefetch
 
         private func prefetchThumbnail(at index: Int) {
+            guard index >= 0,
+                  index < numberOfPages else {
+                return
+            }
+
+            guard !pendingPrefetchIndexes.contains(index) else {
+                return
+            }
+
+            pendingPrefetchIndexes.insert(index)
+
             Task { [weak self] in
                 guard let self else {
                     return
@@ -471,6 +495,7 @@ extension NCMediaViewerThumbnailCollectionView {
                 await self.model.prefetchThumbnailIfNeeded(index: index)
 
                 await MainActor.run {
+                    self.pendingPrefetchIndexes.remove(index)
                     self.refreshThumbnailIfVisible(at: index)
                 }
             }
