@@ -6,6 +6,35 @@ import UIKit
 import SwiftUI
 import NextcloudKit
 
+// MARK: - Layout
+
+private enum NCMediaViewerThumbnailCollectionLayout {
+    /// Real square thumbnail image size for non-selected items.
+    static let thumbnailSize: CGFloat = 42
+
+    /// Total vertical lane height for each collection view cell.
+    /// The selected thumbnail uses this value as its square image size.
+    static let itemContainerHeight: CGFloat = 108
+
+    /// Horizontal spacing between thumbnail cells.
+    static let itemSpacing: CGFloat = 7
+
+    /// Square thumbnail image size used by the currently selected item.
+    static var selectedThumbnailSize: CGFloat {
+        itemContainerHeight
+    }
+
+    /// Extra horizontal width assigned to the selected item.
+    /// This must keep the selected cell wide enough to contain `selectedThumbnailSize`.
+    static let currentExtraWidth: CGFloat = 200
+
+    /// Corner radius used by the thumbnail image and placeholder.
+    static let cornerRadius: CGFloat = 10
+
+    /// Number of thumbnail previews prefetched around the selected index and maximum decoded images kept in memory.
+    static let thumbnailCacheLimit: Int = 80
+}
+
 // MARK: - Thumbnail Collection View
 
 /// UIKit thumbnail strip used by the media viewer.
@@ -95,7 +124,7 @@ extension NCMediaViewerThumbnailCollectionView {
             self.displayedSelectedIndex = model.initialSelectedIndex
             super.init()
 
-            imageCache.countLimit = NCMediaViewerThumbnailCollectionLayout.imageCacheLimit
+            imageCache.countLimit = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
         }
 
         // MARK: - UICollectionViewDataSource
@@ -161,13 +190,13 @@ extension NCMediaViewerThumbnailCollectionView {
             layout collectionViewLayout: UICollectionViewLayout,
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-            let baseSize = NCMediaViewerThumbnailCollectionLayout.thumbnailSize
+            let baseWidth = NCMediaViewerThumbnailCollectionLayout.thumbnailSize
             let extraWidth = isDisplayedCurrentThumbnail(at: indexPath.item)
                 ? NCMediaViewerThumbnailCollectionLayout.currentExtraWidth
                 : 0
 
             return CGSize(
-                width: baseSize + extraWidth,
+                width: baseWidth + extraWidth,
                 height: NCMediaViewerThumbnailCollectionLayout.itemContainerHeight
             )
         }
@@ -279,7 +308,7 @@ extension NCMediaViewerThumbnailCollectionView {
 
             lastPrefetchedCenterIndex = selectedIndex
 
-            let radius = NCMediaViewerThumbnailCollectionLayout.initialPrefetchRadius
+            let radius = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
             let lowerBound = max(0, selectedIndex - radius)
             let upperBound = min(model.numberOfPages - 1, selectedIndex + radius)
 
@@ -419,6 +448,8 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
     private let placeholderIconView = UIImageView(image: UIImage(systemName: "photo"))
     private let playIconView = UIImageView(image: UIImage(systemName: "play.fill"))
 
+    private var isCurrentThumbnail = false
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -432,10 +463,10 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
     override func prepareForReuse() {
         super.prepareForReuse()
 
+        isCurrentThumbnail = false
         imageView.image = nil
         playIconView.isHidden = true
         placeholderView.isHidden = false
-        transform = .identity
         layer.zPosition = 0
         isSelected = false
         isHighlighted = false
@@ -456,7 +487,10 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let thumbnailSize = NCMediaViewerThumbnailCollectionLayout.thumbnailSize
+        let thumbnailSize = isCurrentThumbnail
+            ? NCMediaViewerThumbnailCollectionLayout.selectedThumbnailSize
+            : NCMediaViewerThumbnailCollectionLayout.thumbnailSize
+
         let thumbnailFrame = CGRect(
             x: (contentView.bounds.width - thumbnailSize) / 2,
             y: (contentView.bounds.height - thumbnailSize) / 2,
@@ -483,18 +517,14 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         isCurrent: Bool,
         isVideo: Bool
     ) {
+        isCurrentThumbnail = isCurrent
+
         imageView.image = image
         placeholderView.isHidden = image != nil
         playIconView.isHidden = !isVideo
-
-        transform = isCurrent
-            ? CGAffineTransform(
-                scaleX: NCMediaViewerThumbnailCollectionLayout.currentScale,
-                y: NCMediaViewerThumbnailCollectionLayout.currentScale
-            )
-            : .identity
-
         layer.zPosition = isCurrent ? 10 : 0
+
+        setNeedsLayout()
     }
 
     private func setupViews() {
@@ -536,17 +566,4 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         placeholderView.addSubview(placeholderIconView)
         contentView.addSubview(playIconView)
     }
-}
-
-// MARK: - Layout
-
-private enum NCMediaViewerThumbnailCollectionLayout {
-    static let thumbnailSize: CGFloat = 42
-    static let itemContainerHeight: CGFloat = 68
-    static let itemSpacing: CGFloat = 7
-    static let currentScale: CGFloat = 1.22
-    static let currentExtraWidth: CGFloat = 18
-    static let cornerRadius: CGFloat = 10
-    static let initialPrefetchRadius: Int = 80
-    static let imageCacheLimit: Int = 80
 }
