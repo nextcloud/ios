@@ -39,7 +39,7 @@ private enum NCMediaViewerThumbnailLayout {
     static let thumbnailCacheLimit: Int = 80
 
     /// Number of thumbnails prefetched before and after the current centered item.
-    static let prefetchRadius: Int = 40
+    static let prefetchRadius: Int = 20
 }
 
 // MARK: - Thumbnail
@@ -111,10 +111,6 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
 
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
-
-        DispatchQueue.main.async {
-            context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
-        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -305,7 +301,6 @@ extension NCMediaViewerThumbnail {
             }
 
             guard lastNumberOfPages != numberOfPages else {
-                refreshVisibleCells()
                 return
             }
 
@@ -346,7 +341,6 @@ extension NCMediaViewerThumbnail {
             if lastCenteredIndex == index,
                lastCenteredBoundsSize == boundsSize {
                 refreshVisibleCells()
-                prefetchThumbnailsAround(index)
                 return
             }
 
@@ -370,7 +364,6 @@ extension NCMediaViewerThumbnail {
                 lastCenteredBoundsSize = boundsSize
 
                 refreshVisibleCells()
-                prefetchThumbnailsAround(index)
                 return
             }
 
@@ -398,7 +391,6 @@ extension NCMediaViewerThumbnail {
             lastCenteredBoundsSize = boundsSize
 
             refreshVisibleCells()
-            prefetchThumbnailsAround(index)
         }
 
         // MARK: - Thumbnail Scroll Selection
@@ -486,8 +478,7 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            let selectedItemWidth = NCMediaViewerThumbnailLayout.thumbnailSize +
-            NCMediaViewerThumbnailLayout.selectedExtraWidth
+            let selectedItemWidth = NCMediaViewerThumbnailLayout.thumbnailSize + NCMediaViewerThumbnailLayout.selectedExtraWidth
 
             let horizontalInset = max(
                 0,
