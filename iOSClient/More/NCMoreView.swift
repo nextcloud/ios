@@ -54,7 +54,6 @@ struct NCMoreView: View {
                 .padding(.bottom, 20)
             }
             .overlay(alignment: .bottom) {
-                // Soften the cut where the scrolling list meets the pinned quota.
                 LinearGradient(colors: [Color(.systemGroupedBackground).opacity(0),
                                         Color(.systemGroupedBackground)],
                                startPoint: .top,
@@ -90,7 +89,6 @@ struct NCMoreView: View {
                                 autoUploadStart: model.autoUploadStart)
     }
 
-    /// Auto Upload card: animated cloud icon, a live "items left / failed" subtitle, and a description below.
     private var autoUploadSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Button {
@@ -138,9 +136,6 @@ struct NCMoreView: View {
         }
     }
 
-    /// Renders the app suggestion shortcut strip; scrolls at the top of the content.
-    ///
-    /// - Parameter items: Shortcut items displayed as cards.
     private func moreAppsSection(items: [NCMoreModel.Item]) -> some View {
         HStack(spacing: 14) {
             ForEach(Array(items.enumerated()), id: \.element.identifier) { _, item in
@@ -149,9 +144,6 @@ struct NCMoreView: View {
         }
     }
 
-    /// Creates a tappable shortcut card.
-    ///
-    /// - Parameter item: Item containing title, image and destination.
     private func shortcutButton(_ item: NCMoreModel.Item) -> some View {
         Button {
             model.perform(item.destination)
@@ -178,9 +170,6 @@ struct NCMoreView: View {
         .buttonStyle(.plain)
     }
 
-    /// Renders a rounded menu card containing multiple rows.
-    ///
-    /// - Parameter items: Items displayed in the card.
     private func menuSection(items: [NCMoreModel.Item]) -> some View {
         VStack(spacing: 0) {
             ForEach(Array(items.enumerated()), id: \.element.identifier) { index, item in
@@ -194,10 +183,7 @@ struct NCMoreView: View {
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
-
-    /// Renders a single menu row.
-    ///
-    /// - Parameter item: Item containing title, icon and destination.
+    
     private func menuRow(_ item: NCMoreModel.Item) -> some View {
         Button {
             model.perform(item.destination)
