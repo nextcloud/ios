@@ -82,11 +82,6 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 70)
         bottomConstraint?.isActive = true
 
-        if #available(iOS 26.0, *) {
-//            webView.inputViewController?.navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
-
-        }
-
         if editor == "onlyoffice" {
             webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
         } else if editor == "nextcloud text" {
