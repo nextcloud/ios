@@ -616,7 +616,7 @@
 		F78448BA2FB1BE9000F2909A /* NCVideoPlaybackController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78448A32FB1BE9000F2909A /* NCVideoPlaybackController.swift */; };
 		F78448BE2FB1C33B00F2909A /* NCVideoVLCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78448BD2FB1C33B00F2909A /* NCVideoVLCViewController.swift */; };
 		F785129C2D7989B30087DDD0 /* NCNetworking+TermsOfService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */; };
-		F78599722FD55DA70018D44B /* NCMediaViewerThumbnailCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78599712FD55DA70018D44B /* NCMediaViewerThumbnailCollectionView.swift */; };
+		F78599722FD55DA70018D44B /* NCMediaViewerThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78599712FD55DA70018D44B /* NCMediaViewerThumbnail.swift */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7864ACC2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
@@ -1607,7 +1607,7 @@
 		F78448A82FB1BE9000F2909A /* NCVideoViewerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoViewerContentView.swift; sourceTree = "<group>"; };
 		F78448BD2FB1C33B00F2909A /* NCVideoVLCViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoVLCViewController.swift; sourceTree = "<group>"; };
 		F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+TermsOfService.swift"; sourceTree = "<group>"; };
-		F78599712FD55DA70018D44B /* NCMediaViewerThumbnailCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerThumbnailCollectionView.swift; sourceTree = "<group>"; };
+		F78599712FD55DA70018D44B /* NCMediaViewerThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerThumbnail.swift; sourceTree = "<group>"; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
 		F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+LocalFile.swift"; sourceTree = "<group>"; };
 		F7865FF02F39D32500D09AE4 /* NCCollectionViewCommon+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+Search.swift"; sourceTree = "<group>"; };
@@ -3229,7 +3229,7 @@
 			isa = PBXGroup;
 			children = (
 				F716DA662FA5F019006A6703 /* NCMediaViewerPagingView.swift */,
-				F78599712FD55DA70018D44B /* NCMediaViewerThumbnailCollectionView.swift */,
+				F78599712FD55DA70018D44B /* NCMediaViewerThumbnail.swift */,
 				F7CDB5B92FA33CA300F72306 /* NCMediaViewerPageView.swift */,
 				F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */,
 				F749ED302FADD62400CE8DFA /* NCMediaViewerDetailView.swift */,
@@ -4738,7 +4738,7 @@
 				F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				F7FAAC222FB773CC00DCA45B /* NCVideoAVPlayerViewControls.swift in Sources */,
-				F78599722FD55DA70018D44B /* NCMediaViewerThumbnailCollectionView.swift in Sources */,
+				F78599722FD55DA70018D44B /* NCMediaViewerThumbnail.swift in Sources */,
 				AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */,
 				AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */,
 				F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */,

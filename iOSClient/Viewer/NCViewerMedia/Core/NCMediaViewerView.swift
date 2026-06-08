@@ -44,7 +44,7 @@ struct NCMediaViewerView: View {
             .ignoresSafeArea()
 
             if !model.isChromeHidden, model.numberOfPages > 1 {
-                NCMediaViewerThumbnailCollectionView(
+                NCMediaViewerThumbnail(
                     selectedIndex: model.selectedIndex,
                     numberOfPages: model.numberOfPages,
                     metadataProvider: { index in
@@ -69,7 +69,7 @@ struct NCMediaViewerView: View {
                     }
                 )
                 .equatable()
-                .frame(height: NCMediaViewerThumbnailCollectionView.preferredHeight)
+                .frame(height: NCMediaViewerThumbnail.preferredHeight)
                 .padding(.bottom, 30)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea(.container, edges: [.horizontal, .bottom])
