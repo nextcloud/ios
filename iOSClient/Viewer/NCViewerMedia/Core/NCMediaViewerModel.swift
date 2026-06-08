@@ -391,6 +391,19 @@ final class NCMediaViewerModel: ObservableObject {
         return metadata
     }
 
+    func isThumbnailDeleted(at index: Int) -> Bool {
+        guard let ocId = ocId(at: index),
+              let page = cachedPagesByOcId[ocId] else {
+            return false
+        }
+
+        if case .deleted = page.state {
+            return true
+        }
+
+        return false
+    }
+
     // MARK: - Selected Page Loading
 
     private func loadPage(index: Int) async {

@@ -36,23 +36,19 @@ private enum NCMediaViewerThumbnailCollectionLayout {
     /// Corner radius used by the thumbnail image and placeholder.
     static let cornerRadius: CGFloat = 10
 
-    /// Number of thumbnail previews prefetched around the selected index and maximum decoded images kept in memory.
+    /// Maximum number of decoded preview images kept in memory.
     static let thumbnailCacheLimit: Int = 80
 }
 
 // MARK: - Thumbnail Collection View
 
-/// UIKit thumbnail strip used by the media viewer.
-///
-/// The strip intentionally does not observe the whole media viewer model.
-/// It receives only the selected index and page count from SwiftUI.
-/// Metadata and preview loading are delegated through closures.
 struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable, Equatable {
     let selectedIndex: Int
     let numberOfPages: Int
     let metadataProvider: (_ index: Int) -> tableMetadata?
     let metadataResolver: (_ index: Int) async -> tableMetadata?
     let previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+    let isDeletedProvider: (_ index: Int) -> Bool
     let onSelect: (_ index: Int) -> Void
 
     static var preferredHeight: CGFloat {
@@ -107,12 +103,12 @@ struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable, Equatable {
         context.coordinator.metadataProvider = metadataProvider
         context.coordinator.metadataResolver = metadataResolver
         context.coordinator.previewURLProvider = previewURLProvider
+        context.coordinator.isDeletedProvider = isDeletedProvider
         context.coordinator.onSelect = onSelect
         context.coordinator.syncDisplayedSelectedIndexFromInput()
 
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
-        context.coordinator.prefetchInitialThumbnailWindow()
 
         DispatchQueue.main.async {
             context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
@@ -126,6 +122,7 @@ struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable, Equatable {
             metadataProvider: metadataProvider,
             metadataResolver: metadataResolver,
             previewURLProvider: previewURLProvider,
+            isDeletedProvider: isDeletedProvider,
             onSelect: onSelect
         )
     }
@@ -144,6 +141,7 @@ extension NCMediaViewerThumbnailCollectionView {
         var metadataProvider: (_ index: Int) -> tableMetadata?
         var metadataResolver: (_ index: Int) async -> tableMetadata?
         var previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+        var isDeletedProvider: (_ index: Int) -> Bool
         var onSelect: (_ index: Int) -> Void
 
         weak var collectionView: UICollectionView?
@@ -151,11 +149,10 @@ extension NCMediaViewerThumbnailCollectionView {
         private var lastNumberOfPages: Int?
         private var lastCenteredIndex: Int?
         private var lastCenteredBoundsSize: CGSize = .zero
-        private var prefetchedLowerBound: Int?
-        private var prefetchedUpperBound: Int?
         private var pendingPrefetchIndexes = Set<Int>()
         private var displayedSelectedIndex: Int?
-        private var pendingSelectedIndex: Int?
+        private var isUserScrollingThumbnails = false
+        private var lastSentSelectedIndex: Int?
         private let imageCache = NSCache<NSString, UIImage>()
 
         init(
@@ -164,6 +161,7 @@ extension NCMediaViewerThumbnailCollectionView {
             metadataProvider: @escaping (_ index: Int) -> tableMetadata?,
             metadataResolver: @escaping (_ index: Int) async -> tableMetadata?,
             previewURLProvider: @escaping (_ metadata: tableMetadata) async -> URL?,
+            isDeletedProvider: @escaping (_ index: Int) -> Bool,
             onSelect: @escaping (_ index: Int) -> Void
         ) {
             self.selectedIndex = selectedIndex
@@ -171,8 +169,10 @@ extension NCMediaViewerThumbnailCollectionView {
             self.metadataProvider = metadataProvider
             self.metadataResolver = metadataResolver
             self.previewURLProvider = previewURLProvider
+            self.isDeletedProvider = isDeletedProvider
             self.onSelect = onSelect
             self.displayedSelectedIndex = selectedIndex
+            self.lastSentSelectedIndex = selectedIndex
             super.init()
 
             imageCache.countLimit = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
@@ -214,12 +214,41 @@ extension NCMediaViewerThumbnailCollectionView {
         ) {
             let selectedIndex = indexPath.item
 
-            pendingSelectedIndex = selectedIndex
             displayedSelectedIndex = selectedIndex
             lastCenteredIndex = nil
+            lastSentSelectedIndex = selectedIndex
 
             scrollToSelectedIndexIfNeeded(animated: false)
             onSelect(selectedIndex)
+        }
+
+        // MARK: - UIScrollViewDelegate
+
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            isUserScrollingThumbnails = true
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            guard isUserScrollingThumbnails else {
+                return
+            }
+
+            selectCenteredThumbnailDuringScrollIfNeeded()
+        }
+
+        func scrollViewDidEndDragging(
+            _ scrollView: UIScrollView,
+            willDecelerate decelerate: Bool
+        ) {
+            guard !decelerate else {
+                return
+            }
+
+            finishUserThumbnailScroll()
+        }
+
+        func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+            finishUserThumbnailScroll()
         }
 
         // MARK: - UICollectionViewDelegateFlowLayout
@@ -259,16 +288,12 @@ extension NCMediaViewerThumbnailCollectionView {
                 return
             }
 
-            if let pendingSelectedIndex {
-                if pendingSelectedIndex == selectedIndex {
-                    self.pendingSelectedIndex = nil
-                    displayedSelectedIndex = selectedIndex
-                }
-
+            guard !isUserScrollingThumbnails else {
                 return
             }
 
             displayedSelectedIndex = selectedIndex
+            lastSentSelectedIndex = selectedIndex
         }
 
         func reloadCollectionViewIfNeeded() {
@@ -277,14 +302,13 @@ extension NCMediaViewerThumbnailCollectionView {
             }
 
             guard lastNumberOfPages != numberOfPages else {
+                refreshVisibleCells()
                 return
             }
 
             lastNumberOfPages = numberOfPages
             lastCenteredIndex = nil
             lastCenteredBoundsSize = .zero
-            prefetchedLowerBound = nil
-            prefetchedUpperBound = nil
             pendingPrefetchIndexes.removeAll()
             imageCache.removeAllObjects()
             collectionView.reloadData()
@@ -293,6 +317,10 @@ extension NCMediaViewerThumbnailCollectionView {
         func scrollToSelectedIndexIfNeeded(animated: Bool) {
             guard let collectionView,
                   numberOfPages > 0 else {
+                return
+            }
+
+            guard !isUserScrollingThumbnails else {
                 return
             }
 
@@ -366,40 +394,81 @@ extension NCMediaViewerThumbnailCollectionView {
             refreshVisibleCells()
         }
 
-        func prefetchInitialThumbnailWindow() {
-            let currentIndex = displayedSelectedIndex ?? selectedIndex
+        // MARK: - Thumbnail Scroll Selection
 
-            guard currentIndex >= 0,
-                  currentIndex < numberOfPages else {
+        private func selectCenteredThumbnailDuringScrollIfNeeded() {
+            guard let centeredIndex = centeredThumbnailIndex() else {
                 return
             }
 
-            let radius = NCMediaViewerThumbnailCollectionLayout.thumbnailCacheLimit
-            let lowerBound = max(0, currentIndex - radius)
-            let upperBound = min(numberOfPages - 1, currentIndex + radius)
-
-            guard lowerBound <= upperBound else {
+            guard centeredIndex >= 0,
+                  centeredIndex < numberOfPages else {
                 return
             }
 
-            if let prefetchedLowerBound,
-               let prefetchedUpperBound,
-               currentIndex >= prefetchedLowerBound,
-               currentIndex <= prefetchedUpperBound {
+            guard lastSentSelectedIndex != centeredIndex else {
                 return
             }
 
-            prefetchedLowerBound = lowerBound
-            prefetchedUpperBound = upperBound
+            displayedSelectedIndex = centeredIndex
+            lastCenteredIndex = nil
+            lastSentSelectedIndex = centeredIndex
 
-            let indexes = (lowerBound...upperBound)
-                .sorted {
-                    abs($0 - currentIndex) < abs($1 - currentIndex)
+            collectionView?.collectionViewLayout.invalidateLayout()
+            refreshVisibleCells()
+
+            onSelect(centeredIndex)
+        }
+
+        private func finishUserThumbnailScroll() {
+            guard isUserScrollingThumbnails else {
+                return
+            }
+
+            isUserScrollingThumbnails = false
+            lastCenteredIndex = nil
+
+            scrollToSelectedIndexIfNeeded(animated: true)
+        }
+
+        private func centeredThumbnailIndex() -> Int? {
+            guard let collectionView else {
+                return nil
+            }
+
+            let visibleRect = CGRect(
+                origin: collectionView.contentOffset,
+                size: collectionView.bounds.size
+            )
+
+            let centerPoint = CGPoint(
+                x: visibleRect.midX,
+                y: visibleRect.midY
+            )
+
+            if let indexPath = collectionView.indexPathForItem(at: centerPoint) {
+                return indexPath.item
+            }
+
+            let visibleIndexPaths = collectionView.indexPathsForVisibleItems
+
+            guard !visibleIndexPaths.isEmpty else {
+                return nil
+            }
+
+            return visibleIndexPaths
+                .compactMap { indexPath -> (index: Int, distance: CGFloat)? in
+                    guard let attributes = collectionView.layoutAttributesForItem(at: indexPath) else {
+                        return nil
+                    }
+
+                    return (
+                        index: indexPath.item,
+                        distance: abs(attributes.center.x - centerPoint.x)
+                    )
                 }
-
-            for index in indexes {
-                prefetchThumbnail(at: index)
-            }
+                .min { $0.distance < $1.distance }?
+                .index
         }
 
         // MARK: - Insets
@@ -478,13 +547,14 @@ extension NCMediaViewerThumbnailCollectionView {
             _ cell: NCMediaViewerThumbnailUICollectionCell,
             at index: Int
         ) {
-            let metadata = metadataProvider(index)
+            let isDeleted = isDeletedProvider(index)
+            let metadata = isDeleted ? nil : metadataProvider(index)
             let ocId = metadata?.ocId
             let isCurrent = isDisplayedCurrentThumbnail(at: index)
-            let isVideo = metadata?.classFile == NKTypeClassFile.video.rawValue
-            let image = image(for: ocId)
+            let isVideo = !isDeleted && metadata?.classFile == NKTypeClassFile.video.rawValue
+            let image = isDeleted ? nil : image(for: ocId)
 
-            if image == nil {
+            if !isDeleted, image == nil {
                 if let metadata {
                     loadPreviewIfNeeded(
                         metadata: metadata,
@@ -498,7 +568,8 @@ extension NCMediaViewerThumbnailCollectionView {
             cell.configure(
                 image: image,
                 isCurrent: isCurrent,
-                isVideo: isVideo
+                isVideo: isVideo,
+                isDeleted: isDeleted
             )
         }
 
@@ -522,6 +593,10 @@ extension NCMediaViewerThumbnailCollectionView {
         // MARK: - Preview Loading
 
         private func prefetchThumbnail(at index: Int) {
+            guard !isDeletedProvider(index) else {
+                return
+            }
+
             if let metadata = metadataProvider(index) {
                 loadPreviewIfNeeded(
                     metadata: metadata,
@@ -535,6 +610,10 @@ extension NCMediaViewerThumbnailCollectionView {
         private func resolveMetadataAndLoadPreviewIfNeeded(at index: Int) {
             guard index >= 0,
                   index < numberOfPages else {
+                return
+            }
+
+            guard !isDeletedProvider(index) else {
                 return
             }
 
@@ -557,14 +636,33 @@ extension NCMediaViewerThumbnailCollectionView {
                     return
                 }
 
+                guard !self.isDeletedProvider(index) else {
+                    await MainActor.run {
+                        self.pendingPrefetchIndexes.remove(index)
+                        self.refreshThumbnailIfVisible(at: index)
+                    }
+                    return
+                }
+
                 let previewURL = await self.previewURLProvider(metadata)
+                let image = await Self.makeImage(from: previewURL)
 
                 await MainActor.run {
                     self.pendingPrefetchIndexes.remove(index)
-                    self.storePreviewImageIfPossible(
-                        previewURL: previewURL,
-                        metadata: metadata
-                    )
+
+                    guard !self.isDeletedProvider(index) else {
+                        self.refreshThumbnailIfVisible(at: index)
+                        return
+                    }
+
+                    if !metadata.ocId.isEmpty,
+                       let image {
+                        self.imageCache.setObject(
+                            image,
+                            forKey: metadata.ocId as NSString
+                        )
+                    }
+
                     self.refreshThumbnailIfVisible(at: index)
                 }
             }
@@ -576,6 +674,10 @@ extension NCMediaViewerThumbnailCollectionView {
         ) {
             guard index >= 0,
                   index < numberOfPages else {
+                return
+            }
+
+            guard !isDeletedProvider(index) else {
                 return
             }
 
@@ -601,32 +703,36 @@ extension NCMediaViewerThumbnailCollectionView {
                 }
 
                 let previewURL = await self.previewURLProvider(metadata)
+                let image = await Self.makeImage(from: previewURL)
 
                 await MainActor.run {
                     self.pendingPrefetchIndexes.remove(index)
-                    self.storePreviewImageIfPossible(
-                        previewURL: previewURL,
-                        metadata: metadata
-                    )
+
+                    guard !self.isDeletedProvider(index) else {
+                        self.refreshThumbnailIfVisible(at: index)
+                        return
+                    }
+
+                    if let image {
+                        self.imageCache.setObject(
+                            image,
+                            forKey: cacheKey
+                        )
+                    }
+
                     self.refreshThumbnailIfVisible(at: index)
                 }
             }
         }
 
-        private func storePreviewImageIfPossible(
-            previewURL: URL?,
-            metadata: tableMetadata
-        ) {
-            guard !metadata.ocId.isEmpty,
-                  let previewURL,
-                  let image = UIImage(contentsOfFile: previewURL.path) else {
-                return
+        private static func makeImage(from previewURL: URL?) async -> UIImage? {
+            guard let previewURL else {
+                return nil
             }
 
-            imageCache.setObject(
-                image,
-                forKey: metadata.ocId as NSString
-            )
+            return await Task.detached(priority: .utility) {
+                UIImage(contentsOfFile: previewURL.path)
+            }.value
         }
     }
 }
@@ -658,6 +764,7 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
 
         isCurrentThumbnail = false
         imageView.image = nil
+        placeholderIconView.image = UIImage(systemName: "photo")
         playIconView.isHidden = true
         placeholderView.isHidden = false
         layer.zPosition = 0
@@ -708,13 +815,15 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
     func configure(
         image: UIImage?,
         isCurrent: Bool,
-        isVideo: Bool
+        isVideo: Bool,
+        isDeleted: Bool
     ) {
         isCurrentThumbnail = isCurrent
 
-        imageView.image = image
-        placeholderView.isHidden = image != nil
-        playIconView.isHidden = !isVideo
+        imageView.image = isDeleted ? nil : image
+        placeholderView.isHidden = imageView.image != nil
+        placeholderIconView.image = UIImage(systemName: isDeleted ? "trash" : "photo")
+        playIconView.isHidden = isDeleted || !isVideo
         layer.zPosition = isCurrent ? 10 : 0
 
         setNeedsLayout()

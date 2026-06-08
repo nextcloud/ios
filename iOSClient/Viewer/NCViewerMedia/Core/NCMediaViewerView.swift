@@ -54,7 +54,13 @@ struct NCMediaViewerView: View {
                         await model.resolveMetadataForThumbnail(at: index)
                     },
                     previewURLProvider: { metadata in
-                        await model.previewURL(for: metadata, ext: NCGlobal.shared.previewExt256)
+                        await model.previewURL(
+                            for: metadata,
+                            ext: NCGlobal.shared.previewExt1024
+                        )
+                    },
+                    isDeletedProvider: { index in
+                        model.isThumbnailDeleted(at: index)
                     },
                     onSelect: { index in
                         Task {
