@@ -121,6 +121,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             tabBarController?.tabBar.isHidden = false
         }
 
+        // Prevent back navigation gesture of iOS/iPadOS >= 26 as that can cause unintended swipe backs
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
+        }
+
         Task {
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
         }
