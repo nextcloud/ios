@@ -64,7 +64,7 @@ struct NCMediaViewerView: View {
                     },
                     onSelect: { index in
                         Task {
-                            await model.displayPage(at: index)
+                            await model.displayPreviewPage(at: index)
                         }
                     }
                 )
