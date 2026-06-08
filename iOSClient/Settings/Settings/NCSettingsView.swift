@@ -8,6 +8,7 @@ import NextcloudKit
 import FirebaseCrashlytics
 
 /// Settings view for Nextcloud
+@MainActor
 struct NCSettingsView: View {
     // State to control the visibility of the acknowledgements view
     @State private var showAcknowledgements = false
@@ -28,26 +29,6 @@ struct NCSettingsView: View {
 
     var body: some View {
         Form {
-            // `Auto Upload` Section
-            Section(content: {
-                NavigationLink(destination: LazyView {
-                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
-                }) {
-                    HStack {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .font(.icon())
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            .frame(width: 39)
-
-                        Text(NSLocalizedString("_settings_autoupload_", comment: ""))
-                            .font(.body)
-                    }
-                }
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_description_", comment: ""))
-                    .font(.footnote)
-            })
-
             // `Privacy` Section
             Section(content: {
                 Button(action: {

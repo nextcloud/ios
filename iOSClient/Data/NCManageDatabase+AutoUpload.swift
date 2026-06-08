@@ -106,6 +106,28 @@ extension NCManageDatabase {
         }
     }
 
+    func countAutoUploadMetadatasAsync(account: String,
+                                       autoUploadServerUrlBase: String) async -> (pending: Int, failed: Int) {
+        let global = NCGlobal.shared
+        let pendingStatuses = global.metadatasStatusInWaitingDownloadUpload + global.metadatasStatusDownloadingUploading
+        let failedStatuses = [global.metadataStatusUploadError]
+
+        let result = await core.performRealmReadAsync { realm -> (pending: Int, failed: Int) in
+            let scope = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND directory == false AND sessionSelector == %@",
+                        account,
+                        autoUploadServerUrlBase,
+                        global.selectorUploadAutoUpload)
+
+            let pendingCount = scope.filter("status IN %@", pendingStatuses).count
+            let failedCount = scope.filter("status IN %@", failedStatuses).count
+
+            return (pending: pendingCount, failed: failedCount)
+        }
+
+        return result ?? (pending: 0, failed: 0)
+    }
+
     func existsAutoUpload(account: String,
                           autoUploadServerUrlBase: String) -> Bool {
         return core.performRealmRead { realm in
