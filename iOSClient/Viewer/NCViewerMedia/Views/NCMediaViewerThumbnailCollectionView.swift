@@ -113,6 +113,10 @@ struct NCMediaViewerThumbnailCollectionView: UIViewRepresentable, Equatable {
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
         context.coordinator.prefetchInitialThumbnailWindow()
+
+        DispatchQueue.main.async {
+            context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -146,6 +150,7 @@ extension NCMediaViewerThumbnailCollectionView {
 
         private var lastNumberOfPages: Int?
         private var lastCenteredIndex: Int?
+        private var lastCenteredBoundsSize: CGSize = .zero
         private var prefetchedLowerBound: Int?
         private var prefetchedUpperBound: Int?
         private var pendingPrefetchIndexes = Set<Int>()
@@ -277,6 +282,7 @@ extension NCMediaViewerThumbnailCollectionView {
 
             lastNumberOfPages = numberOfPages
             lastCenteredIndex = nil
+            lastCenteredBoundsSize = .zero
             prefetchedLowerBound = nil
             prefetchedUpperBound = nil
             pendingPrefetchIndexes.removeAll()
@@ -297,12 +303,20 @@ extension NCMediaViewerThumbnailCollectionView {
                 return
             }
 
-            guard lastCenteredIndex != index else {
-                refreshVisibleCells()
+            let boundsSize = collectionView.bounds.size
+
+            guard boundsSize.width > 0,
+                  boundsSize.height > 0 else {
+                lastCenteredIndex = nil
+                lastCenteredBoundsSize = .zero
                 return
             }
 
-            lastCenteredIndex = index
+            if lastCenteredIndex == index,
+               lastCenteredBoundsSize == boundsSize {
+                refreshVisibleCells()
+                return
+            }
 
             collectionView.collectionViewLayout.invalidateLayout()
             collectionView.layoutIfNeeded()
@@ -319,6 +333,9 @@ extension NCMediaViewerThumbnailCollectionView {
                     at: .centeredHorizontally,
                     animated: animated
                 )
+
+                lastCenteredIndex = index
+                lastCenteredBoundsSize = boundsSize
                 refreshVisibleCells()
                 return
             }
@@ -342,6 +359,9 @@ extension NCMediaViewerThumbnailCollectionView {
                 ),
                 animated: animated
             )
+
+            lastCenteredIndex = index
+            lastCenteredBoundsSize = boundsSize
 
             refreshVisibleCells()
         }
