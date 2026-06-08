@@ -111,6 +111,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
 
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
+        context.coordinator.performInitialDeferredCenteringIfNeeded()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -147,6 +148,7 @@ extension NCMediaViewerThumbnail {
         private var lastNumberOfPages: Int?
         private var lastCenteredIndex: Int?
         private var lastCenteredBoundsSize: CGSize = .zero
+        private var didPerformInitialDeferredCentering = false
         private var pendingPrefetchIndexes = Set<Int>()
         private var failedMetadataIndexes = Set<Int>()
         private var failedPreviewIndexes = Set<Int>()
@@ -316,11 +318,30 @@ extension NCMediaViewerThumbnail {
             lastNumberOfPages = numberOfPages
             lastCenteredIndex = nil
             lastCenteredBoundsSize = .zero
+            didPerformInitialDeferredCentering = false
             pendingPrefetchIndexes.removeAll()
             failedMetadataIndexes.removeAll()
             failedPreviewIndexes.removeAll()
             imageCache.removeAllObjects()
             collectionView.reloadData()
+        }
+
+        func performInitialDeferredCenteringIfNeeded() {
+            guard !didPerformInitialDeferredCentering else {
+                return
+            }
+
+            didPerformInitialDeferredCentering = true
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                self.lastCenteredIndex = nil
+                self.lastCenteredBoundsSize = .zero
+                self.scrollToSelectedIndexIfNeeded(animated: false)
+            }
         }
 
         func scrollToSelectedIndexIfNeeded(animated: Bool) {
