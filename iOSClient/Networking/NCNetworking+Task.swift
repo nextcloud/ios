@@ -80,11 +80,13 @@ extension NCNetworking {
             }
         default:
             // DOWNLOAD
-            if metadata.session.contains("download") {
+            if metadata.session.contains("download") || global.metadataStatusDownloadingAllMode.contains(metadata.status) {
                 if metadata.session == sessionDownload {
                     cancelDownloadTasks(metadata: metadata)
                 } else if metadata.session == sessionDownloadBackground {
                     cancelDownloadBackgroundTask(metadata: metadata)
+                } else {
+                    await NCManageDatabase.shared.clearMetadatasSessionAsync(metadatas: [metadata])
                 }
                 await networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
@@ -97,7 +99,7 @@ extension NCNetworking {
                                             error: .success)
                 }
             // UPLOAD
-            } else if metadata.session.contains("upload") {
+            } else if metadata.session.contains("upload") || global.metadataStatusUploadingAllMode.contains(metadata.status) {
                 if metadata.session == nkComm.identifierSessionUpload {
                     cancelUploadTasks(metadata: metadata)
                 } else {
