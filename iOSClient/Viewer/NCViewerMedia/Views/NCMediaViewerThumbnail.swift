@@ -148,6 +148,8 @@ extension NCMediaViewerThumbnail {
         private var lastCenteredIndex: Int?
         private var lastCenteredBoundsSize: CGSize = .zero
         private var pendingPrefetchIndexes = Set<Int>()
+        private var failedMetadataIndexes = Set<Int>()
+        private var failedPreviewIndexes = Set<Int>()
         private var displayedSelectedIndex: Int?
         private var isUserScrollingThumbnails = false
         private var lastSentSelectedIndex: Int?
@@ -308,6 +310,8 @@ extension NCMediaViewerThumbnail {
             lastCenteredIndex = nil
             lastCenteredBoundsSize = .zero
             pendingPrefetchIndexes.removeAll()
+            failedMetadataIndexes.removeAll()
+            failedPreviewIndexes.removeAll()
             imageCache.removeAllObjects()
             collectionView.reloadData()
         }
@@ -555,11 +559,13 @@ extension NCMediaViewerThumbnail {
 
             if !isDeleted, image == nil {
                 if let metadata {
-                    loadPreviewIfNeeded(
-                        metadata: metadata,
-                        index: index
-                    )
-                } else {
+                    if !failedPreviewIndexes.contains(index) {
+                        loadPreviewIfNeeded(
+                            metadata: metadata,
+                            index: index
+                        )
+                    }
+                } else if !failedMetadataIndexes.contains(index) {
                     resolveMetadataAndLoadPreviewIfNeeded(at: index)
                 }
             }
@@ -620,11 +626,19 @@ extension NCMediaViewerThumbnail {
             }
 
             if let metadata = metadataProvider(index) {
+                guard !failedPreviewIndexes.contains(index) else {
+                    return
+                }
+
                 loadPreviewIfNeeded(
                     metadata: metadata,
                     index: index
                 )
             } else {
+                guard !failedMetadataIndexes.contains(index) else {
+                    return
+                }
+
                 resolveMetadataAndLoadPreviewIfNeeded(at: index)
             }
         }
@@ -639,7 +653,8 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            guard !pendingPrefetchIndexes.contains(index) else {
+            guard !failedMetadataIndexes.contains(index),
+                  !pendingPrefetchIndexes.contains(index) else {
                 return
             }
 
@@ -653,6 +668,7 @@ extension NCMediaViewerThumbnail {
                 guard let metadata = await self.metadataResolver(index) else {
                     await MainActor.run {
                         self.pendingPrefetchIndexes.remove(index)
+                        self.failedMetadataIndexes.insert(index)
                         self.refreshThumbnailIfVisible(at: index)
                     }
                     return
@@ -683,6 +699,8 @@ extension NCMediaViewerThumbnail {
                             image,
                             forKey: metadata.ocId as NSString
                         )
+                    } else {
+                        self.failedPreviewIndexes.insert(index)
                     }
 
                     self.refreshThumbnailIfVisible(at: index)
@@ -704,6 +722,7 @@ extension NCMediaViewerThumbnail {
             }
 
             guard !metadata.ocId.isEmpty else {
+                failedPreviewIndexes.insert(index)
                 return
             }
 
@@ -713,7 +732,8 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            guard !pendingPrefetchIndexes.contains(index) else {
+            guard !failedPreviewIndexes.contains(index),
+                  !pendingPrefetchIndexes.contains(index) else {
                 return
             }
 
@@ -740,6 +760,8 @@ extension NCMediaViewerThumbnail {
                             image,
                             forKey: cacheKey
                         )
+                    } else {
+                        self.failedPreviewIndexes.insert(index)
                     }
 
                     self.refreshThumbnailIfVisible(at: index)
