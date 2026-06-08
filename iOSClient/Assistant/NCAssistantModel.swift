@@ -43,7 +43,7 @@ class NCAssistantModel {
         self.session = NCSession.shared.getSession(controller: controller)
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
-        useV2 = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion30
+        useV2 = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v30)
         loadAllTypes()
     }
 

@@ -69,7 +69,7 @@ class NCService: NSObject {
                                         systemImage: "xmark.icloud.fill",
                                         imageAnimation: .none)
                 return false
-            } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
+            } else if NextcloudVersion(serverInfo.versionMajor) <= .v20 {
                 await showWarningBanner(windowScene: windowScene,
                                         subtitle: "_warning_unsupported_",
                                         systemImage: "xmark.icloud.fill",

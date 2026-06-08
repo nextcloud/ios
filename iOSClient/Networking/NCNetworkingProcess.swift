@@ -28,7 +28,7 @@ actor NCNetworkingProcess {
 
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
-    private var inWaitDownloadUploadCount: Int = 0
+    private var lastScheduledAndInProgressCount: Int = 0
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -70,7 +70,7 @@ actor NCNetworkingProcess {
             guard let self else { return }
 
             Task {
-                let count = await self.inWaitingDownloadUploadCount()
+                let count = await self.scheduledAndInProgressCount()
                 try? await UNUserNotificationCenter.current().setBadgeCount(count)
 
                 await self.stopTimer()
@@ -126,12 +126,10 @@ actor NCNetworkingProcess {
         currentAccount = account
     }
 
-    private func inWaitingDownloadUploadCount() async -> Int {
-        let countTransferDownloadingUploadingSuccess = await NCNetworking.shared.metadataTranfersSuccess.count(statuses: NCGlobal.shared.metadatasStatusDownloadingUploading)
-        let countWaitingDownloadUpload = await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: NCGlobal.shared.metadatasStatusInWaitingDownloadUpload)
-        let count = max(0, countWaitingDownloadUpload - countTransferDownloadingUploadingSuccess)
+    private func scheduledAndInProgressCount() async -> Int {
+        let statuses = NCGlobal.shared.metadatasStatusInWaitingDownloadUpload + NCGlobal.shared.metadatasStatusDownloadingUploading
 
-        return count
+        return await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: statuses)
     }
 
     func startTimer(interval: TimeInterval) async {
@@ -198,17 +196,19 @@ actor NCNetworkingProcess {
                 return
             }
 
-            // UPDATE INWAIT DOWNLOAD UPLOAD & BADGE
+            // UPDATE SCHEDULED + IN PROGRESS & BADGE
             //
-            let count = await inWaitingDownloadUploadCount()
-            if count != inWaitDownloadUploadCount {
-                inWaitDownloadUploadCount = count
+            let count = await scheduledAndInProgressCount()
+            if count != lastScheduledAndInProgressCount {
+                lastScheduledAndInProgressCount = count
                 Task { @MainActor in
                     if let controller = getRootController(),
                        let files = controller.tabBar.items?.first {
                             files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
                     }
                 }
+
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: global.notificationCenterTransferCountChanged), object: nil)
             }
 
             // METADATAS

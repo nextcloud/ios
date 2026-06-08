@@ -351,6 +351,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: controller, inputModel: inputModel), chatModel: NCAssistantChatModel(controller: controller, inputModel: inputModel), conversationsModel: NCAssistantChatConversationsModel(controller: controller))
                     let hostingController = UIHostingController(rootView: assistant)
                     controller.present(hostingController, animated: true, completion: nil)
+                } else {
+                    try? await Task.sleep(for: .seconds(1))
+                    await showBanner(windowScene: scene as? UIWindowScene,
+                                     title: "_info_",
+                                     subtitle: "_no_assistant_installed_",
+                                     systemImage: "sparkles",
+                                     imageAnimation: .none,
+                                     imageColor: .systemBlue
+                    )
                 }
             }
 

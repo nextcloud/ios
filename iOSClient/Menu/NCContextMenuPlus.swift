@@ -153,7 +153,7 @@ class NCContextMenuPlus: NSObject {
 
         // ------------------------------- RICHDOCUMENT TEXT
 
-        if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion18,
+        if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v18),
            directory?.richWorkspace == nil,
            !isDirectoryE2EE,
            isNetworkReachable {

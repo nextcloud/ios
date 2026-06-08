@@ -90,7 +90,7 @@ class FileProviderData: NSObject {
             return isPaginated
         } else if serverUrl == NCUtilityFileSystem().getHomeServer(session: session),
                   let capabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: session.account).capabilities,
-                  NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: 32, 0, 2) {
+                  NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v32_0_2) {
             isPaginated = true
             return true
         }
@@ -147,10 +147,7 @@ class FileProviderData: NSObject {
 
     func downloadComplete(fileName: String,
                           serverUrl: String,
-                          etag: String?,
-                          date: Date?,
-                          dateLastModified: Date?,
-                          length: Int64,
+                          allHeaderFields: [AnyHashable: Any]?,
                           task: URLSessionTask,
                           error: NKError) async {
         let taskIdentifier = task.taskIdentifier
@@ -165,6 +162,7 @@ class FileProviderData: NSObject {
         }
 
         let ocId = metadata.ocId
+        let etag = NextcloudKit.shared.nkCommonInstance.findHeader("oc-etag", allHeaderFields: allHeaderFields)
 
         await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
                                                               session: "",
@@ -196,7 +194,8 @@ class FileProviderData: NSObject {
                         ocId: String?,
                         etag: String?,
                         date: Date?,
-                        size: Int64,
+                        ownerId: String?,
+                        permissions: String?,
                         task: URLSessionTask,
                         error: NKError) async {
         guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
@@ -225,9 +224,20 @@ class FileProviderData: NSObject {
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
-            metadata.size = size
+
             if let fileId = fileProviderUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
+            }
+
+            if let ownerId, !ownerId.isEmpty {
+                metadata.ownerId = ownerId
+                if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                    metadata.ownerDisplayName = ownerDisplayName
+                }
+            }
+
+            if let permissions, !permissions.isEmpty {
+                metadata.permissions = permissions
             }
 
             metadata.sceneIdentifier = nil

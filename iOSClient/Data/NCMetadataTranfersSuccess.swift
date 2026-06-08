@@ -13,7 +13,6 @@ public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
 actor NCMetadataTranfersSuccess {
     private struct TransferSuccessItem {
         let metadata: tableMetadata
-        let status: Int
     }
 
     private var tranfersSuccess: [TransferSuccessItem] = []
@@ -30,9 +29,13 @@ actor NCMetadataTranfersSuccess {
         delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
     }
 
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
+    func append(metadata: tableMetadata,
+                ocId: String,
+                date: Date?,
+                etag: String?,
+                ownerId: String? = nil,
+                permissions: String? = nil) async {
         let status = metadata.status
-
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -42,12 +45,23 @@ actor NCMetadataTranfersSuccess {
             metadata.fileId = fileId
         }
 
+        if let ownerId = ownerId.isNotEmpty {
+            metadata.ownerId = ownerId
+            if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                metadata.ownerDisplayName = ownerDisplayName
+            }
+        }
+
+        if let permissions = permissions.isNotEmpty {
+            metadata.permissions = permissions
+        }
+
         metadata.session = ""
         metadata.sessionError = ""
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 
-        let item = TransferSuccessItem(metadata: metadata, status: status)
+        let item = TransferSuccessItem(metadata: metadata)
 
         if let index = tranfersSuccess.firstIndex(where: { $0.metadata.ocId == metadata.ocId }) {
             tranfersSuccess[index] = item
@@ -68,10 +82,6 @@ actor NCMetadataTranfersSuccess {
 
     func count() -> Int {
         tranfersSuccess.count
-    }
-
-    func count(statuses: [Int]) -> Int {
-        tranfersSuccess.filter { statuses.contains($0.status) }.count
     }
 
     func getAll() -> [tableMetadata] {

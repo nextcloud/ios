@@ -227,7 +227,6 @@ extension tableMetadata {
         return session.isEmpty && !isDirectoryE2EE && !e2eEncrypted
     }
 
-    // Return if is sharable
     func isSharable() -> Bool {
         guard let capabilities = NCNetworking.shared.capabilities[account] else {
             return false
@@ -1028,6 +1027,22 @@ extension NCManageDatabase {
         }
     }
 
+    func getOwnerDisplayName(account: String?, ownerId: String?) async -> String? {
+        guard let account = account.isNotEmpty,
+              let ownerId = ownerId.isNotEmpty else {
+            return nil
+        }
+
+        return await core.performRealmReadAsync { realm in
+            let ownerDisplayName = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND ownerId == %@", account, ownerId)
+                .first?
+                .ownerDisplayName
+
+            return ownerDisplayName.isNotEmpty
+        }
+    }
+
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
     /// Handles the home directory case rootFileName) and detaches the Realm object before returning.
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
@@ -1362,6 +1377,14 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first != nil
         } ?? false
+    }
+
+    func countMetadatasFor(serverUrl: String) -> Int {
+        core.performRealmRead { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter("serverUrl == %@", serverUrl)
+            return results.count
+        } ?? 0
     }
 
     // MARK: - helpers

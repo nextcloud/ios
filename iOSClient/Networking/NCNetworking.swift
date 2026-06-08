@@ -57,6 +57,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
+    let nkComm = NextcloudKit.shared.nkCommonInstance
 
     var lastReachability: Bool = true
     var networkReachability: NKTypeReachability?
