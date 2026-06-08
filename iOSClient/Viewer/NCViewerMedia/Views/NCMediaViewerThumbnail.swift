@@ -72,7 +72,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         layout.minimumInteritemSpacing = NCMediaViewerThumbnailLayout.itemSpacing
         layout.sectionInset = .zero
 
-        let collectionView = UICollectionView(
+        let collectionView = NCMediaViewerThumbnailCollectionView(
             frame: .zero,
             collectionViewLayout: layout
         )
@@ -92,6 +92,9 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         )
 
         context.coordinator.collectionView = collectionView
+        collectionView.onBoundsSizeChanged = { [weak coordinator = context.coordinator] size in
+            coordinator?.collectionViewBoundsDidChange(size)
+        }
 
         return collectionView
     }
@@ -338,6 +341,22 @@ extension NCMediaViewerThumbnail {
                 self.lastCenteredBoundsSize = .zero
                 self.scrollToSelectedIndexIfNeeded(animated: false)
             }
+        }
+
+        func collectionViewBoundsDidChange(_ size: CGSize) {
+            guard size.width > 0,
+                  size.height > 0 else {
+                return
+            }
+
+            guard !isUserScrollingThumbnails else {
+                return
+            }
+
+            lastCenteredIndex = nil
+            lastCenteredBoundsSize = .zero
+            collectionView?.collectionViewLayout.invalidateLayout()
+            scrollToSelectedIndexIfNeeded(animated: false)
         }
 
         func scrollToSelectedIndexIfNeeded(animated: Bool) {
@@ -787,6 +806,27 @@ extension NCMediaViewerThumbnail {
 }
 
 // MARK: - Cell
+
+// MARK: - Collection View
+
+private final class NCMediaViewerThumbnailCollectionView: UICollectionView {
+    var onBoundsSizeChanged: ((CGSize) -> Void)?
+
+    private var lastBoundsSize: CGSize = .zero
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let currentBoundsSize = bounds.size
+
+        guard currentBoundsSize != lastBoundsSize else {
+            return
+        }
+
+        lastBoundsSize = currentBoundsSize
+        onBoundsSizeChanged?(currentBoundsSize)
+    }
+}
 
 private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell {
     static let reuseIdentifier = "NCMediaViewerThumbnailUICollectionCell"
