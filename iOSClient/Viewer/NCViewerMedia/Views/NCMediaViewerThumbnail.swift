@@ -39,7 +39,7 @@ private enum NCMediaViewerThumbnailLayout {
     static let thumbnailCacheLimit: Int = 80
 
     /// Number of thumbnails prefetched before and after the current centered item.
-    static let prefetchRadius: Int = 20
+    static let prefetchRadius: Int = UIDevice.current.userInterfaceIdiom == .pad ? 80 : 20
 }
 
 // MARK: - Thumbnail
