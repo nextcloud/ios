@@ -97,6 +97,7 @@ final class NCMediaViewerModel: ObservableObject {
     // MARK: - Dependencies
 
     private let loader: NCMediaViewerLoading
+    private let utilityFileSystem = NCUtilityFileSystem()
 
     // MARK: - Source Context
 
@@ -264,6 +265,12 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
+        if selectedIndex == index,
+           let ocId = ocId(at: index),
+           !pageState(for: ocId).needsSelectedPageLoading {
+            return
+        }
+
         selectedIndex = index
 
         prefetchNeighborPages(around: index)
@@ -371,6 +378,22 @@ final class NCMediaViewerModel: ObservableObject {
 
     func previewURL(for metadata: tableMetadata, ext: String) async -> URL? {
         await loader.previewURL(for: metadata, ext: ext)
+    }
+
+    func localPreviewURL(for metadata: tableMetadata, ext: String) -> URL? {
+        let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(
+            metadata.ocId,
+            etag: metadata.etag,
+            ext: ext,
+            userId: metadata.userId,
+            urlBase: metadata.urlBase
+        )
+
+        guard FileManager.default.fileExists(atPath: localPath) else {
+            return nil
+        }
+
+        return URL(fileURLWithPath: localPath)
     }
 
     func resolveMetadataForThumbnail(at index: Int) async -> tableMetadata? {
