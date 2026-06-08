@@ -150,8 +150,6 @@ extension NCMediaViewerThumbnail {
         private var lastCenteredBoundsSize: CGSize = .zero
         private var didPerformInitialDeferredCentering = false
         private var pendingPrefetchIndexes = Set<Int>()
-        private var failedMetadataIndexes = Set<Int>()
-        private var failedPreviewIndexes = Set<Int>()
         private var displayedSelectedIndex: Int?
         private var isUserScrollingThumbnails = false
         private var shouldEmphasizeSelectedThumbnail = true
@@ -320,8 +318,6 @@ extension NCMediaViewerThumbnail {
             lastCenteredBoundsSize = .zero
             didPerformInitialDeferredCentering = false
             pendingPrefetchIndexes.removeAll()
-            failedMetadataIndexes.removeAll()
-            failedPreviewIndexes.removeAll()
             imageCache.removeAllObjects()
             collectionView.reloadData()
         }
@@ -586,13 +582,11 @@ extension NCMediaViewerThumbnail {
 
             if !isDeleted, image == nil {
                 if let metadata {
-                    if !failedPreviewIndexes.contains(index) {
-                        loadPreviewIfNeeded(
-                            metadata: metadata,
-                            index: index
-                        )
-                    }
-                } else if !failedMetadataIndexes.contains(index) {
+                    loadPreviewIfNeeded(
+                        metadata: metadata,
+                        index: index
+                    )
+                } else {
                     resolveMetadataAndLoadPreviewIfNeeded(at: index)
                 }
             }
@@ -653,19 +647,11 @@ extension NCMediaViewerThumbnail {
             }
 
             if let metadata = metadataProvider(index) {
-                guard !failedPreviewIndexes.contains(index) else {
-                    return
-                }
-
                 loadPreviewIfNeeded(
                     metadata: metadata,
                     index: index
                 )
             } else {
-                guard !failedMetadataIndexes.contains(index) else {
-                    return
-                }
-
                 resolveMetadataAndLoadPreviewIfNeeded(at: index)
             }
         }
@@ -680,8 +666,7 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            guard !failedMetadataIndexes.contains(index),
-                  !pendingPrefetchIndexes.contains(index) else {
+            guard !pendingPrefetchIndexes.contains(index) else {
                 return
             }
 
@@ -695,7 +680,6 @@ extension NCMediaViewerThumbnail {
                 guard let metadata = await self.metadataResolver(index) else {
                     await MainActor.run {
                         self.pendingPrefetchIndexes.remove(index)
-                        self.failedMetadataIndexes.insert(index)
                         self.refreshThumbnailIfVisible(at: index)
                     }
                     return
@@ -726,8 +710,6 @@ extension NCMediaViewerThumbnail {
                             image,
                             forKey: metadata.ocId as NSString
                         )
-                    } else {
-                        self.failedPreviewIndexes.insert(index)
                     }
 
                     self.refreshThumbnailIfVisible(at: index)
@@ -749,7 +731,6 @@ extension NCMediaViewerThumbnail {
             }
 
             guard !metadata.ocId.isEmpty else {
-                failedPreviewIndexes.insert(index)
                 return
             }
 
@@ -759,8 +740,7 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            guard !failedPreviewIndexes.contains(index),
-                  !pendingPrefetchIndexes.contains(index) else {
+            guard !pendingPrefetchIndexes.contains(index) else {
                 return
             }
 
@@ -787,8 +767,6 @@ extension NCMediaViewerThumbnail {
                             image,
                             forKey: cacheKey
                         )
-                    } else {
-                        self.failedPreviewIndexes.insert(index)
                     }
 
                     self.refreshThumbnailIfVisible(at: index)
@@ -890,10 +868,13 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         isDeleted: Bool
     ) {
         isCurrentThumbnail = isCurrent
-
         imageView.image = isDeleted ? nil : image
         placeholderView.isHidden = imageView.image != nil
-        placeholderIconView.image = UIImage(systemName: isDeleted ? "trash" : "photo")
+        placeholderIconView.image = UIImage(systemName: isDeleted ? "trash" : "photo")?
+            .withRenderingMode(.alwaysTemplate)
+        placeholderIconView.tintColor = .systemGray
+        playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
+        playIconView.tintColor = .systemGray
         playIconView.isHidden = isDeleted || !isVideo
         layer.zPosition = isCurrent ? 10 : 0
 
