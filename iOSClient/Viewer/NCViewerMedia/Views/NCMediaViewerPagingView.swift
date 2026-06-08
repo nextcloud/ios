@@ -267,7 +267,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         collectionView.layoutIfNeeded()
 
-        let index = model.initialSelectedIndex
+        let index = model.currentSelectedIndex
 
         guard index >= 0,
               index < model.numberOfPages else {

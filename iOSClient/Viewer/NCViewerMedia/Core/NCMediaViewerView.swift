@@ -45,9 +45,17 @@ struct NCMediaViewerView: View {
 
             if !model.isChromeHidden, model.numberOfPages > 1 {
                 NCMediaViewerThumbnailCollectionView(
-                    model: model,
                     selectedIndex: model.selectedIndex,
                     numberOfPages: model.numberOfPages,
+                    metadataProvider: { index in
+                        model.metadataForThumbnail(at: index)
+                    },
+                    metadataResolver: { index in
+                        await model.resolveMetadataForThumbnail(at: index)
+                    },
+                    previewURLProvider: { metadata in
+                        await model.previewURL(for: metadata, ext: NCGlobal.shared.previewExt256)
+                    },
                     onSelect: { index in
                         Task {
                             await model.displayPage(at: index)
