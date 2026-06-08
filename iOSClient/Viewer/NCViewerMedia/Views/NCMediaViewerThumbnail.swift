@@ -10,11 +10,11 @@ import NextcloudKit
 
 private enum NCMediaViewerThumbnailLayout {
     /// Real square thumbnail image size for non-selected items.
-    static let thumbnailSize: CGFloat = 30
+    static let thumbnailSize: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 45 : 30
 
     /// Total vertical lane height for each collection view cell.
     /// The selected thumbnail uses this value as its square image size.
-    static let itemContainerHeight: CGFloat = 45
+    static let itemContainerHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 60 : 45
 
     /// Preferred SwiftUI container height for the thumbnail strip.
     static var preferredHeight: CGFloat {
@@ -22,7 +22,7 @@ private enum NCMediaViewerThumbnailLayout {
     }
 
     /// Horizontal spacing between thumbnail cells.
-    static let itemSpacing: CGFloat = 3
+    static let itemSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 6 : 3
 
     /// Square thumbnail image size used by the currently selected item.
     static var selectedThumbnailSize: CGFloat {
