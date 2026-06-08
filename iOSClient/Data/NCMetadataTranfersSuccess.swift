@@ -13,7 +13,6 @@ public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
 actor NCMetadataTranfersSuccess {
     private struct TransferSuccessItem {
         let metadata: tableMetadata
-        let status: Int
     }
 
     private var tranfersSuccess: [TransferSuccessItem] = []
@@ -37,7 +36,6 @@ actor NCMetadataTranfersSuccess {
                 ownerId: String? = nil,
                 permissions: String? = nil) async {
         let status = metadata.status
-
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -63,7 +61,7 @@ actor NCMetadataTranfersSuccess {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 
-        let item = TransferSuccessItem(metadata: metadata, status: status)
+        let item = TransferSuccessItem(metadata: metadata)
 
         if let index = tranfersSuccess.firstIndex(where: { $0.metadata.ocId == metadata.ocId }) {
             tranfersSuccess[index] = item
@@ -84,10 +82,6 @@ actor NCMetadataTranfersSuccess {
 
     func count() -> Int {
         tranfersSuccess.count
-    }
-
-    func count(statuses: [Int]) -> Int {
-        tranfersSuccess.filter { statuses.contains($0.status) }.count
     }
 
     func getAll() -> [tableMetadata] {
