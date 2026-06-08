@@ -152,6 +152,7 @@ extension NCMediaViewerThumbnail {
         private var failedPreviewIndexes = Set<Int>()
         private var displayedSelectedIndex: Int?
         private var isUserScrollingThumbnails = false
+        private var shouldEmphasizeSelectedThumbnail = true
         private var lastSentSelectedIndex: Int?
         private let imageCache = NSCache<NSString, UIImage>()
 
@@ -214,10 +215,12 @@ extension NCMediaViewerThumbnail {
         ) {
             let selectedIndex = indexPath.item
 
+            shouldEmphasizeSelectedThumbnail = true
             displayedSelectedIndex = selectedIndex
             lastCenteredIndex = nil
             lastSentSelectedIndex = selectedIndex
 
+            collectionView.collectionViewLayout.invalidateLayout()
             scrollToSelectedIndexIfNeeded(animated: false)
             prefetchThumbnailsAround(selectedIndex)
             onSelect(selectedIndex)
@@ -227,6 +230,10 @@ extension NCMediaViewerThumbnail {
 
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
             isUserScrollingThumbnails = true
+            shouldEmphasizeSelectedThumbnail = false
+
+            collectionView?.collectionViewLayout.invalidateLayout()
+            refreshVisibleCells()
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -260,7 +267,7 @@ extension NCMediaViewerThumbnail {
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
             let baseWidth = NCMediaViewerThumbnailLayout.thumbnailSize
-            let extraWidth = isDisplayedCurrentThumbnail(at: indexPath.item)
+            let extraWidth = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: indexPath.item)
                 ? NCMediaViewerThumbnailLayout.selectedExtraWidth
                 : 0
 
@@ -417,10 +424,7 @@ extension NCMediaViewerThumbnail {
             lastCenteredIndex = nil
             lastSentSelectedIndex = centeredIndex
 
-            collectionView?.collectionViewLayout.invalidateLayout()
-            refreshVisibleCells()
             prefetchThumbnailsAround(centeredIndex)
-
             onSelect(centeredIndex)
         }
 
@@ -430,8 +434,10 @@ extension NCMediaViewerThumbnail {
             }
 
             isUserScrollingThumbnails = false
+            shouldEmphasizeSelectedThumbnail = true
             lastCenteredIndex = nil
 
+            collectionView?.collectionViewLayout.invalidateLayout()
             scrollToSelectedIndexIfNeeded(animated: true)
         }
 
@@ -553,7 +559,7 @@ extension NCMediaViewerThumbnail {
             let isDeleted = isDeletedProvider(index)
             let metadata = isDeleted ? nil : metadataProvider(index)
             let ocId = metadata?.ocId
-            let isCurrent = isDisplayedCurrentThumbnail(at: index)
+            let isCurrent = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: index)
             let isVideo = !isDeleted && metadata?.classFile == NKTypeClassFile.video.rawValue
             let image = isDeleted ? nil : image(for: ocId)
 
