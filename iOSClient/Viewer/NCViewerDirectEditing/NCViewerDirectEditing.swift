@@ -218,7 +218,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         if #available(iOS 26.0, *) {
             navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
         }
-        
+
         NCActivityIndicator.shared.stop()
     }
 
