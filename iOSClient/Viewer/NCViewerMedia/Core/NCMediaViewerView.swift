@@ -42,6 +42,39 @@ struct NCMediaViewerView: View {
                 onClose: onClose
             )
             .ignoresSafeArea()
+
+            if !model.isChromeHidden, model.numberOfPages > 1 {
+                NCMediaViewerThumbnail(
+                    selectedIndex: model.selectedIndex,
+                    numberOfPages: model.numberOfPages,
+                    metadataProvider: { index in
+                        model.metadataForThumbnail(at: index)
+                    },
+                    metadataResolver: { index in
+                        await model.resolveMetadataForThumbnail(at: index)
+                    },
+                    previewURLProvider: { metadata in
+                        model.localPreviewURL(
+                            for: metadata,
+                            ext: NCGlobal.shared.previewExt256
+                        )
+                    },
+                    isDeletedProvider: { index in
+                        model.isThumbnailDeleted(at: index)
+                    },
+                    onSelect: { index in
+                        Task {
+                            await model.displayPreviewPage(at: index)
+                        }
+                    }
+                )
+                .equatable()
+                .frame(height: NCMediaViewerThumbnail.preferredHeight)
+                .padding(.bottom, 30)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .ignoresSafeArea(.container, edges: [.horizontal, .bottom])
+                .zIndex(10)
+            }
         }
         .background(Color.ncViewerBackground(.system))
         .ignoresSafeArea()

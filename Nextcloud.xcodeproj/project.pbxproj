@@ -215,6 +215,7 @@
 		F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */; };
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */; };
+		F7103F652FD6A8F800C6C8F1 /* NCMediaViewerThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7103F642FD6A8F800C6C8F1 /* NCMediaViewerThumbnail.swift */; };
 		F71070AB2F7E49F200AEE58A /* NCEndToEndSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71070AA2F7E49E100AEE58A /* NCEndToEndSetup.swift */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D2022405826100A6033D /* NCContextMenuViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCContextMenuViewer.swift */; };
@@ -1370,6 +1371,7 @@
 		F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommon.swift; sourceTree = "<group>"; };
 		F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingProcess.swift; sourceTree = "<group>"; };
 		F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
+		F7103F642FD6A8F800C6C8F1 /* NCMediaViewerThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerThumbnail.swift; sourceTree = "<group>"; };
 		F71070AA2F7E49E100AEE58A /* NCEndToEndSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndSetup.swift; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCContextMenuViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContextMenuViewer.swift; sourceTree = "<group>"; };
@@ -3229,6 +3231,7 @@
 				F716DA662FA5F019006A6703 /* NCMediaViewerPagingView.swift */,
 				F7CDB5B92FA33CA300F72306 /* NCMediaViewerPageView.swift */,
 				F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */,
+				F7103F642FD6A8F800C6C8F1 /* NCMediaViewerThumbnail.swift */,
 				F749ED302FADD62400CE8DFA /* NCMediaViewerDetailView.swift */,
 			);
 			path = Views;
@@ -4981,6 +4984,7 @@
 				F749ED312FADD62600CE8DFA /* NCMediaViewerDetailView.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
 				F7A98A522FC97464009E6313 /* NCVideoViewerContentView+AVPlayer.swift in Sources */,
+				F7103F652FD6A8F800C6C8F1 /* NCMediaViewerThumbnail.swift in Sources */,
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F7EDBB5C2FA8DBE800098C42 /* NCMediaViewerPresenter.swift in Sources */,

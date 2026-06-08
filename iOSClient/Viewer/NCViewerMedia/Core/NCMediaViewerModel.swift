@@ -61,7 +61,7 @@ struct NCMediaViewerInitialModel {
         }
     }
 
-    var initialSelectedIndex: Int {
+    var currentSelectedIndex: Int {
         normalizedOcIds.firstIndex(of: currentMetadata.ocId) ?? 0
     }
 }
@@ -97,6 +97,7 @@ final class NCMediaViewerModel: ObservableObject {
     // MARK: - Dependencies
 
     private let loader: NCMediaViewerLoading
+    private let utilityFileSystem = NCUtilityFileSystem()
 
     // MARK: - Source Context
 
@@ -122,7 +123,7 @@ final class NCMediaViewerModel: ObservableObject {
         ocIds.count
     }
 
-    var initialSelectedIndex: Int {
+    var currentSelectedIndex: Int {
         selectedIndex
     }
 
@@ -140,6 +141,22 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         let ocId = ocIds[selectedIndex]
+        return cachedPagesByOcId[ocId]?.metadata
+    }
+
+    func ocId(at index: Int) -> String? {
+        guard ocIds.indices.contains(index) else {
+            return nil
+        }
+
+        return ocIds[index]
+    }
+
+    func metadataForThumbnail(at index: Int) -> tableMetadata? {
+        guard let ocId = ocId(at: index) else {
+            return nil
+        }
+
         return cachedPagesByOcId[ocId]?.metadata
     }
 
@@ -173,8 +190,6 @@ final class NCMediaViewerModel: ObservableObject {
         updatePage(ocId: ocId) { page in
             page.state = .deleted
         }
-
-        revision += 1
     }
 
     // MARK: - Init
@@ -189,10 +204,10 @@ final class NCMediaViewerModel: ObservableObject {
         self.session = session
         self.mediaSearch = mediaSearch
         self.ocIds = initialModel.normalizedOcIds
-        self.selectedIndex = initialModel.initialSelectedIndex
+        self.selectedIndex = initialModel.currentSelectedIndex
 
         let currentPage = NCMediaViewerPageModel(
-            index: initialModel.initialSelectedIndex,
+            index: initialModel.currentSelectedIndex,
             ocId: initialModel.currentMetadata.ocId,
             metadata: initialModel.currentMetadata,
             state: .idle
@@ -250,10 +265,85 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
+        if selectedIndex == index,
+           let ocId = ocId(at: index),
+           !pageState(for: ocId).needsSelectedPageLoading {
+            return
+        }
+
         selectedIndex = index
 
         prefetchNeighborPages(around: index)
         await loadPageIfNeeded(index: index)
+    }
+
+    func displayPreviewPage(at index: Int) async {
+        guard ocIds.indices.contains(index) else {
+            return
+        }
+
+        guard selectedIndex != index else {
+            return
+        }
+
+        selectedIndex = index
+
+        let ocId = ocIds[index]
+
+        guard let metadata = await resolvedMetadata(for: ocId) else {
+            return
+        }
+
+        setThumbnailMetadata(metadata, for: ocId)
+
+        let previewURL: URL?
+
+        if let existingPreviewURL = currentPreviewURL(for: ocId) {
+            previewURL = existingPreviewURL
+        } else {
+            previewURL = await loader.previewURL(
+                for: metadata,
+                ext: NCGlobal.shared.previewExt1024
+            )
+        }
+
+        guard let previewURL else {
+            return
+        }
+
+        switch metadata.classFile {
+        case NKTypeClassFile.image.rawValue:
+            setState(
+                .image(
+                    previewURL: previewURL,
+                    localURL: nil,
+                    livePhotoURL: nil,
+                    progress: nil
+                ),
+                for: ocId
+            )
+
+        case NKTypeClassFile.video.rawValue:
+            setState(
+                .video(
+                    localURL: nil,
+                    previewURL: previewURL
+                ),
+                for: ocId
+            )
+
+        case NKTypeClassFile.audio.rawValue:
+            setState(
+                .downloading(
+                    previewURL: previewURL,
+                    progress: nil
+                ),
+                for: ocId
+            )
+
+        default:
+            break
+        }
     }
 
     func selectedPageModel() -> NCMediaViewerPageModel? {
@@ -355,6 +445,57 @@ final class NCMediaViewerModel: ObservableObject {
         isChromeHidden.toggle()
     }
 
+    func previewURL(for metadata: tableMetadata, ext: String) async -> URL? {
+        await loader.previewURL(for: metadata, ext: ext)
+    }
+
+    func localPreviewURL(for metadata: tableMetadata, ext: String) -> URL? {
+        let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(
+            metadata.ocId,
+            etag: metadata.etag,
+            ext: ext,
+            userId: metadata.userId,
+            urlBase: metadata.urlBase
+        )
+
+        guard FileManager.default.fileExists(atPath: localPath) else {
+            return nil
+        }
+
+        return URL(fileURLWithPath: localPath)
+    }
+
+    func resolveMetadataForThumbnail(at index: Int) async -> tableMetadata? {
+        guard let ocId = ocId(at: index) else {
+            return nil
+        }
+
+        if let existingMetadata = cachedPagesByOcId[ocId]?.metadata {
+            return existingMetadata
+        }
+
+        guard let metadata = await resolvedMetadata(for: ocId) else {
+            return nil
+        }
+
+        setThumbnailMetadata(metadata, for: ocId)
+
+        return metadata
+    }
+
+    func isThumbnailDeleted(at index: Int) -> Bool {
+        guard let ocId = ocId(at: index),
+              let page = cachedPagesByOcId[ocId] else {
+            return false
+        }
+
+        if case .deleted = page.state {
+            return true
+        }
+
+        return false
+    }
+
     // MARK: - Selected Page Loading
 
     private func loadPage(index: Int) async {
@@ -378,7 +519,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let previewURL = currentPreviewURL(for: ocId)
 
-        if let localURL = await loader.localMediaURL(for: metadata, index: index) {
+        if let localURL = await loader.localMediaURL(for: metadata) {
             guard !Task.isCancelled else {
                 return
             }
@@ -419,7 +560,7 @@ final class NCMediaViewerModel: ObservableObject {
             if videoPreviewURL == nil {
                 videoPreviewURL = await loader.previewURL(
                     for: metadata,
-                    index: index
+                    ext: NCGlobal.shared.previewExt1024
                 )
 
                 guard !Task.isCancelled else {
@@ -458,7 +599,7 @@ final class NCMediaViewerModel: ObservableObject {
             if imagePreviewURL == nil {
                 imagePreviewURL = await loader.previewURL(
                     for: metadata,
-                    index: index
+                    ext: NCGlobal.shared.previewExt1024
                 )
 
                 guard !Task.isCancelled else {
@@ -497,7 +638,7 @@ final class NCMediaViewerModel: ObservableObject {
            shouldLoadPreview(for: metadata) {
             previewURL = await loader.previewURL(
                 for: metadata,
-                index: index
+                ext: NCGlobal.shared.previewExt1024
             )
         }
 
@@ -544,8 +685,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         do {
             let downloadedURL = try await loader.downloadMedia(
-                for: metadata,
-                index: index
+                for: metadata
             )
 
             guard !Task.isCancelled else {
@@ -665,7 +805,7 @@ final class NCMediaViewerModel: ObservableObject {
         if shouldLoadPreview(for: metadata) {
             previewURL = await loader.previewURL(
                 for: metadata,
-                index: index
+                ext: NCGlobal.shared.previewExt1024
             )
         } else {
             previewURL = nil
@@ -690,8 +830,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         if metadata.classFile == NKTypeClassFile.video.rawValue {
             let localURL = await loader.localMediaURL(
-                for: metadata,
-                index: index
+                for: metadata
             )
 
             guard !Task.isCancelled else {
@@ -710,8 +849,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         if metadata.classFile == NKTypeClassFile.audio.rawValue {
             let localURL = await loader.localMediaURL(
-                for: metadata,
-                index: index
+                for: metadata
             )
 
             guard !Task.isCancelled else {
@@ -825,8 +963,7 @@ final class NCMediaViewerModel: ObservableObject {
 
             if metadata.isLivePhoto {
                 livePhotoURL = await loader.downloadLivePhotoMedia(
-                    for: metadata,
-                    index: index
+                    for: metadata
                 )
             } else {
                 livePhotoURL = nil
@@ -881,7 +1018,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let previewURL = await loader.previewURL(
             for: metadata,
-            index: index
+            ext: NCGlobal.shared.previewExt1024
         )
 
         guard !Task.isCancelled,
@@ -905,6 +1042,7 @@ final class NCMediaViewerModel: ObservableObject {
 
     private func updatePage(
         ocId: String,
+        publishRevision: Bool = true,
         mutation: (inout NCMediaViewerPageModel) -> Void
     ) {
         guard let index = ocIds.firstIndex(of: ocId) else {
@@ -921,7 +1059,19 @@ final class NCMediaViewerModel: ObservableObject {
         mutation(&page)
 
         cachedPagesByOcId[ocId] = page
-        revision &+= 1
+
+        if publishRevision {
+            revision &+= 1
+        }
+    }
+
+    private func setThumbnailMetadata(_ metadata: tableMetadata, for ocId: String) {
+        updatePage(
+            ocId: ocId,
+            publishRevision: false
+        ) { page in
+            page.metadata = metadata
+        }
     }
 
     private func clearLoadingTaskIfCurrent(
