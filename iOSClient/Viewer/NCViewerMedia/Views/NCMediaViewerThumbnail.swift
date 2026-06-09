@@ -153,7 +153,6 @@ extension NCMediaViewerThumbnail {
         private var lastCenteredBoundsSize: CGSize = .zero
         private var didPerformInitialDeferredCentering = false
         private var pendingPrefetchIndexes = Set<Int>()
-        private var failedMetadataIndexes = Set<Int>()
         private var displayedSelectedIndex: Int?
         private var isUserScrollingThumbnails = false
         private var shouldEmphasizeSelectedThumbnail = true
@@ -324,7 +323,6 @@ extension NCMediaViewerThumbnail {
             lastCenteredBoundsSize = .zero
             didPerformInitialDeferredCentering = false
             pendingPrefetchIndexes.removeAll()
-            failedMetadataIndexes.removeAll()
             imageCache.removeAllObjects()
             collectionView.reloadData()
         }
@@ -598,8 +596,7 @@ extension NCMediaViewerThumbnail {
             _ cell: NCMediaViewerThumbnailUICollectionCell,
             at index: Int
         ) {
-            let metadataFailed = failedMetadataIndexes.contains(index)
-            let isDeleted = isDeletedProvider(index) || metadataFailed
+            let isDeleted = isDeletedProvider(index)
             let metadata = isDeleted ? nil : metadataProvider(index)
             let ocId = metadata?.ocId
             let isCurrent = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: index)
@@ -681,7 +678,6 @@ extension NCMediaViewerThumbnail {
             guard index >= 0,
                   index < numberOfPages,
                   !isDeletedProvider(index),
-                  !failedMetadataIndexes.contains(index),
                   !pendingPrefetchIndexes.contains(index) else {
                 return
             }
@@ -709,14 +705,9 @@ extension NCMediaViewerThumbnail {
                       !metadata.ocId.isEmpty else {
                     await MainActor.run {
                         self.pendingPrefetchIndexes.remove(index)
-                        self.failedMetadataIndexes.insert(index)
                         self.refreshThumbnailIfVisible(at: index)
                     }
                     return
-                }
-
-                await MainActor.run {
-                    self.failedMetadataIndexes.remove(index)
                 }
 
                 guard !self.isDeletedProvider(index) else {
@@ -868,7 +859,7 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
         placeholderView.isHidden = imageView.image != nil
-        placeholderIconView.image = UIImage(systemName: isDeleted ? "photo.badge.exclamationmark" : "photo")?
+        placeholderIconView.image = UIImage(systemName: isDeleted ? "trash" : "photo")?
             .withRenderingMode(.alwaysTemplate)
         placeholderIconView.tintColor = .systemGray
         playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
