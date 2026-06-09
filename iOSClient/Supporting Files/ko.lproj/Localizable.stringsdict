@@ -16,5 +16,20 @@
 			<string>%d번의 다운로드 횟수가 남았습니다.</string>
 		</dict>
 	</dict>
+	<key>_focused_auto_upload_items_left_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@items@</string>
+	</dict>
+	<key>_focused_auto_upload_photos_to_back_up_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@photos@</string>
+	</dict>
+	<key>_focused_auto_upload_failed_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed@</string>
+	</dict>
 </dict>
 </plist>
