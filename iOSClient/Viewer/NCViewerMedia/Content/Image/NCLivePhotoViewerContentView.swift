@@ -94,7 +94,8 @@ struct NCLivePhotoViewerContentView: View {
             identifier: identifier,
             previewURL: previewURL,
             fullURL: fullURL,
-            backgroundStyle: backgroundStyle
+            backgroundStyle: backgroundStyle,
+            allowsImageAnalysis: false
         )
     }
 
