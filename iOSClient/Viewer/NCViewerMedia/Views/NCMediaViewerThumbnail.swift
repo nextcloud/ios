@@ -600,14 +600,10 @@ extension NCMediaViewerThumbnail {
             let image = isDeleted ? nil : image(for: ocId)
 
             if !isDeleted, image == nil {
-                if let metadata {
-                    loadPreviewIfNeeded(
-                        metadata: metadata,
-                        index: index
-                    )
-                } else {
-                    resolveMetadataAndLoadPreviewIfNeeded(at: index)
-                }
+                loadThumbnailIfNeeded(
+                    index: index,
+                    metadata: metadata
+                )
             }
 
             cell.configure(
@@ -665,27 +661,26 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            if let metadata = metadataProvider(index) {
-                loadPreviewIfNeeded(
-                    metadata: metadata,
-                    index: index
-                )
-            } else {
-                resolveMetadataAndLoadPreviewIfNeeded(at: index)
-            }
+            loadThumbnailIfNeeded(
+                index: index,
+                metadata: metadataProvider(index)
+            )
         }
 
-        private func resolveMetadataAndLoadPreviewIfNeeded(at index: Int) {
+        private func loadThumbnailIfNeeded(
+            index: Int,
+            metadata initialMetadata: tableMetadata?
+        ) {
             guard index >= 0,
-                  index < numberOfPages else {
+                  index < numberOfPages,
+                  !isDeletedProvider(index),
+                  !pendingPrefetchIndexes.contains(index) else {
                 return
             }
 
-            guard !isDeletedProvider(index) else {
-                return
-            }
-
-            guard !pendingPrefetchIndexes.contains(index) else {
+            if let ocId = initialMetadata?.ocId,
+               !ocId.isEmpty,
+               imageCache.object(forKey: ocId as NSString) != nil {
                 return
             }
 
@@ -696,7 +691,14 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                guard let metadata = await self.metadataResolver(index) else {
+                let metadata = if let initialMetadata {
+                    initialMetadata
+                } else {
+                    await self.metadataResolver(index)
+                }
+
+                guard let metadata,
+                      !metadata.ocId.isEmpty else {
                     await MainActor.run {
                         self.pendingPrefetchIndexes.remove(index)
                         self.refreshThumbnailIfVisible(at: index)
@@ -714,64 +716,7 @@ extension NCMediaViewerThumbnail {
 
                 let previewURL = await self.previewURLProvider(metadata)
                 let image = await Self.makeImage(from: previewURL)
-
-                await MainActor.run {
-                    self.pendingPrefetchIndexes.remove(index)
-
-                    guard !self.isDeletedProvider(index) else {
-                        self.refreshThumbnailIfVisible(at: index)
-                        return
-                    }
-
-                    if !metadata.ocId.isEmpty,
-                       let image {
-                        self.imageCache.setObject(
-                            image,
-                            forKey: metadata.ocId as NSString
-                        )
-                    }
-
-                    self.refreshThumbnailIfVisible(at: index)
-                }
-            }
-        }
-
-        private func loadPreviewIfNeeded(
-            metadata: tableMetadata,
-            index: Int
-        ) {
-            guard index >= 0,
-                  index < numberOfPages else {
-                return
-            }
-
-            guard !isDeletedProvider(index) else {
-                return
-            }
-
-            guard !metadata.ocId.isEmpty else {
-                return
-            }
-
-            let cacheKey = metadata.ocId as NSString
-
-            guard imageCache.object(forKey: cacheKey) == nil else {
-                return
-            }
-
-            guard !pendingPrefetchIndexes.contains(index) else {
-                return
-            }
-
-            pendingPrefetchIndexes.insert(index)
-
-            Task { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                let previewURL = await self.previewURLProvider(metadata)
-                let image = await Self.makeImage(from: previewURL)
+                let cacheKey = metadata.ocId as NSString
 
                 await MainActor.run {
                     self.pendingPrefetchIndexes.remove(index)

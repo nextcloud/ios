@@ -70,7 +70,7 @@ struct NCMediaViewerView: View {
                 )
                 .equatable()
                 .frame(height: NCMediaViewerThumbnail.preferredHeight)
-                .padding(.bottom, 30)
+                .padding(.bottom, 40)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea(.container, edges: [.horizontal, .bottom])
                 .zIndex(10)
