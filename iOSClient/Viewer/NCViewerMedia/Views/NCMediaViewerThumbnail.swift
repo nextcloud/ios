@@ -157,6 +157,7 @@ extension NCMediaViewerThumbnail {
         private var isUserScrollingThumbnails = false
         private var shouldEmphasizeSelectedThumbnail = true
         private var lastSentSelectedIndex: Int?
+        private let selectionFeedbackGenerator = UISelectionFeedbackGenerator()
         private let imageCache = NSCache<NSString, UIImage>()
 
         init(
@@ -234,6 +235,7 @@ extension NCMediaViewerThumbnail {
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
             isUserScrollingThumbnails = true
             shouldEmphasizeSelectedThumbnail = false
+            selectionFeedbackGenerator.prepare()
 
             collectionView?.collectionViewLayout.invalidateLayout()
             refreshVisibleCells()
@@ -459,6 +461,8 @@ extension NCMediaViewerThumbnail {
             displayedSelectedIndex = centeredIndex
             lastCenteredIndex = nil
             lastSentSelectedIndex = centeredIndex
+            selectionFeedbackGenerator.selectionChanged()
+            selectionFeedbackGenerator.prepare()
 
             prefetchThumbnailsAround(centeredIndex)
             onSelect(centeredIndex)
