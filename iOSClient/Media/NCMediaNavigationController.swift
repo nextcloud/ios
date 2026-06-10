@@ -127,7 +127,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                     return
                 }
 
-                let mediaPath = self.database.getTableAccount(account: self.session.account)?.mediaPath ?? ""
+                let mediaPath = self.database.getTableAccount(account: self.session.account)?.mediaPath.replacingOccurrences(of: "/", with: "") ?? ""
 
                 let selectMediaFolderAction = UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), subtitle: mediaPath, image: self.utility.loadImage(named: "folder"), handler: { _ in
                     guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
