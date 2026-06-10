@@ -702,6 +702,7 @@ extension NCMediaViewerThumbnail {
             if let ocId = initialMetadata?.ocId,
                !ocId.isEmpty,
                imageCache.object(forKey: ocId as NSString) != nil {
+                refreshThumbnailIfVisible(at: index)
                 return
             }
 
