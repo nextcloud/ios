@@ -77,7 +77,7 @@ class NCMediaNavigationController: NCMainNavigationController {
             media.setEditMode(true)
         }
 
-        let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
+        let viewFilterMenu = UIMenu(title: "", options: [.singleSelection, .displayInline], children: [
         UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
             media.showOnlyImages = true
             media.showOnlyVideos = false
@@ -94,7 +94,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                     await media.networkRemoveAll()
                 }
             },
-            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
+        UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle"), state: .on) { _ in
                 media.showOnlyImages = false
                 media.showOnlyVideos = false
                 Task {
@@ -121,16 +121,27 @@ class NCMediaNavigationController: NCMainNavigationController {
         ])
 
         let viewFolderMedia = UIMenu(title: "", options: .displayInline, children: [
-            UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(named: "folder"), handler: { _ in
-                guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                      let viewController = navigationController.topViewController as? NCSelect else { return }
-                viewController.delegate = media
-                viewController.typeOfCommandView = .select
-                viewController.type = "mediaFolder"
-                viewController.session = self.session
-                viewController.controller = self.controller
-                self.present(navigationController, animated: true)
-            })
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                guard let self else {
+                    completion([])
+                    return
+                }
+
+                let mediaPath = self.database.getTableAccount(account: self.session.account)?.mediaPath ?? ""
+
+                let selectMediaFolderAction = UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), subtitle: mediaPath, image: self.utility.loadImage(named: "folder"), handler: { _ in
+                    guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                          let viewController = navigationController.topViewController as? NCSelect else { return }
+                    viewController.delegate = media
+                    viewController.typeOfCommandView = .select
+                    viewController.type = "mediaFolder"
+                    viewController.session = self.session
+                    viewController.controller = self.controller
+                    self.present(navigationController, animated: true)
+                })
+
+                completion([selectMediaFolderAction])
+            }
         ])
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in

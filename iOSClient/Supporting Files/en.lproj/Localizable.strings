@@ -601,8 +601,8 @@
 "_undo_modify_"             = "Undo modifying";
 "_rename_already_exists_"   = "A file with this name already exists.";
 "_group_folders_"           = "Team folders";
-"_play_from_files_"         = "Play movie from a file";
-"_play_from_url_"           = "Play movie from URL";
+"_play_from_files_"         = "Play video from a file";
+"_play_from_url_"           = "Play video from a link";
 "_valid_video_url_"         = "Insert a valid URL";
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log.";
 "_download_image_"          = "Download image";
