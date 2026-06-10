@@ -115,6 +115,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         context.coordinator.reloadCollectionViewIfNeeded()
         context.coordinator.scrollToSelectedIndexIfNeeded(animated: false)
         context.coordinator.performInitialDeferredCenteringIfNeeded()
+        context.coordinator.prefetchAroundDisplayedSelectedIndexIfNeeded()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -342,7 +343,23 @@ extension NCMediaViewerThumbnail {
                 self.lastCenteredIndex = nil
                 self.lastCenteredBoundsSize = .zero
                 self.scrollToSelectedIndexIfNeeded(animated: false)
+                self.prefetchAroundDisplayedSelectedIndexIfNeeded()
             }
+        }
+
+        func prefetchAroundDisplayedSelectedIndexIfNeeded() {
+            guard numberOfPages > 0 else {
+                return
+            }
+
+            let index = displayedSelectedIndex ?? selectedIndex
+
+            guard index >= 0,
+                  index < numberOfPages else {
+                return
+            }
+
+            prefetchThumbnailsAround(index)
         }
 
         func collectionViewBoundsDidChange(_ size: CGSize) {
@@ -704,38 +721,43 @@ extension NCMediaViewerThumbnail {
                 guard let metadata,
                       !metadata.ocId.isEmpty else {
                     await MainActor.run {
-                        self.pendingPrefetchIndexes.remove(index)
-                        self.refreshThumbnailIfVisible(at: index)
+                        _ = self.pendingPrefetchIndexes.remove(index)
                     }
                     return
                 }
 
                 guard !self.isDeletedProvider(index) else {
                     await MainActor.run {
-                        self.pendingPrefetchIndexes.remove(index)
-                        self.refreshThumbnailIfVisible(at: index)
+                        _ = self.pendingPrefetchIndexes.remove(index)
                     }
                     return
                 }
 
-                let previewURL = await self.previewURLProvider(metadata)
-                let image = await Self.makeImage(from: previewURL)
-                let cacheKey = metadata.ocId as NSString
+                guard let previewURL = await self.previewURLProvider(metadata) else {
+                    await MainActor.run {
+                        _ = self.pendingPrefetchIndexes.remove(index)
+                    }
+                    return
+                }
+
+                guard let image = await Self.makeImage(from: previewURL) else {
+                    await MainActor.run {
+                        _ = self.pendingPrefetchIndexes.remove(index)
+                    }
+                    return
+                }
 
                 await MainActor.run {
-                    self.pendingPrefetchIndexes.remove(index)
+                    _ = self.pendingPrefetchIndexes.remove(index)
 
                     guard !self.isDeletedProvider(index) else {
-                        self.refreshThumbnailIfVisible(at: index)
                         return
                     }
 
-                    if let image {
-                        self.imageCache.setObject(
-                            image,
-                            forKey: cacheKey
-                        )
-                    }
+                    self.imageCache.setObject(
+                        image,
+                        forKey: metadata.ocId as NSString
+                    )
 
                     self.refreshThumbnailIfVisible(at: index)
                 }
@@ -753,8 +775,6 @@ extension NCMediaViewerThumbnail {
         }
     }
 }
-
-// MARK: - Cell
 
 // MARK: - Collection View
 

@@ -54,7 +54,7 @@ struct NCMediaViewerView: View {
                         await model.resolveMetadataForThumbnail(at: index)
                     },
                     previewURLProvider: { metadata in
-                        model.localPreviewURL(
+                        await model.previewURL(
                             for: metadata,
                             ext: NCGlobal.shared.previewExt256
                         )
