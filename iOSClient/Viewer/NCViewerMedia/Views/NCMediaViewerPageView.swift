@@ -230,14 +230,16 @@ struct NCMediaViewerPageView: View {
                 metadata: metadata,
                 localURL: localURL,
                 previewURL: previewURL,
+                backgroundStyle: backgroundStyle,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 shouldAutoPlay: effectiveShouldAutoPlay,
                 onPrevious: goToPreviousPage,
                 onNext: goToNextPage,
-                onAutoPlayConsumed: consumeAutoPlayIfNeeded
+                onAutoPlayConsumed: consumeAutoPlayIfNeeded,
+                onToggleChrome: onToggleChrome
             )
-            .background(Color.black)
+            .background(Color.ncViewerBackground(backgroundStyle))
         } else {
             metadataMissingView
         }

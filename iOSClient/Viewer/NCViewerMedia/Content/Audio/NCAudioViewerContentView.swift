@@ -12,12 +12,14 @@ struct NCAudioViewerContentView: View {
     let metadata: tableMetadata
     let localURL: URL
     let previewURL: URL?
+    let backgroundStyle: NCViewerBackgroundStyle
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
     let onPrevious: (_ shouldAutoPlay: Bool) -> Void
     let onNext: (_ shouldAutoPlay: Bool) -> Void
     let onAutoPlayConsumed: () -> Void
+    let onToggleChrome: () -> Void
 
     @StateObject private var model: NCAudioViewerModel
 
@@ -25,22 +27,26 @@ struct NCAudioViewerContentView: View {
         metadata: tableMetadata,
         localURL: URL,
         previewURL: URL? = nil,
+        backgroundStyle: NCViewerBackgroundStyle = .system,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
         onPrevious: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
         onNext: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
-        onAutoPlayConsumed: @escaping () -> Void = {}
+        onAutoPlayConsumed: @escaping () -> Void = {},
+        onToggleChrome: @escaping () -> Void = {}
     ) {
         self.metadata = metadata
         self.localURL = localURL
         self.previewURL = previewURL
+        self.backgroundStyle = backgroundStyle
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay
         self.onPrevious = onPrevious
         self.onNext = onNext
         self.onAutoPlayConsumed = onAutoPlayConsumed
+        self.onToggleChrome = onToggleChrome
 
         _model = StateObject(
             wrappedValue: NCAudioViewerPlaybackRegistry.shared.model(
@@ -61,79 +67,86 @@ struct NCAudioViewerContentView: View {
             let sideButtonSize: CGFloat = isLandscape ? 30 : 34
             let playButtonSize: CGFloat = isLandscape ? 64 : 72
 
-            VStack(spacing: mainSpacing) {
-                artworkView(size: artworkSize)
-                if !isLandscape {
-                    VStack(spacing: 8) {
-                        Text(displayFileName)
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.center)
-
-                        Text(metadata.contentType.isEmpty ? "Audio" : metadata.contentType)
-                            .font(.footnote)
-                            .foregroundStyle(.white.opacity(0.55))
-                            .lineLimit(1)
+            ZStack {
+                Color.ncViewerBackground(backgroundStyle)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onToggleChrome()
                     }
-                    .padding(.horizontal, titleHorizontalPadding)
+
+                VStack(spacing: mainSpacing) {
+                    artworkView(size: artworkSize)
+                    if !isLandscape {
+                        VStack(spacing: 8) {
+                            Text(displayFileName)
+                                .font(.headline)
+                                .foregroundStyle(primaryForegroundStyle)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.center)
+
+                            Text(metadata.contentType.isEmpty ? "Audio" : metadata.contentType)
+                                .font(.footnote)
+                                .foregroundStyle(secondaryForegroundStyle)
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, titleHorizontalPadding)
+                    }
+
+                    VStack(spacing: 10) {
+                        Slider(
+                            value: Binding(
+                                get: { model.currentTime },
+                                set: { model.seek(to: $0) }
+                            ),
+                            in: 0...max(model.duration, 1)
+                        )
+                        .disabled(model.duration <= 0)
+
+                        HStack {
+                            Text(formatTime(model.currentTime))
+
+                            Spacer()
+
+                            Text(formatTime(model.duration))
+                        }
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(secondaryForegroundStyle)
+                    }
+                    .padding(.horizontal, sliderHorizontalPadding)
+
+                    HStack(spacing: buttonSpacing) {
+                        Button {
+                            model.toggleLoop()
+                        } label: {
+                            Image(systemName: model.isLoopEnabled ? "repeat.circle.fill" : "repeat.circle")
+                                .font(.system(size: sideButtonSize, weight: .regular))
+                                .foregroundStyle(model.isLoopEnabled ? primaryForegroundStyle : mutedForegroundStyle)
+                        }
+                        .buttonStyle(.plain)
+
+                        Button {
+                            model.togglePlayback()
+                        } label: {
+                            Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                .font(.system(size: playButtonSize, weight: .regular))
+                                .foregroundStyle(primaryForegroundStyle)
+                        }
+                        .buttonStyle(.plain)
+
+                        Button {
+                            model.restart()
+                        } label: {
+                            Image(systemName: "gobackward")
+                                .font(.system(size: sideButtonSize, weight: .regular))
+                                .foregroundStyle(mutedForegroundStyle)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(model.duration <= 0)
+                    }
                 }
-
-                VStack(spacing: 10) {
-                    Slider(
-                        value: Binding(
-                            get: { model.currentTime },
-                            set: { model.seek(to: $0) }
-                        ),
-                        in: 0...max(model.duration, 1)
-                    )
-                    .disabled(model.duration <= 0)
-
-                    HStack {
-                        Text(formatTime(model.currentTime))
-
-                        Spacer()
-
-                        Text(formatTime(model.duration))
-                    }
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.white.opacity(0.6))
-                }
-                .padding(.horizontal, sliderHorizontalPadding)
-
-                HStack(spacing: buttonSpacing) {
-                    Button {
-                        model.toggleLoop()
-                    } label: {
-                        Image(systemName: model.isLoopEnabled ? "repeat.circle.fill" : "repeat.circle")
-                            .font(.system(size: sideButtonSize, weight: .regular))
-                            .foregroundStyle(model.isLoopEnabled ? .white : .white.opacity(0.45))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button {
-                        model.togglePlayback()
-                    } label: {
-                        Image(systemName: model.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                            .font(.system(size: playButtonSize, weight: .regular))
-                            .foregroundStyle(.white)
-                    }
-                    .buttonStyle(.plain)
-
-                    Button {
-                        model.restart()
-                    } label: {
-                        Image(systemName: "gobackward")
-                            .font(.system(size: sideButtonSize, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.45))
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(model.duration <= 0)
-                }
+                .padding(.top, topPadding)
             }
-            .padding(.top, topPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black)
         }
         .task(id: localURL) {
             await model.load(url: localURL)
@@ -166,12 +179,12 @@ struct NCAudioViewerContentView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 24))
             } else {
                 Circle()
-                    .fill(.white.opacity(0.08))
+                    .fill(artworkPlaceholderBackground)
                     .frame(width: size, height: size)
 
                 Image(systemName: "waveform")
                     .font(.system(size: 76, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(primaryForegroundStyle.opacity(0.9))
             }
         }
     }
@@ -183,6 +196,70 @@ struct NCAudioViewerContentView: View {
         }
 
         return UIImage(contentsOfFile: previewURL.path)
+    }
+
+    private var primaryForegroundStyle: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white
+
+        case .white:
+            return .black
+
+        case .system:
+            return .primary
+
+        case .custom:
+            return .white
+        }
+    }
+
+    private var secondaryForegroundStyle: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.55)
+
+        case .white:
+            return .black.opacity(0.55)
+
+        case .system:
+            return .secondary
+
+        case .custom:
+            return .white.opacity(0.65)
+        }
+    }
+
+    private var mutedForegroundStyle: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.45)
+
+        case .white:
+            return .black.opacity(0.40)
+
+        case .system:
+            return .secondary.opacity(0.70)
+
+        case .custom:
+            return .white.opacity(0.45)
+        }
+    }
+
+    private var artworkPlaceholderBackground: Color {
+        switch backgroundStyle {
+        case .black:
+            return .white.opacity(0.08)
+
+        case .white:
+            return .black.opacity(0.06)
+
+        case .system:
+            return .secondary.opacity(0.10)
+
+        case .custom:
+            return .white.opacity(0.10)
+        }
     }
 
     // MARK: - Private
