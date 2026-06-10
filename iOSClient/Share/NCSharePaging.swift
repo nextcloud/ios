@@ -39,6 +39,9 @@ class NCSharePaging: UIViewController {
     private var pageVCs: [UIViewController] = []
     private var contentHost: UIHostingController<NCSharePagingContentView>?
 
+    /// Minimum server version that serves the unified sharing UI (plus button + Sharing tab).
+    private static let unifiedSharingMinVersion: NextcloudVersion = .v34
+
     var metadata = tableMetadata()
     var controller: NCMainTabBarController?
     var pages: [NCBrandOptions.NCInfoPagingTab] = []
@@ -81,9 +84,18 @@ class NCSharePaging: UIViewController {
         let moreButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: nil, action: nil)
         moreButton.menu = UIMenu(children: [manageTagsAction])
 
-        let addShareButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
-        addShareButton.accessibilityLabel = NSLocalizedString("_share_", comment: "")
-        navigationItem.rightBarButtonItems = [addShareButton, moreButton]
+        var rightBarButtonItems = [moreButton]
+
+        // The unified share (+) button only applies to servers with the new sharing API.
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+
+        if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: Self.unifiedSharingMinVersion) {
+            let addShareButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
+            addShareButton.accessibilityLabel = NSLocalizedString("_share_", comment: "")
+            rightBarButtonItems.insert(addShareButton, at: 0)
+        }
+
+        navigationItem.rightBarButtonItems = rightBarButtonItems
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -159,6 +171,13 @@ class NCSharePaging: UIViewController {
             viewController.account = metadata.account
             return viewController
         case .sharing:
+            let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+
+            // The unified share tab fully replaces the legacy NCShare UI on newer servers.
+            if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: Self.unifiedSharingMinVersion) {
+                return UIHostingController(rootView: UnifiedShareView(fileName: metadata.fileNameView, account: metadata.account))
+            }
+
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {
                 return UIViewController()
             }
@@ -234,7 +253,7 @@ class NCSharePaging: UIViewController {
     }
 
     @objc private func addShareTapped(_ sender: UIBarButtonItem) {
-        let viewController = UIHostingController(rootView: UnifiedShareView(fileName: metadata.fileNameView, account: metadata.account))
+        let viewController = UIHostingController(rootView: UnifiedShareEditView(fileName: metadata.fileNameView, account: metadata.account))
         viewController.modalPresentationStyle = .pageSheet
 
         if let sheet = viewController.sheetPresentationController {
