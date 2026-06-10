@@ -33,7 +33,7 @@ struct NCMediaViewerDetailView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(cameraText)
-                    .font(.headline)
+                    .font(.body)
                     .lineLimit(1)
 
                 Spacer(minLength: 8)
@@ -41,10 +41,15 @@ struct NCMediaViewerDetailView: View {
                 if !metadata.fileExtension.isEmpty {
                     detailBadge(metadata.fileExtension.uppercased())
                 }
+
+                if metadata.isLivePhoto {
+                    Image(systemName: "livephoto")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 14)
-            .padding(.bottom, 8)
+            .padding(.vertical, 8)
             .background(.secondary.opacity(0.10))
 
             VStack(alignment: .leading, spacing: 10) {
@@ -90,7 +95,7 @@ struct NCMediaViewerDetailView: View {
         if let date = exif.date as Date? {
             VStack(alignment: .leading, spacing: 4) {
                 Text(dayString(from: date))
-                    .font(.headline)
+                    .font(.body)
 
                 HStack(spacing: 8) {
                     Text(dateString(from: date))
@@ -103,36 +108,6 @@ struct NCMediaViewerDetailView: View {
             Text(NSLocalizedString("_no_date_information_", comment: ""))
                 .font(.headline)
                 .foregroundStyle(.secondary)
-        }
-    }
-
-    private var fileSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(fileNameWithoutExtension)
-                .font(.title3.weight(.semibold))
-                .lineLimit(2)
-
-            HStack(spacing: 8) {
-                if let megapixelsText {
-                    detailBadge(megapixelsText)
-                }
-
-                if let resolutionText {
-                    detailBadge(resolutionText)
-                }
-
-                detailBadge(utilityFileSystem.transformedSize(metadata.size))
-
-                if !metadata.fileExtension.isEmpty {
-                    detailBadge(metadata.fileExtension.uppercased())
-                }
-
-                if metadata.isLivePhoto {
-                    Image(systemName: "livephoto")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
         }
     }
 
@@ -200,24 +175,7 @@ struct NCMediaViewerDetailView: View {
                 longitude: longitude
             )
 
-            VStack(alignment: .leading, spacing: 10) {
-                if let location = exif.location, !location.isEmpty {
-                    Button {
-                        openMaps(
-                            coordinate: coordinate,
-                            name: location
-                        )
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "mappin.and.ellipse")
-                            Text(location)
-                                .lineLimit(2)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.primary)
-                }
-
+            VStack(spacing: 0) {
                 ZStack {
                     Map(
                         initialPosition: .region(
@@ -244,8 +202,34 @@ struct NCMediaViewerDetailView: View {
                     .buttonStyle(.plain)
                 }
                 .frame(height: 180)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+
+                if let location = exif.location, !location.isEmpty {
+                    Button {
+                        openMaps(
+                            coordinate: coordinate,
+                            name: location
+                        )
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(location)
+                                .lineLimit(1)
+                                .foregroundStyle(.tint)
+
+                            Image(systemName: "chevron.right")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .background(.secondary.opacity(0.08))
+                }
             }
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         } else if let location = exif.location, !location.isEmpty {
             HStack(spacing: 8) {
                 Image(systemName: "mappin.and.ellipse")
@@ -263,7 +247,12 @@ struct NCMediaViewerDetailView: View {
             .font(.subheadline)
             .foregroundStyle(.secondary)
             .lineLimit(1)
-            .padding(.vertical, 2)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                .secondary.opacity(0.15),
+                in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+            )
     }
 
     // MARK: - Computed Values
@@ -472,4 +461,48 @@ private struct FlowingDetailValues: View {
             }
         }
     }
+}
+
+// MARK: - Previews
+
+#Preview("Full EXIF") {
+    let metadata: tableMetadata = {
+        let metadata = tableMetadata()
+        metadata.fileNameView = "IMG_0042.HEIC"
+        metadata.size = 3_145_728
+        metadata.livePhotoFile = "IMG_0042.MOV"
+        return metadata
+    }()
+
+    let exif: ExifData = {
+        var exif = ExifData()
+        exif.make = "Apple"
+        exif.model = "iPhone 17 Pro"
+        exif.lensModel = "iPhone 17 Pro back triple camera 6.765mm f/1.78"
+        exif.width = 5712
+        exif.height = 4284
+        exif.iso = 64
+        exif.lensLength = 7
+        exif.exposureValue = 0
+        exif.apertureValue = 1.78
+        exif.shutterSpeedApex = 9.0
+        exif.latitude = 48.137154
+        exif.longitude = 11.576124
+        exif.location = "Munich, Germany"
+        exif.date = Date(timeIntervalSince1970: 1_750_000_000)
+        return exif
+    }()
+
+    NCMediaViewerDetailView(metadata: metadata, exif: exif)
+}
+
+#Preview("No EXIF") {
+    let metadata: tableMetadata = {
+        let metadata = tableMetadata()
+        metadata.fileNameView = "Document scan.png"
+        metadata.size = 482_133
+        return metadata
+    }()
+
+    NCMediaViewerDetailView(metadata: metadata, exif: ExifData())
 }
