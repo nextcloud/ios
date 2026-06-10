@@ -63,26 +63,24 @@ struct NCMediaViewerDetailView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
-            if !exifStripValues.isEmpty {
-                Divider()
+            Divider()
 
-                HStack(spacing: 0) {
-                    ForEach(Array(exifStripValues.enumerated()), id: \.offset) { index, value in
-                        Text(value)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
+            HStack(spacing: 0) {
+                ForEach(Array(exifStripValues.enumerated()), id: \.offset) { index, value in
+                    Text(value)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
 
-                        if index < exifStripValues.count - 1 {
-                            Divider()
-                                .frame(height: 22)
-                        }
+                    if index < exifStripValues.count - 1 {
+                        Divider()
+                            .frame(height: 22)
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 12)
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
         }
         .background(.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -278,29 +276,13 @@ struct NCMediaViewerDetailView: View {
     }
 
     private var exifStripValues: [String] {
-        var values: [String] = []
-
-        if let iso = exif.iso {
-            values.append("ISO \(iso)")
-        }
-
-        if let lensLength = exif.lensLength {
-            values.append("\(lensLength) mm")
-        }
-
-        if let exposureValue = exif.exposureValue {
-            values.append("\(exposureValue) ev")
-        }
-
-        if let apertureValue = exif.apertureValue {
-            values.append("ƒ\(apertureValue)")
-        }
-
-        if let shutterSpeedApex = exif.shutterSpeedApex {
-            values.append("1/\(Int(pow(2, shutterSpeedApex))) s")
-        }
-
-        return values
+        [
+            exif.iso.map { "ISO \($0)" },
+            exif.lensLength.map { "\($0) mm" },
+            exif.exposureValue.map { "\($0) ev" },
+            exif.apertureValue.map { "ƒ\($0)" },
+            exif.shutterSpeedApex.map { "1/\(Int(pow(2, $0))) s" }
+        ].map { $0 ?? "-" }
     }
 
     private var fileNameWithoutExtension: String {
