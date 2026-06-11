@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import ImageIO
 import NextcloudKit
 
 // MARK: - Media Download Limiter
@@ -74,9 +75,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             urlBase: metadata.urlBase
         )
 
-        if isValidLocalFile(path: localPath) {
+        if isValidLocalFile(path: localPath, validateAsImage: true) {
             return URL(fileURLWithPath: localPath)
         }
+
+        removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: true)
 
         await mediaDownloadLimiter.acquire()
 
@@ -96,7 +99,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             )
         }
 
-        guard isValidLocalFile(path: localPath) else {
+        guard isValidLocalFile(path: localPath, validateAsImage: true) else {
+            removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: true)
             return nil
         }
 
@@ -105,8 +109,10 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
     func localMediaURL(for metadata: tableMetadata) async -> URL? {
         let localPath = fullLocalPath(for: metadata)
+        let validateAsImage = metadata.classFile == NKTypeClassFile.image.rawValue
 
-        guard isValidLocalFile(path: localPath) else {
+        guard isValidLocalFile(path: localPath, validateAsImage: validateAsImage) else {
+            removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: validateAsImage)
             return nil
         }
 
@@ -153,7 +159,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         let localPath = fullLocalPath(for: livePhotoMetadata)
 
-        guard isValidLocalFile(path: localPath) else {
+        guard isValidLocalFile(path: localPath, validateAsImage: false) else {
+            removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: false)
             return nil
         }
 
@@ -170,41 +177,25 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return localURL
         }
 
-        guard NCNetworking.shared.isOnline else {
-            return nil
-        }
-
-        guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
-            return nil
-        }
-
-        guard !utilityFileSystem.fileProviderStorageExists(livePhotoMetadata) else {
-            return await localLivePhotoURL(for: metadata)
-        }
-
-        guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
-            ocId: livePhotoMetadata.ocId,
-            session: NCNetworking.shared.sessionDownload,
-            selector: ""
-        ) else {
+        guard NCNetworking.shared.isOnline,
+              let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata),
+              let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
+                ocId: livePhotoMetadata.ocId,
+                session: NCNetworking.shared.sessionDownload,
+                selector: ""
+              ) else {
             return nil
         }
 
         await mediaDownloadLimiter.acquire()
-
         let result = await NCNetworking.shared.downloadFile(metadata: downloadMetadata)
-
         await mediaDownloadLimiter.release()
 
-        if result.nkError != .success {
+        guard result.nkError == .success else {
             return nil
         }
 
-        if let localURL = await localLivePhotoURL(for: metadata) {
-            return localURL
-        }
-
-        return nil
+        return await localLivePhotoURL(for: metadata)
     }
 
     // MARK: - Private Helpers
@@ -217,22 +208,38 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         )
     }
 
-    private func isValidLocalFile(path: String) -> Bool {
-        guard !path.isEmpty else {
+    private func isValidLocalFile(path: String, validateAsImage: Bool) -> Bool {
+        guard !path.isEmpty,
+              fileManager.fileExists(atPath: path),
+              let attributes = try? fileManager.attributesOfItem(atPath: path),
+              let fileSize = attributes[.size] as? NSNumber,
+              fileSize.int64Value > 0 else {
             return false
         }
 
-        guard fileManager.fileExists(atPath: path) else {
-            return false
+        guard validateAsImage else {
+            return true
         }
 
-        guard let attributes = try? fileManager.attributesOfItem(atPath: path),
-              let fileSize = attributes[.size] as? Int64,
-              fileSize > 0 else {
+        let url = URL(fileURLWithPath: path)
+
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              CGImageSourceGetCount(source) > 0,
+              CGImageSourceGetType(source) != nil else {
             return false
         }
 
         return true
+    }
+
+    private func removeInvalidLocalFileIfNeeded(path: String, validateAsImage: Bool) {
+        guard !path.isEmpty,
+              fileManager.fileExists(atPath: path),
+              !isValidLocalFile(path: path, validateAsImage: validateAsImage) else {
+            return
+        }
+
+        try? fileManager.removeItem(atPath: path)
     }
 }
 
