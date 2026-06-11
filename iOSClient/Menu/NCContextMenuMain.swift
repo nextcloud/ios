@@ -10,6 +10,7 @@ import NextcloudKit
 import LucidBanner
 
 /// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
+/// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
 /// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
 /// ``NCCollectionViewCommon/openContextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
 @MainActor
@@ -95,6 +96,7 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "info.circle.fill")
         ) { _ in
             NCCreate().createShare(controller: self.controller,
+                                   presentViewController: self.controller,
                                    metadata: metadata,
                                    page: .activity)
         }
@@ -125,6 +127,7 @@ class NCContextMenuMain: NSObject {
                 await NCCreate().createActivityViewController(
                     selectedMetadata: [self.metadata],
                     controller: self.controller,
+                    presentViewController: self.controller,
                     sender: self.sender
                 )
             }

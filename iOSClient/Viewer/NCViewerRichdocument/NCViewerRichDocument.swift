@@ -46,7 +46,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 primaryAction: nil,
                 menu: UIMenu(title: "", children: [
                     UIDeferredMenuElement.uncached { [self] completion in
-                        if let menu = NCContextMenuViewer(metadata: self.metadata, controller: self.tabBarController as? NCMainTabBarController, webView: true, sender: self).viewMenu() {
+                        if let menu = NCContextMenuViewer(metadata: self.metadata,
+                                                          controller: self.tabBarController as? NCMainTabBarController,
+                                                          viewController: self.tabBarController,
+                                                          webView: true,
+                                                          sender: self).viewMenu() {
                             completion(menu.children)
                         }
                     }
@@ -182,6 +186,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             if message.body as? String == "share" {
                 NCCreate().createShare(controller: self.controller,
+                                       presentViewController: self.controller,
                                        metadata: metadata,
                                        page: .sharing)
             }

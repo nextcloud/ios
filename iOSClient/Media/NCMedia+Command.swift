@@ -95,6 +95,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             await NCCreate().createActivityViewController(
                 selectedMetadata: metadatas,
                 controller: self.controller,
+                presentViewController: self,
                 sender: nil)
         }
     }

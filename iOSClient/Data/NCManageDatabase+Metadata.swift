@@ -1371,6 +1371,26 @@ extension NCManageDatabase {
         } ?? 0
     }
 
+    /// Returns only the ocIds that still have a matching metadata row in Realm.
+    ///
+    /// - Parameter ocIds: Candidate media ocIds used by the media viewer.
+    /// - Returns: Valid ocIds preserving the original input order.
+    func getValidMetadataOcIdsAsync(_ ocIds: [String]) async -> [String] {
+        guard !ocIds.isEmpty else {
+            return []
+        }
+
+        return await core.performRealmReadAsync { realm in
+            let existingOcIds = Set(
+                realm.objects(tableMetadata.self)
+                    .filter("ocId IN %@", ocIds)
+                    .map(\.ocId)
+            )
+
+            return ocIds.filter { existingOcIds.contains($0) }
+        } ?? []
+    }
+
     func metadataExistsAsync(predicate: NSPredicate) async -> Bool {
         await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)

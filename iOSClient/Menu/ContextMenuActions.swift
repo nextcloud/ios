@@ -28,6 +28,7 @@ enum ContextMenuActions {
 
      static func share(metadatas: [tableMetadata],
                        controller: NCMainTabBarController?,
+                       presentViewController: UIViewController?,
                        sender: Any?,
                        completion: (() -> Void)? = nil) -> UIAction {
          UIAction(
@@ -38,6 +39,7 @@ enum ContextMenuActions {
                  await NCCreate().createActivityViewController(
                     selectedMetadata: metadatas,
                     controller: controller,
+                    presentViewController: presentViewController,
                     sender: sender
                  )
                  completion?()

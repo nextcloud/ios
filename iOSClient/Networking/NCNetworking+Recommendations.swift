@@ -39,7 +39,9 @@ extension NCNetworking {
 
                 if results.error == .success, let file = results.files?.first {
                     let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-                    await NCManageDatabase.shared.addMetadataAsync(metadata)
+                    if await NCManageDatabase.shared.getMetadataFromOcIdAsync(metadata.ocId) == nil {
+                        await NCManageDatabase.shared.addMetadataAsync(metadata)
+                    }
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue
