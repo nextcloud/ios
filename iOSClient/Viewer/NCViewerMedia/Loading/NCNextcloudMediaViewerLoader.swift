@@ -137,11 +137,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         await mediaDownloadLimiter.release()
 
-        await NCManageDatabase.shared.clearMetadatasSessionAsync(metadatas: [metadata])
-
-        if result.nkError == .success {
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
-        } else {
+        if result.nkError != .success {
             throw result.nkError
         }
 
