@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
-// SPDX-FileCopyrightText: 2024 Milen Pivchev
+// SPDX-FileCopyrightText: 2026 Milen Pivchev
 // SPDX-FileCopyrightText: 2024 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -10,14 +10,25 @@ import LocalAuthentication
 import PopupView
 
 struct SetupPasscodeView: UIViewControllerRepresentable {
+    var isPasscodeReset: Bool {
+        let passcodeCounterFailReset = NCPreferences().passcodeCounterFailReset
+        return NCPreferences().resetAppCounterFail && passcodeCounterFailReset >= NCBrandOptions.shared.resetAppPasscodeAttempts
+    }
+
+    var isPasscodeCounterFail: Bool {
+        let passcodeCounterFail = NCPreferences().passcodeCounterFail
+        return passcodeCounterFail > 0 && passcodeCounterFail >= 3
+    }
+
     @Binding var isLockActive: Bool
     weak var controller: NCMainTabBarController?
     var changePasscode: Bool = false
-    let maxFailedAttempts = 2 // + 1 = 3... The lib's failed attempt counter starts at 0. Why? Who knows.
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
         var error: NSError?
+        let viewController: UIViewController
+
         if !NCPreferences().passcode.isEmptyOrNil, !changePasscode {
             let passcodeVC = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
             passcodeVC.keypadButtonShowLettering = false
@@ -36,15 +47,17 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             }
 
             passcodeVC.delegate = context.coordinator
-            return passcodeVC
+            viewController = passcodeVC
         } else {
             let passcodeSettingsVC = TOPasscodeSettingsViewController()
             passcodeSettingsVC.hideOptionsButton = true
             passcodeSettingsVC.requireCurrentPasscode = changePasscode
             passcodeSettingsVC.passcodeType = .sixDigits
             passcodeSettingsVC.delegate = context.coordinator
-            return passcodeSettingsVC
+            viewController = passcodeSettingsVC
         }
+
+        return PasscodeContainerViewController(child: viewController)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
@@ -55,7 +68,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate {
+    class Coordinator: NSObject, @MainActor TOPasscodeSettingsViewControllerDelegate, @MainActor TOPasscodeViewControllerDelegate {
         var parent: SetupPasscodeView
         init(_ parent: SetupPasscodeView) {
             self.parent = parent
@@ -66,7 +79,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             var error: NSError?
 
             if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
+                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, evaluateError in
                     DispatchQueue.main.async {
                         if success {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
@@ -75,25 +88,27 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
 
                                 passcodeViewController.dismiss(animated: true)
                             }
+                        } else if evaluateError != nil {
+                            NCPreferences().passcodeCounterFail += 1
+                            NCPreferences().passcodeCounterFailReset += 1
                         }
                     }
                 }
             }
         }
 
+        // This triggers only for "Change passcode" option
+        @MainActor
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
             if passcode == NCPreferences().passcode {
                 return true
-            } else if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts {
-                passcodeSettingsViewController.dismiss(animated: true)
-                Task {
-                    let windowScene = await SceneManager.shared.getWindowScene(controller: parent.controller)
-                    await showErrorBanner(
-                        windowScene: windowScene,
-                        text: "_too_many_failed_passcode_attempts_error_",
-                        errorCode: NCGlobal.shared.errorInternalError
-                    )
-                }
+            } else {
+                NCPreferences().passcodeCounterFail += 1
+                NCPreferences().passcodeCounterFailReset += 1
+            }
+
+            if parent.isPasscodeCounterFail {
+                UIAlertController.failedPasscode(presenter: passcodeSettingsViewController)
             }
 
             return false
@@ -109,6 +124,8 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             passcodeViewController.dismiss(animated: true)
         }
 
+        // This triggers upon pressing "Lock: On"
+        @MainActor
         func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode passcode: String) -> Bool {
             if passcode == NCPreferences().passcode {
                 parent.isLockActive = false
@@ -116,7 +133,54 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
                 return true
             }
 
+            NCPreferences().passcodeCounterFail += 1
+            NCPreferences().passcodeCounterFailReset += 1
+
+            if parent.isPasscodeCounterFail {
+                UIAlertController.failedPasscode(presenter: passcodeViewController)
+            }
+
             return false
         }
+    }
+}
+
+private final class PasscodeContainerViewController: UIViewController {
+    private let child: UIViewController
+
+    init(child: UIViewController) {
+        self.child = child
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        addChild(child)
+        child.view.frame = view.bounds
+        child.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(child.view)
+        child.didMove(toParent: self)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(presentFailedPasscodeIfNeeded),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presentFailedPasscodeIfNeeded()
+    }
+
+    @objc private func presentFailedPasscodeIfNeeded() {
+        guard NCPreferences().passcodeCounterFail >= 3 else { return }
+
+        UIAlertController.failedPasscode(presenter: self)
     }
 }

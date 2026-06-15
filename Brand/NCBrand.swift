@@ -105,17 +105,17 @@ final class NCBrandOptions: @unchecked Sendable {
     var enforce_servers: [(name: String, url: String)] = []
 
     // Internal option behaviour
-    var cleanUpDay: Int = 0                                                                     // Set default "Delete all cached files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
+    var cleanUpDay: Int = 0 // Set default "Delete all cached files older than". Possible days value are: 0, 1, 7, 30, 90, 180, 365
 
-    // Max request/download/upload concurrent
+    // Max request/download/upload concurrent connections per host, default is 8 (same as iOS default)
     let httpMaximumConnectionsPerHost: Int = 8
     let httpMaximumConnectionsPerHostInDownload: Int = 8
     let httpMaximumConnectionsPerHostInUpload: Int = 8
 
-    // Max request/download/upload process
+    // Max request/download/upload processes
     let numMaximumProcess: Int = 20
 
-    // Number of failed attempts after reset app
+    // Number of failed attempts before resetting the app
     let resetAppPasscodeAttempts: Int = 10
     let passcodeSecondsFail: Int = 60
 
@@ -175,7 +175,7 @@ final class NCBrandColor: @unchecked Sendable {
     static let shared = NCBrandColor()
 
     // This is rewrited from customet theme, default is Nextcloud color
-    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // Nextcloud : #0082C9
+    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0) // Nextcloud default: #0082C9
     var customerText: UIColor = .white
 
     // INTERNAL DEFINE COLORS

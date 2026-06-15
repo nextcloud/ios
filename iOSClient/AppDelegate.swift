@@ -128,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             notificationCenter.add(req)
         }
 
-        nkLog(debug: "bye bye")
+        nkLog(debug: "App is terminating")
     }
 
     // MARK: - UISceneSession Lifecycle
