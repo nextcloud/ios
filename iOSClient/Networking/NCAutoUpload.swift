@@ -29,7 +29,7 @@ class NCAutoUpload: NSObject {
             let assetCollections = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
             let result = await getCameraRollAssets(controller: nil, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
             if let assets = result.assets, !assets.isEmpty, let fileNames = result.fileNames {
-                let item = await uploadAssets(controller: nil, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+                let item = await uploadAssets(controller: nil, tblAccount: tblAccount, assets: assets, fileNames: fileNames, filterExistingQueue: true)
                 counter += item
             }
         }
@@ -78,14 +78,15 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+        let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames, filterExistingQueue: false)
         nkLog(debug: "Automatic upload \(num) upload")
     }
 
     private func uploadAssets(controller: NCMainTabBarController?,
                               tblAccount: tableAccount,
                               assets: [PHAsset],
-                              fileNames: [String]) async -> Int {
+                              fileNames: [String],
+                              filterExistingQueue: Bool) async -> Int {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
         let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
         let session = NCSession.shared.getSession(account: tblAccount.account)
@@ -167,6 +168,16 @@ class NCAutoUpload: NSObject {
         }
 
         if !metadatas.isEmpty {
+            let metadatasToAdd: [tableMetadata]
+            if filterExistingQueue {
+                metadatasToAdd = await self.database.filterAutoUploadMetadatasNotAlreadyQueuedAsync(metadatas)
+            } else {
+                metadatasToAdd = metadatas
+            }
+            guard !metadatasToAdd.isEmpty else {
+                return 0
+            }
+
             if autoMkcol {
                 await self.database.addMetadatasAsync(metadatas)
             } else {
