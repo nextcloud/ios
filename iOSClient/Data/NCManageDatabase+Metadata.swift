@@ -1398,10 +1398,11 @@ extension NCManageDatabase {
                 }
                 return realm.objects(tableMetadata.self)
                     .filter(
-                        "account == %@ AND sessionSelector == %@ AND assetLocalIdentifier == %@",
+                        "account == %@ AND sessionSelector == %@ AND assetLocalIdentifier == %@ AND session != %@",
                         metadata.account,
                         NCGlobal.shared.selectorUploadAutoUpload,
-                        metadata.assetLocalIdentifier
+                        metadata.assetLocalIdentifier,
+                        ""
                     )
                     .isEmpty
             }
