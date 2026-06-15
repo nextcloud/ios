@@ -60,7 +60,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
 
-        // Prevent back navigation gesture of iOS/iPadOS >= 26 as that will interfere with the possibility to mark text in onlyoffice
+        // Prevent back navigation gesture of iOS >= 26 as that can cause unintended swipe backs
         if #available(iOS 26.0, *) {
             navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
         }
@@ -215,6 +215,10 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
+        }
+
         NCActivityIndicator.shared.stop()
     }
 
