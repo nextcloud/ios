@@ -214,43 +214,31 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         }
 
         Task { @MainActor in
-            var ocId, fileName, fileNameView: String
-            let session = NCSession.shared.getSession(account: metadata.account)
-            let size = utilityFileSystem.getFileSize(filePath: url.path)
-
+            var fileName: String
             if override {
-                ocId = metadata.ocId
                 fileName = metadata.fileName
-                fileNameView = metadata.fileNameView
             } else {
-                ocId = NSUUID().uuidString
                 fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
-                fileNameView = fileName
             }
 
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
-            guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileName)
 
-            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
-                ocId: ocId,
-                serverUrl: metadata.serverUrl,
-                url: url.path,
-                session: session,
-                sceneIdentifier: nil)
+            let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
+                                                                fileNameLocalPath: url.path,
+                                                                autoMkcol: true,
+                                                                account: metadata.account)
 
-            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-
-            if override {
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
+            if results.error == .success {
+                let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
+                if results.error == .success, let metadata = results.metadata {
+                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+                    utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath)
+                    await self.database.addMetadataAsync(metadata)
+                }
             } else {
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                
             }
-            metadataForUpload.size = size
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadataForUpload.sessionDate = Date()
 
-            self.database.addMetadata(metadataForUpload)
             self.dismiss(animated: true)
         }
     }
