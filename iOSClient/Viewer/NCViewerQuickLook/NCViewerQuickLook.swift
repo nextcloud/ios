@@ -7,6 +7,8 @@ import QuickLook
 import NextcloudKit
 import Mantis
 import SwiftUI
+import LucidBanner
+import Alamofire
 
 public protocol NCViewerQuickLookDelegate: AnyObject {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool)
@@ -215,28 +217,60 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
         Task { @MainActor in
             var fileName: String
+            var uploadRequest: UploadRequest?
+            var banner: LucidBanner?
+            var token: Int?
+            let windowScene = presentingViewController?.viewIfLoaded?.window?.windowScene
+            var error = NKError()
+
             if override {
                 fileName = metadata.fileName
             } else {
                 fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
             }
-
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileName)
 
-            let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName,
-                                                                fileNameLocalPath: url.path,
-                                                                autoMkcol: true,
-                                                                account: metadata.account)
+            (banner, token) = showHudBanner(windowScene: windowScene,
+                                            title: "_upload_in_progress_",
+                                            stage: .button,
+                                            onButtonTap: {
+                if let request = uploadRequest {
+                    request.cancel()
+                }
+            })
 
-            if results.error == .success {
+            let results = await NextcloudKit.shared.uploadAsync(
+                serverUrlFileName: serverUrlFileName,
+                fileNameLocalPath: url.path,
+                autoMkcol: true,
+                account: metadata.account) { request in
+                    uploadRequest = request
+                } progressHandler: { progress in
+                    Task {@MainActor in
+                        banner?.update(
+                            payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                            for: token)
+                    }
+                }
+            error = results.error
+
+            if error == .success {
                 let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
+                error = results.error
+
                 if results.error == .success, let metadata = results.metadata {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
                     utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath)
                     await self.database.addMetadataAsync(metadata)
                 }
-            } else {
-                
+            }
+
+            if let banner {
+                await banner.dismissAsync()
+            }
+
+            if error != .success {
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             }
 
             self.dismiss(animated: true)
