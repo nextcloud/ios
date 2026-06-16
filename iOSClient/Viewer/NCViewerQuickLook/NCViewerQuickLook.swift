@@ -28,7 +28,7 @@ private var hasChangesQuickLook: Bool = false
     private var metadata: tableMetadata?
     private var timer: Timer?
     /// Used to display the save alert
-    private var parentVC: UIViewController?
+    private var viewController: UIViewController?
     private let utilityFileSystem = NCUtilityFileSystem()
     private let database = NCManageDatabase.shared
 
@@ -65,7 +65,13 @@ private var hasChangesQuickLook: Bool = false
 
         if metadata?.isLivePhoto == true {
             Task {
-           //     await showErrorBannerActiveScenes(text: "_message_disable_overwrite_livephoto_", errorCode: NCGlobal.shared.errorInternalError)
+                if let windowScene = presentingViewController?.viewIfLoaded?.window?.windowScene {
+                    await showWarningBanner(windowScene: windowScene,
+                                            subtitle: "_message_disable_overwrite_livephoto_",
+                                            systemImage: "livephoto.slash",
+                                            imageAnimation: .bounce,
+                                            errorCode: NSURLErrorNotConnectedToInternet)
+                }
             }
         }
 
@@ -80,7 +86,7 @@ private var hasChangesQuickLook: Bool = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // needs to be saved bc in didDisappear presentingVC is already nil
-        parentVC = presentingViewController
+        self.viewController = presentingViewController
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -139,7 +145,7 @@ private var hasChangesQuickLook: Bool = false
             self.dismiss(animated: true)
         })
 
-        parentVC?.present(alertController, animated: true)
+        self.viewController?.present(alertController, animated: true)
     }
 
     @objc private func dismissView(_ sender: Any?) {
@@ -200,26 +206,33 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
-        guard let metadata = self.metadata else { return }
-        let session = NCSession.shared.getSession(account: metadata.account)
+        guard let metadata = self.metadata else {
+            return
+        }
         if !uploadMetadata {
             return self.dismiss(animated: true)
         }
-        let ocId = NSUUID().uuidString
-        let size = utilityFileSystem.getFileSize(filePath: url.path)
-
-        if !override {
-            let fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
-            metadata.fileName = fileName
-            metadata.fileNameView = fileName
-        }
 
         Task { @MainActor in
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+            var ocId, fileName, fileNameView: String
+            let session = NCSession.shared.getSession(account: metadata.account)
+            let size = utilityFileSystem.getFileSize(filePath: url.path)
+
+            if override {
+                ocId = metadata.ocId
+                fileName = metadata.fileName
+                fileNameView = metadata.fileNameView
+            } else {
+                ocId = NSUUID().uuidString
+                fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                fileNameView = fileName
+            }
+
+            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
             let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: metadata.fileName,
+                fileName: fileName,
                 ocId: ocId,
                 serverUrl: metadata.serverUrl,
                 url: url.path,
@@ -227,6 +240,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                 sceneIdentifier: nil)
 
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+
             if override {
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
             } else {
