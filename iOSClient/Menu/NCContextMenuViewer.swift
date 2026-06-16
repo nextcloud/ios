@@ -16,6 +16,7 @@ class NCContextMenuViewer: NSObject {
     let sender: Any?
     private let database = NCManageDatabase.shared
     private let utility = NCUtility()
+    private let utilityFileSystem = NCUtilityFileSystem()
 
     internal var windowScene: UIWindowScene? {
        SceneManager.shared.getWindowScene(controller: controller)
@@ -56,7 +57,7 @@ class NCContextMenuViewer: NSObject {
 
         // FAVORITE
         if !metadata.lock {
-            menuElements.append(makeFavoriteAction(metadata: metadata, controller: controller))
+            menuElements.append(makeFavoriteAction())
         }
 
         // OFFLINE
@@ -68,7 +69,7 @@ class NCContextMenuViewer: NSObject {
         if !webView,
            NCNetworking.shared.isOnline,
            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            menuElements.append(makeSaveLivePhotoAction(metadata: metadata, metadataMOV: metadataMOV))
+            menuElements.append(makeSaveLivePhotoAction(metadataMOV: metadataMOV))
         }
 
         // SHARE
@@ -81,9 +82,17 @@ class NCContextMenuViewer: NSObject {
             menuElements.append(contentsOf: makePDFActions())
         }
 
+        // MODIFY
+        if metadata.isImage,
+           utilityFileSystem.fileSizeIfExists(metadata) {
+            menuElements.append(makeModifyPhoto())
+        }
+
         // DELETE
         if !webView, metadata.isDeletable {
-            menuElements.append(ContextMenuActions.delete(metadatas: [metadata], controller: controller))
+            menuElements.append(UIMenu(options: .displayInline, children: [
+                ContextMenuActions.delete(metadatas: [metadata], controller: controller)
+            ]))
         }
 
         return UIMenu(title: "", children: menuElements)
@@ -131,7 +140,7 @@ class NCContextMenuViewer: NSObject {
         }
     }
 
-    private func makeFavoriteAction(metadata: tableMetadata, controller: NCMainTabBarController) -> UIAction {
+    private func makeFavoriteAction() -> UIAction {
         UIAction(
             title: metadata.favorite
                 ? NSLocalizedString("_remove_favorites_", comment: "")
@@ -139,7 +148,7 @@ class NCContextMenuViewer: NSObject {
             image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
         ) { _ in
             Task {
-                await NCNetworking.shared.setStatusWaitFavorite(metadata)
+                await NCNetworking.shared.setStatusWaitFavorite(self.metadata)
             }
         }
     }
@@ -165,12 +174,34 @@ class NCContextMenuViewer: NSObject {
         ]
     }
 
-    private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
+    private func makeSaveLivePhotoAction(metadataMOV: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_livephoto_save_", comment: ""),
             image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
-            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
+            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: self.metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
+        }
+    }
+
+    private func makeModifyPhoto() -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("_modify_", comment: ""),
+            image: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
+        ) { _ in
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(
+                        status: NCGlobal.shared.networkingStatusDownloaded,
+                        account: self.metadata.account,
+                        fileName: self.metadata.fileName,
+                        serverUrl: self.metadata.serverUrl,
+                        selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                        ocId: self.metadata.ocId,
+                        destination: nil,
+                        error: .success
+                    )
+                }
+            }
         }
     }
 }

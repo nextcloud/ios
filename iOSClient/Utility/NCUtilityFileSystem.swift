@@ -229,6 +229,17 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return false
     }
 
+    /// Returns the file size for a path if the file exists and can be read.
+    func fileSizeIfExists(_ metadata: tableMetadata) -> Bool {
+        let path = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: path)
+            return attributes[.size] as? UInt64 ?? 0 > 0
+        } catch {
+            return false
+        }
+    }
+
     func fileProviderStorageSize(_ ocId: String, fileName: String, userId: String, urlBase: String) -> UInt64 {
         let fileNamePath = getDirectoryProviderStorageOcId(ocId, fileName: fileName, userId: userId, urlBase: urlBase)
         do {
