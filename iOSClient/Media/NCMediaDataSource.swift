@@ -126,14 +126,19 @@ extension NCMedia {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
 
-        let options = NKRequestOptions(timeout: 180, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let x = await searchMediaPlaceholders(path: tblAccount.mediaPath,
+                                              lessDate: lessDate,
+                                              greaterDate: greaterDate,
+                                              account: self.session.account) { task in
+
+        }
+        print("x")
 
         let result = await searchMediaAsync(path: tblAccount.mediaPath,
                                             lessDate: lessDate,
                                             greaterDate: greaterDate,
                                             limit: limit,
-                                            account: self.session.account,
-                                            options: options) { task in
+                                            account: self.session.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
                                                                                             name: "searchMedia")
