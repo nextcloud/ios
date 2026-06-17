@@ -293,7 +293,7 @@ class NCContextMenuMain: NSObject {
                 ), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
                     picker.selectedColor = color
                 }
-                picker.onColorSelected = { [weak self] hexColor in
+                picker.onColorSelected = { [weak self = self] hexColor in
                     Task { @MainActor in
                         await NCManageDatabase.shared.updateDirectoryColorFolderAsync(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
                         (self?.viewController as? NCFiles)?.collectionView.reloadData()

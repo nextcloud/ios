@@ -35,7 +35,6 @@ actor NCMetadataTranfersSuccess {
                 etag: String?,
                 ownerId: String? = nil,
                 permissions: String? = nil) async {
-        let status = metadata.status
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""

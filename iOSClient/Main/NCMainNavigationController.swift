@@ -105,7 +105,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
         transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         transfersButtonItem.primaryAction = UIAction(handler: { _ in
-            let rootView = TransfersView(session: self.session, onClose: { [weak self] in
+            let rootView = TransfersView(session: self.session, onClose: { [weak self = self] in
                 self?.dismiss(animated: true)
             })
             let hosting = UIHostingController(rootView: rootView)
