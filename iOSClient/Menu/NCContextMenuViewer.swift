@@ -71,6 +71,17 @@ class NCContextMenuViewer: NSObject {
             menuElements.append(ContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
         }
 
+        if !webView,
+           metadata.isRenameable {
+            //menuElements.append(ContextMenuActions.makeRenameAction(metadata: metadata))
+        }
+
+        // MOVE - COPY
+        if !webView,
+           metadata.isCopyableMovable {
+            menuElements.append(ContextMenuActions.moveOrCopy(metadatas: [metadata], account: metadata.account, controller: controller))
+        }
+
         // LIVE PHOTO
         if !webView,
            NCNetworking.shared.isOnline,
