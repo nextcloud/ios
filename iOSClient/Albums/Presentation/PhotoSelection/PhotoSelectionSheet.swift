@@ -9,17 +9,19 @@
 import SwiftUI
 
 struct PhotoSelectionSheet: View {
+    
     let onPhotosSelected: ([String]) -> Void
+    
+    @State private var selectedPhotosCount: Int = 0 
+    
     @State private var mediaVC: NCMedia?
-    @State private var selectedPhotosCount: Int = 0
 
     var body: some View {
         NavigationView {
-            NCMediaViewRepresentable(
-                ncMedia: $mediaVC,
-                selectedCount: $selectedPhotosCount,
-                isSelectionContext: true
-            )
+            VStack {
+                NCMediaViewRepresentable(ncMedia: $mediaVC)
+                    .frame(maxHeight: .infinity)
+            }
             .navigationTitle(NSLocalizedString("_albums_photo_selection_sheet_title_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -43,4 +45,3 @@ struct PhotoSelectionSheet: View {
         }
     }
 }
-
