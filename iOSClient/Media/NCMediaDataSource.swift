@@ -133,7 +133,7 @@ extension NCMedia {
 
         Task { [weak self] in
             guard let self else { return }
-            let resultsPlaceholders = await searchMediaPlaceholders(
+            let (files, error) = await searchMediaPlaceholders(
                 path: tblAccount.mediaPath,
                 firstDate: firstDate,
                 lastDate: lastDate,
@@ -146,7 +146,7 @@ extension NCMedia {
                 }
             }
 
-            print("ciao")
+            print(files.count)
         }
 
         let result = await searchMediaAsync(path: tblAccount.mediaPath,
