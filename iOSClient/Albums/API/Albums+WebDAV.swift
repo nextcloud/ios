@@ -193,19 +193,27 @@ public extension NextcloudKit {
                 debugPrint(response)
             }
             
-            let statusCode = response.response?.statusCode
-            
-            // Explicit 405 check
-            if statusCode == 405 {
-                let error = NKError(errorCode: 405, errorDescription: "Album already exists!", responseData: nil)
+            // Explicit 405 check -> treat as conflict (album already exists)
+            if let statusCode = response.response?.statusCode, statusCode == 405 {
+                // Resolve localized message so UI using `localizedDescription` shows the proper text
+                let message = NSLocalizedString("_album_already_exists_", comment: "Album already exists")
+                // Build an NSError carrying the localized description
+                let nsError = NSError(
+                    domain: "NextcloudKit",
+                    code: NCGlobal.shared.errorConflict,
+                    userInfo: [NSLocalizedDescriptionKey: message]
+                )
+                let error = NKError(error: nsError)
                 return options.queue.async {
                     completion(.failure(error))
                 }
             }
             
             guard let statusCode = response.response?.statusCode, (200...299).contains(statusCode) else {
+                let code = response.response?.statusCode ?? -1
+                let httpError = NKError(errorCode: code, errorDescription: "HTTP error \(code)", responseData: response.data)
                 return options.queue.async {
-                    completion(.failure(NKError.invalidResponseError))
+                    completion(.failure(httpError))
                 }
             }
             
@@ -659,6 +667,8 @@ public extension NextcloudKit {
                 withAllowedCharacters: CharacterSet.urlQueryAllowed.subtracting(["+", "?", "&"])
             ) ?? destinationHeader
         )
+        // Disallow overwriting an existing destination to avoid silent data loss
+        headers.add(name: "Overwrite", value: "F")
         
         var urlRequest: URLRequest
         do {
@@ -677,6 +687,18 @@ public extension NextcloudKit {
             .response(queue: self.nkCommonInstance.backgroundQueue) { response in
                 if NKLogFileManager.shared.logLevel.rawValue > 0 {
                     debugPrint(response)
+                }
+                
+                // If server signals that destination already exists, surface a conflict error to the UI
+                if let statusCode = response.response?.statusCode, statusCode == 412 || statusCode == 409 {
+                    let message = NSLocalizedString("_album_already_exists_", comment: "Album already exists")
+                    let nsError = NSError(
+                        domain: "NextcloudKit",
+                        code: NCGlobal.shared.errorConflict,
+                        userInfo: [NSLocalizedDescriptionKey: message]
+                    )
+                    let error = NKError(error: nsError)
+                    return options.queue.async { completion(.failure(error)) }
                 }
                 
                 switch response.result {

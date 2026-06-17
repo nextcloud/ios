@@ -33,6 +33,7 @@ class AlbumsListViewModel: ObservableObject {
     @Published var navigationDestination: AlbumsListScreen.NavigationDestination? = nil
     
     private var cancellables: Set<AnyCancellable> = []
+    private var isNavigatingToDetails: Bool = false
     
     init(account: String) {
         self.account = account
@@ -92,31 +93,50 @@ class AlbumsListViewModel: ObservableObject {
     
     // MARK: - Events
     func onAlbumClicked(_ album: Album) {
-        AlbumsNavigator.shared.push(.albumDetails(album: album))
+        guard !isNavigatingToDetails else { return }
+        isNavigatingToDetails = true
+        DispatchQueue.main.async { [weak self] in
+            AlbumsNavigator.shared.push(.albumDetails(album: album))
+            self?.isNavigatingToDetails = false
+        }
     }
     
     // MARK: - Album name popup
     func onNewAlbumClick() {
+        // Reset any previous error and open the popup with a clean state
+        newAlbumNameError = nil
         isNewAlbumCreationPopupVisible = true
     }
     
     func onNewAlbumPopupCancel() {
+        // Clear input and error when cancelling
         newAlbumName = ""
+        newAlbumNameError = nil
         isNewAlbumCreationPopupVisible = false
     }
     
     func onNewAlbumPopupCreate() {
-        
-        //        let errors = validateAlbumName(newAlbumName)
-        //        guard errors.isEmpty else {
-        //            newAlbumNameError = errors.first
-        //            return
-        //        } // TODO: For more defensive coding
-        
-        
+        // Prevent double submission while a request is in-flight
+        guard !isLoadingPopupVisible else { return }
+
+        // Trim and validate before proceeding (defensive for iOS 17 timing)
+        let trimmedName = newAlbumName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let errors = validateAlbumName(trimmedName)
+        if let firstError = errors.first {
+            newAlbumNameError = firstError
+            return
+        }
+
+        // Capture the valid name, then reset UI state deterministically
+        let nameToCreate = trimmedName
+
+        // Dismiss the popup and clear the field AFTER we've captured the value
         isNewAlbumCreationPopupVisible = false
-        createNewAlbum(for: newAlbumName)
         newAlbumName = ""
+        newAlbumNameError = nil
+
+        // Kick off creation with a clean state
+        createNewAlbum(for: nameToCreate)
     }
     
     // MARK: - APIs
@@ -145,24 +165,46 @@ class AlbumsListViewModel: ObservableObject {
                 }
                 
             case .failure(let error):
-                NCContentPresenter().showError(error: NKError(error: error))
+                let nkError = NKError(error: error)
+                // Prefer friendly info alert for duplicate album names (409)
+                if let inner = nkError.error as? NKError, inner.errorCode == NCGlobal.shared.errorConflict {
+                    let message = NSLocalizedString("_album_already_exists_", comment: "Album already exists")
+                    let conflict = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: message)
+                    NCContentPresenter().showInfo(error: conflict)
+                } else if nkError.errorCode == NCGlobal.shared.errorConflict {
+                    // Top-level conflict
+                    let message = NSLocalizedString("_album_already_exists_", comment: "Album already exists")
+                    let conflict = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: message)
+                    NCContentPresenter().showInfo(error: conflict)
+                } else {
+                    // Other errors
+                    NCContentPresenter().showError(error: nkError)
+                }
             }
         }
     }
     
     func onPhotosSelected(selectedPhotos: [String]) {
-        
         isPhotoSelectionSheetVisible = false
         
         guard let album = newlyCreatedAlbum else { return }
         
         if selectedPhotos.isEmpty {
-            AlbumsNavigator.shared.push(.albumDetails(album: album))
+            guard !isNavigatingToDetails else { return }
+            isNavigatingToDetails = true
+            DispatchQueue.main.async { [weak self] in
+                AlbumsNavigator.shared.push(.albumDetails(album: album))
+                self?.isNavigatingToDetails = false
+            }
             return
         }
         
+        // Batch copy operations and navigate only once after a final sync to avoid iOS 17 navigation race conditions
+        let group = DispatchGroup()
+        var hadAnySuccess = false
+        
         for photo in selectedPhotos {
-            
+            group.enter()
             let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
             
             NextcloudKit.shared.copyPhotoToAlbum(
@@ -171,36 +213,50 @@ class AlbumsListViewModel: ObservableObject {
                 albumName: album.name,
                 fileName: metadata?.fileName ?? photo
             ) { result in
-                
                 switch result {
                 case .success:
-                    AlbumsNavigator.shared.push(.albumDetails(album: album))
-                    AlbumsManager.shared.syncAlbums()
-                    
+                    hadAnySuccess = true
                 case .failure(let error):
                     let nkError = NKError(error: error)
-                        
-                    // 1. Log the high-level error (usually 1)
-                    debugPrint("Top-level errorCode:", nkError.errorCode)
-
-                    // 2. Check the nested error for the 409 Conflict
+                    
+                    // Check nested conflict first (409), then top-level, otherwise show error
                     if let innerError = nkError.error as? NKError,
                        innerError.errorCode == NCGlobal.shared.errorConflict {
-                        
-                        // This is the "File already exists" case (409)
                         let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
                                                     errorDescription: "_file_already_exists_")
                         NCContentPresenter().showInfo(error: conflictError)
-                        
                     } else if nkError.errorCode == NCGlobal.shared.errorConflict {
-                        // Fallback check if the top-level error itself is 409
                         NCContentPresenter().showInfo(error: nkError)
                     } else {
-                        // Handle all other errors (Network, 404, 500, etc.)
                         NCContentPresenter().showError(error: nkError)
                     }
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) { [weak self] in
+            guard let self = self else { return }
+            if hadAnySuccess {
+                AlbumsManager.shared.syncAlbums { _ in
+                    guard !self.isNavigatingToDetails else { return }
+                    self.isNavigatingToDetails = true
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        AlbumsNavigator.shared.push(.albumDetails(album: album))
+                        self.isNavigatingToDetails = false
+                    }
+                }
+            } else {
+                guard !self.isNavigatingToDetails else { return }
+                self.isNavigatingToDetails = true
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    AlbumsNavigator.shared.push(.albumDetails(album: album))
+                    self.isNavigatingToDetails = false
                 }
             }
         }
     }
 }
+

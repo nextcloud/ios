@@ -243,7 +243,20 @@ class AlbumDetailsViewModel: ObservableObject {
                 
             case .failure(let error):
                 self?.isLoadingPopupVisible = false
-                NCContentPresenter().showError(error: NKError(error: error))
+                let nkError = NKError(error: error)
+
+                if nkError.errorCode == NCGlobal.shared.errorConflict {
+                    let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
+                                                errorDescription: "_album_already_exists_")
+                    NCContentPresenter().showInfo(error: conflictError)
+                } else if let innerError = nkError.error as? NKError,
+                          innerError.errorCode == NCGlobal.shared.errorConflict {
+                    let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
+                                                errorDescription: "_album_already_exists_")
+                    NCContentPresenter().showInfo(error: conflictError)
+                } else {
+                    NCContentPresenter().showError(error: nkError)
+                }
             }
         }
     }

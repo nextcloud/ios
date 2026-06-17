@@ -26,7 +26,9 @@ struct PhotosGridView: View {
     
     var body: some View {
         // Sort by filename or date to ensure stability
-        let sortedPhotos = photos.keys.sorted { $0.fileName < $1.fileName }
+        let sortedPhotos = photos.keys.sorted { lhs, rhs in
+            lhs.fileName.localizedCaseInsensitiveCompare(rhs.fileName) == .orderedAscending
+        }
             
         ScrollView {
             LazyVGrid(columns: columns, spacing: 1) {
@@ -49,67 +51,79 @@ struct PhotosGridView: View {
     }
     
     private func openPhotoViewer(photo: AlbumPhoto, metadata: tableMetadata?) {
-        // 1. Try to use existing metadata, or find it in the DB, or create a stub
-        var activeMetadata = metadata
-        
-        
-        if activeMetadata == nil {
-            // Attempt database lookup first to get full details
-            activeMetadata = NCManageDatabase.shared.getMetadataFromOcId(photo.id)
-        }
-        
-        if activeMetadata == nil {
-            // Fallback: Manually create metadata from the AlbumPhoto object
-            let stub = tableMetadata()
-            stub.ocId = photo.id
-            stub.fileId = photo.id
-            stub.fileName = photo.fileName
-            stub.account = self.localAccount
-            // Combine album path with photo name if necessary
-            stub.path = "\(album.href)\(photo.fileName)"
-            activeMetadata = stub
-            
-            // ADD THIS: Save the stub so the viewer can find it later
-            NCManageDatabase.shared.addMetadata(stub)
+        // Build a complete, ordered metadata list matching the grid order
+        // 1) Establish a single, consistent order identical to the grid
+        let orderedPhotos = photos.keys.sorted { lhs, rhs in
+            lhs.fileName.localizedCaseInsensitiveCompare(rhs.fileName) == .orderedAscending
         }
 
-        // 2. Safety check
-        guard let finalMetadata = activeMetadata else { return }
+        // 2) Build full metadatas list, creating/saving stubs where needed
+        var metadatas: [tableMetadata] = []
+        metadatas.reserveCapacity(orderedPhotos.count)
 
-        // 3. Navigation and Viewer Setup
+        for p in orderedPhotos {
+            // Prefer provided dictionary value; if nil, try DB; otherwise create a stub and save it
+            if let existing = photos[p] ?? NCManageDatabase.shared.getMetadataFromOcId(p.id) {
+                metadatas.append(existing)
+            } else {
+                let stub = tableMetadata()
+                stub.ocId = p.id
+                stub.fileId = p.id
+                stub.fileName = p.fileName
+                stub.account = self.localAccount
+                stub.path = "\(album.href)\(p.fileName)"
+                // Save the stub so it is available for the viewer and later lookups
+                NCManageDatabase.shared.addMetadata(stub)
+                metadatas.append(stub)
+            }
+        }
+
+        // 3) Compute ocIds and currentIndex
+        let ocIds = metadatas.map { $0.ocId }
+        // Try to find the current index by ocId; fall back to orderedPhotos position if needed
+        var resolvedCurrentIndex: Int? = metadatas.firstIndex(where: { $0.ocId == photo.id })
+        if resolvedCurrentIndex == nil {
+            // Fallback: try by fileId match
+            resolvedCurrentIndex = metadatas.firstIndex(where: { $0.fileId == photo.id })
+        }
+        if resolvedCurrentIndex == nil {
+            // As a last resort, align with the orderedPhotos position
+            if let fallbackIdx = orderedPhotos.firstIndex(where: { $0.id == photo.id }) {
+                resolvedCurrentIndex = fallbackIdx
+            }
+        }
+        guard let currentIndex = resolvedCurrentIndex else {
+            print("[PhotosGridView] Could not resolve currentIndex for photo id: \(photo.id)")
+            return
+        }
+
+        // 4) Navigation and Viewer Setup
         guard let navController = (UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState == .foregroundActive })?
             .windows
             .first(where: { $0.isKeyWindow })?.rootViewController as? NCMainTabBarController)?
-            .selectedViewController as? UINavigationController else { return }
-            
+            .selectedViewController as? UINavigationController else {
+                print("[PhotosGridView] Could not find active UINavigationController to present viewer")
+                return
+            }
+
         guard let viewer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil)
-            .instantiateInitialViewController() as? NCViewerMediaPage else { return }
-        
-        // 4. Populate viewer with the new metadata
-        // We filter out nils to ensure metadatas and ocIds arrays stay in sync
-        // 1. Get keys and sort them IDENTICALLY to the Grid
-        let sortedKeys = photos.keys.sorted { $0.fileName < $1.fileName }
-        
-        // 2. Map those keys to metadata, ensuring we include our activeMetadata
-        let metadatas: [tableMetadata] = sortedKeys.compactMap { key in
-            if key.id == photo.id { return finalMetadata } // Use the current one (stub or DB)
-            return photos[key] ?? nil // Use existing or skip nil
-        }
+            .instantiateInitialViewController() as? NCViewerMediaPage else {
+                print("[PhotosGridView] Failed to instantiate NCViewerMediaPage from storyboard")
+                return
+            }
 
-        let ocIds = metadatas.map { $0.ocId }
+        viewer.hidesBottomBarWhenPushed = true
 
-        // 3. Find index safely
-        if let targetIndex = metadatas.firstIndex(where: { $0.ocId == finalMetadata.ocId }) {
-            viewer.ocIds = ocIds
-            viewer.metadatas = metadatas
-            viewer.currentIndex = targetIndex
-            viewer.albumName = album.name
-            viewer.albumServerUrl = album.href
-            viewer.albumPhoto = photo
-            
-            navController.pushViewController(viewer, animated: true)
-        }
+        // 5) Populate viewer with the complete, ordered arrays
+        viewer.ocIds = ocIds
+        viewer.metadatas = metadatas
+        viewer.currentIndex = currentIndex
+        viewer.albumName = album.name
+        viewer.albumServerUrl = album.href
+        viewer.albumPhoto = photo
+
+        navController.pushViewController(viewer, animated: true)
     }
 }

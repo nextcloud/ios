@@ -61,16 +61,11 @@ struct AlbumDetailsScreen: View {
                 }
             }
         }
-        .sheet(isPresented: $showMedia) {
-            MediaSelectionSheet(
-                onCancel: {
-                    // Dismiss the sheet
-                    showMedia = false
-                },
-                onDone: { files in
-                    viewModel.onPhotosSelected(selectedPhotos: files)
-                    showMedia = false
-                }
+        .sheet(
+            isPresented: $viewModel.isPhotoSelectionSheetVisible
+        ) {
+            PhotoSelectionSheet(
+                onPhotosSelected: viewModel.onPhotosSelected
             )
         }
         .inputAlbumNameAlert(
@@ -104,6 +99,18 @@ struct AlbumDetailsScreen: View {
                 Text(NSLocalizedString("_albums_delete_album_popup_desc_", comment: ""))
             }
         )
+        .onAppear {
+            // Force end selection mode so the tab bar remains visible on this screen
+            NotificationCenter.default.post(name: Notification.Name("NCSelectionModeDidEnd"), object: nil)
+        }
+        .onDisappear {
+            NotificationCenter.default.post(name: Notification.Name("NCSelectionModeDidEnd"), object: nil)
+        }
+        .onChange(of: viewModel.isPhotoSelectionSheetVisible) { isPresented in
+            if isPresented == false {
+                NotificationCenter.default.post(name: Notification.Name("NCSelectionModeDidEnd"), object: nil)
+            }
+        }
     }
     
     @ViewBuilder
@@ -140,22 +147,3 @@ struct AlbumDetailsScreen: View {
         showMedia = true
     }
 }
-
-//#if DEBUG
-//#Preview {
-//    NavigationView {
-//        AlbumDetailsScreen(
-//            account: "120049010000000000682377",
-//            album: Album(
-//                href: "/Urlaub",
-//                lastPhotoId: "mountain",
-//                itemCount: 42,
-//                location: "Alps",
-//                dateRange: nil,
-//                collaborators: nil
-//            )
-//        )
-//    }
-//}
-//#endif
-
