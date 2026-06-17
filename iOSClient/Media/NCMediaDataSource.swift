@@ -67,6 +67,8 @@ extension NCMedia {
 
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
+        var firstDate: Date?
+        var lastDate: Date?
         var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
@@ -104,6 +106,9 @@ extension NCMedia {
                 return date1 > date2
             }
 
+            firstDate = visibleCells.first?.date
+            lastDate = visibleCells.last?.date
+
             if !visibleCells.isEmpty, !distant {
                 let firstCellDate = visibleCells.first?.date
                 let lastCellDate = visibleCells.last?.date
@@ -127,8 +132,8 @@ extension NCMedia {
         }
 
         let x = await searchMediaPlaceholders(path: tblAccount.mediaPath,
-                                              lessDate: lessDate,
-                                              greaterDate: greaterDate,
+                                              firstDate: firstDate,
+                                              lastDate: lastDate,
                                               account: self.session.account) { task in
 
         }

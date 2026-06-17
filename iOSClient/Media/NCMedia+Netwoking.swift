@@ -144,10 +144,14 @@ extension NCMedia {
     // MARK: - TEST
 
     func searchMediaPlaceholders(path: String,
-                                 lessDate: Date,
-                                 greaterDate: Date,
+                                 firstDate: Date?,
+                                 lastDate: Date?,
                                  account: String,
                                  taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> ([NKFile], NKError) {
+        guard let firstDate,
+              let lastDate else {
+            return ([], .success)
+        }
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return ([], NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
         }
@@ -156,19 +160,8 @@ extension NCMedia {
         let href = "/files/" + nkSession.userId + path
 
         let elementDate = "d:getlastmodified"
-        let lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-
-        let httpBodyString = String(format: getRequestBodySearchMediaPlaceholders(
-            href: href,
-            elementDate: elementDate,
-            lessDate: lessDateString,
-            greaterDate: greaterDateString)
-        )
-
-        guard let httpBody = httpBodyString.data(using: .utf8) else {
-            return ([], NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
-        }
+        let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
         var paginatedTotal = 0
         var paginateToken: String?
@@ -177,12 +170,25 @@ extension NCMedia {
         var page = 0
         var paginateOffset = 0
         var totalResults = 0
+        let limit = 100000
+
+        let httpBodyString = String(format: getRequestBodySearchMediaPlaceholders(
+            href: href,
+            elementDate: elementDate,
+            lessDate: lessDateString,
+            greaterDate: greaterDateString,
+            limit: String(limit))
+        )
+
+        guard let httpBody = httpBodyString.data(using: .utf8) else {
+            return ([], NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+        }
 
         while true {
             var isPaginate: Bool = false
             let options = NKRequestOptions(timeout: 180,
                                            taskDescription: self.global.taskDescriptionRetrievesProperties,
-                                           paginate: false,
+                                           paginate: true,
                                            paginateToken: paginateToken,
                                            paginateOffset: paginateOffset,
                                            paginateCount: paginateCount)
@@ -209,15 +215,7 @@ extension NCMedia {
                 break
             }
 
-            if results.files?.count ?? 0 < paginateCount {
-                break
-            }
-
-            if !isPaginate {
-                break
-            }
-
-            if totalResults == paginatedTotal {
+            if !isPaginate || results.files?.count == 0 {
                 break
             }
 
@@ -228,7 +226,11 @@ extension NCMedia {
         return (allFiles, error)
     }
 
-    func getRequestBodySearchMediaPlaceholders(href: String, elementDate: String, lessDate: String, greaterDate: String) -> String {
+    func getRequestBodySearchMediaPlaceholders(href: String,
+                                               elementDate: String,
+                                               lessDate: String,
+                                               greaterDate: String,
+                                               limit: String) -> String {
         let request = """
         <?xml version=\"1.0\"?>
         <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
@@ -274,16 +276,16 @@ extension NCMedia {
                         </d:like>
                     </d:or>
 
-                    <!-- Date / numeric range filter -->
+                    <!-- Date / numeric range filter LTE / GTE -->
                     <d:and>
-                        <d:lt>
+                        <d:lte>
                             <d:prop><\(elementDate)/></d:prop>
                             <d:literal>\(lessDate)</d:literal>
-                        </d:lt>
-                        <d:gt>
+                        </d:lte>
+                        <d:gte>
                             <d:prop><\(elementDate)/></d:prop>
                             <d:literal>\(greaterDate)</d:literal>
-                        </d:gt>
+                        </d:gte>
                     </d:and>
                 </d:and>
             </d:where>
@@ -303,6 +305,13 @@ extension NCMedia {
                     <d:descending/>
                 </d:order>
             </d:orderby>
+
+            <!-- ===================================================== -->
+            <!-- LIMIT: maximum number of results returned             -->
+            <!-- ===================================================== -->
+            <d:limit>
+                <d:nresults>\(limit)</d:nresults>
+            </d:limit>
 
             </d:basicsearch>
         </d:searchrequest>
