@@ -629,6 +629,7 @@ extension NCNetworking {
 
     // MARK: - Favorite
 
+    @discardableResult
     func setStatusWaitFavorite(_ metadata: tableMetadata) async -> NKError {
         if metadata.status != global.metadataStatusNormal,
            metadata.status != global.metadataStatusWaitFavorite {
