@@ -95,13 +95,22 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
         rootView = makeRootView(navigationBar: nil)
 
-        transferDelegate = NCMediaViewerTransferDelegate { [weak self] deletedOcId in
-            guard let self else {
-                return
-            }
+        transferDelegate = NCMediaViewerTransferDelegate(
+            onDeletedOcId: { [weak self] deletedOcId in
+                guard let self else {
+                    return
+                }
 
-            self.model.markPageAsDeleted(ocId: deletedOcId)
-        }
+                self.model.markPageAsDeleted(ocId: deletedOcId)
+            },
+            onReloadDataSource: { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                await self.model.reloadPage(index: self.model.selectedIndex)
+            }
+        )
 
         view.backgroundColor = .ncViewerBackground(.system)
         edgesForExtendedLayout = [.all]
@@ -440,10 +449,15 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 /// Bridges transfer events into the MainActor-isolated media viewer controller.
 final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
     private let onDeletedOcId: @MainActor (_ ocId: String) -> Void
+    private let onReloadDataSource: @MainActor () async -> Void
     let sceneIdentifier: String = ""
 
-    init(onDeletedOcId: @escaping @MainActor (_ ocId: String) -> Void) {
+    init(
+        onDeletedOcId: @escaping @MainActor (_ ocId: String) -> Void,
+        onReloadDataSource: @escaping @MainActor () async -> Void
+    ) {
         self.onDeletedOcId = onDeletedOcId
+        self.onReloadDataSource = onReloadDataSource
     }
 
     func transferReloadData(serverUrl: String?) { }
@@ -452,7 +466,11 @@ final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
         serverUrl: String?,
         requestData: Bool,
         status: Int?
-    ) { }
+    ) {
+        Task { @MainActor in
+            await onReloadDataSource()
+        }
+    }
 
     func transferProgressDidUpdate(
         progress: Float,

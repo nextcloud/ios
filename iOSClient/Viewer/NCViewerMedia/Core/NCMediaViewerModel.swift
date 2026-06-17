@@ -392,6 +392,8 @@ final class NCMediaViewerModel: ObservableObject {
         clearLoadingTaskIfCurrent(ocId: ocId, identifier: identifier)
     }
 
+    /// Reloads the page from the beginning, forcing a fresh metadata resolution before rebuilding the preview and media state.
+    /// - Parameter index: The index of the page that must be reloaded.
     func reloadPage(index: Int) async {
         guard ocIds.indices.contains(index) else {
             return
@@ -403,10 +405,14 @@ final class NCMediaViewerModel: ObservableObject {
         loadingTasksByOcId[ocId] = nil
 
         updatePage(ocId: ocId) { page in
+            page.metadata = nil
             page.state = .idle
         }
 
-        await loadPageIfNeeded(index: index)
+        await loadPage(
+            index: index,
+            forceMetadataReload: true
+        )
     }
 
     func cancelLoading(index: Int) {
@@ -498,13 +504,19 @@ final class NCMediaViewerModel: ObservableObject {
 
     // MARK: - Selected Page Loading
 
-    private func loadPage(index: Int) async {
+    private func loadPage(
+        index: Int,
+        forceMetadataReload: Bool = false
+    ) async {
         guard ocIds.indices.contains(index) else {
             return
         }
 
         let ocId = ocIds[index]
-        let metadata = await resolvedMetadata(for: ocId)
+        let metadata = await resolvedMetadata(
+            for: ocId,
+            allowCached: !forceMetadataReload
+        )
 
         guard !Task.isCancelled else {
             return
@@ -888,12 +900,20 @@ final class NCMediaViewerModel: ObservableObject {
 
     // MARK: - Page Updates
 
-    private func resolvedMetadata(for ocId: String) async -> tableMetadata? {
-        if let existingMetadata = cachedPagesByOcId[ocId]?.metadata {
+    private func resolvedMetadata(
+        for ocId: String,
+        allowCached: Bool = true
+    ) async -> tableMetadata? {
+        if allowCached,
+           let existingMetadata = cachedPagesByOcId[ocId]?.metadata {
             return existingMetadata
         }
 
-        return await loader.metadata(for: ocId, account: session.account, mediaSearch: mediaSearch)
+        return await loader.metadata(
+            for: ocId,
+            account: session.account,
+            mediaSearch: mediaSearch
+        )
     }
 
     private func pageState(for ocId: String) -> NCMediaViewerPageState {
