@@ -91,6 +91,7 @@ final class NCMediaViewerModel: ObservableObject {
 
     @Published private(set) var selectedIndex: Int
     @Published private(set) var revision: Int = 0
+    @Published private(set) var thumbnailReloadRevision: Int = 0
     @Published private(set) var isChromeHidden = false
     @Published private(set) var autoPlayTargetIndex: Int?
 
@@ -408,6 +409,8 @@ final class NCMediaViewerModel: ObservableObject {
             page.metadata = nil
             page.state = .idle
         }
+
+        thumbnailReloadRevision &+= 1
 
         await loadPage(
             index: index,

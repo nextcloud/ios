@@ -47,6 +47,7 @@ private enum NCMediaViewerThumbnailLayout {
 struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     let selectedIndex: Int
     let numberOfPages: Int
+    let reloadRevision: Int
     let metadataProvider: (_ index: Int) -> tableMetadata?
     let metadataResolver: (_ index: Int) async -> tableMetadata?
     let previewURLProvider: (_ metadata: tableMetadata) async -> URL?
@@ -62,7 +63,8 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         rhs: NCMediaViewerThumbnail
     ) -> Bool {
         lhs.selectedIndex == rhs.selectedIndex &&
-        lhs.numberOfPages == rhs.numberOfPages
+        lhs.numberOfPages == rhs.numberOfPages &&
+        lhs.reloadRevision == rhs.reloadRevision
     }
 
     func makeUIView(context: Context) -> UICollectionView {
@@ -105,6 +107,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     ) {
         context.coordinator.selectedIndex = selectedIndex
         context.coordinator.numberOfPages = numberOfPages
+        context.coordinator.reloadRevision = reloadRevision
         context.coordinator.metadataProvider = metadataProvider
         context.coordinator.metadataResolver = metadataResolver
         context.coordinator.previewURLProvider = previewURLProvider
@@ -122,6 +125,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         Coordinator(
             selectedIndex: selectedIndex,
             numberOfPages: numberOfPages,
+            reloadRevision: reloadRevision,
             metadataProvider: metadataProvider,
             metadataResolver: metadataResolver,
             previewURLProvider: previewURLProvider,
@@ -141,6 +145,7 @@ extension NCMediaViewerThumbnail {
                              UICollectionViewDataSourcePrefetching {
         var selectedIndex: Int
         var numberOfPages: Int
+        var reloadRevision: Int
         var metadataProvider: (_ index: Int) -> tableMetadata?
         var metadataResolver: (_ index: Int) async -> tableMetadata?
         var previewURLProvider: (_ metadata: tableMetadata) async -> URL?
@@ -150,6 +155,7 @@ extension NCMediaViewerThumbnail {
         weak var collectionView: UICollectionView?
 
         private var lastNumberOfPages: Int?
+        private var lastReloadRevision: Int?
         private var lastCenteredIndex: Int?
         private var lastCenteredBoundsSize: CGSize = .zero
         private var didPerformInitialDeferredCentering = false
@@ -164,6 +170,7 @@ extension NCMediaViewerThumbnail {
         init(
             selectedIndex: Int,
             numberOfPages: Int,
+            reloadRevision: Int,
             metadataProvider: @escaping (_ index: Int) -> tableMetadata?,
             metadataResolver: @escaping (_ index: Int) async -> tableMetadata?,
             previewURLProvider: @escaping (_ metadata: tableMetadata) async -> URL?,
@@ -172,6 +179,8 @@ extension NCMediaViewerThumbnail {
         ) {
             self.selectedIndex = selectedIndex
             self.numberOfPages = numberOfPages
+            self.reloadRevision = reloadRevision
+            self.lastReloadRevision = reloadRevision
             self.metadataProvider = metadataProvider
             self.metadataResolver = metadataResolver
             self.previewURLProvider = previewURLProvider
@@ -313,6 +322,16 @@ extension NCMediaViewerThumbnail {
         func reloadCollectionViewIfNeeded() {
             guard let collectionView else {
                 return
+            }
+
+            let didChangeReloadRevision = lastReloadRevision != reloadRevision
+
+            if didChangeReloadRevision {
+                lastReloadRevision = reloadRevision
+                pendingPrefetchIndexes.removeAll()
+                imageCache.removeAllObjects()
+                refreshVisibleCells()
+                prefetchAroundDisplayedSelectedIndexIfNeeded()
             }
 
             guard lastNumberOfPages != numberOfPages else {

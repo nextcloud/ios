@@ -47,6 +47,7 @@ struct NCMediaViewerView: View {
                 NCMediaViewerThumbnail(
                     selectedIndex: model.selectedIndex,
                     numberOfPages: model.numberOfPages,
+                    reloadRevision: model.thumbnailReloadRevision,
                     metadataProvider: { index in
                         model.metadataForThumbnail(at: index)
                     },
