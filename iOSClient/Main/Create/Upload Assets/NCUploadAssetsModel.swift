@@ -30,7 +30,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             self.uploadInProgress.toggle()
             return
         }
-        let autoMkcol = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion33
+        let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
         func createProcessUploads() {
             if !self.dismissView {
                 self.database.addMetadatas(metadatas)
@@ -245,104 +245,6 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             return (metadata.fileNameView)
         } else {
             return (serverUrl as NSString).lastPathComponent
-        }
-    }
-
-    func lowResolutionImage(asset: PHAsset) -> UIImage? {
-        let imageManager = PHImageManager.default()
-        let options = PHImageRequestOptions()
-        options.isSynchronous = true
-        options.resizeMode = .fast
-        options.isNetworkAccessAllowed = true
-
-        let targetSize = CGSize(width: 80, height: 80)
-        var thumbnail: UIImage?
-
-        // Must be in primary Task
-        //
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { result, _ in
-            thumbnail = result
-        }
-
-        return thumbnail
-    }
-
-    func deleteAsset(index: Int) {
-        assets.remove(at: index)
-        previewStore.remove(at: index)
-        if previewStore.isEmpty {
-            dismissView = true
-        }
-    }
-
-    func presentedQuickLook(index: Int, fileNamePath: String) -> Bool {
-        var image: UIImage?
-
-        if let imageData = previewStore[index].data {
-            image = UIImage(data: imageData)
-        } else if let imageFullResolution = previewStore[index].asset.fullResolutionImage?.fixedOrientation() {
-            image = imageFullResolution
-        }
-        if let image = image {
-            if let data = image.jpegData(compressionQuality: 1) {
-                do {
-                    try data.write(to: URL(fileURLWithPath: fileNamePath))
-                    return true
-                } catch {
-                }
-            }
-        }
-        return false
-    }
-
-    func startTimer(navigationItem: UINavigationItem) {
-        self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
-            guard let buttonDone = navigationItem.leftBarButtonItems?.first, let buttonCrop = navigationItem.leftBarButtonItems?.last else { return }
-            buttonCrop.isEnabled = true
-            buttonDone.isEnabled = true
-            if let markup = navigationItem.rightBarButtonItems?.first(where: { $0.accessibilityIdentifier == "QLOverlayMarkupButtonAccessibilityIdentifier" }) {
-                if let originalButton = markup.value(forKey: "originalButton") as AnyObject? {
-                    if let symbolImageName = originalButton.value(forKey: "symbolImageName") as? String {
-                        if symbolImageName == "pencil.tip.crop.circle.on" {
-                            buttonCrop.isEnabled = false
-                            buttonDone.isEnabled = false
-                        }
-                    }
-                }
-            }
-        })
-    }
-
-    func stopTimer() {
-        self.timer?.invalidate()
-        self.timer = nil
-    }
-
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
-        guard let metadatas = metadatas else {
-            self.showHUD = false
-            self.uploadInProgress.toggle()
-            return
-        }
-        let autoMkcol = NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33)
-
-        func createProcessUploads() {
-            if !self.dismissView {
-                self.database.addMetadatas(metadatas)
-                self.dismissView = true
-            }
-        }
-
-        if !autoMkcol,
-           useAutoUploadFolder {
-            let assets = self.assets.compactMap { $0.phAsset }
-            NCManageDatabaseCreateMetadata().createMetadatasFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session) { metadatasFolder in
-                self.database.addMetadatas(metadatasFolder)
-                self.showHUD = false
-                createProcessUploads()
-            }
-        } else {
-            createProcessUploads()
         }
     }
 

@@ -64,6 +64,18 @@ class NCPhotosPickerViewController: NSObject {
             }
         }, didCancel: nil)
         pickerVC?.ncController = controller
+        pickerVC?.didCaptureMediaURL = { [weak controller] url in
+            let ext = url.pathExtension.lowercased()
+            let fileType: PHAssetMediaType = ["mov", "mp4", "m4v"].contains(ext) ? .video : .image
+            let originalName = fileType == .video ? "video.\(ext)" : "photo.\(ext)"
+            let newFileName = NCUtilityFileSystem().createFileName(originalName, fileDate: Date(), fileType: fileType)
+            let renamedURL = url.deletingLastPathComponent().appendingPathComponent(newFileName)
+            try? FileManager.default.moveItem(at: url, to: renamedURL)
+            guard let controller else { return }
+            let model = NCUploadAssetsModel(tempAssets: [renamedURL], serverUrl: controller.currentServerUrl(), controller: controller)
+            let uploadView = NCUploadAssetsView(model: model)
+            controller.present(UIHostingController(rootView: uploadView), animated: true)
+        }
 
         configure.usedCameraButton = true
         pickerVC?.configure = configure
@@ -164,18 +176,7 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
         PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
     }
 
-    // Intercept TLPhotosPickerViewController's camera presentation to inject ourselves
-    // as delegate, so we can receive the photo/video without saving to camera roll.
-    override func present(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-        if let imagePicker = viewControllerToPresent as? UIImagePickerController {
-            imagePicker.delegate = self
-            super.present(imagePicker, animated: animated, completion: completion)
-        } else {
-            super.present(viewControllerToPresent, animated: animated, completion: completion)
-        }
-    }
-
-    private func presentUploadView(url: URL) {
+    func presentUploadView(url: URL) {
         guard let controller = ncController else { return }
         let model = NCUploadAssetsModel(tempAssets: [url], serverUrl: controller.currentServerUrl(), controller: controller)
         let uploadView = NCUploadAssetsView(model: model)
@@ -187,27 +188,6 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 
     @objc private func customAction() {
         self.dismiss(animated: true)
-    }
-}
-
-// MARK: - UIImagePickerControllerDelegate
-
-extension customPhotoPickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        picker.dismiss(animated: true)
-
-        let tempDir = FileManager.default.temporaryDirectory
-
-        if let videoURL = info[.mediaURL] as? URL {
-            let destURL = tempDir.appendingPathComponent(UUID().uuidString + ".mov")
-            try? FileManager.default.copyItem(at: videoURL, to: destURL)
-            presentUploadView(url: destURL)
-        } else if let image = info[.originalImage] as? UIImage,
-                  let data = image.jpegData(compressionQuality: 0.9) {
-            let destURL = tempDir.appendingPathComponent(UUID().uuidString + ".jpg")
-            try? data.write(to: destURL)
-            presentUploadView(url: destURL)
-        }
     }
 }
 
