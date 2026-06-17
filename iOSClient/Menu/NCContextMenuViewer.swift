@@ -41,23 +41,29 @@ class NCContextMenuViewer: NSObject {
             return nil
         }
 
+        var topMenuItems: [UIMenuElement] = []
         var menuElements: [UIMenuElement] = []
         let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
 
+        // SHARE
+        if !webView, metadata.canShare {
+            topMenuItems.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, presentViewController: viewController, sender: sender))
+        }
+
         // DETAIL
         if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-            menuElements.append(makeDetailAction(metadata: metadata, controller: controller, presentViewController: viewController))
+            topMenuItems.append(makeDetailAction(metadata: metadata, controller: controller, presentViewController: viewController))
+        }
+
+        // FAVORITE
+        if !metadata.lock {
+            topMenuItems.append(makeFavoriteAction())
         }
 
         // VIEW IN FOLDER
         if !webView {
             menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller, viewController: viewController))
-        }
-
-        // FAVORITE
-        if !metadata.lock {
-            menuElements.append(makeFavoriteAction())
         }
 
         // OFFLINE
@@ -70,11 +76,6 @@ class NCContextMenuViewer: NSObject {
            NCNetworking.shared.isOnline,
            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             menuElements.append(makeSaveLivePhotoAction(metadataMOV: metadataMOV))
-        }
-
-        // SHARE
-        if !webView, metadata.canShare {
-            menuElements.append(ContextMenuActions.share(metadatas: [metadata], controller: controller, presentViewController: viewController, sender: sender))
         }
 
         // PDF ACTIONS
@@ -95,7 +96,13 @@ class NCContextMenuViewer: NSObject {
             ]))
         }
 
-        return UIMenu(title: "", children: menuElements)
+        // Assemble final menu
+        let topMenu = UIMenu(title: "", options: .displayInline, children: topMenuItems)
+        topMenu.preferredElementSize = .medium // top menu items are shown in a short format style
+
+        let baseMenu = UIMenu(title: "", options: .displayInline, children: menuElements)
+
+        return UIMenu(title: "", children: [topMenu, baseMenu])
     }
 
     // MARK: - Private Action Makers
@@ -103,7 +110,7 @@ class NCContextMenuViewer: NSObject {
     private func makeDetailAction(metadata: tableMetadata, controller: NCMainTabBarController, presentViewController: UIViewController?) -> UIAction {
         UIAction(
             title: NSLocalizedString("_details_", comment: ""),
-            image: UIImage(systemName: "info")
+            image: UIImage(systemName: "info.circle.fill")
         ) { _ in
             NCCreate().createShare(controller: controller,
                                    presentViewController: presentViewController,
@@ -145,7 +152,7 @@ class NCContextMenuViewer: NSObject {
             title: metadata.favorite
                 ? NSLocalizedString("_remove_favorites_", comment: "")
                 : NSLocalizedString("_add_favorites_", comment: ""),
-            image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])
+            image: utility.loadImage(named: metadata.favorite ? "star.slash.fill" : "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
         ) { _ in
             Task {
                 await NCNetworking.shared.setStatusWaitFavorite(self.metadata)

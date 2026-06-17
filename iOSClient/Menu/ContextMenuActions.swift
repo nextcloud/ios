@@ -33,7 +33,7 @@ enum ContextMenuActions {
                        completion: (() -> Void)? = nil) -> UIAction {
          UIAction(
              title: NSLocalizedString("_share_", comment: ""),
-             image: UIImage(systemName: "square.and.arrow.up")
+             image: UIImage(systemName: "square.and.arrow.up.fill")
          ) { _ in
              Task {
                  await NCCreate().createActivityViewController(
