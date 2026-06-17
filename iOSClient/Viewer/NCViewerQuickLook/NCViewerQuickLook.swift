@@ -223,11 +223,12 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             var token: Int?
             let windowScene = viewController?.view.window?.windowScene
             var error = NKError()
+            let serverUrl = metadata.serverUrl
 
             if override {
                 fileName = metadata.fileName
             } else {
-                fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
+                fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: serverUrl, account: metadata.account)
             }
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileName)
 
@@ -260,14 +261,16 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                 error = results.error
 
                 if results.error == .success, let metadata = results.metadata {
-                    // remove dir
-                    utilityFileSystem.deleteDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
-                    // create a new dir
-                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+                    // clean dir
+                    let directory = utilityFileSystem.cleanDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
                     // copy new file
-                    utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath)
+                    utilityFileSystem.copyFile(atPath: url.path, toPath: directory + "/" + metadata.fileName)
                     // add new metadata
                     await self.database.addMetadataAsync(metadata)
+                    // reload datasource
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                        delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: nil)
+                    }
                 }
             }
 

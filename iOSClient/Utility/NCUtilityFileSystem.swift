@@ -119,14 +119,19 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
-    func deleteDirectoryProviderStorageOcId(_ ocId: String, userId: String, urlBase: String) {
+    func cleanDirectoryProviderStorageOcId(_ ocId: String, userId: String, urlBase: String) -> String {
         let path = getDocumentStorage(userId: userId, urlBase: urlBase) + "/" + ocId
 
         do {
             if FileManager.default.fileExists(atPath: path) {
-                try FileManager.default.removeItem(atPath: path)
+                try fileManager.removeItem(atPath: path)
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
             }
-        } catch { }
+        } catch {
+            print("Error: \(error)")
+        }
+
+        return path
     }
 
     func getDirectoryProviderStorageImageOcId(_ ocId: String, etag: String, ext: String, userId: String, urlBase: String) -> String {
