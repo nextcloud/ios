@@ -63,17 +63,18 @@ private var hasChangesQuickLook: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard isEditingEnabled else { return }
+        guard isEditingEnabled else {
+            return
+        }
 
         if metadata?.isLivePhoto == true {
             Task {
-                if let windowScene = presentingViewController?.viewIfLoaded?.window?.windowScene {
-                    await showWarningBanner(windowScene: windowScene,
-                                            subtitle: "_message_disable_overwrite_livephoto_",
-                                            systemImage: "livephoto.slash",
-                                            imageAnimation: .bounce,
-                                            errorCode: NSURLErrorNotConnectedToInternet)
-                }
+                let windowScene = viewController?.view.window?.windowScene
+                await showWarningBanner(windowScene: windowScene,
+                                        subtitle: "_message_disable_overwrite_livephoto_",
+                                        systemImage: "livephoto.slash",
+                                        imageAnimation: .bounce,
+                                        errorCode: NSURLErrorNotConnectedToInternet)
             }
         }
 
@@ -220,7 +221,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             var uploadRequest: UploadRequest?
             var banner: LucidBanner?
             var token: Int?
-            let windowScene = presentingViewController?.viewIfLoaded?.window?.windowScene
+            let windowScene = viewController?.view.window?.windowScene
             var error = NKError()
 
             if override {
@@ -259,8 +260,13 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                 error = results.error
 
                 if results.error == .success, let metadata = results.metadata {
+                    // remove dir
+                    utilityFileSystem.deleteDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+                    // create a new dir
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+                    // copy new file
                     utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath)
+                    // add new metadata
                     await self.database.addMetadataAsync(metadata)
                 }
             }
