@@ -97,23 +97,23 @@ class NCContextMenuMain: NSObject {
         metadata: tableMetadata,
         capabilities: NKCapabilities.Capabilities
     ) -> [UIMenuElement] {
-        var mainActionsMenu: [UIMenuElement] = []
+        var menuElements: [UIMenuElement] = []
 
         if NCNetworking.shared.isOnline,
            !metadata.directory,
            !capabilities.filesLockVersion.isEmpty {
-            mainActionsMenu.append(
+            menuElements.append(
                 NCContextMenuActions.lockUnlock(isLocked: metadata.lock,
                                               metadata: metadata,
                                               controller: controller)
             )
         }
 
-        addE2EEActions(metadata: metadata, capabilities: capabilities, mainActionsMenu: &mainActionsMenu)
+        addE2EEActions(metadata: metadata, capabilities: capabilities, mainActionsMenu: &menuElements)
 
         if NCNetworking.shared.isOnline,
            metadata.canSetAsAvailableOffline {
-            mainActionsMenu.append(
+            menuElements.append(
                 NCContextMenuActions.setAvailableOffline(
                     metadatas: [metadata],
                     isAnyOffline: metadata.isOffline,
@@ -124,20 +124,20 @@ class NCContextMenuMain: NSObject {
 
         if NCNetworking.shared.isOnline,
            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            mainActionsMenu.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
+            menuElements.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
         }
 
         if NCNetworking.shared.isOnline,
            metadata.isSavebleAsImage {
-            mainActionsMenu.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: sceneIdentifier))
+            menuElements.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: sceneIdentifier))
         }
 
         if metadata.isRenameable {
-            mainActionsMenu.append(NCContextMenuActions.rename(metadata: metadata, presenter: viewController, windowScene: windowScene))
+            menuElements.append(NCContextMenuActions.rename(metadata: metadata, presenter: viewController, windowScene: windowScene))
         }
 
         if metadata.isCopyableMovable {
-            mainActionsMenu.append(
+            menuElements.append(
                 NCContextMenuActions.moveOrCopy(
                     metadatas: [metadata],
                     account: metadata.account,
@@ -148,15 +148,15 @@ class NCContextMenuMain: NSObject {
 
         if NCNetworking.shared.isOnline,
            metadata.isModifiableWithQuickLook {
-            mainActionsMenu.append(makeModifyWithQuickLookAction(metadata: metadata))
+            menuElements.append(makeModifyWithQuickLookAction(metadata: metadata))
         }
 
         if viewController is NCFiles,
            metadata.directory {
-            mainActionsMenu.append(makeColorFolderAction(metadata: metadata))
+            menuElements.append(makeColorFolderAction(metadata: metadata))
         }
 
-        return mainActionsMenu
+        return menuElements
     }
 
     // MARK: E2EE Actions

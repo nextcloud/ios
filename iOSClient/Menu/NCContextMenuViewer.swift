@@ -47,7 +47,8 @@ class NCContextMenuViewer: NSObject {
         let isOffline = localFile?.offline == true
 
         // SHARE
-        if !webView, metadata.canShare {
+        if !webView,
+           metadata.canShare {
             topMenuItems.append(
                 NCContextMenuActions.share(
                     metadatas: [metadata],
@@ -58,7 +59,6 @@ class NCContextMenuViewer: NSObject {
             )
         }
 
-        // DETAILS
         if shouldShowDetails(for: capabilities) {
             topMenuItems.append(
                 NCContextMenuActions.detail(
@@ -73,12 +73,23 @@ class NCContextMenuViewer: NSObject {
             topMenuItems.append(NCContextMenuActions.favorite(metadata: metadata))
         }
 
+        if NCNetworking.shared.isOnline,
+           !capabilities.filesLockVersion.isEmpty {
+            menuElements.append(NCContextMenuActions.lockUnlock(isLocked: metadata.lock, metadata: metadata, controller: controller))
+        }
+
         if !webView {
             menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller, viewController: viewController))
         }
 
         if !webView, metadata.canSetAsAvailableOffline {
             menuElements.append(NCContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
+        }
+
+        if !webView,
+           NCNetworking.shared.isOnline,
+           metadata.isSavebleAsImage {
+            menuElements.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: controller.sceneIdentifier))
         }
 
         if !webView,
@@ -106,7 +117,8 @@ class NCContextMenuViewer: NSObject {
             menuElements.append(makeModifyPhoto())
         }
 
-        if !webView, metadata.isDeletable {
+        if !webView,
+           metadata.isDeletable {
             menuElements.append(UIMenu(options: .displayInline, children: [
                 NCContextMenuActions.delete(metadatas: [metadata], controller: controller)
             ]))
