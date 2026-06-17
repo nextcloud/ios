@@ -10,7 +10,6 @@ import NextcloudKit
 import LucidBanner
 
 /// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
-/// A context menu used in ``NCCollectionViewCommon`` and ``NCMedia``
 /// See ``NCCollectionViewCommon/collectionView(_:contextMenuConfigurationForItemAt:point:)``,
 /// ``NCCollectionViewCommon/openContextMenu(with:button:sender:)``, ``NCMedia/collectionView(_:contextMenuConfigurationForItemAt:point:)`` for usage details.
 @MainActor
@@ -44,94 +43,52 @@ class NCContextMenuMain: NSObject {
         }
 
         let topMenuItems = buildTopMenuItems(metadata: metadata)
-
-        let mainActionsMenu = buildMainActionsMenu(
-            metadata: metadata,
-            capabilities: capabilities
-        )
-
-        let clientIntegrationMenu = buildClientIntegrationMenuItems(
-            capabilities: capabilities,
-            metadata: metadata
-        )
-
+        let mainActionsMenu = buildMainActionsMenu(metadata: metadata, capabilities: capabilities)
+        let clientIntegrationMenu = buildClientIntegrationMenuItems(capabilities: capabilities, metadata: metadata)
         let deleteMenu = buildDeleteMenu(metadata: metadata)
 
-        // Assemble final menu
-        let baseChildren = [
-            UIMenu(title: "", options: .displayInline, children: mainActionsMenu),
-            UIMenu(title: "", options: .displayInline, children: clientIntegrationMenu),
-            UIMenu(title: "", options: .displayInline, children: deleteMenu)
-        ]
+        var menuElements: [UIMenuElement] = []
 
-        let finalMenu = UIMenu(title: "", children: topMenuItems + baseChildren)
-        finalMenu.preferredElementSize = .medium // top menu items are shown in a short format style
+        if let topMenu = NCContextMenuActions.inlineMenu(children: topMenuItems, preferredElementSize: .medium) {
+            menuElements.append(topMenu)
+        }
 
-        return finalMenu
+        [mainActionsMenu, clientIntegrationMenu, deleteMenu]
+            .compactMap { NCContextMenuActions.inlineMenu(children: $0) }
+            .forEach { menuElements.append($0) }
+
+        return UIMenu(title: "", children: menuElements)
     }
 
     // MARK: Top Menu Items
 
-    private func buildTopMenuItems(metadata: tableMetadata, appending items: [UIMenuElement] = []) -> [UIMenuElement] {
+    private func buildTopMenuItems(metadata: tableMetadata) -> [UIMenuElement] {
         var topActionsMenu: [UIMenuElement] = []
 
         if metadata.canShare {
-            topActionsMenu.append(makeShareAction())
+            topActionsMenu.append(
+                NCContextMenuActions.share(
+                    metadatas: [metadata],
+                    controller: controller,
+                    presentViewController: controller,
+                    sender: sender
+                )
+            )
         }
 
-        topActionsMenu.append(makeDetailAction(metadata: metadata))
+        topActionsMenu.append(
+            NCContextMenuActions.detail(
+                metadata: metadata,
+                controller: controller,
+                presentViewController: controller
+            )
+        )
 
         if !metadata.lock {
-            topActionsMenu.append(makeFavoriteAction(metadata: metadata))
+            topActionsMenu.append(NCContextMenuActions.favorite(metadata: metadata))
         }
 
         return topActionsMenu
-    }
-
-    // MARK: Basic Actions
-
-    private func makeDetailAction(metadata: tableMetadata) -> UIAction {
-        return UIAction(
-            title: NSLocalizedString("_details_", comment: ""),
-            image: utility.loadImage(named: "info.circle.fill")
-        ) { _ in
-            NCCreate().createShare(controller: self.controller,
-                                   presentViewController: self.controller,
-                                   metadata: metadata,
-                                   page: .activity)
-        }
-    }
-
-    private func makeFavoriteAction(metadata: tableMetadata) -> UIAction {
-        return UIAction(
-            title: metadata.favorite ?
-            NSLocalizedString("_remove_favorites_", comment: "") :
-                NSLocalizedString("_add_favorites_", comment: ""),
-            image: utility.loadImage(
-                named: metadata.favorite ? "star.slash.fill" : "star.fill",
-                colors: [NCBrandColor.shared.yellowFavorite]
-            )
-        ) { _ in
-            Task {
-                await NCNetworking.shared.setStatusWaitFavorite(metadata)
-            }
-        }
-    }
-
-    private func makeShareAction() -> UIAction {
-        return UIAction(
-            title: NSLocalizedString("_share_", comment: ""),
-            image: utility.loadImage(named: "square.and.arrow.up.fill")
-        ) { _ in
-            Task { @MainActor in
-                await NCCreate().createActivityViewController(
-                    selectedMetadata: [self.metadata],
-                    controller: self.controller,
-                    presentViewController: self.controller,
-                    sender: self.sender
-                )
-            }
-        }
     }
 
     // MARK: Main Actions Menu
@@ -141,25 +98,23 @@ class NCContextMenuMain: NSObject {
         capabilities: NKCapabilities.Capabilities
     ) -> [UIMenuElement] {
         var mainActionsMenu: [UIMenuElement] = []
-        // Lock/Unlock
+
         if NCNetworking.shared.isOnline,
            !metadata.directory,
            !capabilities.filesLockVersion.isEmpty {
             mainActionsMenu.append(
-                ContextMenuActions.lockUnlock(isLocked: metadata.lock,
+                NCContextMenuActions.lockUnlock(isLocked: metadata.lock,
                                               metadata: metadata,
                                               controller: controller)
             )
         }
 
-        // E2EE actions
         addE2EEActions(metadata: metadata, capabilities: capabilities, mainActionsMenu: &mainActionsMenu)
 
-        // Offline
         if NCNetworking.shared.isOnline,
            metadata.canSetAsAvailableOffline {
             mainActionsMenu.append(
-                ContextMenuActions.setAvailableOffline(
+                NCContextMenuActions.setAvailableOffline(
                     metadatas: [metadata],
                     isAnyOffline: metadata.isOffline,
                     controller: controller
@@ -167,27 +122,23 @@ class NCContextMenuMain: NSObject {
             )
         }
 
-        // Save Live Photo
         if NCNetworking.shared.isOnline,
            let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            mainActionsMenu.append(makeSaveLivePhotoAction(metadata: metadata, metadataMOV: metadataMOV))
+            mainActionsMenu.append(NCContextMenuActions.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene))
         }
 
-        // Save as scan
         if NCNetworking.shared.isOnline,
            metadata.isSavebleAsImage {
-            mainActionsMenu.append(makeSaveAsScanAction(metadata: metadata))
+            mainActionsMenu.append(NCContextMenuActions.saveAsScan(metadata: metadata, sceneIdentifier: sceneIdentifier))
         }
 
-        // Rename
         if metadata.isRenameable {
-            mainActionsMenu.append(makeRenameAction(metadata: metadata))
+            mainActionsMenu.append(NCContextMenuActions.rename(metadata: metadata, presenter: viewController, windowScene: windowScene))
         }
 
-        // Move/Copy
         if metadata.isCopyableMovable {
             mainActionsMenu.append(
-                ContextMenuActions.moveOrCopy(
+                NCContextMenuActions.moveOrCopy(
                     metadatas: [metadata],
                     account: metadata.account,
                     controller: controller
@@ -195,13 +146,11 @@ class NCContextMenuMain: NSObject {
             )
         }
 
-        // Modify with Quick Look
         if NCNetworking.shared.isOnline,
            metadata.isModifiableWithQuickLook {
             mainActionsMenu.append(makeModifyWithQuickLookAction(metadata: metadata))
         }
 
-        // Color folder
         if viewController is NCFiles,
            metadata.directory {
             mainActionsMenu.append(makeColorFolderAction(metadata: metadata))
@@ -299,85 +248,6 @@ class NCContextMenuMain: NSObject {
 
     // MARK: File Actions
 
-    private func makeSaveLivePhotoAction(metadata: tableMetadata, metadataMOV: tableMetadata) -> UIAction {
-        return UIAction(
-            title: NSLocalizedString("_livephoto_save_", comment: ""),
-            image: utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
-        ) { _ in
-            NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: self.windowScene))
-        }
-    }
-
-    private func makeSaveAsScanAction(metadata: tableMetadata) -> UIAction {
-        return UIAction(
-            title: NSLocalizedString("_save_as_scan_", comment: ""),
-            image: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor])
-        ) { _ in
-            Task {
-                if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(
-                            status: NCGlobal.shared.networkingStatusDownloaded,
-                            account: metadata.account,
-                            fileName: metadata.fileName,
-                            serverUrl: metadata.serverUrl,
-                            selector: NCGlobal.shared.selectorSaveAsScan,
-                            ocId: metadata.ocId,
-                            destination: nil,
-                            error: .success
-                        )
-                    }
-                } else {
-                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(
-                        ocId: metadata.ocId,
-                        session: NCNetworking.shared.sessionDownload,
-                        selector: NCGlobal.shared.selectorSaveAsScan,
-                        sceneIdentifier: self.sceneIdentifier
-                    ) {
-                        await NCNetworking.shared.downloadFile(metadata: metadata)
-                    }
-                }
-            }
-        }
-    }
-
-    private func makeRenameAction(metadata: tableMetadata) -> UIAction {
-        return UIAction(
-            title: NSLocalizedString("_rename_", comment: ""),
-            image: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor])
-        ) { _ in
-            Task { @MainActor in
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-                let fileNameNew = await UIAlertController.renameFileAsync(
-                    fileName: metadata.fileNameView,
-                    isDirectory: metadata.directory,
-                    capabilities: capabilities,
-                    account: metadata.account,
-                    presenter: self.viewController
-                )
-
-                if await NCManageDatabase.shared.getMetadataAsync(
-                    predicate: NSPredicate(
-                        format: "account == %@ AND serverUrl == %@ AND fileName == %@",
-                        metadata.account,
-                        metadata.serverUrl,
-                        fileNameNew
-                    )
-                ) != nil {
-                    await showErrorBanner(windowScene: self.windowScene,
-                                          text: "_rename_already_exists_",
-                                          errorCode: 0)
-                    return
-                }
-
-                let error = await NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew, windowScene: self.windowScene)
-                if error != .success {
-                    await showErrorBanner(windowScene: self.windowScene, error: error)
-                }
-            }
-        }
-    }
-
     private func makeModifyWithQuickLookAction(metadata: tableMetadata) -> UIAction {
         return UIAction(
             title: NSLocalizedString("_modify_", comment: ""),
@@ -444,18 +314,6 @@ class NCContextMenuMain: NSObject {
 
     private func buildDeleteMenu(metadata: tableMetadata) -> [UIMenuElement] {
         var deleteMenu: [UIMenuElement] = []
-
-        /*
-        let deleteConfirmLocal = makeDeleteLocalAction(metadata: metadata)
-        let deleteConfirmFile = makeDeleteFileAction(metadata: metadata)
-
-        let deleteSubMenu = UIMenu(
-            title: NSLocalizedString("_delete_", comment: ""),
-            image: utility.loadImage(named: "trash"),
-            options: .destructive,
-            children: [deleteConfirmLocal, deleteConfirmFile]
-        )
-        */
 
         deleteMenu.append(makeDeleteLocalAction(metadata: metadata))
 
