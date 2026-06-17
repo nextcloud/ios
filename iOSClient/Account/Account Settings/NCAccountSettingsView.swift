@@ -137,7 +137,7 @@ struct NCAccountSettingsView: View {
                         if let account = model.tblAccount?.account {
                             NavigationLink(destination: NCUserStatusView(account: account, controller: model.controller)) {
                                 HStack {
-                                    Image(systemName: "moon.fill")
+                                    Image(systemName: "moon")
                                         .font(.icon())
                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                         .frame(width: 26)
@@ -151,7 +151,7 @@ struct NCAccountSettingsView: View {
                         if let account = model.tblAccount?.account {
                             NavigationLink(destination: NCStatusMessageView(account: account, controller: model.controller)) {
                                 HStack {
-                                    Image(systemName: "message.fill")
+                                    Image(systemName: "message")
                                         .font(.icon())
                                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                                         .frame(width: 26)

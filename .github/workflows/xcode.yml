@@ -103,8 +103,6 @@ jobs:
         ./server/occ config:system:set hashing_default_password --value=true --type=boolean
         ./server/occ config:system:set auth.bruteforce.protection.enabled --value false --type bool
         ./server/occ config:system:set ratelimit.protection.enabled --value false --type bool
-        ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-        ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
         ./server/occ app:enable files_downloadlimit
         ./server/occ background:cron
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &

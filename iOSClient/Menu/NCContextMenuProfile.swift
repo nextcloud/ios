@@ -36,7 +36,7 @@ class NCContextMenuProfile: NSObject {
     func viewMenu() -> UIMenu {
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
-        guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else {
+        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v23) else {
             return UIMenu()
         }
 

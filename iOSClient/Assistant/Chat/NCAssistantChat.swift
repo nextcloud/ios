@@ -23,7 +23,7 @@ struct NCAssistantChat: View {
 
         }
         .safeAreaInset(edge: .bottom) {
-            ChatInputField(isLoading: $chatModel.isSending, isDisabled: $chatModel.isSendingDisabled) { input in
+            ChatInputField(text: $chatModel.text, initialText: $chatModel.inputText, isLoading: $chatModel.isSending, isDisabled: $chatModel.isSendingDisabled) { input in
                 if chatModel.selectedConversation != nil {
                     chatModel.sendMessage(input: input)
                 } else {
@@ -209,15 +209,15 @@ struct EmptyChatView: View {
 #Preview {
     NavigationStack {
         NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
-            .environment(NCAssistantChatModel(controller: nil))
-            .environment(NCAssistantModel(controller: nil))
+            .environment(NCAssistantChatModel(controller: nil, inputModel: NCAssistantInputModel()))
+            .environment(NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel()))
     }
 }
 
 #Preview("With Messages") {
     NavigationStack {
         NCAssistantChat(conversationsModel: .constant(NCAssistantChatConversationsModel(controller: nil)))
-            .environment(NCAssistantChatModel.example)
-            .environment(NCAssistantModel(controller: nil))
+            .environment(NCAssistantChatModel(controller: nil, inputModel: NCAssistantInputModel()))
+            .environment(NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel()))
     }
 }

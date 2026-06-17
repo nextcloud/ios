@@ -20,5 +20,59 @@
 			<string>%d downloads restantes permitidos</string>
 		</dict>
 	</dict>
+	<key>_focused_auto_upload_items_left_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Resta %d item</string>
+			<key>many</key>
+			<string>Restam %d de itens</string>
+			<key>other</key>
+			<string>Restam %d itens</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_photos_to_back_up_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Você tem %d item para fazer backup</string>
+			<key>many</key>
+			<string>Você tem %d de itens para fazer backup</string>
+			<key>other</key>
+			<string>Você tem %d itens para fazer backup</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_failed_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d falhou</string>
+			<key>many</key>
+			<string>%d falharam</string>
+			<key>other</key>
+			<string>%d falharam</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

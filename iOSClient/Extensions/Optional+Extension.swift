@@ -28,4 +28,11 @@ extension Optional where Wrapped: Collection {
     var isEmptyOrNil: Bool {
         return self?.isEmpty ?? true
     }
+
+    var isNotEmpty: Wrapped? {
+        guard let value = self, !value.isEmpty else {
+            return nil
+        }
+        return value
+    }
 }

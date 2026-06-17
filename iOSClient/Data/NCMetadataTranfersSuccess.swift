@@ -11,7 +11,11 @@ public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
 }
 
 actor NCMetadataTranfersSuccess {
-    private var tranfersSuccess: [tableMetadata] = []
+    private struct TransferSuccessItem {
+        let metadata: tableMetadata
+    }
+
+    private var tranfersSuccess: [TransferSuccessItem] = []
     private let utility = NCUtility()
     private var delegates: [NCMetadataTransfersSuccessDelegate] = []
 
@@ -25,7 +29,13 @@ actor NCMetadataTranfersSuccess {
         delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
     }
 
-    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) async {
+    func append(metadata: tableMetadata,
+                ocId: String,
+                date: Date?,
+                etag: String?,
+                ownerId: String? = nil,
+                permissions: String? = nil) async {
+        let status = metadata.status
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -35,15 +45,28 @@ actor NCMetadataTranfersSuccess {
             metadata.fileId = fileId
         }
 
+        if let ownerId = ownerId.isNotEmpty {
+            metadata.ownerId = ownerId
+            if let ownerDisplayName = await NCManageDatabase.shared.getOwnerDisplayName(account: metadata.account, ownerId: ownerId) {
+                metadata.ownerDisplayName = ownerDisplayName
+            }
+        }
+
+        if let permissions = permissions.isNotEmpty {
+            metadata.permissions = permissions
+        }
+
         metadata.session = ""
         metadata.sessionError = ""
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 
-        if let index = tranfersSuccess.firstIndex(where: { $0.ocId == metadata.ocId }) {
-            tranfersSuccess[index] = metadata
+        let item = TransferSuccessItem(metadata: metadata)
+
+        if let index = tranfersSuccess.firstIndex(where: { $0.metadata.ocId == metadata.ocId }) {
+            tranfersSuccess[index] = item
         } else {
-            tranfersSuccess.append(metadata)
+            tranfersSuccess.append(item)
         }
 
         // Create Live Photo metadata
@@ -62,15 +85,16 @@ actor NCMetadataTranfersSuccess {
     }
 
     func getAll() -> [tableMetadata] {
-        tranfersSuccess
+        tranfersSuccess.map(\.metadata)
     }
 
     func exists(serverUrlFileName: String) async -> Bool {
-        return tranfersSuccess.filter({ $0.serverUrlFileName == serverUrlFileName }).first != nil
+        return tranfersSuccess.contains { $0.metadata.serverUrlFileName == serverUrlFileName }
     }
 
     func flush() async {
-        let metadatas: [tableMetadata] = tranfersSuccess
+        let items = tranfersSuccess
+        let metadatas = items.map(\.metadata)
         let hasLivePhotos = await NCManageDatabase.shared.hasLivePhotos()
         tranfersSuccess.removeAll(keepingCapacity: true)
 
@@ -115,7 +139,9 @@ actor NCMetadataTranfersSuccess {
 
             // TransferDispatcher — notify outside of shared-state mutation
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for metadata in metadatas {
+                for item in items {
+                    let metadata = item.metadata
+
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
                                             fileName: metadata.fileName,

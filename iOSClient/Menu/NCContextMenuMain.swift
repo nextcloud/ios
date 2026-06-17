@@ -214,9 +214,12 @@ class NCContextMenuMain: NSObject {
         capabilities: NKCapabilities.Capabilities,
         mainActionsMenu: inout [UIMenuElement]
     ) {
+        let numItems = NCManageDatabase.shared.countMetadatasFor(serverUrl: metadata.serverUrlFileName)
+
         // Set folder E2EE
         if NCNetworking.shared.isOnline,
            metadata.directory,
+           numItems == 0,
            metadata.size == 0,
            !metadata.e2eEncrypted,
            NCPreferences().isEndToEndEnabled(account: metadata.account),
@@ -226,6 +229,7 @@ class NCContextMenuMain: NSObject {
 
         // Unset folder E2EE
         if NCNetworking.shared.isOnline,
+           numItems == 0,
            metadata.canUnsetDirectoryAsE2EE {
             mainActionsMenu.append(makeUnsetFolderE2EEAction(metadata: metadata))
         }

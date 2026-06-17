@@ -94,7 +94,7 @@ struct MediaTabBarSelectView: View {
                   tabBarSelect.delegate?.share()
                 } label: {
                     Image(systemName: "square.and.arrow.up")
-                        .font(.icon())
+                        .font(.icon(23))
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
@@ -104,7 +104,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.move()
                 } label: {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
-                        .font(.icon())
+                        .font(.icon(23))
                 }
                 .tint(Color(NCBrandColor.shared.iconImageColor))
                 .frame(maxWidth: .infinity)
@@ -114,7 +114,7 @@ struct MediaTabBarSelectView: View {
                     tabBarSelect.delegate?.delete()
                 } label: {
                     Image(systemName: "trash")
-                        .font(.icon())
+                        .font(.icon(23))
                 }
                 .tint(.red)
                 .frame(maxWidth: .infinity)

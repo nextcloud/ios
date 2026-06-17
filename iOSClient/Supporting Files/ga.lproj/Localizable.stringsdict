@@ -24,5 +24,71 @@
 			<string>%d íosluchtú fágtha ceadaithe</string>
 		</dict>
 	</dict>
+	<key>_focused_auto_upload_items_left_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d mír fágtha</string>
+			<key>two</key>
+			<string>%d míreanna fágtha</string>
+			<key>few</key>
+			<string>%d míreanna fágtha</string>
+			<key>many</key>
+			<string>%d míreanna fágtha</string>
+			<key>other</key>
+			<string>%d míreanna fágtha</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_photos_to_back_up_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Tá %d mír le cúltaca agat</string>
+			<key>two</key>
+			<string>Tá %d míreanna le cúltaca agat</string>
+			<key>few</key>
+			<string>Tá %d míreanna le cúltaca agat</string>
+			<key>many</key>
+			<string>Tá %d míreanna le cúltaca agat</string>
+			<key>other</key>
+			<string>Tá %d míreanna le cúltaca agat</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_failed_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Theip ar %d</string>
+			<key>two</key>
+			<string>Theip ar %d</string>
+			<key>few</key>
+			<string>Theip ar %d</string>
+			<key>many</key>
+			<string>Theip ar %d</string>
+			<key>other</key>
+			<string>Theip ar %d</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

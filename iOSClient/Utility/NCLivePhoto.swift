@@ -723,7 +723,7 @@ extension NCLivePhoto {
         Task {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata1.account)
 
-            guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion28 else {
+            guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v28) else {
                 return
             }
 

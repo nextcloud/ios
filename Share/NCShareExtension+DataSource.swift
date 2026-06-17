@@ -104,6 +104,13 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         cell.setTags(tags: Array(metadata.tags))
 
+        let accessibilityLabel = [metadata.fileNameView, cell.labelInfo.text, cell.labelSubinfo.text]
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: ", ")
+        cell.setAccessibility(label: accessibilityLabel, value: "")
+        cell.accessibilityTraits = .button
+
         cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
 
         return cell

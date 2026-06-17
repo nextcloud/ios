@@ -37,10 +37,15 @@ final class NCMoreModel: ObservableObject {
     @Published var quotaProgress: Double = 0
     @Published var quotaExternalSiteTitle: String = ""
     @Published var quotaExternalSiteUrl: String?
+    @Published var autoUploadStart: Bool = false
 
     private weak var controller: NCMainTabBarController?
     var account: String {
         controller?.account ?? ""
+    }
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
     }
 
     private let database = NCManageDatabase.shared
@@ -165,6 +170,8 @@ final class NCMoreModel: ObservableObject {
               let capabilities = NCNetworking.shared.capabilities[tableAccount.account] else {
             return
         }
+
+        autoUploadStart = tableAccount.autoUploadStart
 
         var functionItems: [Item] = []
         var externalSiteItems: [Item] = []
@@ -508,6 +515,23 @@ final class NCMoreModel: ObservableObject {
         settingsController.title = NSLocalizedString("_settings_", comment: "")
 
         navigationController.pushViewController(settingsController, animated: true)
+    }
+
+    /// Opens the SwiftUI auto-upload screen, injecting the shared counter so the row and the
+    /// screen observe the same source.
+    func openAutoUpload(counter: NCAutoUploadCounter) {
+        guard let controller,
+              let navigationController = controller.currentNavigationController() else {
+            return
+        }
+
+        let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller),
+                                              albumModel: AlbumModel(controller: controller))
+            .environment(counter)
+
+        let hostingController = UIHostingController(rootView: autoUploadView)
+
+        navigationController.pushViewController(hostingController, animated: true)
     }
 
     /// Opens an app using a custom URL scheme.
