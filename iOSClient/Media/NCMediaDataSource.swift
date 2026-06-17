@@ -131,13 +131,23 @@ extension NCMedia {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
 
-        let x = await searchMediaPlaceholders(path: tblAccount.mediaPath,
-                                              firstDate: firstDate,
-                                              lastDate: lastDate,
-                                              account: self.session.account) { task in
+        Task { [weak self] in
+            guard let self else { return }
+            let resultsPlaceholders = await searchMediaPlaceholders(
+                path: tblAccount.mediaPath,
+                firstDate: firstDate,
+                lastDate: lastDate,
+                account: self.session.account
+            ) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                name: "searchMediaPlaceholders")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
+            print("ciao")
         }
-        print("x")
 
         let result = await searchMediaAsync(path: tblAccount.mediaPath,
                                             lessDate: lessDate,
