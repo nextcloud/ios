@@ -221,7 +221,7 @@ extension NCMedia {
                 break
             }
 
-            if !isPaginate || results.files?.count == 0 {
+            if !isPaginate || (results.files?.count ?? 0) < paginateCount {
                 break
             }
 
