@@ -249,6 +249,8 @@ extension NCMedia {
                     <fileid xmlns="http://owncloud.org/ns"/>
                     <d:getetag/>
                     <creation_time xmlns="http://nextcloud.org/ns"/>
+                    <d:getlastmodified />
+                    <upload_time xmlns="http://nextcloud.org/ns"/>
                     <size xmlns="http://owncloud.org/ns"/>
                     <has-preview xmlns="http://nextcloud.org/ns"/>
                 </d:prop>
