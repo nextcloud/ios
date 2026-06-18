@@ -200,7 +200,8 @@ extension NCMedia {
                     }
                 } update: { files in
                     Task.detached {
-                        if let firstDate, let lastDate {
+                        if let firstDate = files.first?.creationDate as? NSDate,
+                           let lastDate = files.last?.creationDate as? NSDate {
                             let mediaPredicate = await self.imageCache.getMediaPredicate(
                                 session: self.session,
                                 mediaPath: tblAccount.mediaPath,
@@ -208,14 +209,18 @@ extension NCMedia {
                                 showOnlyVideos: self.showOnlyVideos)
 
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                                NSPredicate(format: "%@ >= %@ AND %@ <= %@", self.global.mediaOrderByName, firstDate as NSDate, self.global.mediaOrderByName, lastDate as NSDate),
+                                NSPredicate(format: "%@ >= %@ AND %@ <= %@", self.global.mediaOrderByName, firstDate, self.global.mediaOrderByName, lastDate),
                                 mediaPredicate
                             ])
 
-                            let localMetadatas = await self.database.getMetadatasAsync(predicate: predicate)
+                            let metadatas = await self.database.getMetadatasAsync(predicate: predicate)
 
                             let inserted = await self.database.insertPlaceholderMetadataAsync(
-                                files: files)
+                                files: files,
+                                metadatas: metadatas,
+                                firstDate: firstDate,
+                                lastDate: lastDate)
+
                             if inserted > 0 {
                                 await self.loadDataSource()
                             }

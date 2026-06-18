@@ -907,10 +907,11 @@ extension NCManageDatabase {
         return true
     }
 
-    func insertPlaceholderMetadataAsync(files: [NKFile]) async -> Int {
-        guard !files.isEmpty,
-              let firstDate = files.first?.creationDate,
-              let lastDate = files.last?.creationDate else {
+    func insertPlaceholderMetadataAsync(files: [NKFile],
+                                        metadatas: [tableMetadata],
+                                        firstDate: NSDate,
+                                        lastDate: NSDate) async -> Int {
+        guard !files.isEmpty else {
             return 0
         }
         let createMetadata = NCManageDatabaseCreateMetadata()
