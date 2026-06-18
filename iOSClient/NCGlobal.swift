@@ -74,6 +74,9 @@ final class NCGlobal: Sendable {
          }
     }
 
+    // MEDIA SEARCH
+    let mediaOrderByName                            = "getlastmodified"
+
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
