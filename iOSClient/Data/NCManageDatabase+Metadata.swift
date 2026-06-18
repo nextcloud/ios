@@ -86,7 +86,7 @@ class tableMetadata: Object {
     @objc public var lockOwnerDisplayName = ""
     @objc public var lockTime: Date?
     @objc public var lockTimeOut: Date?
-    @objc dynamic var placeholders: Bool = false
+    @objc dynamic var placeholder: Bool = false
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var placePhotos: String?
@@ -851,37 +851,63 @@ extension NCManageDatabase {
         }
     }
 
-    /// Syncs the remote and local metadata.
-    /// Returns true if there were changes (additions or deletions), false if everything was already up-to-date.
+    /// Synchronizes remote and local metadata entries by `ocId`.
+    ///
+    /// Local entries missing from the remote list are deleted, remote entries missing locally are inserted,
+    /// and local placeholder entries are replaced with their matching remote metadata.
+    ///
+    /// - Returns: `true` if any metadata entry was added, deleted, or replaced; otherwise `false`.
     func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata], localMetadatas: [tableMetadata]) async -> Bool {
-        // Set of ocId
-        let remoteOcIds = Set(remoteMetadatas.map { $0.ocId })
-        let localOcIds = Set(localMetadatas.map { $0.ocId })
+        // Build ocId lookup sets.
+        let remoteOcIds = Set(remoteMetadatas.map(\.ocId))
+        let localOcIds = Set(localMetadatas.map(\.ocId))
 
-        // Calculate diffs
+        // Calculate metadata that must be deleted or added.
         let toDeleteOcIds = localOcIds.subtracting(remoteOcIds)
         let toAddOcIds = remoteOcIds.subtracting(localOcIds)
 
-        guard !toDeleteOcIds.isEmpty || !toAddOcIds.isEmpty else {
-            return false // No changes needed
+        // Find local placeholders that also exist remotely.
+        // These entries must be overwritten with the full remote metadata.
+        let toUpdatePlaceholderOcIds = Set(
+            localMetadatas
+                .filter { metadata in
+                    metadata.placeholder && remoteOcIds.contains(metadata.ocId)
+                }
+                .map(\.ocId)
+        )
+
+        guard !toDeleteOcIds.isEmpty ||
+              !toAddOcIds.isEmpty ||
+              !toUpdatePlaceholderOcIds.isEmpty else {
+            return false
         }
 
         let toDeleteKeys = Array(toDeleteOcIds)
 
+        // Prepare detached remote metadata before entering the Realm write queue.
+        let toAddOrUpdate = remoteMetadatas
+            .filter { metadata in
+                toAddOcIds.contains(metadata.ocId) ||
+                toUpdatePlaceholderOcIds.contains(metadata.ocId)
+            }
+            .map { $0.detachedCopy() }
+
         await core.performRealmWriteAsync { realm in
-            let toAdd = remoteMetadatas.filter { toAddOcIds.contains($0.ocId) }
+            // Delete local metadata no longer present on the remote side.
             let toDelete = toDeleteKeys.compactMap {
                 realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
             }
 
             realm.delete(toDelete)
-            realm.add(toAdd, update: .modified)
+
+            // Insert new remote metadata and overwrite local placeholders.
+            realm.add(toAddOrUpdate, update: .modified)
         }
 
         return true
     }
 
-    func insertMissingMetadataAsync(files: [NKFile]) async -> Int {
+    func insertMissingPlaceholderMetadataAsync(files: [NKFile]) async -> Int {
         guard !files.isEmpty else {
             return 0
         }
@@ -907,6 +933,7 @@ extension NCManageDatabase {
             // Insert only new metadata objects.
             for file in missingFiles {
                 let metadata = createMetadata.createMetadata(file)
+                metadata.placeholder = true
                 realm.add(metadata, update: .modified)
             }
 
