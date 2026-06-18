@@ -907,7 +907,7 @@ extension NCManageDatabase {
         return true
     }
 
-    func insertMissingPlaceholderMetadataAsync(files: [NKFile]) async -> Int {
+    func insertPlaceholderMetadataAsync(files: [NKFile]) async -> Int {
         guard !files.isEmpty else {
             return 0
         }

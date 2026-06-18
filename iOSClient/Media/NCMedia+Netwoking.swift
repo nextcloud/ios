@@ -201,7 +201,7 @@ extension NCMedia {
 
             if error == .success {
                 if let files = results.files {
-                    let inserted = await database.insertMissingPlaceholderMetadataAsync(files: files)
+                    let inserted = await database.insertPlaceholderMetadataAsync(files: files)
                     metadataInserted += inserted
                 }
                 let allHeaderFields = results.responseData?.response?.allHeaderFields
