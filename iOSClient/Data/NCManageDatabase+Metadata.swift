@@ -1134,6 +1134,24 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns `true` if at least one metadata entry for the specified account and server URL is marked as placeholder.
+    ///
+    /// - Parameters:
+    ///   - account: The account identifier used to scope the metadata lookup.
+    ///   - serverUrl: The server URL used to scope the metadata lookup.
+    /// - Returns: `true` if at least one matching placeholder metadata exists; otherwise `false`.
+    func getMetadataFolderPlaceholderAsync(account: String, serverUrl: String) async -> Bool {
+        return await core.performRealmReadAsync { realm in
+            !realm.objects(tableMetadata.self)
+                .filter(
+                    "account == %@ AND serverUrl == %@ AND placeholder == true",
+                    account,
+                    serverUrl
+                )
+                .isEmpty
+        } ?? false
+    }
+
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
         guard metadata.isLivePhoto else {
             return nil

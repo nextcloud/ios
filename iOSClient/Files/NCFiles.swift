@@ -178,7 +178,9 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
-        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: forced)
+        let hasPlaceholder = await database.getMetadataFolderPlaceholderAsync(account: self.session.account, serverUrl: self.serverUrl)
+        let effectiveForced = forced || hasPlaceholder
+        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: effectiveForced)
         guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
             return
         }

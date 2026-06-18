@@ -166,7 +166,7 @@ extension NCMedia {
         // var paginatedTotal = 0
         var paginateToken: String?
         var error = NKError()
-        let paginateCount = 75
+        let paginateCount = 100
         var page = 0
         var paginateOffset = 0
         // var totalResults = 0
