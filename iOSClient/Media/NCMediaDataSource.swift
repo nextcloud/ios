@@ -172,7 +172,10 @@ extension NCMedia {
             }
 
             await database.addMetadatasAsync(metadatas)
-            await loadDataSource()
+
+            await self.debouncerLoadDataSource.call {
+                await self.loadDataSource()
+            }
 
             /*
             if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
@@ -222,7 +225,9 @@ extension NCMedia {
                                 lastDate: lastDate)
 
                             if inserted > 0 {
-                                await self.loadDataSource()
+                                await self.debouncerLoadDataSource.call {
+                                    await self.loadDataSource()
+                                }
                             }
                         }
                     }
