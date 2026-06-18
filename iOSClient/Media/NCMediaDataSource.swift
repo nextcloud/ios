@@ -204,9 +204,10 @@ extension NCMedia {
                         )
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
-                } update: { file in
+                } update: { files in
                     Task.detached {
-                        let inserted = await self.database.insertPlaceholderMetadataAsync(files: files)
+                        let inserted = await self.database.insertPlaceholderMetadataAsync(
+                            files: files)
                         if inserted > 0 {
                             await self.loadDataSource()
                         }
