@@ -42,7 +42,8 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
     // MARK: - NCMediaViewerLoading
     func metadata(for ocId: String, account: String) async -> tableMetadata? {
-        if let metadata = await database.getMetadataFromOcIdAsync(ocId) {
+        if let metadata = await database.getMetadataFromOcIdAsync(ocId),
+           !metadata.placeholder {
             return metadata
         }
 
