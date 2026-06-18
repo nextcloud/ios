@@ -78,22 +78,6 @@ extension NCMedia {
             </d:from>
 
             <!-- ===================================================== -->
-            <!-- ORDER BY:                                             -->
-            <!-- Primary sort on elementDate (descending)              -->
-            <!-- Secondary sort on displayname for deterministic order -->
-            <!-- ===================================================== -->
-            <d:orderby>
-                <d:order>
-                    <d:prop><\(elementDate)/></d:prop>
-                    <d:descending/>
-                </d:order>
-                <d:order>
-                    <d:prop><d:displayname/></d:prop>
-                    <d:descending/>
-                </d:order>
-            </d:orderby>
-
-            <!-- ===================================================== -->
             <!-- WHERE:                                                -->
             <!-- 1) Filter only image and video content types          -->
             <!-- 2) Apply a numeric/date range on elementDate          -->
@@ -129,6 +113,22 @@ extension NCMedia {
             </d:where>
 
             <!-- ===================================================== -->
+            <!-- ORDER BY:                                             -->
+            <!-- Primary sort on elementDate (descending)              -->
+            <!-- Secondary sort on displayname for deterministic order -->
+            <!-- ===================================================== -->
+            <d:orderby>
+                <d:order>
+                    <d:prop><\(elementDate)/></d:prop>
+                    <d:descending/>
+                </d:order>
+                <d:order>
+                    <d:prop><d:displayname/></d:prop>
+                    <d:descending/>
+                </d:order>
+            </d:orderby>
+
+            <!-- ===================================================== -->
             <!-- LIMIT: maximum number of results returned             -->
             <!-- ===================================================== -->
             <d:limit>
@@ -147,22 +147,22 @@ extension NCMedia {
                                  firstDate: Date?,
                                  lastDate: Date?,
                                  account: String,
-                                 taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> ([NKFile], NKError) {
+                                 taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> Int {
         guard let firstDate,
               let lastDate else {
-            return ([], .success)
+            return 0
         }
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
-            return ([], NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+            return 0
         }
         let nkComm = NextcloudKit.shared.nkCommonInstance
-        var allFiles: [NKFile] = []
         let href = "/files/" + nkSession.userId + path
 
         let elementDate = "d:getlastmodified"
         let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
+        var metadataInserted = 0
         var paginatedTotal = 0
         var paginateToken: String?
         var error = NKError()
@@ -181,7 +181,7 @@ extension NCMedia {
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
-            return ([], NKError(errorCode: NCGlobal.shared.errorOfflineNotAllowed, errorDescription: "_offline_not_allowed_"))
+            return 0
         }
 
         while true {
@@ -198,7 +198,8 @@ extension NCMedia {
 
             if error == .success {
                 if let files = results.files {
-                    allFiles.append(contentsOf: files)
+                    let inserted = await database.insertMissingMetadataAsync(files: files)
+                    metadataInserted += inserted
                 }
                 let allHeaderFields = results.responseData?.response?.allHeaderFields
                 if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
@@ -223,7 +224,7 @@ extension NCMedia {
             paginateOffset = page * paginateCount
         }
 
-        return (allFiles, error)
+        return metadataInserted
     }
 
     func getRequestBodySearchMediaPlaceholders(href: String,
@@ -243,6 +244,11 @@ extension NCMedia {
             <d:select>
                 <d:prop>
                     <id xmlns="http://owncloud.org/ns"/>
+                    <fileid xmlns="http://owncloud.org/ns"/>
+                    <d:getetag/>
+                    <creation_time xmlns="http://nextcloud.org/ns"/>
+                    <size xmlns="http://owncloud.org/ns"/>
+                    <has-preview xmlns="http://nextcloud.org/ns"/>
                 </d:prop>
             </d:select>
 

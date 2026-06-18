@@ -131,25 +131,6 @@ extension NCMedia {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
 
-        Task.detached { [sessionAccount = self.session.account, mediaPath = tblAccount.mediaPath] in
-            let (files, error) = await self.searchMediaPlaceholders(
-                path: mediaPath,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                account: sessionAccount
-            ) { task in
-                Task.detached {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: sessionAccount,
-                        name: "searchMediaPlaceholders"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            print(files.count)
-        }
-
         let result = await searchMediaAsync(path: tblAccount.mediaPath,
                                             lessDate: lessDate,
                                             greaterDate: greaterDate,
@@ -205,6 +186,29 @@ extension NCMedia {
                 await loadDataSource()
             } else if await self.dataSource.isEmpty() {
                 await self.collectionViewReloadData()
+            }
+        }
+
+        // Placeholders
+        //
+        Task.detached(priority: .low) { [sessionAccount = self.session.account, mediaPath = tblAccount.mediaPath] in
+            let inserted = await self.searchMediaPlaceholders(
+                path: mediaPath,
+                firstDate: firstDate,
+                lastDate: lastDate,
+                account: sessionAccount
+            ) { task in
+                Task.detached {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: sessionAccount,
+                        name: "searchMediaPlaceholders"
+                    )
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            if inserted > 0 {
+                await self.loadDataSource()
             }
         }
     }

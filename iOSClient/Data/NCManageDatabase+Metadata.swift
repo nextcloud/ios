@@ -876,6 +876,41 @@ extension NCManageDatabase {
         return true
     }
 
+    func insertMissingMetadataAsync(files: [NKFile]) async -> Int {
+        guard !files.isEmpty else {
+            return 0
+        }
+        let createMetadata = NCManageDatabaseCreateMetadata()
+        var inserted = 0
+
+        await core.performRealmWriteAsync { realm in
+            // Extract all incoming ocIds.
+            let incomingOcIds = files.map(\.ocId)
+
+            // Read existing ocIds with a single Realm query.
+            let existingOcIds = Set(
+                realm.objects(tableMetadata.self)
+                    .filter("ocId IN %@", incomingOcIds)
+                    .map(\.ocId)
+            )
+
+            // Keep only file objects that are not already stored.
+            let missingFiles = files.filter { file in
+                !existingOcIds.contains(file.ocId)
+            }
+
+            // Insert only new metadata objects.
+            for file in missingFiles {
+                let metadata = createMetadata.createMetadata(file)
+                realm.add(metadata, update: .modified)
+            }
+
+            inserted = missingFiles.count
+        }
+
+        return inserted
+    }
+
     // MARK: - Realm Read
 
     func getAllTableMetadataAsync() async -> [tableMetadata] {
