@@ -192,24 +192,26 @@ extension NCMedia {
         // Placeholders
         //
         Task.detached(priority: .low) { [sessionAccount = self.session.account, mediaPath = tblAccount.mediaPath] in
-            let inserted = await self.searchMediaPlaceholders(
+            await self.searchMediaPlaceholders(
                 path: mediaPath,
                 firstDate: firstDate,
                 lastDate: lastDate,
-                account: sessionAccount
-            ) { task in
-                Task.detached {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: sessionAccount,
-                        name: "searchMediaPlaceholders"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                account: sessionAccount) { task in
+                    Task.detached {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                            account: sessionAccount,
+                            name: "searchMediaPlaceholders"
+                        )
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                } update: { file in
+                    Task.detached {
+                        let inserted = await self.database.insertPlaceholderMetadataAsync(files: files)
+                        if inserted > 0 {
+                            await self.loadDataSource()
+                        }
+                    }
                 }
-            }
-
-            if inserted > 0 {
-                await self.loadDataSource()
-            }
         }
     }
 }

@@ -149,13 +149,14 @@ extension NCMedia {
                                  firstDate: Date?,
                                  lastDate: Date?,
                                  account: String,
-                                 taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> Int {
+                                 taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                                 update: @escaping (_ files: [NKFile]) -> Void) async {
         guard let firstDate,
               let lastDate else {
-            return 0
+            return
         }
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
-            return 0
+            return
         }
         let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
@@ -164,7 +165,6 @@ extension NCMedia {
         let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
-        var metadataInserted = 0
         // var paginatedTotal = 0
         var paginateToken: String?
         var error = NKError()
@@ -183,7 +183,7 @@ extension NCMedia {
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
-            return 0
+            return
         }
 
         while true {
@@ -201,8 +201,7 @@ extension NCMedia {
 
             if error == .success {
                 if let files = results.files {
-                    let inserted = await database.insertPlaceholderMetadataAsync(files: files)
-                    metadataInserted += inserted
+                    update(files)
                 }
                 let allHeaderFields = results.responseData?.response?.allHeaderFields
                 if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
@@ -228,8 +227,6 @@ extension NCMedia {
             page += 1
             paginateOffset = page * paginateCount
         }
-
-        return metadataInserted
     }
 
     func getRequestBodySearchMediaPlaceholders(href: String,
