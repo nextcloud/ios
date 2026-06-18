@@ -23,7 +23,9 @@ extension NCMedia {
         let elementDate = "d:getlastmodified"
         let lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let options = NKRequestOptions(timeout: 180, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 180,
+                                       taskDescription: self.global.taskDescriptionRetrievesProperties,
+                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         let httpBodyString = String(format: getRequestBodySearchMedia(
             createProperties: options.createProperties,
@@ -166,7 +168,7 @@ extension NCMedia {
         // var paginatedTotal = 0
         var paginateToken: String?
         var error = NKError()
-        let paginateCount = 100
+        let paginateCount = 200
         var page = 0
         var paginateOffset = 0
         // var totalResults = 0
@@ -191,7 +193,8 @@ extension NCMedia {
                                            paginate: true,
                                            paginateToken: paginateToken,
                                            paginateOffset: paginateOffset,
-                                           paginateCount: paginateCount)
+                                           paginateCount: paginateCount,
+                                           queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
             let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
             error = results.error
