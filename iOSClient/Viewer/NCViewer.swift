@@ -43,8 +43,7 @@ class NCViewer: NSObject {
         // IMAGE AUDIO VIDEO
         else if metadata.isImage || metadata.isAudioOrVideo {
             let mediaOcIds = ocIds ?? [metadata.ocId]
-            let mediaSearch = delegate is NCMedia
-            let model = NCMediaViewerModel(currentMetadata: metadata, ocIds: mediaOcIds, session: session, mediaSearch: mediaSearch, loader: NCMediaViewerLoader())
+            let model = NCMediaViewerModel(currentMetadata: metadata, ocIds: mediaOcIds, session: session, loader: NCMediaViewerLoader())
 
             NCMediaViewerPresenter.shared.show(
                 model: model,

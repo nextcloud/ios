@@ -141,7 +141,7 @@ extension NCMedia {
     return request
     }
 
-    // MARK: - TEST
+    // MARK: - Placeholders
 
     func searchMediaPlaceholders(path: String,
                                  firstDate: Date?,
@@ -163,13 +163,13 @@ extension NCMedia {
         let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
         var metadataInserted = 0
-        var paginatedTotal = 0
+        // var paginatedTotal = 0
         var paginateToken: String?
         var error = NKError()
         let paginateCount = 75
         var page = 0
         var paginateOffset = 0
-        var totalResults = 0
+        // var totalResults = 0
         let limit = 100000
 
         let httpBodyString = String(format: getRequestBodySearchMediaPlaceholders(
@@ -205,10 +205,12 @@ extension NCMedia {
                 if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
                     paginateToken = result
                 }
+                /*
                 if let result = nkComm.findHeader("x-nc-paginate-total", allHeaderFields: allHeaderFields),
                    let total = Int(result) {
                     paginatedTotal = total
                 }
+                */
                 if let result = nkComm.findHeader("x-nc-paginate", allHeaderFields: allHeaderFields) {
                     isPaginate = Bool(result) ?? false
                 }

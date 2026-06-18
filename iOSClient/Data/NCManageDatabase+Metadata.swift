@@ -86,7 +86,7 @@ class tableMetadata: Object {
     @objc public var lockOwnerDisplayName = ""
     @objc public var lockTime: Date?
     @objc public var lockTimeOut: Date?
-    @objc dynamic var mediaSearch: Bool = false
+    @objc dynamic var placeholders: Bool = false
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var placePhotos: String?
@@ -696,45 +696,50 @@ extension NCManageDatabase {
         }
     }
 
-    /// Asynchronously updates a list of `tableMetadata` entries in Realm for a given account and server URL.
+    /// Asynchronously refreshes the `tableMetadata` entries stored in Realm for the specified account and server URL.
     ///
     /// This function performs the following steps:
-    /// 1. Skips all entries with `status != metadataStatusNormal`.
-    /// 2. Deletes existing metadata entries with `status == metadataStatusNormal` that are not in the skip list.
-    /// 3. Copies matching `mediaSearch` from previously deleted metadata to the incoming list.
-    /// 4. Inserts or updates new metadata entries into Realm, except those in the skip list.
+    /// 1. Collects all metadata entries with `status != metadataStatusNormal` and protects them from refresh.
+    /// 2. Deletes existing normal metadata entries for the specified account and server URL, excluding the root entry.
+    /// 3. Skips incoming metadata entries whose `ocId` belongs to a protected non-normal metadata entry.
+    /// 4. Inserts or updates the remaining incoming metadata entries into Realm.
     ///
     /// - Parameters:
     ///   - metadatas: An array of incoming detached `tableMetadata` objects to insert or update.
-    ///   - serverUrl: The server URL associated with the metadata entries.
-    ///   - account: The account identifier used to scope the metadata update.
-    func updateMetadatasFilesAsync(_ metadatas: [tableMetadata], serverUrl: String, account: String) async {
+    ///   - serverUrl: The server URL used to scope the metadata refresh.
+    ///   - account: The account identifier used to scope the metadata refresh.
+    func updateMetadatasFilesAsync(
+        _ metadatas: [tableMetadata],
+        serverUrl: String,
+        account: String
+    ) async {
         await core.performRealmWriteAsync { realm in
+            // Collect metadata currently involved in non-normal operations.
+            // These entries must not be deleted or overwritten by the refresh.
             let ocIdsToSkip = Set(
                 realm.objects(tableMetadata.self)
                     .filter("status != %d", NCGlobal.shared.metadataStatusNormal)
                     .map(\.ocId)
             )
 
+            // Delete current normal metadata for this account and server URL,
+            // excluding the root entry and protected non-normal entries.
             let resultsToDelete = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName)
+                .filter(
+                    "account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@",
+                    account,
+                    serverUrl,
+                    NCGlobal.shared.metadataStatusNormal,
+                    NextcloudKit.shared.nkCommonInstance.rootFileName
+                )
                 .filter { !ocIdsToSkip.contains($0.ocId) }
-
-            // Cache mediaSearch (and anything else needed) before deletion, keyed by ocId.
-            let metadatasByOcId: [String: tableMetadata] = Dictionary(
-                uniqueKeysWithValues: resultsToDelete.map { object in
-                    (object.ocId, tableMetadata(value: object))
-                }
-            )
 
             realm.delete(resultsToDelete)
 
+            // Insert the refreshed metadata list, skipping protected entries.
             for metadata in metadatas {
                 guard !ocIdsToSkip.contains(metadata.ocId) else {
                     continue
-                }
-                if let previous = metadatasByOcId[metadata.ocId] {
-                    metadata.mediaSearch = previous.mediaSearch
                 }
 
                 realm.add(metadata.detachedCopy(), update: .all)

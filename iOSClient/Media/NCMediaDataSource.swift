@@ -164,14 +164,14 @@ extension NCMedia {
             guard let self else {
                 return
             }
-            let (_, remoteMetadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files, mediaSearch: true)
+            let (_, remoteMetadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
             let mediaPredicate = await self.imageCache.getMediaPredicate(session: session,
                                                                          mediaPath: tblAccount.mediaPath,
                                                                          showOnlyImages: self.showOnlyImages,
                                                                          showOnlyVideos: self.showOnlyVideos)
 
             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                NSPredicate(format: "date >= %@ AND date <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
+                NSPredicate(format: "date >= %@ AND date <= %@", greaterDate as NSDate, lessDate as NSDate),
                 mediaPredicate
             ])
 

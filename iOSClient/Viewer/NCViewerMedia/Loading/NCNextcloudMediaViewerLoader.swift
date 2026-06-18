@@ -41,7 +41,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let mediaDownloadLimiter = NCMediaDownloadLimiter()
 
     // MARK: - NCMediaViewerLoading
-    func metadata(for ocId: String, account: String, mediaSearch: Bool) async -> tableMetadata? {
+    func metadata(for ocId: String, account: String) async -> tableMetadata? {
         if let metadata = await database.getMetadataFromOcIdAsync(ocId) {
             return metadata
         }
@@ -60,7 +60,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file, mediaSearch: mediaSearch)
+        let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
         await NCManageDatabase.shared.addMetadataAsync(metadata)
 
         return metadata
@@ -244,7 +244,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 }
 
 protocol NCMediaViewerLoading: Sendable {
-    func metadata(for ocId: String, account: String, mediaSearch: Bool) async -> tableMetadata?
+    func metadata(for ocId: String, account: String) async -> tableMetadata?
 
     func localMediaURL(for metadata: tableMetadata) async -> URL?
 

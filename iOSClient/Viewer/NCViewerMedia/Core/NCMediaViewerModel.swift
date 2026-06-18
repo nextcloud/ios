@@ -103,7 +103,6 @@ final class NCMediaViewerModel: ObservableObject {
     // MARK: - Source Context
 
     private let session: NCSession.Session
-    private let mediaSearch: Bool
 
     // MARK: - Source Data
 
@@ -198,12 +197,10 @@ final class NCMediaViewerModel: ObservableObject {
     init(
         initialModel: NCMediaViewerInitialModel,
         session: NCSession.Session,
-        mediaSearch: Bool,
         loader: NCMediaViewerLoading
     ) {
         self.loader = loader
         self.session = session
-        self.mediaSearch = mediaSearch
         self.ocIds = initialModel.normalizedOcIds
         self.selectedIndex = initialModel.currentSelectedIndex
 
@@ -221,7 +218,6 @@ final class NCMediaViewerModel: ObservableObject {
         currentMetadata: tableMetadata,
         ocIds: [String],
         session: NCSession.Session,
-        mediaSearch: Bool,
         loader: NCMediaViewerLoading
     ) {
         let initialModel = NCMediaViewerInitialModel(
@@ -232,7 +228,6 @@ final class NCMediaViewerModel: ObservableObject {
         self.init(
             initialModel: initialModel,
             session: session,
-            mediaSearch: mediaSearch,
             loader: loader
         )
     }
@@ -914,8 +909,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         return await loader.metadata(
             for: ocId,
-            account: session.account,
-            mediaSearch: mediaSearch
+            account: session.account
         )
     }
 
