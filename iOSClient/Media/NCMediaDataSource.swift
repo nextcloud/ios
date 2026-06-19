@@ -126,90 +126,86 @@ extension NCMedia {
             }
         }
 
-        Task.detached(priority: .userInitiated) {
-            await self.searchNetworkNewMedia(lessDate: lessDate, greaterDate: greaterDate, mediaPath: tblAccount.mediaPath)
-        }
-
-
-        Task.detached(priority: .low) {
-            await self.searchNetworkMediaPlaceholders(firstDate: firstDate,
-                                                      lastDate: lastDate,
-                                                      mediaPath: tblAccount.mediaPath) { update in
-                if update {
-                    Task {
-                        await self.debouncerLoadDataSource.call {
-                            await self.loadDataSource()
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    internal func searchNetworkNewMedia(lessDate: Date,
-                                        greaterDate: Date,
-                                        mediaPath: String) async {
-        Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            if lessDate == .distantFuture || greaterDate == .distantPast {
-                let limit = await MainActor.run {
-                    max(self.collectionView.visibleCells.count * 3, 300)
-                }
-
-                let result = await searchNewMediaAsync(path: mediaPath,
-                                                       lessDate: lessDate,
-                                                       greaterDate: greaterDate,
-                                                       limit: limit,
-                                                       account: self.session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: self.session.account,
-                            name: "searchMedia")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
-
-                guard result.error == .success, let files = result.files, await !self.showOnlyImages, await !self.showOnlyVideos else {
-                    nkLog(error: "Media search failed: \(result.error.errorDescription)")
-                    await MainActor.run {
-                        self.searchMediaInProgress = false
-                        self.collectionViewReloadData()
-                        self.activityIndicator.stopAnimating()
-                    }
-                    return
-                }
-
-                if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
-                    await MainActor.run {
-                        self.dataSource.clearMetadatas()
-                        self.collectionViewReloadData()
-                    }
-                }
-
-                let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
-
-                await MainActor.run {
-                    self.activityIndicator.stopAnimating()
-                    self.searchMediaInProgress = false
-                }
-
-                await database.addMetadatasAsync(metadatas)
-
+        await self.searchNetworkNewMedia(lessDate: lessDate,
+                                         greaterDate: greaterDate,
+                                         mediaPath: tblAccount.mediaPath) {
+            Task {
                 await self.debouncerLoadDataSource.call {
                     await self.loadDataSource()
                 }
             }
         }
+
+        await self.searchNetworkMediaPlaceholders(firstDate: firstDate,
+                                                  lastDate: lastDate,
+                                                  mediaPath: tblAccount.mediaPath) { update in
+            if update {
+                Task {
+                    await self.debouncerLoadDataSource.call {
+                        await self.loadDataSource()
+                    }
+                }
+            }
+        } finish: {
+            Task { @MainActor in
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+        }
+    }
+
+    internal func searchNetworkNewMedia(lessDate: Date,
+                                        greaterDate: Date,
+                                        mediaPath: String,
+                                        update: @escaping () -> Void) async {
+        if lessDate != .distantFuture, greaterDate != .distantPast {
+            return
+        }
+
+        let limit = await MainActor.run {
+            max(self.collectionView.visibleCells.count * 3, 300)
+        }
+
+        let result = await searchNewMediaAsync(path: mediaPath,
+                                               lessDate: lessDate,
+                                               greaterDate: greaterDate,
+                                               limit: limit,
+                                               account: self.session.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: self.session.account,
+                    name: "searchMedia")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
+
+        guard result.error == .success, let files = result.files, !self.showOnlyImages, !self.showOnlyVideos else {
+            nkLog(error: "Media search failed: \(result.error.errorDescription)")
+            return
+        }
+
+        if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
+            await MainActor.run {
+                self.dataSource.clearMetadatas()
+                self.collectionViewReloadData()
+            }
+        }
+
+        let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+
+        await database.addMetadatasAsync(metadatas)
+
+        update()
     }
 
     internal func searchNetworkMediaPlaceholders(firstDate: Date?,
                                                  lastDate: Date?,
                                                  mediaPath: String,
-                                                 update: @escaping (Bool) -> Void) async {
+                                                 update: @escaping (Bool) -> Void,
+                                                 finish: @escaping () -> Void) async {
         guard let firstDate,
               let lastDate else {
+            update(false)
             return
         }
 
@@ -247,6 +243,8 @@ extension NCMedia {
                         update(isUpdated)
                     }
                 }
+            } finish: {
+                finish()
             }
     }
 }

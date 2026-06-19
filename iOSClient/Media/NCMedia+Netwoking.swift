@@ -8,11 +8,11 @@ import Alamofire
 
 extension NCMedia {
     func searchNewMediaAsync(path: String = "",
-                          lessDate: Date,
-                          greaterDate: Date,
-                          limit: Int,
-                          account: String,
-                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }
+                             lessDate: Date,
+                             greaterDate: Date,
+                             limit: Int,
+                             account: String,
+                             taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }
     ) async -> (account: String, files: [NKFile]?, error: NKError) {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return (account, nil, .urlError)
@@ -150,7 +150,8 @@ extension NCMedia {
                                  lastDate: Date,
                                  account: String,
                                  taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                                 update: @escaping (_ files: [NKFile]) -> Void) async {
+                                 update: @escaping (_ files: [NKFile]) -> Void,
+                                 finish: @escaping () -> Void) async {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return
         }
@@ -179,6 +180,7 @@ extension NCMedia {
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
+            finish()
             return
         }
 
@@ -226,6 +228,7 @@ extension NCMedia {
             page += 1
             paginateOffset = page * paginateCount
         }
+        finish()
     }
 
     func getRequestBodySearchMediaPlaceholders(href: String,
