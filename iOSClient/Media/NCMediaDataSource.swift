@@ -16,7 +16,7 @@ extension NCMedia {
                                                                showOnlyImages: self.showOnlyImages,
                                                                showOnlyVideos: self.showOnlyVideos)
 
-        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: self.global.mediaOrderByName, ascending: false) {
+        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) {
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
                     self.dataSource = NCMediaDataSource(metadatas: metadatas)
@@ -203,8 +203,8 @@ extension NCMedia {
                     }
                 } update: { files in
                     Task.detached {
-                        if let firstDate = files.first?.creationDate as? NSDate,
-                           let lastDate = files.last?.creationDate as? NSDate {
+                        if let firstDate = files.first?.date as? NSDate,
+                           let lastDate = files.last?.date as? NSDate {
                             let mediaPredicate = await self.imageCache.getMediaPredicate(
                                 session: self.session,
                                 mediaPath: tblAccount.mediaPath,
@@ -212,19 +212,14 @@ extension NCMedia {
                                 showOnlyVideos: self.showOnlyVideos)
 
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                                NSPredicate(format: "%@ >= %@ AND %@ <= %@", self.global.mediaOrderByName, firstDate, self.global.mediaOrderByName, lastDate),
-                                mediaPredicate
+                                NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
                             ])
 
                             let metadatas = await self.database.getMetadatasAsync(predicate: predicate)
 
-                            let inserted = await self.database.insertPlaceholderMetadataAsync(
-                                files: files,
-                                metadatas: metadatas,
-                                firstDate: firstDate,
-                                lastDate: lastDate)
+                            let inserted = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
 
-                            if inserted > 0 {
+                            if inserted {
                                 await self.debouncerLoadDataSource.call {
                                     await self.loadDataSource()
                                 }

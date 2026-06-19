@@ -75,7 +75,7 @@ final class NCGlobal: Sendable {
     }
 
     // MEDIA SEARCH
-    let mediaOrderByName                            = "getlastmodified"
+    let mediaPropOrder                              = "getlastmodified"
 
     // E2EE
     //

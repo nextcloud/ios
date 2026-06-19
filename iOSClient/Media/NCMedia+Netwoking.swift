@@ -20,7 +20,7 @@ extension NCMedia {
         let files: [NKFile] = []
         let href = "/files/" + nkSession.userId + path
 
-        let elementDate = "d:" + global.mediaOrderByName
+        let elementDate = "d:" + global.mediaPropOrder
         let lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let options = NKRequestOptions(timeout: 180,
@@ -161,7 +161,7 @@ extension NCMedia {
         let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
 
-        let elementDate = "d:" + global.mediaOrderByName
+        let elementDate = "d:" + global.mediaPropOrder
         let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
@@ -248,7 +248,6 @@ extension NCMedia {
                     <id xmlns="http://owncloud.org/ns"/>
                     <fileid xmlns="http://owncloud.org/ns"/>
                     <d:getetag/>
-                    <creation_time xmlns="http://nextcloud.org/ns"/>
                     <d:getlastmodified />
                     <upload_time xmlns="http://nextcloud.org/ns"/>
                     <size xmlns="http://owncloud.org/ns"/>

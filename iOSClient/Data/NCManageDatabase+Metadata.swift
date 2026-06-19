@@ -907,43 +907,95 @@ extension NCManageDatabase {
         return true
     }
 
-    func insertPlaceholderMetadataAsync(files: [NKFile],
-                                        metadatas: [tableMetadata],
-                                        firstDate: NSDate,
-                                        lastDate: NSDate) async -> Int {
+    func syncPlaceholderMetadatasAsync(files: [NKFile], metadatas: [tableMetadata]) async -> Bool {
         guard !files.isEmpty else {
-            return 0
+            return false
         }
+
+        // Build lookup maps for fast diffing.
+        // Using merge strategy avoids crashes when duplicated ocIds are present.
+        let filesByOcId: [String: NKFile] = Dictionary(
+            files.map { ($0.ocId, $0) },
+            uniquingKeysWith: { _, new in new }
+        )
+
+        let metadatasByOcId: [String: tableMetadata] = Dictionary(
+            metadatas.map { ($0.ocId, $0) },
+            uniquingKeysWith: { _, new in new }
+        )
+
+        let fileOcIds = Set(filesByOcId.keys)
+        let metadataOcIds = Set(metadatasByOcId.keys)
+
+        // Diff sets.
+        let toInsertOcIds = fileOcIds.subtracting(metadataOcIds)
+        let toDeleteOcIds = metadataOcIds.subtracting(fileOcIds)
+
+        let toModifyOcIds: [String] = Array(fileOcIds.intersection(metadataOcIds)).filter { ocId in
+            guard let file = filesByOcId[ocId],
+                  let metadata = metadatasByOcId[ocId] else {
+                return false
+            }
+
+            return file.etag != metadata.etag
+        }
+
+        let hasChanges = !toInsertOcIds.isEmpty ||
+                         !toDeleteOcIds.isEmpty ||
+                         !toModifyOcIds.isEmpty
+
+        guard hasChanges else {
+            return false
+        }
+
         let createMetadata = NCManageDatabaseCreateMetadata()
-        var inserted = 0
 
         await core.performRealmWriteAsync { realm in
-            // Extract all incoming ocIds.
-            let incomingOcIds = files.map(\.ocId)
+            // DELETE: Remove metadata entries whose ocId is no longer present in the remote file list.
+            if !toDeleteOcIds.isEmpty {
+                let resultsToDelete = realm.objects(tableMetadata.self)
+                    .filter("ocId IN %@", Array(toDeleteOcIds))
 
-            // Read existing ocIds with a single Realm query.
-            let existingOcIds = Set(
-                realm.objects(tableMetadata.self)
-                    .filter("ocId IN %@", incomingOcIds)
-                    .map(\.ocId)
-            )
-
-            // Keep only file objects that are not already stored.
-            let missingFiles = files.filter { file in
-                !existingOcIds.contains(file.ocId)
+                realm.delete(resultsToDelete)
             }
 
-            // Insert only new metadata objects.
-            for file in missingFiles {
-                let metadata = createMetadata.createMetadata(file)
-                metadata.placeholder = true
-                realm.add(metadata, update: .modified)
+            // MODIFY: Update only the etag for existing placeholder metadata entries.
+            if !toModifyOcIds.isEmpty {
+                let resultsToModify = realm.objects(tableMetadata.self)
+                    .filter("ocId IN %@", Array(toModifyOcIds))
+
+                for metadata in resultsToModify {
+                    guard let file = filesByOcId[metadata.ocId] else {
+                        continue
+                    }
+
+                    metadata.etag = file.etag
+                    metadata.date = file.date as NSDate
+                    if let date = file.creationDate as? NSDate {
+                        metadata.creationDate = date
+                    }
+                }
             }
 
-            inserted = missingFiles.count
+            // INSERT: Add placeholder metadata entries for files not currently present in Realm.
+            if !toInsertOcIds.isEmpty {
+                let insertedMetadatas: [tableMetadata] = toInsertOcIds.compactMap { ocId in
+                    guard let file = filesByOcId[ocId] else {
+                        return nil
+                    }
+
+                    let metadata = createMetadata.createMetadata(file)
+                    metadata.placeholder = true
+                    return metadata
+                }
+
+                if !insertedMetadatas.isEmpty {
+                    realm.add(insertedMetadatas, update: .modified)
+                }
+            }
         }
 
-        return inserted
+        return true
     }
 
     // MARK: - Realm Read
