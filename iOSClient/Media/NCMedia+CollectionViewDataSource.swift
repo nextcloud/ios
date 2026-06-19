@@ -20,8 +20,8 @@ extension NCMedia: UICollectionViewDataSource {
             return header
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let images = dataSource.metadatas.filter({ $0.isImage }).count
-            let video = dataSource.metadatas.count - images
+            let images = dataSource.tinyMetadatas.filter({ $0.isImage }).count
+            let video = dataSource.tinyMetadatas.count - images
 
             footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
             return footer
@@ -29,26 +29,26 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.metadatas.count
+        let numberOfItemsInSection = dataSource.tinyMetadatas.count
         self.numberOfColumns = getColumnCount()
         return numberOfItemsInSection
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
+        guard let tinyMetadata = dataSource.getTinyMetadata(indexPath: indexPath) else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            for case let operation as NCMediaDownloadThumbnail in networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            for case let operation as NCMediaDownloadThumbnail in networking.downloadThumbnailQueue.operations where operation.tinyMetadata.ocId == tinyMetadata.ocId {
                 operation.cancel()
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
-        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
-           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
+        guard let tinyMetadata = dataSource.getTinyMetadata(indexPath: indexPath) else { return }
+        if !utilityFileSystem.fileProviderStorageImageExists(tinyMetadata.ocId, etag: tinyMetadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
+           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.tinyMetadata.ocId == tinyMetadata.ocId }).isEmpty {
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(tinyMetadata: tinyMetadata, media: self))
         }
     }
 
@@ -56,25 +56,25 @@ extension NCMedia: UICollectionViewDataSource {
         guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
             fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return cell }
+        guard let tinyMetadata = dataSource.getTinyMetadata(indexPath: indexPath) else { return cell }
 
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+        let imageCache = imageCache.getImageCache(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, ext: ext)
 
         cell.imageItem.image = imageCache
-        cell.date = metadata.date
-        cell.ocId = metadata.ocId
+        cell.date = tinyMetadata.date
+        cell.ocId = tinyMetadata.ocId
         cell.imageStatus.image = nil
 
         if cell.imageItem.frame.width > 60 {
-            if metadata.isVideo {
+            if tinyMetadata.isVideo {
                 cell.imageStatus.image = playImage
-            } else if metadata.isLivePhoto {
+            } else if tinyMetadata.isLivePhoto {
                 cell.imageStatus.image = livePhotoImage
             }
         }
 
-        if isEditMode, fileSelect.contains(metadata.ocId) {
+        if isEditMode, fileSelect.contains(tinyMetadata.ocId) {
             cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
         } else {
             cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
@@ -82,15 +82,15 @@ extension NCMedia: UICollectionViewDataSource {
 
         if cell.imageItem.image == nil {
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
+                cell.imageItem.image = utility.getImage(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
             } else {
                 let session = self.session
                 DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
+                    let image = self.utility.getImage(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                           currentCell.ocId == metadata.ocId, let image {
-                            self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+                           currentCell.ocId == tinyMetadata.ocId, let image {
+                            self.imageCache.addImageCache(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, image: image, ext: ext, cost: indexPath.row)
                             currentCell.imageItem.image = image
                         }
                     }

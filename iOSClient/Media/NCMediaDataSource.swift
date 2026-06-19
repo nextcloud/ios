@@ -11,10 +11,11 @@ extension NCMedia {
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", self.session.account)) else {
             return
         }
-        let mediaPredicate = self.imageCache.getMediaPredicate(session: self.session,
-                                                               mediaPath: tblAccount.mediaPath,
-                                                               showOnlyImages: self.showOnlyImages,
-                                                               showOnlyVideos: self.showOnlyVideos)
+        let mediaPredicate = self.imageCache.getMediaPredicate(
+            session: self.session,
+            mediaPath: tblAccount.mediaPath,
+            showOnlyImages: self.showOnlyImages,
+            showOnlyVideos: self.showOnlyVideos)
 
         if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) {
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
@@ -25,7 +26,7 @@ extension NCMedia {
             }
         } else {
             await MainActor.run {
-                self.dataSource.clearMetadatas()
+                self.dataSource.clearTinyMetadatas()
                 self.collectionViewReloadData()
             }
         }
@@ -66,7 +67,7 @@ extension NCMedia {
         var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
-            if self.dataSource.metadatas.isEmpty {
+            if self.dataSource.tinyMetadatas.isEmpty {
                 self.collectionViewReloadData()
             }
             let sortedIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
@@ -113,7 +114,7 @@ extension NCMedia {
                     lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate ?? .distantFuture) ?? .distantFuture
                 }
 
-                if lastCellDate == self.dataSource.metadatas.last?.date {
+                if lastCellDate == self.dataSource.tinyMetadatas.last?.date {
                     greaterDate = .distantPast
                 } else {
                     greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate ?? .distantPast) ?? .distantPast
@@ -166,7 +167,9 @@ extension NCMedia {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                     account: self.session.account,
                     name: "searchMedia")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(
+                    identifier: identifier,
+                    task: task)
             }
         }
 
@@ -177,7 +180,7 @@ extension NCMedia {
 
         if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
             await MainActor.run {
-                self.dataSource.clearMetadatas()
+                self.dataSource.clearTinyMetadatas()
                 self.collectionViewReloadData()
             }
         }
@@ -210,7 +213,9 @@ extension NCMedia {
                         account: self.session.account,
                         name: "searchMediaPlaceholders"
                     )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    await NCNetworking.shared.networkingTasks.track(
+                        identifier: identifier,
+                        task: task)
                 }
             } update: { files in
                 Task.detached {
@@ -226,9 +231,10 @@ extension NCMedia {
                             NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
                         ])
 
-                        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                                              sortedByKeyPath: "date",
-                                                                              ascending: false) ?? []
+                        let metadatas = await self.database.getMetadatasAsync(
+                            predicate: predicate,
+                            sortedByKeyPath: "date",
+                            ascending: false) ?? []
 
                         let results = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
                         // DELETE
@@ -255,7 +261,7 @@ extension NCMedia {
 
 @MainActor
 public class NCMediaDataSource: NSObject {
-    public class Metadata: NSObject {
+    public class TinyMetadata: NSObject {
         let date: Date
         let etag: String
         let imageSize: CGSize
@@ -283,77 +289,68 @@ public class NCMediaDataSource: NSObject {
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-    private(set) var metadatas: [Metadata] = []
+    private(set) var tinyMetadatas: [TinyMetadata] = []
 
     override init() { super.init() }
 
     init(metadatas: [tableMetadata]) {
         super.init()
 
-        self.metadatas = metadatas.map { getMetadataFromTableMetadata($0) }
-    }
-
-    private func insertInMetadatas(metadata: Metadata) {
-        for i in 0..<self.metadatas.count {
-            if (metadata.date) > self.metadatas[i].date {
-                self.metadatas.insert(metadata, at: i)
-                return
-            }
+        self.tinyMetadatas = metadatas.map {
+            getTinyMetadataFromMetadata($0)
         }
-
-        self.metadatas.append(metadata)
     }
 
-    private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
+    private func getTinyMetadataFromMetadata(_ metadata: tableMetadata) -> TinyMetadata {
         let date = metadata.date as Date
-        return Metadata(date: date,
-                        etag: metadata.etag,
-                        imageSize: CGSize(width: metadata.width, height: metadata.height),
-                        isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
-                        isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                        isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
-                        ocId: metadata.ocId)
+        return TinyMetadata(date: date,
+                            etag: metadata.etag,
+                            imageSize: CGSize(width: metadata.width, height: metadata.height),
+                            isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
+                            isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                            isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
+                            ocId: metadata.ocId)
     }
 
     // MARK: -
 
-    func clearMetadatas() {
-        metadatas.removeAll()
+    func clearTinyMetadatas() {
+        self.tinyMetadatas.removeAll()
     }
 
     func isEmpty() -> Bool {
-        return self.metadatas.isEmpty
+        return self.tinyMetadatas.isEmpty
     }
 
     func indexPath(forOcId ocId: String) -> IndexPath? {
-        guard let index = self.metadatas.firstIndex(where: { $0.ocId == ocId }) else {
+        guard let index = self.tinyMetadatas.firstIndex(where: { $0.ocId == ocId }) else {
             return nil
         }
 
         return IndexPath(item: index, section: 0)
     }
 
-    func getMetadata(indexPath: IndexPath) -> Metadata? {
-        if indexPath.row < self.metadatas.count {
-            return self.metadatas[indexPath.row]
+    func getTinyMetadata(indexPath: IndexPath) -> TinyMetadata? {
+        if indexPath.row < self.tinyMetadatas.count {
+            return self.tinyMetadatas[indexPath.row]
         }
 
         return nil
     }
 
-    func getMetadatas(indexPaths: [IndexPath]) -> [Metadata] {
-        var metadatas: [Metadata] = []
+    func getTinyMetadatas(indexPaths: [IndexPath]) -> [TinyMetadata] {
+        var metadatas: [TinyMetadata] = []
         for indexPath in indexPaths {
-            if indexPath.row < self.metadatas.count {
-                metadatas.append(self.metadatas[indexPath.row])
+            if indexPath.row < self.tinyMetadatas.count {
+                metadatas.append(self.tinyMetadatas[indexPath.row])
             }
         }
 
         return metadatas
     }
 
-    func removeMetadata(_ ocId: [String]) {
-        self.metadatas.removeAll { item in
+    func removeTinyMetadata(_ ocId: [String]) {
+        self.tinyMetadatas.removeAll { item in
             ocId.contains(item.ocId)
         }
     }

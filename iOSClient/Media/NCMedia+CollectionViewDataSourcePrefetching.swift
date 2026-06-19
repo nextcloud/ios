@@ -12,12 +12,12 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
             return
         }
         let cost = indexPaths.first?.row ?? 0
-        let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
+        let tinyMetadatas = self.dataSource.getTinyMetadatas(indexPaths: indexPaths)
 
-        metadatas.forEach { metadata in
-            if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
-                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase) {
-                self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+        tinyMetadatas.forEach { tinyMetadata in
+            if self.imageCache.getImageCache(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, ext: ext) == nil,
+                let image = self.utility.getImage(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase) {
+                self.imageCache.addImageCache(ocId: tinyMetadata.ocId, etag: tinyMetadata.etag, image: image, ext: ext, cost: cost)
             }
         }
     }

@@ -148,7 +148,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { _ in
             Task {
-                await self.dataSource.clearMetadatas()
+                await self.dataSource.clearTinyMetadatas()
                 self.imageCache.removeAll()
                 await self.searchMediaUI(true)
             }
@@ -260,7 +260,7 @@ class NCMedia: UIViewController {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if !dataSource.metadatas.isEmpty {
+        if !dataSource.tinyMetadatas.isEmpty {
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
         }

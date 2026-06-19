@@ -48,7 +48,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         if metadata.hasPreview,
            !existsImagePreview,
-           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.tinyMetadata.ocId == metadata.ocId }).isEmpty {
             self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
         }
     }

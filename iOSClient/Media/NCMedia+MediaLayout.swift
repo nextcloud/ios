@@ -25,14 +25,14 @@ extension NCMedia: NCMediaLayoutDelegate {
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
-        if dataSource.metadatas.count == 0 {
+        if dataSource.tinyMetadatas.count == 0 {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
         }
         return Float(height)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        if dataSource.metadatas.count == 0 {
+        if dataSource.tinyMetadatas.count == 0 {
             return .zero
         } else {
             return 100.0
@@ -59,10 +59,10 @@ extension NCMedia: NCMediaLayoutDelegate {
         if typeLayout == global.mediaLayoutSquare {
             return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         } else {
-            guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
+            guard let tinyMetadata = dataSource.getTinyMetadata(indexPath: indexPath) else { return .zero }
 
-            if metadata.imageSize != CGSize.zero {
-                return metadata.imageSize
+            if tinyMetadata.imageSize != CGSize.zero {
+                return tinyMetadata.imageSize
             } else {
                 return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
             }
