@@ -7,7 +7,7 @@ import NextcloudKit
 import Alamofire
 
 extension NCMedia {
-    func searchMediaAsync(path: String = "",
+    func searchNewMediaAsync(path: String = "",
                           lessDate: Date,
                           greaterDate: Date,
                           limit: Int,
@@ -146,15 +146,11 @@ extension NCMedia {
     // MARK: - Placeholders
 
     func searchMediaPlaceholders(path: String,
-                                 firstDate: Date?,
-                                 lastDate: Date?,
+                                 firstDate: Date,
+                                 lastDate: Date,
                                  account: String,
                                  taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                                  update: @escaping (_ files: [NKFile]) -> Void) async {
-        guard let firstDate,
-              let lastDate else {
-            return
-        }
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return
         }

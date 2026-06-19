@@ -175,10 +175,8 @@ class NCMedia: UIViewController {
             }
         }
 
-        if dataSource.metadatas.isEmpty {
-            Task {
-                await loadDataSource()
-            }
+        Task {
+            await loadDataSource()
         }
     }
 

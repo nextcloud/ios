@@ -126,69 +126,82 @@ extension NCMedia {
             }
         }
 
-        let limit = await MainActor.run {
-            max(self.collectionView.visibleCells.count * 3, 300)
-        }
+        self.searchNetworkNewMedia(lessDate: lessDate, greaterDate: greaterDate, mediaPath: tblAccount.mediaPath)
+        self.searchNetworkMediaPlaceholders(firstDate: firstDate, lastDate: lastDate, mediaPath: tblAccount.mediaPath)
 
-        let result = await searchMediaAsync(path: tblAccount.mediaPath,
-                                            lessDate: lessDate,
-                                            greaterDate: greaterDate,
-                                            limit: limit,
-                                            account: self.session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.session.account,
-                    name: "searchMedia")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+    }
+
+    internal func searchNetworkNewMedia(lessDate: Date,
+                                        greaterDate: Date,
+                                        mediaPath: String) {
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            if lessDate == .distantFuture || greaterDate == .distantPast {
+                let limit = await MainActor.run {
+                    max(self.collectionView.visibleCells.count * 3, 300)
+                }
+
+                let result = await searchNewMediaAsync(path: mediaPath,
+                                                       lessDate: lessDate,
+                                                       greaterDate: greaterDate,
+                                                       limit: limit,
+                                                       account: self.session.account) { task in
+                    Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                            account: self.session.account,
+                            name: "searchMedia")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                }
+
+                guard result.error == .success, let files = result.files, await !self.showOnlyImages, await !self.showOnlyVideos else {
+                    nkLog(error: "Media search failed: \(result.error.errorDescription)")
+                    await MainActor.run {
+                        self.searchMediaInProgress = false
+                        self.collectionViewReloadData()
+                        self.activityIndicator.stopAnimating()
+                    }
+                    return
+                }
+
+                if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
+                    await MainActor.run {
+                        self.dataSource.clearMetadatas()
+                        self.collectionViewReloadData()
+                    }
+                }
+
+                let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
+
+                await MainActor.run {
+                    self.activityIndicator.stopAnimating()
+                    self.searchMediaInProgress = false
+                }
+
+                await database.addMetadatasAsync(metadatas)
+
+                await self.debouncerLoadDataSource.call {
+                    await self.loadDataSource()
+                }
             }
         }
+    }
 
-        guard result.error == .success, let files = result.files, !self.showOnlyImages, !self.showOnlyVideos else {
-            nkLog(error: "Media search failed: \(result.error.errorDescription)")
-            await MainActor.run {
-                self.searchMediaInProgress = false
-                self.collectionViewReloadData()
-                self.activityIndicator.stopAnimating()
-            }
+    internal func searchNetworkMediaPlaceholders(firstDate: Date?, lastDate: Date?, mediaPath: String) {
+        guard let firstDate,
+              let lastDate else {
             return
         }
-
-        if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
-            await MainActor.run {
-                self.dataSource.clearMetadatas()
-                self.collectionViewReloadData()
-            }
-        }
-
-        Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self else {
-                return
-            }
-            let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
-
-            await MainActor.run {
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
-
-            await database.addMetadatasAsync(metadatas)
-
-            await self.debouncerLoadDataSource.call {
-                await self.loadDataSource()
-            }
-        }
-
-        // Placeholders
-        //
-        Task.detached(priority: .low) { [sessionAccount = self.session.account, mediaPath = tblAccount.mediaPath] in
+        Task.detached(priority: .low) {
             await self.searchMediaPlaceholders(
                 path: mediaPath,
                 firstDate: firstDate,
                 lastDate: lastDate,
-                account: sessionAccount) { task in
+                account: self.session.account) { task in
                     Task.detached {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: sessionAccount,
+                            account: self.session.account,
                             name: "searchMediaPlaceholders"
                         )
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
@@ -199,7 +212,7 @@ extension NCMedia {
                            let lastDate = files.last?.date as? NSDate {
                             let mediaPredicate = await self.imageCache.getMediaPredicate(
                                 session: self.session,
-                                mediaPath: tblAccount.mediaPath,
+                                mediaPath: mediaPath,
                                 showOnlyImages: self.showOnlyImages,
                                 showOnlyVideos: self.showOnlyVideos)
 
