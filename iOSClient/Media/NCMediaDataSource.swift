@@ -126,14 +126,30 @@ extension NCMedia {
             }
         }
 
-        self.searchNetworkNewMedia(lessDate: lessDate, greaterDate: greaterDate, mediaPath: tblAccount.mediaPath)
-        self.searchNetworkMediaPlaceholders(firstDate: firstDate, lastDate: lastDate, mediaPath: tblAccount.mediaPath)
+        Task.detached(priority: .userInitiated) {
+            await self.searchNetworkNewMedia(lessDate: lessDate, greaterDate: greaterDate, mediaPath: tblAccount.mediaPath)
+        }
+
+
+        Task.detached(priority: .low) {
+            await self.searchNetworkMediaPlaceholders(firstDate: firstDate,
+                                                      lastDate: lastDate,
+                                                      mediaPath: tblAccount.mediaPath) { update in
+                if update {
+                    Task {
+                        await self.debouncerLoadDataSource.call {
+                            await self.loadDataSource()
+                        }
+                    }
+                }
+            }
+        }
 
     }
 
     internal func searchNetworkNewMedia(lessDate: Date,
                                         greaterDate: Date,
-                                        mediaPath: String) {
+                                        mediaPath: String) async {
         Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
@@ -188,53 +204,50 @@ extension NCMedia {
         }
     }
 
-    internal func searchNetworkMediaPlaceholders(firstDate: Date?, lastDate: Date?, mediaPath: String) {
+    internal func searchNetworkMediaPlaceholders(firstDate: Date?,
+                                                 lastDate: Date?,
+                                                 mediaPath: String,
+                                                 update: @escaping (Bool) -> Void) async {
         guard let firstDate,
               let lastDate else {
             return
         }
-        Task.detached(priority: .low) {
-            await self.searchMediaPlaceholders(
-                path: mediaPath,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                account: self.session.account) { task in
-                    Task.detached {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: self.session.account,
-                            name: "searchMediaPlaceholders"
-                        )
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                } update: { files in
-                    Task.detached {
-                        if let firstDate = files.first?.date as? NSDate,
-                           let lastDate = files.last?.date as? NSDate {
-                            let mediaPredicate = await self.imageCache.getMediaPredicate(
-                                session: self.session,
-                                mediaPath: mediaPath,
-                                showOnlyImages: self.showOnlyImages,
-                                showOnlyVideos: self.showOnlyVideos)
 
-                            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                                NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
-                            ])
+        await self.searchMediaPlaceholders(
+            path: mediaPath,
+            firstDate: firstDate,
+            lastDate: lastDate,
+            account: self.session.account) { task in
+                Task.detached {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: self.session.account,
+                        name: "searchMediaPlaceholders"
+                    )
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            } update: { files in
+                Task.detached {
+                    if let firstDate = files.first?.date as? NSDate,
+                       let lastDate = files.last?.date as? NSDate {
+                        let mediaPredicate = await self.imageCache.getMediaPredicate(
+                            session: self.session,
+                            mediaPath: mediaPath,
+                            showOnlyImages: self.showOnlyImages,
+                            showOnlyVideos: self.showOnlyVideos)
 
-                            let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                                                  sortedByKeyPath: "date",
-                                                                                  ascending: false) ?? []
+                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                            NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
+                        ])
 
-                            let inserted = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
+                        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                              sortedByKeyPath: "date",
+                                                                              ascending: false) ?? []
 
-                            if inserted {
-                                await self.debouncerLoadDataSource.call {
-                                    await self.loadDataSource()
-                                }
-                            }
-                        }
+                        let isUpdated = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
+                        update(isUpdated)
                     }
                 }
-        }
+            }
     }
 }
 
