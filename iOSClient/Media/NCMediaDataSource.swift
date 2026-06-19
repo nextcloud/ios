@@ -135,12 +135,10 @@ extension NCMedia {
 
         await self.searchNetworkMediaPlaceholders(firstDate: firstDate,
                                                   lastDate: lastDate,
-                                                  mediaPath: tblAccount.mediaPath) { update in
-            if update {
-                Task {
-                    await self.debouncerLoadDataSource.call {
-                        await self.loadDataSource()
-                    }
+                                                  mediaPath: tblAccount.mediaPath) {
+            Task {
+                await self.debouncerLoadDataSource.call {
+                    await self.loadDataSource()
                 }
             }
         } finish: {
@@ -194,11 +192,10 @@ extension NCMedia {
     internal func searchNetworkMediaPlaceholders(firstDate: Date?,
                                                  lastDate: Date?,
                                                  mediaPath: String,
-                                                 update: @escaping (Bool) -> Void,
+                                                 update: @escaping () -> Void,
                                                  finish: @escaping () -> Void) async {
         guard let firstDate,
               let lastDate else {
-            update(false)
             finish()
             return
         }
@@ -244,7 +241,7 @@ extension NCMedia {
                         }
                         await self.database.deleteMetadatasAsync(ocIds: ocIdsToDelete)
                         if ocIdsToDelete.count > 0, results.inserted > 0, results.updated > 0 {
-                            update(true)
+                            update()
                         }
                     }
                 }
