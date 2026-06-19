@@ -233,8 +233,19 @@ extension NCMedia {
                                                                               sortedByKeyPath: "date",
                                                                               ascending: false) ?? []
 
-                        let isUpdated = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
-                        update(isUpdated)
+                        let results = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
+                        // DELETE
+                        var ocIdsToDelete: [String] = []
+                        for metadata in results.deleted {
+                            let existsResult = await self.networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                            if existsResult.errorCode == 404 {
+                                ocIdsToDelete.append(metadata.ocId)
+                            }
+                        }
+                        await self.database.deleteMetadatasAsync(ocIds: ocIdsToDelete)
+                        if ocIdsToDelete.count > 0, results.inserted > 0, results.updated > 0 {
+                            update(true)
+                        }
                     }
                 }
             } finish: {

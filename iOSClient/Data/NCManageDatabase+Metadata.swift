@@ -851,9 +851,12 @@ extension NCManageDatabase {
         }
     }
 
-    func syncPlaceholderMetadatasAsync(files: [NKFile], metadatas: [tableMetadata]) async -> Bool {
+    func syncPlaceholderMetadatasAsync(
+        files: [NKFile],
+        metadatas: [tableMetadata]
+    ) async -> (inserted: Int, updated: Int, deleted: [tableMetadata]) {
         guard !files.isEmpty else {
-            return false
+            return (0, 0, [])
         }
 
         // Build lookup maps for fast diffing.
@@ -863,19 +866,30 @@ extension NCManageDatabase {
             uniquingKeysWith: { _, new in new }
         )
 
+        // Store detached copies because returned metadata objects must remain usable
+        // outside the Realm lifecycle.
         let metadatasByOcId: [String: tableMetadata] = Dictionary(
-            metadatas.map { ($0.ocId, $0) },
+            metadatas.map { ($0.ocId, $0.detachedCopy()) },
             uniquingKeysWith: { _, new in new }
         )
 
         let fileOcIds = Set(filesByOcId.keys)
         let metadataOcIds = Set(metadatasByOcId.keys)
 
-        // Diff sets.
+        // INSERT: Remote files that are not present in the local date-window metadata list.
         let toInsertOcIds = fileOcIds.subtracting(metadataOcIds)
+
+        // DELETE CANDIDATES: Local metadata entries that are no longer present
+        // in the current remote date-window result.
+        // They are returned to the caller and must be validated/deleted outside this function.
         let toDeleteOcIds = metadataOcIds.subtracting(fileOcIds)
 
-        let toModifyOcIds: [String] = Array(fileOcIds.intersection(metadataOcIds)).filter { ocId in
+        let deletedMetadatas: [tableMetadata] = toDeleteOcIds.compactMap { ocId in
+            metadatasByOcId[ocId]
+        }
+
+        // UPDATE: Existing placeholder metadata entries whose etag changed.
+        let toUpdateOcIds: [String] = Array(fileOcIds.intersection(metadataOcIds)).filter { ocId in
             guard let file = filesByOcId[ocId],
                   let metadata = metadatasByOcId[ocId] else {
                 return false
@@ -885,28 +899,23 @@ extension NCManageDatabase {
         }
 
         let hasChanges = !toInsertOcIds.isEmpty ||
-                         !toDeleteOcIds.isEmpty ||
-                         !toModifyOcIds.isEmpty
+                         !toUpdateOcIds.isEmpty
 
         guard hasChanges else {
-            return false
+            return (
+                inserted: 0,
+                updated: 0,
+                deleted: deletedMetadatas
+            )
         }
 
         let createMetadata = NCManageDatabaseCreateMetadata()
 
         await core.performRealmWriteAsync { realm in
-            // DELETE: Remove metadata entries whose ocId is no longer present in the remote file list.
-            if !toDeleteOcIds.isEmpty {
-                let resultsToDelete = realm.objects(tableMetadata.self)
-                    .filter("ocId IN %@", Array(toDeleteOcIds))
-
-                realm.delete(resultsToDelete)
-            }
-
-            // MODIFY: Update only the etag for existing placeholder metadata entries.
-            if !toModifyOcIds.isEmpty {
+            // MODIFY: Update lightweight fields for existing placeholder metadata entries.
+            if !toUpdateOcIds.isEmpty {
                 let resultsToModify = realm.objects(tableMetadata.self)
-                    .filter("ocId IN %@", Array(toModifyOcIds))
+                    .filter("ocId IN %@", Array(toUpdateOcIds))
 
                 for metadata in resultsToModify {
                     guard let file = filesByOcId[metadata.ocId] else {
@@ -915,13 +924,14 @@ extension NCManageDatabase {
 
                     metadata.etag = file.etag
                     metadata.date = file.date as NSDate
+
                     if let date = file.creationDate as? NSDate {
                         metadata.creationDate = date
                     }
                 }
             }
 
-            // INSERT: Add placeholder metadata entries for files not currently present in Realm.
+            // INSERT: Add placeholder metadata entries for files not currently present in the local date-window metadata list.
             if !toInsertOcIds.isEmpty {
                 let insertedMetadatas: [tableMetadata] = toInsertOcIds.compactMap { ocId in
                     guard let file = filesByOcId[ocId] else {
@@ -939,7 +949,11 @@ extension NCManageDatabase {
             }
         }
 
-        return true
+        return (
+            inserted: toInsertOcIds.count,
+            updated: toUpdateOcIds.count,
+            deleted: deletedMetadatas
+        )
     }
 
     // MARK: - Realm Read
