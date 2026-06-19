@@ -218,17 +218,18 @@ extension NCMedia {
                     isPaginate = Bool(result) ?? false
                 }
             } else {
+                finish()
                 break
             }
 
             if !isPaginate || (results.files?.count ?? 0) < paginateCount {
+                finish()
                 break
             }
 
             page += 1
             paginateOffset = page * paginateCount
         }
-        finish()
     }
 
     func getRequestBodySearchMediaPlaceholders(href: String,

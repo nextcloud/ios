@@ -46,8 +46,7 @@ extension NCMedia {
                     !self.isPinchGestureActive,
                     !self.showOnlyImages,
                     !self.showOnlyVideos,
-                    !self.isEditMode,
-                    self.networking.downloadThumbnailQueue.operationCount == 0 else {
+                    !self.isEditMode else {
                 return false
             }
             self.searchMediaInProgress = true
@@ -57,10 +56,6 @@ extension NCMedia {
 
         guard shouldContinue,
               let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
-            await MainActor.run {
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
             return
         }
 
@@ -206,6 +201,7 @@ extension NCMedia {
         guard let firstDate,
               let lastDate else {
             update(false)
+            finish()
             return
         }
 
