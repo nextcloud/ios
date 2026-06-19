@@ -153,6 +153,7 @@ extension NCMedia {
                                  update: @escaping (_ files: [NKFile]) -> Void,
                                  finish: @escaping () -> Void) async {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
+            finish()
             return
         }
         let nkComm = NextcloudKit.shared.nkCommonInstance
