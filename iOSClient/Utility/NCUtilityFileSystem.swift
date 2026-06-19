@@ -119,6 +119,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
+    @discardableResult
     func cleanDirectoryProviderStorageOcId(_ ocId: String, userId: String, urlBase: String) -> String {
         let path = getDocumentStorage(userId: userId, urlBase: urlBase) + "/" + ocId
 

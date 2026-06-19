@@ -855,6 +855,7 @@ extension NCManageDatabase {
         guard !files.isEmpty else {
             return false
         }
+        let utilityFileSystem = NCUtilityFileSystem()
 
         // Build lookup maps for fast diffing.
         // Using merge strategy avoids crashes when duplicated ocIds are present.
