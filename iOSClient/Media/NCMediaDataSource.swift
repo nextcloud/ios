@@ -121,12 +121,14 @@ extension NCMedia {
             }
         }
 
-        await self.searchNetworkNewMedia(lessDate: lessDate,
-                                         greaterDate: greaterDate,
-                                         mediaPath: tblAccount.mediaPath) {
-            Task {
-                await self.debouncerLoadDataSource.call {
-                    await self.loadDataSource()
+        if lessDate == .distantFuture || greaterDate == .distantPast {
+            await self.searchNetworkNewMedia(lessDate: lessDate,
+                                             greaterDate: greaterDate,
+                                             mediaPath: tblAccount.mediaPath) {
+                Task {
+                    await self.debouncerLoadDataSource.call {
+                        await self.loadDataSource()
+                    }
                 }
             }
         }
@@ -153,10 +155,6 @@ extension NCMedia {
                                         greaterDate: Date,
                                         mediaPath: String,
                                         update: @escaping () -> Void) async {
-        if lessDate != .distantFuture, greaterDate != .distantPast {
-            return
-        }
-
         let limit = await MainActor.run {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
