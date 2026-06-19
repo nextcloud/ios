@@ -200,7 +200,10 @@ extension NCMedia {
             error = results.error
 
             if error == .success {
-                if let files = results.files {
+                if let filesUnordered = results.files {
+                    let files = filesUnordered.sorted {
+                        $0.date > $1.date
+                    }
                     update(files)
                 }
                 let allHeaderFields = results.responseData?.response?.allHeaderFields

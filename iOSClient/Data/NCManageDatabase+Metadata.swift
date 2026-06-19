@@ -851,62 +851,6 @@ extension NCManageDatabase {
         }
     }
 
-    /// Synchronizes remote and local metadata entries by `ocId`.
-    ///
-    /// Local entries missing from the remote list are deleted, remote entries missing locally are inserted,
-    /// and local placeholder entries are replaced with their matching remote metadata.
-    ///
-    /// - Returns: `true` if any metadata entry was added, deleted, or replaced; otherwise `false`.
-    func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata], localMetadatas: [tableMetadata]) async -> Bool {
-        // Build ocId lookup sets.
-        let remoteOcIds = Set(remoteMetadatas.map(\.ocId))
-        let localOcIds = Set(localMetadatas.map(\.ocId))
-
-        // Calculate metadata that must be deleted or added.
-        let toDeleteOcIds = localOcIds.subtracting(remoteOcIds)
-        let toAddOcIds = remoteOcIds.subtracting(localOcIds)
-
-        // Find local placeholders that also exist remotely.
-        // These entries must be overwritten with the full remote metadata.
-        let toUpdatePlaceholderOcIds = Set(
-            localMetadatas
-                .filter { metadata in
-                    metadata.placeholder && remoteOcIds.contains(metadata.ocId)
-                }
-                .map(\.ocId)
-        )
-
-        guard !toDeleteOcIds.isEmpty ||
-              !toAddOcIds.isEmpty ||
-              !toUpdatePlaceholderOcIds.isEmpty else {
-            return false
-        }
-
-        let toDeleteKeys = Array(toDeleteOcIds)
-
-        // Prepare detached remote metadata before entering the Realm write queue.
-        let toAddOrUpdate = remoteMetadatas
-            .filter { metadata in
-                toAddOcIds.contains(metadata.ocId) ||
-                toUpdatePlaceholderOcIds.contains(metadata.ocId)
-            }
-            .map { $0.detachedCopy() }
-
-        await core.performRealmWriteAsync { realm in
-            // Delete local metadata no longer present on the remote side.
-            let toDelete = toDeleteKeys.compactMap {
-                realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
-            }
-
-            realm.delete(toDelete)
-
-            // Insert new remote metadata and overwrite local placeholders.
-            realm.add(toAddOrUpdate, update: .modified)
-        }
-
-        return true
-    }
-
     func syncPlaceholderMetadatasAsync(files: [NKFile], metadatas: [tableMetadata]) async -> Bool {
         guard !files.isEmpty else {
             return false

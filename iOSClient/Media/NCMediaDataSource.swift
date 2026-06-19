@@ -176,14 +176,6 @@ extension NCMedia {
             await self.debouncerLoadDataSource.call {
                 await self.loadDataSource()
             }
-
-            /*
-            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
-                await loadDataSource()
-            } else if await self.dataSource.isEmpty() {
-                await self.collectionViewReloadData()
-            }
-            */
         }
 
         // Placeholders
@@ -215,7 +207,9 @@ extension NCMedia {
                                 NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
                             ])
 
-                            let metadatas = await self.database.getMetadatasAsync(predicate: predicate)
+                            let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                                  sortedByKeyPath: "date",
+                                                                                  ascending: false) ?? []
 
                             let inserted = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
 
