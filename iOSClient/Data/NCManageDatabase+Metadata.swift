@@ -855,7 +855,6 @@ extension NCManageDatabase {
         guard !files.isEmpty else {
             return false
         }
-        let utilityFileSystem = NCUtilityFileSystem()
 
         // Build lookup maps for fast diffing.
         // Using merge strategy avoids crashes when duplicated ocIds are present.
@@ -1079,6 +1078,31 @@ extension NCManageDatabase {
                 }
                 .map { $0.detachedCopy() }
         } ?? []
+    }
+
+    /// Returns the ocIds that do not have a matching `tableMetadata` object in the local Realm database.
+    ///
+    /// - Parameter ocIds: The ocId strings to verify against the local Realm database.
+    /// - Returns: A set containing the ocIds that were not found locally. Returns an empty set when all ocIds exist locally.
+    func getMissingLocalMetadataOcIdsAsync(_ ocIds: [String]) async -> Set<String> {
+        let requestedOcIds = Set(ocIds)
+
+        guard !requestedOcIds.isEmpty else {
+            return []
+        }
+
+        let existingOcIdsArray: [String] = await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableMetadata.self)
+                .where {
+                    $0.ocId.in(Array(requestedOcIds))
+                }
+
+            return Array(results.map { $0.ocId })
+        } ?? []
+
+        let existingOcIds = Set(existingOcIdsArray)
+
+        return requestedOcIds.subtracting(existingOcIds)
     }
 
     func getMetadataFromOcIdAndocIdTransferAsync(_ ocId: String?) async -> tableMetadata? {
