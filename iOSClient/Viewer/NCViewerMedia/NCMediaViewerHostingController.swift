@@ -209,10 +209,13 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         )
     }
 
-    /// Closes the viewer.
+    /// Closes the viewer, forwarding the selected media identifier when no explicit identifier is provided.
+    /// - Parameter ocId: The media identifier that should be used by the caller to resolve the closing animation source frame.
     func close(ocId: String? = nil) {
+        let closingOcId = ocId ?? model.selectedMetadata?.ocId
+
         stop()
-        onClose(ocId)
+        onClose(closingOcId)
     }
 
     // MARK: - Navigation
@@ -323,7 +326,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     @objc
     private func closeButtonTapped() {
-        close()
+        close(ocId: model.selectedMetadata?.ocId)
     }
 
     @objc
