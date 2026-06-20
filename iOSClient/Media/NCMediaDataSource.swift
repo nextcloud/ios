@@ -26,7 +26,7 @@ extension NCMedia {
             }
         } else {
             await MainActor.run {
-                self.dataSource.clearTinyMetadatas()
+                self.dataSource.clearcompactMetadatas()
                 self.collectionViewReloadData()
             }
         }
@@ -67,7 +67,7 @@ extension NCMedia {
         var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
-            if self.dataSource.tinyMetadatas.isEmpty {
+            if self.dataSource.compactMetadatas.isEmpty {
                 self.collectionViewReloadData()
             }
             let sortedIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
@@ -114,7 +114,7 @@ extension NCMedia {
                     firstDateNew = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate ?? .distantFuture) ?? .distantFuture
                 }
 
-                if lastCellDate == self.dataSource.tinyMetadatas.last?.date {
+                if lastCellDate == self.dataSource.compactMetadatas.last?.date {
                     lastDateNew = .distantPast
                 } else {
                     lastDateNew = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate ?? .distantPast) ?? .distantPast
@@ -185,7 +185,7 @@ extension NCMedia {
                lastDate == .distantPast,
                files.isEmpty {
                 Task { @MainActor in
-                    self.dataSource.clearTinyMetadatas()
+                    self.dataSource.clearcompactMetadatas()
                     self.collectionViewReloadData()
                 }
             } else {
@@ -280,7 +280,7 @@ extension NCMedia {
 
 @MainActor
 public class NCMediaDataSource: NSObject {
-    public class TinyMetadata: NSObject {
+    public class NCCompactMetadata: NSObject {
         let date: Date
         let etag: String
         let imageSize: CGSize
@@ -308,68 +308,68 @@ public class NCMediaDataSource: NSObject {
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-    private(set) var tinyMetadatas: [TinyMetadata] = []
+    private(set) var compactMetadatas: [NCCompactMetadata] = []
 
     override init() { super.init() }
 
     init(metadatas: [tableMetadata]) {
         super.init()
 
-        self.tinyMetadatas = metadatas.map {
-            getTinyMetadataFromMetadata($0)
+        self.compactMetadatas = metadatas.map {
+            getcompactMetadataFromMetadata($0)
         }
     }
 
-    private func getTinyMetadataFromMetadata(_ metadata: tableMetadata) -> TinyMetadata {
+    private func getcompactMetadataFromMetadata(_ metadata: tableMetadata) -> NCCompactMetadata {
         let date = metadata.date as Date
-        return TinyMetadata(date: date,
-                            etag: metadata.etag,
-                            imageSize: CGSize(width: metadata.width, height: metadata.height),
-                            isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
-                            isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                            isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
-                            ocId: metadata.ocId)
+        return NCCompactMetadata(date: date,
+                                 etag: metadata.etag,
+                                 imageSize: CGSize(width: metadata.width, height: metadata.height),
+                                 isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
+                                 isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                                 isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
+                                 ocId: metadata.ocId)
     }
 
     // MARK: -
 
-    func clearTinyMetadatas() {
-        self.tinyMetadatas.removeAll()
+    func clearcompactMetadatas() {
+        self.compactMetadatas.removeAll()
     }
 
     func isEmpty() -> Bool {
-        return self.tinyMetadatas.isEmpty
+        return self.compactMetadatas.isEmpty
     }
 
     func indexPath(forOcId ocId: String) -> IndexPath? {
-        guard let index = self.tinyMetadatas.firstIndex(where: { $0.ocId == ocId }) else {
+        guard let index = self.compactMetadatas.firstIndex(where: { $0.ocId == ocId }) else {
             return nil
         }
 
         return IndexPath(item: index, section: 0)
     }
 
-    func getTinyMetadata(indexPath: IndexPath) -> TinyMetadata? {
-        if indexPath.row < self.tinyMetadatas.count {
-            return self.tinyMetadatas[indexPath.row]
+    func getcompactMetadata(indexPath: IndexPath) -> NCCompactMetadata? {
+        if indexPath.row < self.compactMetadatas.count {
+            return self.compactMetadatas[indexPath.row]
         }
 
         return nil
     }
 
-    func getTinyMetadatas(indexPaths: [IndexPath]) -> [TinyMetadata] {
-        var metadatas: [TinyMetadata] = []
+    func getcompactMetadatas(indexPaths: [IndexPath]) -> [NCCompactMetadata] {
+        var metadatas: [NCCompactMetadata] = []
         for indexPath in indexPaths {
-            if indexPath.row < self.tinyMetadatas.count {
-                metadatas.append(self.tinyMetadatas[indexPath.row])
+            if indexPath.row < self.compactMetadatas.count {
+                metadatas.append(self.compactMetadatas[indexPath.row])
             }
         }
 
         return metadatas
     }
 
-    func removeTinyMetadata(_ ocId: [String]) {
-        self.tinyMetadatas.removeAll { item in
+    func removecompactMetadata(_ ocId: [String]) {
+        self.compactMetadatas.removeAll { item in
             ocId.contains(item.ocId)
         }
     }

@@ -7,15 +7,15 @@ import NextcloudKit
 import Queuer
 
 class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
-    var tinyMetadata: NCMediaDataSource.TinyMetadata
+    var compactMetadata: NCMediaDataSource.NCCompactMetadata
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let media: NCMedia
     var session: NCSession.Session
 
     @MainActor
-    init(tinyMetadata: NCMediaDataSource.TinyMetadata, media: NCMedia) {
-        self.tinyMetadata = tinyMetadata
+    init(compactMetadata: NCMediaDataSource.NCCompactMetadata, media: NCMedia) {
+        self.compactMetadata = compactMetadata
         self.media = media
         self.session = media.session
     }
@@ -23,7 +23,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     override func start() {
        Task {
            guard !isCancelled,
-                 let tblMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(self.tinyMetadata.ocId) else {
+                 let tblMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(self.compactMetadata.ocId) else {
                return self.finish()
            }
            var image: UIImage?

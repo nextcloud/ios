@@ -9,22 +9,22 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Task {
-            guard let tinyMetadata = dataSource.getTinyMetadata(indexPath: indexPath),
+            guard let compactMetadata = dataSource.getcompactMetadata(indexPath: indexPath),
                   let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
 
             if isEditMode {
-                if let index = fileSelect.firstIndex(of: tinyMetadata.ocId) {
+                if let index = fileSelect.firstIndex(of: compactMetadata.ocId) {
                     fileSelect.remove(at: index)
                     cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
                 } else {
-                    fileSelect.append(tinyMetadata.ocId)
+                    fileSelect.append(compactMetadata.ocId)
                     cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
                 }
                 tabBarSelect.selectCount = fileSelect.count
-            } else if let metadata = await self.database.getMetadataFromOcIdAsync(tinyMetadata.ocId) {
+            } else if let metadata = await self.database.getMetadataFromOcIdAsync(compactMetadata.ocId) {
                 let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
                 var viewerTransitionSource: NCMediaViewerTransitionSource?
-                let ocIds = dataSource.tinyMetadatas.map { $0.ocId }
+                let ocIds = dataSource.compactMetadatas.map { $0.ocId }
 
                 if let imageView = cell.imageItem,
                    let image = imageView.image,
@@ -100,7 +100,7 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let ocId = dataSource.getTinyMetadata(indexPath: indexPath)?.ocId,
+        guard let ocId = dataSource.getcompactMetadata(indexPath: indexPath)?.ocId,
               let metadata = database.getMetadataFromOcId(ocId)
         else {
             return nil

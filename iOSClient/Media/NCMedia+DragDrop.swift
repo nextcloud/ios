@@ -12,7 +12,7 @@ extension NCMedia: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         if isEditMode {
             return NCDragDrop().performDrag(fileSelect: fileSelect)
-        } else if let ocId = dataSource.getTinyMetadata(indexPath: indexPath)?.ocId,
+        } else if let ocId = dataSource.getcompactMetadata(indexPath: indexPath)?.ocId,
                   let metadata = database.getMetadataFromOcId(ocId) {
             return NCDragDrop().performDrag(metadata: metadata)
         }
