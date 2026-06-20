@@ -42,7 +42,18 @@ class NCViewer: NSObject {
 
         // IMAGE AUDIO VIDEO
         else if metadata.isImage || metadata.isAudioOrVideo {
+            var metadata = metadata
             let mediaOcIds = ocIds ?? [metadata.ocId]
+
+            // Update metadata placeholder
+            if metadata.placeholder {
+                let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                if results.error == .success, let resultsMetadata = results.metadata {
+                    metadata = resultsMetadata
+                    await NCManageDatabase.shared.addMetadataAsync(resultsMetadata)
+                }
+            }
+
             let model = NCMediaViewerModel(currentMetadata: metadata, ocIds: mediaOcIds, session: session, loader: NCMediaViewerLoader())
 
             NCMediaViewerPresenter.shared.show(
