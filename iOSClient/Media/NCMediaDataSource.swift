@@ -129,9 +129,7 @@ extension NCMedia {
                                              lastDate: lastDateNew,
                                              mediaPath: tblAccount.mediaPath) {
                 Task {
-                    await self.debouncerLoadDataSource.call {
-                        await self.loadDataSource()
-                    }
+                    await self.loadDataSource()
                 }
             }
         }
