@@ -183,14 +183,19 @@ extension NCMedia {
                     task: task)
             }
         } update: { files in
-            if firstDate == .distantFuture, lastDate == .distantPast, files.isEmpty {
+            if firstDate == .distantFuture,
+               lastDate == .distantPast,
+               files.isEmpty {
                 Task { @MainActor in
                     self.dataSource.clearTinyMetadatas()
                     self.collectionViewReloadData()
                 }
             } else {
                 Task.detached {
-                    await self.updateMedia(files: files, firstDate: firstDate as NSDate, lastDate: lastDate as NSDate, mediaPath: mediaPath) {
+                    await self.updateMediaMetadatas(files: files,
+                                                    firstDate: firstDate as NSDate,
+                                                    lastDate: lastDate as NSDate,
+                                                    mediaPath: mediaPath) {
                         update()
                     }
                 }
@@ -223,7 +228,10 @@ extension NCMedia {
                 Task.detached {
                     if let firstDate = files.first?.date as? NSDate,
                        let lastDate = files.last?.date as? NSDate {
-                        await self.updateMedia(files: files, firstDate: firstDate, lastDate: lastDate, mediaPath: mediaPath) {
+                        await self.updateMediaMetadatas(files: files,
+                                                        firstDate: firstDate,
+                                                        lastDate: lastDate,
+                                                        mediaPath: mediaPath) {
                             update()
                         }
                     }
@@ -233,11 +241,11 @@ extension NCMedia {
             }
     }
 
-    private func updateMedia(files: [NKFile],
-                             firstDate: NSDate,
-                             lastDate: NSDate,
-                             mediaPath: String,
-                             update: @escaping () -> Void) async {
+    private func updateMediaMetadatas(files: [NKFile],
+                                      firstDate: NSDate,
+                                      lastDate: NSDate,
+                                      mediaPath: String,
+                                      update: @escaping () -> Void) async {
         // DB
         let mediaPredicate = self.imageCache.getMediaPredicate(
             session: self.session,
@@ -251,12 +259,14 @@ extension NCMedia {
             predicate: predicate,
             sortedByKeyPath: "date",
             ascending: false) ?? []
-        let results = await self.database.syncPlaceholderMetadatasAsync(files: files, metadatas: metadatas)
+        let results = await self.database.syncPlaceholderMetadatasAsync(files: files,
+                                                                        metadatas: metadatas)
 
         // DELETE
         var ocIdsToDelete: [String] = []
         for metadata in results.deleted {
-            let existsResult = await self.networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            let existsResult = await self.networking.fileExists(serverUrlFileName: metadata.serverUrlFileName,
+                                                                account: metadata.account)
             if existsResult.errorCode == 404 {
                 ocIdsToDelete.append(metadata.ocId)
             }
