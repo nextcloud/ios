@@ -123,6 +123,7 @@ extension NCMedia {
         }
 
         // SEARCH NEW MEDIA
+        //
         if firstDateNew == .distantFuture || lastDateNew == .distantPast {
             await self.searchNetworkNewMedia(firstDate: firstDateNew,
                                              lastDate: lastDateNew,
@@ -135,7 +136,14 @@ extension NCMedia {
             }
         }
 
-        // SEARCH MEDIA
+        guard let firstDate, let lastDate else {
+            Task { @MainActor in
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+            return
+        }
+
         await self.verifyNetworkMedia(firstDate: firstDate,
                                       lastDate: lastDate,
                                       mediaPath: tblAccount.mediaPath) {
@@ -182,28 +190,19 @@ extension NCMedia {
                 }
             } else {
                 Task.detached {
-                    if let firstDate = files.first?.date as? NSDate,
-                       let lastDate = files.last?.date as? NSDate {
-                        await self.updateMedia(files: files, firstDate: firstDate, lastDate: lastDate, mediaPath: mediaPath) {
-                            update()
-                        }
+                    await self.updateMedia(files: files, firstDate: firstDate as NSDate, lastDate: lastDate as NSDate, mediaPath: mediaPath) {
+                        update()
                     }
                 }
             }
         } finish: { }
     }
 
-    internal func verifyNetworkMedia(firstDate: Date?,
-                                     lastDate: Date?,
+    internal func verifyNetworkMedia(firstDate: Date,
+                                     lastDate: Date,
                                      mediaPath: String,
                                      update: @escaping () -> Void,
                                      finish: @escaping () -> Void) async {
-        guard let firstDate,
-              let lastDate else {
-            finish()
-            return
-        }
-
         await self.searchVerifyNetworkMedia(
             path: mediaPath,
             firstDate: firstDate,
@@ -263,7 +262,7 @@ extension NCMedia {
             }
         }
         await self.database.deleteMetadatasAsync(ocIds: ocIdsToDelete)
-        if ocIdsToDelete.count > 0, results.inserted > 0, results.updated > 0 {
+        if ocIdsToDelete.count > 0 || results.inserted > 0 || results.updated > 0 {
             update()
         }
     }

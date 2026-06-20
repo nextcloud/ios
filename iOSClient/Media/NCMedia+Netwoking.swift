@@ -78,6 +78,8 @@ extension NCMedia {
                 break
             }
 
+            nkLog(info: "\(lessDateString) - \(greaterDateString) - \(isPaginate)", consoleOnly: true)
+
             if !isPaginate || (results.files?.count ?? 0) < paginateCount {
                 finish()
                 break
