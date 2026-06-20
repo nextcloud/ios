@@ -108,6 +108,13 @@ class NCShare: UIViewController, NCSharePagingContent {
                 checkSharedWithYou()
             }
 
+            // Update metadata fron network
+            let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if results.error == .success, let metadata = results.metadata {
+                await database.addMetadataAsync(metadata)
+                self.metadata = metadata
+            }
+
             reloadData()
 
             networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session, controller: controller)
