@@ -43,7 +43,6 @@ extension NCMedia: NCTransferDelegate {
             Task {
                 await self.debouncerSearch.call {
                     await self.loadDataSource()
-                    await self.searchMediaUI()
                 }
             }
         }
