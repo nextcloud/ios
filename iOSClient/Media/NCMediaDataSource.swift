@@ -38,21 +38,7 @@ extension NCMedia {
         setElements()
     }
 
-    @MainActor
-    func collectionViewReloadDataKeepingPosition() {
-        let anchor = captureScrollAnchor()
-
-        collectionView.reloadData()
-        collectionView.layoutIfNeeded()
-
-        DispatchQueue.main.async {
-            self.collectionView.layoutIfNeeded()
-            self.restoreScrollAnchor(anchor)
-            self.setElements()
-        }
-    }
-
-    // MARK: -
+    // MARK: - Keeping position
 
     @MainActor
     private func captureScrollAnchor() -> CollectionViewScrollAnchor? {
@@ -128,6 +114,20 @@ extension NCMedia {
             ),
             animated: false
         )
+    }
+
+    @MainActor
+    func collectionViewReloadDataKeepingPosition() {
+        let anchor = captureScrollAnchor()
+
+        collectionView.reloadData()
+        collectionView.layoutIfNeeded()
+
+        DispatchQueue.main.async {
+            self.collectionView.layoutIfNeeded()
+            self.restoreScrollAnchor(anchor)
+            self.setElements()
+        }
     }
 
     // MARK: - Search media
