@@ -9,7 +9,7 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Task {
-            guard let compactMetadata = dataSource.getcompactMetadata(indexPath: indexPath),
+            guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath),
                   let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
 
             if isEditMode {
@@ -100,7 +100,7 @@ extension NCMedia: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let ocId = dataSource.getcompactMetadata(indexPath: indexPath)?.ocId,
+        guard let ocId = dataSource.getCompactMetadata(indexPath: indexPath)?.ocId,
               let metadata = database.getMetadataFromOcId(ocId)
         else {
             return nil

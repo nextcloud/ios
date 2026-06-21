@@ -36,7 +36,7 @@ extension NCMedia {
         if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
             let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
 
-            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getcompactMetadata(indexPath: firstAttribute.indexPath) {
+            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getCompactMetadata(indexPath: firstAttribute.indexPath) {
                 titleDate?.text = utility.getTitleFromDate(metadata.date)
                 return
             }
@@ -132,7 +132,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
     func deleteImage(with ocId: String) async {
         guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
             await MainActor.run {
-                self.dataSource.removecompactMetadata([ocId])
+                self.dataSource.removeCompactMetadata([ocId])
                 self.collectionViewReloadData()
             }
             return
@@ -156,11 +156,11 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         await MainActor.run {
             if let indexPath = self.dataSource.indexPath(forOcId: ocId) {
                 self.collectionView.performBatchUpdates {
-                    self.dataSource.removecompactMetadata([ocId])
+                    self.dataSource.removeCompactMetadata([ocId])
                     self.collectionView.deleteItems(at: [indexPath])
                 }
             } else {
-                self.dataSource.removecompactMetadata([ocId])
+                self.dataSource.removeCompactMetadata([ocId])
                 self.collectionViewReloadData()
             }
         }

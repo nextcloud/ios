@@ -59,7 +59,7 @@ extension NCMedia: NCMediaLayoutDelegate {
         if typeLayout == global.mediaLayoutSquare {
             return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         } else {
-            guard let compactMetadata = dataSource.getcompactMetadata(indexPath: indexPath) else { return .zero }
+            guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return .zero }
 
             if compactMetadata.imageSize != CGSize.zero {
                 return compactMetadata.imageSize

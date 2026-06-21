@@ -35,7 +35,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let compactMetadata = dataSource.getcompactMetadata(indexPath: indexPath) else { return }
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             for case let operation as NCMediaDownloadThumbnail in networking.downloadThumbnailQueue.operations where operation.compactMetadata.ocId == compactMetadata.ocId {
@@ -45,7 +45,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let compactMetadata = dataSource.getcompactMetadata(indexPath: indexPath) else { return }
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return }
         if !utilityFileSystem.fileProviderStorageImageExists(compactMetadata.ocId, etag: compactMetadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
            NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.compactMetadata.ocId == compactMetadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(compactMetadata: compactMetadata, media: self))
@@ -56,7 +56,7 @@ extension NCMedia: UICollectionViewDataSource {
         guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
             fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
-        guard let compactMetadata = dataSource.getcompactMetadata(indexPath: indexPath) else { return cell }
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return cell }
 
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let imageCache = imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext)

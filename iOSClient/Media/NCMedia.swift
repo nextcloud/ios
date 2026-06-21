@@ -55,6 +55,12 @@ class NCMedia: UIViewController {
     let debouncerLoadDataSource = NCDebouncer(delay: .seconds(3), maxEventCount: 10)
     let debouncerSearch = NCDebouncer(delay: .seconds(2), maxEventCount: 10)
 
+    struct CollectionViewScrollAnchor {
+        let ocId: String
+        let deltaX: CGFloat
+        let deltaY: CGFloat
+    }
+
     @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -148,7 +154,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { _ in
             Task {
-                await self.dataSource.clearcompactMetadatas()
+                await self.dataSource.clearCompactMetadatas()
                 self.imageCache.removeAll()
                 await self.searchMediaUI(true)
             }

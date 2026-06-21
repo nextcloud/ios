@@ -12,7 +12,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
             return
         }
         let cost = indexPaths.first?.row ?? 0
-        let compactMetadatas = self.dataSource.getcompactMetadatas(indexPaths: indexPaths)
+        let compactMetadatas = self.dataSource.getCompactMetadatas(indexPaths: indexPaths)
 
         compactMetadatas.forEach { compactMetadata in
             if self.imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext) == nil,
