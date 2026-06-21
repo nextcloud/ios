@@ -36,10 +36,15 @@ extension NCMedia: NCTransferDelegate {
                         ocId: String,
                         destination: String?,
                         error: NKError) {
-        Task {
-            await self.debouncerSearch.call {
-                await self.loadDataSource()
-                await self.searchMediaUI()
+        if status == global.networkingStatusDelete ||
+        status == global.networkingStatusRename ||
+        status == global.networkingStatusCopyMove ||
+        status == global.networkingStatusFavorite {
+            Task {
+                await self.debouncerSearch.call {
+                    await self.loadDataSource()
+                    await self.searchMediaUI()
+                }
             }
         }
     }
