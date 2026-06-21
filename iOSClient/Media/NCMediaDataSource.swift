@@ -21,7 +21,7 @@ extension NCMedia {
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
                     self.dataSource = NCMediaDataSource(metadatas: metadatas)
-                    self.collectionViewReloadDataKeepingPosition()
+                    self.collectionViewReloadData()
                 }
             }
         } else {
@@ -36,98 +36,6 @@ extension NCMedia {
     func collectionViewReloadData() {
         collectionView.reloadData()
         setElements()
-    }
-
-    // MARK: - Keeping position
-
-    @MainActor
-    private func captureScrollAnchor() -> CollectionViewScrollAnchor? {
-        let visibleRect = CGRect(
-            x: collectionView.contentOffset.x + collectionView.adjustedContentInset.left,
-            y: collectionView.contentOffset.y + collectionView.adjustedContentInset.top,
-            width: collectionView.bounds.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right,
-            height: collectionView.bounds.height - collectionView.adjustedContentInset.top - collectionView.adjustedContentInset.bottom
-        )
-
-        guard let attributes = collectionView.collectionViewLayout
-            .layoutAttributesForElements(in: visibleRect)?
-            .filter({ $0.representedElementCategory == .cell })
-            .sorted(by: {
-                if abs($0.frame.minY - $1.frame.minY) > 1 {
-                    return $0.frame.minY < $1.frame.minY
-                }
-
-                return $0.frame.minX < $1.frame.minX
-            })
-            .first,
-              let metadata = dataSource.getMetadata(indexPath: attributes.indexPath) else {
-            return nil
-        }
-
-        return CollectionViewScrollAnchor(
-            ocId: metadata.ocId,
-            deltaX: visibleRect.minX - attributes.frame.minX,
-            deltaY: visibleRect.minY - attributes.frame.minY
-        )
-    }
-
-    @MainActor
-    private func restoreScrollAnchor(_ anchor: CollectionViewScrollAnchor?) {
-        guard let anchor,
-              let indexPath = dataSource.indexPath(forOcId: anchor.ocId) else {
-            return
-        }
-
-        guard let attributes = collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath) else {
-            return
-        }
-
-        let targetOffset = CGPoint(
-            x: attributes.frame.minX + anchor.deltaX - collectionView.adjustedContentInset.left,
-            y: attributes.frame.minY + anchor.deltaY - collectionView.adjustedContentInset.top
-        )
-
-        let minimumOffset = CGPoint(
-            x: -collectionView.adjustedContentInset.left,
-            y: -collectionView.adjustedContentInset.top
-        )
-
-        let maximumOffset = CGPoint(
-            x: max(
-                minimumOffset.x,
-                collectionView.contentSize.width
-                    - collectionView.bounds.width
-                    + collectionView.adjustedContentInset.right
-            ),
-            y: max(
-                minimumOffset.y,
-                collectionView.contentSize.height
-                    - collectionView.bounds.height
-                    + collectionView.adjustedContentInset.bottom
-            )
-        )
-
-        collectionView.setContentOffset(
-            CGPoint(
-                x: min(max(targetOffset.x, minimumOffset.x), maximumOffset.x),
-                y: min(max(targetOffset.y, minimumOffset.y), maximumOffset.y)
-            ),
-            animated: false
-        )
-    }
-
-    @MainActor
-    func collectionViewReloadDataKeepingPosition() {
-        let anchor = captureScrollAnchor()
-
-        collectionView.reloadData()
-        collectionView.layoutIfNeeded()
-
-        DispatchQueue.main.async {
-            self.collectionView.layoutIfNeeded()
-            self.restoreScrollAnchor(anchor)
-            self.setElements()
-        }
     }
 
     // MARK: - Search media
