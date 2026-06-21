@@ -55,6 +55,12 @@ class NCMedia: UIViewController {
     let debouncerLoadDataSource = NCDebouncer(maxEventCount: 10)
     let debouncerSearch = NCDebouncer(maxEventCount: 10)
 
+    struct CollectionViewScrollAnchor {
+        let ocId: String
+        let deltaX: CGFloat
+        let deltaY: CGFloat
+    }
+
     @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
