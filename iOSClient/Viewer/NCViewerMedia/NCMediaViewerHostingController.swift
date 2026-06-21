@@ -484,7 +484,7 @@ final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
     ) { }
 
     func transferChange(
-        status: String,
+        networkingStatus: String,
         account: String,
         fileName: String,
         serverUrl: String,
@@ -493,7 +493,7 @@ final class NCMediaViewerTransferDelegate: NSObject, NCTransferDelegate {
         destination: String?,
         error: NKError
     ) {
-        guard status == NCGlobal.shared.networkingStatusDelete,
+        guard networkingStatus == NCGlobal.shared.networkingStatusDelete,
               error == .success else {
             return
         }

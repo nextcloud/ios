@@ -20,7 +20,7 @@ protocol ClientCertificateDelegate: AnyObject {
 protocol NCTransferDelegate: AnyObject {
     var sceneIdentifier: String { get }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,

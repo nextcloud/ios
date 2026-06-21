@@ -815,7 +815,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         }
     }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -840,7 +840,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                 return
             }
 
-            switch status {
+            switch networkingStatus {
             case self.global.networkingStatusCreateFolder:
                 if error == .success,
                    serverUrl == self.serverUrl,

@@ -19,7 +19,7 @@ extension NCNetworking: NCTransferDelegate {
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -30,7 +30,7 @@ extension NCNetworking: NCTransferDelegate {
         Task { @MainActor in
             // DOWNLOADED
             guard error == .success,
-                  status == self.global.networkingStatusDownloaded,
+                  networkingStatus == self.global.networkingStatusDownloaded,
                   let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId)
             else {
                 return

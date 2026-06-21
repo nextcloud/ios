@@ -200,7 +200,7 @@ class NCContextMenuViewer: NSObject {
             Task {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(
-                        status: NCGlobal.shared.networkingStatusDownloaded,
+                        networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
                         account: self.metadata.account,
                         fileName: self.metadata.fileName,
                         serverUrl: self.metadata.serverUrl,

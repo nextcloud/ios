@@ -106,7 +106,7 @@ class NCNetworkingE2EERename: NSObject {
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
+            delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusRename,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,

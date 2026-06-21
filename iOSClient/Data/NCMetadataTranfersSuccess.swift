@@ -141,7 +141,7 @@ actor NCMetadataTranfersSuccess {
                 for item in items {
                     let metadata = item.metadata
 
-                    delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
+                    delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,

@@ -279,7 +279,7 @@ extension NCNetworking {
 
         if let sceneIdentifier = metadata.sceneIdentifier {
             await transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                delegate.transferChange(networkingStatus: self.global.networkingStatusCreateFolder,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
@@ -292,7 +292,7 @@ extension NCNetworking {
             }
         } else {
             await transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                delegate.transferChange(networkingStatus: self.global.networkingStatusCreateFolder,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
@@ -423,7 +423,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
+            delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusDelete,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
@@ -486,7 +486,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
+            delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusRename,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
@@ -550,7 +550,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusCopyMove,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusCopyMove,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
@@ -614,7 +614,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusCopyMove,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusCopyMove,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
@@ -674,7 +674,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusFavorite,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusFavorite,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,

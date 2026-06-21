@@ -443,7 +443,7 @@ extension NCViewerRichDocument: NCTransferDelegate {
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -452,7 +452,7 @@ extension NCViewerRichDocument: NCTransferDelegate {
                         destination: String?,
                         error: NKError) {
         Task {@MainActor in
-            if status == NCGlobal.shared.networkingStatusFavorite,
+            if networkingStatus == NCGlobal.shared.networkingStatusFavorite,
                self.metadata.ocId == ocId,
                let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
                 self.metadata = metadata

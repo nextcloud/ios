@@ -173,7 +173,7 @@ enum NCContextMenuActions {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(
-                            status: NCGlobal.shared.networkingStatusDownloaded,
+                            networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
                             account: metadata.account,
                             fileName: metadata.fileName,
                             serverUrl: metadata.serverUrl,
