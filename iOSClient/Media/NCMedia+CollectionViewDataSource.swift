@@ -34,21 +34,96 @@ extension NCMedia: UICollectionViewDataSource {
         return numberOfItemsInSection
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return }
+    func collectionView(_ collectionView: UICollectionView,
+                        didEndDisplaying cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+            return
+        }
 
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            for case let operation as NCMediaDownloadThumbnail in networking.downloadThumbnailQueue.operations where operation.compactMetadata.ocId == compactMetadata.ocId {
-                operation.cancel()
-            }
+        Task {
+            await NCTransferCoordinator.shared.cancel(identifier: compactMetadata.ocId)
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return }
-        if !utilityFileSystem.fileProviderStorageImageExists(compactMetadata.ocId, etag: compactMetadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
-           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.compactMetadata.ocId == compactMetadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(compactMetadata: compactMetadata, media: self))
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+            return
+        }
+        let ocId = compactMetadata.ocId
+        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+
+        Task {
+            await NCTransferCoordinator.shared.start(
+                identifier: ocId,
+                priority: .visible
+            ) { [weak self] in
+                guard let self,
+                      let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
+                    return
+                }
+                let ocId = metadata.ocId
+                let iconName = metadata.iconName
+                let account = metadata.account
+
+                let result = await NextcloudKit.shared.downloadPreviewAsync(
+                    fileId: metadata.fileId,
+                    etag: metadata.etag,
+                    account: metadata.account,
+                    options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                )
+
+                guard !Task.isCancelled,
+                      result.error == .success,
+                      let data = result.responseData?.data else {
+                    return
+                }
+
+                NCUtility().createImageFileFrom(data: data, metadata: metadata)
+
+                let image = NCUtility().getImage(
+                    ocId: metadata.ocId,
+                    etag: metadata.etag,
+                    ext: ext,
+                    userId: metadata.userId,
+                    urlBase: metadata.urlBase
+                )
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
+                        self.dataSource.getCompactMetadata(indexPath: $0)?.ocId == ocId
+                    }),
+                    let mediaCell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCMediaCell,
+                    mediaCell.ocId == ocId else {
+                        return
+                    }
+
+                    if let image {
+                        mediaCell.imageItem.contentMode = .scaleAspectFill
+
+                        UIView.transition(
+                            with: mediaCell.imageItem,
+                            duration: 0.75,
+                            options: .transitionCrossDissolve
+                        ) {
+                            mediaCell.imageItem.image = image
+                        }
+                    } else {
+                        mediaCell.imageItem.contentMode = .scaleAspectFit
+                        mediaCell.imageItem.image = NCUtility().loadImage(
+                            named: iconName,
+                            useTypeIconFile: true,
+                            account: account
+                        )
+                    }
+                }
+            }
         }
     }
 
