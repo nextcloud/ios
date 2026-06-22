@@ -9,7 +9,9 @@ import RealmSwift
 
 extension NCNetworking {
     func cancelAllQueue() {
-        downloadThumbnailQueue.cancelAll()
+        Task {
+            await NCTransferCoordinator.shared.cancelAll()
+        }
         downloadThumbnailActivityQueue.cancelAll()
         downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()

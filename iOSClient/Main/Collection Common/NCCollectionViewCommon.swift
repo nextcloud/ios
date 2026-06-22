@@ -358,9 +358,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         super.viewWillDisappear(animated)
         dismissTip()
 
-        // Cancel Queue & Retrieves Properties
-        self.networking.downloadThumbnailQueue.cancelAll()
+        // Cancel Properties
         Task {
+            await NCTransferCoordinator.shared.cancelAll()
             await searchOperationHandle.cancel()
         }
     }

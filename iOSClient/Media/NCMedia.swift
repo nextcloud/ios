@@ -231,7 +231,7 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
 
-        networking.downloadThumbnailQueue.cancelAll()
+        await NCTransferCoordinator.shared.cancelAll()
 
         let tasks = await networking.getAllDataTask()
         for task in tasks.filter({ $0.taskDescription == global.taskDescriptionRetrievesProperties }) {

@@ -99,24 +99,23 @@ extension NCMedia: UICollectionViewDataSource {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
                         self.dataSource.getCompactMetadata(indexPath: $0)?.ocId == ocId
                     }),
-                    let mediaCell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCMediaCell,
-                    mediaCell.ocId == ocId else {
+                    let cell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCMediaCell, cell.ocId == ocId else {
                         return
                     }
 
                     if let image {
-                        mediaCell.imageItem.contentMode = .scaleAspectFill
+                        cell.imageItem.contentMode = .scaleAspectFill
 
                         UIView.transition(
-                            with: mediaCell.imageItem,
+                            with: cell.imageItem,
                             duration: 0.75,
                             options: .transitionCrossDissolve
                         ) {
-                            mediaCell.imageItem.image = image
+                            cell.imageItem.image = image
                         }
                     } else {
-                        mediaCell.imageItem.contentMode = .scaleAspectFit
-                        mediaCell.imageItem.image = NCUtility().loadImage(
+                        cell.imageItem.contentMode = .scaleAspectFit
+                        cell.imageItem.image = NCUtility().loadImage(
                             named: iconName,
                             useTypeIconFile: true,
                             account: account

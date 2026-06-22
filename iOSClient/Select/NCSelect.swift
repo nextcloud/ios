@@ -350,6 +350,7 @@ extension NCSelect: UICollectionViewDelegate {
 
 extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        /*
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
             return
         }
@@ -371,6 +372,7 @@ extension NCSelect: UICollectionViewDataSource {
                 }
             }
         }
+        */
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
