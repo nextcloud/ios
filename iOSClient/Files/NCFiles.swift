@@ -178,7 +178,10 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
+        // Check whether the folder contains placeholder metadata.
+        // When placeholders exist, force a remote folder read to refresh their data.
         let hasPlaceholder = await database.getMetadataFolderPlaceholderAsync(account: self.session.account, serverUrl: self.serverUrl)
+
         let effectiveForced = forced || hasPlaceholder
         let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: effectiveForced)
         guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
