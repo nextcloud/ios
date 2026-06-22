@@ -130,7 +130,6 @@ extension NCMedia {
         }
     }
 
-
     // MARK: - Search media
 
     func searchMediaUI(_ distant: Bool = false) async {
