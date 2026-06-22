@@ -6,39 +6,11 @@ import Foundation
 import ImageIO
 import NextcloudKit
 
-// MARK: - Media Download Limiter
-private actor NCMediaDownloadLimiter {
-    private var runningDownloads = 0
-    private var waitingContinuations: [CheckedContinuation<Void, Never>] = []
-
-    func acquire() async {
-        guard runningDownloads >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload else {
-            runningDownloads += 1
-            return
-        }
-
-        await withCheckedContinuation { continuation in
-            waitingContinuations.append(continuation)
-        }
-    }
-
-    func release() {
-        guard !waitingContinuations.isEmpty else {
-            runningDownloads = max(0, runningDownloads - 1)
-            return
-        }
-
-        let continuation = waitingContinuations.removeFirst()
-        continuation.resume()
-    }
-}
-
 // MARK: - Media Viewer Loader
 final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
     private let database = NCManageDatabase.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let fileManager = FileManager.default
-    private let mediaDownloadLimiter = NCMediaDownloadLimiter()
 
     // MARK: - NCMediaViewerLoading
     func metadata(for ocId: String, account: String) async -> tableMetadata? {
@@ -81,7 +53,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
 
         removeInvalidLocalFileIfNeeded(path: localPath, validateAsImage: true)
 
-        await mediaDownloadLimiter.acquire()
+        do {
+            try await NCTransferCoordinator.shared.acquire(priority: .visible)
+        } catch {
+            return nil
+        }
 
         let result = await NextcloudKit.shared.downloadPreviewAsync(
             fileId: metadata.fileId,
@@ -89,7 +65,7 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             account: metadata.account
         )
 
-        await mediaDownloadLimiter.release()
+        await NCTransferCoordinator.shared.release()
 
         if result.error == .success,
            let data = result.responseData?.data {
@@ -131,11 +107,11 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
                 throw NSError(domain: "Download Media", code: 1, userInfo: [NSLocalizedDescriptionKey: "FULL error"])
         }
 
-        await mediaDownloadLimiter.acquire()
+        try await NCTransferCoordinator.shared.acquire(priority: .userInitiated)
 
         let result = await NCNetworking.shared.downloadFile(metadata: metadata)
 
-        await mediaDownloadLimiter.release()
+        await NCTransferCoordinator.shared.release()
 
         if result.nkError != .success {
             throw result.nkError
@@ -187,9 +163,14 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
             return nil
         }
 
-        await mediaDownloadLimiter.acquire()
+        do {
+            try await NCTransferCoordinator.shared.acquire(priority: .visible)
+        } catch {
+            return nil
+        }
+
         let result = await NCNetworking.shared.downloadFile(metadata: downloadMetadata)
-        await mediaDownloadLimiter.release()
+        await NCTransferCoordinator.shared.release()
 
         guard result.nkError == .success else {
             return nil
