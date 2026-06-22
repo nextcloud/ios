@@ -109,13 +109,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             }
 
             // Update metadata placeholder
-            if metadata.placeholder {
-                let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-                if results.error == .success, let metadata = results.metadata {
-                    await database.addMetadataAsync(metadata)
-                    self.metadata = metadata
-                }
-            }
+            self.metadata = await NCNetworking.shared.updateMetadataPlaceholder(metadata)
 
             reloadData()
 

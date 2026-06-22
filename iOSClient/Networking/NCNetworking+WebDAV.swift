@@ -104,6 +104,18 @@ extension NCNetworking {
         return results.error
     }
 
+    @discardableResult
+    func updateMetadataPlaceholder(_ metadata: tableMetadata) async -> tableMetadata {
+        if metadata.placeholder {
+            let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if results.error == .success, let metadata = results.metadata {
+                await NCManageDatabase.shared.addMetadataAsync(metadata)
+                return metadata
+            }
+        }
+        return metadata
+    }
+
     // MARK: - Create Filename
 
     /// Creates a unique file name on both local metadata and remote server side.

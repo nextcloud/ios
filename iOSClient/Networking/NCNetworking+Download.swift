@@ -29,13 +29,7 @@ extension NCNetworking {
             return(metadata.account, metadata.etag, metadata.date as Date, metadata.size, .success)
         }
 
-        // Update metadata placeholder
-        if metadata.placeholder {
-            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-            if resultsReadFile.error == .success, let metadata = resultsReadFile.metadata {
-                await NCManageDatabase.shared.addMetadataAsync(metadata)
-            }
-        }
+        await updateMetadataPlaceholder(metadata)
 
         let results = await NextcloudKit.shared.downloadAsync(serverUrlFileName: metadata.serverUrlFileName,
                                                               fileNameLocalPath: fileNameLocalPath,
