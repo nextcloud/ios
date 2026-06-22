@@ -7,6 +7,8 @@ import QuickLook
 import NextcloudKit
 import Mantis
 import SwiftUI
+import LucidBanner
+import Alamofire
 
 public protocol NCViewerQuickLookDelegate: AnyObject {
     func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool)
@@ -28,7 +30,7 @@ private var hasChangesQuickLook: Bool = false
     private var metadata: tableMetadata?
     private var timer: Timer?
     /// Used to display the save alert
-    private var parentVC: UIViewController?
+    private var viewController: UIViewController?
     private let utilityFileSystem = NCUtilityFileSystem()
     private let database = NCManageDatabase.shared
 
@@ -61,11 +63,18 @@ private var hasChangesQuickLook: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard isEditingEnabled else { return }
+        guard isEditingEnabled else {
+            return
+        }
 
         if metadata?.isLivePhoto == true {
             Task {
-           //     await showErrorBannerActiveScenes(text: "_message_disable_overwrite_livephoto_", errorCode: NCGlobal.shared.errorInternalError)
+                let windowScene = viewController?.view.window?.windowScene
+                await showWarningBanner(windowScene: windowScene,
+                                        subtitle: "_message_disable_overwrite_livephoto_",
+                                        systemImage: "livephoto.slash",
+                                        imageAnimation: .bounce,
+                                        errorCode: NSURLErrorNotConnectedToInternet)
             }
         }
 
@@ -80,7 +89,7 @@ private var hasChangesQuickLook: Bool = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // needs to be saved bc in didDisappear presentingVC is already nil
-        parentVC = presentingViewController
+        self.viewController = presentingViewController
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -139,7 +148,7 @@ private var hasChangesQuickLook: Bool = false
             self.dismiss(animated: true)
         })
 
-        parentVC?.present(alertController, animated: true)
+        self.viewController?.present(alertController, animated: true)
     }
 
     @objc private func dismissView(_ sender: Any?) {
@@ -200,43 +209,79 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
-        guard let metadata = self.metadata else { return }
-        let session = NCSession.shared.getSession(account: metadata.account)
+        guard let metadata = self.metadata else {
+            return
+        }
         if !uploadMetadata {
             return self.dismiss(animated: true)
         }
-        let ocId = NSUUID().uuidString
-        let size = utilityFileSystem.getFileSize(filePath: url.path)
-
-        if !override {
-            let fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
-            metadata.fileName = fileName
-            metadata.fileNameView = fileName
-        }
 
         Task { @MainActor in
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
-            guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
+            var fileName: String
+            var uploadRequest: UploadRequest?
+            var banner: LucidBanner?
+            var token: Int?
+            let windowScene = viewController?.view.window?.windowScene
+            var error = NKError()
+            let serverUrl = metadata.serverUrl
 
-            let metadataForUpload = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: metadata.fileName,
-                ocId: ocId,
-                serverUrl: metadata.serverUrl,
-                url: url.path,
-                session: session,
-                sceneIdentifier: nil)
-
-            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
             if override {
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
+                fileName = metadata.fileName
             } else {
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                fileName = utilityFileSystem.createFileName(metadata.fileNameView, serverUrl: serverUrl, account: metadata.account)
             }
-            metadataForUpload.size = size
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadataForUpload.sessionDate = Date()
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileName)
 
-            self.database.addMetadata(metadataForUpload)
+            (banner, token) = showHudBanner(windowScene: windowScene,
+                                            title: "_upload_in_progress_",
+                                            stage: .button,
+                                            onButtonTap: {
+                if let request = uploadRequest {
+                    request.cancel()
+                }
+            })
+
+            let results = await NextcloudKit.shared.uploadAsync(
+                serverUrlFileName: serverUrlFileName,
+                fileNameLocalPath: url.path,
+                autoMkcol: true,
+                account: metadata.account) { request in
+                    uploadRequest = request
+                } progressHandler: { progress in
+                    Task {@MainActor in
+                        banner?.update(
+                            payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
+                            for: token)
+                    }
+                }
+            error = results.error
+
+            if error == .success {
+                let results = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
+                error = results.error
+
+                if results.error == .success, let metadata = results.metadata {
+                    // clean dir
+                    let directory = utilityFileSystem.cleanDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+                    // copy new file
+                    utilityFileSystem.copyFile(atPath: url.path, toPath: directory + "/" + metadata.fileName)
+                    // add new metadata
+                    await self.database.addMetadataAsync(metadata)
+                    // reload datasource
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                        delegate.transferReloadDataSource(serverUrl: serverUrl, requestData: false, status: nil)
+                    }
+                }
+            }
+
+            if let banner {
+                await banner.dismissAsync()
+            }
+
+            if error != .success {
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+            }
+
             self.dismiss(animated: true)
         }
     }

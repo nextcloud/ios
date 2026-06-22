@@ -1387,6 +1387,28 @@ extension NCManageDatabase {
         } ?? 0
     }
 
+    /// Filters Auto Upload metadata entries, returning only the items that are not already queued in the local database.
+    /// - Parameter metadatas: The detached Auto Upload metadata entries generated from Photos assets.
+    /// - Returns: Only metadata entries that can be safely added to the upload queue.
+    func filterAutoUploadMetadatasNotAlreadyQueuedAsync(_ metadatas: [tableMetadata]) async -> [tableMetadata] {
+        await core.performRealmReadAsync { realm in
+            metadatas.filter { metadata in
+                guard !metadata.assetLocalIdentifier.isEmpty else {
+                    return false
+                }
+                return realm.objects(tableMetadata.self)
+                    .filter(
+                        "account == %@ AND sessionSelector == %@ AND assetLocalIdentifier == %@ AND session != %@",
+                        metadata.account,
+                        NCGlobal.shared.selectorUploadAutoUpload,
+                        metadata.assetLocalIdentifier,
+                        ""
+                    )
+                    .isEmpty
+            }
+        } ?? []
+    }
+
     // MARK: - helpers
 
     /// Extracts the relative DAV folder path and filename from metadata.
