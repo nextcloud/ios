@@ -354,30 +354,33 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Opens or closes the media detail panel.
     private func openDetail(animated: Bool = true) {
-        guard !isShowingDetail else {
-            closeDetail(animated: animated)
-            return
-        }
+        Task {
+            guard !isShowingDetail else {
+                closeDetail(animated: animated)
+                return
+            }
 
-        guard let metadata = model.selectedMetadata else {
-            return
-        }
+            guard var metadata = model.selectedMetadata else {
+                return
+            }
+            metadata = await NCNetworking.shared.updateMetadataPlaceholder(metadata)
 
-        let index = model.selectedIndex
-        isShowingDetail = true
+            let index = model.selectedIndex
+            isShowingDetail = true
 
-        NCUtility().getExif(metadata: metadata) { [weak self] exif in
-            Task { @MainActor in
-                guard let self else {
-                    return
+            NCUtility().getExif(metadata: metadata) { [weak self] exif in
+                Task { @MainActor in
+                    guard let self else {
+                        return
+                    }
+
+                    self.presentDetailView(
+                        metadata: metadata,
+                        index: index,
+                        exif: exif,
+                        animated: animated
+                    )
                 }
-
-                self.presentDetailView(
-                    metadata: metadata,
-                    index: index,
-                    exif: exif,
-                    animated: animated
-                )
             }
         }
     }

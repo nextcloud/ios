@@ -108,7 +108,6 @@ class NCShare: UIViewController, NCSharePagingContent {
                 checkSharedWithYou()
             }
 
-            // Update metadata placeholder
             self.metadata = await NCNetworking.shared.updateMetadataPlaceholder(metadata)
 
             reloadData()
