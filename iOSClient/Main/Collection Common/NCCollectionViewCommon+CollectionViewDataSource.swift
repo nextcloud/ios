@@ -33,8 +33,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 return
             }
 
-            for case let operation as NCCollectionViewDownloadThumbnail in self.networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
+            Task {
+                await NCTransferCoordinator.shared.cancel(identifier: metadata.ocId)
             }
         }
     }
@@ -44,12 +44,83 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             return
         }
         let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+        let ocId = metadata.ocId
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
 
-        if metadata.hasPreview,
-           !existsImagePreview,
-           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
+        guard metadata.hasPreview,
+              !existsImagePreview else {
+            return
+        }
+
+        Task {
+            await NCTransferCoordinator.shared.start(
+                identifier: ocId,
+                priority: .visible
+            ) { [weak self] in
+                guard let self,
+                      let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
+                    return
+                }
+                let ocId = metadata.ocId
+                let iconName = metadata.iconName
+                let account = metadata.account
+
+                let result = await NextcloudKit.shared.downloadPreviewAsync(
+                    fileId: metadata.fileId,
+                    etag: metadata.etag,
+                    account: metadata.account,
+                    options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                )
+
+                guard !Task.isCancelled,
+                      result.error == .success,
+                      let data = result.responseData?.data else {
+                    return
+                }
+
+                NCUtility().createImageFileFrom(data: data, metadata: metadata)
+
+                let image = NCUtility().getImage(
+                    ocId: metadata.ocId,
+                    etag: metadata.etag,
+                    ext: ext,
+                    userId: metadata.userId,
+                    urlBase: metadata.urlBase
+                )
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
+                        self.dataSource.getMetadata(indexPath: $0)?.ocId == ocId
+                    }),
+                          let cell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCCellMainProtocol,
+                          cell.metadata?.ocId == ocId else {
+                        return
+                    }
+
+                    if let image, let imageItem = cell.previewImg {
+                        imageItem.contentMode = .scaleAspectFill
+
+                        UIView.transition(
+                            with: imageItem,
+                            duration: 0.75,
+                            options: .transitionCrossDissolve
+                        ) {
+                            imageItem.image = image
+                        }
+                    } else {
+                        cell.previewImg?.contentMode = .scaleAspectFit
+                        cell.previewImg?.image = NCUtility().loadImage(
+                            named: iconName,
+                            useTypeIconFile: true,
+                            account: account
+                        )
+                    }
+                }
+            }
         }
     }
 

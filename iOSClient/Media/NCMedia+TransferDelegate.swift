@@ -28,7 +28,7 @@ extension NCMedia: NCTransferDelegate {
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -36,10 +36,14 @@ extension NCMedia: NCTransferDelegate {
                         ocId: String,
                         destination: String?,
                         error: NKError) {
-        Task {
-            await self.debouncerSearch.call {
-                await self.loadDataSource()
-                await self.searchMediaUI()
+        if networkingStatus == global.networkingStatusDelete ||
+            networkingStatus == global.networkingStatusRename ||
+            networkingStatus == global.networkingStatusCopyMove ||
+            networkingStatus == global.networkingStatusFavorite {
+            Task {
+                await self.debouncerLoadDataSource.call {
+                    await self.loadDataSource()
+                }
             }
         }
     }

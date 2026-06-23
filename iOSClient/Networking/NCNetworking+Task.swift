@@ -9,7 +9,9 @@ import RealmSwift
 
 extension NCNetworking {
     func cancelAllQueue() {
-        downloadThumbnailQueue.cancelAll()
+        Task {
+            await NCTransferCoordinator.shared.cancelAll()
+        }
         downloadThumbnailActivityQueue.cancelAll()
         downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
@@ -89,7 +91,7 @@ extension NCNetworking {
                     await NCManageDatabase.shared.clearMetadatasSessionAsync(metadatas: [metadata])
                 }
                 await networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                    delegate.transferChange(networkingStatus: self.global.networkingStatusDownloadCancel,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,

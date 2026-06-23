@@ -20,8 +20,8 @@ extension NCMedia: UICollectionViewDataSource {
             return header
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let images = dataSource.metadatas.filter({ $0.isImage }).count
-            let video = dataSource.metadatas.count - images
+            let images = dataSource.compactMetadatas.filter({ $0.isImage }).count
+            let video = dataSource.compactMetadatas.count - images
 
             footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
             return footer
@@ -29,26 +29,100 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.metadatas.count
+        let numberOfItemsInSection = dataSource.compactMetadatas.count
         self.numberOfColumns = getColumnCount()
         return numberOfItemsInSection
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
+    func collectionView(_ collectionView: UICollectionView,
+                        didEndDisplaying cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+            return
+        }
 
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            for case let operation as NCMediaDownloadThumbnail in networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
-            }
+        Task {
+            await NCTransferCoordinator.shared.cancel(identifier: compactMetadata.ocId)
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
-        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
-           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+            return
+        }
+        let ocId = compactMetadata.ocId
+        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+
+        Task {
+            await NCTransferCoordinator.shared.start(
+                identifier: ocId,
+                priority: .visible
+            ) { [weak self] in
+                guard let self,
+                      let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
+                    return
+                }
+                let ocId = metadata.ocId
+                let iconName = metadata.iconName
+                let account = metadata.account
+
+                let result = await NextcloudKit.shared.downloadPreviewAsync(
+                    fileId: metadata.fileId,
+                    etag: metadata.etag,
+                    account: metadata.account,
+                    options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                )
+
+                guard !Task.isCancelled,
+                      result.error == .success,
+                      let data = result.responseData?.data else {
+                    return
+                }
+
+                NCUtility().createImageFileFrom(data: data, metadata: metadata)
+
+                let image = NCUtility().getImage(
+                    ocId: metadata.ocId,
+                    etag: metadata.etag,
+                    ext: ext,
+                    userId: metadata.userId,
+                    urlBase: metadata.urlBase
+                )
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
+                        self.dataSource.getCompactMetadata(indexPath: $0)?.ocId == ocId
+                    }),
+                    let cell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCMediaCell, cell.ocId == ocId else {
+                        return
+                    }
+
+                    if let image {
+                        cell.imageItem.contentMode = .scaleAspectFill
+
+                        UIView.transition(
+                            with: cell.imageItem,
+                            duration: 0.75,
+                            options: .transitionCrossDissolve
+                        ) {
+                            cell.imageItem.image = image
+                        }
+                    } else {
+                        cell.imageItem.contentMode = .scaleAspectFit
+                        cell.imageItem.image = NCUtility().loadImage(
+                            named: iconName,
+                            useTypeIconFile: true,
+                            account: account
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -56,25 +130,25 @@ extension NCMedia: UICollectionViewDataSource {
         guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
             fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return cell }
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return cell }
 
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+        let imageCache = imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext)
 
         cell.imageItem.image = imageCache
-        cell.date = metadata.date
-        cell.ocId = metadata.ocId
+        cell.date = compactMetadata.date
+        cell.ocId = compactMetadata.ocId
         cell.imageStatus.image = nil
 
         if cell.imageItem.frame.width > 60 {
-            if metadata.isVideo {
+            if compactMetadata.isVideo {
                 cell.imageStatus.image = playImage
-            } else if metadata.isLivePhoto {
+            } else if compactMetadata.isLivePhoto {
                 cell.imageStatus.image = livePhotoImage
             }
         }
 
-        if isEditMode, fileSelect.contains(metadata.ocId) {
+        if isEditMode, fileSelect.contains(compactMetadata.ocId) {
             cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
         } else {
             cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
@@ -82,15 +156,15 @@ extension NCMedia: UICollectionViewDataSource {
 
         if cell.imageItem.image == nil {
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
+                cell.imageItem.image = utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
             } else {
                 let session = self.session
                 DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
+                    let image = self.utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                           currentCell.ocId == metadata.ocId, let image {
-                            self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+                           currentCell.ocId == compactMetadata.ocId, let image {
+                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext, cost: indexPath.row)
                             currentCell.imageItem.image = image
                         }
                     }

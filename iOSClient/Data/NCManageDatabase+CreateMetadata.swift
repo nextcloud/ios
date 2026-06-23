@@ -9,7 +9,7 @@ import NextcloudKit
 import Photos
 
 final class NCManageDatabaseCreateMetadata {
-    func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false, isDirectoryE2EE: Bool? = nil) async -> tableMetadata {
+    func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool? = nil) async -> tableMetadata {
         let metadata = self.createMetadata(file)
         let e2eEncryptedDirectory: Bool
         if let value = isDirectoryE2EE {
@@ -40,7 +40,6 @@ final class NCManageDatabaseCreateMetadata {
             metadata.iconName = results.iconName
             metadata.classFile = results.classFile
             metadata.typeIdentifier = results.typeIdentifier
-            metadata.mediaSearch = mediaSearch
         }
 
         return metadata.detachedCopy()
@@ -76,7 +75,7 @@ final class NCManageDatabaseCreateMetadata {
         completion(metadata)
     }
 
-    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         var listServerUrl: [String: Bool] = [:]
@@ -93,7 +92,7 @@ final class NCManageDatabaseCreateMetadata {
                 }
 #endif
 
-            let metadata = await convertFileToMetadataAsync(file, mediaSearch: mediaSearch, isDirectoryE2EE: isDirectoryE2EE)
+            let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
 
             if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 metadataFolder = metadata

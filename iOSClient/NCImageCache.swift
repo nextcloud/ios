@@ -143,7 +143,6 @@ final class NCImageCache: @unchecked Sendable {
         let showBothPredicate = """
         account == %@ AND
         serverUrl BEGINSWITH %@ AND
-        mediaSearch == true AND
         hasPreview == true AND
         (
         classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
@@ -154,7 +153,6 @@ final class NCImageCache: @unchecked Sendable {
         let showOnlyPredicateImage = """
         account == %@ AND
         serverUrl BEGINSWITH %@ AND
-        mediaSearch == true AND
         hasPreview == true AND
         (
         classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
@@ -165,7 +163,6 @@ final class NCImageCache: @unchecked Sendable {
         let showOnlyPredicateVideo = """
         account == %@ AND
         serverUrl BEGINSWITH %@ AND
-        mediaSearch == true AND
         hasPreview == true AND
         classFile == 'video' AND
         NOT (status IN %@)
