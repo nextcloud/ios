@@ -26,7 +26,7 @@ extension NCMedia: UICollectionViewDelegate {
                 var viewerTransitionSource: NCMediaViewerTransitionSource?
                 let ocIds = dataSource.compactMetadatas.map { $0.ocId }
 
-                if let imageView = cell.imageItem,
+                if let imageView = cell.image,
                    let image = imageView.image,
                    let window = imageView.window {
                     let sourceFrame = imageView.convert(imageView.bounds, to: window)
@@ -69,7 +69,7 @@ extension NCMedia: UICollectionViewDelegate {
         }
 
         if let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-           let imageView = cell.imageItem,
+           let imageView = cell.image,
            let image = imageView.image {
             let sourceFrame = imageView.convert(
                 imageView.bounds,

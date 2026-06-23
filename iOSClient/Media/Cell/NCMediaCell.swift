@@ -24,12 +24,12 @@
 import UIKit
 
 class NCMediaCell: UICollectionViewCell {
-    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
 
-    var ocId: String = ""
+    var identifier: String = ""
     var date: Date?
 
     override func awakeFromNib() {
@@ -44,7 +44,7 @@ class NCMediaCell: UICollectionViewCell {
 
     func initCell() {
         imageStatus.image = nil
-        imageItem.image = nil
+        image.image = nil
 
         imageVisualEffect.isHidden = false
         imageVisualEffect.effect = nil

@@ -103,23 +103,23 @@ extension NCMedia: UICollectionViewDataSource {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
                         self.dataSource.getCompactMetadata(indexPath: $0)?.ocId == ocId
                     }),
-                    let cell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCMediaCell, cell.ocId == ocId else {
+                    let cell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCMediaCell, cell.identifier == ocId else {
                         return
                     }
 
                     if let image {
-                        cell.imageItem.contentMode = .scaleAspectFill
+                        cell.image.contentMode = .scaleAspectFill
 
                         UIView.transition(
-                            with: cell.imageItem,
+                            with: cell.image,
                             duration: 0.75,
                             options: .transitionCrossDissolve
                         ) {
-                            cell.imageItem.image = image
+                            cell.image.image = image
                         }
                     } else {
-                        cell.imageItem.contentMode = .scaleAspectFit
-                        cell.imageItem.image = NCUtility().loadImage(
+                        cell.image.contentMode = .scaleAspectFit
+                        cell.image.image = NCUtility().loadImage(
                             named: iconName,
                             useTypeIconFile: true,
                             account: account
@@ -139,12 +139,12 @@ extension NCMedia: UICollectionViewDataSource {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let imageCache = imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext)
 
-        cell.imageItem.image = imageCache
+        cell.image.image = imageCache
         cell.date = compactMetadata.date
-        cell.ocId = compactMetadata.ocId
+        cell.identifier = compactMetadata.ocId
         cell.imageStatus.image = nil
 
-        if cell.imageItem.frame.width > 60 {
+        if cell.image.frame.width > 60 {
             if compactMetadata.isVideo {
                 cell.imageStatus.image = playImage
             } else if compactMetadata.isLivePhoto {
@@ -158,18 +158,18 @@ extension NCMedia: UICollectionViewDataSource {
             cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
         }
 
-        if cell.imageItem.image == nil {
+        if cell.image.image == nil {
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.imageItem.image = utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
+                cell.image.image = utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
             } else {
                 let session = self.session
                 DispatchQueue.global(qos: .userInteractive).async {
                     let image = self.utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                           currentCell.ocId == compactMetadata.ocId, let image {
+                           currentCell.identifier == compactMetadata.ocId, let image {
                             self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext, cost: indexPath.row)
-                            currentCell.imageItem.image = image
+                            currentCell.image.image = image
                         }
                     }
                 }
