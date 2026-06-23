@@ -54,6 +54,11 @@ extension NCMedia: UICollectionViewDataSource {
         }
         let ocId = compactMetadata.ocId
         let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: compactMetadata.etag, userId: self.session.userId, urlBase: self.session.urlBase)
+
+        guard !imageExists else {
+            return
+        }
 
         Task {
             await NCTransferCoordinator.shared.start(

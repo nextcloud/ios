@@ -51,10 +51,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let account = metadata.account
 
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
-        let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+        let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         guard metadata.hasPreview,
-              !existsImagePreview else {
+              !imageExists else {
             return
         }
 
