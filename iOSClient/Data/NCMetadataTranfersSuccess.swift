@@ -35,7 +35,6 @@ actor NCMetadataTranfersSuccess {
                 etag: String?,
                 ownerId: String? = nil,
                 permissions: String? = nil) async {
-        let status = metadata.status
         metadata.ocId = ocId
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -142,7 +141,7 @@ actor NCMetadataTranfersSuccess {
                 for item in items {
                     let metadata = item.metadata
 
-                    delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
+                    delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusUploaded,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,

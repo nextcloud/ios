@@ -358,9 +358,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         super.viewWillDisappear(animated)
         dismissTip()
 
-        // Cancel Queue & Retrieves Properties
-        self.networking.downloadThumbnailQueue.cancelAll()
+        // Cancel Properties
         Task {
+            await NCTransferCoordinator.shared.cancelAll()
             await searchOperationHandle.cancel()
         }
     }
@@ -787,9 +787,9 @@ extension NCCollectionViewCommon: NCSectionFirstHeaderDelegate {
         }
     }
 
-    func tapRecommendations(with metadata: tableMetadata) {
+    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCMediaViewerTransitionSource?) {
         Task {
-            await didSelectMetadata(metadata, withOcIds: false)
+            await didSelectMetadata(metadata, withOcIds: false, viewerTransitionSource: viewerTransitionSource)
         }
     }
 }
@@ -815,7 +815,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
         }
     }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -840,7 +840,7 @@ extension NCCollectionViewCommon: NCTransferDelegate {
                 return
             }
 
-            switch status {
+            switch networkingStatus {
             case self.global.networkingStatusCreateFolder:
                 if error == .success,
                    serverUrl == self.serverUrl,

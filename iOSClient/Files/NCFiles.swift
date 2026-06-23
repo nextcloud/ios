@@ -8,7 +8,6 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    internal var fileNameBlink: String?
     internal var lastOffsetY: CGFloat = 0
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
@@ -107,11 +106,6 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if !self.dataSource.isEmpty() {
-            blinkCell(fileName: self.fileNameBlink)
-            fileNameBlink = nil
-        }
-
         Task {
             // Plus Menu reload
             await self.mainNavigationController?.menuPlus?.create(session: session)
@@ -130,12 +124,6 @@ class NCFiles: NCCollectionViewCommon {
             await stopSyncMetadata()
             await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        fileNameBlink = nil
     }
 
     // MARK: - DataSource
@@ -190,7 +178,12 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
-        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: forced)
+        // Check whether the folder contains placeholder metadata.
+        // When placeholders exist, force a remote folder read to refresh their data.
+        let hasPlaceholder = await database.getMetadataFolderPlaceholderAsync(account: self.session.account, serverUrl: self.serverUrl)
+
+        let effectiveForced = forced || hasPlaceholder
+        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: effectiveForced)
         guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
             return
         }
@@ -355,31 +348,11 @@ class NCFiles: NCCollectionViewCommon {
         return (metadatas, error, reloadRequired)
     }
 
-    func blinkCell(fileName: String?) {
-        if let fileName = fileName, let metadata = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
-            if let indexPath = indexPath {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    UIView.animate(withDuration: 0.3) {
-                        self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-                    } completion: { _ in
-                        if let cell = self.collectionView.cellForItem(at: indexPath) {
-                            cell.backgroundColor = .darkGray
-                            UIView.animate(withDuration: 2) {
-                                cell.backgroundColor = .clear
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     func open(metadata: tableMetadata?) async {
         guard let metadata else {
             return
         }
-        await didSelectMetadata(metadata, withOcIds: false)
+        await didSelectMetadata(metadata, withOcIds: false, viewerTransitionSource: nil)
     }
 
     // MARK: - NCAccountSettingsModelDelegate

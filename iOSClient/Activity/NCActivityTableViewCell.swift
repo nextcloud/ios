@@ -122,7 +122,6 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
         cell.imageView.image = NCImageCache.shared.getImageFile()
         cell.fileId = activityPreview.fileId
 
-        // Trashbin
         if activityPreview.view == "trashbin" {
             let source = activityPreview.source
             Task {
@@ -142,26 +141,9 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.imageView.image = image
                     }
                 }
-            } else {
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: String(activityPreview.fileId)) {
-                    let fileNamePath = NCUtilityFileSystem().createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: activitySubjectRich.name)
-
-                    if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
-                        cell.imageView.image = image
-                        cell.imageView?.contentMode = .scaleAspectFill
-                    } else {
-                        cell.imageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
-                        cell.imageView?.contentMode = .scaleAspectFit
-                        cell.fileId = activityPreview.fileId
-                        if !FileManager.default.fileExists(atPath: fileNamePath) {
-                            if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == activityPreview.fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: activityPreview.fileId, etag: "", fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
-                            }
-                        }
-                    }
-                }
             }
         }
+
         return cell
     }
 }
@@ -177,46 +159,5 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
-    }
-}
-
-class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Sendable {
-    var collectionView: UICollectionView?
-    var fileNamePreviewLocalPath: String
-    var fileId: Int
-    var account: String
-    var etag: String
-
-    init(fileId: Int, etag: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
-        self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
-        self.fileId = fileId
-        self.account = account
-        self.collectionView = collectionView
-        self.etag = etag
-    }
-
-    override func start() {
-        guard !isCancelled else { return self.finish() }
-        NextcloudKit.shared.downloadPreview(fileId: String(fileId), etag: etag, account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                            path: String(self.fileId),
-                                                                                            name: "DownloadPreview")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { _, _, _, _, responseData, error in
-            if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
-                for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
-                    if self.fileId == cell.fileId {
-                        UIView.transition(with: cell.imageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { cell.imageView.image = UIImage(data: data) },
-                                          completion: nil)
-                    }
-                }
-            }
-            self.finish()
-        }
     }
 }

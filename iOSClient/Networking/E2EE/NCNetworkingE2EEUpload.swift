@@ -222,7 +222,7 @@ class NCNetworkingE2EEUpload: NSObject {
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusUploaded,
+                delegate.transferChange(networkingStatus: self.global.networkingStatusUploaded,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,

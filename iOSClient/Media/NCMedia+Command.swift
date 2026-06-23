@@ -9,7 +9,7 @@ import SwiftUI
 
 extension NCMedia {
     func setEditMode(_ editMode: Bool) {
-        if dataSource.metadatas.isEmpty {
+        if dataSource.compactMetadatas.isEmpty {
             isEditMode = false
         } else {
             isEditMode = editMode
@@ -36,7 +36,7 @@ extension NCMedia {
         if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
             let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
 
-            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
+            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getCompactMetadata(indexPath: firstAttribute.indexPath) {
                 titleDate?.text = utility.getTitleFromDate(metadata.date)
                 return
             }
@@ -49,7 +49,7 @@ extension NCMedia {
         let highTextTitle = titleDate.frame.height
         let isOver = self.collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top && self.collectionView.contentOffset.y != -view.safeAreaInsets.top
 
-        if isOver || dataSource.metadatas.isEmpty {
+        if isOver || dataSource.compactMetadatas.isEmpty {
             UIView.animate(withDuration: 0.3) { [self] in
                 gradientView.isHidden = true
                 titleDate?.textColor = NCBrandColor.shared.textColor
@@ -95,6 +95,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             await NCCreate().createActivityViewController(
                 selectedMetadata: metadatas,
                 controller: self.controller,
+                presentViewController: self,
                 sender: nil)
         }
     }
@@ -131,7 +132,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
     func deleteImage(with ocId: String) async {
         guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
             await MainActor.run {
-                self.dataSource.removeMetadata([ocId])
+                self.dataSource.removeCompactMetadata([ocId])
                 self.collectionViewReloadData()
             }
             return
@@ -155,11 +156,11 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         await MainActor.run {
             if let indexPath = self.dataSource.indexPath(forOcId: ocId) {
                 self.collectionView.performBatchUpdates {
-                    self.dataSource.removeMetadata([ocId])
+                    self.dataSource.removeCompactMetadata([ocId])
                     self.collectionView.deleteItems(at: [indexPath])
                 }
             } else {
-                self.dataSource.removeMetadata([ocId])
+                self.dataSource.removeCompactMetadata([ocId])
                 self.collectionViewReloadData()
             }
         }

@@ -74,6 +74,9 @@ final class NCGlobal: Sendable {
          }
     }
 
+    // MEDIA SEARCH
+    let mediaPropOrder                              = "getlastmodified"
+
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
@@ -382,6 +385,7 @@ final class NCGlobal: Sendable {
     let logTagSpeedUpSyncMetadata           = "SYNC METADATA"
     let logTagNetworkingTasks               = "NETWORKING TASKS"
     let logTagMetadataTransfers             = "METADATA TRANSFERS"
+    let logTagViewer                        = "VIEWERS"
 
     // USER DEFAULTS
     //
