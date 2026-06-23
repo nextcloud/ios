@@ -12,8 +12,6 @@ extension NCNetworking {
         Task {
             await NCTransferCoordinator.shared.cancelAll()
         }
-        downloadThumbnailActivityQueue.cancelAll()
-        downloadThumbnailTrashQueue.cancelAll()
         downloadAvatarQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
     }

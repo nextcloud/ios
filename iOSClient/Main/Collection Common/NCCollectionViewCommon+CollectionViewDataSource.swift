@@ -43,12 +43,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
             return
         }
-        let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+
         let ocId = metadata.ocId
+        let etag = metadata.etag
+        let fileId = metadata.fileId
+        let iconName = metadata.iconName
+        let account = metadata.account
+
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
+        let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         guard metadata.hasPreview,
-              !existsImagePreview else {
+              !imageExists else {
             return
         }
 
@@ -56,21 +62,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             await NCTransferCoordinator.shared.start(
                 identifier: ocId,
                 priority: .visible
-            ) { [weak self] in
-                guard let self,
-                      let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
-                    return
-                }
-                let ocId = metadata.ocId
-                let iconName = metadata.iconName
-                let account = metadata.account
-
+            ) {
                 let result = await NextcloudKit.shared.downloadPreviewAsync(
-                    fileId: metadata.fileId,
-                    etag: metadata.etag,
-                    account: metadata.account,
-                    options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-                )
+                    fileId: fileId,
+                    etag: etag,
+                    account: account)
 
                 guard !Task.isCancelled,
                       result.error == .success,
@@ -78,14 +74,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     return
                 }
 
-                NCUtility().createImageFileFrom(data: data, metadata: metadata)
+                await NCUtility().createImageFileFrom(data: data,
+                                                      ocId: ocId,
+                                                      etag: etag,
+                                                      userId: self.session.userId,
+                                                      urlBase: self.session.urlBase)
 
-                let image = NCUtility().getImage(
-                    ocId: metadata.ocId,
-                    etag: metadata.etag,
+                let image = await NCUtility().getImage(
+                    ocId: ocId,
+                    etag: etag,
                     ext: ext,
-                    userId: metadata.userId,
-                    urlBase: metadata.urlBase
+                    userId: self.session.userId,
+                    urlBase: self.session.urlBase
                 )
 
                 guard !Task.isCancelled else {
