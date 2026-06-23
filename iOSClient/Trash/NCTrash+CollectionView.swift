@@ -4,6 +4,7 @@
 
 import UIKit
 import RealmSwift
+import NextcloudKit
 
 // MARK: UICollectionViewDelegate
 extension NCTrash: UICollectionViewDelegate {
@@ -34,6 +35,101 @@ extension NCTrash: UICollectionViewDelegate {
 extension NCTrash: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return datasource?.count ?? 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        didEndDisplaying cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let result = datasource?[indexPath.item] else {
+            return
+        }
+
+        Task {
+            await NCTransferCoordinator.shared.cancel(identifier: result.fileId)
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let result = datasource?[indexPath.item] else {
+            return
+        }
+        let identifier = result.fileId
+        let etag = result.fileName
+        let iconName = result.iconName
+        let imageExists = utilityFileSystem.fileProviderStorageImageExists(identifier, etag: etag, userId: self.session.userId, urlBase: self.session.urlBase)
+
+        guard result.hasPreview,
+              !imageExists else {
+            return
+        }
+
+        Task {
+            await NCTransferCoordinator.shared.start(
+                identifier: identifier,
+                priority: .visible
+            ) {
+                let result = await NextcloudKit.shared.downloadTrashPreviewAsync(
+                    fileId: identifier,
+                    account: self.session.account)
+
+                guard !Task.isCancelled,
+                      result.error == .success,
+                      let data = result.responseData?.data else {
+                    return
+                }
+
+                await NCUtility().createImageFileFrom(
+                    data: data,
+                    ocId: identifier,
+                    etag: etag,
+                    userId: self.session.userId,
+                    urlBase: self.session.urlBase)
+
+                let image = await NCUtility().getImage(
+                    ocId: identifier,
+                    etag: etag,
+                    ext: NCGlobal.shared.previewExt256,
+                    userId: self.session.userId,
+                    urlBase: self.session.urlBase)
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    guard let visibleIndexPath = collectionView.indexPathsForVisibleItems.first(where: { visibleIndexPath in
+                        guard let fileId = self.datasource?[visibleIndexPath.item].fileId else {
+                            return false
+                        }
+                        return String(fileId) == identifier
+                    }),
+                    let cell = collectionView.cellForItem(at: visibleIndexPath) as? NCTrashListCell,
+                        cell.objectId == identifier else {
+                            return
+                    }
+
+                    if let image {
+                        cell.imageItem?.contentMode = .scaleAspectFill
+                        UIView.transition(
+                            with: cell.imageItem,
+                            duration: 0.75,
+                            options: .transitionCrossDissolve
+                        ) {
+                            cell.imageItem.image = image
+                        }
+                    } else {
+                        cell.imageItem.contentMode = .scaleAspectFit
+                        cell.imageItem.image = NCUtility().loadImage(
+                            named: iconName,
+                            useTypeIconFile: true,
+                            account: self.session.account
+                        )
+                    }
+                }
+            }
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -77,12 +173,6 @@ extension NCTrash: UICollectionViewDataSource {
                                             urlBase: session.urlBase) {
             image = imageIcon
             cell.imageItem.contentMode = .scaleAspectFill
-        } else {
-            if resultTableTrash.hasPreview {
-                if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == resultTableTrash.fileId }).isEmpty {
-                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(fileId: resultTableTrash.fileId, fileName: resultTableTrash.fileName, session: session, collectionView: collectionView))
-                }
-            }
         }
 
         cell.objectId = resultTableTrash.fileId

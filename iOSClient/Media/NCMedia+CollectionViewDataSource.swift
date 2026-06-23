@@ -64,14 +64,13 @@ extension NCMedia: UICollectionViewDataSource {
                       let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                     return
                 }
-                let ocId = metadata.ocId
                 let iconName = metadata.iconName
                 let account = metadata.account
 
                 let result = await NextcloudKit.shared.downloadPreviewAsync(
                     fileId: metadata.fileId,
                     etag: metadata.etag,
-                    account: metadata.account,
+                    account: account,
                     options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
                 )
 
