@@ -10,7 +10,7 @@ protocol NCTrashListCellDelegate: AnyObject {
 }
 
 class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
-    @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -25,7 +25,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCTrashListCellDelegate?
-    var objectId = ""
+    var identifier = ""
 
     var statusImg: UIImageView? {
         get { return imageStatus }
@@ -59,8 +59,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         imageRestore.image = NCUtility().loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor])
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
-        imageItem.layer.cornerRadius = 6
-        imageItem.layer.masksToBounds = true
+        image.layer.cornerRadius = 6
+        image.layer.masksToBounds = true
 
         imageStatus.image = nil
 
@@ -106,11 +106,11 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, image: imageItem.image, sender: sender)
+        delegate?.tapMoreListItem(with: identifier, image: image.image, sender: sender)
     }
 
     @IBAction func touchUpInsideRestore(_ sender: Any) {
-        delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
+        delegate?.tapRestoreListItem(with: identifier, image: image.image, sender: sender)
     }
 
     func selected(_ status: Bool, isEditMode: Bool, color: UIColor) {

@@ -105,23 +105,23 @@ extension NCTrash: UICollectionViewDataSource {
                         }
                         return String(fileId) == identifier
                     }),
-                    let cell = collectionView.cellForItem(at: visibleIndexPath) as? NCTrashListCell,
-                        cell.objectId == identifier else {
+                    let cell = collectionView.cellForItem(at: visibleIndexPath) as? NCTrashCellProtocol,
+                        cell.identifier == identifier else {
                             return
                     }
 
                     if let image {
-                        cell.imageItem?.contentMode = .scaleAspectFill
+                        cell.image?.contentMode = .scaleAspectFill
                         UIView.transition(
-                            with: cell.imageItem,
+                            with: cell.image,
                             duration: 0.75,
                             options: .transitionCrossDissolve
                         ) {
-                            cell.imageItem.image = image
+                            cell.image.image = image
                         }
                     } else {
-                        cell.imageItem.contentMode = .scaleAspectFit
-                        cell.imageItem.image = NCUtility().loadImage(
+                        cell.image.contentMode = .scaleAspectFit
+                        cell.image.image = NCUtility().loadImage(
                             named: iconName,
                             useTypeIconFile: true,
                             account: self.session.account
@@ -158,7 +158,7 @@ extension NCTrash: UICollectionViewDataSource {
             gridCell.buttonMore.showsMenuAsPrimaryAction = true
         }
 
-        cell.imageItem.contentMode = .scaleAspectFit
+        cell.image.contentMode = .scaleAspectFit
 
         if resultTableTrash.iconName.isEmpty {
             image = NCImageCache.shared.getImageFile()
@@ -172,10 +172,10 @@ extension NCTrash: UICollectionViewDataSource {
                                             userId: session.userId,
                                             urlBase: session.urlBase) {
             image = imageIcon
-            cell.imageItem.contentMode = .scaleAspectFill
+            cell.image.contentMode = .scaleAspectFill
         }
 
-        cell.objectId = resultTableTrash.fileId
+        cell.identifier = resultTableTrash.fileId
         cell.setupCellUI(tableTrash: resultTableTrash, image: image)
         cell.selected(selectOcId.contains(resultTableTrash.fileId), isEditMode: isEditMode, color: NCBrandColor.shared.getElement(account: session.account))
 
