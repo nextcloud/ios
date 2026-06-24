@@ -151,7 +151,8 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EECertificate(account: model.session.account) { task in
+                let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
+                NextcloudKit.shared.deleteE2EECertificate(account: model.session.account, options: options) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: model.session.account,
                                                                                                     name: "deleteE2EECertificate")
@@ -187,7 +188,8 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EEPrivateKey(account: model.session.account) { task in
+                let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
+                NextcloudKit.shared.deleteE2EEPrivateKey(account: model.session.account, options: options) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: model.session.account,
                                                                                                     name: "deleteE2EEPrivateKey")
