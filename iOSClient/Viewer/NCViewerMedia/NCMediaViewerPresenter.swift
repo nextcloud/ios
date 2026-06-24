@@ -212,6 +212,7 @@ final class NCMediaViewerPresenter: NSObject {
         }
 
         isDismissing = true
+        currentModel?.cancelAllDownloads()
         removeDismissPanGesture()
 
         guard animated else {
