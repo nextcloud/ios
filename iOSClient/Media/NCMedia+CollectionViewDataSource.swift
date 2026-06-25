@@ -37,12 +37,12 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         didEndDisplaying cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
-        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+        guard let cell = cell as? NCMediaCell else {
             return
         }
 
         Task {
-            await NCTransferCoordinator.shared.cancel(identifier: compactMetadata.ocId)
+            await NCTransferCoordinator.shared.cancel(identifier: cell.identifier)
         }
     }
 

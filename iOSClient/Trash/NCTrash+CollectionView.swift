@@ -40,21 +40,24 @@ extension NCTrash: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         didEndDisplaying cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
-        guard let result = datasource?[indexPath.item] else {
+        guard let cell = cell as? NCTrashCellProtocol else {
             return
         }
 
         Task {
-            await NCTransferCoordinator.shared.cancel(identifier: result.fileId)
+            await NCTransferCoordinator.shared.cancel(identifier: cell.identifier)
         }
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
-        guard let result = datasource?[indexPath.item] else {
+        guard let datasource,
+              indexPath.item >= 0,
+              indexPath.item < datasource.count else {
             return
         }
+        let result = datasource[indexPath.item]
         let identifier = result.fileId
         let etag = result.fileName
         let iconName = result.iconName
