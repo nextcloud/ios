@@ -373,13 +373,17 @@ extension NCPlayerToolBar: NCSelectDelegate {
                         banner?.update(payload: LucidBannerPayload.Update(progress: Double(progress.fractionCompleted)),
                                        for: token)
                     }
-                }) { _, etag, _, _, _, _, error in
+                }) { _, response, error in
                     Task {
                         if let banner {
                             banner.dismiss()
                         }
 
                         let ocId = metadata.ocId
+                        let allHeaderFields = response?.response?.allHeaderFields
+                        let nkComm = NextcloudKit.shared.nkCommonInstance
+                        let etag = nkComm.normalizedETag(nkComm.findHeader("oc-etag", allHeaderFields: allHeaderFields))
+
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     session: "",
                                                                     sessionTaskIdentifier: 0,

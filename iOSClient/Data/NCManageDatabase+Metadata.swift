@@ -227,7 +227,6 @@ extension tableMetadata {
         return session.isEmpty && !isDirectoryE2EE && !e2eEncrypted
     }
 
-    // Return if is sharable
     func isSharable() -> Bool {
         guard let capabilities = NCNetworking.shared.capabilities[account] else {
             return false
@@ -259,9 +258,8 @@ extension tableMetadata {
            directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if directEditingEditors.contains("nextcloud text") || directEditingEditors.contains("onlyoffice") {
-            // DirectEditing: Nextcloud Text - OnlyOffice
-           return true
+        } else if !directEditingEditors.isEmpty {
+            return true
         }
         return false
     }
@@ -282,12 +280,8 @@ extension tableMetadata {
         guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType).map { $0.lowercased() }
-
-        if editors.contains("nextcloud text") || editors.contains("onlyoffice") {
-            return true
-        }
-        return false
+        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
+        return !editors.isEmpty
     }
 
     var isPDF: Bool {
@@ -1033,6 +1027,22 @@ extension NCManageDatabase {
         }
     }
 
+    func getOwnerDisplayName(account: String?, ownerId: String?) async -> String? {
+        guard let account = account.isNotEmpty,
+              let ownerId = ownerId.isNotEmpty else {
+            return nil
+        }
+
+        return await core.performRealmReadAsync { realm in
+            let ownerDisplayName = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND ownerId == %@", account, ownerId)
+                .first?
+                .ownerDisplayName
+
+            return ownerDisplayName.isNotEmpty
+        }
+    }
+
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
     /// Handles the home directory case rootFileName) and detaches the Realm object before returning.
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
@@ -1353,10 +1363,10 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getMetadatasInWaitingCountAsync() async -> Int {
+    func getMetadatasStatusCountAsync(status: [Int]) async -> Int {
         await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
-                .filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting)
+                .filter("status IN %@", status)
                 .count
         } ?? 0
     }
@@ -1367,6 +1377,36 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first != nil
         } ?? false
+    }
+
+    func countMetadatasFor(serverUrl: String) -> Int {
+        core.performRealmRead { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter("serverUrl == %@", serverUrl)
+            return results.count
+        } ?? 0
+    }
+
+    /// Filters Auto Upload metadata entries, returning only the items that are not already queued in the local database.
+    /// - Parameter metadatas: The detached Auto Upload metadata entries generated from Photos assets.
+    /// - Returns: Only metadata entries that can be safely added to the upload queue.
+    func filterAutoUploadMetadatasNotAlreadyQueuedAsync(_ metadatas: [tableMetadata]) async -> [tableMetadata] {
+        await core.performRealmReadAsync { realm in
+            metadatas.filter { metadata in
+                guard !metadata.assetLocalIdentifier.isEmpty else {
+                    return false
+                }
+                return realm.objects(tableMetadata.self)
+                    .filter(
+                        "account == %@ AND sessionSelector == %@ AND assetLocalIdentifier == %@ AND session != %@",
+                        metadata.account,
+                        NCGlobal.shared.selectorUploadAutoUpload,
+                        metadata.assetLocalIdentifier,
+                        ""
+                    )
+                    .isEmpty
+            }
+        } ?? []
     }
 
     // MARK: - helpers

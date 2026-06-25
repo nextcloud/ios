@@ -22,5 +22,65 @@
 			<string>%d likusių leidžiamų atsisiuntimų skaičius</string>
 		</dict>
 	</dict>
+	<key>_focused_auto_upload_items_left_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>liko %d elementas</string>
+			<key>few</key>
+			<string>liko %d elementai</string>
+			<key>many</key>
+			<string>liko %d elementų</string>
+			<key>other</key>
+			<string>liko %d elementų</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_photos_to_back_up_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Turite %d elementą, kuriam reikia sukurti atsarginę kopiją</string>
+			<key>few</key>
+			<string>Turite %d elementus, kuriems reikia sukurti atsargines kopijas</string>
+			<key>many</key>
+			<string>Turite %d elementų, kuriems reikia sukurti atsargines kopijas</string>
+			<key>other</key>
+			<string>Turite %d elementų, kuriems reikia sukurti atsargines kopijas</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_failed_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d nepavyko</string>
+			<key>few</key>
+			<string>%d nepavyko</string>
+			<key>many</key>
+			<string>%d nepavyko</string>
+			<key>other</key>
+			<string>%d nepavyko</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

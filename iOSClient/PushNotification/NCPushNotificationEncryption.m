@@ -108,16 +108,25 @@
 
     // Decrypt the message
     unsigned char *decrypted = (unsigned char *) malloc(4096);
-    
-    int decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
-    if(decrypted_length == -1) {
+
+    // Try decrypting with RSA OAEP padding
+    int decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_OAEP_PADDING);
+    NSString *decryptString = decrypted_length == -1 ? nil : [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
+
+    // Try decrypting with RSA PKCS#1 v1.5 padding
+    if(decrypted_length == -1 || decryptString == nil) {
+        ERR_clear_error();
+        decrypted_length = RSA_private_decrypt((int)[decodedData length], [decodedData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
+        decryptString = decrypted_length == -1 ? nil : [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
+    }
+
+    // Could not decrypt
+    if(decrypted_length == -1 || decryptString == nil) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
         NSLog(@"%@",[NSString stringWithUTF8String:buffer]);
         return nil;
     }
-    
-    NSString *decryptString = [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
     
     if (decrypted)
         free(decrypted);

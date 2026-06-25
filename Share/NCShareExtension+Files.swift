@@ -12,7 +12,22 @@ extension NCShareExtension {
     func reloadData() async {
         let session = NCShareExtensionData.shared.getSession()
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl)
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND directory == true", session.account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName)
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
+        let predicate = showHiddenFiles
+            ? NSPredicate(
+                format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND directory == true",
+                session.account,
+                serverUrl,
+                NextcloudKit.shared.nkCommonInstance.rootFileName
+            )
+            : NSPredicate(
+                format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND directory == true AND NOT fileName BEGINSWITH[c] %@",
+                session.account,
+                serverUrl,
+                NextcloudKit.shared.nkCommonInstance.rootFileName,
+                "."
+            )
+
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate,
                                                                         withLayout: layoutForView,
                                                                         withAccount: session.account)

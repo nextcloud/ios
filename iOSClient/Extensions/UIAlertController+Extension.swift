@@ -357,4 +357,25 @@ extension UIAlertController {
             presenter.present(alert, animated: true)
         }
     }
+
+    @MainActor
+    static func failedPasscode(presenter: UIViewController, completion: (() -> Void)? = nil) {
+        let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
+        presenter.present(alertController, animated: true, completion: { })
+
+        var seconds = NCBrandOptions.shared.passcodeSecondsFail
+        alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
+
+        _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
+            seconds -= 1
+            if seconds < 0 {
+                timer.invalidate()
+                alertController.dismiss(animated: true)
+                NCPreferences().passcodeCounterFail = 0
+                NCPreferences().passcodeCounterFailReset = 0
+                completion?()
+            }
+        }
+    }
 }

@@ -18,5 +18,53 @@
 			<string>%d indirme daha yapılabilir</string>
 		</dict>
 	</dict>
+	<key>_focused_auto_upload_items_left_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d öge kaldı</string>
+			<key>other</key>
+			<string>%d öge kaldı</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_photos_to_back_up_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Yedeklenecek %d öge var</string>
+			<key>other</key>
+			<string>Yedeklenecek %d öge var</string>
+		</dict>
+	</dict>
+	<key>_focused_auto_upload_failed_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d tamamlanamadı</string>
+			<key>other</key>
+			<string>%d tamamlanamadı</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

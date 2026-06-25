@@ -153,6 +153,7 @@ class NCDeepLinkHandler {
             navigationController.popToRootViewController(animated: false)
 
             let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller), albumModel: AlbumModel(controller: controller))
+                .environment(NCAutoUploadCounter())
             let autoUploadController = UIHostingController(rootView: autoUploadView)
             navigationController.pushViewController(autoUploadController, animated: true)
         }

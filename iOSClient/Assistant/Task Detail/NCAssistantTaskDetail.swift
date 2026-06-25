@@ -35,7 +35,7 @@ struct NCAssistantTaskDetail: View {
 }
 
 #Preview {
-    let assistantModel = NCAssistantModel(controller: nil)
+    let assistantModel = NCAssistantModel(controller: nil, inputModel: NCAssistantInputModel())
 
     NCAssistantTaskDetail(task: assistantModel.selectedTask!)
         .environment(assistantModel)
