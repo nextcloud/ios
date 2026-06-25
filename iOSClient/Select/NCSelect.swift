@@ -350,29 +350,6 @@ extension NCSelect: UICollectionViewDelegate {
 
 extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        /*
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
-            return
-        }
-
-        // Thumbnail
-        if !metadata.directory {
-            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                (cell as? NCListCell)?.previewImg?.image = image
-            } else {
-                if metadata.iconName.isEmpty {
-                    (cell as? NCListCell)?.previewImg?.image = NCImageCache.shared.getImageFile()
-                } else {
-                    (cell as? NCListCell)?.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                }
-                if metadata.hasPreview,
-                   metadata.status == NCGlobal.shared.metadataStatusNormal {
-                    for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.previewExt256))
-                }
-            }
-        }
-        */
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

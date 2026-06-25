@@ -29,12 +29,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            guard let cell = cell as? NCCellMainProtocol,
+                  let identifier = cell.metadata?.ocId else {
                 return
             }
 
             Task {
-                await NCTransferCoordinator.shared.cancel(identifier: metadata.ocId)
+                await NCTransferCoordinator.shared.cancel(identifier: identifier)
             }
         }
     }
