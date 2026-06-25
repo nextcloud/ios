@@ -25,6 +25,17 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         }
     }
 
+    func viewerTransitionSource() -> NCMediaViewerTransitionSource? {
+        guard let imageView = image,
+              let image = imageView.image,
+              let window = imageView.window else {
+            return nil
+        }
+        let sourceFrame = imageView.convert(imageView.bounds, to: window)
+
+        return NCMediaViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
+    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
 

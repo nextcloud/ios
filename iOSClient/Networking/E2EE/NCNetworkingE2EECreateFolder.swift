@@ -143,7 +143,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrlFileName, account: session.account)
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusCreateFolder,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,

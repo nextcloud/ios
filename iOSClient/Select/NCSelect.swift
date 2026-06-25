@@ -222,7 +222,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -239,7 +239,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         Task { @MainActor in
             guard session.account == account,
-                  status == self.global.networkingStatusCreateFolder,
+                  networkingStatus == self.global.networkingStatusCreateFolder,
                   self.serverUrl == serverUrl,
                   let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName))
             else {
@@ -292,7 +292,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func tapRichWorkspace(_ sender: Any) { }
-    func tapRecommendations(with metadata: tableMetadata) { }
+    func tapRecommendations(with metadata: tableMetadata, viewerTransitionSource: NCMediaViewerTransitionSource?) { }
 
     // MARK: - Push metadata
 
@@ -350,27 +350,6 @@ extension NCSelect: UICollectionViewDelegate {
 
 extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
-            return
-        }
-
-        // Thumbnail
-        if !metadata.directory {
-            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                (cell as? NCListCell)?.previewImg?.image = image
-            } else {
-                if metadata.iconName.isEmpty {
-                    (cell as? NCListCell)?.previewImg?.image = NCImageCache.shared.getImageFile()
-                } else {
-                    (cell as? NCListCell)?.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                }
-                if metadata.hasPreview,
-                   metadata.status == NCGlobal.shared.metadataStatusNormal {
-                    for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.previewExt256))
-                }
-            }
-        }
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

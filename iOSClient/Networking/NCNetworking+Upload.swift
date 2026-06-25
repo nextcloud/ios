@@ -110,7 +110,7 @@ extension NCNetworking {
                                                                      chunkFolder: chunkFolder,
                                                                      filesChunk: filesChunk)
                         await self.transferDispatcher.notifyAllDelegates { delegate in
-                            delegate.transferChange(status: self.global.networkingStatusUploading,
+                            delegate.transferChange(networkingStatus: self.global.networkingStatusUploading,
                                                     account: metadata.account,
                                                     fileName: metadata.fileName,
                                                     serverUrl: metadata.serverUrl,
@@ -229,7 +229,7 @@ extension NCNetworking {
                                                                       sessionTaskIdentifier: task.taskIdentifier,
                                                                       status: self.global.metadataStatusUploading)
                 await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploading,
+                    delegate.transferChange(networkingStatus: self.global.networkingStatusUploading,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
@@ -301,7 +301,7 @@ extension NCNetworking {
         }
 
         await self.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusUploaded,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusUploaded,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
@@ -353,7 +353,7 @@ extension NCNetworking {
                                                                  errorCode: error.errorCode)
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusUploaded,
+                delegate.transferChange(networkingStatus: self.global.networkingStatusUploaded,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,

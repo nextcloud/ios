@@ -110,9 +110,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "NCActivity")
         }
-
-        // Cancel Queue & Retrieves Properties
-        NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
     }
 
     override func viewWillLayoutSubviews() {

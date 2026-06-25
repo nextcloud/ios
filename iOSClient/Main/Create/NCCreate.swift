@@ -49,7 +49,7 @@ class NCCreate: NSObject {
                 url: url,
                 session: session,
                 sceneIdentifier: controller.sceneIdentifier)
-            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
 
@@ -79,7 +79,7 @@ class NCCreate: NSObject {
                 session: session,
                 sceneIdentifier: controller.sceneIdentifier)
 
-            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -157,7 +157,7 @@ class NCCreate: NSObject {
         return (templates, selectedTemplate, ext)
     }
 
-    func createShare(controller: NCMainTabBarController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
+    func createShare(controller: NCMainTabBarController?, presentViewController: UIViewController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         guard let controller else {
             return
         }
@@ -211,7 +211,7 @@ class NCCreate: NSObject {
 
                     shareNavigationController?.modalPresentationStyle = .formSheet
                     if let shareNavigationController = shareNavigationController {
-                        controller.present(shareNavigationController, animated: true, completion: nil)
+                        presentViewController?.present(shareNavigationController, animated: true, completion: nil)
                     }
                 }
             }
@@ -224,8 +224,8 @@ class NCCreate: NSObject {
     ///   - controller: Main tab bar controller used to present the activity view.
     ///   - sender: The UI element that triggered the action (for iPad popover anchoring).
     @MainActor
-    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
-        guard let controller else {
+    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, presentViewController: UIViewController?, sender: Any?) async {
+        guard let controller, let presentViewController else {
             return
         }
 
@@ -303,14 +303,21 @@ class NCCreate: NSObject {
 
         // iPad popover configuration
         if let popover = activityViewController.popoverPresentationController {
-            if let view = sender as? UIView {
-                popover.sourceView = view
-                popover.sourceRect = view.bounds
+            if let barButtonItem = sender as? UIBarButtonItem {
+                // Anchor the popover to the bar button item.
+                popover.barButtonItem = barButtonItem
+
+            } else if let sourceView = sender as? UIView {
+                // Anchor the popover to the sender view.
+                popover.sourceView = sourceView
+                popover.sourceRect = sourceView.bounds
+
             } else {
-                popover.sourceView = controller.view
+                // Fallback: anchor the popover to the center of the presenting view.
+                popover.sourceView = presentViewController.view
                 popover.sourceRect = CGRect(
-                    x: controller.view.bounds.midX,
-                    y: controller.view.bounds.midY,
+                    x: presentViewController.view.bounds.midX,
+                    y: presentViewController.view.bounds.midY,
                     width: 0,
                     height: 0
                 )
@@ -318,7 +325,7 @@ class NCCreate: NSObject {
             }
         }
 
-        controller.present(activityViewController, animated: true)
+        presentViewController.present(activityViewController, animated: true)
     }
 
     // MARK: - Private helper

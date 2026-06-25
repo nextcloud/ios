@@ -29,6 +29,8 @@ extension NCNetworking {
             return(metadata.account, metadata.etag, metadata.date as Date, metadata.size, .success)
         }
 
+        await updateMetadataPlaceholder(metadata)
+
         let results = await NextcloudKit.shared.downloadAsync(serverUrlFileName: metadata.serverUrlFileName,
                                                               fileNameLocalPath: fileNameLocalPath,
                                                               account: metadata.account,
@@ -47,7 +49,7 @@ extension NCNetworking {
                     status: self.global.metadataStatusDownloading)
 
                 await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloading,
+                    delegate.transferChange(networkingStatus: self.global.networkingStatusDownloading,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
@@ -112,7 +114,7 @@ extension NCNetworking {
                                                                   status: self.global.metadataStatusDownloading)
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusDownloading,
+                delegate.transferChange(networkingStatus: self.global.networkingStatusDownloading,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,
@@ -160,7 +162,7 @@ extension NCNetworking {
                                                               etag: etag)
 
         await self.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusDownloaded,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusDownloaded,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,
@@ -192,7 +194,7 @@ extension NCNetworking {
                                                                   status: self.global.metadataStatusNormal)
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                    delegate.transferChange(networkingStatus: self.global.networkingStatusDownloadCancel,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
@@ -210,7 +212,7 @@ extension NCNetworking {
                                                                  status: self.global.metadataStatusNormal)
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                delegate.transferChange(networkingStatus: NCGlobal.shared.networkingStatusDownloaded,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,

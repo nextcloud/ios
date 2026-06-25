@@ -75,7 +75,7 @@ class NCMainTabBarController: UITabBarController {
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
             if !isAppInBackground {
-                self.timerTask = Task { @MainActor [weak self] in
+                self.timerTask = Task { @MainActor [weak self = self] in
                     await self?.timerCheck()
                 }
             }

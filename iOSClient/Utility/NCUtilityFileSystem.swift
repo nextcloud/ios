@@ -119,6 +119,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
+    @discardableResult
     func cleanDirectoryProviderStorageOcId(_ ocId: String, userId: String, urlBase: String) -> String {
         let path = getDocumentStorage(userId: userId, urlBase: urlBase) + "/" + ocId
 
@@ -242,6 +243,17 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 #endif
         } catch { print("Error: \(error)") }
         return false
+    }
+
+    /// Returns the file size for a path if the file exists and can be read.
+    func fileSizeIfExists(_ metadata: tableMetadata) -> Bool {
+        let path = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: path)
+            return attributes[.size] as? UInt64 ?? 0 > 0
+        } catch {
+            return false
+        }
     }
 
     func fileProviderStorageSize(_ ocId: String, fileName: String, userId: String, urlBase: String) -> UInt64 {
@@ -863,5 +875,21 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let id = url.lastPathComponent
         let parent = url.deletingLastPathComponent().lastPathComponent
         return parent == "f" ? id : nil
+    }
+
+    /// Extracts the numeric fileId prefix from a Nextcloud ocId.
+    ///
+    /// - Parameter ocId: Nextcloud ocId, usually composed by a numeric fileId prefix and an instance suffix.
+    /// - Returns: Numeric fileId string if available.
+    func extractFileId(from ocId: String) -> String? {
+        let prefix = ocId.prefix { character in
+            character.isNumber
+        }
+
+        guard !prefix.isEmpty else {
+            return nil
+        }
+
+        return String(Int(prefix) ?? 0)
     }
 }

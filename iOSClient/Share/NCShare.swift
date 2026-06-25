@@ -107,6 +107,8 @@ class NCShare: UIViewController, NCSharePagingContent {
                 checkSharedWithYou()
             }
 
+            self.metadata = await NCNetworking.shared.updateMetadataPlaceholder(metadata)
+
             reloadData()
 
             networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session, controller: controller)

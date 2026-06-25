@@ -86,7 +86,7 @@ class tableMetadata: Object {
     @objc public var lockOwnerDisplayName = ""
     @objc public var lockTime: Date?
     @objc public var lockTimeOut: Date?
-    @objc dynamic var mediaSearch: Bool = false
+    @objc dynamic var placeholder: Bool = false
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var placePhotos: String?
@@ -696,45 +696,50 @@ extension NCManageDatabase {
         }
     }
 
-    /// Asynchronously updates a list of `tableMetadata` entries in Realm for a given account and server URL.
+    /// Asynchronously refreshes the `tableMetadata` entries stored in Realm for the specified account and server URL.
     ///
     /// This function performs the following steps:
-    /// 1. Skips all entries with `status != metadataStatusNormal`.
-    /// 2. Deletes existing metadata entries with `status == metadataStatusNormal` that are not in the skip list.
-    /// 3. Copies matching `mediaSearch` from previously deleted metadata to the incoming list.
-    /// 4. Inserts or updates new metadata entries into Realm, except those in the skip list.
+    /// 1. Collects all metadata entries with `status != metadataStatusNormal` and protects them from refresh.
+    /// 2. Deletes existing normal metadata entries for the specified account and server URL, excluding the root entry.
+    /// 3. Skips incoming metadata entries whose `ocId` belongs to a protected non-normal metadata entry.
+    /// 4. Inserts or updates the remaining incoming metadata entries into Realm.
     ///
     /// - Parameters:
     ///   - metadatas: An array of incoming detached `tableMetadata` objects to insert or update.
-    ///   - serverUrl: The server URL associated with the metadata entries.
-    ///   - account: The account identifier used to scope the metadata update.
-    func updateMetadatasFilesAsync(_ metadatas: [tableMetadata], serverUrl: String, account: String) async {
+    ///   - serverUrl: The server URL used to scope the metadata refresh.
+    ///   - account: The account identifier used to scope the metadata refresh.
+    func updateMetadatasFilesAsync(
+        _ metadatas: [tableMetadata],
+        serverUrl: String,
+        account: String
+    ) async {
         await core.performRealmWriteAsync { realm in
+            // Collect metadata currently involved in non-normal operations.
+            // These entries must not be deleted or overwritten by the refresh.
             let ocIdsToSkip = Set(
                 realm.objects(tableMetadata.self)
                     .filter("status != %d", NCGlobal.shared.metadataStatusNormal)
                     .map(\.ocId)
             )
 
+            // Delete current normal metadata for this account and server URL,
+            // excluding the root entry and protected non-normal entries.
             let resultsToDelete = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName)
+                .filter(
+                    "account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@",
+                    account,
+                    serverUrl,
+                    NCGlobal.shared.metadataStatusNormal,
+                    NextcloudKit.shared.nkCommonInstance.rootFileName
+                )
                 .filter { !ocIdsToSkip.contains($0.ocId) }
-
-            // Cache mediaSearch (and anything else needed) before deletion, keyed by ocId.
-            let metadatasByOcId: [String: tableMetadata] = Dictionary(
-                uniqueKeysWithValues: resultsToDelete.map { object in
-                    (object.ocId, tableMetadata(value: object))
-                }
-            )
 
             realm.delete(resultsToDelete)
 
+            // Insert the refreshed metadata list, skipping protected entries.
             for metadata in metadatas {
                 guard !ocIdsToSkip.contains(metadata.ocId) else {
                     continue
-                }
-                if let previous = metadatasByOcId[metadata.ocId] {
-                    metadata.mediaSearch = previous.mediaSearch
                 }
 
                 realm.add(metadata.detachedCopy(), update: .all)
@@ -846,34 +851,109 @@ extension NCManageDatabase {
         }
     }
 
-    /// Syncs the remote and local metadata.
-    /// Returns true if there were changes (additions or deletions), false if everything was already up-to-date.
-    func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata], localMetadatas: [tableMetadata]) async -> Bool {
-        // Set of ocId
-        let remoteOcIds = Set(remoteMetadatas.map { $0.ocId })
-        let localOcIds = Set(localMetadatas.map { $0.ocId })
-
-        // Calculate diffs
-        let toDeleteOcIds = localOcIds.subtracting(remoteOcIds)
-        let toAddOcIds = remoteOcIds.subtracting(localOcIds)
-
-        guard !toDeleteOcIds.isEmpty || !toAddOcIds.isEmpty else {
-            return false // No changes needed
+    func syncPlaceholderMetadatasAsync(
+        files: [NKFile],
+        metadatas: [tableMetadata]
+    ) async -> (inserted: Int, updated: Int, deleted: [tableMetadata]) {
+        guard !files.isEmpty else {
+            return (0, 0, [])
         }
 
-        let toDeleteKeys = Array(toDeleteOcIds)
+        // Build lookup maps for fast diffing.
+        // Using merge strategy avoids crashes when duplicated ocIds are present.
+        let filesByOcId: [String: NKFile] = Dictionary(
+            files.map { ($0.ocId, $0) },
+            uniquingKeysWith: { _, new in new }
+        )
 
-        await core.performRealmWriteAsync { realm in
-            let toAdd = remoteMetadatas.filter { toAddOcIds.contains($0.ocId) }
-            let toDelete = toDeleteKeys.compactMap {
-                realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
+        // Store detached copies because returned metadata objects must remain usable
+        // outside the Realm lifecycle.
+        let metadatasByOcId: [String: tableMetadata] = Dictionary(
+            metadatas.map { ($0.ocId, $0.detachedCopy()) },
+            uniquingKeysWith: { _, new in new }
+        )
+
+        let fileOcIds = Set(filesByOcId.keys)
+        let metadataOcIds = Set(metadatasByOcId.keys)
+
+        // INSERT: Remote files that are not present in the local date-window metadata list.
+        let toInsertOcIds = fileOcIds.subtracting(metadataOcIds)
+
+        // DELETE CANDIDATES: Local metadata entries that are no longer present
+        // in the current remote date-window result.
+        // They are returned to the caller and must be validated/deleted outside this function.
+        let toDeleteOcIds = metadataOcIds.subtracting(fileOcIds)
+
+        let deletedMetadatas: [tableMetadata] = toDeleteOcIds.compactMap { ocId in
+            metadatasByOcId[ocId]
+        }
+
+        // UPDATE: Existing placeholder metadata entries whose etag changed.
+        let toUpdateOcIds: [String] = Array(fileOcIds.intersection(metadataOcIds)).filter { ocId in
+            guard let file = filesByOcId[ocId],
+                  let metadata = metadatasByOcId[ocId] else {
+                return false
             }
 
-            realm.delete(toDelete)
-            realm.add(toAdd, update: .modified)
+            return file.etag != metadata.etag
         }
 
-        return true
+        let hasChanges = !toInsertOcIds.isEmpty ||
+                         !toUpdateOcIds.isEmpty
+
+        guard hasChanges else {
+            return (
+                inserted: 0,
+                updated: 0,
+                deleted: deletedMetadatas
+            )
+        }
+
+        let createMetadata = NCManageDatabaseCreateMetadata()
+
+        await core.performRealmWriteAsync { realm in
+            // MODIFY: Update lightweight fields for existing placeholder metadata entries.
+            if !toUpdateOcIds.isEmpty {
+                let resultsToModify = realm.objects(tableMetadata.self)
+                    .filter("ocId IN %@", Array(toUpdateOcIds))
+
+                for metadata in resultsToModify {
+                    guard let file = filesByOcId[metadata.ocId] else {
+                        continue
+                    }
+
+                    metadata.etag = file.etag
+                    metadata.date = file.date as NSDate
+
+                    if let date = file.creationDate as? NSDate {
+                        metadata.creationDate = date
+                    }
+                }
+            }
+
+            // INSERT: Add placeholder metadata entries for files not currently present in the local date-window metadata list.
+            if !toInsertOcIds.isEmpty {
+                let insertedMetadatas: [tableMetadata] = toInsertOcIds.compactMap { ocId in
+                    guard let file = filesByOcId[ocId] else {
+                        return nil
+                    }
+
+                    let metadata = createMetadata.createMetadata(file)
+                    metadata.placeholder = true
+                    return metadata
+                }
+
+                if !insertedMetadatas.isEmpty {
+                    realm.add(insertedMetadatas, update: .modified)
+                }
+            }
+        }
+
+        return (
+            inserted: toInsertOcIds.count,
+            updated: toUpdateOcIds.count,
+            deleted: deletedMetadatas
+        )
     }
 
     // MARK: - Realm Read
@@ -1014,6 +1094,31 @@ extension NCManageDatabase {
         } ?? []
     }
 
+    /// Returns the ocIds that do not have a matching `tableMetadata` object in the local Realm database.
+    ///
+    /// - Parameter ocIds: The ocId strings to verify against the local Realm database.
+    /// - Returns: A set containing the ocIds that were not found locally. Returns an empty set when all ocIds exist locally.
+    func getMissingLocalMetadataOcIdsAsync(_ ocIds: [String]) async -> Set<String> {
+        let requestedOcIds = Set(ocIds)
+
+        guard !requestedOcIds.isEmpty else {
+            return []
+        }
+
+        let existingOcIdsArray: [String] = await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableMetadata.self)
+                .where {
+                    $0.ocId.in(Array(requestedOcIds))
+                }
+
+            return Array(results.map { $0.ocId })
+        } ?? []
+
+        let existingOcIds = Set(existingOcIdsArray)
+
+        return requestedOcIds.subtracting(existingOcIds)
+    }
+
     func getMetadataFromOcIdAndocIdTransferAsync(_ ocId: String?) async -> tableMetadata? {
         guard let ocId else {
             return nil
@@ -1065,6 +1170,24 @@ extension NCManageDatabase {
                 .first
                 .map { $0.detachedCopy() }
         }
+    }
+
+    /// Returns `true` if at least one metadata entry for the specified account and server URL is marked as placeholder.
+    ///
+    /// - Parameters:
+    ///   - account: The account identifier used to scope the metadata lookup.
+    ///   - serverUrl: The server URL used to scope the metadata lookup.
+    /// - Returns: `true` if at least one matching placeholder metadata exists; otherwise `false`.
+    func getMetadataFolderPlaceholderAsync(account: String, serverUrl: String) async -> Bool {
+        return await core.performRealmReadAsync { realm in
+            !realm.objects(tableMetadata.self)
+                .filter(
+                    "account == %@ AND serverUrl == %@ AND placeholder == true",
+                    account,
+                    serverUrl
+                )
+                .isEmpty
+        } ?? false
     }
 
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
@@ -1369,6 +1492,26 @@ extension NCManageDatabase {
                 .filter("status IN %@", status)
                 .count
         } ?? 0
+    }
+
+    /// Returns only the ocIds that still have a matching metadata row in Realm.
+    ///
+    /// - Parameter ocIds: Candidate media ocIds used by the media viewer.
+    /// - Returns: Valid ocIds preserving the original input order.
+    func getValidMetadataOcIdsAsync(_ ocIds: [String]) async -> [String] {
+        guard !ocIds.isEmpty else {
+            return []
+        }
+
+        return await core.performRealmReadAsync { realm in
+            let existingOcIds = Set(
+                realm.objects(tableMetadata.self)
+                    .filter("ocId IN %@", ocIds)
+                    .map(\.ocId)
+            )
+
+            return ocIds.filter { existingOcIds.contains($0) }
+        } ?? []
     }
 
     func metadataExistsAsync(predicate: NSPredicate) async -> Bool {

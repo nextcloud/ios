@@ -7,27 +7,33 @@ import NextcloudKit
 import Alamofire
 
 extension NCMedia {
-    func searchMediaAsync(path: String = "",
-                          lessDate: Date,
-                          greaterDate: Date,
-                          limit: Int,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions(),
-                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }
-    ) async -> (account: String, files: [NKFile]?, error: NKError) {
+    func searchVerifyNetworkMedia(path: String,
+                                  firstDate: Date,
+                                  lastDate: Date,
+                                  account: String,
+                                  paginate: Bool,
+                                  limit: Int,
+                                  taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                                  update: @escaping (_ files: [NKFile]) -> Void,
+                                  finish: @escaping () -> Void) async {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
-            return (account, nil, .urlError)
+            finish()
+            return
         }
-        let files: [NKFile] = []
+        let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
 
-        let elementDate = "d:getlastmodified"
-        let lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let elementDate = "d:" + global.mediaPropOrder
+        let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+
+        var paginateToken: String?
+        var error = NKError()
+        let paginateCount = 200
+        var page = 0
+        var paginateOffset = 0
 
         let httpBodyString = String(format: getRequestBodySearchMedia(
-            createProperties: options.createProperties,
-            removeProperties: options.removeProperties,
             href: href,
             elementDate: elementDate,
             lessDate: lessDateString,
@@ -36,35 +42,78 @@ extension NCMedia {
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
-            return (account, files, .invalidData)
+            finish()
+            return
         }
 
-        let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
+        while true {
+            var isPaginate: Bool = false
+            let options = NKRequestOptions(timeout: 180,
+                                           taskDescription: self.global.taskDescriptionRetrievesProperties,
+                                           paginate: paginate,
+                                           paginateToken: paginateToken,
+                                           paginateOffset: paginateOffset,
+                                           paginateCount: paginateCount,
+                                           queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        return(results.account, results.files, results.error)
+            let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
+            error = results.error
+
+            if error == .success {
+                if let filesUnordered = results.files {
+                    let files = filesUnordered.sorted {
+                        $0.date > $1.date
+                    }
+                    update(files)
+                }
+                let allHeaderFields = results.responseData?.response?.allHeaderFields
+                if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
+                    paginateToken = result
+                }
+                if let result = nkComm.findHeader("x-nc-paginate", allHeaderFields: allHeaderFields) {
+                    isPaginate = Bool(result) ?? false
+                }
+            } else {
+                finish()
+                break
+            }
+
+            nkLog(info: "\(lessDateString) - \(greaterDateString) - \(isPaginate)", consoleOnly: true)
+
+            if !isPaginate || (results.files?.count ?? 0) < paginateCount {
+                finish()
+                break
+            }
+
+            page += 1
+            paginateOffset = page * paginateCount
+        }
     }
 
-    func getRequestBodySearchMedia(createProperties: [NKProperties]?,
-                                   removeProperties: [NKProperties] = [],
-                                   href: String,
-                                   elementDate: String,
-                                   lessDate: String,
-                                   greaterDate: String,
-                                   limit: String) -> String {
-        // Build the DAV property list (merged create/remove rules)
-        let properties = NKProperties.properties(createProperties: createProperties, removeProperties: removeProperties)
-
+    private func getRequestBodySearchMedia(href: String,
+                                           elementDate: String,
+                                           lessDate: String,
+                                           greaterDate: String,
+                                           limit: String) -> String {
         let request = """
         <?xml version=\"1.0\"?>
         <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
             <d:basicsearch>
 
             <!-- ====================================================== -->
-            <!-- SELECT: properties returned for each matching resource -->
+            <!-- SELECT: return only the Nextcloud internal object id   -->
             <!-- ====================================================== -->
 
             <d:select>
-                <d:prop>\(properties)</d:prop>
+                <d:prop>
+                    <id xmlns="http://owncloud.org/ns"/>
+                    <fileid xmlns="http://owncloud.org/ns"/>
+                    <d:getetag/>
+                    <d:getlastmodified />
+                    <upload_time xmlns="http://nextcloud.org/ns"/>
+                    <size xmlns="http://owncloud.org/ns"/>
+                    <has-preview xmlns="http://nextcloud.org/ns"/>
+                </d:prop>
             </d:select>
 
             <!-- ===================================================== -->
@@ -76,6 +125,40 @@ extension NCMedia {
                     <d:depth>infinity</d:depth>
                 </d:scope>
             </d:from>
+
+            <!-- ===================================================== -->
+            <!-- WHERE:                                                -->
+            <!-- 1) Filter only image and video content types          -->
+            <!-- 2) Apply a date range on elementDate                  -->
+            <!-- ===================================================== -->
+            <d:where>
+                <d:and>
+
+                    <!-- Media type filter -->
+                    <d:or>
+                        <d:like>
+                            <d:prop><d:getcontenttype/></d:prop>
+                            <d:literal>image/%%</d:literal>
+                        </d:like>
+                        <d:like>
+                            <d:prop><d:getcontenttype/></d:prop>
+                            <d:literal>video/%%</d:literal>
+                        </d:like>
+                    </d:or>
+
+                    <!-- Date / numeric range filter LTE / GTE -->
+                    <d:and>
+                        <d:lte>
+                            <d:prop><\(elementDate)/></d:prop>
+                            <d:literal>\(lessDate)</d:literal>
+                        </d:lte>
+                        <d:gte>
+                            <d:prop><\(elementDate)/></d:prop>
+                            <d:literal>\(greaterDate)</d:literal>
+                        </d:gte>
+                    </d:and>
+                </d:and>
+            </d:where>
 
             <!-- ===================================================== -->
             <!-- ORDER BY:                                             -->
@@ -94,41 +177,6 @@ extension NCMedia {
             </d:orderby>
 
             <!-- ===================================================== -->
-            <!-- WHERE:                                                -->
-            <!-- 1) Filter only image and video content types          -->
-            <!-- 2) Apply a numeric/date range on elementDate          -->
-            <!-- ===================================================== -->
-            <d:where>
-                <d:and>
-
-                    <!-- Media type filter -->
-                    <d:or>
-                        <d:like>
-                            <d:prop><d:getcontenttype/></d:prop>
-                            <d:literal>image/%%</d:literal>
-                        </d:like>
-                        <d:like>
-                            <d:prop><d:getcontenttype/></d:prop>
-                            <d:literal>video/%%</d:literal>
-                        </d:like>
-                    </d:or>
-
-                    <!-- Date / numeric range filter -->
-                    <d:and>
-                        <d:lt>
-                            <d:prop><\(elementDate)/></d:prop>
-                            <d:literal>\(lessDate)</d:literal>
-                        </d:lt>
-                        <d:gt>
-                            <d:prop><\(elementDate)/></d:prop>
-                            <d:literal>\(greaterDate)</d:literal>
-                        </d:gt>
-                    </d:and>
-
-                </d:and>
-            </d:where>
-
-            <!-- ===================================================== -->
             <!-- LIMIT: maximum number of results returned             -->
             <!-- ===================================================== -->
             <d:limit>
@@ -138,7 +186,7 @@ extension NCMedia {
             </d:basicsearch>
         </d:searchrequest>
         """
-    return request
+        return request
     }
 }
 

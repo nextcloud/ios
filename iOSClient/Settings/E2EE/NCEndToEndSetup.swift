@@ -25,6 +25,7 @@ class NCEndToEndSetup {
     let global = NCGlobal.shared
     var extractedPublicKey: String?
     var controller: NCMainTabBarController?
+    var options = NKRequestOptions()
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -50,9 +51,13 @@ class NCEndToEndSetup {
     func start() async throws {
         // Clear all keys
         NCPreferences().clearAllKeysEndToEnd(account: session.account)
+        // get version E2EE
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        options = NCNetworkingE2EE().getOptions(account: session.account, capabilities: capabilities)
 
         try await getPublicKey()
         try await getPrivateKey()
+
     }
 
     /// Ensures that a valid user certificate is available.
@@ -67,7 +72,7 @@ class NCEndToEndSetup {
     ///   - `NKError` if certificate is missing or invalid
     ///   - Server errors propagated from NextcloudKit
     private func getPublicKey() async throws {
-        let results = await NextcloudKit.shared.getE2EECertificateAsync(account: session.account)
+        let results = await NextcloudKit.shared.getE2EECertificateAsync(account: session.account, options: options)
 
         switch results.error.errorCode {
         case .zero:
@@ -86,7 +91,7 @@ class NCEndToEndSetup {
             }
 
             // Get certificate from server
-            let results = await NextcloudKit.shared.signE2EECertificateAsync(certificate: csr, account: self.session.account)
+            let results = await NextcloudKit.shared.signE2EECertificateAsync(certificate: csr, account: self.session.account, options: options)
             guard results.error == .success,
                   let certificate = results.certificate
             else {
@@ -134,7 +139,7 @@ class NCEndToEndSetup {
     ///   - `NSUserCancelledError` if user cancels input
     ///   - Server errors propagated from NextcloudKit
     private func getPrivateKey() async throws {
-        let results = await NextcloudKit.shared.getE2EEPrivateKeyAsync(account: self.session.account)
+        let results = await NextcloudKit.shared.getE2EEPrivateKeyAsync(account: self.session.account, options: options)
 
         switch results.error.errorCode {
         case .zero:
@@ -161,7 +166,7 @@ class NCEndToEndSetup {
             NCPreferences().setEndToEndPrivateKey(account: session.account, privateKey: privateKey)
             NCPreferences().setEndToEndPassphrase(account: session.account, passphrase: passphrase)
 
-            let results = await NextcloudKit.shared.getE2EEPublicKeyAsync(account: self.session.account)
+            let results = await NextcloudKit.shared.getE2EEPublicKeyAsync(account: self.session.account, options: options)
             guard results.error == .success,
                   let publicKey = results.publicKey
             else {
@@ -229,7 +234,8 @@ class NCEndToEndSetup {
 
         let storeResults = await NextcloudKit.shared.storeE2EEPrivateKeyAsync(
             privateKey: privateKeyCipher,
-            account: session.account
+            account: session.account,
+            options: options
         )
 
         switch storeResults.error.errorCode {
@@ -250,7 +256,7 @@ class NCEndToEndSetup {
 
             // Fetch server public key
 
-            let publicKeyResults = await NextcloudKit.shared.getE2EEPublicKeyAsync(account: session.account)
+            let publicKeyResults = await NextcloudKit.shared.getE2EEPublicKeyAsync(account: session.account, options: options)
 
             guard publicKeyResults.error == .success,
                   let publicKey = publicKeyResults.publicKey
