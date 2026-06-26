@@ -1467,23 +1467,39 @@ extension NCManageDatabase {
         }
     }
 
-    func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {
+    func getTransferAsync(tranfersSuccess: [tableMetadata], status: [Int], offset: Int, limit: Int) async -> (metadatas: [tableMetadata], inWaiting: Int, inProgress: Int, inError: Int) {
         await core.performRealmReadAsync { realm in
-            let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
+            let allTransfers = realm.objects(tableMetadata.self)
+                .filter("status != 0")
+
+            let excludedIds = Set(tranfersSuccess.compactMap(\.ocIdTransfer))
+
+            let inWaiting = allTransfers.filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting).count
+            let inProgress = allTransfers.filter("status IN %@", NCGlobal.shared.metadatasStatusDownloadingUploading).count
+            let inError = allTransfers.filter("status IN %@", NCGlobal.shared.metadatasStatusInError).count
+
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true),
+                RealmSwift.SortDescriptor(keyPath: "ocId", ascending: true)
             ]
 
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
+            let results = allTransfers
+                .filter("status IN %@", status)
                 .sorted(by: sortDescriptors)
+                .filter { !excludedIds.contains($0.ocIdTransfer) }
 
-            let excludedIds = Set(tranfersSuccess.compactMap { $0.ocIdTransfer })
-            let filtered = results.filter { !excludedIds.contains($0.ocIdTransfer) }
+            let startIndex = min(offset, results.count)
+            let endIndex = min(startIndex + limit, results.count)
+            let metadatas = results[startIndex..<endIndex].map { $0.detachedCopy() }
 
-            return filtered.map { $0.detachedCopy() }
-        } ?? []
+            return (
+                metadatas: metadatas,
+                inWaiting: inWaiting,
+                inProgress: inProgress,
+                inError: inError
+            )
+        } ?? (metadatas: [], inWaiting: 0, inProgress: 0, inError: 0)
     }
 
     func getMetadatasStatusCountAsync(status: [Int]) async -> Int {

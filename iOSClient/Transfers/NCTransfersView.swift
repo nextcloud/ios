@@ -7,7 +7,6 @@ import SwiftUI
 // MARK: - Main View
 
 struct TransfersView: View {
-    @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
 
     private let onClose: (() -> Void)?
@@ -34,9 +33,7 @@ struct TransfersView: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("_close_") {
-                            if let onClose {
-                                onClose()
-                            }
+                            onClose?()
                         }
                     }
                 }
@@ -47,22 +44,108 @@ struct TransfersView: View {
         .presentationDetents([.medium, .large])
     }
 
+    private var emptyFilterTitle: String {
+        switch model.selectedFilter {
+        case .progress:
+            return NSLocalizedString("_no_transfer_in_progress_", comment: "")
+        case .waiting:
+            return NSLocalizedString("_no_transfer_in_waiting_", comment: "")
+        case .error:
+            return NSLocalizedString("_no_transfer_in_error_", comment: "")
+        }
+    }
+
+    private var emptyFilterDescription: String {
+        switch model.selectedFilter {
+        case .progress:
+            return NSLocalizedString("_no_transfer_in_progress_sub_", comment: "")
+        case .waiting:
+            return NSLocalizedString("_no_transfer_in_waiting_sub_", comment: "")
+        case .error:
+            return NSLocalizedString("_no_transfer_in_error_sub_", comment: "")
+        }
+    }
+
+    private var emptyFilterSymbol: String {
+        switch model.selectedFilter {
+        case .progress:
+            return "arrow.up.arrow.down.circle"
+        case .waiting:
+            return "arrow.triangle.2.circlepath"
+        case .error:
+            return "exclamationmark.triangle"
+        }
+    }
+
     @ViewBuilder
     private var contentView: some View {
-        if model.showFlushMessage || (model.metadatas.isEmpty && model.inWaitingCount == 0) {
+        if model.showFlushMessage || (
+            model.inWaitingCount == 0 &&
+            model.inProgressCount == 0 &&
+            model.inErrorCount == 0
+        ) {
             EmptyTransfersView(model: model)
+        } else if model.metadatas.isEmpty {
+            VStack(spacing: 0) {
+                TransfersSummaryHeader(
+                    selectedFilter: model.selectedFilter,
+                    inWaitingCount: model.inWaitingCount,
+                    inProgressCount: model.inProgressCount,
+                    inErrorCount: model.inErrorCount,
+                    onSelect: { filter in
+                        Task {
+                            await model.selectFilter(filter)
+                        }
+                    }
+                )
+                .font(.headline)
+                .padding(.horizontal, 15)
+                .padding(.vertical, 6)
+
+                Spacer()
+
+                ContentUnavailableView(
+                    emptyFilterTitle,
+                    systemImage: emptyFilterSymbol,
+                    description: Text(emptyFilterDescription)
+                )
+
+                Spacer()
+            }
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
+                    selectedFilter: model.selectedFilter,
                     inWaitingCount: model.inWaitingCount,
                     inProgressCount: model.inProgressCount,
-                    inErrorCount: model.inErrorCount
+                    inErrorCount: model.inErrorCount,
+                    onSelect: { filter in
+                        Task {
+                            await model.selectFilter(filter)
+                        }
+                    }
                 ).font(.headline)) {
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
                         }
                         .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                    }
+
+                    if model.selectedFilter == .waiting,
+                       model.inWaitingCount > model.metadatas.count {
+                        Text(
+                            String(
+                                format: NSLocalizedString("_transfers_waiting_shown_", comment: ""),
+                                model.metadatas.count,
+                                model.inWaitingCount
+                            )
+                        )
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 12)
                         .listRowSeparator(.hidden)
                     }
                 }
@@ -75,32 +158,62 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
+    let selectedFilter: TransfersFilter
     let inWaitingCount: Int
     let inProgressCount: Int
     let inErrorCount: Int
+    let onSelect: (TransfersFilter) -> Void
 
     var body: some View {
         HStack(spacing: 8) {
-            summaryPill(title: "_in_waiting_", value: inWaitingCount)
-            summaryPill(title: "_in_progress_", value: inProgressCount)
-            summaryPill(title: "_in_error_", value: inErrorCount)
+            summaryButton(
+                title: "_in_progress_",
+                value: inProgressCount,
+                filter: .progress
+            )
+
+            summaryButton(
+                title: "_in_waiting_",
+                value: inWaitingCount,
+                filter: .waiting
+            )
+
+            summaryButton(
+                title: "_in_error_",
+                value: inErrorCount,
+                filter: .error
+            )
+
             Spacer()
         }
         .padding(.vertical, 6)
     }
 
-    private func summaryPill(title: String, value: Int) -> some View {
-        HStack(spacing: 6) {
-            Text(NSLocalizedString(title, comment: ""))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text("\(value)")
-                .font(.caption)
-                .fontWeight(.semibold)
+    private func summaryButton(
+        title: String,
+        value: Int,
+        filter: TransfersFilter
+    ) -> some View {
+        Button {
+            onSelect(filter)
+        } label: {
+            HStack(spacing: 6) {
+                Text(NSLocalizedString(title, comment: ""))
+                    .font(.caption)
+
+                Text("\(value)")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+            }
+            .foregroundStyle(selectedFilter == filter ? .primary : .secondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                selectedFilter == filter ? AnyShapeStyle(.ultraThinMaterial) : AnyShapeStyle(.clear),
+                in: Capsule()
+            )
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
+        .buttonStyle(.plain)
     }
 }
 
@@ -137,14 +250,8 @@ struct EmptyTransfersView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: model.showFlushMessage) {
-            if model.showFlushMessage {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
-                    flash = true
-                }
-            } else {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    flash = false
-                }
+            withAnimation(flash ? .easeInOut(duration: 0.25) : .spring(response: 0.35, dampingFraction: 0.82)) {
+                flash = model.showFlushMessage
             }
         }
     }
@@ -167,7 +274,8 @@ struct TransferRowView: View {
                     .font(.icon(30))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(item.fileName).font(.headline)
+                    Text(item.fileName)
+                        .font(.headline)
 
                     if !status.status.isEmpty {
                         Text(status.status)
@@ -198,10 +306,7 @@ struct TransferRowView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .stroke(
-                                Color.gray.opacity(0.2),
-                                lineWidth: 2
-                            )
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 2)
                             .frame(width: 36, height: 36)
 
                         Circle()
@@ -213,6 +318,7 @@ struct TransferRowView: View {
                             .rotationEffect(.degrees(-90))
                             .frame(width: 36, height: 36)
                             .animation(.easeInOut(duration: 0.25), value: model.progress(for: item))
+
                         Image(systemName: "stop.fill")
                             .font(.icon(14, weight: .bold))
                             .foregroundStyle(.primary)
@@ -222,6 +328,7 @@ struct TransferRowView: View {
                 .accessibilityLabel(NSLocalizedString("_cancel_", comment: ""))
             }
             .contentShape(Rectangle())
+
             Divider()
         }
         .padding(.horizontal, 15)
@@ -235,9 +342,11 @@ struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
         let metadatas: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
-            tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
-            tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
-            tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full Disk full Disk full Disk full Disk full Disk full Disk full Disk full", errorCode: 1)]
+            tableMetadata(ocId: "2", fileName: "filename 2", size: 7_230_000, status: NCGlobal.shared.metadataStatusUploading),
+            tableMetadata(ocId: "3", fileName: "filename 3", size: 5_230_000, status: NCGlobal.shared.metadataStatusDownloading),
+            tableMetadata(ocId: "4", fileName: "filename 4", size: 7_230_000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full Disk full Disk full Disk full Disk full Disk full Disk full Disk full", errorCode: 1)
+        ]
+
         return TransfersView(previewMetadatas: metadatas)
             .previewDisplayName("Transfers – Preview Items")
     }
