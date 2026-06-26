@@ -424,6 +424,12 @@ final class NCMediaViewerModel: ObservableObject {
         loadingTasksByOcId[ocId] = nil
     }
 
+    func cancelAllDownloads() {
+        Task {
+            await loader.cancelAllDownloads()
+        }
+    }
+
     func setSelectedIndex(_ index: Int) {
         guard ocIds.indices.contains(index) else {
             return
