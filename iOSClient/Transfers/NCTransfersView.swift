@@ -69,9 +69,9 @@ struct TransfersView: View {
     private var emptyFilterSymbol: String {
         switch model.selectedFilter {
         case .progress:
-            return "arrow.triangle.2.circlepath"
+            return "arrow.up.arrow.down.circle"
         case .waiting:
-            return "clock"
+            return "arrow.triangle.2.circlepath"
         case .error:
             return "exclamationmark.triangle"
         }
@@ -135,12 +135,18 @@ struct TransfersView: View {
 
                     if model.selectedFilter == .waiting,
                        model.inWaitingCount > model.metadatas.count {
-                        Text("\(model.metadatas.count) di \(model.inWaitingCount) trasferimenti in attesa")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, 12)
-                            .listRowSeparator(.hidden)
+                        Text(
+                            String(
+                                format: NSLocalizedString("_transfers_waiting_shown_", comment: ""),
+                                model.metadatas.count,
+                                model.inWaitingCount
+                            )
+                        )
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 12)
+                        .listRowSeparator(.hidden)
                     }
                 }
             }

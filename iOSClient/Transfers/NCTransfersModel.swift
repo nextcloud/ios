@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-
 import Foundation
 import NextcloudKit
 
@@ -26,7 +25,6 @@ internal enum TransfersFilter: Sendable {
 final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDelegate {
     @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
-    @Published var isLoading = false
     @Published var showFlushMessage = false
     @Published var inWaitingCount = 0
     @Published var inProgressCount = 0
@@ -34,10 +32,8 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
 
     @Published private(set) var selectedFilter: TransfersFilter = .progress
 
-    private let pageSize = 100
-    @Published private(set) var currentPage = 0
-    @Published private(set) var hasNextPage = true
-    private var isLoadingPage = false
+    private var isLoadingTransfers = false
+    private let transfersLimit = 100
 
     // Dependencies
     private let session: NCSession.Session
@@ -72,7 +68,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     func pollTransfers() async {
         while !Task.isCancelled {
             if !isXcodeRunningForPreviews {
-                await loadPage(currentPage, force: true)
+                await loadTransfers()
             }
             try? await Task.sleep(for: .seconds(0.5))
         }
@@ -85,62 +81,29 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
         }
 
         selectedFilter = filter
-        currentPage = 0
-        hasNextPage = true
-        await loadPage(0, force: true)
+        await loadTransfers()
     }
 
     @MainActor
-    func loadNextPage() async {
-        guard hasNextPage else {
+    private func loadTransfers() async {
+        guard !isLoadingTransfers else {
             return
         }
 
-        await loadPage(currentPage + 1, force: false)
-    }
-
-    @MainActor
-    func loadPreviousPage() async {
-        guard currentPage > 0 else {
-            return
-        }
-
-        await loadPage(currentPage - 1, force: false)
-    }
-
-    @MainActor
-    private func loadPage(_ page: Int, force: Bool) async {
-        guard !isLoadingPage else {
-            return
-        }
-
-        let page = max(0, page)
-        let offset = page * pageSize
-
-        isLoadingPage = true
-        isLoading = true
+        isLoadingTransfers = true
         defer {
-            isLoadingPage = false
-            isLoading = false
+            isLoadingTransfers = false
         }
 
         let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
         let result = await database.getTransferAsync(
             tranfersSuccess: transfersSuccess,
             status: selectedFilter.statuses,
-            offset: offset,
-            limit: pageSize
+            offset: 0,
+            limit: transfersLimit
         )
 
-        guard force || !result.metadatas.isEmpty || page == 0 else {
-            hasNextPage = false
-            return
-        }
-
         metadatas = result.metadatas
-        currentPage = page
-        hasNextPage = result.metadatas.count == pageSize
-
         inWaitingCount = result.inWaiting
         inProgressCount = result.inProgress
         inErrorCount = result.inError

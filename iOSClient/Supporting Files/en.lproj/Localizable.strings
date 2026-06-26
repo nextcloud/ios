@@ -443,6 +443,7 @@
 "_no_transfer_in_waiting_sub_"  = "Transfers waiting to start will appear here.";
 "_no_transfer_in_error_"        = "No transfer errors";
 "_no_transfer_in_error_sub_"    = "Transfers that need your attention will appear here.";
+"_transfers_waiting_shown_"     = "%1$d of %2$d transfers waiting";
 "_no_activity_footer_"              = "No more activities to load";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
