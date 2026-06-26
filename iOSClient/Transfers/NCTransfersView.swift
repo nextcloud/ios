@@ -85,6 +85,33 @@ struct TransfersView: View {
             model.inErrorCount == 0
         ) {
             EmptyTransfersView(model: model)
+        } else if model.metadatas.isEmpty {
+            VStack(spacing: 0) {
+                TransfersSummaryHeader(
+                    selectedFilter: model.selectedFilter,
+                    inWaitingCount: model.inWaitingCount,
+                    inProgressCount: model.inProgressCount,
+                    inErrorCount: model.inErrorCount,
+                    onSelect: { filter in
+                        Task {
+                            await model.selectFilter(filter)
+                        }
+                    }
+                )
+                .font(.headline)
+                .padding(.horizontal, 15)
+                .padding(.vertical, 6)
+
+                Spacer()
+
+                ContentUnavailableView(
+                    emptyFilterTitle,
+                    systemImage: emptyFilterSymbol,
+                    description: Text(emptyFilterDescription)
+                )
+
+                Spacer()
+            }
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
@@ -98,15 +125,6 @@ struct TransfersView: View {
                         }
                     }
                 ).font(.headline)) {
-                    if model.metadatas.isEmpty {
-                        ContentUnavailableView(
-                            emptyFilterTitle,
-                            systemImage: emptyFilterSymbol,
-                            description: Text(emptyFilterDescription)
-                        )
-                        .listRowSeparator(.hidden)
-                    }
-
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
@@ -114,6 +132,7 @@ struct TransfersView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                     }
+
                     if model.selectedFilter == .waiting,
                        model.inWaitingCount > model.metadatas.count {
                         Text("\(model.metadatas.count) di \(model.inWaitingCount) trasferimenti in attesa")
