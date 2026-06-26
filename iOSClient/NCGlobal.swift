@@ -234,6 +234,7 @@ final class NCGlobal: Sendable {
     let metadataStatusTransfers                 = [-2, -3, 2, 3, 10, 11, 12, 13, 14, 15]
 
     let metadatasStatusInWaiting                = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadatasStatusInError                  = [-3, 3]
     let metadatasStatusInWaitingDownloadUpload  = [-1, 1]
     let metadatasStatusDownloadingUploading     = [-2, 2]
 

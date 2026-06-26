@@ -2,8 +2,26 @@
 // SPDX-FileCopyrightText: 2025 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+
 import Foundation
 import NextcloudKit
+
+internal enum TransfersFilter: Sendable {
+    case waiting
+    case progress
+    case error
+
+    var statuses: [Int] {
+        switch self {
+        case .waiting:
+            return NCGlobal.shared.metadatasStatusInWaiting
+        case .progress:
+            return NCGlobal.shared.metadatasStatusDownloadingUploading
+        case .error:
+            return NCGlobal.shared.metadatasStatusInError
+        }
+    }
+}
 
 final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDelegate {
     @Published var metadatas: [tableMetadata] = []
@@ -13,6 +31,13 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     @Published var inWaitingCount = 0
     @Published var inProgressCount = 0
     @Published var inErrorCount = 0
+
+    @Published private(set) var selectedFilter: TransfersFilter = .progress
+
+    private let pageSize = 100
+    @Published private(set) var currentPage = 0
+    @Published private(set) var hasNextPage = true
+    private var isLoadingPage = false
 
     // Dependencies
     private let session: NCSession.Session
@@ -47,34 +72,78 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     func pollTransfers() async {
         while !Task.isCancelled {
             if !isXcodeRunningForPreviews {
-                isLoading = true
-
-                // Items
-                let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
-                let results = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
-                metadatas = results.filter {
-                    self.global.metadataStatusTransfers.contains($0.status)
-                }
-
-                // inWaitingCount
-                let countTransfersSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
-                let countWaiting = await NCManageDatabase.shared.getMetadatasStatusCountAsync(status: NCGlobal.shared.metadatasStatusInWaiting)
-                inWaitingCount = max(0, countWaiting - countTransfersSuccess)
-
-                // inProgressCount
-                inProgressCount = metadatas.compactMap(\.status)
-                    .filter { NCGlobal.shared.metadatasStatusDownloadingUploading.contains($0) }
-                    .count
-
-                // inErrorCount
-                inErrorCount = metadatas.compactMap(\.errorCode)
-                    .filter { $0 != 0 }
-                    .count
-
-                isLoading = false
+                await loadPage(currentPage, force: true)
             }
             try? await Task.sleep(for: .seconds(0.5))
         }
+    }
+
+    @MainActor
+    func selectFilter(_ filter: TransfersFilter) async {
+        guard selectedFilter != filter else {
+            return
+        }
+
+        selectedFilter = filter
+        currentPage = 0
+        hasNextPage = true
+        await loadPage(0, force: true)
+    }
+
+    @MainActor
+    func loadNextPage() async {
+        guard hasNextPage else {
+            return
+        }
+
+        await loadPage(currentPage + 1, force: false)
+    }
+
+    @MainActor
+    func loadPreviousPage() async {
+        guard currentPage > 0 else {
+            return
+        }
+
+        await loadPage(currentPage - 1, force: false)
+    }
+
+    @MainActor
+    private func loadPage(_ page: Int, force: Bool) async {
+        guard !isLoadingPage else {
+            return
+        }
+
+        let page = max(0, page)
+        let offset = page * pageSize
+
+        isLoadingPage = true
+        isLoading = true
+        defer {
+            isLoadingPage = false
+            isLoading = false
+        }
+
+        let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
+        let result = await database.getTransferAsync(
+            tranfersSuccess: transfersSuccess,
+            status: selectedFilter.statuses,
+            offset: offset,
+            limit: pageSize
+        )
+
+        guard force || !result.metadatas.isEmpty || page == 0 else {
+            hasNextPage = false
+            return
+        }
+
+        metadatas = result.metadatas
+        currentPage = page
+        hasNextPage = result.metadatas.count == pageSize
+
+        inWaitingCount = result.inWaiting
+        inProgressCount = result.inProgress
+        inErrorCount = result.inError
     }
 
     func cancel(item: tableMetadata) async {

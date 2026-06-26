@@ -49,19 +49,56 @@ struct TransfersView: View {
 
     @ViewBuilder
     private var contentView: some View {
-        if model.showFlushMessage || (model.metadatas.isEmpty && model.inWaitingCount == 0) {
+        if model.showFlushMessage || (
+            model.inWaitingCount == 0 &&
+            model.inProgressCount == 0 &&
+            model.inErrorCount == 0
+        ) {
             EmptyTransfersView(model: model)
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
+                    selectedFilter: model.selectedFilter,
                     inWaitingCount: model.inWaitingCount,
                     inProgressCount: model.inProgressCount,
-                    inErrorCount: model.inErrorCount
+                    inErrorCount: model.inErrorCount,
+                    onSelect: { filter in
+                        Task {
+                            await model.selectFilter(filter)
+                        }
+                    }
                 ).font(.headline)) {
+                    if model.metadatas.isEmpty {
+                        ContentUnavailableView(
+                            NSLocalizedString("_no_transfer_", comment: ""),
+                            systemImage: "tray",
+                            description: Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
+                        )
+                        .listRowSeparator(.hidden)
+                    }
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
                         }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                    }
+
+                    if !model.metadatas.isEmpty {
+                        TransferPaginationControls(
+                            currentPage: model.currentPage,
+                            hasNextPage: model.hasNextPage,
+                            onPrevious: {
+                                Task {
+                                    await model.loadPreviousPage()
+                                }
+                            },
+                            onNext: {
+                                Task {
+                                    await model.loadNextPage()
+                                }
+                            }
+                        )
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                     }
@@ -75,32 +112,101 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
+    let selectedFilter: TransfersFilter
     let inWaitingCount: Int
     let inProgressCount: Int
     let inErrorCount: Int
+    let onSelect: (TransfersFilter) -> Void
 
     var body: some View {
         HStack(spacing: 8) {
-            summaryPill(title: "_in_waiting_", value: inWaitingCount)
-            summaryPill(title: "_in_progress_", value: inProgressCount)
-            summaryPill(title: "_in_error_", value: inErrorCount)
+            summaryButton(
+                title: "_in_progress_",
+                value: inProgressCount,
+                filter: .progress
+            )
+
+            summaryButton(
+                title: "_in_waiting_",
+                value: inWaitingCount,
+                filter: .waiting
+            )
+
+            summaryButton(
+                title: "_in_error_",
+                value: inErrorCount,
+                filter: .error
+            )
+
             Spacer()
         }
         .padding(.vertical, 6)
     }
 
-    private func summaryPill(title: String, value: Int) -> some View {
-        HStack(spacing: 6) {
-            Text(NSLocalizedString(title, comment: ""))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text("\(value)")
-                .font(.caption)
-                .fontWeight(.semibold)
+    private func summaryButton(
+        title: String,
+        value: Int,
+        filter: TransfersFilter
+    ) -> some View {
+        Button {
+            onSelect(filter)
+        } label: {
+            HStack(spacing: 6) {
+                Text(NSLocalizedString(title, comment: ""))
+                    .font(.caption)
+
+                Text("\(value)")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+            }
+            .foregroundStyle(selectedFilter == filter ? .primary : .secondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                selectedFilter == filter ? AnyShapeStyle(.ultraThinMaterial) : AnyShapeStyle(.clear),
+                in: Capsule()
+            )
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Pagination
+
+struct TransferPaginationControls: View {
+    let currentPage: Int
+    let hasNextPage: Bool
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button {
+                onPrevious()
+            } label: {
+                Label("_previous_", systemImage: "chevron.left")
+            }
+            .disabled(currentPage == 0)
+
+            Spacer()
+
+            Text("\(currentPage + 1)")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Button {
+                onNext()
+            } label: {
+                Label("_next_", systemImage: "chevron.right")
+                    .labelStyle(.titleAndIcon)
+            }
+            .disabled(!hasNextPage)
+        }
+        .buttonStyle(.borderless)
+        .padding(.horizontal, 15)
+        .padding(.vertical, 12)
     }
 }
 
