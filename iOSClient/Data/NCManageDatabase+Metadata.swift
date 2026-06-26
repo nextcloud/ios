@@ -1470,7 +1470,7 @@ extension NCManageDatabase {
     func getTransferAsync(tranfersSuccess: [tableMetadata], status: [Int], offset: Int, limit: Int) async -> (metadatas: [tableMetadata], inWaiting: Int, inProgress: Int, inError: Int) {
         await core.performRealmReadAsync { realm in
             let allTransfers = realm.objects(tableMetadata.self)
-                .filter("status IN %@", NCGlobal.shared.metadataStatusTransfers)
+                .filter("status != 0")
 
             let excludedIds = Set(tranfersSuccess.compactMap(\.ocIdTransfer))
 

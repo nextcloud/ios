@@ -7,7 +7,6 @@ import SwiftUI
 // MARK: - Main View
 
 struct TransfersView: View {
-    @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
 
     private let onClose: (() -> Void)?
@@ -34,9 +33,7 @@ struct TransfersView: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("_close_") {
-                            if let onClose {
-                                onClose()
-                            }
+                            onClose?()
                         }
                     }
                 }
@@ -45,6 +42,39 @@ struct TransfersView: View {
             model.detach()
         }
         .presentationDetents([.medium, .large])
+    }
+
+    private var emptyFilterTitle: String {
+        switch model.selectedFilter {
+        case .progress:
+            return NSLocalizedString("_no_transfer_in_progress_", comment: "")
+        case .waiting:
+            return NSLocalizedString("_no_transfer_in_waiting_", comment: "")
+        case .error:
+            return NSLocalizedString("_no_transfer_in_error_", comment: "")
+        }
+    }
+
+    private var emptyFilterDescription: String {
+        switch model.selectedFilter {
+        case .progress:
+            return NSLocalizedString("_no_transfer_in_progress_sub_", comment: "")
+        case .waiting:
+            return NSLocalizedString("_no_transfer_in_waiting_sub_", comment: "")
+        case .error:
+            return NSLocalizedString("_no_transfer_in_error_sub_", comment: "")
+        }
+    }
+
+    private var emptyFilterSymbol: String {
+        switch model.selectedFilter {
+        case .progress:
+            return "arrow.triangle.2.circlepath"
+        case .waiting:
+            return "clock"
+        case .error:
+            return "exclamationmark.triangle"
+        }
     }
 
     @ViewBuilder
@@ -70,12 +100,13 @@ struct TransfersView: View {
                 ).font(.headline)) {
                     if model.metadatas.isEmpty {
                         ContentUnavailableView(
-                            NSLocalizedString("_no_transfer_", comment: ""),
-                            systemImage: "tray",
-                            description: Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
+                            emptyFilterTitle,
+                            systemImage: emptyFilterSymbol,
+                            description: Text(emptyFilterDescription)
                         )
                         .listRowSeparator(.hidden)
                     }
+
                     ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
@@ -83,24 +114,14 @@ struct TransfersView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                     }
-
-                    if !model.metadatas.isEmpty {
-                        TransferPaginationControls(
-                            currentPage: model.currentPage,
-                            hasNextPage: model.hasNextPage,
-                            onPrevious: {
-                                Task {
-                                    await model.loadPreviousPage()
-                                }
-                            },
-                            onNext: {
-                                Task {
-                                    await model.loadNextPage()
-                                }
-                            }
-                        )
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
+                    if model.selectedFilter == .waiting,
+                       model.inWaitingCount > model.metadatas.count {
+                        Text("\(model.metadatas.count) di \(model.inWaitingCount) trasferimenti in attesa")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 12)
+                            .listRowSeparator(.hidden)
                     }
                 }
             }
@@ -171,45 +192,6 @@ struct TransfersSummaryHeader: View {
     }
 }
 
-// MARK: - Pagination
-
-struct TransferPaginationControls: View {
-    let currentPage: Int
-    let hasNextPage: Bool
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button {
-                onPrevious()
-            } label: {
-                Label("_previous_", systemImage: "chevron.left")
-            }
-            .disabled(currentPage == 0)
-
-            Spacer()
-
-            Text("\(currentPage + 1)")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-
-            Spacer()
-
-            Button {
-                onNext()
-            } label: {
-                Label("_next_", systemImage: "chevron.right")
-                    .labelStyle(.titleAndIcon)
-            }
-            .disabled(!hasNextPage)
-        }
-        .buttonStyle(.borderless)
-        .padding(.horizontal, 15)
-        .padding(.vertical, 12)
-    }
-}
-
 // MARK: - Empty State
 
 struct EmptyTransfersView: View {
@@ -243,14 +225,8 @@ struct EmptyTransfersView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: model.showFlushMessage) {
-            if model.showFlushMessage {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
-                    flash = true
-                }
-            } else {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    flash = false
-                }
+            withAnimation(flash ? .easeInOut(duration: 0.25) : .spring(response: 0.35, dampingFraction: 0.82)) {
+                flash = model.showFlushMessage
             }
         }
     }
@@ -273,7 +249,8 @@ struct TransferRowView: View {
                     .font(.icon(30))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(item.fileName).font(.headline)
+                    Text(item.fileName)
+                        .font(.headline)
 
                     if !status.status.isEmpty {
                         Text(status.status)
@@ -304,10 +281,7 @@ struct TransferRowView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .stroke(
-                                Color.gray.opacity(0.2),
-                                lineWidth: 2
-                            )
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 2)
                             .frame(width: 36, height: 36)
 
                         Circle()
@@ -319,6 +293,7 @@ struct TransferRowView: View {
                             .rotationEffect(.degrees(-90))
                             .frame(width: 36, height: 36)
                             .animation(.easeInOut(duration: 0.25), value: model.progress(for: item))
+
                         Image(systemName: "stop.fill")
                             .font(.icon(14, weight: .bold))
                             .foregroundStyle(.primary)
@@ -328,6 +303,7 @@ struct TransferRowView: View {
                 .accessibilityLabel(NSLocalizedString("_cancel_", comment: ""))
             }
             .contentShape(Rectangle())
+
             Divider()
         }
         .padding(.horizontal, 15)
@@ -341,9 +317,11 @@ struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
         let metadatas: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
-            tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
-            tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
-            tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full Disk full Disk full Disk full Disk full Disk full Disk full Disk full", errorCode: 1)]
+            tableMetadata(ocId: "2", fileName: "filename 2", size: 7_230_000, status: NCGlobal.shared.metadataStatusUploading),
+            tableMetadata(ocId: "3", fileName: "filename 3", size: 5_230_000, status: NCGlobal.shared.metadataStatusDownloading),
+            tableMetadata(ocId: "4", fileName: "filename 4", size: 7_230_000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full Disk full Disk full Disk full Disk full Disk full Disk full Disk full", errorCode: 1)
+        ]
+
         return TransfersView(previewMetadatas: metadatas)
             .previewDisplayName("Transfers – Preview Items")
     }
