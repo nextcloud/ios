@@ -73,6 +73,8 @@
 "_no_albums_"               = "No albums";
 "_denied_album_"            = "This app does not have access to \"Photos\". You can enable access in Privacy Settings.";
 "_denied_camera_"           = "This app does not have access to the \"Camera\". You can enable access in Privacy Settings.";
+"_save_to_camera_roll_"        = "Save to camera roll";
+"_save_to_camera_roll_desc_"   = "When enabled, photos and videos taken with the in-app camera will also be saved to your iOS camera roll.";
 "_force_start_"             = "Force the start";
 "_account_does_not_exist_"  = "The account %@ does not exist. Please log in again.";
 "_sharing_"                 = "Sharing";
