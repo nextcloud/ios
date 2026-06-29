@@ -11,13 +11,12 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
               imageCache.allowExtensions(ext: ext) else {
             return
         }
-        let cost = indexPaths.first?.row ?? 0
         let compactMetadatas = self.dataSource.getCompactMetadatas(indexPaths: indexPaths)
 
         compactMetadatas.forEach { compactMetadata in
             if self.imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext) == nil,
                 let image = self.utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase) {
-                self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext, cost: cost)
+                self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext)
             }
         }
     }

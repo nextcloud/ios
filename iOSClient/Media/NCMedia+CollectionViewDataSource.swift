@@ -168,7 +168,7 @@ extension NCMedia: UICollectionViewDataSource {
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                            currentCell.identifier == compactMetadata.ocId, let image {
-                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext, cost: indexPath.row)
+                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext)
                             currentCell.image.image = image
                         }
                     }

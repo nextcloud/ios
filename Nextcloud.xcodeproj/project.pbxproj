@@ -144,7 +144,6 @@
 		F37208C02BAB63F0006B5430 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F37208BF2BAB63F0006B5430 /* Mantis */; };
 		F37208C22BAB63F0006B5430 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C12BAB63F0006B5430 /* TagListView */; };
 		F37208C42BAB63F0006B5430 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C32BAB63F0006B5430 /* Gzip */; };
-		F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C52BAB63F0006B5430 /* LRUCache */; };
 		F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C72BAB63F1006B5430 /* KeychainAccess */; };
 		F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */; };
 		F389C9F52CEE383300049762 /* SelectAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F389C9F42CEE383300049762 /* SelectAlbumView.swift */; };
@@ -411,7 +410,6 @@
 		F74BAE172C7E2F4E0028D4FA /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F74C0436253F1CDC009762AB /* NCShares.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C0434253F1CDC009762AB /* NCShares.swift */; };
 		F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74C0435253F1CDC009762AB /* NCShares.storyboard */; };
-		F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F74C863C2AEFBFD9009A1D4A /* LRUCache */; };
 		F74D50352C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D50342C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */; };
 		F74D50362C9856D300BBBF4C /* NCCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */; };
 		F74E3EEB2FB0AD8500252FA0 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74E3EEA2FB0AD7800252FA0 /* Notification+Extension.swift */; };
@@ -554,7 +552,6 @@
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B649C2ADFFAED00014640 /* NCImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B649B2ADFFAED00014640 /* NCImageCache.swift */; };
-		F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F76B649D2ADFFDEC00014640 /* LRUCache */; };
 		F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
 		F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */; };
@@ -933,7 +930,6 @@
 		F7E742FA2EC0A5BC00E2362A /* NCManageDatabase+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */; };
 		F7E742FB2EC0A5FD00E2362A /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
 		F7E742FC2EC0A5FD00E2362A /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
-		F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */; };
 		F7E8A391295DC5E0006CB2D0 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
 		F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
@@ -1897,7 +1893,6 @@
 		F7E41315294A19B300839300 /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommentsCell.swift; sourceTree = "<group>"; };
-		F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewDownloadThumbnail.swift; sourceTree = "<group>"; };
 		F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Video.swift"; sourceTree = "<group>"; };
 		F7EDBB4A2FA89F6500098C42 /* NCLivePhotoViewerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLivePhotoViewerContentView.swift; sourceTree = "<group>"; };
@@ -1982,7 +1977,6 @@
 				F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */,
 				F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */,
 				F37208C02BAB63F0006B5430 /* Mantis in Frameworks */,
-				F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */,
 				F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */,
 				F37208B22BAB63EF006B5430 /* DropDown in Frameworks */,
 				F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */,
@@ -2017,7 +2011,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
-				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
 				F70557B92ED44E4700135623 /* LucidBanner in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
@@ -2084,7 +2077,6 @@
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
-				F76B649E2ADFFDEC00014640 /* LRUCache in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2690,7 +2682,6 @@
 				F7D4BF002CA1831600A5E746 /* NCCollectionViewCommonPinchGesture.swift */,
 				F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */,
 				F7C1EEA425053A9C00866ACC /* NCCollectionViewDataSource.swift */,
-				F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
 			);
 			path = "Collection Common";
@@ -3713,7 +3704,6 @@
 				F37208BF2BAB63F0006B5430 /* Mantis */,
 				F37208C12BAB63F0006B5430 /* TagListView */,
 				F37208C32BAB63F0006B5430 /* Gzip */,
-				F37208C52BAB63F0006B5430 /* LRUCache */,
 				F37208C72BAB63F1006B5430 /* KeychainAccess */,
 			);
 			productName = NextcloudUITests;
@@ -3790,7 +3780,6 @@
 				F77CB6A82AA08053000C3CA4 /* OpenSSL */,
 				F7A560472AE15D5000BE8FD6 /* Queuer */,
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
-				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
 				F70557B82ED44E4700135623 /* LucidBanner */,
 			);
@@ -3887,7 +3876,6 @@
 				F7D56B192972405500FA46C4 /* Mantis */,
 				F7A1050D29E587AF00FFD92B /* TagListView */,
 				F7F623B42A5EF4D30022D3D4 /* Gzip */,
-				F76B649D2ADFFDEC00014640 /* LRUCache */,
 				F760DE022AE66EA80027D78A /* KeychainAccess */,
 				F3A0479D2BD268B500658E7B /* PopupView */,
 				F7160A812BE933390034DCB3 /* RealmSwift */,
@@ -4093,7 +4081,6 @@
 				F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */,
 				F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */,
 				F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */,
-				F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */,
 				F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */,
 				F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */,
@@ -4913,7 +4900,6 @@
 				F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */,
 				F70557BD2ED44F1800135623 /* UploadBannerView.swift in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
-				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,
 				F3C587AE2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
@@ -6237,7 +6223,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6305,7 +6291,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6546,14 +6532,6 @@
 				minimumVersion = 4.0.0;
 			};
 		};
-		F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nicklockwood/LRUCache";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.7;
-			};
-		};
 		F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FabrizioBrancati/Queuer";
@@ -6788,11 +6766,6 @@
 			package = F7F623B32A5EF4D30022D3D4 /* XCRemoteSwiftPackageReference "GzipSwift" */;
 			productName = Gzip;
 		};
-		F37208C52BAB63F0006B5430 /* LRUCache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
-			productName = LRUCache;
-		};
 		F37208C72BAB63F1006B5430 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
@@ -6918,11 +6891,6 @@
 			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
-		F74C863C2AEFBFD9009A1D4A /* LRUCache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
-			productName = LRUCache;
-		};
 		F753BA92281FD8020015BFB6 /* EasyTipView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */;
@@ -6962,11 +6930,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
-		};
-		F76B649D2ADFFDEC00014640 /* LRUCache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76B649A2ADFFAD200014640 /* XCRemoteSwiftPackageReference "LRUCache" */;
-			productName = LRUCache;
 		};
 		F76DA962277B760E0082465B /* Queuer */ = {
 			isa = XCSwiftPackageProductDependency;
