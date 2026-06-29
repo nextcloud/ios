@@ -78,7 +78,7 @@ extension NCCollectionViewCommon {
             DispatchQueue.global(qos: .userInteractive).async {
                 let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
                 if let image {
-                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
                     DispatchQueue.main.async {
                         cell.previewImg?.image = image
                         cell.previewImg?.contentMode = .scaleAspectFill
