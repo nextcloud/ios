@@ -55,16 +55,16 @@ class NCContextMenuPlus: NSObject {
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
 
-        var menuActionElement: [UIMenuElement] = []
-        var menuE2EEElement: [UIMenuElement] = []
-        var menuTextElement: [UIMenuElement] = []
+        var menuActionElements: [UIMenuElement] = []
+        var menuFolderElements: [UIMenuElement] = []
+        var menuTextElements: [UIMenuElement] = []
         var menuDirectEditingElements: [UIMenuElement] = []
         var menuRichDocumentElements: [UIMenuElement] = []
 
         // ------------------------------- ACTION
 
-        menuActionElement.append(UIAction(title: NSLocalizedString("_upload_photos_videos_", comment: ""),
-                                          image: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElements.append(UIAction(title: NSLocalizedString("_upload_photos_videos_", comment: ""),
+                                           image: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                 if hasPermission {
                     DispatchQueue.main.async {
@@ -74,22 +74,22 @@ class NCContextMenuPlus: NSObject {
             }
         })
 
-        menuActionElement.append(UIAction(title: NSLocalizedString("_upload_file_", comment: ""),
-                                          image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElements.append(UIAction(title: NSLocalizedString("_upload_file_", comment: ""),
+                                           image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             DispatchQueue.main.async {
                 controller.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: false, allowsMultipleSelection: true)
             }
         })
 
-        menuActionElement.append(UIAction(title: NSLocalizedString("_scans_document_", comment: ""),
-                                          image: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElements.append(UIAction(title: NSLocalizedString("_scans_document_", comment: ""),
+                                           image: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             DispatchQueue.main.async {
                 NCDocumentCamera.shared.openScannerDocument(viewController: controller)
             }
         })
 
-        menuActionElement.append(UIAction(title: NSLocalizedString("_create_voice_memo_", comment: ""),
-                                          image: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElements.append(UIAction(title: NSLocalizedString("_create_voice_memo_", comment: ""),
+                                           image: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                 if hasPermission {
                     DispatchQueue.main.async {
@@ -104,8 +104,8 @@ class NCContextMenuPlus: NSObject {
             }
         })
 
-        menuActionElement.append(UIAction(title: titleCreateFolder,
-                                          image: imageCreateFolder) { _ in
+        menuFolderElements.append(UIAction(title: titleCreateFolder,
+                                           image: imageCreateFolder) { _ in
             DispatchQueue.main.async {
                 let alertController = UIAlertController.createFolderWith(
                     serverUrl: serverUrl,
@@ -129,8 +129,8 @@ class NCContextMenuPlus: NSObject {
         if serverUrl == utilityFileSystem.getHomeServer(session: session),
            NCPreferences().isEndToEndEnabled(account: session.account),
            isNetworkReachable {
-            menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
-                                            image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
+            menuFolderElements.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
+                                               image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 DispatchQueue.main.async {
                     let alertController = UIAlertController.createFolderWith(
                         serverUrl: serverUrl,
@@ -157,8 +157,8 @@ class NCContextMenuPlus: NSObject {
            directory?.richWorkspace == nil,
            !isDirectoryE2EE,
            isNetworkReachable {
-            menuTextElement.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
-                                            image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            menuTextElements.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
+                                             image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 Task { @MainActor in
                     let richWorkspaceCommon = NCRichWorkspaceCommon()
                     if let viewController = controller.currentViewController() {
@@ -179,8 +179,8 @@ class NCContextMenuPlus: NSObject {
         if isNetworkReachable,
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
            !isDirectoryE2EE {
-            menuTextElement.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
-                                            image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            menuTextElements.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
+                                             image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 Task {
                     let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
                     let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -276,9 +276,17 @@ class NCContextMenuPlus: NSObject {
             }
         }
 
-        let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
-        let menuText = UIMenu(title: "", options: .displayInline, children: menuTextElement)
-        let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
+        let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElements)
+        // FOLDER
+        let menuFolder = UIMenu(title: "", options: .displayInline, children: menuFolderElements)
+        if menuFolderElements.count > 1 {
+            menuFolder.preferredElementSize = .medium
+        }
+        // TEXT
+        let menuText = UIMenu(title: "", options: .displayInline, children: menuTextElements)
+        if menuTextElements.count > 1 {
+            menuText.preferredElementSize = .medium
+        }
         // EURO OFFICE
         let menuDirectEditing = UIMenu(title: "", options: .displayInline, children: menuDirectEditingElements)
         menuDirectEditing.preferredElementSize = .medium
@@ -286,7 +294,8 @@ class NCContextMenuPlus: NSObject {
         let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElements)
         menuRichDocument.preferredElementSize = .medium
 
-        let plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuDirectEditing])
+        // MENU PLUS
+        let plusMenu = UIMenu(children: [menuAction, menuFolder, menuText, menuRichDocument, menuDirectEditing])
 
         let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
         let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
