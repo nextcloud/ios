@@ -4,6 +4,7 @@
 
 import SwiftUI
 import UIKit
+import NextcloudKit
 
 struct NCShareDetailsView: View {
     @State private var model: NCShareDetailsGovernanceModel
@@ -17,38 +18,50 @@ struct NCShareDetailsView: View {
             Section(header:
                 Text(NSLocalizedString("_governance_", comment: "")).font(.headline)
             ) {
-                HStack {
-                    Text(NSLocalizedString("_sensitivity_label_", comment: ""))
-                        .cappedFont(.body, maxDynamicType: .accessibility2)
-                    Spacer()
-                    Picker("", selection: $model.selectedSensitivityLabel) {
-                        ForEach(model.getSensitivityLabels()) { label in
-                            Label(label.localizedName, systemImage: label.systemImageName).tag(label)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                }
-                .onChange(of: model.selectedSensitivityLabel) { _, newValue in
-                    model.setSensitivityLabel(newValue)
+                labelPicker(
+                    title: "_sensitivity_label_",
+                    labels: model.sensitivityLabels,
+                    selection: $model.selectedSensitivityLabelID
+                ) { newValue in
+                    await model.applySensitivityLabel(newValue)
                 }
 
-                HStack {
-                    Text(NSLocalizedString("_file_retention_", comment: ""))
-                        .cappedFont(.body, maxDynamicType: .accessibility2)
-                    Spacer()
-                    Picker("", selection: $model.selectedRetentionPolicy) {
-                        ForEach(model.getRetentionPolicies()) { policy in
-                            Label(policy.localizedName, systemImage: policy.systemImageName).tag(policy)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                }
-                .onChange(of: model.selectedRetentionPolicy) { _, newValue in
-                    model.setRetentionPolicy(newValue)
+                labelPicker(
+                    title: "_file_retention_",
+                    labels: model.retentionLabels,
+                    selection: $model.selectedRetentionLabelID
+                ) { newValue in
+                    await model.applyRetentionLabel(newValue)
                 }
             }
         }
         .tint(Color(NCBrandColor.shared.getElement(account: model.account)))
+        .task {
+            await model.load()
+        }
+    }
+
+    private func labelPicker(
+        title: String,
+        labels: [NKGovernanceLabel],
+        selection: Binding<String>,
+        onChange: @escaping (String) async -> Void
+    ) -> some View {
+        HStack {
+            Text(NSLocalizedString(title, comment: ""))
+                .cappedFont(.body, maxDynamicType: .accessibility2)
+            Spacer()
+            Picker("", selection: selection) {
+                Text(NSLocalizedString("_none_", comment: "")).tag("")
+                ForEach(labels, id: \.id) { label in
+                    Text(label.name).tag(label.id)
+                }
+            }
+            .pickerStyle(.menu)
+        }
+        .onChange(of: selection.wrappedValue) { _, newValue in
+            Task { await onChange(newValue) }
+        }
     }
 }
 

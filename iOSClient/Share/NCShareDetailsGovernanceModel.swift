@@ -5,55 +5,26 @@
 import Foundation
 import NextcloudKit
 
+enum GovernanceViewState {
+    case loading
+    case selectedLabelsUpdated(entityLabels: NKGovernanceEntityLabels, availableSensitivityLabels: [NKGovernanceLabel], availableRetentionLabels: [NKGovernanceLabel])
+    case error(Error)
+}
+
 @MainActor
 @Observable
 final class NCShareDetailsGovernanceModel {
-    enum SensitivityLabel: String, CaseIterable, Identifiable {
-        case publicLabel, internalUseOnly, restricted
+    private(set) var sensitivityLabels: [NKGovernanceLabel] = []
+    private(set) var retentionLabels: [NKGovernanceLabel] = []
+//    private(set) var isLoading = false
 
-        var id: String { rawValue }
+    var state: GovernanceViewState = .loading
 
-        var localizedName: String {
-            switch self {
-            case .publicLabel:     return NSLocalizedString("_public_", comment: "")
-            case .internalUseOnly: return NSLocalizedString("_internal_use_only_", comment: "")
-            case .restricted:      return NSLocalizedString("_restricted_", comment: "")
-            }
-        }
+    var selectedSensitivityLabelID = ""
+    var selectedRetentionLabelID = ""
 
-        var systemImageName: String {
-            switch self {
-            case .publicLabel:     return "link"
-            case .internalUseOnly: return "person.2"
-            case .restricted:      return "xmark"
-            }
-        }
-    }
-
-    enum RetentionPolicy: String, CaseIterable, Identifiable {
-        case publicPolicy, internalUseOnly, restricted
-
-        var id: String { rawValue }
-
-        var localizedName: String {
-            switch self {
-            case .publicPolicy:    return NSLocalizedString("_public_", comment: "")
-            case .internalUseOnly: return NSLocalizedString("_internal_use_only_", comment: "")
-            case .restricted:      return NSLocalizedString("_restricted_", comment: "")
-            }
-        }
-
-        var systemImageName: String {
-            switch self {
-            case .publicPolicy:    return "link"
-            case .internalUseOnly: return "person.2"
-            case .restricted:      return "xmark"
-            }
-        }
-    }
-
-    var selectedSensitivityLabel: SensitivityLabel = .publicLabel
-    var selectedRetentionPolicy: RetentionPolicy = .publicPolicy
+    private var appliedSensitivityLabelID = ""
+    private var appliedRetentionLabelID = ""
 
     private let metadata: tableMetadata
 
@@ -63,19 +34,53 @@ final class NCShareDetailsGovernanceModel {
 
     var account: String { metadata.account }
 
-    func getSensitivityLabels() -> [SensitivityLabel] {
-        SensitivityLabel.allCases
+    private var entityID: String { metadata.fileId }
+
+    func load() async {
+        async let sensitivity = NextcloudKit.shared.getGovernanceAvailableSensitivityLabels(entityId: entityID, account: account)
+        async let retention = NextcloudKit.shared.getGovernanceAvailableRetentionLabels(entityId: entityID, account: account)
+        async let entity = NextcloudKit.shared.getGovernanceLabels(entityId: entityID, account: account)
+
+        sensitivityLabels = await sensitivity.labels ?? []
+        retentionLabels = await retention.labels ?? []
+
+        guard let entityLabels = await entity.labels,
+        let sensitivityLabels = await sensitivity.labels,
+        let retentionLabels = await retention.labels
+        else { return }
+//        appliedSensitivityLabelID = entityLabels?.sensitivity?.id ?? ""
+//        appliedRetentionLabelID = entityLabels?.retention.first?.id ?? ""
+//        selectedSensitivityLabelID = appliedSensitivityLabelID
+//        selectedRetentionLabelID = appliedRetentionLabelID
+
+        state = .selectedLabelsUpdated(entityLabels: entityLabels, availableSensitivityLabels: sensitivityLabels, availableRetentionLabels: retentionLabels)
     }
 
-    func getRetentionPolicies() -> [RetentionPolicy] {
-        RetentionPolicy.allCases
+    func applySensitivityLabel(_ id: String) async {
+        guard id != appliedSensitivityLabelID else { return }
+
+        if await applyLabel(type: .sensitivity, newID: id, appliedID: appliedSensitivityLabelID) {
+            appliedSensitivityLabelID = id
+        } else {
+            selectedSensitivityLabelID = appliedSensitivityLabelID
+        }
     }
 
-    func setSensitivityLabel(_ label: SensitivityLabel) {
-        selectedSensitivityLabel = label
+    func applyRetentionLabel(_ id: String) async {
+        guard id != appliedRetentionLabelID else { return }
+
+        if await applyLabel(type: .retention, newID: id, appliedID: appliedRetentionLabelID) {
+            appliedRetentionLabelID = id
+        } else {
+            selectedRetentionLabelID = appliedRetentionLabelID
+        }
     }
 
-    func setRetentionPolicy(_ policy: RetentionPolicy) {
-        selectedRetentionPolicy = policy
+    private func applyLabel(type: NKGovernanceLabelType, newID: String, appliedID: String) async -> Bool {
+        if newID.isEmpty {
+            return await NextcloudKit.shared.removeGovernanceLabel(entityId: entityID, labelType: type, labelId: appliedID, account: account).error == .success
+        }
+
+        return await NextcloudKit.shared.setGovernanceLabel(entityId: entityID, labelType: type, labelId: newID, account: account).error == .success
     }
 }

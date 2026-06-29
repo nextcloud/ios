@@ -827,6 +827,4 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_governance_"                      = "Governance";
 "_sensitivity_label_"               = "Sensitivity label";
 "_file_retention_"                  = "File retention";
-"_public_"                          = "Public";
-"_internal_use_only_"               = "Internal use only";
-"_restricted_"                      = "Restricted";
+"_none_"                            = "None";
