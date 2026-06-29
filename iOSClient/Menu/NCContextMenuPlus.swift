@@ -58,8 +58,8 @@ class NCContextMenuPlus: NSObject {
         var menuActionElement: [UIMenuElement] = []
         var menuE2EEElement: [UIMenuElement] = []
         var menuTextElement: [UIMenuElement] = []
-        var menuDirectEditingElement: [UIMenuElement] = []
-        var menuRichDocumentElement: [UIMenuElement] = []
+        var menuDirectEditingElements: [UIMenuElement] = []
+        var menuRichDocumentElements: [UIMenuElement] = []
 
         // ------------------------------- ACTION
 
@@ -197,7 +197,7 @@ class NCContextMenuPlus: NSObject {
 
             // ------------------------------- COLLABORA
             if capabilities.richDocumentsEnabled {
-                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
+                menuRichDocumentElements.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
                                                         image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
@@ -209,7 +209,7 @@ class NCContextMenuPlus: NSObject {
                     }
                 })
 
-                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
+                menuRichDocumentElements.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
                                                         image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
@@ -221,7 +221,7 @@ class NCContextMenuPlus: NSObject {
                     }
                 })
 
-                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
+                menuRichDocumentElements.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
                                                         image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
                     Task { @MainActor in
                         let createDocument = NCCreate()
@@ -248,8 +248,8 @@ class NCContextMenuPlus: NSObject {
                     }
                     .sorted { $0.1.sortOrder < $1.1.sortOrder }
 
-                for (creator, info) in sortedCreators {
-                    menuDirectEditingElement.append(UIAction(
+                let editorActions: [UIMenuElement] = sortedCreators.map { creator, info in
+                    UIAction(
                         title: NSLocalizedString(info.titleKey, comment: ""),
                         image: utility.loadImage(named: info.icon, colors: [info.iconColor])
                     ) { _ in
@@ -269,16 +269,22 @@ class NCContextMenuPlus: NSObject {
                             let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
                             await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: editorId, creatorId: creator.identifier, templateId: templateIdentifier, account: session.account)
                         }
-                    })
+                    }
                 }
+
+                menuDirectEditingElements.append(contentsOf: editorActions)
             }
         }
 
         let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
         let menuText = UIMenu(title: "", options: .displayInline, children: menuTextElement)
         let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
-        let menuDirectEditing = UIMenu(title: "", options: .displayInline, children: menuDirectEditingElement)
-        let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
+        // EURO OFFICE
+        let menuDirectEditing = UIMenu(title: "", options: .displayInline, children: menuDirectEditingElements)
+        menuDirectEditing.preferredElementSize = .medium
+        // COLLABORA
+        let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElements)
+        menuRichDocument.preferredElementSize = .medium
 
         let plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuDirectEditing])
 
