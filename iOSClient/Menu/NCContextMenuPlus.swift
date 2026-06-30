@@ -17,6 +17,7 @@ class NCContextMenuPlus: NSObject {
 
     let menuToolbar: UIToolbar?
     let controller: NCMainTabBarController?
+    private var capabilitiesSignature: String?
 
     internal var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
@@ -55,10 +56,18 @@ class NCContextMenuPlus: NSObject {
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
         let creatorsByEditor = Dictionary(grouping: capabilities.directEditingCreators, by: \.editor)
+        let directEditingSignature = capabilities.directEditingCreators
+            .sorted { $0.identifier < $1.identifier }
+            .map { creator in
+                "\(creator.identifier)|\(creator.editor)|\(creator.ext)|\(creator.mimetype)|\(creator.templates)"
+            }
+            .joined(separator: ";")
+        let currentCapabilitiesSignature = "\(session.account)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)"
+        let capabilitiesChanged = capabilitiesSignature != currentCapabilitiesSignature
+        capabilitiesSignature = currentCapabilitiesSignature
 
         var menuActionElements: [UIMenuElement] = []
         var menuFolderElements: [UIMenuElement] = []
-        var menuFolderInfoElements: [UIMenuElement] = []
         var menuTextElements: [UIMenuElement] = []
         var menuRichDocumentElements: [UIMenuElement] = []
         var menuDirectEditingTextElements: [UIMenuElement] = []
@@ -154,16 +163,16 @@ class NCContextMenuPlus: NSObject {
             })
         }
 
-        // FOLDER INFO
+        // FOLDER INFO + TEXT
         //
         if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v34) {
-            // USE DIRECT EDITING
+            // FOLDER INFO
             if let textCreators = creatorsByEditor["text"],
                !textCreators.isEmpty,
                directory?.richWorkspace == nil,
                !isDirectoryE2EE,
                isNetworkReachable {
-                menuFolderInfoElements.append(
+                menuTextElements.append(
                     UIAction(
                         title: NSLocalizedString("_add_folder_info_", comment: ""),
                         image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
@@ -191,12 +200,12 @@ class NCContextMenuPlus: NSObject {
                 })
             }
         } else {
-            // USE RICHDOCUMENT TEXT
+            // FOLDER INFO
             if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v18),
                directory?.richWorkspace == nil,
                !isDirectoryE2EE,
                isNetworkReachable {
-                menuFolderInfoElements.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
+                menuTextElements.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
                                                        image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                     Task { @MainActor in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
@@ -206,7 +215,7 @@ class NCContextMenuPlus: NSObject {
                     }
                 })
             }
-
+            // TEXT
             if isNetworkReachable,
                let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
                !isDirectoryE2EE {
@@ -363,19 +372,13 @@ class NCContextMenuPlus: NSObject {
         // ACTIONS
         let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElements)
 
-        // FOLDER INFO
-        let menuFolderInfo = UIMenu(title: "", options: .displayInline, children: menuFolderInfoElements)
+        // TEXT
+        let menuText = UIMenu(title: "", options: .displayInline, children: menuTextElements)
 
         // FOLDER
         let menuFolder = UIMenu(title: "", options: .displayInline, children: menuFolderElements)
         if menuFolderElements.count > 1 {
             menuFolder.preferredElementSize = .medium
-        }
-
-        // NEXTCLOUD TEXT
-        let menuText = UIMenu(title: "", options: .displayInline, children: menuTextElements)
-        if menuTextElements.count > 1 {
-            menuText.preferredElementSize = .medium
         }
 
         // EUROOFFICE - ONLYOFFICE
@@ -400,17 +403,23 @@ class NCContextMenuPlus: NSObject {
         menuRichDocumentOffice.preferredElementSize = .medium
 
         // MENU PLUS
-        var plusMenuElements: [UIMenuElement] = [menuAction, menuFolderInfo]
+        var plusMenuElements: [UIMenuElement] = [menuAction, menuText]
         if let menuOffice {
             plusMenuElements.append(menuOffice)
         }
-        plusMenuElements.append(contentsOf: [menuFolder, menuText, menuRichDocumentOffice])
+        plusMenuElements.append(contentsOf: [menuFolder, menuRichDocumentOffice])
 
         let plusMenu = UIMenu(children: plusMenuElements)
 
         // TOOLBAR
         let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
         let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
+
+        if let plusItem = menuToolbar.items?.first,
+           plusItem.menu != nil,
+           !capabilitiesChanged {
+            return
+        }
 
         if let plusItem = menuToolbar.items?.first {
             plusItem.menu = plusMenu

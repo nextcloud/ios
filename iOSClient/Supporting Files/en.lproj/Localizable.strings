@@ -504,9 +504,9 @@
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
-"_create_new_document_"             = "Create new document";
-"_create_new_spreadsheet_"          = "Create new spreadsheet";
-"_create_new_presentation_"         = "Create new presentation";
+"_create_new_document_"             = "Document";
+"_create_new_spreadsheet_"          = "Spreadsheet";
+"_create_new_presentation_"         = "Presentation";
 "_go_online_"                       = "Go online to see the document";
 "_intro_1_title_"                   = "Keep your data secure and under your control";
 "_intro_2_title_"                   = "Secure collaboration & file exchange";
