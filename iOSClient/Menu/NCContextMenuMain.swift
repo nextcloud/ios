@@ -109,6 +109,16 @@ class NCContextMenuMain: NSObject {
             )
         }
 
+        if metadata.isAvailableDirectEditingEditorView {
+            let availableEditors = utility.editorsDirectEditing(
+                account: metadata.account,
+                contentType: metadata.contentType
+            ).map { $0.lowercased() }
+            if availableEditors.contains("eurooffice") {
+                menuElements.append(makeOpenWithOffice(metadata: metadata, selectedEditor: "eurooffice"))
+            }
+        }
+
         addE2EEActions(metadata: metadata, capabilities: capabilities, mainActionsMenu: &menuElements)
 
         if NCNetworking.shared.isOnline,
@@ -306,6 +316,21 @@ class NCContextMenuMain: NSObject {
                 )
                 popup.backgroundAlpha = 0
                 self.viewController.present(popup, animated: true)
+            }
+        }
+    }
+
+    // MARK: - Open with Office
+
+    private func makeOpenWithOffice(metadata: tableMetadata, selectedEditor: String) -> UIAction {
+        return UIAction(
+            title: NSLocalizedString("_open_in_office_", comment: ""),
+            image: UIImage(systemName: "doc.richtext")
+        ) { _ in
+            Task {
+                if let vc = await NCViewer().getViewerController(metadata: metadata, image: nil, delegate: self.viewController, viewerTransitionSource: nil, selectedEditor: selectedEditor) {
+                    self.viewController.navigationController?.pushViewController(vc, animated: true)
+                }
             }
         }
     }
