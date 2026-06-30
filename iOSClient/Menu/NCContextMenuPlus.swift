@@ -156,7 +156,7 @@ class NCContextMenuPlus: NSObject {
 
         // FOLDER INFO
         //
-        if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33) {
+        if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v34) {
             // USE DIRECT EDITING
             if let textCreators = creatorsByEditor["text"],
                !textCreators.isEmpty,
@@ -201,15 +201,7 @@ class NCContextMenuPlus: NSObject {
                     Task { @MainActor in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
                         if let viewController = controller.currentViewController() {
-                            if await NCManageDatabase.shared.getMetadataAsync(
-                                predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
-                                                       session.account,
-                                                       serverUrl,
-                                                       NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
-                                richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: controller, session: session)
-                            } else {
-                                richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: controller, session: session)
-                            }
+                            richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, controller: controller, session: session)
                         }
                     }
                 })
