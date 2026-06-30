@@ -14,28 +14,38 @@ struct NCShareDetailsView: View {
     }
 
     var body: some View {
-        Form {
-            Section(header:
-                Text(NSLocalizedString("_governance_", comment: "")).font(.headline)
-            ) {
-                labelPicker(
-                    title: "_sensitivity_label_",
-                    labels: model.sensitivityLabels,
-                    selection: $model.selectedSensitivityLabelID
-                ) { newValue in
-                    await model.applySensitivityLabel(newValue)
-                }
+        ZStack {
+            switch model.state {
+                case .loading:
+                    Text("Loading")
+                case .loaded(let data):
+                    Form {
+                        Section(header:
+                                    Text(NSLocalizedString("_governance_", comment: "")).font(.headline)
+                        ) {
+                            labelPicker(
+                                title: "_sensitivity_label_",
+                                labels: data.availableSensitivityLabels,
+                                selection: $model.selectedSensitivityLabelID
+                            ) { oldValue, newValue in
+                                await model.applySensitivityLabel(from: oldValue, to: newValue)
+                            }
 
-                labelPicker(
-                    title: "_file_retention_",
-                    labels: model.retentionLabels,
-                    selection: $model.selectedRetentionLabelID
-                ) { newValue in
-                    await model.applyRetentionLabel(newValue)
-                }
+                            labelPicker(
+                                title: "_file_retention_",
+                                labels: data.availableRetentionLabels,
+                                selection: $model.selectedRetentionLabelID
+                            ) { oldValue, newValue in
+                                await model.applyRetentionLabel(from: oldValue, to: newValue)
+                            }
+                        }
+                    }
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.account)))
+
+                case .error(let error):
+                    Text(error.localizedDescription)
             }
         }
-        .tint(Color(NCBrandColor.shared.getElement(account: model.account)))
         .task {
             await model.load()
         }
@@ -45,7 +55,7 @@ struct NCShareDetailsView: View {
         title: String,
         labels: [NKGovernanceLabel],
         selection: Binding<String>,
-        onChange: @escaping (String) async -> Void
+        onChange: @escaping (_ oldValue: String, _ newValue: String) async -> Void
     ) -> some View {
         HStack {
             Text(NSLocalizedString(title, comment: ""))
@@ -59,8 +69,8 @@ struct NCShareDetailsView: View {
             }
             .pickerStyle(.menu)
         }
-        .onChange(of: selection.wrappedValue) { _, newValue in
-            Task { await onChange(newValue) }
+        .onChange(of: selection.wrappedValue) { oldValue, newValue in
+            Task { await onChange(oldValue, newValue) }
         }
     }
 }

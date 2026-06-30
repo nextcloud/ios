@@ -5,26 +5,24 @@
 import Foundation
 import NextcloudKit
 
+struct GovernanceData {
+    let availableSensitivityLabels: [NKGovernanceLabel]
+    let availableRetentionLabels: [NKGovernanceLabel]
+}
+
 enum GovernanceViewState {
     case loading
-    case selectedLabelsUpdated(entityLabels: NKGovernanceEntityLabels, availableSensitivityLabels: [NKGovernanceLabel], availableRetentionLabels: [NKGovernanceLabel])
+    case loaded(GovernanceData)
     case error(Error)
 }
 
 @MainActor
 @Observable
 final class NCShareDetailsGovernanceModel {
-    private(set) var sensitivityLabels: [NKGovernanceLabel] = []
-    private(set) var retentionLabels: [NKGovernanceLabel] = []
-//    private(set) var isLoading = false
-
     var state: GovernanceViewState = .loading
 
     var selectedSensitivityLabelID = ""
     var selectedRetentionLabelID = ""
-
-    private var appliedSensitivityLabelID = ""
-    private var appliedRetentionLabelID = ""
 
     private let metadata: tableMetadata
 
@@ -41,46 +39,33 @@ final class NCShareDetailsGovernanceModel {
         async let retention = NextcloudKit.shared.getGovernanceAvailableRetentionLabels(entityId: entityID, account: account)
         async let entity = NextcloudKit.shared.getGovernanceLabels(entityId: entityID, account: account)
 
-        sensitivityLabels = await sensitivity.labels ?? []
-        retentionLabels = await retention.labels ?? []
-
         guard let entityLabels = await entity.labels,
-        let sensitivityLabels = await sensitivity.labels,
-        let retentionLabels = await retention.labels
+              let sensitivityLabels = await sensitivity.labels,
+              let retentionLabels = await retention.labels
         else { return }
-//        appliedSensitivityLabelID = entityLabels?.sensitivity?.id ?? ""
-//        appliedRetentionLabelID = entityLabels?.retention.first?.id ?? ""
-//        selectedSensitivityLabelID = appliedSensitivityLabelID
-//        selectedRetentionLabelID = appliedRetentionLabelID
 
-        state = .selectedLabelsUpdated(entityLabels: entityLabels, availableSensitivityLabels: sensitivityLabels, availableRetentionLabels: retentionLabels)
+        selectedSensitivityLabelID = entityLabels.sensitivity?.id ?? ""
+        selectedRetentionLabelID = entityLabels.retention.first?.id ?? ""
+
+        state = .loaded(GovernanceData(
+            availableSensitivityLabels: sensitivityLabels,
+            availableRetentionLabels: retentionLabels
+        ))
     }
 
-    func applySensitivityLabel(_ id: String) async {
-        guard id != appliedSensitivityLabelID else { return }
-
-        if await applyLabel(type: .sensitivity, newID: id, appliedID: appliedSensitivityLabelID) {
-            appliedSensitivityLabelID = id
-        } else {
-            selectedSensitivityLabelID = appliedSensitivityLabelID
-        }
+    func applySensitivityLabel(from oldID: String, to newID: String) async {
+        await applyLabel(type: .sensitivity, oldID: oldID, newID: newID)
     }
 
-    func applyRetentionLabel(_ id: String) async {
-        guard id != appliedRetentionLabelID else { return }
-
-        if await applyLabel(type: .retention, newID: id, appliedID: appliedRetentionLabelID) {
-            appliedRetentionLabelID = id
-        } else {
-            selectedRetentionLabelID = appliedRetentionLabelID
-        }
+    func applyRetentionLabel(from oldID: String, to newID: String) async {
+        await applyLabel(type: .retention, oldID: oldID, newID: newID)
     }
 
-    private func applyLabel(type: NKGovernanceLabelType, newID: String, appliedID: String) async -> Bool {
+    private func applyLabel(type: NKGovernanceLabelType, oldID: String, newID: String) async {
         if newID.isEmpty {
-            return await NextcloudKit.shared.removeGovernanceLabel(entityId: entityID, labelType: type, labelId: appliedID, account: account).error == .success
+            _ = await NextcloudKit.shared.removeGovernanceLabel(entityId: entityID, labelType: type, labelId: oldID, account: account)
+        } else {
+            _ = await NextcloudKit.shared.setGovernanceLabel(entityId: entityID, labelType: type, labelId: newID, account: account)
         }
-
-        return await NextcloudKit.shared.setGovernanceLabel(entityId: entityID, labelType: type, labelId: newID, account: account).error == .success
     }
 }
