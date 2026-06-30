@@ -704,6 +704,7 @@
 "_image_file_could_not_be_decoded_" = "Image file could not be decoded";
 "_media_not_available_" = "Media not available";
 "_no_assistant_installed_"  = "Assistant is not installed on this server. Ask your administrator to install the Assistant app";
+"_open_with_office_" = "Open with Office";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
