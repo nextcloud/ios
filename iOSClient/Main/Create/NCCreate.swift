@@ -17,6 +17,7 @@ class NCCreate: NSObject {
     @MainActor
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) async {
         let session = NCSession.shared.getSession(account: account)
+        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
         guard let viewController = controller.currentViewController() else {
             return
         }
@@ -35,20 +36,17 @@ class NCCreate: NSObject {
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
-            guard results.error == .success, let url = results.url else {
-                Task {
-                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                }
+            guard results.error == .success else {
+                await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                 return
             }
-            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
-                ocId: UUID,
-                serverUrl: serverUrl,
-                url: url,
-                session: session,
-                sceneIdentifier: controller.sceneIdentifier)
+            let serverUrlFileName = serverUrl + "/" + fileName
+            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+            guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
+                await showErrorBanner(windowScene: windowScene, text: resultsReadFile.error.errorDescription, errorCode: resultsReadFile.error.errorCode)
+                return
+            }
+
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
