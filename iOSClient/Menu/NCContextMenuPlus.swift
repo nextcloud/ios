@@ -62,7 +62,7 @@ class NCContextMenuPlus: NSObject {
                 "\(creator.identifier)|\(creator.editor)|\(creator.ext)|\(creator.mimetype)|\(creator.templates)"
             }
             .joined(separator: ";")
-        let currentCapabilitiesSignature = "\(session.account)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)"
+        let currentCapabilitiesSignature = "\(session.account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)"
         let capabilitiesChanged = capabilitiesSignature != currentCapabilitiesSignature
         capabilitiesSignature = currentCapabilitiesSignature
 
