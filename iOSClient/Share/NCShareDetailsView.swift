@@ -38,6 +38,14 @@ struct NCShareDetailsView: View {
                             ) { oldValue, newValue in
                                 await model.applyRetentionLabel(from: oldValue, to: newValue)
                             }
+
+                            labelPicker(
+                                title: "_legal_hold_",
+                                labels: data.availableHoldLabels,
+                                selection: $model.selectedHoldLabelID
+                            ) { oldValue, newValue in
+                                await model.applyHoldLabel(from: oldValue, to: newValue)
+                            }
                         }
                     }
                     .tint(Color(NCBrandColor.shared.getElement(account: model.account)))

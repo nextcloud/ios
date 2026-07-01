@@ -827,4 +827,5 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_governance_"                      = "Governance";
 "_sensitivity_label_"               = "Sensitivity label";
 "_file_retention_"                  = "File retention";
+"_legal_hold_"                      = "Legal hold";
 "_none_"                            = "None";
