@@ -15,22 +15,25 @@ class NCCreate: NSObject {
     let global = NCGlobal.shared
 
     @MainActor
-    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) async {
-        let session = NCSession.shared.getSession(account: account)
+    func createDocument(controller: NCMainTabBarController,
+                        serverUrl: String,
+                        fileName: String,
+                        editorId: String,
+                        creatorId: String? = nil,
+                        templateId: String,
+                        session: NCSession.Session) async {
         let windowScene = SceneManager.shared.getWindowScene(controller: controller)
         guard let viewController = controller.currentViewController() else {
             return
         }
-        var UUID = NSUUID().uuidString
-        UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
-        var options = NKRequestOptions()
-        let serverUrl = controller.currentServerUrl()
+        let fileNamePath = utilityFileSystem.getRelativeFilePath(fileName, serverUrl: serverUrl, session: session)
+        let serverUrlFileName = serverUrl + "/" + fileName
 
         if let creatorId, let adapter = NCDirectEditorAdapter.resolve(from: [editorId]) {
-            options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
-            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { task in
+            let options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
+            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: session.account, options: options) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
                                                                                                 path: fileNamePath,
                                                                                                 name: "textCreateFile")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
@@ -40,7 +43,7 @@ class NCCreate: NSObject {
                 await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                 return
             }
-            let serverUrlFileName = serverUrl + "/" + fileName
+
             let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
             guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
                 await showErrorBanner(windowScene: windowScene, text: resultsReadFile.error.errorDescription, errorCode: resultsReadFile.error.errorCode)
@@ -53,9 +56,9 @@ class NCCreate: NSObject {
 
         } else if editorId == "collabora" {
 
-            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: account) { task in
+            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: session.account) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
                                                                                                 path: fileNamePath,
                                                                                                 name: "CreateRichdocuments")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
@@ -69,13 +72,11 @@ class NCCreate: NSObject {
                 return
             }
 
-            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
-                ocId: UUID,
-                serverUrl: serverUrl,
-                url: url,
-                session: session,
-                sceneIdentifier: controller.sceneIdentifier)
+            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+            guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
+                await showErrorBanner(windowScene: windowScene, text: resultsReadFile.error.errorDescription, errorCode: resultsReadFile.error.errorCode)
+                return
+            }
 
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)

@@ -40,22 +40,20 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if !metadata.ocId.hasPrefix("TEMP") {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                image: NCImageCache.shared.getImageButtonMore(),
-                primaryAction: nil,
-                menu: UIMenu(title: "", children: [
-                    UIDeferredMenuElement.uncached { [self] completion in
-                        if let menu = NCContextMenuViewer(metadata: self.metadata,
-                                                          controller: self.tabBarController as? NCMainTabBarController,
-                                                          viewController: self.tabBarController,
-                                                          webView: true,
-                                                          sender: self).viewMenu() {
-                            completion(menu.children)
-                        }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: NCImageCache.shared.getImageButtonMore(),
+            primaryAction: nil,
+            menu: UIMenu(title: "", children: [
+                UIDeferredMenuElement.uncached { [self] completion in
+                    if let menu = NCContextMenuViewer(metadata: self.metadata,
+                                                      controller: self.tabBarController as? NCMainTabBarController,
+                                                      viewController: self.tabBarController,
+                                                      webView: true,
+                                                      sender: self).viewMenu() {
+                        completion(menu.children)
                     }
-                ]))
-        }
+                }
+            ]))
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
