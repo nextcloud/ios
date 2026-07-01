@@ -71,18 +71,12 @@ class NCContextMenuViewer: NSObject {
             topMenuItems.append(NCContextMenuActions.favorite(metadata: metadata))
         }
 
-        /*
-        if NCNetworking.shared.isOnline,
-           !capabilities.filesLockVersion.isEmpty {
-            menuElements.append(NCContextMenuActions.lockUnlock(isLocked: metadata.lock, metadata: metadata, controller: controller))
-        }
-        */
-
         if !webView {
             menuElements.append(makeViewInFolderAction(metadata: metadata, controller: controller, viewController: viewController))
         }
 
-        if !webView, metadata.canSetAsAvailableOffline {
+        if !webView,
+           metadata.canSetAsAvailableOffline {
             menuElements.append(NCContextMenuActions.setAvailableOffline(metadatas: [metadata], isAnyOffline: isOffline, controller: controller))
         }
 
