@@ -219,10 +219,6 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if #available(iOS 26.0, *) {
-            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
-        }
-
         NCActivityIndicator.shared.stop()
     }
 

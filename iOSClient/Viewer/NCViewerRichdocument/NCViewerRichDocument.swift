@@ -43,7 +43,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if #available(iOS 26.0, *) {
             navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
         }
-        navigationItem.hidesBackButton = true
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: NCImageCache.shared.getImageButtonMore(),
