@@ -62,7 +62,7 @@ class NCContextMenuPlus: NSObject {
                 "\(creator.identifier)|\(creator.editor)|\(creator.ext)|\(creator.mimetype)|\(creator.templates)"
             }
             .joined(separator: ";")
-        let currentCapabilitiesSignature = "\(session.account)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)"
+        let currentCapabilitiesSignature = "\(session.account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)"
         let capabilitiesChanged = capabilitiesSignature != currentCapabilitiesSignature
         capabilitiesSignature = currentCapabilitiesSignature
 
@@ -183,19 +183,15 @@ class NCContextMenuPlus: NSObject {
                                     account: session.account,
                                     serverUrl: serverUrl
                                 )
-                                let fileNamePath = utilityFileSystem.getRelativeFilePath(
-                                    String(describing: fileName),
-                                    serverUrl: serverUrl,
-                                    session: session)
 
                                 await createDocument.createDocument(
                                     controller: controller,
-                                    fileNamePath: fileNamePath,
-                                    fileName: String(describing: fileName),
+                                    serverUrl: serverUrl,
+                                    fileName: fileName,
                                     editorId: "text",
                                     creatorId: "textdocument",
                                     templateId: "",
-                                    account: session.account)
+                                    session: session)
                             }
                 })
             }
@@ -223,9 +219,14 @@ class NCContextMenuPlus: NSObject {
                                                  image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                     Task {
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        await NCCreate().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
+                        await NCCreate().createDocument(controller: controller,
+                                                        serverUrl: serverUrl,
+                                                        fileName: fileName,
+                                                        editorId: "text",
+                                                        creatorId: creator.identifier,
+                                                        templateId: "document",
+                                                        session: session)
                     }
                 })
             }
@@ -244,9 +245,13 @@ class NCContextMenuPlus: NSObject {
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                        await createDocument.createDocument(controller: controller,
+                                                            serverUrl: serverUrl,
+                                                            fileName: fileName,
+                                                            editorId: "collabora",
+                                                            templateId: templates.selectedTemplate.identifier,
+                                                            session: session)
                     }
                 })
 
@@ -256,9 +261,13 @@ class NCContextMenuPlus: NSObject {
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                        await createDocument.createDocument(controller: controller,
+                                                            serverUrl: serverUrl,
+                                                            fileName: fileName,
+                                                            editorId: "collabora",
+                                                            templateId: templates.selectedTemplate.identifier,
+                                                            session: session)
                     }
                 })
 
@@ -268,9 +277,13 @@ class NCContextMenuPlus: NSObject {
                         let createDocument = NCCreate()
                         let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
                         let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                        await createDocument.createDocument(controller: controller,
+                                                            serverUrl: serverUrl,
+                                                            fileName: fileName,
+                                                            editorId: "collabora",
+                                                            templateId: templates.selectedTemplate.identifier,
+                                                            session: session)
                     }
                 })
             }
@@ -308,8 +321,14 @@ class NCContextMenuPlus: NSObject {
                                 templateIdentifier = ""
                             }
                             let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + fileExt, account: session.account, serverUrl: serverUrl)
-                            let fileNamePath = utilityFileSystem.getRelativeFilePath(String(describing: fileName), serverUrl: serverUrl, session: session)
-                            await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: editorId, creatorId: creator.identifier, templateId: templateIdentifier, account: session.account)
+
+                            await createDocument.createDocument(controller: controller,
+                                                                serverUrl: serverUrl,
+                                                                fileName: fileName,
+                                                                editorId: editorId,
+                                                                creatorId: creator.identifier,
+                                                                templateId: templateIdentifier,
+                                                                session: session)
                         }
                     }
                 }
@@ -349,19 +368,15 @@ class NCContextMenuPlus: NSObject {
                             account: session.account,
                             serverUrl: serverUrl
                         )
-                        let fileNamePath = utilityFileSystem.getRelativeFilePath(
-                            String(describing: fileName),
-                            serverUrl: serverUrl,
-                            session: session)
 
                         await createDocument.createDocument(
                             controller: controller,
-                            fileNamePath: fileNamePath,
-                            fileName: String(describing: fileName),
+                            serverUrl: serverUrl,
+                            fileName: fileName,
                             editorId: creator.editor,
                             creatorId: creator.identifier,
                             templateId: "",
-                            account: session.account)
+                            session: session)
                     }
                 }
 
