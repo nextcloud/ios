@@ -40,6 +40,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
+        }
+        navigationItem.hidesBackButton = true
+
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: NCImageCache.shared.getImageButtonMore(),
             primaryAction: nil,
@@ -123,11 +128,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             tabBarController?.tabBar.isHidden = false
         }
 
-        // Prevent back navigation gesture of iOS >= 26 as that can cause unintended swipe backs
-        if #available(iOS 26.0, *) {
-            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
-        }
-
         Task {
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
         }
@@ -146,6 +146,16 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if isMovingFromParent || navigationController?.isBeingDismissed == true {
+            if #available(iOS 26.0, *) {
+                navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+            }
+        }
     }
 
     // MARK: - NotificationCenter
@@ -396,10 +406,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if #available(iOS 26.0, *) {
-            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
-        }
-
         NCActivityIndicator.shared.stop()
     }
 

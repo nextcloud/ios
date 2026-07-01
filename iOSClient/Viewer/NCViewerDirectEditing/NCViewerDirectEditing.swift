@@ -61,6 +61,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         if #available(iOS 26.0, *) {
             navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
         }
+        navigationItem.hidesBackButton = true
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
@@ -128,6 +129,12 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        if isMovingFromParent || navigationController?.isBeingDismissed == true {
+            if #available(iOS 26.0, *) {
+                navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+            }
+        }
 
         if #available(iOS 18.0, *) {
             tabBarController?.setTabBarHidden(false, animated: true)
