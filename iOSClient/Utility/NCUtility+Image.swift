@@ -71,9 +71,9 @@ extension NCUtility {
 
     func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
         let fileName = NCSession.shared.getFileName(urlBase: urlBase, user: user)
-        let localFilePath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
-        if var localImage = UIImage(contentsOfFile: localFilePath) {
+        if var localImage = UIImage(contentsOfFile: fileNameLocalPath) {
             let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
             UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
             UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
@@ -81,8 +81,6 @@ extension NCUtility {
             localImage = UIGraphicsGetImageFromCurrentImageContext() ?? localImage
             UIGraphicsEndImageContext()
             return localImage
-        } else if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName).image {
-            return image
         } else if let displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg
         } else {

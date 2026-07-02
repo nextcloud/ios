@@ -88,7 +88,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // OPERATIONQUEUE
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 #endif
 
     // MARK: - init
