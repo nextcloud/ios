@@ -32,9 +32,12 @@ struct TransfersView: View {
                 .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("_close_") {
+                        Button {
                             onClose?()
+                        } label: {
+                            Image(systemName: "xmark")
                         }
+                        .accessibilityLabel(NSLocalizedString("_close_", comment: ""))
                     }
                 }
         }
