@@ -24,7 +24,6 @@
 //
 
 import UIKit
-import Parchment
 import DropDown
 import NextcloudKit
 import ContactsUI
@@ -75,7 +74,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
 
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 0
@@ -86,7 +85,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
 
         tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
