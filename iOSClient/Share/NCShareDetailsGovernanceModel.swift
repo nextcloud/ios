@@ -23,8 +23,8 @@ final class NCShareDetailsGovernanceModel {
     var state: GovernanceViewState = .loading
 
     var selectedSensitivityLabelID = ""
-    var selectedRetentionLabelID = ""
-    var selectedHoldLabelID = ""
+    var selectedRetentionLabelIDs: Set<String> = []
+    var selectedHoldLabelIDs: Set<String> = []
 
     private let metadata: tableMetadata
 
@@ -49,8 +49,8 @@ final class NCShareDetailsGovernanceModel {
         else { return }
 
         selectedSensitivityLabelID = entityLabels.sensitivity?.id ?? ""
-        selectedRetentionLabelID = entityLabels.retention.first?.id ?? ""
-        // NKGovernanceEntityLabels exposes no hold, so the applied hold can't be preselected.
+        selectedRetentionLabelIDs = Set(entityLabels.retention.map(\.id))
+        // NKGovernanceEntityLabels exposes no hold, so applied holds can't be preselected.
 
         state = .loaded(GovernanceData(
             availableSensitivityLabels: sensitivityLabels,
@@ -63,12 +63,23 @@ final class NCShareDetailsGovernanceModel {
         await applyLabel(type: .sensitivity, oldID: oldID, newID: newID)
     }
 
-    func applyRetentionLabel(from oldID: String, to newID: String) async {
-        await applyLabel(type: .retention, oldID: oldID, newID: newID)
-    }
+    /// Persists a multi-selection by diffing against what's applied and calling set/remove per changed label.
+    func saveLabels(type: NKGovernanceLabelType, selectedIDs: Set<String>) async {
+        let current = (type == .retention) ? selectedRetentionLabelIDs : selectedHoldLabelIDs
 
-    func applyHoldLabel(from oldID: String, to newID: String) async {
-        await applyLabel(type: .hold, oldID: oldID, newID: newID)
+        for id in selectedIDs.subtracting(current) {
+            await applyLabel(type: type, oldID: "", newID: id)
+        }
+
+        for id in current.subtracting(selectedIDs) {
+            await applyLabel(type: type, oldID: id, newID: "")
+        }
+
+        if type == .retention {
+            selectedRetentionLabelIDs = selectedIDs
+        } else {
+            selectedHoldLabelIDs = selectedIDs
+        }
     }
 
     private func applyLabel(type: NKGovernanceLabelType, oldID: String, newID: String) async {

@@ -8,6 +8,14 @@ import NextcloudKit
 
 struct NCShareDetailsView: View {
     @State private var model: NCShareDetailsGovernanceModel
+    @State private var activeSelector: GovernanceSelector?
+
+    private enum GovernanceSelector: String, Identifiable {
+        case retention
+        case hold
+
+        var id: String { rawValue }
+    }
 
     init(metadata: tableMetadata) {
         _model = State(initialValue: NCShareDetailsGovernanceModel(metadata: metadata))
@@ -31,24 +39,37 @@ struct NCShareDetailsView: View {
                                 await model.applySensitivityLabel(from: oldValue, to: newValue)
                             }
 
-                            labelPicker(
+                            labelSelectorRow(
                                 title: "_file_retention_",
                                 labels: data.availableRetentionLabels,
-                                selection: $model.selectedRetentionLabelID
-                            ) { oldValue, newValue in
-                                await model.applyRetentionLabel(from: oldValue, to: newValue)
+                                selectedIDs: model.selectedRetentionLabelIDs
+                            ) {
+                                activeSelector = .retention
                             }
 
-                            labelPicker(
+                            labelSelectorRow(
                                 title: "_legal_hold_",
                                 labels: data.availableHoldLabels,
-                                selection: $model.selectedHoldLabelID
-                            ) { oldValue, newValue in
-                                await model.applyHoldLabel(from: oldValue, to: newValue)
+                                selectedIDs: model.selectedHoldLabelIDs
+                            ) {
+                                activeSelector = .hold
                             }
                         }
                     }
                     .tint(Color(NCBrandColor.shared.getElement(account: model.account)))
+                    .sheet(item: $activeSelector) { selector in
+                        let isRetention = selector == .retention
+
+                        NCGovernanceLabelSelectorView(
+                            title: isRetention ? "_file_retention_" : "_legal_hold_",
+                            labels: isRetention ? data.availableRetentionLabels : data.availableHoldLabels,
+                            account: model.account,
+                            initialSelection: isRetention ? model.selectedRetentionLabelIDs : model.selectedHoldLabelIDs
+                        ) { newSelection in
+                            await model.saveLabels(type: isRetention ? .retention : .hold, selectedIDs: newSelection)
+                        }
+                        .presentationDetents([.medium, .large])
+                    }
 
                 case .error(let error):
                     Text(error.localizedDescription)
@@ -80,6 +101,42 @@ struct NCShareDetailsView: View {
         .onChange(of: selection.wrappedValue) { oldValue, newValue in
             Task { await onChange(oldValue, newValue) }
         }
+    }
+
+    private func labelSelectorRow(
+        title: String,
+        labels: [NKGovernanceLabel],
+        selectedIDs: Set<String>,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(NSLocalizedString(title, comment: ""))
+                    .cappedFont(.body, maxDynamicType: .accessibility2)
+                    .foregroundStyle(.primary)
+
+                Spacer()
+
+                Text(summary(labels: labels, selectedIDs: selectedIDs))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+
+    private func summary(labels: [NKGovernanceLabel], selectedIDs: Set<String>) -> String {
+        guard !selectedIDs.isEmpty else {
+            return NSLocalizedString("_none_", comment: "")
+        }
+
+        return labels
+            .filter { selectedIDs.contains($0.id) }
+            .map(\.name)
+            .joined(separator: ", ")
     }
 }
 

@@ -52,6 +52,7 @@
 		AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCTagEditorView.swift */; };
 		AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000012F70000100FE2776 /* NCShareDetailsView.swift */; };
 		AB7000042F70000100FE2776 /* NCShareDetailsGovernanceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000032F70000100FE2776 /* NCShareDetailsGovernanceModel.swift */; };
+		AB7000062F70000100FE2776 /* NCGovernanceLabelSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000052F70000100FE2776 /* NCGovernanceLabelSelectorView.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
@@ -1289,6 +1290,7 @@
 		AB6000022F60000200FE2775 /* NCTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorView.swift; sourceTree = "<group>"; };
 		AB7000012F70000100FE2776 /* NCShareDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareDetailsView.swift; sourceTree = "<group>"; };
 		AB7000032F70000100FE2776 /* NCShareDetailsGovernanceModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareDetailsGovernanceModel.swift; sourceTree = "<group>"; };
+		AB7000052F70000100FE2776 /* NCGovernanceLabelSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCGovernanceLabelSelectorView.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
 		AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+DataSource.swift"; sourceTree = "<group>"; };
@@ -2503,6 +2505,7 @@
 				AF93471527E2361E002537EE /* NCShareHeader.swift */,
 				AB7000012F70000100FE2776 /* NCShareDetailsView.swift */,
 				AB7000032F70000100FE2776 /* NCShareDetailsGovernanceModel.swift */,
+				AB7000052F70000100FE2776 /* NCGovernanceLabelSelectorView.swift */,
 				AFCE353827E5DE0400FEA6C2 /* Shareable.swift */,
 				AA8E03D92D2ED83300E7E89C /* TransientShare.swift */,
 			);
@@ -4784,6 +4787,7 @@
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */,
 				AB7000042F70000100FE2776 /* NCShareDetailsGovernanceModel.swift in Sources */,
+				AB7000062F70000100FE2776 /* NCGovernanceLabelSelectorView.swift in Sources */,
 				F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F74D50352C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */,
 				F7802B322BD5584F00D74270 /* NCMedia+DragDrop.swift in Sources */,
