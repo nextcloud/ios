@@ -70,6 +70,7 @@ class NCShareHeader: UIView {
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().getRelativeDateTitle(metadata.date as Date)
 
         tagListView.marginY = 8
+        tagListView.backgroundColor = .secondarySystemBackground
         refreshTags(metadata.tagNames, tagModels: metadata.tags.map(\.nkTag))
 
         setNeedsLayout()
