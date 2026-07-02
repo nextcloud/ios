@@ -101,7 +101,7 @@ extension NCMedia {
             <d:basicsearch>
 
             <!-- ====================================================== -->
-            <!-- SELECT: return only the Nextcloud internal object id   -->
+            <!-- SELECT: return the Nextcloud internal object           -->
             <!-- ====================================================== -->
 
             <d:select>
@@ -119,6 +119,7 @@ extension NCMedia {
             <!-- ===================================================== -->
             <!-- FROM: recursive search starting from the given href   -->
             <!-- ===================================================== -->
+
             <d:from>
                 <d:scope>
                     <d:href>\(href)</d:href>
@@ -131,6 +132,7 @@ extension NCMedia {
             <!-- 1) Filter only image and video content types          -->
             <!-- 2) Apply a date range on elementDate                  -->
             <!-- ===================================================== -->
+
             <d:where>
                 <d:and>
 
@@ -165,6 +167,7 @@ extension NCMedia {
             <!-- Primary sort on elementDate (descending)              -->
             <!-- Secondary sort on displayname for deterministic order -->
             <!-- ===================================================== -->
+
             <d:orderby>
                 <d:order>
                     <d:prop><\(elementDate)/></d:prop>
@@ -179,6 +182,7 @@ extension NCMedia {
             <!-- ===================================================== -->
             <!-- LIMIT: maximum number of results returned             -->
             <!-- ===================================================== -->
+
             <d:limit>
                 <d:nresults>\(limit)</d:nresults>
             </d:limit>

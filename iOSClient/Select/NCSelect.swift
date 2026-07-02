@@ -109,7 +109,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .systemBackground
 
-        buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
+        buttonCancel.title = nil
+        buttonCancel.image = UIImage(systemName: "xmark")
+        buttonCancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
         bottomContraint?.constant = UIApplication.shared.mainAppWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Type of command view
