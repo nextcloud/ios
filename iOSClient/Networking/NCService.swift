@@ -20,9 +20,6 @@ class NCService: NSObject {
             return
         }
 
-        // Clear cached avatar loading state from the local database
-        await self.database.clearAllAvatarLoadedAsync()
-
         // Request the server status and continue only if it's valid
         let result = await requestServerStatus(account: account, controller: controller)
 
@@ -115,13 +112,11 @@ class NCService: NSObject {
             }
         }
 
-        if  resultsDownload.error == .success,
+        if resultsDownload.error == .success,
             let etag = resultsDownload.etag,
             etag != tblAvatar?.etag {
             await self.database.addAvatarAsync(fileName: fileName, etag: etag)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": resultsDownload.error])
-        } else {
-            await self.database.setAvatarLoadedAsync(fileName: fileName)
         }
     }
 
