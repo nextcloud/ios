@@ -222,6 +222,8 @@ extension NCActivity: UITableViewDataSource {
         cell.delegate = self
         cell.configureAvatarMenu()
 
+        /*
+
         // Avatar
         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
         let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
@@ -232,11 +234,13 @@ extension NCActivity: UITableViewDataSource {
             cell.avatarImage?.image = results.image
         }
 
+
         if let tblAvatar = results.tblAvatar,
            !tblAvatar.loaded,
            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, account: account, view: tableView))
         }
+        */
 
         // Username
         cell.labelUser.text = comment.actorDisplayName
@@ -297,17 +301,48 @@ extension NCActivity: UITableViewDataSource {
             cell.configureAvatarMenu()
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
-
-            if results.image == nil {
-                cell.avatar?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
+            if let image = NCImageCache.shared.getImageCache(key: fileName) {
+                cell.avatar?.image = image
             } else {
-                cell.avatar?.image = results.image
-            }
+                let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.avatar?.image = image
+                    NCImageCache.shared.addImageCache(image: image, key: fileName)
+                }
 
-            if !(results.tblAvatar?.loaded ?? false),
-               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, account: session.account, view: tableView))
+                let user = activity.user
+                let idActivity = activity.idActivity
+                let account = session.account
+
+                Task {
+                    let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
+                    await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                             priority: .userInitiated) {
+                    let results = await NextcloudKit.shared.downloadAvatarAsync(
+                        user: user,
+                        fileNameLocalPath: fileNameLocalPath,
+                        sizeImage: NCGlobal.shared.avatarSize,
+                        avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                        etagResource: etagResource,
+                        account: account)
+
+                        if results.error == .success,
+                           let image = results.imageAvatar,
+                           let etag = results.etag,
+                           etag != etagResource {
+                            NCImageCache.shared.addImageCache(image: image, key: fileName)
+                            await self.database.addAvatarAsync(fileName: fileName, etag: etag)
+                            await MainActor.run {
+                                guard
+                                    let cell = self.tableView.cellForRow(at: indexPath) as? NCActivityTableViewCell,
+                                    cell.idActivity == idActivity else {
+                                    return
+                                }
+                                cell.avatar?.image = image
+                            }
+                        }
+                    }
+                }
             }
         } else {
             cell.subjectLeadingConstraint.constant = -30
