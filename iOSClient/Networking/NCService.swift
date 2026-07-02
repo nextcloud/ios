@@ -98,12 +98,12 @@ class NCService: NSObject {
         let session = NCSession.shared.getSession(account: account)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
         let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-        let tblAvatar = await self.database.getTableAvatarAsync(fileName: fileName)
-        let resultsDownload = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
-                                                                            fileNameLocalPath: fileNameLocalPath,
-                                                                            sizeImage: NCGlobal.shared.avatarSize,
-                                                                            etagResource: tblAvatar?.etag,
-                                                                            account: account) { task in
+        let etagResource = await self.database.getTableAvatarAsync(fileName: fileName)?.etag
+        let results = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
+                                                                    fileNameLocalPath: fileNameLocalPath,
+                                                                    sizeImage: NCGlobal.shared.avatarSize,
+                                                                    etagResource: etagResource,
+                                                                    account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                             path: session.userId,
@@ -112,11 +112,11 @@ class NCService: NSObject {
             }
         }
 
-        if resultsDownload.error == .success,
-            let etag = resultsDownload.etag,
-            etag != tblAvatar?.etag {
+        if results.error == .success,
+            let etag = results.etag,
+            etag != etagResource {
             await self.database.addAvatarAsync(fileName: fileName, etag: etag)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": resultsDownload.error])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": results.error])
         }
     }
 
