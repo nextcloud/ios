@@ -12,7 +12,6 @@ extension NCNetworking {
         Task {
             await NCTransferCoordinator.shared.cancelAll()
         }
-        saveLivePhotoQueue.cancelAll()
     }
 
     func cancelAllTask() {

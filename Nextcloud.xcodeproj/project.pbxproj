@@ -133,7 +133,6 @@
 		F37208A42BAB63EE006B5430 /* QRCodeReader in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A32BAB63EE006B5430 /* QRCodeReader */; };
 		F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A52BAB63EE006B5430 /* SwiftRichString */; };
 		F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A92BAB63EE006B5430 /* MarkdownKit */; };
-		F37208B02BAB63EF006B5430 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F37208AF2BAB63EF006B5430 /* Queuer */; };
 		F37208B22BAB63EF006B5430 /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B12BAB63EF006B5430 /* DropDown */; };
 		F37208B42BAB63EF006B5430 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B32BAB63EF006B5430 /* Parchment */; };
 		F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B52BAB63EF006B5430 /* EasyTipView */; };
@@ -558,7 +557,6 @@
 		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
 		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */; };
-		F76DA963277B760E0082465B /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA962277B760E0082465B /* Queuer */; };
 		F76DA969277B77EA0082465B /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA968277B77EA0082465B /* DropDown */; };
 		F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */; };
 		F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */; };
@@ -708,9 +706,7 @@
 		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
 		F7A509252C26BD5D00326106 /* NCCreate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A509242C26BD5D00326106 /* NCCreate.swift */; };
 		F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */; };
-		F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7A560452AE15D3D00BE8FD6 /* Queuer */; };
-		F7A560482AE15D5000BE8FD6 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7A560472AE15D5000BE8FD6 /* Queuer */; };
+		F7A560422AE1593700BE8FD6 /* NCSaveLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A560412AE1593700BE8FD6 /* NCSaveLivePhoto.swift */; };
 		F7A573692E190387009C9257 /* NCShareExtensionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A573682E190377009C9257 /* NCShareExtensionData.swift */; };
 		F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */; };
 		F7A7FDDD2C2DBD6200E9A93A /* NCDeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7FDDB2C2DBD6200E9A93A /* NCDeepLinkHandler.swift */; };
@@ -952,8 +948,6 @@
 		F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */; };
 		F7F1FB9D2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9E2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
-		F7F1FBA82E27D13700C79E20 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7F1FBA72E27D13700C79E20 /* Queuer */; };
-		F7F1FBB02E27D3A800C79E20 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F7F1FBAF2E27D3A800C79E20 /* Queuer */; };
 		F7F3E58E2D3BB65600A32B14 /* NCNetworking+Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */; };
 		F7F4F10527ECDBDB008676F9 /* Inconsolata-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */; };
 		F7F4F10627ECDBDB008676F9 /* Inconsolata-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */; };
@@ -1679,7 +1673,7 @@
 		F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDebouncer.swift; sourceTree = "<group>"; };
 		F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Nextcloud Hub.png"; sourceTree = SOURCE_ROOT; };
 		F7A509242C26BD5D00326106 /* NCCreate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreate.swift; sourceTree = "<group>"; };
-		F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCOperationSaveLivePhoto.swift; sourceTree = "<group>"; };
+		F7A560412AE1593700BE8FD6 /* NCSaveLivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSaveLivePhoto.swift; sourceTree = "<group>"; };
 		F7A573682E190377009C9257 /* NCShareExtensionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareExtensionData.swift; sourceTree = "<group>"; };
 		F7A7FDDB2C2DBD6200E9A93A /* NCDeepLinkHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDeepLinkHandler.swift; sourceTree = "<group>"; };
 		F7A846DD2BB01ACB0024816F /* NCTrashCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashCellProtocol.swift; sourceTree = "<group>"; };
@@ -1947,7 +1941,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F33EE6ED2BF4C03800CA1A51 /* NIOSSL in Frameworks */,
-				F7F1FBB02E27D3A800C79E20 /* Queuer in Frameworks */,
 				F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */,
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
 				F760DE0F2AE66EE60027D78A /* KeychainAccess in Frameworks */,
@@ -1967,7 +1960,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F37208C42BAB63F0006B5430 /* Gzip in Frameworks */,
-				F37208B02BAB63EF006B5430 /* Queuer in Frameworks */,
 				F3F0419F2B9F7E7900D5155F /* RealmSwift in Frameworks */,
 				F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */,
 				F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */,
@@ -2016,7 +2008,6 @@
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
 				F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */,
 				F760DE092AE66ED00027D78A /* KeychainAccess in Frameworks */,
-				F7A560482AE15D5000BE8FD6 /* Queuer in Frameworks */,
 				F70821D829E59E6D001CA2D7 /* TagListView in Frameworks */,
 				F7F623B72A5EFA0C0022D3D4 /* Gzip in Frameworks */,
 				F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */,
@@ -2031,7 +2022,6 @@
 				F33EE6E32BF4C00700CA1A51 /* NIOSSL in Frameworks */,
 				F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
-				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2069,7 +2059,6 @@
 				F70557B72ED44E2700135623 /* LucidBanner in Frameworks */,
 				F3374AF42D78B01B002A38F9 /* DequeModule in Frameworks */,
 				F7160A822BE933390034DCB3 /* RealmSwift in Frameworks */,
-				F76DA963277B760E0082465B /* Queuer in Frameworks */,
 				F3374AF22D78B01B002A38F9 /* Collections in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
@@ -2093,7 +2082,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7F1FBA82E27D13700C79E20 /* Queuer in Frameworks */,
 				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */,
@@ -3140,7 +3128,7 @@
 				F77C97382953131000FDDD09 /* NCCameraRoll.swift */,
 				F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */,
 				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
-				F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */,
+				F7A560412AE1593700BE8FD6 /* NCSaveLivePhoto.swift */,
 				F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F7814E952F3B5F170074DA3A /* NCSVGRenderer.swift */,
@@ -3644,7 +3632,6 @@
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
 				F760DE0E2AE66EE60027D78A /* KeychainAccess */,
 				F33EE6EC2BF4C03800CA1A51 /* NIOSSL */,
-				F7F1FBAF2E27D3A800C79E20 /* Queuer */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -3693,7 +3680,6 @@
 				F37208A32BAB63EE006B5430 /* QRCodeReader */,
 				F37208A52BAB63EE006B5430 /* SwiftRichString */,
 				F37208A92BAB63EE006B5430 /* MarkdownKit */,
-				F37208AF2BAB63EF006B5430 /* Queuer */,
 				F37208B12BAB63EF006B5430 /* DropDown */,
 				F37208B32BAB63EF006B5430 /* Parchment */,
 				F37208B52BAB63EF006B5430 /* EasyTipView */,
@@ -3778,7 +3764,6 @@
 				F70821D729E59E6D001CA2D7 /* TagListView */,
 				F7F623B62A5EFA0C0022D3D4 /* Gzip */,
 				F77CB6A82AA08053000C3CA4 /* OpenSSL */,
-				F7A560472AE15D5000BE8FD6 /* Queuer */,
 				F760DE082AE66ED00027D78A /* KeychainAccess */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
 				F70557B82ED44E4700135623 /* LucidBanner */,
@@ -3803,7 +3788,6 @@
 			name = Widget;
 			packageProductDependencies = (
 				F783034328B5142B00B84583 /* NextcloudKit */,
-				F7A560452AE15D3D00BE8FD6 /* Queuer */,
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
 				F7160A7C2BE931DE0034DCB3 /* RealmSwift */,
 				F33EE6E22BF4C00700CA1A51 /* NIOSSL */,
@@ -3865,7 +3849,6 @@
 				F72DA9B325F53E4E00B87DB1 /* SwiftRichString */,
 				F788ECC6263AAAFA00ADC67F /* MarkdownKit */,
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
-				F76DA962277B760E0082465B /* Queuer */,
 				F76DA968277B77EA0082465B /* DropDown */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
@@ -3932,7 +3915,6 @@
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
 				F760DE062AE66EC70027D78A /* KeychainAccess */,
 				F33EE6E42BF4C02000CA1A51 /* NIOSSL */,
-				F7F1FBA72E27D13700C79E20 /* Queuer */,
 			);
 			productName = WidgetDashboardIntentHandler;
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
@@ -4069,7 +4051,6 @@
 				F72DA9B225F53E4E00B87DB1 /* XCRemoteSwiftPackageReference "SwiftRichString" */,
 				F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */,
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
@@ -5016,7 +4997,7 @@
 				AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */,
 				F760A48D2FE95D06001B212E /* NCTransferDelegateDispatcher.swift in Sources */,
 				F77BC3ED293E528A005F2B08 /* NCConfigServer.swift in Sources */,
-				F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */,
+				F7A560422AE1593700BE8FD6 /* NCSaveLivePhoto.swift in Sources */,
 				F7D1C4AC2C9484FD00EC6D44 /* NCMedia+CollectionViewDataSourcePrefetching.swift in Sources */,
 				F7D368DF2DAFE19E0037E7C6 /* NCActivityNavigationController.swift in Sources */,
 				F7A03E332D426115007AA677 /* NCMoreNavigationController.swift in Sources */,
@@ -6532,14 +6513,6 @@
 				minimumVersion = 4.0.0;
 			};
 		};
-		F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/FabrizioBrancati/Queuer";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 		F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AssistoLab/DropDown";
@@ -6710,11 +6683,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
-		};
-		F37208AF2BAB63EF006B5430 /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
 		};
 		F37208B12BAB63EF006B5430 /* DropDown */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -6931,11 +6899,6 @@
 			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
 		};
-		F76DA962277B760E0082465B /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
-		};
 		F76DA968277B77EA0082465B /* DropDown */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */;
@@ -6971,16 +6934,6 @@
 			package = F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */;
 			productName = TagListView;
 		};
-		F7A560452AE15D3D00BE8FD6 /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
-		};
-		F7A560472AE15D5000BE8FD6 /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
-		};
 		F7A8D72328F1771B008BBE1C /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
@@ -7015,16 +6968,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7ED547A25EEA65400956C55 /* XCRemoteSwiftPackageReference "QRCodeReader" */;
 			productName = QRCodeReader;
-		};
-		F7F1FBA72E27D13700C79E20 /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
-		};
-		F7F1FBAF2E27D3A800C79E20 /* Queuer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
-			productName = Queuer;
 		};
 		F7F623B42A5EF4D30022D3D4 /* Gzip */ = {
 			isa = XCSwiftPackageProductDependency;
