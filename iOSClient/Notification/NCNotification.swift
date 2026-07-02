@@ -63,11 +63,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             }
         }
 
-        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain) {
-            self.dismiss(animated: true)
-        }
+        let close = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            style: .plain,
+            target: self,
+            action: #selector(viewClose)
+        )
+        close.accessibilityLabel = NSLocalizedString("_close_", comment: "")
 
-        self.navigationItem.leftBarButtonItems = [close]
+        navigationItem.rightBarButtonItem = close
     }
 
     override func viewDidAppear(_ animated: Bool) {
