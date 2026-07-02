@@ -5,7 +5,6 @@
 import UIKit
 import NextcloudKit
 import Alamofire
-import Queuer
 import RealmSwift
 
 extension NCNetworking {

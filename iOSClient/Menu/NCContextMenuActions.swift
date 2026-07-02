@@ -90,13 +90,7 @@ enum NCContextMenuActions {
             title: NSLocalizedString("_livephoto_save_", comment: ""),
             image: NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
-            NCNetworking.shared.saveLivePhotoQueue.addOperation(
-                NCOperationSaveLivePhoto(
-                    metadata: metadata,
-                    metadataMOV: metadataMOV,
-                    windowScene: windowScene
-                )
-            )
+            NCSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, windowScene: windowScene).start()
         }
     }
 
