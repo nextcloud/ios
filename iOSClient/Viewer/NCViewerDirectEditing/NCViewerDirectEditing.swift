@@ -61,7 +61,6 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         if #available(iOS 26.0, *) {
             navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
         }
-        navigationItem.hidesBackButton = true
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
