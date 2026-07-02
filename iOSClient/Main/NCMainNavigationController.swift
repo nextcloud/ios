@@ -236,13 +236,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             collectionViewCommon.navigationItem.searchController = nil
 
             let cancel = UIBarButtonItem(
-                title: NSLocalizedString("_cancel_", comment: ""),
+                image: UIImage(systemName: "xmark"),
                 style: .plain
             ) {
                 Task {
                     await collectionViewCommon.setEditMode(false)
                 }
             }
+            cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
 
             let group = UIBarButtonItemGroup(
                 barButtonItems: [cancel],
@@ -260,11 +261,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             trashViewController.tabBarSelect.show()
 
             let cancel = UIBarButtonItem(
-                title: NSLocalizedString("_cancel_", comment: ""),
+                image: UIImage(systemName: "xmark"),
                 style: .plain
             ) {
                 trashViewController.setEditMode(false)
             }
+            cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
 
             let group = UIBarButtonItemGroup(
                 barButtonItems: [cancel],
