@@ -1353,6 +1353,23 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns detached (unmanaged) copies of `tableMetadata` objects matching the provided ocIds.
+    /// - Parameter fileIds: Array of fileId strings used to fetch corresponding metadata.
+    /// - Returns: An array of detached `tableMetadata` objects. Empty if no matches are found.
+    func getMetadatasFromFileIdsAsync(_ fileIds: [String]) async -> [tableMetadata] {
+        guard !fileIds.isEmpty else {
+            return []
+        }
+
+        return await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .where {
+                    $0.fileId.in(fileIds)
+                }
+                .map { $0.detachedCopy() }
+        } ?? []
+    }
+
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
     /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
     func getMetadatasAsync(predicate: NSPredicate,

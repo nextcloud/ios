@@ -34,6 +34,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private var recommendations: [tableRecommendedFiles] = []
     private var viewController: UIViewController?
     private var sceneIdentifier: String = ""
+    private var recommendationsIdentity: [String] = []
 
 #if !EXTENSION
     @MainActor
@@ -133,11 +134,32 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 #if EXTENSION
         self.collectionViewRecommendations.reloadData()
 #else
-        Task {
-            let isPause = await (viewController as? NCCollectionViewCommon)?.debouncerReloadDataSource.isPausedNow() ?? false
-            if !isPause {
-                self.collectionViewRecommendations.reloadData()
+        Task { [weak self] in
+            guard let self else { return }
+
+            let isPause = await (viewController as? NCCollectionViewCommon)?
+                .debouncerReloadDataSource
+                .isPausedNow() ?? false
+
+            guard !isPause else {
+                return
             }
+
+            let fileIds = recommendations.map(\.id)
+            let metadatas = await NCManageDatabase.shared.getMetadatasFromFileIdsAsync(fileIds)
+            let etagsByFileId = Dictionary(
+                uniqueKeysWithValues: metadatas.map { ($0.fileId, $0.etag) }
+            )
+            let newRecommendationsIdentity = recommendations.map {
+                "\($0.id)|\($0.reason)|\(etagsByFileId[$0.id] ?? "")"
+            }
+
+            guard self.recommendationsIdentity != newRecommendationsIdentity else {
+                return
+            }
+
+            self.recommendationsIdentity = newRecommendationsIdentity
+            self.collectionViewRecommendations.reloadData()
         }
 #endif
     }
