@@ -163,66 +163,146 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let recommendedFiles = self.recommendations[indexPath.row]
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else { fatalError() }
+        let recommendedFile = self.recommendations[indexPath.row]
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "cell",
+            for: indexPath
+        ) as? NCRecommendationsCell else {
+            fatalError("Unable to dequeue NCRecommendationsCell")
+        }
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id) {
-            let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase)
+        cell.representedFileId = recommendedFile.id
+        cell.recommendedFiles = recommendedFile
+        cell.labelInfo.text = recommendedFile.reason
+        cell.delegate = self
+        cell.image.image = nil
+        cell.image.contentMode = .scaleAspectFit
+        cell.setImageCorner(withBorder: false)
+
+        let fileId = recommendedFile.id
+
+        Task { [weak self, weak cell] in
+            guard let self,
+                  let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId),
+                  !Task.isCancelled else {
+                return
+            }
+
+            await MainActor.run {
+                guard let cell,
+                      cell.representedFileId == fileId else {
+                    return
+                }
+
+                cell.metadata = metadata
+                cell.setBidiSafeFilename(
+                    metadata.fileNameView,
+                    isDirectory: metadata.directory,
+                    titleLabel: cell.labelFilename,
+                    extensionLabel: cell.labelExtensionFilename
+                )
+
+                let hasDocumentPreview = metadata.hasPreview &&
+                metadata.classFile == NKTypeClassFile.document.rawValue
+
+                cell.setImageCorner(withBorder: hasDocumentPreview)
+            }
 
             if metadata.directory {
-                cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                cell.image.contentMode = .scaleAspectFit
-            } else if let image = imagePreview {
-                cell.image.image = image
-                cell.image.contentMode = .scaleAspectFill
-            } else {
-                cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                cell.image.contentMode = .scaleAspectFit
-                if recommendedFiles.hasPreview {
-                    Task {
-                        let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account) { task in
-                            Task {
-                                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                            path: metadata.fileId,
-                                                                                                            name: "DownloadPreview")
-                                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                            }
-                        }
-                        if resultsPreview.error == .success, let data = resultsPreview.responseData?.data {
-                            self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
-                            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
-                                Task { @MainActor in
-                                    for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
-                                        if cell.metadata?.fileId == recommendedFiles.id {
-                                            cell.image.contentMode = .scaleAspectFill
-                                            if metadata.classFile == NKTypeClassFile.document.rawValue {
-                                                cell.setImageCorner(withBorder: true)
-                                            }
-                                            UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
-                                                cell.image.image = image
-                                            }, completion: nil)
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                let icon = self.utility.loadImage(
+                    named: metadata.iconName,
+                    useTypeIconFile: true,
+                    account: metadata.account
+                )
+
+                await MainActor.run {
+                    guard let cell,
+                          cell.representedFileId == fileId else {
+                        return
                     }
+
+                    cell.image.image = icon
+                    cell.image.contentMode = .scaleAspectFit
+                }
+
+                return
+            }
+
+            if let image = self.utility.getImage(
+                ocId: metadata.ocId,
+                etag: metadata.etag,
+                ext: self.global.previewExt512,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase
+            ) {
+                await MainActor.run {
+                    guard let cell,
+                          cell.representedFileId == fileId else {
+                        return
+                    }
+
+                    cell.image.image = image
+                    cell.image.contentMode = .scaleAspectFill
+                }
+
+                return
+            }
+
+            let icon = self.utility.loadImage(
+                named: metadata.iconName,
+                useTypeIconFile: true,
+                account: metadata.account
+            )
+
+            await MainActor.run {
+                guard let cell,
+                      cell.representedFileId == fileId else {
+                    return
+                }
+
+                cell.image.image = icon
+                cell.image.contentMode = .scaleAspectFit
+            }
+
+            let result = await NextcloudKit.shared.downloadPreviewAsync(
+                fileId: fileId,
+                etag: metadata.etag,
+                account: metadata.account
+            )
+
+            guard result.error == .success,
+                  let data = result.responseData?.data,
+                  let image = NCUtility().createImageFileFrom(
+                    data: data,
+                    ocId: metadata.ocId,
+                    etag: metadata.etag,
+                    ext: self.global.previewExt512,
+                    userId: metadata.userId,
+                    urlBase: metadata.urlBase
+                  ) else {
+                return
+            }
+
+            await MainActor.run {
+                guard let cell,
+                      cell.representedFileId == fileId else {
+                    return
+                }
+
+                cell.image.contentMode = .scaleAspectFill
+
+                if metadata.classFile == NKTypeClassFile.document.rawValue {
+                    cell.setImageCorner(withBorder: true)
+                }
+
+                UIView.transition(
+                    with: cell.image,
+                    duration: 0.25,
+                    options: .transitionCrossDissolve
+                ) {
+                    cell.image.image = image
                 }
             }
-
-            if metadata.hasPreview, metadata.classFile == NKTypeClassFile.document.rawValue, imagePreview != nil {
-                cell.setImageCorner(withBorder: true)
-            } else {
-                cell.setImageCorner(withBorder: false)
-            }
-
-            cell.setBidiSafeFilename(metadata.fileNameView, isDirectory: metadata.directory, titleLabel: cell.labelFilename, extensionLabel: cell.labelExtensionFilename)
-            cell.labelInfo.text = recommendedFiles.reason
-
-            cell.delegate = self
-            cell.metadata = metadata
-            cell.recommendedFiles = recommendedFiles
         }
 
         return cell
