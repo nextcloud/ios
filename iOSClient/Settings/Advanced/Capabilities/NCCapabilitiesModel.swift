@@ -43,7 +43,8 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         var textEditor = false
-        var onlyofficeEditors = false
+        var onlyofficeEditor = false
+        var euroOfficeEditor = false
         let cap = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         capabililies.removeAll()
 
@@ -70,16 +71,20 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
         let editors = cap.directEditingCreators
         for editor in editors {
-            if editor.editor == "text" {
+            if editor.editor.lowercased() == "text" {
                 textEditor = true
-            } else if editor.editor == "onlyoffice" {
-                onlyofficeEditors = true
+            } else if editor.editor.lowercased() == "onlyoffice" {
+                onlyofficeEditor = true
+            } else if editor.editor.lowercased() == "eurooffice" {
+                euroOfficeEditor = true
             }
         }
 
         capabililies.append(Capability(text: "Text", image: utility.loadImage(named: "doc.text"), resize: false, available: textEditor))
 
-        capabililies.append(Capability(text: "ONLYOFFICE", image: utility.loadImage(named: "onlyoffice"), resize: true, available: onlyofficeEditors))
+        capabililies.append(Capability(text: "Euro-Office", image: utility.loadImage(named: "eurooffice"), resize: true, available: euroOfficeEditor))
+
+        capabililies.append(Capability(text: "OnlyOffice", image: utility.loadImage(named: "onlyoffice"), resize: true, available: onlyofficeEditor))
 
         capabililies.append(Capability(text: "Collabora", image: utility.loadImage(named: "collabora"), resize: true, available: cap.richDocumentsEnabled))
 
