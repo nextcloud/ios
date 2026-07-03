@@ -31,7 +31,7 @@ struct TransfersView: View {
             contentView
                 .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
+                    ToolbarItem(placement: .confirmationAction) {
                         Button {
                             onClose?()
                         } label: {
