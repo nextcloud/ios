@@ -64,7 +64,7 @@ class NCCreate: NSObject {
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
-            guard results.error == .success, let url = results.url else {
+            guard results.error == .success else {
                 Task {
                     let windowScene = SceneManager.shared.getWindowScene(controller: controller)
                     await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)

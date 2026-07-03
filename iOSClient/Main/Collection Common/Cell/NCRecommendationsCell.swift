@@ -18,6 +18,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     var delegate: NCRecommendationsCellDelegate?
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
+    var representedFileId: String?
 
     var metadata: tableMetadata? {
         didSet {

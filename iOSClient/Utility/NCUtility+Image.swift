@@ -130,13 +130,20 @@ extension NCUtility {
         createImageStandard(ocId: metadata.ocId, etag: metadata.etag, image: image, userId: metadata.userId, urlBase: metadata.urlBase)
     }
 
-    func createImageFileFrom(data: Data, metadata: tableMetadata) {
-        createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+    @discardableResult
+    func createImageFileFrom(data: Data, metadata: tableMetadata, ext: String? = nil) -> UIImage? {
+        return createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
     }
 
-    func createImageFileFrom(data: Data, ocId: String, etag: String, userId: String, urlBase: String) {
+    @discardableResult
+    func createImageFileFrom(data: Data,
+                             ocId: String,
+                             etag: String,
+                             ext: String? = nil,
+                             userId: String,
+                             urlBase: String) -> UIImage? {
         guard let image = UIImage(data: data) else {
-            return
+            return nil
         }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId,
                                                                                            etag: etag,
@@ -148,24 +155,42 @@ extension NCUtility {
             try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
         } catch { }
 
-        createImageStandard(ocId: ocId, etag: etag, image: image, userId: userId, urlBase: urlBase)
+        return createImageStandard(ocId: ocId, etag: etag, image: image, ext: ext, userId: userId, urlBase: urlBase)
     }
 
-    private func createImageStandard(ocId: String, etag: String, image: UIImage, userId: String, urlBase: String) {
-        let ext = [global.previewExt1024, global.previewExt512, global.previewExt256]
+    @discardableResult
+    private func createImageStandard(ocId: String,
+                                     etag: String,
+                                     image: UIImage,
+                                     ext: String? = nil,
+                                     userId: String,
+                                     urlBase: String) -> UIImage? {
+        let extList = [global.previewExt1024, global.previewExt512, global.previewExt256]
         let size = [global.size1024, global.size512, global.size256]
         let compressionQuality = [0.5, 0.6, 0.7]
+        var imageExt: UIImage?
 
-        for i in 0..<ext.count {
-            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext[i], userId: userId, urlBase: urlBase),
-               let image = image.resizeImage(size: size[i]),
-               let data = image.jpegData(compressionQuality: compressionQuality[i]) {
-                do {
-                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i], userId: userId, urlBase: urlBase)
-                    try data.write(to: URL(fileURLWithPath: fileNamePath))
-                } catch { }
+        for i in extList.indices {
+            if utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: extList[i], userId: userId, urlBase: urlBase) {
+                if ext == extList[i] {
+                    imageExt = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: extList[i], userId: userId, urlBase: urlBase))
+                }
+            } else {
+                if let image = image.resizeImage(size: size[i]),
+                   let data = image.jpegData(compressionQuality: compressionQuality[i]) {
+                    do {
+                        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: extList[i], userId: userId, urlBase: urlBase)
+                        try data.write(to: URL(fileURLWithPath: fileNamePath))
+
+                        if ext == extList[i] {
+                            imageExt = image
+                        }
+                    } catch { }
+                }
             }
         }
+
+        return imageExt
     }
 
     func getImage(ocId: String, etag: String, ext: String, userId: String, urlBase: String) -> UIImage? {

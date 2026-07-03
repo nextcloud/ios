@@ -204,7 +204,6 @@ class NCSearchUserDropDownCell: DropDownCell {
             }
 
             let user = sharee.shareWith
-            let identifier = sharee.uuid
             let account = session.account
 
             Task {
