@@ -172,7 +172,6 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         }
 
         cell.representedFileId = recommendedFile.id
-        cell.recommendedFiles = recommendedFile
         cell.labelInfo.text = recommendedFile.reason
         cell.delegate = self
         cell.image.image = nil
