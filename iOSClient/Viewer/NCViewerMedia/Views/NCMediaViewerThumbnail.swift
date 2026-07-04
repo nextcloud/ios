@@ -832,10 +832,9 @@ extension NCMediaViewerThumbnail {
                 }
 
                 guard metadata.classFile != NKTypeClassFile.audio.rawValue else {
-                    await self.audioLoadProvider(index)
-
                     await MainActor.run {
                         _ = self.pendingPrefetchIndexes.remove(index)
+                        self.loadAudioIfNeeded(at: index)
                         self.refreshThumbnailIfVisible(at: index)
                     }
                     return
