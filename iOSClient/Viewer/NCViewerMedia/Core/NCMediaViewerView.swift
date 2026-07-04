@@ -60,6 +60,9 @@ struct NCMediaViewerView: View {
                             ext: NCGlobal.shared.previewExt256
                         )
                     },
+                    audioLoadProvider: { index in
+                        await model.loadPageIfNeeded(index: index)
+                    },
                     isDeletedProvider: { index in
                         model.isThumbnailDeleted(at: index)
                     },

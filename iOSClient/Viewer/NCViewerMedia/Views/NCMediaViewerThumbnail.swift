@@ -51,6 +51,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     let metadataProvider: (_ index: Int) -> tableMetadata?
     let metadataResolver: (_ index: Int) async -> tableMetadata?
     let previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+    let audioLoadProvider: (_ index: Int) async -> Void
     let isDeletedProvider: (_ index: Int) -> Bool
     let onSelect: (_ index: Int) -> Void
 
@@ -111,6 +112,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         context.coordinator.metadataProvider = metadataProvider
         context.coordinator.metadataResolver = metadataResolver
         context.coordinator.previewURLProvider = previewURLProvider
+        context.coordinator.audioLoadProvider = audioLoadProvider
         context.coordinator.isDeletedProvider = isDeletedProvider
         context.coordinator.onSelect = onSelect
         context.coordinator.syncDisplayedSelectedIndexFromInput()
@@ -129,6 +131,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
             metadataProvider: metadataProvider,
             metadataResolver: metadataResolver,
             previewURLProvider: previewURLProvider,
+            audioLoadProvider: audioLoadProvider,
             isDeletedProvider: isDeletedProvider,
             onSelect: onSelect
         )
@@ -149,6 +152,7 @@ extension NCMediaViewerThumbnail {
         var metadataProvider: (_ index: Int) -> tableMetadata?
         var metadataResolver: (_ index: Int) async -> tableMetadata?
         var previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+        var audioLoadProvider: (_ index: Int) async -> Void
         var isDeletedProvider: (_ index: Int) -> Bool
         var onSelect: (_ index: Int) -> Void
 
@@ -174,6 +178,7 @@ extension NCMediaViewerThumbnail {
             metadataProvider: @escaping (_ index: Int) -> tableMetadata?,
             metadataResolver: @escaping (_ index: Int) async -> tableMetadata?,
             previewURLProvider: @escaping (_ metadata: tableMetadata) async -> URL?,
+            audioLoadProvider: @escaping (_ index: Int) async -> Void,
             isDeletedProvider: @escaping (_ index: Int) -> Bool,
             onSelect: @escaping (_ index: Int) -> Void
         ) {
@@ -184,6 +189,7 @@ extension NCMediaViewerThumbnail {
             self.metadataProvider = metadataProvider
             self.metadataResolver = metadataResolver
             self.previewURLProvider = previewURLProvider
+            self.audioLoadProvider = audioLoadProvider
             self.isDeletedProvider = isDeletedProvider
             self.onSelect = onSelect
             self.displayedSelectedIndex = selectedIndex
@@ -637,21 +643,50 @@ extension NCMediaViewerThumbnail {
             let ocId = metadata?.ocId
             let isCurrent = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: index)
             let isVideo = !isDeleted && metadata?.classFile == NKTypeClassFile.video.rawValue
+            let isAudio = !isDeleted && metadata?.classFile == NKTypeClassFile.audio.rawValue
             let image = isDeleted ? nil : image(for: ocId)
 
             if !isDeleted, image == nil {
-                loadThumbnailIfNeeded(
-                    index: index,
-                    metadata: metadata
-                )
+                if isAudio {
+                    loadAudioIfNeeded(at: index)
+                } else {
+                    loadThumbnailIfNeeded(
+                        index: index,
+                        metadata: metadata
+                    )
+                }
             }
 
             cell.configure(
                 image: image,
                 isCurrent: isCurrent,
                 isVideo: isVideo,
+                isAudio: isAudio,
                 isDeleted: isDeleted
             )
+        }
+
+        private func loadAudioIfNeeded(at index: Int) {
+            guard index >= 0,
+                  index < numberOfPages,
+                  !isDeletedProvider(index),
+                  !pendingPrefetchIndexes.contains(index) else {
+                return
+            }
+
+            pendingPrefetchIndexes.insert(index)
+
+            Task { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                await self.audioLoadProvider(index)
+
+                await MainActor.run {
+                    _ = self.pendingPrefetchIndexes.remove(index)
+                }
+            }
         }
 
         private func isDisplayedCurrentThumbnail(at index: Int) -> Bool {
@@ -701,10 +736,16 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            loadThumbnailIfNeeded(
-                index: index,
-                metadata: metadataProvider(index)
-            )
+            let metadata = metadataProvider(index)
+
+            if metadata?.classFile == NKTypeClassFile.audio.rawValue {
+                loadAudioIfNeeded(at: index)
+            } else {
+                loadThumbnailIfNeeded(
+                    index: index,
+                    metadata: metadata
+                )
+            }
         }
 
         private func loadThumbnailIfNeeded(
@@ -894,12 +935,14 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         image: UIImage?,
         isCurrent: Bool,
         isVideo: Bool,
+        isAudio: Bool,
         isDeleted: Bool
     ) {
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
         placeholderView.isHidden = imageView.image != nil
-        placeholderIconView.image = UIImage(systemName: isDeleted ? "trash" : "photo")?
+        let placeholderSymbol = isDeleted ? "trash" : (isAudio ? "waveform" : "photo")
+        placeholderIconView.image = UIImage(systemName: placeholderSymbol)?
             .withRenderingMode(.alwaysTemplate)
         placeholderIconView.tintColor = .systemGray
         playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
