@@ -263,8 +263,11 @@ struct NCMediaViewerPageView: View {
             }
 
         case NKTypeClassFile.audio.rawValue:
-            Color.ncViewerBackground(backgroundStyle)
-                .ignoresSafeArea()
+            if let previewURL {
+                previewOnlyView(previewURL: previewURL)
+            } else {
+                audioPlaceholderView
+            }
 
         default:
             if let previewURL {
@@ -315,10 +318,29 @@ struct NCMediaViewerPageView: View {
     ) -> some View {
         if let previewURL {
             previewOnlyView(previewURL: previewURL)
+        } else if page.metadata?.classFile == NKTypeClassFile.audio.rawValue {
+            audioPlaceholderView
         } else {
             Color.ncViewerBackground(backgroundStyle)
                 .ignoresSafeArea()
         }
+    }
+
+    private var audioPlaceholderView: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "waveform")
+                .font(.system(size: 44, weight: .regular))
+
+            Text(page.metadata?.fileNameView ?? page.metadata?.fileName ?? "")
+                .font(.headline)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+        }
+        .foregroundStyle(primaryForegroundStyle)
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
+        .gesture(chromeToggleGesture())
     }
 
     @ViewBuilder
