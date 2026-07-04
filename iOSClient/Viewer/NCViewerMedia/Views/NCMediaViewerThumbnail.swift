@@ -647,6 +647,7 @@ extension NCMediaViewerThumbnail {
             let isCurrent = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: index)
             let isVideo = !isDeleted && metadata?.classFile == NKTypeClassFile.video.rawValue
             let isAudio = !isDeleted && metadata?.classFile == NKTypeClassFile.audio.rawValue
+            let isMetadataResolved = metadata != nil
             let image = isDeleted ? nil : image(for: ocId)
 
             if !isDeleted, isAudio {
@@ -663,6 +664,7 @@ extension NCMediaViewerThumbnail {
                 isCurrent: isCurrent,
                 isVideo: isVideo,
                 isAudio: isAudio,
+                isMetadataResolved: isMetadataResolved,
                 isDeleted: isDeleted
             )
         }
@@ -981,16 +983,33 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         isCurrent: Bool,
         isVideo: Bool,
         isAudio: Bool,
+        isMetadataResolved: Bool,
         isDeleted: Bool
     ) {
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
         placeholderView.isHidden = imageView.image != nil
 
-        let placeholderSymbol = isDeleted ? "trash" : (isAudio ? "waveform" : "photo")
+        let placeholderSymbol: String
+
+        if isDeleted {
+            placeholderSymbol = "trash"
+        } else if !isMetadataResolved {
+            placeholderSymbol = "ellipsis"
+        } else if isAudio {
+            placeholderSymbol = "waveform"
+        } else {
+            placeholderSymbol = "photo"
+        }
         let placeholderPointSize: CGFloat
 
-        if isAudio {
+        if !isMetadataResolved {
+            placeholderPointSize = isCurrent
+                ? NCMediaViewerThumbnailLayout.selectedThumbnailSize * 0.28
+                : NCMediaViewerThumbnailLayout.thumbnailSize * 0.34
+            placeholderView.backgroundColor = UIColor.white.withAlphaComponent(0.16)
+            placeholderIconView.tintColor = .secondaryLabel
+        } else if isAudio {
             placeholderPointSize = isCurrent
                 ? NCMediaViewerThumbnailLayout.selectedThumbnailSize * 0.32
                 : NCMediaViewerThumbnailLayout.thumbnailSize * 0.38
