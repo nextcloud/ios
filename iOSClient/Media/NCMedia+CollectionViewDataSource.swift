@@ -85,15 +85,10 @@ extension NCMedia: UICollectionViewDataSource {
                     return
                 }
 
-                NCUtility().createImageFileFrom(data: data, metadata: metadata)
-
-                let image = NCUtility().getImage(
-                    ocId: metadata.ocId,
-                    etag: metadata.etag,
-                    ext: ext,
-                    userId: metadata.userId,
-                    urlBase: metadata.urlBase
-                )
+                let image = NCUtility().createImageFileFrom(
+                    data: data,
+                    metadata: metadata,
+                    ext: ext)
 
                 guard !Task.isCancelled else {
                     return
