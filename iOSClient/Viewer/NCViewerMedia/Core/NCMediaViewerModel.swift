@@ -1146,11 +1146,10 @@ private extension NCMediaViewerPageState {
         case .video(nil, nil):
             return true
 
-        case .audio(_, nil):
-            return true
+        case .audio:
+            return false
 
         case .image(_, .some, _, _),
-             .audio(_, .some),
              .video,
              .loadingMetadata,
              .metadataMissing,

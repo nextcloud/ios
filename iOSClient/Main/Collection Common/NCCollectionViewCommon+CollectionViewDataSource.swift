@@ -83,10 +83,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     userId: self.session.userId,
                     urlBase: self.session.urlBase)
 
-                guard !Task.isCancelled else {
-                    return
-                }
-
                 await MainActor.run {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
                         self.dataSource.getMetadata(indexPath: $0)?.ocId == ocId

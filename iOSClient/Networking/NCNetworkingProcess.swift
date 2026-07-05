@@ -29,6 +29,8 @@ actor NCNetworkingProcess {
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
     private var lastScheduledAndInProgressCount: Int = 0
+    private var lastVerifyZombieDate: Date = .distantPast
+    private let verifyZombieInterval: TimeInterval = 12
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -36,6 +38,49 @@ actor NCNetworkingProcess {
     public let maxInterval: TimeInterval = 3.5
     private let minInterval: TimeInterval = 2.5
     private let offlineInterval: TimeInterval = 10
+    private let seriousThermalInterval: TimeInterval = 7
+    private let criticalThermalInterval: TimeInterval = 12
+
+    /// Returns the preferred polling interval for the networking process.
+    ///
+    /// The interval is adjusted according to the current thermal state to reduce
+    /// CPU activity, database checks, and transfer polling when the device is hot.
+    /// Offline mode keeps its dedicated interval during nominal and fair states.
+    ///
+    /// - Parameter hasPendingTransfers: Indicates whether uploads or downloads are pending.
+    /// - Returns: The interval to use before the next networking process check.
+    private func preferredTimerInterval(hasPendingTransfers: Bool) -> TimeInterval {
+        let baseInterval: TimeInterval
+
+        if networking.isOffline {
+            baseInterval = offlineInterval
+        } else {
+            baseInterval = hasPendingTransfers ? minInterval : maxInterval
+        }
+
+        switch ProcessInfo.processInfo.thermalState {
+        case .critical:
+            return max(baseInterval, criticalThermalInterval)
+
+        case .serious:
+            return max(baseInterval, seriousThermalInterval)
+
+        case .fair, .nominal:
+            return baseInterval
+
+        @unknown default:
+            return baseInterval
+        }
+    }
+
+    private func updateTimerIntervalIfNeeded(hasPendingTransfers: Bool) async {
+        let interval = preferredTimerInterval(hasPendingTransfers: hasPendingTransfers)
+        guard lastUsedInterval != interval else {
+            return
+        }
+
+        await startTimer(interval: interval)
+    }
 
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
@@ -103,10 +148,10 @@ actor NCNetworkingProcess {
         }
 
         if controller == nil {
-            for ctlr in SceneManager.shared.getControllers() {
-                let account = ctlr.account
-                if account == account {
-                    controller = ctlr
+            for controllerCandidate in SceneManager.shared.getControllers() {
+                if controllerCandidate.account == account {
+                    controller = controllerCandidate
+                    break
                 }
             }
         }
@@ -213,21 +258,26 @@ actor NCNetworkingProcess {
 
             // METADATAS
             //
-            let metadatas = await NCManageDatabase.shared.getMetadataProcess()
+            var metadatas = await NCManageDatabase.shared.getMetadataProcess()
 
             // TRANSFERS SUCCESS
             //
-            let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
-            let countProgress = metadatas.filter { global.metadatasStatusDownloadingUploading.contains($0.status) }.count
             let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+            let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
             if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
                 await NCNetworking.shared.metadataTranfersSuccess.flush()
             }
 
             // ZOMBIE
-            //
-            if countWaitUpload == 0, countProgress > 0 {
+            // Check periodically while transfers are marked as in progress. Do not let a
+            // stalled download keep a process slot occupied, but avoid querying all URLSession
+            // task lists on every pipeline tick.
+            let countProgress = metadatas.filter { global.metadatasStatusDownloadingUploading.contains($0.status) }.count
+            if countProgress > 0,
+               Date().timeIntervalSince(lastVerifyZombieDate) >= verifyZombieInterval {
+                lastVerifyZombieDate = Date()
                 await NCNetworking.shared.verifyZombie()
+                metadatas = await NCManageDatabase.shared.getMetadataProcess()
             }
 
             if !metadatas.isEmpty {
@@ -263,13 +313,7 @@ actor NCNetworkingProcess {
 
                 await runMetadataPipelineAsync(metadatas: metadatas)
 
-                // TODO: Check temperature
-
-                if networking.isOffline {
-                    await startTimer(interval: offlineInterval)
-                } else if lastUsedInterval != minInterval {
-                    await startTimer(interval: minInterval)
-                }
+                await updateTimerIntervalIfNeeded(hasPendingTransfers: true)
             } else {
                 // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
@@ -277,9 +321,7 @@ actor NCNetworkingProcess {
                 // Set Live Photo
                 await NCNetworking.shared.setLivePhoto(account: currentAccount)
 
-                if lastUsedInterval != maxInterval {
-                    await startTimer(interval: maxInterval)
-                }
+                await updateTimerIntervalIfNeeded(hasPendingTransfers: false)
             }
         }
     }
@@ -308,7 +350,7 @@ actor NCNetworkingProcess {
         let database = NCManageDatabase.shared
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
         let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
+        let countUploading = max(0, metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess)
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         // Banner

@@ -133,9 +133,13 @@ private extension NCVideoViewerContentView {
     var requestedPlaybackView: some View {
         switch playback.engine {
         case .loading:
-            videoBackgroundColor
-                .ignoresSafeArea()
-                .allowsHitTesting(false)
+            NCVideoPlaybackCoverView(
+                previewURL: previewURL,
+                isPlayEnabled: false,
+                isLaunchingPlayback: true,
+                onToggleChrome: onToggleChrome,
+                onPlay: { }
+            )
 
         case .avFoundation(let preparedPlayback):
             if isSelected,
@@ -181,15 +185,26 @@ private extension NCVideoViewerContentView {
     }
 
     func failedView(_ message: String) -> some View {
-        VStack(spacing: 12) {
-            Image(systemName: "video.slash")
-                .font(.system(size: 44, weight: .regular))
+        ZStack {
+            NCVideoPlaybackCoverView(
+                previewURL: previewURL,
+                isPlayEnabled: false,
+                isLaunchingPlayback: false,
+                onToggleChrome: onToggleChrome,
+                onPlay: { }
+            )
 
-            Text(NSLocalizedString("_video_not_available_", comment: ""))
-                .font(.headline)
+            VStack(spacing: 12) {
+                Image(systemName: "video.slash")
+                    .font(.system(size: 44, weight: .regular))
+
+                Text(NSLocalizedString("_video_not_available_", comment: ""))
+                    .font(.headline)
+            }
+            .foregroundStyle(.white)
+            .padding(24)
+            .background(.black.opacity(0.36), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
-        .foregroundStyle(.white)
-        .padding(24)
     }
 }
 
