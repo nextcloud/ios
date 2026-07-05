@@ -8,24 +8,53 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource() async {
-        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", self.session.account)) else {
+        let account = self.session.account
+
+        guard let tblAccount = await self.database.getTableAccountAsync(
+            predicate: NSPredicate(format: "account == %@", account)
+        ) else {
             return
         }
+
+        guard self.session.account == account else {
+            return
+        }
+
         let mediaPredicate = self.imageCache.getMediaPredicate(
             session: self.session,
             mediaPath: tblAccount.mediaPath,
             showOnlyImages: self.showOnlyImages,
             showOnlyVideos: self.showOnlyVideos)
 
-        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) {
+        guard self.session.account == account else {
+            return
+        }
+
+        if let metadatas = await self.database.getMetadatasAsync(
+            predicate: mediaPredicate,
+            sortedByKeyPath: "date",
+            ascending: false
+        ) {
+            guard self.session.account == account else {
+                return
+            }
+
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
+                    guard self.session.account == account else {
+                        return
+                    }
+
                     self.dataSource = NCMediaDataSource(metadatas: metadatas)
                     self.collectionViewReloadDataKeepingPosition()
                 }
             }
         } else {
             await MainActor.run {
+                guard self.session.account == account else {
+                    return
+                }
+
                 self.dataSource.clearCompactMetadatas()
                 self.collectionViewReloadData()
             }
@@ -236,6 +265,9 @@ extension NCMedia {
                     await self.loadDataSource()
                 }
             }
+        }
+        guard self.session.account == account else {
+            return
         }
 
         guard let firstDate, let lastDate else {
