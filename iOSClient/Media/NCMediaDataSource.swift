@@ -320,14 +320,14 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                if let firstDate = files.first?.date as? NSDate,
-                   let lastDate = files.last?.date as? NSDate {
-                    await self.updateMediaMetadatas(files: files,
-                                                    firstDate: firstDate,
-                                                    lastDate: lastDate,
-                                                    mediaPath: mediaPath) {
-                        update()
-                    }
+                let pageFirstDate = (files.first?.date as? NSDate) ?? firstDate as NSDate
+                let pageLastDate = (files.last?.date as? NSDate) ?? lastDate as NSDate
+
+                await self.updateMediaMetadatas(files: files,
+                                                firstDate: pageFirstDate,
+                                                lastDate: pageLastDate,
+                                                mediaPath: mediaPath) {
+                    update()
                 }
             } finish: {
                 finish()
