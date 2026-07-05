@@ -30,7 +30,7 @@ actor NCNetworkingProcess {
     private var currentAccount = ""
     private var lastScheduledAndInProgressCount: Int = 0
     private var lastVerifyZombieDate: Date = .distantPast
-    private let verifyZombieInterval: TimeInterval = 10
+    private let verifyZombieInterval: TimeInterval = 12
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -38,6 +38,41 @@ actor NCNetworkingProcess {
     public let maxInterval: TimeInterval = 3.5
     private let minInterval: TimeInterval = 2.5
     private let offlineInterval: TimeInterval = 10
+    private let seriousThermalInterval: TimeInterval = 7
+    private let criticalThermalInterval: TimeInterval = 12
+
+    /// Returns the preferred polling interval for the networking process.
+    ///
+    /// The interval is adjusted according to the current thermal state to reduce
+    /// CPU activity, database checks, and transfer polling when the device is hot.
+    /// Offline mode keeps its dedicated interval during nominal and fair states.
+    ///
+    /// - Parameter hasPendingTransfers: Indicates whether uploads or downloads are pending.
+    /// - Returns: The interval to use before the next networking process check.
+    private func preferredTimerInterval(hasPendingTransfers: Bool) -> TimeInterval {
+        switch ProcessInfo.processInfo.thermalState {
+        case .critical:
+            return criticalThermalInterval
+        case .serious:
+            return seriousThermalInterval
+        case .fair, .nominal:
+            if networking.isOffline {
+                return offlineInterval
+            }
+            return hasPendingTransfers ? minInterval : maxInterval
+        @unknown default:
+            return hasPendingTransfers ? minInterval : maxInterval
+        }
+    }
+
+    private func updateTimerIntervalIfNeeded(hasPendingTransfers: Bool) async {
+        let interval = preferredTimerInterval(hasPendingTransfers: hasPendingTransfers)
+        guard lastUsedInterval != interval else {
+            return
+        }
+
+        await startTimer(interval: interval)
+    }
 
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
@@ -270,13 +305,7 @@ actor NCNetworkingProcess {
 
                 await runMetadataPipelineAsync(metadatas: metadatas)
 
-                // TODO: Check temperature
-
-                if networking.isOffline {
-                    await startTimer(interval: offlineInterval)
-                } else if lastUsedInterval != minInterval {
-                    await startTimer(interval: minInterval)
-                }
+                await updateTimerIntervalIfNeeded(hasPendingTransfers: true)
             } else {
                 // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
@@ -284,9 +313,7 @@ actor NCNetworkingProcess {
                 // Set Live Photo
                 await NCNetworking.shared.setLivePhoto(account: currentAccount)
 
-                if lastUsedInterval != maxInterval {
-                    await startTimer(interval: maxInterval)
-                }
+                await updateTimerIntervalIfNeeded(hasPendingTransfers: false)
             }
         }
     }
