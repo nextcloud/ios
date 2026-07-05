@@ -147,8 +147,15 @@ extension NCMedia {
             return true
         }
 
-        guard shouldContinue,
-              let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard shouldContinue else {
+            return
+        }
+
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
             return
         }
 
@@ -276,18 +283,16 @@ extension NCMedia {
             if firstDate == .distantFuture,
                lastDate == .distantPast,
                files.isEmpty {
-                Task { @MainActor in
+                await MainActor.run {
                     self.dataSource.clearCompactMetadatas()
                     self.collectionViewReloadData()
                 }
             } else {
-                Task.detached {
-                    await self.updateMediaMetadatas(files: files,
-                                                    firstDate: firstDate as NSDate,
-                                                    lastDate: lastDate as NSDate,
-                                                    mediaPath: mediaPath) {
-                        update()
-                    }
+                await self.updateMediaMetadatas(files: files,
+                                                firstDate: firstDate as NSDate,
+                                                lastDate: lastDate as NSDate,
+                                                mediaPath: mediaPath) {
+                    update()
                 }
             }
         } finish: { }
@@ -315,15 +320,13 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                Task.detached {
-                    if let firstDate = files.first?.date as? NSDate,
-                       let lastDate = files.last?.date as? NSDate {
-                        await self.updateMediaMetadatas(files: files,
-                                                        firstDate: firstDate,
-                                                        lastDate: lastDate,
-                                                        mediaPath: mediaPath) {
-                            update()
-                        }
+                if let firstDate = files.first?.date as? NSDate,
+                   let lastDate = files.last?.date as? NSDate {
+                    await self.updateMediaMetadatas(files: files,
+                                                    firstDate: firstDate,
+                                                    lastDate: lastDate,
+                                                    mediaPath: mediaPath) {
+                        update()
                     }
                 }
             } finish: {
@@ -353,16 +356,45 @@ extension NCMedia {
                                                                         metadatas: metadatas)
 
         // DELETE
-        var ocIdsToDelete: [String] = []
-        for metadata in results.deleted {
-            let existsResult = await self.networking.fileExists(serverUrlFileName: metadata.serverUrlFileName,
-                                                                account: metadata.account)
-            if existsResult.errorCode == 404 {
-                ocIdsToDelete.append(metadata.ocId)
-            }
+        let deletedMetadatas = results.deleted
+
+        // Confirm every deletion candidate with WebDAV before removing it from
+        // the local database, regardless of whether the search is paginated.
+        let maximumConcurrentChecks = max(1, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+
+        if results.inserted > 0 || results.updated > 0 {
+            update()
         }
-        await self.database.deleteMetadatasAsync(ocIds: ocIdsToDelete)
-        if ocIdsToDelete.count > 0 || results.inserted > 0 || results.updated > 0 {
+
+        for batchStart in stride(from: 0, to: deletedMetadatas.count, by: maximumConcurrentChecks) {
+            let batchEnd = min(batchStart + maximumConcurrentChecks, deletedMetadatas.count)
+            let batch = deletedMetadatas[batchStart..<batchEnd]
+
+            let ocIdsToDelete = await withTaskGroup(of: String?.self, returning: Set<String>.self) { group in
+                for metadata in batch {
+                    group.addTask {
+                        let existsResult = await self.networking.fileExists(
+                            serverUrlFileName: metadata.serverUrlFileName,
+                            account: metadata.account
+                        )
+                        return existsResult.errorCode == 404 ? metadata.ocId : nil
+                    }
+                }
+
+                var ocIds = Set<String>()
+                for await ocId in group {
+                    if let ocId {
+                        ocIds.insert(ocId)
+                    }
+                }
+                return ocIds
+            }
+
+            guard !ocIdsToDelete.isEmpty else {
+                continue
+            }
+
+            await self.database.deleteMetadatasAsync(ocIds: Array(ocIdsToDelete))
             update()
         }
     }

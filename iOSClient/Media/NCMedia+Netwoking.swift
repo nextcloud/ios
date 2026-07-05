@@ -14,7 +14,7 @@ extension NCMedia {
                                   paginate: Bool,
                                   limit: Int,
                                   taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                                  update: @escaping (_ files: [NKFile]) -> Void,
+                                  update: @escaping (_ files: [NKFile]) async -> Void,
                                   finish: @escaping () -> Void) async {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             finish()
@@ -64,7 +64,7 @@ extension NCMedia {
                     let files = filesUnordered.sorted {
                         $0.date > $1.date
                     }
-                    update(files)
+                    await update(files)
                 }
                 let allHeaderFields = results.responseData?.response?.allHeaderFields
                 if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
