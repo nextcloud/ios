@@ -38,7 +38,8 @@ struct NCMediaViewerPageView: View {
             case .idle,
                  .loadingMetadata,
                  .checkingLocalFile:
-                unresolvedMediaPlaceholderView
+                Color.ncViewerBackground(backgroundStyle)
+                    .ignoresSafeArea()
 
             case .metadataMissing:
                 metadataMissingView
