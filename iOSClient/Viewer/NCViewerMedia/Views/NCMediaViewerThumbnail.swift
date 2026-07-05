@@ -866,7 +866,6 @@ extension NCMediaViewerThumbnail {
                 }
 
                 await MainActor.run {
-                    self.audioIndexesWithoutPreview.remove(index)
                     _ = self.pendingPrefetchIndexes.remove(index)
 
                     guard !self.isDeletedProvider(index) else {
@@ -1056,7 +1055,7 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         )
         playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
         playIconView.tintColor = .systemGray
-        playIconView.isHidden = isDeleted || !isVideo
+        playIconView.isHidden = isDeleted || !isVideo || imageView.image == nil
         layer.zPosition = isCurrent ? 10 : 0
 
         setNeedsLayout()
