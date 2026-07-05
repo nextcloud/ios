@@ -913,6 +913,8 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
     private let playIconView = UIImageView(image: UIImage(systemName: "play.fill"))
 
     private var isCurrentThumbnail = false
+    private var placeholderWorkItem: DispatchWorkItem?
+    private var configurationIdentifier = UUID()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -926,6 +928,10 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
 
     override func prepareForReuse() {
         super.prepareForReuse()
+
+        placeholderWorkItem?.cancel()
+        placeholderWorkItem = nil
+        configurationIdentifier = UUID()
 
         isCurrentThumbnail = false
         imageView.image = nil
@@ -985,9 +991,13 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         isMetadataResolved: Bool,
         isDeleted: Bool
     ) {
+        placeholderWorkItem?.cancel()
+        placeholderWorkItem = nil
+        configurationIdentifier = UUID()
+
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
-        placeholderView.isHidden = imageView.image != nil
+        placeholderView.isHidden = true
 
         let placeholderSymbol: String
 
@@ -1035,6 +1045,24 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
             width: placeholderPointSize,
             height: placeholderPointSize
         )
+        if imageView.image == nil {
+            let configurationIdentifier = configurationIdentifier
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self,
+                      self.configurationIdentifier == configurationIdentifier,
+                      self.imageView.image == nil else {
+                    return
+                }
+
+                self.placeholderView.isHidden = false
+            }
+
+            placeholderWorkItem = workItem
+            DispatchQueue.main.asyncAfter(
+                deadline: .now() + 0.12,
+                execute: workItem
+            )
+        }
         playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
         playIconView.tintColor = .systemGray
         playIconView.isHidden = isDeleted || !isVideo
