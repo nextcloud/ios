@@ -41,7 +41,8 @@ extension NCMedia {
 
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
-                    guard self.session.account == account else {
+                    guard self.isViewActived,
+                          self.session.account == account else {
                         return
                     }
 
@@ -51,7 +52,8 @@ extension NCMedia {
             }
         } else {
             await MainActor.run {
-                guard self.session.account == account else {
+                guard self.isViewActived,
+                      self.session.account == account else {
                     return
                 }
 
@@ -153,6 +155,10 @@ extension NCMedia {
         collectionView.layoutIfNeeded()
 
         DispatchQueue.main.async {
+            guard self.isViewActived else {
+                return
+            }
+
             self.collectionView.layoutIfNeeded()
             self.restoreScrollAnchor(anchor)
             self.setElements()
@@ -274,6 +280,10 @@ extension NCMedia {
             }
         }
         guard self.session.account == account else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
             return
         }
 
