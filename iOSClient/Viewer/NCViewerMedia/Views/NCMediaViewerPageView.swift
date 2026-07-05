@@ -187,8 +187,7 @@ struct NCMediaViewerPageView: View {
                 backgroundStyle: backgroundStyle
             )
         } else {
-            Color.ncViewerBackground(backgroundStyle)
-                .ignoresSafeArea()
+            imagePlaceholderView
         }
     }
 
@@ -273,8 +272,7 @@ struct NCMediaViewerPageView: View {
             if let previewURL {
                 previewOnlyView(previewURL: previewURL)
             } else {
-                Color.ncViewerBackground(backgroundStyle)
-                    .ignoresSafeArea()
+                imagePlaceholderView
             }
         }
     }
@@ -321,9 +319,25 @@ struct NCMediaViewerPageView: View {
         } else if page.metadata?.classFile == NKTypeClassFile.audio.rawValue {
             audioPlaceholderView
         } else {
-            Color.ncViewerBackground(backgroundStyle)
-                .ignoresSafeArea()
+            imagePlaceholderView
         }
+    }
+
+    private var imagePlaceholderView: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "photo")
+                .font(.system(size: 44, weight: .regular))
+
+            Text(page.metadata?.fileNameView ?? page.metadata?.fileName ?? "")
+                .font(.headline)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+        }
+        .foregroundStyle(primaryForegroundStyle)
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
+        .gesture(chromeToggleGesture())
     }
 
     private var audioPlaceholderView: some View {
