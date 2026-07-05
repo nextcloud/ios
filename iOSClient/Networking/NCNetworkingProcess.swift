@@ -50,18 +50,26 @@ actor NCNetworkingProcess {
     /// - Parameter hasPendingTransfers: Indicates whether uploads or downloads are pending.
     /// - Returns: The interval to use before the next networking process check.
     private func preferredTimerInterval(hasPendingTransfers: Bool) -> TimeInterval {
+        let baseInterval: TimeInterval
+
+        if networking.isOffline {
+            baseInterval = offlineInterval
+        } else {
+            baseInterval = hasPendingTransfers ? minInterval : maxInterval
+        }
+
         switch ProcessInfo.processInfo.thermalState {
         case .critical:
-            return criticalThermalInterval
+            return max(baseInterval, criticalThermalInterval)
+
         case .serious:
-            return seriousThermalInterval
+            return max(baseInterval, seriousThermalInterval)
+
         case .fair, .nominal:
-            if networking.isOffline {
-                return offlineInterval
-            }
-            return hasPendingTransfers ? minInterval : maxInterval
+            return baseInterval
+
         @unknown default:
-            return hasPendingTransfers ? minInterval : maxInterval
+            return baseInterval
         }
     }
 
@@ -140,10 +148,10 @@ actor NCNetworkingProcess {
         }
 
         if controller == nil {
-            for ctlr in SceneManager.shared.getControllers() {
-                let account = ctlr.account
-                if account == account {
-                    controller = ctlr
+            for controllerCandidate in SceneManager.shared.getControllers() {
+                if controllerCandidate.account == account {
+                    controller = controllerCandidate
+                    break
                 }
             }
         }
@@ -254,9 +262,8 @@ actor NCNetworkingProcess {
 
             // TRANSFERS SUCCESS
             //
-            let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
-            let countProgress = metadatas.filter { global.metadatasStatusDownloadingUploading.contains($0.status) }.count
             let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+            let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
             if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
                 await NCNetworking.shared.metadataTranfersSuccess.flush()
             }
@@ -265,6 +272,7 @@ actor NCNetworkingProcess {
             // Check periodically while transfers are marked as in progress. Do not let a
             // stalled download keep a process slot occupied, but avoid querying all URLSession
             // task lists on every pipeline tick.
+            let countProgress = metadatas.filter { global.metadatasStatusDownloadingUploading.contains($0.status) }.count
             if countProgress > 0,
                Date().timeIntervalSince(lastVerifyZombieDate) >= verifyZombieInterval {
                 lastVerifyZombieDate = Date()
@@ -342,7 +350,7 @@ actor NCNetworkingProcess {
         let database = NCManageDatabase.shared
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
         let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
+        let countUploading = max(0, metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess)
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         // Banner
