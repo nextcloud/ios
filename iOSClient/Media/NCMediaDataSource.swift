@@ -252,6 +252,10 @@ extension NCMedia {
         }
 
         guard self.session.account == account else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
             return
         }
         // SEARCH NEW MEDIA
@@ -262,6 +266,9 @@ extension NCMedia {
                                              mediaPath: tblAccount.mediaPath,
                                              account: account) {
                 Task {
+                    guard self.session.account == account else {
+                        return
+                    }
                     await self.loadDataSource()
                 }
             }
@@ -283,7 +290,14 @@ extension NCMedia {
                                       mediaPath: tblAccount.mediaPath,
                                       account: account) {
             Task {
+                guard self.session.account == account else {
+                    return
+                }
+
                 await self.debouncerLoadDataSource.call {
+                    guard self.session.account == account else {
+                        return
+                    }
                     await self.loadDataSource()
                 }
             }
@@ -330,8 +344,7 @@ extension NCMedia {
                 guard self.session.account == account else {
                     return
                 }
-                if self.isViewActived,
-                   self.session.account == account {
+                if self.isViewActived {
                     update()
                 }
             }
@@ -375,15 +388,11 @@ extension NCMedia {
                     guard self.session.account == account else {
                         return
                     }
-                    if self.isViewActived,
-                       self.session.account == account {
+                    if self.isViewActived {
                         update()
                     }
                 }
             } finish: {
-                guard self.session.account == account else {
-                    return
-                }
                 finish()
             }
     }
