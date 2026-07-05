@@ -38,8 +38,7 @@ struct NCMediaViewerPageView: View {
             case .idle,
                  .loadingMetadata,
                  .checkingLocalFile:
-                Color.ncViewerBackground(backgroundStyle)
-                    .ignoresSafeArea()
+                unresolvedMediaPlaceholderView
 
             case .metadataMissing:
                 metadataMissingView
@@ -319,6 +318,24 @@ struct NCMediaViewerPageView: View {
         } else if page.metadata?.classFile == NKTypeClassFile.audio.rawValue {
             audioPlaceholderView
         } else {
+            unresolvedMediaPlaceholderView
+        }
+    }
+
+    @ViewBuilder
+    private var unresolvedMediaPlaceholderView: some View {
+        switch page.metadata?.classFile {
+        case NKTypeClassFile.video.rawValue:
+            NCVideoPlaybackCoverView(
+                previewURL: nil,
+                isPlayEnabled: false,
+                isLaunchingPlayback: false,
+                onToggleChrome: onToggleChrome,
+                onPlay: { }
+            )
+        case NKTypeClassFile.audio.rawValue:
+            audioPlaceholderView
+        default:
             imagePlaceholderView
         }
     }
