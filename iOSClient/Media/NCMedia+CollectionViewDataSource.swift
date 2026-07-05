@@ -75,8 +75,7 @@ extension NCMedia: UICollectionViewDataSource {
                 let result = await NextcloudKit.shared.downloadPreviewAsync(
                     fileId: metadata.fileId,
                     etag: metadata.etag,
-                    account: account,
-                    options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                    account: account
                 )
 
                 guard !Task.isCancelled,
@@ -89,10 +88,6 @@ extension NCMedia: UICollectionViewDataSource {
                     data: data,
                     metadata: metadata,
                     ext: ext)
-
-                guard !Task.isCancelled else {
-                    return
-                }
 
                 await MainActor.run {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {

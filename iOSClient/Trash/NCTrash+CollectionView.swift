@@ -91,10 +91,6 @@ extension NCTrash: UICollectionViewDataSource {
                     userId: self.session.userId,
                     urlBase: self.session.urlBase)
 
-                guard !Task.isCancelled else {
-                    return
-                }
-
                 await MainActor.run {
                     guard let visibleIndexPath = collectionView.indexPathsForVisibleItems.first(where: { visibleIndexPath in
                         guard let fileId = self.datasource?[visibleIndexPath.item].fileId else {
