@@ -44,6 +44,7 @@ extension NCNetworking {
 
                 await NCManageDatabase.shared.setMetadataSessionAsync(
                     ocId: metadata.ocId,
+                    session: self.sessionDownload,
                     sessionTaskIdentifier: task.taskIdentifier,
                     status: self.global.metadataStatusDownloading)
 
@@ -109,6 +110,7 @@ extension NCNetworking {
             nkLog(debug: " Downloading file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
             await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                  session: self.sessionDownloadBackground,
                                                                   sessionTaskIdentifier: task.taskIdentifier,
                                                                   status: self.global.metadataStatusDownloading)
 

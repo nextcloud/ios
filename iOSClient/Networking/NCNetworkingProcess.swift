@@ -29,6 +29,8 @@ actor NCNetworkingProcess {
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
     private var lastScheduledAndInProgressCount: Int = 0
+    private var lastVerifyZombieDate: Date = .distantPast
+    private let verifyZombieInterval: TimeInterval = 10
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -213,7 +215,7 @@ actor NCNetworkingProcess {
 
             // METADATAS
             //
-            let metadatas = await NCManageDatabase.shared.getMetadataProcess()
+            var metadatas = await NCManageDatabase.shared.getMetadataProcess()
 
             // TRANSFERS SUCCESS
             //
@@ -225,9 +227,14 @@ actor NCNetworkingProcess {
             }
 
             // ZOMBIE
-            //
-            if countWaitUpload == 0, countProgress > 0 {
+            // Check periodically while transfers are marked as in progress. Do not let a
+            // stalled download keep a process slot occupied, but avoid querying all URLSession
+            // task lists on every pipeline tick.
+            if countProgress > 0,
+               Date().timeIntervalSince(lastVerifyZombieDate) >= verifyZombieInterval {
+                lastVerifyZombieDate = Date()
                 await NCNetworking.shared.verifyZombie()
+                metadatas = await NCManageDatabase.shared.getMetadataProcess()
             }
 
             if !metadatas.isEmpty {
