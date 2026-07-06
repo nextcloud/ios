@@ -112,16 +112,17 @@ extension AppDelegate {
             guard !Task.isCancelled else {
                 return
             }
-
+            let session = NCSession.Session(account: account.account,
+                                            urlBase: account.urlBase,
+                                            user: account.user,
+                                            userId: account.userId)
             let state = await database.getMediaMetadataBackfillAsync(account: account.account)
             var offset = state?.offset ?? 0
             var token: String?
             let backfill = NCMediaMetadataBackfill(account: account.account)
 
             while !Task.isCancelled {
-                let result = await backfill.run(firstDate: Date.distantFuture,
-                                                lastDate: Date.distantPast,
-                                                mediaPath: account.mediaPath,
+                let result = await backfill.run(mediaPath: account.mediaPath,
                                                 account: account.account,
                                                 offset: offset,
                                                 token: token,
@@ -140,9 +141,9 @@ extension AppDelegate {
                     break
                 }
 
-                await backfill.insertMissingMediaPlaceholders(files: files,
-                                                              mediaPath: account.mediaPath,
-                                                              account: account.account)
+                let resultPlaceholders = await backfill.insertMissingMediaPlaceholders(files: files,
+                                                                                       mediaPath: account.mediaPath,
+                                                                                       session: session)
 
                 guard !Task.isCancelled else {
                     return

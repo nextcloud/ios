@@ -15,17 +15,13 @@ final class NCMediaMetadataBackfill {
 
     /// Processes one media archive page and adds placeholders for metadata
     /// available on the server but missing from the local database.
-    func run(firstDate: Date,
-             lastDate: Date,
-             mediaPath: String,
+    func run(mediaPath: String,
              account: String,
              offset: Int,
              token: String? = nil,
              count: Int) async -> (files: [NKFile]?, token: String?) {
 
         let result = await searchMediaPage(path: mediaPath,
-                                           firstDate: firstDate,
-                                           lastDate: lastDate,
                                            account: account,
                                            offset: offset,
                                            token: token,
@@ -37,9 +33,8 @@ final class NCMediaMetadataBackfill {
 
         return result
     }
+
     private func searchMediaPage(path: String,
-                                 firstDate: Date,
-                                 lastDate: Date,
                                  account: String,
                                  offset: Int,
                                  token: String? = nil,
@@ -51,8 +46,8 @@ final class NCMediaMetadataBackfill {
         let href = "/files/" + nkSession.userId + path
 
         let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
-        let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let lessDateString = Date.distantFuture.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let greaterDateString = Date.distantPast.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let httpBodyString = String(format: NCMediaNetwork().getRequestBodySearchMedia(
             href: href,
             elementDate: elementDate,
@@ -87,7 +82,30 @@ final class NCMediaMetadataBackfill {
 
     func insertMissingMediaPlaceholders(files: [NKFile],
                                         mediaPath: String,
-                                        account: String) async {
+                                        session: NCSession.Session) async -> (inserted: Int, updated: Int, deleted: [tableMetadata]) {
 
+
+        guard let firstDate = files.first?.date as? NSDate,
+              let lastDate = files.last?.date as? NSDate else {
+            return (0, 0, [])
+        }
+
+        // DB
+        let mediaPredicate = NCImageCache().getMediaPredicate(
+            session: session,
+            mediaPath: mediaPath,
+            showOnlyImages: false,
+            showOnlyVideos: false)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
+        ])
+        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(
+            predicate: predicate,
+            sortedByKeyPath: "date",
+            ascending: false) ?? []
+        let results = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(files: files,
+                                                                                  metadatas: metadatas)
+
+        return results
     }
 }
