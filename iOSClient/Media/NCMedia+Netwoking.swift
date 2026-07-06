@@ -113,6 +113,7 @@ extension NCMedia {
                     <upload_time xmlns="http://nextcloud.org/ns"/>
                     <size xmlns="http://owncloud.org/ns"/>
                     <has-preview xmlns="http://nextcloud.org/ns"/>
+                    <metadata-files-live-photo xmlns="http://nextcloud.org/ns"/>
                 </d:prop>
             </d:select>
 
