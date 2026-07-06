@@ -81,6 +81,13 @@ extension AppDelegate {
                 return true
             } else {
                 await NCAutoUpload.shared.autoUploadBackgroundSync()
+
+                guard !Task.isCancelled else {
+                    return false
+                }
+
+                // await NCMediaRepair.shared.runBackgroundRepair()
+                
                 return !Task.isCancelled
             }
         }
