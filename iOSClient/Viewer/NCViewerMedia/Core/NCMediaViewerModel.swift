@@ -728,13 +728,26 @@ final class NCMediaViewerModel: ObservableObject {
         } catch is CancellationError {
             return
         } catch {
-            setState(
-                .failed(
-                    previewURL: previewURL,
-                    message: ""
-                ),
-                for: ocId
-            )
+            if metadata.classFile == NKTypeClassFile.image.rawValue,
+               let previewURL {
+                setState(
+                    .image(
+                        previewURL: previewURL,
+                        localURL: nil,
+                        livePhotoURL: nil,
+                        progress: nil
+                    ),
+                    for: ocId
+                )
+            } else {
+                setState(
+                    .failed(
+                        previewURL: previewURL,
+                        message: ""
+                    ),
+                    for: ocId
+                )
+            }
         }
     }
 

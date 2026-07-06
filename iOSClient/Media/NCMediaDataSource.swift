@@ -264,6 +264,7 @@ extension NCMedia {
             }
             return
         }
+
         // SEARCH NEW MEDIA
         //
         if firstDateNew == .distantFuture || lastDateNew == .distantPast {
@@ -295,6 +296,8 @@ extension NCMedia {
             return
         }
 
+        // VERIFY MEDIA
+        //
         await self.verifyNetworkMedia(firstDate: firstDate,
                                       lastDate: lastDate,
                                       mediaPath: tblAccount.mediaPath,
@@ -319,6 +322,8 @@ extension NCMedia {
         }
     }
 
+    /// Searches the server for new media within the given date range,
+    /// syncs the returned files with the local database, and refreshes the UI.
     internal func searchNetworkNewMedia(firstDate: Date,
                                         lastDate: Date,
                                         mediaPath: String,
@@ -361,6 +366,8 @@ extension NCMedia {
         } finish: { }
     }
 
+    /// Verifies the media currently visible in the collection against the server,
+    /// syncs each result page with the local database, and refreshes the UI.
     internal func verifyNetworkMedia(firstDate: Date,
                                      lastDate: Date,
                                      mediaPath: String,
