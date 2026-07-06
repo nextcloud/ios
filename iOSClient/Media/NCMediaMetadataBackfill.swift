@@ -19,7 +19,7 @@ final class NCMediaMetadataBackfill {
              account: String,
              offset: Int,
              token: String? = nil,
-             count: Int) async -> (files: [NKFile]?, token: String?, error: NKError?) {
+             count: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError?) {
 
         let result = await searchMediaPage(path: mediaPath,
                                            account: account,
@@ -28,7 +28,7 @@ final class NCMediaMetadataBackfill {
                                            count: count)
 
         guard !Task.isCancelled else {
-            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorTaskCancelled, errorDescription: "Task cancelled for account: \(account)"))
+            return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorTaskCancelled, errorDescription: "Task cancelled for account: \(account)"))
         }
 
         return result
@@ -38,9 +38,9 @@ final class NCMediaMetadataBackfill {
                                  account: String,
                                  offset: Int,
                                  token: String? = nil,
-                                 count: Int) async -> (files: [NKFile]?, token: String?, error: NKError) {
+                                 count: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError) {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
-            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: "Session not found for account: \(account)"))
+            return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: "Session not found for account: \(account)"))
         }
         let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
@@ -57,7 +57,7 @@ final class NCMediaMetadataBackfill {
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
-            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorPreconditionFailed, errorDescription: "Body error for account: \(account)"))
+            return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorPreconditionFailed, errorDescription: "Body error for account: \(account)"))
         }
 
         let options = NKRequestOptions(timeout: 240,
@@ -74,9 +74,13 @@ final class NCMediaMetadataBackfill {
             if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
                 token = result
             }
-            return (files, token, results.error)
+            var paginate: Bool = false
+            if let result = nkComm.findHeader("x-nc-paginate", allHeaderFields: allHeaderFields) {
+                paginate = Bool(result) ?? false
+            }
+            return (files, token, paginate, results.error)
         } else {
-            return (nil, nil, results.error)
+            return (nil, nil, false, results.error)
         }
     }
 }

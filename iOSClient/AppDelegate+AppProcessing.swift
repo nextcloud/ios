@@ -105,64 +105,60 @@ extension AppDelegate {
 
     func runMediaMetadataBackfill() async {
         let database = NCManageDatabase.shared
-        let accounts = await database.getAllTableAccountAsync()
+        guard let account = await database.getActiveTableAccountAsync() else {
+            return
+        }
         let count = 500
+        let state = await database.getMediaMetadataBackfillAsync(account: account.account)
+        var offset = state?.offset ?? 0
+        var token: String?
+        let backfill = NCMediaMetadataBackfill(account: account.account)
 
-        for account in accounts {
+        nkLog(tag: self.global.logTagMediaBackfill, emoji: .start, message: "Start media metadata backfill")
+
+        while !Task.isCancelled {
+            let result = await backfill.run(mediaPath: account.mediaPath,
+                                            account: account.account,
+                                            offset: offset,
+                                            token: token,
+                                            count: count)
+
             guard !Task.isCancelled else {
                 return
             }
-            let state = await database.getMediaMetadataBackfillAsync(account: account.account)
-            var offset = state?.offset ?? 0
-            var token: String?
-            let backfill = NCMediaMetadataBackfill(account: account.account)
 
-            nkLog(tag: self.global.logTagMediaBackfill, emoji: .start, message: "Start media metadata backfill")
-
-            while !Task.isCancelled {
-                let result = await backfill.run(mediaPath: account.mediaPath,
-                                                account: account.account,
-                                                offset: offset,
-                                                token: token,
-                                                count: count)
-
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                guard let files = result.files else {
-                    nkLog(tag: self.global.logTagMediaBackfill,
-                          emoji: .error,
-                          message: "Media metadata backfill failed \(result.error?.errorCode ?? 0) \(result.error?.errorDescription ?? "")")
-                    break
-                }
-
-                guard !files.isEmpty else {
-                    await database.completeMediaMetadataBackfillAsync(account: account.account)
-                    break
-                }
-
-                let ocIds = files.compactMap(\.ocId)
-                let metadatas = await NCManageDatabase.shared.getMetadatasFromOcIdsAsync(ocIds)
-                let resultPlaceholders = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(files: files,
-                                                                                                     metadatas: metadatas)
-
-                nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(resultPlaceholders.inserted) - updated \(resultPlaceholders.updated)")
-
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                offset += files.count
-                await database.updateMediaMetadataBackfillAsync(account: account.account, offset: offset)
-
-                guard files.count == count else {
-                    await database.completeMediaMetadataBackfillAsync(account: account.account)
-                    break
-                }
-
-                token = result.token
+            guard let files = result.files else {
+                nkLog(tag: self.global.logTagMediaBackfill,
+                      emoji: .error,
+                      message: "Media metadata backfill failed \(result.error?.errorCode ?? 0) \(result.error?.errorDescription ?? "")")
+                break
             }
+
+            guard !files.isEmpty else {
+                await database.completeMediaMetadataBackfillAsync(account: account.account)
+                break
+            }
+
+            let ocIds = files.compactMap(\.ocId)
+            let metadatas = await NCManageDatabase.shared.getMetadatasFromOcIdsAsync(ocIds)
+            let resultPlaceholders = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(files: files,
+                                                                                                 metadatas: metadatas)
+
+            nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(resultPlaceholders.inserted) - updated \(resultPlaceholders.updated)")
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            offset += files.count
+            await database.updateMediaMetadataBackfillAsync(account: account.account, offset: offset)
+
+            guard files.count == count else {
+                await database.completeMediaMetadataBackfillAsync(account: account.account)
+                break
+            }
+
+            token = result.token
         }
     }
 }
