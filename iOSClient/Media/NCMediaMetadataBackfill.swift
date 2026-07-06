@@ -7,10 +7,10 @@ import NextcloudKit
 import RealmSwift
 
 final class NCMediaMetadataBackfill {
-    private let session: NCSession.Session
+    private let account: String
 
-    init(session: NCSession.Session) {
-        self.session = session
+    init(account: String) {
+        self.account = account
     }
 
     /// Processes one media archive page and adds placeholders for metadata
@@ -31,8 +31,7 @@ final class NCMediaMetadataBackfill {
                                            token: token,
                                            count: count)
 
-        guard session.account == account,
-              !Task.isCancelled else {
+        guard !Task.isCancelled else {
             return (nil, nil)
         }
 
@@ -84,5 +83,11 @@ final class NCMediaMetadataBackfill {
         } else {
             return (nil, nil)
         }
+    }
+
+    func insertMissingMediaPlaceholders(files: [NKFile],
+                                        mediaPath: String,
+                                        account: String) async {
+
     }
 }

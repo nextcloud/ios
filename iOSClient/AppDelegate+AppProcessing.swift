@@ -86,8 +86,8 @@ extension AppDelegate {
                     return false
                 }
 
-                // await NCMediaRepair.shared.runBackgroundRepair()
-                
+                await runMediaMetadataBackfill()
+
                 return !Task.isCancelled
             }
         }
@@ -100,6 +100,65 @@ extension AppDelegate {
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .stop, message: "Processing task expired")
             processingTask.cancel()
+        }
+    }
+
+    private func runMediaMetadataBackfill() async {
+        let database = NCManageDatabase.shared
+        let accounts = await database.getAllTableAccountAsync()
+        let count = 1_000
+
+        for account in accounts {
+            guard !Task.isCancelled else {
+                return
+            }
+
+            let state = await database.getMediaMetadataBackfillAsync(account: account.account)
+            var offset = state?.offset ?? 0
+            var token: String?
+            let backfill = NCMediaMetadataBackfill(account: account.account)
+
+            while !Task.isCancelled {
+                let result = await backfill.run(firstDate: Date.distantFuture,
+                                                lastDate: Date.distantPast,
+                                                mediaPath: account.mediaPath,
+                                                account: account.account,
+                                                offset: offset,
+                                                token: token,
+                                                count: count)
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                guard let files = result.files else {
+                    break
+                }
+
+                guard !files.isEmpty else {
+                    await database.completeMediaMetadataBackfillAsync(account: account.account)
+                    break
+                }
+
+                await backfill.insertMissingMediaPlaceholders(files: files,
+                                                              mediaPath: account.mediaPath,
+                                                              account: account.account)
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                offset += files.count
+                await database.updateMediaMetadataBackfillAsync(account: account.account,
+                                                                 offset: offset)
+
+                guard files.count == count else {
+                    await database.completeMediaMetadataBackfillAsync(account: account.account)
+                    break
+                }
+
+                token = result.token
+            }
         }
     }
 }
