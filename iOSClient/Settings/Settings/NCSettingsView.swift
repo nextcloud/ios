@@ -274,6 +274,23 @@ struct NCSettingsView: View {
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
+
+                Button(action: {
+                    Task {
+                        await (UIApplication.shared.delegate as? AppDelegate)?.runMediaMetadataBackfill()
+                    }
+                }, label: {
+                    HStack {
+                        Image(systemName: "photo.stack")
+                            .font(.icon())
+                            .foregroundColor(.blue)
+                            .frame(width: 39)
+
+                        Text("Test run media metadata backfill")
+                            .font(.body)
+                    }
+                })
+                .tint(Color(NCBrandColor.shared.textColor))
             })
 #endif
 

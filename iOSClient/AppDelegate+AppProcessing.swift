@@ -103,7 +103,7 @@ extension AppDelegate {
         }
     }
 
-    private func runMediaMetadataBackfill() async {
+    func runMediaMetadataBackfill() async {
         let database = NCManageDatabase.shared
         let accounts = await database.getAllTableAccountAsync()
         let count = 1_000
