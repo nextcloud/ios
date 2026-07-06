@@ -112,10 +112,6 @@ extension AppDelegate {
             guard !Task.isCancelled else {
                 return
             }
-            let session = NCSession.Session(account: account.account,
-                                            urlBase: account.urlBase,
-                                            user: account.user,
-                                            userId: account.userId)
             let state = await database.getMediaMetadataBackfillAsync(account: account.account)
             var offset = state?.offset ?? 0
             var token: String?
@@ -135,6 +131,9 @@ extension AppDelegate {
                 }
 
                 guard let files = result.files else {
+                    nkLog(tag: self.global.logTagMediaBackfill,
+                          emoji: .error,
+                          message: "Media metadata backfill failed \(result.error?.errorCode ?? 0) \(result.error?.errorDescription ?? "")")
                     break
                 }
 
@@ -143,9 +142,10 @@ extension AppDelegate {
                     break
                 }
 
-                let resultPlaceholders = await backfill.insertMissingMediaPlaceholders(files: files,
-                                                                                       mediaPath: account.mediaPath,
-                                                                                       session: session)
+                let ocIds = files.compactMap(\.ocId)
+                let metadatas = await NCManageDatabase.shared.getMetadatasFromOcIdsAsync(ocIds)
+                let resultPlaceholders = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(files: files,
+                                                                                                     metadatas: metadatas)
 
                 nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(resultPlaceholders.inserted) - updated \(resultPlaceholders.updated)")
 
@@ -154,8 +154,7 @@ extension AppDelegate {
                 }
 
                 offset += files.count
-                await database.updateMediaMetadataBackfillAsync(account: account.account,
-                                                                 offset: offset)
+                await database.updateMediaMetadataBackfillAsync(account: account.account, offset: offset)
 
                 guard files.count == count else {
                     await database.completeMediaMetadataBackfillAsync(account: account.account)

@@ -19,7 +19,7 @@ final class NCMediaMetadataBackfill {
              account: String,
              offset: Int,
              token: String? = nil,
-             count: Int) async -> (files: [NKFile]?, token: String?) {
+             count: Int) async -> (files: [NKFile]?, token: String?, error: NKError?) {
 
         let result = await searchMediaPage(path: mediaPath,
                                            account: account,
@@ -28,7 +28,7 @@ final class NCMediaMetadataBackfill {
                                            count: count)
 
         guard !Task.isCancelled else {
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorTaskCancelled, errorDescription: "Task cancelled for account: \(account)"))
         }
 
         return result
@@ -38,9 +38,9 @@ final class NCMediaMetadataBackfill {
                                  account: String,
                                  offset: Int,
                                  token: String? = nil,
-                                 count: Int) async -> (files: [NKFile]?, token: String?) {
+                                 count: Int) async -> (files: [NKFile]?, token: String?, error: NKError) {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
-            return ([], nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: "Session not found for account: \(account)"))
         }
         let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
@@ -57,7 +57,7 @@ final class NCMediaMetadataBackfill {
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorPreconditionFailed, errorDescription: "Body error for account: \(account)"))
         }
 
         let options = NKRequestOptions(timeout: 240,
@@ -74,36 +74,9 @@ final class NCMediaMetadataBackfill {
             if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
                 token = result
             }
-            return (files, token)
+            return (files, token, results.error)
         } else {
-            return (nil, nil)
+            return (nil, nil, results.error)
         }
-    }
-
-    func insertMissingMediaPlaceholders(files: [NKFile],
-                                        mediaPath: String,
-                                        session: NCSession.Session) async -> (inserted: Int, updated: Int, deleted: [tableMetadata]) {
-        guard let firstDate = files.first?.date as? NSDate,
-              let lastDate = files.last?.date as? NSDate else {
-            return (0, 0, [])
-        }
-
-        // DB
-        let mediaPredicate = NCImageCache().getMediaPredicate(
-            session: session,
-            mediaPath: mediaPath,
-            showOnlyImages: false,
-            showOnlyVideos: false)
-        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "date >= %@ AND date <= %@", lastDate, firstDate), mediaPredicate
-        ])
-        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(
-            predicate: predicate,
-            sortedByKeyPath: "date",
-            ascending: false) ?? []
-        let results = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(files: files,
-                                                                                  metadatas: metadatas)
-
-        return results
     }
 }

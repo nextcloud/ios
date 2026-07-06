@@ -159,6 +159,7 @@ final class NCGlobal: Sendable {
     let errorVersionMismatch: Int               = -99989
     let errorNCSessionNotFound: Int             = -99988
     let errorNotPermission: Int                 = -99987
+    let errorTaskCancelled: Int                 = -99986
 
 
     // E2EE
