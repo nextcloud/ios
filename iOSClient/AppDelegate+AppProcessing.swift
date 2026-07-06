@@ -106,7 +106,7 @@ extension AppDelegate {
     func runMediaMetadataBackfill() async {
         let database = NCManageDatabase.shared
         let accounts = await database.getAllTableAccountAsync()
-        let count = 1_000
+        let count = 500
 
         for account in accounts {
             guard !Task.isCancelled else {
@@ -120,6 +120,8 @@ extension AppDelegate {
             var offset = state?.offset ?? 0
             var token: String?
             let backfill = NCMediaMetadataBackfill(account: account.account)
+
+            nkLog(tag: self.global.logTagMediaBackfill, emoji: .start, message: "Start media metadata backfill")
 
             while !Task.isCancelled {
                 let result = await backfill.run(mediaPath: account.mediaPath,
@@ -144,6 +146,8 @@ extension AppDelegate {
                 let resultPlaceholders = await backfill.insertMissingMediaPlaceholders(files: files,
                                                                                        mediaPath: account.mediaPath,
                                                                                        session: session)
+
+                nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(resultPlaceholders.inserted) - updated \(resultPlaceholders.updated)")
 
                 guard !Task.isCancelled else {
                     return

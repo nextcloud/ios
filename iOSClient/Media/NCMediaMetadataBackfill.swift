@@ -83,8 +83,6 @@ final class NCMediaMetadataBackfill {
     func insertMissingMediaPlaceholders(files: [NKFile],
                                         mediaPath: String,
                                         session: NCSession.Session) async -> (inserted: Int, updated: Int, deleted: [tableMetadata]) {
-
-
         guard let firstDate = files.first?.date as? NSDate,
               let lastDate = files.last?.date as? NSDate else {
             return (0, 0, [])
