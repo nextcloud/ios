@@ -86,7 +86,10 @@ extension AppDelegate {
                     return false
                 }
 
-                await runMediaMetadataBackfill()
+                await runMediaMetadataBackfill { offset, inserted, updated in
+                    nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(inserted) - updated \(updated)")
+
+                }
 
                 return !Task.isCancelled
             }
@@ -103,7 +106,7 @@ extension AppDelegate {
         }
     }
 
-    func runMediaMetadataBackfill() async {
+    func runMediaMetadataBackfill(update: @escaping (_ offset: Int, _ inserted: Int, _ updated: Int) async -> Void) async {
         let database = NCManageDatabase.shared
         guard let account = await database.getActiveTableAccountAsync() else {
             return
@@ -141,18 +144,19 @@ extension AppDelegate {
 
             let ocIds = files.compactMap(\.ocId)
             let metadatas = await NCManageDatabase.shared.getMetadatasFromOcIdsAsync(ocIds)
-            let resultPlaceholders = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(files: files,
-                                                                                                 metadatas: metadatas)
+            let resultPlaceholders = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(
+                files: files,
+                metadatas: metadatas
+            )
+            offset += files.count
 
-            nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(resultPlaceholders.inserted) - updated \(resultPlaceholders.updated)")
+            await update(offset, resultPlaceholders.inserted, resultPlaceholders.updated)
 
             guard !Task.isCancelled else {
                 return
             }
 
-            offset += files.count
             await database.updateMediaMetadataBackfillAsync(account: account.account, offset: offset)
-
             guard files.count == count else {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
                 break

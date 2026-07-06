@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import Combine
 import NextcloudKit
 import FirebaseCrashlytics
 
@@ -20,6 +21,8 @@ struct NCSettingsView: View {
     @State private var showBrowser = false
     // State to control the visibility of the Source Code  view
     @State private var showSourceCode = false
+    // State to control the visibility of the media metadata backfill progress view
+    @State private var showMediaMetadataBackfill = false
     // Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
 
@@ -276,9 +279,7 @@ struct NCSettingsView: View {
                 .tint(Color(NCBrandColor.shared.textColor))
 
                 Button(action: {
-                    Task {
-                        await (UIApplication.shared.delegate as? AppDelegate)?.runMediaMetadataBackfill()
-                    }
+                    showMediaMetadataBackfill = true
                 }, label: {
                     HStack {
                         Image(systemName: "photo.stack")
@@ -291,6 +292,9 @@ struct NCSettingsView: View {
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
+                .sheet(isPresented: $showMediaMetadataBackfill) {
+                    NCMediaMetadataBackfillProgressView()
+                }
             })
 #endif
 
@@ -333,6 +337,105 @@ struct E2EESection: View {
         })
     }
 }
+
+// MARK: - Media Metadata Backfill Progress View (Debug only)
+
+#if DEBUG
+@MainActor
+private struct NCMediaMetadataBackfillProgressView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var startedAt = Date()
+    @State private var elapsedSeconds = 0
+    @State private var offset = 0
+    @State private var inserted = 0
+    @State private var updated = 0
+    @State private var isRunning = false
+    @State private var isCompleted = false
+    @State private var backfillTask: Task<Void, Never>?
+
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    LabeledContent("Seconds", value: "\(elapsedSeconds)")
+                    LabeledContent("Offset", value: "\(offset)")
+                    LabeledContent("Inserted", value: "\(inserted)")
+                    LabeledContent("Updated", value: "\(updated)")
+                } header: {
+                    Text("Media metadata backfill")
+                } footer: {
+                    Text(isCompleted ? "Completed" : "Running…")
+                }
+            }
+            .navigationTitle("Media backfill")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Close")
+                }
+            }
+            .onAppear {
+                startBackfill()
+            }
+            .onDisappear {
+                backfillTask?.cancel()
+                backfillTask = nil
+            }
+            .onReceive(timer) { _ in
+                guard isRunning else { return }
+                elapsedSeconds = Int(Date().timeIntervalSince(startedAt))
+            }
+        }
+    }
+
+    private func startBackfill() {
+        guard !isRunning else { return }
+
+        startedAt = Date()
+        elapsedSeconds = 0
+        offset = 0
+        inserted = 0
+        updated = 0
+        isRunning = true
+        isCompleted = false
+
+        backfillTask = Task {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            await appDelegate?.runMediaMetadataBackfill { newOffset, newInserted, newUpdated in
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    guard !Task.isCancelled else {
+                        return
+                    }
+                    offset = newOffset
+                    inserted = newInserted
+                    updated = newUpdated
+                }
+            }
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            isRunning = false
+            isCompleted = true
+            elapsedSeconds = Int(Date().timeIntervalSince(startedAt))
+            backfillTask = nil
+        }
+    }
+}
+#endif
 
 #Preview {
     NCSettingsView(model: NCSettingsModel(controller: nil))
