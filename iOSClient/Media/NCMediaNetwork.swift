@@ -6,16 +6,16 @@ import Foundation
 import NextcloudKit
 import Alamofire
 
-extension NCMedia {
-    func searchVerifyNetworkMedia(path: String,
-                                  firstDate: Date,
-                                  lastDate: Date,
-                                  account: String,
-                                  paginate: Bool,
-                                  limit: Int,
-                                  taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                                  update: @escaping (_ files: [NKFile]) async -> Void,
-                                  finish: @escaping () -> Void) async {
+final class NCMediaNetwork {
+    func searchMediaPage(path: String,
+                         firstDate: Date,
+                         lastDate: Date,
+                         account: String,
+                         paginate: Bool,
+                         limit: Int,
+                         taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                         update: @escaping (_ files: [NKFile]) async -> Void,
+                         finish: @escaping () -> Void) async {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             finish()
             return
@@ -23,7 +23,7 @@ extension NCMedia {
         let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
 
-        let elementDate = "d:" + global.mediaPropOrder
+        let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
         let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
@@ -49,7 +49,7 @@ extension NCMedia {
         while true {
             var isPaginate: Bool = false
             let options = NKRequestOptions(timeout: 180,
-                                           taskDescription: self.global.taskDescriptionRetrievesProperties,
+                                           taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties,
                                            paginate: paginate,
                                            paginateToken: paginateToken,
                                            paginateOffset: paginateOffset,
@@ -90,11 +90,11 @@ extension NCMedia {
         }
     }
 
-    private func getRequestBodySearchMedia(href: String,
-                                           elementDate: String,
-                                           lessDate: String,
-                                           greaterDate: String,
-                                           limit: String) -> String {
+    internal func getRequestBodySearchMedia(href: String,
+                                            elementDate: String,
+                                            lessDate: String,
+                                            greaterDate: String,
+                                            limit: String) -> String {
         let request = """
         <?xml version=\"1.0\"?>
         <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
