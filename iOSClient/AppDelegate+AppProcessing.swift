@@ -101,7 +101,7 @@ extension AppDelegate {
                     return false
                 }
 
-                let limit = 200
+                let limit = 500
                 await runMediaMetadataPlaceholderHydration(account: account, limit: limit) { processed in
                     nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - limit \(limit)")
                 }
@@ -208,15 +208,18 @@ extension AppDelegate {
             guard !Task.isCancelled else {
                 return false
             }
-            let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-
+            let result = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName,
+                                                                         depth: "0",
+                                                                         account: metadata.account)
             guard !Task.isCancelled,
                   result.error == .success,
-                  let resultMetadata = result.metadata else {
+                  let file = result.files?.first else {
                 return false
             }
 
-            await database.addMetadataAsync(resultMetadata)
+            let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+            await database.addMetadataAsync(metadata)
+
             return true
         }
 
