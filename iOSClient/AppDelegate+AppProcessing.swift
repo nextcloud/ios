@@ -218,6 +218,8 @@ extension AppDelegate {
             return true
         }
 
+        nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .start, message: "Start media metadata placeholder hydration")
+
         await withTaskGroup(of: Bool.self) { group in
             var iterator = metadatas.makeIterator()
 
