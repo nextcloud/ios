@@ -180,14 +180,18 @@ extension AppDelegate {
     }
 
     /// Completes media metadata placeholders by retrieving and storing their full properties.
-    func runMediaMetadataPlaceholderHydration(update: @escaping (_ processed: Int) async -> Void) async {
+    func runMediaMetadataPlaceholderHydration(
+        update: @escaping (_ processed: Int) async -> Void
+    ) async {
         let database = NCManageDatabase.shared
         guard let account = await database.getActiveTableAccountAsync() else {
             return
         }
-        let limit = NCBrandOptions.shared.httpMaximumConnectionsPerHost * 10
+        let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+        let limit = maximumConcurrentRequests * 10
+        var processed = 0
 
-        if let metadatas = await database.getMetadatasAsync(
+        guard let metadatas = await database.getMetadatasAsync(
             predicate: NSPredicate(
                 format: "account == %@ AND placeholder == true",
                 account.account
@@ -195,11 +199,59 @@ extension AppDelegate {
             sortedByKeyPath: "date",
             ascending: false,
             limit: limit
-        ) {
-            // Hydrate metadatas
-            for metadata in metadatas {
+        ), !metadatas.isEmpty else {
+            return
+        }
 
+        func hydrate(_ metadata: tableMetadata) async -> Bool {
+            guard !Task.isCancelled else {
+                return false
+            }
+            let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+
+            guard !Task.isCancelled,
+                  result.error == .success,
+                  let resultMetadata = result.metadata else {
+                return false
+            }
+
+            await database.addMetadataAsync(resultMetadata)
+            return true
+        }
+
+        await withTaskGroup(of: Bool.self) { group in
+            var iterator = metadatas.makeIterator()
+
+            for _ in 0..<maximumConcurrentRequests {
+                guard let metadata = iterator.next() else {
+                    break
+                }
+
+                group.addTask {
+                    await hydrate(metadata)
+                }
+            }
+
+            while let completed = await group.next() {
+                if completed {
+                    processed += 1
+                }
+
+                guard !Task.isCancelled,
+                      let metadata = iterator.next() else {
+                    continue
+                }
+
+                group.addTask {
+                    await hydrate(metadata)
+                }
             }
         }
+
+        guard !Task.isCancelled else {
+            return
+        }
+
+        await update(processed)
     }
 }
