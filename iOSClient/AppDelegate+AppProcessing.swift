@@ -95,7 +95,10 @@ extension AppDelegate {
                     return false
                 }
 
-                await runMediaMetadataPlaceholderHydration { processed in
+                let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+                let limit = maximumConcurrentRequests * 10
+
+                await runMediaMetadataPlaceholderHydration(limit: limit) { processed in
                     nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed)")
                 }
 
@@ -180,15 +183,12 @@ extension AppDelegate {
     }
 
     /// Completes media metadata placeholders by retrieving and storing their full properties.
-    func runMediaMetadataPlaceholderHydration(
-        update: @escaping (_ processed: Int) async -> Void
-    ) async {
+    func runMediaMetadataPlaceholderHydration(limit: Int,
+                                              update: @escaping (_ processed: Int) async -> Void) async {
         let database = NCManageDatabase.shared
         guard let account = await database.getActiveTableAccountAsync() else {
             return
         }
-        let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
-        let limit = maximumConcurrentRequests * 10
         var processed = 0
 
         guard let metadatas = await database.getMetadatasAsync(
