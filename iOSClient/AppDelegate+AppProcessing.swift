@@ -95,9 +95,7 @@ extension AppDelegate {
                     return false
                 }
 
-                let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
-                let limit = maximumConcurrentRequests * 10
-
+                let limit = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost) * 10
                 await runMediaMetadataPlaceholderHydration(limit: limit) { processed in
                     nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed)")
                 }
@@ -189,6 +187,7 @@ extension AppDelegate {
         guard let account = await database.getActiveTableAccountAsync() else {
             return
         }
+        let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
         var processed = 0
 
         guard let metadatas = await database.getMetadatasAsync(
