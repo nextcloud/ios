@@ -113,6 +113,10 @@ extension AppDelegate {
         }
         let count = 500
         let state = await database.getMediaMetadataBackfillAsync(account: account.account)
+        // Stops the backfill when the media archive has already been fully processed.
+        guard state?.lastCompletedCycleDate == nil else {
+            return
+        }
         var offset = state?.offset ?? 0
         var token: String?
         let backfill = NCMediaMetadataBackfill(account: account.account)
