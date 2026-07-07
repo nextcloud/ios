@@ -23,6 +23,8 @@ struct NCSettingsView: View {
     @State private var showSourceCode = false
     // State to control the visibility of the media metadata backfill progress view
     @State private var showMediaMetadataBackfill = false
+    // State to control the visibility of the media metadata placeholder hydration progress view
+    @State private var showMediaMetadataPlaceholderHydration = false
     // Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
 
@@ -295,6 +297,24 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showMediaMetadataBackfill) {
                     NCMediaMetadataBackfillProgressView()
                 }
+
+                Button(action: {
+                    showMediaMetadataPlaceholderHydration = true
+                }, label: {
+                    HStack {
+                        Image(systemName: "placeholdertext.fill")
+                            .font(.icon())
+                            .foregroundColor(.blue)
+                            .frame(width: 39)
+
+                        Text("Test run media metadata placeholder hydration")
+                            .font(.body)
+                    }
+                })
+                .tint(Color(NCBrandColor.shared.textColor))
+                .sheet(isPresented: $showMediaMetadataPlaceholderHydration) {
+                    NCMediaMetadataBackfillProgressView()
+                }
             })
 #endif
 
@@ -432,6 +452,95 @@ private struct NCMediaMetadataBackfillProgressView: View {
             isCompleted = true
             elapsedSeconds = Int(Date().timeIntervalSince(startedAt))
             backfillTask = nil
+        }
+    }
+}
+
+// MARK: - Media Metadata Placeholder Hydration Progress View (Debug only)
+
+@MainActor
+private struct NCMediaMetadataPlaceholderHydrationProgressView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var startedAt = Date()
+    @State private var elapsedSeconds = 0
+    @State private var processed = 0
+    @State private var isRunning = false
+    @State private var isCompleted = false
+    @State private var placeholderHydrationTask: Task<Void, Never>?
+
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    LabeledContent("Seconds", value: "\(elapsedSeconds)")
+                    LabeledContent("Processed", value: "\(processed)")
+                } header: {
+                    Text("Media metadata placeholder hydration")
+                } footer: {
+                    Text(isCompleted ? "Completed" : "Running…")
+                }
+            }
+            .navigationTitle("Media placeholder hydration")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Close")
+                }
+            }
+            .onAppear {
+                startPlaceholderHydration()
+            }
+            .onDisappear {
+                placeholderHydrationTask?.cancel()
+                placeholderHydrationTask = nil
+            }
+            .onReceive(timer) { _ in
+                guard isRunning else { return }
+                elapsedSeconds = Int(Date().timeIntervalSince(startedAt))
+            }
+        }
+    }
+
+    private func startPlaceholderHydration() {
+        guard !isRunning else { return }
+
+        startedAt = Date()
+        elapsedSeconds = 0
+        processed = 0
+        isRunning = true
+        isCompleted = false
+
+        placeholderHydrationTask = Task {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            await appDelegate?.runMediaMetadataPlaceholderHydration(limit: 0) { newProcessed in
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    guard !Task.isCancelled else {
+                        return
+                    }
+                    processed = newProcessed
+                }
+            }
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            isRunning = false
+            isCompleted = true
+            elapsedSeconds = Int(Date().timeIntervalSince(startedAt))
+            placeholderHydrationTask = nil
         }
     }
 }
