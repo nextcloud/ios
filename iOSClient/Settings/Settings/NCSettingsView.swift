@@ -432,7 +432,7 @@ private struct NCMediaMetadataBackfillProgressView: View {
 
         backfillTask = Task {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            await appDelegate?.runMediaMetadataBackfill(account: account) { newOffset, newInserted, newUpdated in
+            await appDelegate?.runMediaMetadataBackfill(account: account, limit: 1000) { newOffset, newInserted, newUpdated in
                 guard !Task.isCancelled else {
                     return
                 }

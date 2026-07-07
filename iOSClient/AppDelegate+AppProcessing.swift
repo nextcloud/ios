@@ -92,7 +92,9 @@ extension AppDelegate {
                     return false
                 }
 
-                await runMediaMetadataBackfill(account: account) { offset, inserted, updated in
+                let limit = 500
+
+                await runMediaMetadataBackfill(account: account, limit: limit) { offset, inserted, updated in
                     nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(inserted) - updated \(updated)")
 
                 }
@@ -101,7 +103,6 @@ extension AppDelegate {
                     return false
                 }
 
-                let limit = 500
                 await runMediaMetadataPlaceholderHydration(account: account, limit: limit) { processed in
                     nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - limit \(limit)")
                 }
@@ -123,9 +124,9 @@ extension AppDelegate {
 
     /// Progressively scans the media archive and creates missing metadata placeholders.
     func runMediaMetadataBackfill(account: tableAccount,
+                                  limit: Int,
                                   update: @escaping (_ offset: Int, _ inserted: Int, _ updated: Int) async -> Void) async {
         let database = NCManageDatabase.shared
-        let count = 500
         let state = await database.getMediaMetadataBackfillAsync(account: account.account)
         // Stops the backfill when the media archive has already been fully processed.
         guard state?.lastCompletedCycleDate == nil else {
@@ -142,7 +143,7 @@ extension AppDelegate {
                                             account: account.account,
                                             offset: offset,
                                             token: token,
-                                            count: count)
+                                            count: limit)
 
             guard !Task.isCancelled else {
                 return
@@ -175,7 +176,7 @@ extension AppDelegate {
             }
 
             await database.updateMediaMetadataBackfillAsync(account: account.account, offset: offset)
-            guard files.count == count else {
+            guard files.count == limit else {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
                 break
             }
