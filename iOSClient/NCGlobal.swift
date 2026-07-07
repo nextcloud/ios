@@ -388,6 +388,7 @@ final class NCGlobal: Sendable {
     let logTagMetadataTransfers             = "METADATA TRANSFERS"
     let logTagViewer                        = "VIEWERS"
     let logTagMediaBackfill                 = "MEDIA BACKFILL"
+    let logTagMediaPlaceholder              = "MEDIA PLACEHOLDER"
 
     // USER DEFAULTS
     //

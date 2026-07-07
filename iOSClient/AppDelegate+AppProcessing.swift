@@ -91,6 +91,14 @@ extension AppDelegate {
 
                 }
 
+                guard !Task.isCancelled else {
+                    return false
+                }
+
+                await runMediaMetadataPlaceholderHydration { processed, updated in
+                    nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - updated \(updated)")
+                }
+
                 return !Task.isCancelled
             }
         }
@@ -106,6 +114,7 @@ extension AppDelegate {
         }
     }
 
+    /// Progressively scans the media archive and creates missing metadata placeholders.
     func runMediaMetadataBackfill(update: @escaping (_ offset: Int, _ inserted: Int, _ updated: Int) async -> Void) async {
         let database = NCManageDatabase.shared
         guard let account = await database.getActiveTableAccountAsync() else {
@@ -168,5 +177,10 @@ extension AppDelegate {
 
             token = result.token
         }
+    }
+
+    /// Completes media metadata placeholders by retrieving and storing their full properties.
+    func runMediaMetadataPlaceholderHydration(update: @escaping (_ processed: Int, _ updated: Int) async -> Void) async {
+
     }
 }
