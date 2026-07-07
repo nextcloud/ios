@@ -86,7 +86,11 @@ extension AppDelegate {
                     return false
                 }
 
-                await runMediaMetadataBackfill { offset, inserted, updated in
+                guard let account = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
+                    return false
+                }
+
+                await runMediaMetadataBackfill(account: account) { offset, inserted, updated in
                     nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(inserted) - updated \(updated)")
 
                 }
@@ -96,8 +100,8 @@ extension AppDelegate {
                 }
 
                 let limit = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost) * 10
-                await runMediaMetadataPlaceholderHydration(limit: limit) { processed in
-                    nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed)")
+                await runMediaMetadataPlaceholderHydration(account: account, limit: limit) { processed in
+                    nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - limit \(limit)")
                 }
 
                 return !Task.isCancelled
@@ -116,11 +120,9 @@ extension AppDelegate {
     }
 
     /// Progressively scans the media archive and creates missing metadata placeholders.
-    func runMediaMetadataBackfill(update: @escaping (_ offset: Int, _ inserted: Int, _ updated: Int) async -> Void) async {
+    func runMediaMetadataBackfill(account: tableAccount,
+                                  update: @escaping (_ offset: Int, _ inserted: Int, _ updated: Int) async -> Void) async {
         let database = NCManageDatabase.shared
-        guard let account = await database.getActiveTableAccountAsync() else {
-            return
-        }
         let count = 500
         let state = await database.getMediaMetadataBackfillAsync(account: account.account)
         // Stops the backfill when the media archive has already been fully processed.
@@ -181,12 +183,10 @@ extension AppDelegate {
     }
 
     /// Completes media metadata placeholders by retrieving and storing their full properties.
-    func runMediaMetadataPlaceholderHydration(limit: Int,
+    func runMediaMetadataPlaceholderHydration(account: tableAccount,
+                                              limit: Int,
                                               update: @escaping (_ processed: Int) async -> Void) async {
         let database = NCManageDatabase.shared
-        guard let account = await database.getActiveTableAccountAsync() else {
-            return
-        }
         let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
         var processed = 0
 

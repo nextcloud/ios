@@ -417,7 +417,10 @@ private struct NCMediaMetadataBackfillProgressView: View {
     }
 
     private func startBackfill() {
-        guard !isRunning else { return }
+        guard !isRunning,
+              let account = NCManageDatabase.shared.getActiveTableAccount() else {
+            return
+        }
 
         startedAt = Date()
         elapsedSeconds = 0
@@ -429,7 +432,7 @@ private struct NCMediaMetadataBackfillProgressView: View {
 
         backfillTask = Task {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            await appDelegate?.runMediaMetadataBackfill { newOffset, newInserted, newUpdated in
+            await appDelegate?.runMediaMetadataBackfill(account: account) { newOffset, newInserted, newUpdated in
                 guard !Task.isCancelled else {
                     return
                 }
@@ -510,7 +513,10 @@ private struct NCMediaMetadataPlaceholderHydrationProgressView: View {
     }
 
     private func startPlaceholderHydration() {
-        guard !isRunning else { return }
+        guard !isRunning,
+              let account = NCManageDatabase.shared.getActiveTableAccount() else {
+            return
+        }
 
         startedAt = Date()
         elapsedSeconds = 0
@@ -520,7 +526,7 @@ private struct NCMediaMetadataPlaceholderHydrationProgressView: View {
 
         placeholderHydrationTask = Task {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            await appDelegate?.runMediaMetadataPlaceholderHydration(limit: 0) { newProcessed in
+            await appDelegate?.runMediaMetadataPlaceholderHydration(account: account, limit: 0) { newProcessed in
                 guard !Task.isCancelled else {
                     return
                 }
