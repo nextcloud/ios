@@ -95,8 +95,8 @@ extension AppDelegate {
                     return false
                 }
 
-                await runMediaMetadataPlaceholderHydration { processed, updated in
-                    nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - updated \(updated)")
+                await runMediaMetadataPlaceholderHydration { processed in
+                    nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed)")
                 }
 
                 return !Task.isCancelled
@@ -180,7 +180,26 @@ extension AppDelegate {
     }
 
     /// Completes media metadata placeholders by retrieving and storing their full properties.
-    func runMediaMetadataPlaceholderHydration(update: @escaping (_ processed: Int, _ updated: Int) async -> Void) async {
+    func runMediaMetadataPlaceholderHydration(update: @escaping (_ processed: Int) async -> Void) async {
+        let database = NCManageDatabase.shared
+        guard let account = await database.getActiveTableAccountAsync() else {
+            return
+        }
+        let limit = NCBrandOptions.shared.httpMaximumConnectionsPerHost * 10
 
+        if let metadatas = await database.getMetadatasAsync(
+            predicate: NSPredicate(
+                format: "account == %@ AND placeholder == true",
+                account.account
+            ),
+            sortedByKeyPath: "date",
+            ascending: false,
+            limit: limit
+        ) {
+            // Hydrate metadatas
+            for metadata in metadatas {
+
+            }
+        }
     }
 }
