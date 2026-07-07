@@ -77,7 +77,9 @@ extension AppDelegate {
                 }
 
                 NCPreferences().setDoneCleaningWeek()
+
                 nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Stop cleaning week")
+
                 return true
             } else {
                 await NCAutoUpload.shared.autoUploadBackgroundSync()
