@@ -214,6 +214,9 @@ extension AppDelegate {
             guard !Task.isCancelled,
                   result.error == .success,
                   let file = result.files?.first else {
+                nkLog(tag: self.global.logTagMediaPlaceholder,
+                      emoji: .error,
+                      message: "Media metadata placeholder failed hydration failed \(result.error.errorCode) \(result.error.errorDescription)")
                 return false
             }
 
