@@ -101,7 +101,7 @@ extension AppDelegate {
                     return false
                 }
 
-                let limit = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost) * 10
+                let limit = 200
                 await runMediaMetadataPlaceholderHydration(account: account, limit: limit) { processed in
                     nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - limit \(limit)")
                 }
