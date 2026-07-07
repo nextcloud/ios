@@ -26,16 +26,16 @@ extension AppDelegate {
         }
     }
 
-    // Handles the BGProcessingTask lifecycle for weekly cleanup or background synchronization.
-    //
-    // The function:
-    // - validates background Realm availability,
-    // - schedules the next processing task,
-    // - executes either weekly cleanup or background sync,
-    // - cooperates with BGTask expiration by cancelling the Swift task,
-    // - reports success only if the work completes without cancellation.
-    //
-    // - Parameter task: The system-provided background processing task.
+    /// Handles the lifecycle of the app processing background task.
+    ///
+    /// The task opens the background database, schedules its next execution, and then runs either
+    /// the weekly maintenance cleanup or the background synchronization pipeline. The sync pipeline
+    /// performs auto-upload, media metadata backfill, and placeholder hydration for the active account.
+    ///
+    /// The underlying Swift task is cancelled when iOS expires the background execution time, and the
+    /// processing task is marked successful only when all scheduled work finishes without cancellation.
+    ///
+    /// - Parameter task: The system-provided background processing task.
     func handleProcessingTask(_ task: BGProcessingTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
