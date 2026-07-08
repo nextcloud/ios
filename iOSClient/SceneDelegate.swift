@@ -675,27 +675,36 @@ final class SceneManager {
         // Try exact match via your registry
         if let sceneIdentifier,
            let controller = sceneController.keys.first(where: { $0.sceneIdentifier == sceneIdentifier }),
-           let scene = sceneController[controller] {
-            return getWindow(scene: scene)
+           let scene = sceneController[controller],
+           let window = getWindow(scene: scene)?.windowScene?.resolvedWindow {
+            return window
         }
+
+        let windowScenes = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
 
         // Fallback: prefer a foregroundActive window scene
-        if let active = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive }),
-           let w = active.keyWindow {
-            return w
+        if let window = windowScenes
+            .first(where: { $0.activationState == .foregroundActive })?
+            .resolvedWindow {
+            return window
         }
 
-        // Last resort: first connected window scene
-        if let any = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first,
-           let w = any.keyWindow {
-            return w
+        // Fallback: foregroundInactive window scene
+        if let window = windowScenes
+            .first(where: { $0.activationState == .foregroundInactive })?
+            .resolvedWindow {
+            return window
         }
 
-        // Absolute last resort (if you keep it)
+        // Last resort: first connected window scene with a resolved window
+        if let window = windowScenes
+            .compactMap({ $0.resolvedWindow })
+            .first {
+            return window
+        }
+
+        // Absolute last resort
         return UIApplication.shared.mainAppWindow
     }
 
