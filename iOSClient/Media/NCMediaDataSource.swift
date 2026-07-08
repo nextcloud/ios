@@ -333,37 +333,38 @@ extension NCMedia {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
 
-        await self.searchVerifyNetworkMedia(path: mediaPath,
-                                            firstDate: firstDate,
-                                            lastDate: lastDate,
-                                            account: account,
-                                            paginate: false,
-                                            limit: limit) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: account,
-                    name: "searchMedia")
-                await NCNetworking.shared.networkingTasks.track(
-                    identifier: identifier,
-                    task: task)
-            }
-        } update: { files in
-            guard self.session.account == account else {
-                return
-            }
-            await self.updateMediaMetadatas(files: files,
-                                            firstDate: firstDate as NSDate,
-                                            lastDate: lastDate as NSDate,
-                                            mediaPath: mediaPath,
-                                            account: account) {
+        await NCMediaNetwork().searchMediaPage(
+            path: mediaPath,
+            firstDate: firstDate,
+            lastDate: lastDate,
+            account: account,
+            paginate: false,
+            limit: limit) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: account,
+                        name: "searchMedia")
+                    await NCNetworking.shared.networkingTasks.track(
+                        identifier: identifier,
+                        task: task)
+                }
+            } update: { files in
                 guard self.session.account == account else {
                     return
                 }
-                if self.isViewActived {
-                    update()
+                await self.updateMediaMetadatas(files: files,
+                                                firstDate: firstDate as NSDate,
+                                                lastDate: lastDate as NSDate,
+                                                mediaPath: mediaPath,
+                                                account: account) {
+                    guard self.session.account == account else {
+                        return
+                    }
+                    if self.isViewActived {
+                        update()
+                    }
                 }
-            }
-        } finish: { }
+            } finish: { }
     }
 
     /// Verifies the media currently visible in the collection against the server,
@@ -374,13 +375,13 @@ extension NCMedia {
                                      account: String,
                                      update: @escaping () -> Void,
                                      finish: @escaping () -> Void) async {
-        await self.searchVerifyNetworkMedia(
+        await NCMediaNetwork().searchMediaPage(
             path: mediaPath,
             firstDate: firstDate,
             lastDate: lastDate,
             account: account,
             paginate: true,
-            limit: 100000) { task in
+            limit: 1000000) { task in
                 Task.detached {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                         account: account,
