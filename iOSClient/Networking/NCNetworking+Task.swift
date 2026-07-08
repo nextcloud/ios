@@ -8,38 +8,16 @@ import NextcloudKit
 import RealmSwift
 
 extension NCNetworking {
-    func cancelAllQueue() {
+    func cancelAllTask() {
         Task {
             await NCTransferCoordinator.shared.cancelAll()
         }
-    }
-
-    func cancelAllTask() {
-        cancelAllQueue()
         cancelAllDataTask()
         cancelAllWaitTask()
-        cancelAllDownloadUploadTask()
-    }
-
-    func cancelAllDownloadTask() {
         cancelDownloadTasks()
         cancelDownloadBackgroundTask()
-    }
-
-    func cancelAllUploadTask() {
         cancelUploadTasks()
         cancelUploadBackgroundTask()
-    }
-
-    func cancelAllDownloadUploadTask() {
-        cancelAllDownloadTask()
-        cancelAllUploadTask()
-    }
-
-    func cancelAllTaskForGoInBackground() {
-        cancelAllQueue()
-        cancelDownloadTasks()
-        cancelUploadTasks()
     }
 
     // MARK: -

@@ -271,8 +271,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // Timeout auto
             let didFinish = await withTaskGroup(of: Bool.self) { group -> Bool in
                 group.addTask {
-                    // QUEUE
-                    NCNetworking.shared.cancelAllQueue()
+                    // TransferCoordinator
+                    await NCTransferCoordinator.shared.cancelAll()
                     // FLUSH TRANSFERS SUCCESS
                     await NCNetworking.shared.metadataTranfersSuccess.flush()
                     // BACKUP
