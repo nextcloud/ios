@@ -33,8 +33,8 @@ class NCFiles: NCCollectionViewCommon {
                 if let userInfo = notification.userInfo,
                    let account = userInfo["account"] as? String,
                    self.controller?.account == account {
-                    let color = NCBrandColor.shared.getElement(account: account)
-                    self.mainNavigationController?.menuToolbar.items?.forEach { $0.tintColor = color }
+                    self.mainNavigationController?.menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
+                    self.mainNavigationController?.menuPlusButton.tintColor = .white
                 }
             }
         }
@@ -63,10 +63,8 @@ class NCFiles: NCCollectionViewCommon {
                     }
                     if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
-                        let color = NCBrandColor.shared.getElement(account: account)
-                        self.mainNavigationController?.menuToolbar.items?.forEach {
-                            $0.tintColor = color
-                        }
+                        self.mainNavigationController?.menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
+                        self.mainNavigationController?.menuPlusButton.tintColor = .white
                     }
 
                     self.navigationController?.popToRootViewController(animated: false)
@@ -144,11 +142,10 @@ class NCFiles: NCCollectionViewCommon {
             // disable + button if no create permission
             let color = NCBrandColor.shared.getElement(account: self.session.account)
 
-            if let items = self.mainNavigationController?.menuToolbar.items {
-                for item in items {
-                    item.isEnabled = metadataFolder.isCreatable
-                    item.tintColor = metadataFolder.isCreatable ? color : .lightGray
-                }
+            if let menuPlusButton = self.mainNavigationController?.menuPlusButton {
+                menuPlusButton.isEnabled = metadataFolder.isCreatable
+                menuPlusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray
+                menuPlusButton.tintColor = .white
             }
         }
 
