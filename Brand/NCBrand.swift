@@ -155,7 +155,7 @@ final class NCBrandOptions: @unchecked Sendable {
 
         if pushNotificationServerProxy.isEmpty,
             brand == "Nextcloud" {
-            pushNotificationServerProxy = "https://push-notifications.nextcloud.com"
+            pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
             // DEBUG SERVER PUSH
             // pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
         }
