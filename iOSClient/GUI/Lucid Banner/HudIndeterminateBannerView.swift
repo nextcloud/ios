@@ -12,7 +12,7 @@ func showHudIndeterminateBanner(windowScene: UIWindowScene?,
                                 stage: LucidBanner.Stage? = nil,
                                 onButtonTap: (() -> Void)? = nil) -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene,
-          let window = windowScene.windows.first(where: \.isKeyWindow) else {
+          let window = windowScene.resolvedWindow else {
         return (nil, nil)
     }
     let localizedTitle = title.map { NSLocalizedString($0, comment: "") }

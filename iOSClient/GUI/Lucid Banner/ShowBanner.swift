@@ -27,7 +27,7 @@ func showBanner(windowScene: UIWindowScene?,
                 policy: LucidBanner.ShowPolicy = .replace,
                 errorCode: Int? = nil) async -> (banner: LucidBanner?, token: Int?) {
     guard let windowScene,
-          let window = windowScene.windows.first(where: \.isKeyWindow) else {
+          let window = windowScene.resolvedWindow else {
         return(nil, nil)
     }
 

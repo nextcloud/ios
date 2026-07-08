@@ -24,7 +24,7 @@ func showErrorBanner(windowScene: UIWindowScene?,
                      errorCode: Int? = nil,
                      afError: AFError? = nil) async {
     guard let windowScene,
-          let window = windowScene.windows.first(where: \.isKeyWindow) else {
+          let window = windowScene.resolvedWindow else {
         return
     }
 

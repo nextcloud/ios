@@ -782,6 +782,8 @@
 		F7C55CC92FB5CE74004A974F /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C55CC32FB5CE74004A974F /* ActionViewController.swift */; };
 		F7C55CCA2FB5CE74004A974F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7C55CC42FB5CE74004A974F /* Images.xcassets */; };
 		F7C55CCC2FB5CE74004A974F /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C55CC72FB5CE74004A974F /* MainInterface.storyboard */; };
+		F7C630762FFE480900257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630752FFE480700257EEB /* UIWindowScene+Extension.swift */; };
+		F7C630772FFE491000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630752FFE480700257EEB /* UIWindowScene+Extension.swift */; };
 		F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EA2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EB2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
@@ -1798,6 +1800,7 @@
 		F7C55CC32FB5CE74004A974F /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		F7C55CC42FB5CE74004A974F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7C55CC62FB5CE74004A974F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		F7C630752FFE480700257EEB /* UIWindowScene+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindowScene+Extension.swift"; sourceTree = "<group>"; };
 		F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+RecommendedFiles.swift"; sourceTree = "<group>"; };
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
 		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
@@ -3019,6 +3022,7 @@
 				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
 				F7E41315294A19B300839300 /* UIView+Extension.swift */,
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
+				F7C630752FFE480700257EEB /* UIWindowScene+Extension.swift */,
 				F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */,
 			);
 			path = Extensions;
@@ -4517,6 +4521,7 @@
 				F71916122E2901FB00E13E96 /* NCNetworking+Upload.swift in Sources */,
 				F73BC74F2F23811E003170C2 /* WarningBannerView.swift in Sources */,
 				F7D4BF322CA2E8D800A5E746 /* TOPasscodeCircleImage.m in Sources */,
+				F7C630772FFE491000257EEB /* UIWindowScene+Extension.swift in Sources */,
 				F7CAFE192F168F6000DB35A5 /* NCDebouncer.swift in Sources */,
 				F7D4BF332CA2E8D800A5E746 /* TOPasscodeView.m in Sources */,
 				F77E8C252E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift in Sources */,
@@ -4940,6 +4945,7 @@
 				F768823E2C0DD305001CF441 /* LazyView.swift in Sources */,
 				F7CAFE1B2F16AA8D00DB35A5 /* main.swift in Sources */,
 				F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */,
+				F7C630762FFE480900257EEB /* UIWindowScene+Extension.swift in Sources */,
 				F747EB0D2C4AC1FF00F959A8 /* NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,

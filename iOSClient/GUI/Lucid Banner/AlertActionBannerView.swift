@@ -13,7 +13,7 @@ func showAlertActionBanner(lucidBanner: LucidBanner?,
                            onConfirm: (() -> Void)? = nil) {
     guard let lucidBanner,
           let windowScene,
-          let window = windowScene.windows.first(where: \.isKeyWindow) else {
+          let window = windowScene.resolvedWindow else {
         return
     }
     let horizontalLayout = horizontalLayoutBanner(bounds: window.bounds,
