@@ -93,21 +93,53 @@ extension AppDelegate {
                 }
 
                 let limit = 500
+                let mediaProcessor = NCMediaMetadataBackgroundProcessor()
 
-                await runMediaMetadataBackfill(account: account, limit: limit) { offset, inserted, updated in
-                    nkLog(tag: self.global.logTagMediaBackfill, emoji: .info, message: "Media metadata backfill: offset \(offset) - inserted \(inserted) - updated \(updated)")
+                nkLog(tag: self.global.logTagMediaBackfill,
+                      emoji: .start,
+                      message: "Start media metadata backfill")
 
+                let backfillStatus = await mediaProcessor.runBackfill(
+                    account: account,
+                    limit: limit
+                ) { offset, inserted, updated in
+                    nkLog(tag: self.global.logTagMediaBackfill,
+                          emoji: .info,
+                          message: "Media metadata backfill progress: offset \(offset) - inserted \(inserted) - updated \(updated)")
                 }
 
-                guard !Task.isCancelled else {
+                nkLog(tag: self.global.logTagMediaBackfill,
+                      emoji: backfillStatus.isSuccessful ? .success : .error,
+                      message: backfillStatus.logMessage)
+
+                guard backfillStatus.isSuccessful,
+                      !Task.isCancelled else {
                     return false
                 }
 
-                await runMediaMetadataPlaceholderHydration(account: account, limit: limit) { processed in
-                    nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .info, message: "Media metadata placeholder hydration: processed \(processed) - limit \(limit)")
+                nkLog(tag: self.global.logTagMediaPlaceholder,
+                      emoji: .start,
+                      message: "Start media metadata placeholder hydration")
+
+                let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
+                    account: account,
+                    limit: limit
+                ) { succeeded in
+                    nkLog(tag: self.global.logTagMediaPlaceholder,
+                          emoji: .info,
+                          message: "Media metadata placeholder hydration progress: succeeded \(succeeded) - limit \(limit)")
                 }
 
-                return !Task.isCancelled
+                nkLog(tag: self.global.logTagMediaPlaceholder,
+                      emoji: hydrationStatus.isSuccessful ? .success : .error,
+                      message: hydrationStatus.logMessage)
+
+                guard hydrationStatus.isSuccessful,
+                      !Task.isCancelled else {
+                    return false
+                }
+
+                return true
             }
         }
 
@@ -120,148 +152,5 @@ extension AppDelegate {
             nkLog(tag: self.global.logTagTask, emoji: .stop, message: "Processing task expired")
             processingTask.cancel()
         }
-    }
-
-    /// Progressively scans the media archive and creates missing metadata placeholders.
-    func runMediaMetadataBackfill(account: tableAccount,
-                                  limit: Int,
-                                  update: @escaping (_ offset: Int, _ inserted: Int, _ updated: Int) async -> Void) async {
-        let database = NCManageDatabase.shared
-        let state = await database.getMediaMetadataBackfillAsync(account: account.account)
-        // Stops the backfill when the media archive has already been fully processed.
-        guard state?.lastCompletedCycleDate == nil else {
-            return
-        }
-        var offset = state?.offset ?? 0
-        var token: String?
-        let backfill = NCMediaMetadataBackfill(account: account.account)
-
-        nkLog(tag: self.global.logTagMediaBackfill, emoji: .start, message: "Start media metadata backfill")
-
-        while !Task.isCancelled {
-            let result = await backfill.run(mediaPath: account.mediaPath,
-                                            account: account.account,
-                                            offset: offset,
-                                            token: token,
-                                            count: limit)
-
-            guard !Task.isCancelled else {
-                return
-            }
-
-            guard let files = result.files else {
-                nkLog(tag: self.global.logTagMediaBackfill,
-                      emoji: .error,
-                      message: "Media metadata backfill failed \(result.error?.errorCode ?? 0) \(result.error?.errorDescription ?? "")")
-                break
-            }
-
-            guard !files.isEmpty else {
-                await database.completeMediaMetadataBackfillAsync(account: account.account)
-                break
-            }
-
-            let ocIds = files.compactMap(\.ocId)
-            let metadatas = await NCManageDatabase.shared.getMetadatasFromOcIdsAsync(ocIds)
-            let resultPlaceholders = await NCManageDatabase.shared.syncPlaceholderMetadatasAsync(
-                files: files,
-                metadatas: metadatas
-            )
-            offset += files.count
-
-            await update(offset, resultPlaceholders.inserted, resultPlaceholders.updated)
-
-            guard !Task.isCancelled else {
-                return
-            }
-
-            await database.updateMediaMetadataBackfillAsync(account: account.account, offset: offset)
-            guard files.count == limit else {
-                await database.completeMediaMetadataBackfillAsync(account: account.account)
-                break
-            }
-
-            token = result.token
-        }
-    }
-
-    /// Completes media metadata placeholders by retrieving and storing their full properties.
-    func runMediaMetadataPlaceholderHydration(account: tableAccount,
-                                              limit: Int,
-                                              update: @escaping (_ processed: Int) async -> Void) async {
-        let database = NCManageDatabase.shared
-        let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
-        var processed = 0
-
-        guard let metadatas = await database.getMetadatasAsync(
-            predicate: NSPredicate(
-                format: "account == %@ AND placeholder == true",
-                account.account
-            ),
-            sortedByKeyPath: "date",
-            ascending: false,
-            limit: limit
-        ), !metadatas.isEmpty else {
-            return
-        }
-
-        func hydrate(_ metadata: tableMetadata) async -> Bool {
-            guard !Task.isCancelled else {
-                return false
-            }
-            let result = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName,
-                                                                         depth: "0",
-                                                                         account: metadata.account)
-            guard !Task.isCancelled,
-                  result.error == .success,
-                  let file = result.files?.first else {
-                nkLog(tag: self.global.logTagMediaPlaceholder,
-                      emoji: .error,
-                      message: "Media metadata placeholder failed hydration failed \(result.error.errorCode) \(result.error.errorDescription)")
-                return false
-            }
-
-            let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-            await database.addMetadataAsync(metadata)
-
-            return true
-        }
-
-        nkLog(tag: self.global.logTagMediaPlaceholder, emoji: .start, message: "Start media metadata placeholder hydration")
-
-        await withTaskGroup(of: Bool.self) { group in
-            var iterator = metadatas.makeIterator()
-
-            for _ in 0..<maximumConcurrentRequests {
-                guard let metadata = iterator.next() else {
-                    break
-                }
-
-                group.addTask {
-                    await hydrate(metadata)
-                }
-            }
-
-            while let completed = await group.next() {
-                if completed {
-                    processed += 1
-                }
-
-                guard !Task.isCancelled,
-                      let metadata = iterator.next() else {
-                    continue
-                }
-
-                group.addTask {
-                    await hydrate(metadata)
-                }
-            }
-        }
-
-        guard !Task.isCancelled else {
-            return
-        }
-
-        await update(processed)
     }
 }
