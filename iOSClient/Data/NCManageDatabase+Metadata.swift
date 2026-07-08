@@ -1006,7 +1006,7 @@ extension NCManageDatabase {
                 .sorted(byKeyPath: sortedByKeyPath,
                         ascending: ascending)
 
-            if let limit {
+            if let limit, limit > 0 {
                 let sliced = results.prefix(limit)
                 return sliced.map { $0.detachedCopy() }
             } else {

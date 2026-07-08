@@ -360,7 +360,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         // Cancel Properties
         Task {
-            await NCTransferCoordinator.shared.cancelAll()
             await searchOperationHandle.cancel()
         }
     }
