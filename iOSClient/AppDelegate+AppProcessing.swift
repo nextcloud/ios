@@ -109,7 +109,7 @@ extension AppDelegate {
                 }
 
                 nkLog(tag: self.global.logTagMediaBackfill,
-                      emoji: backfillStatus.isSuccessful ? .success : .error,
+                      emoji: backfillStatus.isSuccessful ? .stop : .error,
                       message: backfillStatus.logMessage)
 
                 guard backfillStatus.isSuccessful,
@@ -131,7 +131,7 @@ extension AppDelegate {
                 }
 
                 nkLog(tag: self.global.logTagMediaPlaceholder,
-                      emoji: hydrationStatus.isSuccessful ? .success : .error,
+                      emoji: hydrationStatus.isSuccessful ? .stop : .error,
                       message: hydrationStatus.logMessage)
 
                 guard hydrationStatus.isSuccessful,
@@ -145,6 +145,11 @@ extension AppDelegate {
 
         Task {
             let success = await processingTask.value
+
+            nkLog(tag: self.global.logTagTask,
+                  emoji: success ? .stop : .error,
+                  message: "Stop processing task")
+
             task.setTaskCompleted(success: success)
         }
 
