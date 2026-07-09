@@ -22,7 +22,7 @@ internal enum TransfersFilter: Sendable {
     }
 }
 
-final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDelegate {
+final class TransfersViewModel: ObservableObject, NCMetadataUploadTransfersSuccessDelegate {
     @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var showFlushMessage = false
@@ -189,7 +189,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
         return nil
     }
 
-    func metadataTransferWillFlush(hasLivePhotos: Bool) {
+    func metadataUploadTransferWillFlush(hasLivePhotos: Bool) {
         if hasLivePhotos {
             DispatchQueue.main.async {
                 self.showFlushMessage = true
@@ -197,7 +197,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
         }
     }
 
-    func metadataTransferDidFlush(hasLivePhotos: Bool) {
+    func metadataUploadTransferDidFlush(hasLivePhotos: Bool) {
         if hasLivePhotos {
             DispatchQueue.main.async {
                 self.showFlushMessage = false
