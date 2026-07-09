@@ -15,7 +15,7 @@ class NCContextMenuPlus: NSObject {
         let sortOrder: Int
     }
 
-    let menuToolbar: UIToolbar?
+    let menuPlusButton: UIButton?
     let controller: NCMainTabBarController?
     private var capabilitiesSignature: String?
 
@@ -23,8 +23,8 @@ class NCContextMenuPlus: NSObject {
         SceneManager.shared.getWindowScene(controller: controller)
     }
 
-    init(menuToolbar: UIToolbar?, controller: NCMainTabBarController?) {
-        self.menuToolbar = menuToolbar
+    init(menuPlusButton: UIButton?, controller: NCMainTabBarController?) {
+        self.menuPlusButton = menuPlusButton
         self.controller = controller
     }
 
@@ -42,7 +42,7 @@ class NCContextMenuPlus: NSObject {
     }
 
     func create(session: NCSession.Session) async {
-        guard let controller, let menuToolbar else {
+        guard let controller, let menuPlusButton else {
             return
         }
         let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
@@ -426,79 +426,66 @@ class NCContextMenuPlus: NSObject {
 
         let plusMenu = UIMenu(children: plusMenuElements)
 
-        // TOOLBAR
-        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
-        let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
-
-        if let plusItem = menuToolbar.items?.first,
-           plusItem.menu != nil,
+        // PLUS BUTTON
+        if menuPlusButton.menu != nil,
            !capabilitiesChanged {
             return
         }
 
-        if let plusItem = menuToolbar.items?.first {
-            plusItem.menu = plusMenu
-        } else {
-            let plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
-            plusItem.tintColor = NCBrandColor.shared.getElement(account: session.account)
-            plusItem.menu = plusMenu
-            menuToolbar.setItems([plusItem], animated: false)
-            menuToolbar.sizeToFit()
-            menuToolbar.alpha = 1
-        }
+        menuPlusButton.menu = plusMenu
+        menuPlusButton.showsMenuAsPrimaryAction = true
+        menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: session.account)
+        menuPlusButton.tintColor = .white
+        menuPlusButton.alpha = 1
 
-        // E2EE Offile disable
-        if !isNetworkReachable, isDirectoryE2EE {
-            menuToolbar.items?.first?.isEnabled = false
-        } else {
-            menuToolbar.items?.first?.isEnabled = true
-        }
+        // E2EE Offline disable
+        menuPlusButton.isEnabled = isNetworkReachable || !isDirectoryE2EE
     }
 
     @MainActor
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
-        guard let menuToolbar else {
+        guard let menuPlusButton else {
             return
         }
         let tx = 200.0
         if isHidden {
-            if menuToolbar.transform.tx == tx {
-                menuToolbar.alpha = 0
+            if menuPlusButton.transform.tx == tx {
+                menuPlusButton.alpha = 0
                 return
             }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
-                    menuToolbar.transform = CGAffineTransform(translationX: tx, y: 0)
-                    menuToolbar.alpha = 0
+                    menuPlusButton.transform = CGAffineTransform(translationX: tx, y: 0)
+                    menuPlusButton.alpha = 0
                 })
             } else {
-                menuToolbar.transform = CGAffineTransform(translationX: tx, y: 0)
-                menuToolbar.alpha = 0
+                menuPlusButton.transform = CGAffineTransform(translationX: tx, y: 0)
+                menuPlusButton.alpha = 0
             }
         } else {
-            if menuToolbar.transform.tx == 0.0 {
-                menuToolbar.alpha = 1
+            if menuPlusButton.transform.tx == 0.0 {
+                menuPlusButton.alpha = 1
                 return
             }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
-                    menuToolbar.transform = .identity
-                    menuToolbar.alpha = 1
+                    menuPlusButton.transform = .identity
+                    menuPlusButton.alpha = 1
                 })
             } else {
-                menuToolbar.transform = .identity
-                menuToolbar.alpha = 1
+                menuPlusButton.transform = .identity
+                menuPlusButton.alpha = 1
             }
         }
     }
 
     @MainActor
     func resetPlusButtonAlpha(animated: Bool = true) {
-        guard let menuToolbar else {
+        guard let menuPlusButton else {
             return
         }
         let update = {
-            menuToolbar.alpha = 1.0
+            menuPlusButton.alpha = 1.0
         }
         if animated {
             UIView.animate(withDuration: 0.3, animations: update)
