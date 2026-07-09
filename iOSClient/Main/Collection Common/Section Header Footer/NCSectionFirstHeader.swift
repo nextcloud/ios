@@ -148,7 +148,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             let fileIds = recommendations.map(\.id)
             let metadatas = await NCManageDatabase.shared.getMetadatasFromFileIdsAsync(fileIds)
             let etagsByFileId = Dictionary(
-                uniqueKeysWithValues: metadatas.map { ($0.fileId, $0.etag) }
+                metadatas.map { ($0.fileId, $0.etag) },
+                uniquingKeysWith: { current, _ in current }
             )
             let newRecommendationsIdentity = recommendations.map {
                 "\($0.id)|\($0.reason)|\(etagsByFileId[$0.id] ?? "")"
