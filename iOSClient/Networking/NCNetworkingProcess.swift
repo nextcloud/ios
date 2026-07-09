@@ -262,10 +262,10 @@ actor NCNetworkingProcess {
 
             // TRANSFERS SUCCESS
             //
-            let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+            let countTransferSuccess = await NCNetworking.shared.metadataUploadTranfersSuccess.count()
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
             if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
-                await NCNetworking.shared.metadataTranfersSuccess.flush()
+                await NCNetworking.shared.metadataUploadTranfersSuccess.flush()
             }
 
             // ZOMBIE
@@ -348,7 +348,7 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
-        let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+        let countTransferSuccess = await NCNetworking.shared.metadataUploadTranfersSuccess.count()
         let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let countUploading = max(0, metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess)
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
@@ -450,7 +450,7 @@ actor NCNetworkingProcess {
 
                 // IS TRANSFER SUCCESS
                 //
-                if await NCNetworking.shared.metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) {
+                if await NCNetworking.shared.metadataUploadTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) {
                     // File exists
                     continue
                 }

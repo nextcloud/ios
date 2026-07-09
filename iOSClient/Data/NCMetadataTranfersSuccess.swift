@@ -10,7 +10,7 @@ public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
     func metadataTransferDidFlush(hasLivePhotos: Bool)
 }
 
-actor NCMetadataTranfersSuccess {
+actor NCMetadataUploadTranfersSuccess {
     private struct TransferSuccessItem {
         let metadata: tableMetadata
     }

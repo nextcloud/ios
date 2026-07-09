@@ -149,12 +149,12 @@ extension NCNetworking {
                     } else {
 #if !EXTENSION
                         await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)
-                        await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
-                                                                                 ocId: ocId,
-                                                                                 date: date,
-                                                                                 etag: etag,
-                                                                                 ownerId: ownerId,
-                                                                                 permissions: permissions)
+                        await NCNetworking.shared.metadataUploadTranfersSuccess.append(metadata: metadata,
+                                                                                       ocId: ocId,
+                                                                                       date: date,
+                                                                                       etag: etag,
+                                                                                       ownerId: ownerId,
+                                                                                       permissions: permissions)
 #endif
                     }
                 } else {

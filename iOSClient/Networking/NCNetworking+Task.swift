@@ -308,7 +308,7 @@ extension NCNetworking {
                 let taskIdentifiers = Set(tasks.1.map(\.taskIdentifier))
 
                 for metadata in accountMetadatas {
-                    guard await !metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
+                    guard await !metadataUploadTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
                         continue
                     }
 
@@ -341,7 +341,7 @@ extension NCNetworking {
                 let backgroundWWanTaskIdentifiers = Set((await nkSession.sessionUploadBackgroundWWan.allTasks).map(\.taskIdentifier))
 
                 for metadata in accountMetadatas {
-                    guard await !metadataTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
+                    guard await !metadataUploadTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
                         continue
                     }
 
