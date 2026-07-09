@@ -157,6 +157,6 @@ actor NCMetadataUploadTranfersSuccess {
             delegate.metadataUploadTransferDidFlush(hasLivePhotos: hasLivePhotos)
         }
 
-        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagMetadataUploadTransfers, message: "Upload flush successful (\(metadatas.count))", consoleOnly: true)
     }
 }

@@ -383,6 +383,9 @@ extension NCNetworking {
                 let taskIdentifiers = Set(tasks.2.map(\.taskIdentifier))
 
                 for metadata in accountMetadatas where !taskIdentifiers.contains(metadata.sessionTaskIdentifier) {
+                    guard await !metadataDownloadTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
+                        continue
+                    }
                     await restoreDownload(metadata)
                 }
             }
@@ -407,6 +410,9 @@ extension NCNetworking {
                 let taskIdentifiers = Set((await nkSession.sessionDownloadBackground.allTasks).map(\.taskIdentifier))
 
                 for metadata in accountMetadatas where !taskIdentifiers.contains(metadata.sessionTaskIdentifier) {
+                    guard await !metadataDownloadTranfersSuccess.exists(serverUrlFileName: metadata.serverUrlFileName) else {
+                        continue
+                    }
                     await restoreDownload(metadata)
                 }
             }

@@ -536,5 +536,4 @@ extension NCNetworking {
 
         return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
-
 }

@@ -260,12 +260,20 @@ actor NCNetworkingProcess {
             //
             var metadatas = await NCManageDatabase.shared.getMetadataProcess()
 
-            // TRANSFERS SUCCESS
+            // TRANSFERS UPLOAD SUCCESS
             //
-            let countTransferSuccess = await NCNetworking.shared.metadataUploadTranfersSuccess.count()
+            let countTransferUploadSuccess = await NCNetworking.shared.metadataUploadTranfersSuccess.count()
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
-            if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
+            if (countWaitUpload == 0 && countTransferUploadSuccess > 0) || countTransferUploadSuccess >= NCBrandOptions.shared.numMaximumProcess {
                 await NCNetworking.shared.metadataUploadTranfersSuccess.flush()
+            }
+
+            // TRANSFERS DOWNLOAD SUCCESS
+            //
+            let countTransferDownloadSuccess = await NCNetworking.shared.metadataDownloadTranfersSuccess.count()
+            let countWaitDownload = metadatas.filter { $0.status == self.global.metadataStatusWaitDownload }.count
+            if (countWaitDownload == 0 && countTransferDownloadSuccess > 0) || countTransferDownloadSuccess >= NCBrandOptions.shared.numMaximumProcess {
+                await NCNetworking.shared.metadataDownloadTranfersSuccess.flush()
             }
 
             // ZOMBIE
@@ -348,9 +356,10 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
-        let countTransferSuccess = await NCNetworking.shared.metadataUploadTranfersSuccess.count()
-        let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let countUploading = max(0, metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess)
+        let countDownloadTransferSuccess = await NCNetworking.shared.metadataDownloadTranfersSuccess.count()
+        let countUploadTransferSuccess = await NCNetworking.shared.metadataUploadTranfersSuccess.count()
+        let countDownloading = max(0, metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count - countDownloadTransferSuccess)
+        let countUploading = max(0, metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countUploadTransferSuccess)
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         // Banner

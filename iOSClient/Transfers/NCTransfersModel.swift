@@ -22,7 +22,7 @@ internal enum TransfersFilter: Sendable {
     }
 }
 
-final class TransfersViewModel: ObservableObject, NCMetadataUploadTransfersSuccessDelegate {
+final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuccessDelegate, NCMetadataUploadTransfersSuccessDelegate {
     @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var showFlushMessage = false
@@ -49,6 +49,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataUploadTransfersSucce
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
             await NCNetworking.shared.metadataUploadTranfersSuccess.addDelegate(self)
+            await NCNetworking.shared.metadataDownloadTranfersSuccess.addDelegate(self)
             await pollTransfers()
         }
     }
@@ -61,6 +62,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataUploadTransfersSucce
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
             await NCNetworking.shared.metadataUploadTranfersSuccess.removeDelegate(self)
+            await NCNetworking.shared.metadataDownloadTranfersSuccess.removeDelegate(self)
         }
     }
 
@@ -204,6 +206,10 @@ final class TransfersViewModel: ObservableObject, NCMetadataUploadTransfersSucce
             }
         }
     }
+
+    func metadataDownloadTransferWillFlush() { }
+
+    func metadataDownloadTransferDidFlush() { }
 }
 
 extension TransfersViewModel: NCTransferDelegate {

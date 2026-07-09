@@ -83,6 +83,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let progressQuantizer = ProgressQuantizer()
 
 #if !EXTENSION
+    let metadataDownloadTranfersSuccess = NCMetadataDownloadTranfersSuccess()
     let metadataUploadTranfersSuccess = NCMetadataUploadTranfersSuccess()
 #endif
 

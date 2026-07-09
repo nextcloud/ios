@@ -274,6 +274,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     // TransferCoordinator
                     await NCTransferCoordinator.shared.cancelAll()
                     // FLUSH TRANSFERS SUCCESS
+                    await NCNetworking.shared.metadataDownloadTranfersSuccess.flush()
                     await NCNetworking.shared.metadataUploadTranfersSuccess.flush()
                     // BACKUP
                     await NCManageDatabase.shared.backupTableAccountToFileAsync()

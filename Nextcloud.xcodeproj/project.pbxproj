@@ -791,6 +791,7 @@
 		F7C630712FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */; };
 		F7C6307F2FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */; };
 		F7C630802FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */; };
+		F7C630872FFF6DE100257EEB /* NCMetadataDownloadTranfersSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630832FFF6DDF00257EEB /* NCMetadataDownloadTranfersSuccess.swift */; };
 		F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EA2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EB2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
@@ -1811,6 +1812,7 @@
 		F7C55CC62FB5CE74004A974F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaMetadataBackgroundProcessor.swift; sourceTree = "<group>"; };
 		F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindowScene+Extension.swift"; sourceTree = "<group>"; };
+		F7C630832FFF6DDF00257EEB /* NCMetadataDownloadTranfersSuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMetadataDownloadTranfersSuccess.swift; sourceTree = "<group>"; };
 		F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+RecommendedFiles.swift"; sourceTree = "<group>"; };
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
 		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
@@ -3113,6 +3115,7 @@
 				F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */,
 				F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */,
 				F7CADEFA2EA1591D0057849E /* NCMetadataUploadTranfersSuccess.swift */,
+				F7C630832FFF6DDF00257EEB /* NCMetadataDownloadTranfersSuccess.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -5017,6 +5020,7 @@
 				AA8D31702D4123B200FE2775 /* DownloadLimitViewModel.swift in Sources */,
 				AA8D31712D4123B200FE2775 /* NCShareDownloadLimitViewController.swift in Sources */,
 				AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */,
+				F7C630872FFF6DE100257EEB /* NCMetadataDownloadTranfersSuccess.swift in Sources */,
 				AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */,
 				AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */,
 				F760A48D2FE95D06001B212E /* NCTransferDelegateDispatcher.swift in Sources */,
