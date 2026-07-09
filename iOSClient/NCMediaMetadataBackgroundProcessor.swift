@@ -54,9 +54,11 @@ final class NCMediaMetadataBackgroundProcessor {
             case .skippedNoPlaceholders:
                 return "Media metadata placeholder hydration skipped: no placeholders found"
             case .completed(let total, let succeeded, let failed):
-                return "Media metadata placeholder hydration completed: total \(total) - succeeded \(succeeded) - failed \(failed)"
+                let pending = max(0, total - succeeded - failed)
+                return "Media metadata placeholder hydration completed: total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
             case .cancelled(let total, let succeeded, let failed):
-                return "Media metadata placeholder hydration cancelled: total \(total) - succeeded \(succeeded) - failed \(failed)"
+                let pending = max(0, total - succeeded - failed)
+                return "Media metadata placeholder hydration cancelled: total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
             }
         }
     }
