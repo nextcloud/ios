@@ -95,7 +95,8 @@ class NotificationService: UNNotificationServiceExtension {
             return
         }
 
-        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared, memoryCapacity: 2, diskCapacity: 10)
+        // NextcloudKit Session
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tblAccount.account,
                                           urlBase: tblAccount.urlBase,
                                           user: tblAccount.user,
@@ -107,7 +108,7 @@ class NotificationService: UNNotificationServiceExtension {
         Task {
             let results = await NextcloudKit.shared.getNotificationsAsync(idNotification: nid,
                                                                           account: tblAccount.account,
-                                                                          options: NKRequestOptions(timeout: 15))
+                                                                          options: NKRequestOptions(timeout: 20))
 
             if results.error == .success, let notification = results.notifications?.first {
                 bestAttemptContent.title = notification.message.isEmpty ? NCBrandOptions.shared.brand : notification.subject
