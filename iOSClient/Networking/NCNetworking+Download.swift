@@ -259,12 +259,14 @@ extension NCNetworking {
               message: "Read infinite folder: \(serverUrl)")
 
         let ocIdsInDownload = Set(metadatasInDownload?.map(\.ocId) ?? [])
+        var directoriesToCreate: [tableMetadata] = []
         var metadatasToDownload: [tableMetadata] = []
 
         for file in files {
+            let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+
             if file.directory {
-                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-                await NCManageDatabase.shared.createDirectory(metadata: metadata)
+                directoriesToCreate.append(metadata)
                 continue
             }
 
@@ -277,7 +279,6 @@ extension NCNetworking {
                 continue
             }
 
-            let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
             metadata.session = self.sessionDownloadBackground
             metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
             metadata.sessionTaskIdentifier = 0
@@ -288,13 +289,13 @@ extension NCNetworking {
             metadatasToDownload.append(metadata)
         }
 
-        if !metadatasToDownload.isEmpty {
-            await NCManageDatabase.shared.addMetadatasAsync(metadatasToDownload)
+        await NCManageDatabase.shared.createDirectoriesAsync(metadatas: directoriesToCreate)
+        await NCManageDatabase.shared.addMetadatasAsync(metadatasToDownload)
 
-            nkLog(tag: self.global.logTagSync,
-                  emoji: .start,
-                  message: "Queued \(metadatasToDownload.count) files for offline synchronization: \(serverUrl)")
-        }
+        nkLog(tag: self.global.logTagSync,
+              emoji: .start,
+              message: "Queued \(metadatasToDownload.count) files for offline synchronization: \(serverUrl)")
+
     }
 
     internal func isFileDifferent(ocId: String,
