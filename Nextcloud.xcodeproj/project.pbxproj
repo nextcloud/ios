@@ -789,6 +789,8 @@
 		F7C55CCA2FB5CE74004A974F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7C55CC42FB5CE74004A974F /* Images.xcassets */; };
 		F7C55CCC2FB5CE74004A974F /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C55CC72FB5CE74004A974F /* MainInterface.storyboard */; };
 		F7C630712FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */; };
+		F7C6307F2FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */; };
+		F7C630802FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */; };
 		F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EA2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
 		F7C687EB2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */; };
@@ -1808,6 +1810,7 @@
 		F7C55CC42FB5CE74004A974F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7C55CC62FB5CE74004A974F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaMetadataBackgroundProcessor.swift; sourceTree = "<group>"; };
+		F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindowScene+Extension.swift"; sourceTree = "<group>"; };
 		F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+RecommendedFiles.swift"; sourceTree = "<group>"; };
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
 		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
@@ -3029,6 +3032,7 @@
 				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
 				F7E41315294A19B300839300 /* UIView+Extension.swift */,
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
+				F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */,
 				F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */,
 			);
 			path = Extensions;
@@ -4523,6 +4527,7 @@
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F7C30DFE291BD0B80017149B /* NCNetworkingE2EEDelete.swift in Sources */,
 				F7D4BF2C2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,
+				F7C630802FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */,
 				F7D4BF2D2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */,
 				F7D4BF2E2CA2E8D800A5E746 /* TOPasscodeFixedInputView.m in Sources */,
 				F7D61EA92EBF1694007F865B /* NCManageDatabase+TableCapabilities.swift in Sources */,
@@ -5087,6 +5092,7 @@
 				F77C3F5B2D9BF8CD00F3C471 /* UITabBar+Extension.swift in Sources */,
 				F7D7A76E2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
 				F7F563042E15762B00631A11 /* MigrationMultiDomains.swift in Sources */,
+				F7C6307F2FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */,
 				F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F7DA0F672F66AA0D0033020C /* ShowBanner.swift in Sources */,
