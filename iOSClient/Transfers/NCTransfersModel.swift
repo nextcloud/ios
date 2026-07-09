@@ -22,7 +22,7 @@ internal enum TransfersFilter: Sendable {
     }
 }
 
-final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDelegate {
+final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuccessDelegate, NCMetadataUploadTransfersSuccessDelegate {
     @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var showFlushMessage = false
@@ -48,7 +48,8 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
 
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
-            await NCNetworking.shared.metadataTranfersSuccess.addDelegate(self)
+            await NCNetworking.shared.metadataUploadTranfersSuccess.addDelegate(self)
+            await NCNetworking.shared.metadataDownloadTranfersSuccess.addDelegate(self)
             await pollTransfers()
         }
     }
@@ -60,7 +61,8 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
     func detach() {
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
-            await NCNetworking.shared.metadataTranfersSuccess.removeDelegate(self)
+            await NCNetworking.shared.metadataUploadTranfersSuccess.removeDelegate(self)
+            await NCNetworking.shared.metadataDownloadTranfersSuccess.removeDelegate(self)
         }
     }
 
@@ -95,9 +97,9 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
             isLoadingTransfers = false
         }
 
-        let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
+        let uploadTransfersSuccess = await networking.metadataUploadTranfersSuccess.getAll()
         let result = await database.getTransferAsync(
-            tranfersSuccess: transfersSuccess,
+            tranfersSuccess: uploadTransfersSuccess,
             status: selectedFilter.statuses,
             offset: 0,
             limit: transfersLimit
@@ -189,7 +191,7 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
         return nil
     }
 
-    func metadataTransferWillFlush(hasLivePhotos: Bool) {
+    func metadataUploadTransferWillFlush(hasLivePhotos: Bool) {
         if hasLivePhotos {
             DispatchQueue.main.async {
                 self.showFlushMessage = true
@@ -197,13 +199,17 @@ final class TransfersViewModel: ObservableObject, NCMetadataTransfersSuccessDele
         }
     }
 
-    func metadataTransferDidFlush(hasLivePhotos: Bool) {
+    func metadataUploadTransferDidFlush(hasLivePhotos: Bool) {
         if hasLivePhotos {
             DispatchQueue.main.async {
                 self.showFlushMessage = false
             }
         }
     }
+
+    func metadataDownloadTransferWillFlush() { }
+
+    func metadataDownloadTransferDidFlush() { }
 }
 
 extension TransfersViewModel: NCTransferDelegate {

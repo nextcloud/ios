@@ -477,6 +477,9 @@ extension NCManageDatabase {
     }
 
     func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
+        if metadatas.isEmpty {
+            return
+        }
         let detached = metadatas.map { $0.detachedCopy() }
 
         await core.performRealmWriteAsync { realm in
