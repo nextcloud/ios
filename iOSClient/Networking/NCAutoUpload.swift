@@ -167,29 +167,33 @@ class NCAutoUpload: NSObject {
             await self.database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: date, account: session.account)
         }
 
-        if !metadatas.isEmpty {
-            let metadatasToAdd: [tableMetadata]
-            if filterExistingQueue {
-                metadatasToAdd = await self.database.filterAutoUploadMetadatasNotAlreadyQueuedAsync(metadatas)
-            } else {
-                metadatasToAdd = metadatas
-            }
-            guard !metadatasToAdd.isEmpty else {
-                return 0
-            }
-
-            if autoMkcol {
-                await self.database.addMetadatasAsync(metadatas)
-            } else {
-                let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
-                    assets: assets,
-                    useSubFolder: tblAccount.autoUploadCreateSubfolder,
-                    session: session)
-                await self.database.addMetadatasAsync(metadatasFolder + metadatas)
-            }
+        guard !metadatas.isEmpty else {
+            return 0
         }
 
-        return metadatas.count
+        let metadatasToAdd: [tableMetadata]
+
+        if filterExistingQueue {
+            metadatasToAdd = await self.database.filterAutoUploadMetadatasNotAlreadyQueuedAsync(metadatas)
+        } else {
+            metadatasToAdd = metadatas
+        }
+
+        guard !metadatasToAdd.isEmpty else {
+            return 0
+        }
+
+        if autoMkcol {
+            await self.database.addMetadatasAsync(metadatasToAdd)
+        } else {
+            let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
+                assets: assets,
+                useSubFolder: tblAccount.autoUploadCreateSubfolder,
+                session: session)
+            await self.database.addMetadatasAsync(metadatasFolder + metadatasToAdd)
+        }
+
+        return metadatasToAdd.count
     }
 
     // MARK: -
