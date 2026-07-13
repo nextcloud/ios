@@ -50,6 +50,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
 
+        // Clear stale server-unavailable (503) state from the previous app session
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            groupDefaults.removeObject(
+                forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable
+            )
+        }
+
         if !NCPreferences().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
