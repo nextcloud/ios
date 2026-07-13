@@ -204,46 +204,59 @@ extension NCNetworking {
                                                                                   fileName: metadata.fileName,
                                                                                   userId: metadata.userId,
                                                                                   urlBase: metadata.urlBase)
+        let localFileSize = utilityFileSystem.getFileSize(filePath: fileNameLocalPath)
+
+        if localFileSize == 0 && metadata.size != 0 {
+            nkLog(error: "Deleting upload metadata because local file is empty or missing: \(metadata.fileNameView), ocId: \(metadata.ocId)")
+            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+
+            return NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
+        }
 
         start()
 
-        // Check file dim > 0
-        if utilityFileSystem.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
-            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
-            return NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
-        } else {
-            let (task, error) = await backgroundSession.uploadAsync(serverUrlFileName: metadata.serverUrlFileName,
-                                                                    fileNameLocalPath: fileNameLocalPath,
-                                                                    dateCreationFile: metadata.creationDate as Date,
-                                                                    dateModificationFile: metadata.date as Date,
-                                                                    autoMkcol: true,
-                                                                    account: metadata.account,
-                                                                    sessionIdentifier: metadata.session)
+        let (task, error) = await backgroundSession.uploadAsync(serverUrlFileName: metadata.serverUrlFileName,
+                                                                fileNameLocalPath: fileNameLocalPath,
+                                                                dateCreationFile: metadata.creationDate as Date,
+                                                                dateModificationFile: metadata.date as Date,
+                                                                autoMkcol: true,
+                                                                account: metadata.account,
+                                                                sessionIdentifier: metadata.session)
 
-            taskHandler(task)
+        taskHandler(task)
 
-            if let task, error == .success {
-                nkLog(debug: "Uploading file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
+        if let task, error == .success {
+            nkLog(debug: "Uploading file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
-                await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                      sessionTaskIdentifier: task.taskIdentifier,
-                                                                      status: self.global.metadataStatusUploading)
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(networkingStatus: self.global.networkingStatusUploading,
-                                            account: metadata.account,
-                                            fileName: metadata.fileName,
-                                            serverUrl: metadata.serverUrl,
-                                            selector: metadata.sessionSelector,
-                                            ocId: metadata.ocId,
-                                            destination: nil,
-                                            error: .success)
-                }
-            } else {
-                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                  sessionTaskIdentifier: task.taskIdentifier,
+                                                                  status: self.global.metadataStatusUploading)
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(networkingStatus: self.global.networkingStatusUploading,
+                                        account: metadata.account,
+                                        fileName: metadata.fileName,
+                                        serverUrl: metadata.serverUrl,
+                                        selector: metadata.sessionSelector,
+                                        ocId: metadata.ocId,
+                                        destination: nil,
+                                        error: .success)
             }
+        } else {
+            nkLog(debug: "Background upload task creation: \(metadata.fileNameView), " +
+                  "task: \(String(describing: task?.taskIdentifier)), " +
+                  "error: \(error.errorCode) \(error.errorDescription)"
+            )
 
-            return(error)
+            await NCManageDatabase.shared.setMetadataSessionAsync(
+                ocId: metadata.ocId,
+                sessionTaskIdentifier: 0,
+                sessionError: error.errorDescription,
+                status: global.metadataStatusUploadError,
+                errorCode: error.errorCode
+            )
         }
+
+        return(error)
     }
 
     // MARK: - UPLOAD SUCCESS
