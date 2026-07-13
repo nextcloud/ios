@@ -79,68 +79,64 @@ extension AppDelegate {
                 NCPreferences().setDoneCleaningWeek()
 
                 nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Stop cleaning week")
+            }
 
-                return true
-            } else {
-                await NCAutoUpload.shared.autoUploadBackgroundSync()
+            await NCAutoUpload.shared.autoUploadBackgroundSync()
 
-                guard !Task.isCancelled else {
-                    return false
-                }
+            guard !Task.isCancelled else {
+                return false
+            }
 
-                guard let account = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
-                    return false
-                }
-
-                let limit = 500
-                let mediaProcessor = NCMediaMetadataBackgroundProcessor()
-
-                nkLog(tag: self.global.logTagMediaBackfill,
-                      emoji: .start,
-                      message: "Start media metadata backfill")
-
-                let backfillStatus = await mediaProcessor.runBackfill(
-                    account: account,
-                    limit: limit
-                ) { offset, inserted, updated in
-                    nkLog(tag: self.global.logTagMediaBackfill,
-                          emoji: .info,
-                          message: "Media metadata backfill progress: offset \(offset) - inserted \(inserted) - updated \(updated)")
-                }
-
-                nkLog(tag: self.global.logTagMediaBackfill,
-                      emoji: backfillStatus.isSuccessful ? .stop : .error,
-                      message: backfillStatus.logMessage)
-
-                guard backfillStatus.isSuccessful,
-                      !Task.isCancelled else {
-                    return false
-                }
-
-                nkLog(tag: self.global.logTagMediaPlaceholder,
-                      emoji: .start,
-                      message: "Start media metadata placeholder hydration")
-
-                let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
-                    account: account,
-                    limit: limit
-                ) { succeeded in
-                    nkLog(tag: self.global.logTagMediaPlaceholder,
-                          emoji: .info,
-                          message: "Media metadata placeholder hydration progress: succeeded \(succeeded) - limit \(limit)")
-                }
-
-                nkLog(tag: self.global.logTagMediaPlaceholder,
-                      emoji: hydrationStatus.isSuccessful ? .stop : .error,
-                      message: hydrationStatus.logMessage)
-
-                guard hydrationStatus.isSuccessful,
-                      !Task.isCancelled else {
-                    return false
-                }
-
+            guard let account = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
                 return true
             }
+
+            let limit = 500
+            let mediaProcessor = NCMediaMetadataBackgroundProcessor()
+
+            nkLog(tag: self.global.logTagMediaBackfill,
+                  emoji: .start,
+                  message: "Start media metadata backfill")
+
+            let backfillStatus = await mediaProcessor.runBackfill(
+                account: account,
+                limit: limit
+            ) { offset, inserted, updated in
+                nkLog(tag: self.global.logTagMediaBackfill,
+                      emoji: .info,
+                      message: "Media metadata backfill progress: offset \(offset) - inserted \(inserted) - updated \(updated)")
+            }
+
+            nkLog(tag: self.global.logTagMediaBackfill,
+                  emoji: backfillStatus.isSuccessful ? .stop : .error,
+                  message: backfillStatus.logMessage)
+
+            guard !Task.isCancelled else {
+                return false
+            }
+
+            nkLog(tag: self.global.logTagMediaPlaceholder,
+                  emoji: .start,
+                  message: "Start media metadata placeholder hydration")
+
+            let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
+                account: account,
+                limit: limit
+            ) { succeeded in
+                nkLog(tag: self.global.logTagMediaPlaceholder,
+                      emoji: .info,
+                      message: "Media metadata placeholder hydration progress: succeeded \(succeeded) - limit \(limit)")
+            }
+
+            nkLog(tag: self.global.logTagMediaPlaceholder,
+                  emoji: hydrationStatus.isSuccessful ? .stop : .error,
+                  message: hydrationStatus.logMessage)
+
+            guard !Task.isCancelled else {
+                return false
+            }
+
+            return true
         }
 
         Task {
