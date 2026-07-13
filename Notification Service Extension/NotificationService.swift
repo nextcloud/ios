@@ -58,11 +58,11 @@ class NotificationService: UNNotificationServiceExtension {
                     nkLog(debug: "🔑 Loaded private key for \(tableAccount.account): prefix(Base64)=\(prefixBase64)")
 
                     guard let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
-                        bestAttemptContent.body = "Error decryption for \(tableAccount.account)"
+                        bestAttemptContent.body = "Error decrypting notification for \(tableAccount.account)"
                         continue
                     }
                     guard let data = decryptedMessage.data(using: .utf8) else {
-                        bestAttemptContent.body = "Error decryption data utf8 for \(tableAccount.account)"
+                        bestAttemptContent.body = "Error decrypting UTF8 notification data for \(tableAccount.account)"
                         continue
                     }
 
@@ -78,7 +78,7 @@ class NotificationService: UNNotificationServiceExtension {
                         matchedAccount = tableAccount
                         payload = json
                     } else {
-                        bestAttemptContent.body = "Error JSON Serialization for  \(tableAccount.account)"
+                        bestAttemptContent.body = "Error with notification JSON for \(tableAccount.account)"
                     }
                     break
                 }
