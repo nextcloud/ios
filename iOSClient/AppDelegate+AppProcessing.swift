@@ -49,25 +49,35 @@ extension AppDelegate {
         scheduleAppProcessing()
 
         let processingTask = Task { () -> Bool in
+            let accounts = await NCManageDatabase.shared.getAllTableAccountAsync()
+            let activeAccount = accounts.first(where: { $0.active })
+            let sortedAccounts = accounts.sorted { $0.active && !$1.active }
+            guard let activeAccount else {
+                return true
+            }
+
+            // Auto Upload
+            await NCAutoUpload.shared.autoUploadBackgroundSync()
+
+            guard !Task.isCancelled else {
+                return false
+            }
+
             // If possible, cleaning every week.
+            //
             if NCPreferences().cleaningWeek() {
                 nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Start cleaning week")
 
-                let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
-                for tblAccount in tblAccounts {
+                for account in accounts {
+                    await NCManageDatabase.shared.cleanTablesOcIds(
+                        account: account.account,
+                        userId: account.userId,
+                        urlBase: account.urlBase
+                    )
+
                     guard !Task.isCancelled else {
                         return false
                     }
-
-                    await NCManageDatabase.shared.cleanTablesOcIds(
-                        account: tblAccount.account,
-                        userId: tblAccount.userId,
-                        urlBase: tblAccount.urlBase
-                    )
-                }
-
-                guard !Task.isCancelled else {
-                    return false
                 }
 
                 await NCUtilityFileSystem().cleanUpAsync()
@@ -81,26 +91,19 @@ extension AppDelegate {
                 nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Stop cleaning week")
             }
 
-            await NCAutoUpload.shared.autoUploadBackgroundSync()
-
             guard !Task.isCancelled else {
                 return false
             }
 
-            guard let account = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
-                return true
-            }
-
-            let limit = 500
             let mediaProcessor = NCMediaMetadataBackgroundProcessor()
 
             nkLog(tag: self.global.logTagMediaBackfill,
                   emoji: .start,
-                  message: "Start media metadata backfill")
+                  message: "Start media metadata backfill for account \(activeAccount.account)")
 
             let backfillStatus = await mediaProcessor.runBackfill(
-                account: account,
-                limit: limit
+                account: activeAccount,
+                limit: 250
             ) { offset, inserted, updated in
                 nkLog(tag: self.global.logTagMediaBackfill,
                       emoji: .info,
@@ -115,25 +118,27 @@ extension AppDelegate {
                 return false
             }
 
-            nkLog(tag: self.global.logTagMediaPlaceholder,
-                  emoji: .start,
-                  message: "Start media metadata placeholder hydration")
-
-            let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
-                account: account,
-                limit: limit
-            ) { succeeded in
+            for account in sortedAccounts {
                 nkLog(tag: self.global.logTagMediaPlaceholder,
-                      emoji: .info,
-                      message: "Media metadata placeholder hydration progress: succeeded \(succeeded) - limit \(limit)")
-            }
+                      emoji: .start,
+                      message: "Start media metadata placeholder hydration for account \(account.account)")
 
-            nkLog(tag: self.global.logTagMediaPlaceholder,
-                  emoji: hydrationStatus.isSuccessful ? .stop : .error,
-                  message: hydrationStatus.logMessage)
+                let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
+                    account: account,
+                    limit: 100
+                ) { succeeded in
+                    nkLog(tag: self.global.logTagMediaPlaceholder,
+                          emoji: .info,
+                          message: "Media metadata placeholder hydration progress: succeeded \(succeeded)")
+                }
 
-            guard !Task.isCancelled else {
-                return false
+                nkLog(tag: self.global.logTagMediaPlaceholder,
+                      emoji: hydrationStatus.isSuccessful ? .stop : .error,
+                      message: hydrationStatus.logMessage)
+
+                guard !Task.isCancelled else {
+                    return false
+                }
             }
 
             return true
