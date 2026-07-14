@@ -50,7 +50,7 @@ extension NCNetworking {
         let unauthorizedArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnauthorized) as? [String] ?? []
         let tosArray = groupDefaults.array(forKey: nkComm.groupDefaultsToS) as? [String] ?? []
 
-        // Unavailable
+        // Unavailable (503)
         if unavailableArray.contains(account) {
             let serverUrl = NCSession.shared.getSession(account: account).urlBase
             let resultsServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
@@ -61,20 +61,17 @@ extension NCNetworking {
             }
             switch resultsServerStatus.result {
             case .success(let serverInfo):
-                unavailableArray.removeAll { $0 == account }
-                groupDefaults.set(unavailableArray, forKey: nkComm.groupDefaultsUnavailable)
+                // Remove the error (503) from groupDefaults
                 unavailableArray.removeAll { $0 == account }
                 groupDefaults.set(unavailableArray, forKey: nkComm.groupDefaultsUnavailable)
 
                 if serverInfo.maintenance {
-                    Task {
-                        let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                        await showWarningBanner(windowScene: windowScene,
-                                                subtitle: "_maintenance_mode_",
-                                                systemImage: "xmark.icloud.fill",
-                                                imageAnimation: .none,
-                                                errorCode: 401)
-                    }
+                    let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
+                    await showWarningBanner(windowScene: windowScene,
+                                            subtitle: "_maintenance_mode_",
+                                            systemImage: "xmark.icloud.fill",
+                                            imageAnimation: .none,
+                                            errorCode: 503)
                 }
             case .failure:
                 break
