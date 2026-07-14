@@ -7,10 +7,10 @@ import NextcloudKit
 
 final class NCMediaMetadataBackgroundProcessor {
     enum BackfillStatus {
-        case skippedAlreadyCompleted
-        case completed(processed: Int, inserted: Int, updated: Int)
-        case failed(processed: Int, inserted: Int, updated: Int, errorCode: Int, errorDescription: String)
-        case cancelled(processed: Int, inserted: Int, updated: Int)
+        case skippedAlreadyCompleted(account: String)
+        case completed(account: String, processed: Int, inserted: Int, updated: Int)
+        case failed(account: String, processed: Int, inserted: Int, updated: Int, errorCode: Int, errorDescription: String)
+        case cancelled(account: String, processed: Int, inserted: Int, updated: Int)
 
         var isSuccessful: Bool {
             switch self {
@@ -23,22 +23,25 @@ final class NCMediaMetadataBackgroundProcessor {
 
         var logMessage: String {
             switch self {
-            case .skippedAlreadyCompleted:
-                return "Media metadata backfill skipped: cycle already completed"
-            case .completed(let processed, let inserted, let updated):
-                return "Media metadata backfill completed: processed \(processed) - inserted \(inserted) - updated \(updated)"
-            case .failed(let processed, let inserted, let updated, let errorCode, let errorDescription):
-                return "Media metadata backfill failed: processed \(processed) - inserted \(inserted) - updated \(updated) - error \(errorCode) \(errorDescription)"
-            case .cancelled(let processed, let inserted, let updated):
-                return "Media metadata backfill cancelled: processed \(processed) - inserted \(inserted) - updated \(updated)"
+            case .skippedAlreadyCompleted(let account):
+                return "Media metadata backfill skipped for account \(account): cycle already completed"
+
+            case .completed(let account, let processed, let inserted, let updated):
+                return "Media metadata backfill completed for account \(account): processed \(processed) - inserted \(inserted) - updated \(updated)"
+
+            case .failed(let account, let processed, let inserted, let updated, let errorCode, let errorDescription):
+                return "Media metadata backfill failed for account \(account): processed \(processed) - inserted \(inserted) - updated \(updated) - error \(errorCode) \(errorDescription)"
+
+            case .cancelled(let account, let processed, let inserted, let updated):
+                return "Media metadata backfill cancelled for account \(account): processed \(processed) - inserted \(inserted) - updated \(updated)"
             }
         }
     }
 
     enum PlaceholderHydrationStatus {
-        case skippedNoPlaceholders
-        case completed(total: Int, succeeded: Int, failed: Int)
-        case cancelled(total: Int, succeeded: Int, failed: Int)
+        case skippedNoPlaceholders(account: String)
+        case completed(account: String, total: Int, succeeded: Int, failed: Int)
+        case cancelled(account: String, total: Int, succeeded: Int, failed: Int)
 
         var isSuccessful: Bool {
             switch self {
@@ -51,14 +54,16 @@ final class NCMediaMetadataBackgroundProcessor {
 
         var logMessage: String {
             switch self {
-            case .skippedNoPlaceholders:
-                return "Media metadata placeholder hydration skipped: no placeholders found"
-            case .completed(let total, let succeeded, let failed):
+            case .skippedNoPlaceholders(let account):
+                return "Media metadata placeholder hydration skipped for account \(account): no placeholders found"
+
+            case .completed(let account, let total, let succeeded, let failed):
                 let pending = max(0, total - succeeded - failed)
-                return "Media metadata placeholder hydration completed: total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
-            case .cancelled(let total, let succeeded, let failed):
+                return "Media metadata placeholder hydration completed for account \(account): total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
+
+            case .cancelled(let account, let total, let succeeded, let failed):
                 let pending = max(0, total - succeeded - failed)
-                return "Media metadata placeholder hydration cancelled: total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
+                return "Media metadata placeholder hydration cancelled for account \(account): total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
             }
         }
     }
@@ -73,7 +78,7 @@ final class NCMediaMetadataBackgroundProcessor {
         let state = await database.getMediaMetadataBackfillAsync(account: account.account)
 
         guard state?.lastCompletedCycleDate == nil else {
-            return .skippedAlreadyCompleted
+            return .skippedAlreadyCompleted(account: account.account)
         }
 
         var offset = state?.offset ?? 0
@@ -94,7 +99,7 @@ final class NCMediaMetadataBackgroundProcessor {
             )
 
             guard !Task.isCancelled else {
-                return .cancelled(processed: processed, inserted: inserted, updated: updated)
+                return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
             guard let files = result.files else {
@@ -102,6 +107,7 @@ final class NCMediaMetadataBackgroundProcessor {
                 let errorDescription = result.error?.errorDescription ?? ""
 
                 return .failed(
+                    account: account.account,
                     processed: processed,
                     inserted: inserted,
                     updated: updated,
@@ -112,7 +118,7 @@ final class NCMediaMetadataBackgroundProcessor {
 
             guard !files.isEmpty else {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
-                return .completed(processed: processed, inserted: inserted, updated: updated)
+                return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
             let ocIds = files.compactMap(\.ocId)
@@ -131,7 +137,7 @@ final class NCMediaMetadataBackgroundProcessor {
             await update(offset, resultPlaceholders.inserted, resultPlaceholders.updated)
 
             guard !Task.isCancelled else {
-                return .cancelled(processed: processed, inserted: inserted, updated: updated)
+                return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
             await database.updateMediaMetadataBackfillAsync(
@@ -141,13 +147,13 @@ final class NCMediaMetadataBackgroundProcessor {
 
             guard files.count == limit else {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
-                return .completed(processed: processed, inserted: inserted, updated: updated)
+                return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
             token = result.token
         }
 
-        return .cancelled(processed: processed, inserted: inserted, updated: updated)
+        return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
     }
 
     /// Completes media metadata placeholders by retrieving and storing their full properties.
@@ -171,7 +177,7 @@ final class NCMediaMetadataBackgroundProcessor {
             ascending: false,
             limit: limit
         ), !metadatas.isEmpty else {
-            return .skippedNoPlaceholders
+            return .skippedNoPlaceholders(account: account.account)
         }
 
         let total = metadatas.count
@@ -235,11 +241,11 @@ final class NCMediaMetadataBackgroundProcessor {
         }
 
         guard !Task.isCancelled else {
-            return .cancelled(total: total, succeeded: succeeded, failed: failed)
+            return .cancelled(account: account.account, total: total, succeeded: succeeded, failed: failed)
         }
 
         await update(succeeded)
 
-        return .completed(total: total, succeeded: succeeded, failed: failed)
+        return .completed(account: account.account, total: total, succeeded: succeeded, failed: failed)
     }
 }

@@ -107,7 +107,7 @@ extension AppDelegate {
             ) { offset, inserted, updated in
                 nkLog(tag: self.global.logTagMediaBackfill,
                       emoji: .info,
-                      message: "Media metadata backfill progress: offset \(offset) - inserted \(inserted) - updated \(updated)")
+                      message: "Media metadata backfill progress: offset \(offset) - inserted \(inserted) - updated \(updated) - account: \(activeAccount.account)")
             }
 
             nkLog(tag: self.global.logTagMediaBackfill,
@@ -129,7 +129,7 @@ extension AppDelegate {
                 ) { succeeded in
                     nkLog(tag: self.global.logTagMediaPlaceholder,
                           emoji: .info,
-                          message: "Media metadata placeholder hydration progress: succeeded \(succeeded)")
+                          message: "Media metadata placeholder hydration progress: succeeded \(succeeded) account \(account.account)")
                 }
 
                 nkLog(tag: self.global.logTagMediaPlaceholder,
