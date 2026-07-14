@@ -317,8 +317,7 @@ class NCFiles: NCCollectionViewCommon {
         var error = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
                                                               signature: resultsE2eeGetMetadata.signature,
                                                               serverUrl: serverUrl,
-                                                              session: self.session,
-                                                              withCheck: true)
+                                                              session: self.session)
 
         if error == .success {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)

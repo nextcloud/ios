@@ -34,7 +34,7 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Decode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadata(_ metadata: String, signature: String?, serverUrl: String, session: NCSession.Session, withCheck: Bool) async -> NKError {
+    func decodeMetadata(_ metadata: String, signature: String?, serverUrl: String, session: NCSession.Session) async -> NKError {
         guard let data = metadata.data(using: .utf8), let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return (NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "Unable to decode the metadata file"))
         }
@@ -46,7 +46,17 @@ class NCEndToEndMetadata: NSObject {
         } else if (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil {
             return await decodeMetadataV12(metadata, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
         } else if (try? JSONDecoder().decode(E2eeV2.self, from: data)) != nil {
-            return await decodeMetadataV2(metadata, signature: signature, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session, withCheck: withCheck)
+            let result = await decodeMetadataV2(metadata,
+                                                signature: signature,
+                                                serverUrl: serverUrl,
+                                                ocIdServerUrl: directory.ocId,
+                                                session: session)
+            if result.requiredEncodeMetadata, result.error == .success {
+                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
+                return error
+            } else {
+                return result.error
+            }
         } else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Unable to decode the metadata file")
         }

@@ -225,7 +225,7 @@ class NCNetworkingE2EE: NSObject {
             return resultsGetE2EEMetadata.error
         }
 
-        let resultsDecodeMetadataError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session, withCheck: false)
+        let resultsDecodeMetadataError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
         guard resultsDecodeMetadataError == .success else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)

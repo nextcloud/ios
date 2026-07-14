@@ -214,13 +214,17 @@ extension NCEndToEndMetadata {
                           signature: String?,
                           serverUrl: String,
                           ocIdServerUrl: String,
-                          session: NCSession.Session,
-                          withCheck: Bool) async -> NKError {
+                          session: NCSession.Session) async -> (error: NKError, requiredEncodeMetadata: Bool) {
         let global = NCGlobal.shared
+        var requiredEncodeMetadata = false
+
         guard let data = json.data(using: .utf8),
               let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
-                           errorDescription: NSLocalizedString("_e2ee_no_metadata_", comment: ""))
+            return (
+                NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
+                        errorDescription: NSLocalizedString("_e2ee_no_metadata_", comment: "")),
+                requiredEncodeMetadata
+            )
         }
         let directoryTopOcId = directoryTop.ocId
         let isDirectoryTop = serverUrl == directoryTop.serverUrlFileName
@@ -286,32 +290,34 @@ extension NCEndToEndMetadata {
             guard let tableUser = await self.database.getE2EUserAsync(account: session.account, directoryTopOcId: directoryTopOcId, userId: session.userId),
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                               errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: ""))
+                return (NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound,
+                               errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")), requiredEncodeMetadata)
             }
 
             // SIGNATURE CHECK
             //
-            if withCheck {
-                guard let signature, !signature.isEmpty else {
-                    return NKError(
-                        errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature,
-                        errorDescription: NSLocalizedString("_e2ee_no_signature_found_", comment: ""))
-                }
+            guard let signature, !signature.isEmpty else {
+                return (
+                    NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature,
+                            errorDescription: NSLocalizedString("_e2ee_no_signature_found_", comment: "")),
+                    requiredEncodeMetadata
+                )
+            }
 
-                guard verifySignature(
-                    account: session.account,
-                    signature: signature,
-                    userId: tableUser.userId,
-                    metadata: metadata,
-                    users: users,
-                    version: version,
-                    certificate: tableUser.certificate
-                ) else {
-                    return NKError(
-                        errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature,
-                        errorDescription: NSLocalizedString("_e2ee_signature_failed_", comment: ""))
-                }
+            guard verifySignature(
+                account: session.account,
+                signature: signature,
+                userId: tableUser.userId,
+                metadata: metadata,
+                users: users,
+                version: version,
+                certificate: tableUser.certificate
+            ) else {
+                return (
+                    NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature,
+                            errorDescription: NSLocalizedString("_e2ee_signature_failed_", comment: "")),
+                    requiredEncodeMetadata
+                )
             }
 
             // FILEDROP
@@ -328,8 +334,11 @@ extension NCEndToEndMetadata {
                             let filedropKey = decryptedFiledropKey.base64EncodedString()
                             guard let decryptedFiledrop = NCEndToEndEncryption.shared().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
                                   decryptedFiledrop.isGzipped else {
-                                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext,
-                                               errorDescription: NSLocalizedString("_e2ee_filedrop_ciphertext_", comment: ""))
+                                return (
+                                    NKError(errorCode: NCGlobal.shared.errorE2EEKeyFiledropCiphertext,
+                                            errorDescription: NSLocalizedString("_e2ee_filedrop_ciphertext_", comment: "")),
+                                    requiredEncodeMetadata
+                                )
                             }
                             let data = try decryptedFiledrop.gunzipped()
                             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
@@ -345,8 +354,11 @@ extension NCEndToEndMetadata {
             //
             guard let decryptedMetadata = NCEndToEndEncryption.shared().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag),
                   decryptedMetadata.isGzipped else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext,
-                               errorDescription: NSLocalizedString("_e2ee_key_ciphertext_", comment: ""))
+                return (
+                    NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext,
+                            errorDescription: NSLocalizedString("_e2ee_key_ciphertext_", comment: "")),
+                    requiredEncodeMetadata
+                )
             }
             let data = try decryptedMetadata.gunzipped()
             // DEBUG
@@ -355,41 +367,43 @@ extension NCEndToEndMetadata {
 
             // CHECKSUM CHECK
             //
-            if withCheck {
-                let keyChecksums = jsonCiphertextMetadata.keyChecksums
 
-                if keyChecksums == nil || keyChecksums?.isEmpty == true {
-                    // Desktop bug CHECKSUM not present
-                    var controller: UIViewController?
+            let keyChecksums = jsonCiphertextMetadata.keyChecksums
+
+            if keyChecksums == nil || keyChecksums?.isEmpty == true {
+                // Desktop bug CHECKSUM not present
+                var controller: UIViewController?
 #if EXTENSION
-                    controller = await MainActor.run {
-                        NCExtensionUIContext.shared.viewController
-                    }
-#else
-                    controller = await SceneManager.shared.getController(account: session.account)
-#endif
-                    let shouldContinue = await showAlert(from: controller,
-                                                         title: "_e2ee_checksum_empty_title_",
-                                                         message: "_e2ee_checksum_empty_message_",
-                                                         cancelAction: "_go_back_",
-                                                         continueAction: "_continue_anyway_")
-                    if shouldContinue {
-                        // Nothing.
-                    } else {
-                        return NKError(
-                            errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                            errorDescription: NSLocalizedString("_e2ee_key_no_checksums_found_", comment: ""))
-                    }
+                controller = await MainActor.run {
+                    NCExtensionUIContext.shared.viewController
                 }
+#else
+                controller = await SceneManager.shared.getController(account: session.account)
+#endif
+                let shouldContinue = await showAlert(from: controller,
+                                                     title: "_e2ee_checksum_empty_title_",
+                                                     message: "_e2ee_checksum_empty_message_",
+                                                     cancelAction: "_go_back_",
+                                                     continueAction: "_continue_anyway_")
+                if shouldContinue {
+                    requiredEncodeMetadata = true
+                } else {
+                    return (
+                        NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                                errorDescription: NSLocalizedString("_e2ee_key_no_checksums_found_", comment: "")),
+                        requiredEncodeMetadata
+                    )
+                }
+            }
 
-                if let keyChecksums, !keyChecksums.isEmpty {
-                    guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
-                          keyChecksums.contains(hash) else {
-                        return NKError(
-                            errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                            errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: "")
-                        )
-                    }
+            if let keyChecksums, !keyChecksums.isEmpty {
+                guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
+                      keyChecksums.contains(hash) else {
+                    return (
+                        NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                                errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: "")),
+                        requiredEncodeMetadata
+                    )
                 }
             }
 
@@ -401,10 +415,12 @@ extension NCEndToEndMetadata {
             if let resultCounter = await self.database.getCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl) {
                 nkLog(tag: global.logTagE2EE, message: "COUNTER CHECK: counter saved \(resultCounter), counter UPDATED: \(jsonCiphertextMetadata.counter)")
                 await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
-                if withCheck &&
-                   jsonCiphertextMetadata.counter < resultCounter {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                                   errorDescription: NSLocalizedString("_e2ee_counter_check_", comment: ""))
+                if jsonCiphertextMetadata.counter < resultCounter {
+                    return (
+                        NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
+                                errorDescription: NSLocalizedString("_e2ee_counter_check_", comment: "")),
+                        requiredEncodeMetadata
+                    )
                 }
             } else {
                 nkLog(tag: global.logTagE2EE, message: "COUNTER CHECK: counter RESET: \(jsonCiphertextMetadata.counter)")
@@ -451,10 +467,13 @@ extension NCEndToEndMetadata {
             print("DECODE SUCCESS ------------------------\n\n")
 
         } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
+            return (
+                NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
+                        errorDescription: error.localizedDescription),
+                requiredEncodeMetadata)
         }
 
-        return NKError()
+        return (NKError(), requiredEncodeMetadata)
     }
 
     // MARK: -
