@@ -5,27 +5,27 @@
 import Foundation
 import NextcloudKit
 
-public protocol NCMetadataTransfersSuccessDelegate: AnyObject {
-    func metadataTransferWillFlush(hasLivePhotos: Bool)
-    func metadataTransferDidFlush(hasLivePhotos: Bool)
+public protocol NCMetadataUploadTransfersSuccessDelegate: AnyObject {
+    func metadataUploadTransferWillFlush(hasLivePhotos: Bool)
+    func metadataUploadTransferDidFlush(hasLivePhotos: Bool)
 }
 
-actor NCMetadataTranfersSuccess {
+actor NCMetadataUploadTranfersSuccess {
     private struct TransferSuccessItem {
         let metadata: tableMetadata
     }
 
     private var tranfersSuccess: [TransferSuccessItem] = []
     private let utility = NCUtility()
-    private var delegates: [NCMetadataTransfersSuccessDelegate] = []
+    private var delegates: [NCMetadataUploadTransfersSuccessDelegate] = []
 
     // Adds a new delegate
-    func addDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+    func addDelegate(_ delegate: NCMetadataUploadTransfersSuccessDelegate) {
         delegates.append(delegate)
     }
 
     // Removes a delegate
-    func removeDelegate(_ delegate: NCMetadataTransfersSuccessDelegate) {
+    func removeDelegate(_ delegate: NCMetadataUploadTransfersSuccessDelegate) {
         delegates.removeAll { $0 as AnyObject === delegate as AnyObject }
     }
 
@@ -102,7 +102,7 @@ actor NCMetadataTranfersSuccess {
         var autoUploads: [tableAutoUploadTransfer] = []
 
         for delegate in delegates {
-            delegate.metadataTransferWillFlush(hasLivePhotos: hasLivePhotos)
+            delegate.metadataUploadTransferWillFlush(hasLivePhotos: hasLivePhotos)
         }
 
         for metadata in metadatas {
@@ -154,9 +154,9 @@ actor NCMetadataTranfersSuccess {
         }
 
         for delegate in delegates {
-            delegate.metadataTransferDidFlush(hasLivePhotos: hasLivePhotos)
+            delegate.metadataUploadTransferDidFlush(hasLivePhotos: hasLivePhotos)
         }
 
-        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful (\(metadatas.count))", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagMetadataUploadTransfers, message: "Upload flush successful (\(metadatas.count))", consoleOnly: true)
     }
 }

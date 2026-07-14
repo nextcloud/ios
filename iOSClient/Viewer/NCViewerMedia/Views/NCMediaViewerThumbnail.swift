@@ -51,6 +51,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
     let metadataProvider: (_ index: Int) -> tableMetadata?
     let metadataResolver: (_ index: Int) async -> tableMetadata?
     let previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+    let audioLoadProvider: (_ index: Int) async -> Void
     let isDeletedProvider: (_ index: Int) -> Bool
     let onSelect: (_ index: Int) -> Void
 
@@ -111,6 +112,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
         context.coordinator.metadataProvider = metadataProvider
         context.coordinator.metadataResolver = metadataResolver
         context.coordinator.previewURLProvider = previewURLProvider
+        context.coordinator.audioLoadProvider = audioLoadProvider
         context.coordinator.isDeletedProvider = isDeletedProvider
         context.coordinator.onSelect = onSelect
         context.coordinator.syncDisplayedSelectedIndexFromInput()
@@ -129,6 +131,7 @@ struct NCMediaViewerThumbnail: UIViewRepresentable, Equatable {
             metadataProvider: metadataProvider,
             metadataResolver: metadataResolver,
             previewURLProvider: previewURLProvider,
+            audioLoadProvider: audioLoadProvider,
             isDeletedProvider: isDeletedProvider,
             onSelect: onSelect
         )
@@ -149,6 +152,7 @@ extension NCMediaViewerThumbnail {
         var metadataProvider: (_ index: Int) -> tableMetadata?
         var metadataResolver: (_ index: Int) async -> tableMetadata?
         var previewURLProvider: (_ metadata: tableMetadata) async -> URL?
+        var audioLoadProvider: (_ index: Int) async -> Void
         var isDeletedProvider: (_ index: Int) -> Bool
         var onSelect: (_ index: Int) -> Void
 
@@ -160,6 +164,8 @@ extension NCMediaViewerThumbnail {
         private var lastCenteredBoundsSize: CGSize = .zero
         private var didPerformInitialDeferredCentering = false
         private var pendingPrefetchIndexes = Set<Int>()
+        private var loadedAudioIndexes = Set<Int>()
+        private var indexesWithoutPreview = Set<Int>()
         private var displayedSelectedIndex: Int?
         private var isUserScrollingThumbnails = false
         private var shouldEmphasizeSelectedThumbnail = true
@@ -174,6 +180,7 @@ extension NCMediaViewerThumbnail {
             metadataProvider: @escaping (_ index: Int) -> tableMetadata?,
             metadataResolver: @escaping (_ index: Int) async -> tableMetadata?,
             previewURLProvider: @escaping (_ metadata: tableMetadata) async -> URL?,
+            audioLoadProvider: @escaping (_ index: Int) async -> Void,
             isDeletedProvider: @escaping (_ index: Int) -> Bool,
             onSelect: @escaping (_ index: Int) -> Void
         ) {
@@ -184,6 +191,7 @@ extension NCMediaViewerThumbnail {
             self.metadataProvider = metadataProvider
             self.metadataResolver = metadataResolver
             self.previewURLProvider = previewURLProvider
+            self.audioLoadProvider = audioLoadProvider
             self.isDeletedProvider = isDeletedProvider
             self.onSelect = onSelect
             self.displayedSelectedIndex = selectedIndex
@@ -329,6 +337,8 @@ extension NCMediaViewerThumbnail {
             if didChangeReloadRevision {
                 lastReloadRevision = reloadRevision
                 pendingPrefetchIndexes.removeAll()
+                loadedAudioIndexes.removeAll()
+                indexesWithoutPreview.removeAll()
                 imageCache.removeAllObjects()
                 refreshVisibleCells()
                 prefetchAroundDisplayedSelectedIndexIfNeeded()
@@ -343,6 +353,8 @@ extension NCMediaViewerThumbnail {
             lastCenteredBoundsSize = .zero
             didPerformInitialDeferredCentering = false
             pendingPrefetchIndexes.removeAll()
+            loadedAudioIndexes.removeAll()
+            indexesWithoutPreview.removeAll()
             imageCache.removeAllObjects()
             collectionView.reloadData()
         }
@@ -637,9 +649,17 @@ extension NCMediaViewerThumbnail {
             let ocId = metadata?.ocId
             let isCurrent = shouldEmphasizeSelectedThumbnail && isDisplayedCurrentThumbnail(at: index)
             let isVideo = !isDeleted && metadata?.classFile == NKTypeClassFile.video.rawValue
+            let isAudio = !isDeleted && metadata?.classFile == NKTypeClassFile.audio.rawValue
+            let isMetadataResolved = metadata != nil
             let image = isDeleted ? nil : image(for: ocId)
+            let shouldShowPlaceholder = isDeleted || (
+                image == nil &&
+                indexesWithoutPreview.contains(index)
+            )
 
-            if !isDeleted, image == nil {
+            if !isDeleted, isAudio {
+                loadAudioIfNeeded(at: index)
+            } else if !isDeleted, image == nil {
                 loadThumbnailIfNeeded(
                     index: index,
                     metadata: metadata
@@ -650,8 +670,71 @@ extension NCMediaViewerThumbnail {
                 image: image,
                 isCurrent: isCurrent,
                 isVideo: isVideo,
+                isAudio: isAudio,
+                isMetadataResolved: isMetadataResolved,
+                shouldShowPlaceholder: shouldShowPlaceholder,
                 isDeleted: isDeleted
             )
+        }
+
+        private func loadAudioIfNeeded(at index: Int) {
+            guard index >= 0,
+                  index < numberOfPages,
+                  !isDeletedProvider(index),
+                  !loadedAudioIndexes.contains(index),
+                  !pendingPrefetchIndexes.contains(index) else {
+                return
+            }
+
+            pendingPrefetchIndexes.insert(index)
+
+            Task { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                let metadata: tableMetadata?
+
+                if let cachedMetadata = self.metadataProvider(index) {
+                    metadata = cachedMetadata
+                } else {
+                    metadata = await self.metadataResolver(index)
+                }
+
+                // Let the normal viewer pipeline resolve/download the audio first.
+                // It can trigger a SwiftUI update that clears this thumbnail cache.
+                await self.audioLoadProvider(index)
+
+                guard let metadata,
+                      !metadata.ocId.isEmpty,
+                      !self.isDeletedProvider(index) else {
+                    _ = self.pendingPrefetchIndexes.remove(index)
+                    return
+                }
+
+                guard let previewURL = await self.previewURLProvider(metadata),
+                      let image = await Self.makeImage(from: previewURL) else {
+                    _ = self.pendingPrefetchIndexes.remove(index)
+                    self.loadedAudioIndexes.insert(index)
+                    self.indexesWithoutPreview.insert(index)
+                    self.refreshThumbnailIfVisible(at: index)
+                    return
+                }
+
+                _ = self.pendingPrefetchIndexes.remove(index)
+                self.loadedAudioIndexes.insert(index)
+                self.indexesWithoutPreview.remove(index)
+
+                guard !self.isDeletedProvider(index) else {
+                    return
+                }
+
+                self.imageCache.setObject(
+                    image,
+                    forKey: metadata.ocId as NSString
+                )
+                self.refreshThumbnailIfVisible(at: index)
+            }
         }
 
         private func isDisplayedCurrentThumbnail(at index: Int) -> Bool {
@@ -701,10 +784,16 @@ extension NCMediaViewerThumbnail {
                 return
             }
 
-            loadThumbnailIfNeeded(
-                index: index,
-                metadata: metadataProvider(index)
-            )
+            let metadata = metadataProvider(index)
+
+            if metadata?.classFile == NKTypeClassFile.audio.rawValue {
+                loadAudioIfNeeded(at: index)
+            } else {
+                loadThumbnailIfNeeded(
+                    index: index,
+                    metadata: metadata
+                )
+            }
         }
 
         private func loadThumbnailIfNeeded(
@@ -714,6 +803,7 @@ extension NCMediaViewerThumbnail {
             guard index >= 0,
                   index < numberOfPages,
                   !isDeletedProvider(index),
+                  !indexesWithoutPreview.contains(index),
                   !pendingPrefetchIndexes.contains(index) else {
                 return
             }
@@ -753,21 +843,35 @@ extension NCMediaViewerThumbnail {
                     return
                 }
 
-                guard let previewURL = await self.previewURLProvider(metadata) else {
+                guard metadata.classFile != NKTypeClassFile.audio.rawValue else {
                     await MainActor.run {
                         _ = self.pendingPrefetchIndexes.remove(index)
+                        self.loadAudioIfNeeded(at: index)
+                        self.refreshThumbnailIfVisible(at: index)
+                    }
+                    return
+                }
+
+                guard let previewURL = await self.previewURLProvider(metadata) else {
+                    await MainActor.run {
+                        self.indexesWithoutPreview.insert(index)
+                        _ = self.pendingPrefetchIndexes.remove(index)
+                        self.refreshThumbnailIfVisible(at: index)
                     }
                     return
                 }
 
                 guard let image = await Self.makeImage(from: previewURL) else {
                     await MainActor.run {
+                        self.indexesWithoutPreview.insert(index)
                         _ = self.pendingPrefetchIndexes.remove(index)
+                        self.refreshThumbnailIfVisible(at: index)
                     }
                     return
                 }
 
                 await MainActor.run {
+                    self.indexesWithoutPreview.remove(index)
                     _ = self.pendingPrefetchIndexes.remove(index)
 
                     guard !self.isDeletedProvider(index) else {
@@ -844,7 +948,7 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         imageView.image = nil
         placeholderIconView.image = UIImage(systemName: "photo")
         playIconView.isHidden = true
-        placeholderView.isHidden = false
+        placeholderView.isHidden = true
         layer.zPosition = 0
         isSelected = false
         isHighlighted = false
@@ -894,20 +998,55 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
         image: UIImage?,
         isCurrent: Bool,
         isVideo: Bool,
+        isAudio: Bool,
+        isMetadataResolved: Bool,
+        shouldShowPlaceholder: Bool,
         isDeleted: Bool
     ) {
         isCurrentThumbnail = isCurrent
         imageView.image = isDeleted ? nil : image
-        placeholderView.isHidden = imageView.image != nil
-        placeholderIconView.image = UIImage(systemName: isDeleted ? "trash" : "photo")?
-            .withRenderingMode(.alwaysTemplate)
-        placeholderIconView.tintColor = .systemGray
+        placeholderView.isHidden = !shouldShowPlaceholder
+
+        let placeholderSymbol: String
+
+        if isDeleted {
+            placeholderSymbol = "trash"
+        } else if !isMetadataResolved {
+            placeholderSymbol = "ellipsis"
+        } else if isAudio {
+            placeholderSymbol = "waveform"
+        } else if isVideo {
+            placeholderSymbol = "play.rectangle"
+        } else {
+            placeholderSymbol = "photo"
+        }
+        let placeholderPointSize = isCurrent
+            ? NCMediaViewerThumbnailLayout.selectedThumbnailSize * 0.32
+            : NCMediaViewerThumbnailLayout.thumbnailSize * 0.38
+
+        placeholderView.backgroundColor = UIColor.secondarySystemFill
+        placeholderIconView.tintColor = .label
+
+        let placeholderConfiguration = UIImage.SymbolConfiguration(
+            pointSize: placeholderPointSize,
+            weight: .medium
+        )
+
+        placeholderIconView.image = UIImage(
+            systemName: placeholderSymbol,
+            withConfiguration: placeholderConfiguration
+        )?.withRenderingMode(.alwaysTemplate)
+        placeholderIconView.bounds.size = CGSize(
+            width: placeholderPointSize,
+            height: placeholderPointSize
+        )
         playIconView.image = playIconView.image?.withRenderingMode(.alwaysTemplate)
         playIconView.tintColor = .systemGray
-        playIconView.isHidden = isDeleted || !isVideo
+        playIconView.isHidden = isDeleted || !isVideo || imageView.image == nil
         layer.zPosition = isCurrent ? 10 : 0
 
         setNeedsLayout()
+        layoutIfNeeded()
     }
 
     private func setupViews() {
@@ -925,10 +1064,6 @@ private final class NCMediaViewerThumbnailUICollectionCell: UICollectionViewCell
 
         placeholderIconView.tintColor = UIColor.white.withAlphaComponent(0.75)
         placeholderIconView.contentMode = .center
-        placeholderIconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(
-            pointSize: 18,
-            weight: .medium
-        )
 
         playIconView.tintColor = .white
         playIconView.contentMode = .center

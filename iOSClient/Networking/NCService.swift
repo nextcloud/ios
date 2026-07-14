@@ -20,9 +20,6 @@ class NCService: NSObject {
             return
         }
 
-        // Clear cached avatar loading state from the local database
-        await self.database.clearAllAvatarLoadedAsync()
-
         // Request the server status and continue only if it's valid
         let result = await requestServerStatus(account: account, controller: controller)
 
@@ -101,12 +98,12 @@ class NCService: NSObject {
         let session = NCSession.shared.getSession(account: account)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
         let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-        let tblAvatar = await self.database.getTableAvatarAsync(fileName: fileName)
-        let resultsDownload = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
-                                                                            fileNameLocalPath: fileNameLocalPath,
-                                                                            sizeImage: NCGlobal.shared.avatarSize,
-                                                                            etagResource: tblAvatar?.etag,
-                                                                            account: account) { task in
+        let etagResource = await self.database.getTableAvatarAsync(fileName: fileName)?.etag
+        let results = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
+                                                                    fileNameLocalPath: fileNameLocalPath,
+                                                                    sizeImage: NCGlobal.shared.avatarSize,
+                                                                    etagResource: etagResource,
+                                                                    account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                             path: session.userId,
@@ -115,13 +112,11 @@ class NCService: NSObject {
             }
         }
 
-        if  resultsDownload.error == .success,
-            let etag = resultsDownload.etag,
-            etag != tblAvatar?.etag {
+        if results.error == .success,
+            let etag = results.etag,
+            etag != etagResource {
             await self.database.addAvatarAsync(fileName: fileName, etag: etag)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": resultsDownload.error])
-        } else {
-            await self.database.setAvatarLoadedAsync(fileName: fileName)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": results.error])
         }
     }
 
@@ -261,18 +256,26 @@ class NCService: NSObject {
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
+
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
             let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
             await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: metadatas)
         }
 
-        // file already in dowloading
-        let predicate = NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode)
-        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: predicate,
-                                                                        withLimit: nil)
+        // Files already downloading.
+        let predicate = NSPredicate(format: "account == %@ AND status IN %@",
+                                    account,
+                                    self.global.metadataStatusDownloadingAllMode)
 
-        // Synchronize Directory
-        let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
+        var metadatasInDownload = await self.database.getMetadatasAsync(predicate: predicate, withLimit: nil)
+
+        // Synchronize offline directories.
+        let directories = await self.database.getTablesDirectoryAsync(
+            predicate: NSPredicate(format: "account == %@ AND offline == true", account),
+            sorted: "serverUrl",
+            ascending: true
+        )
+
         for directory in directories {
             await NCNetworking.shared.synchronizationDownload(account: account,
                                                               serverUrl: directory.serverUrl,
@@ -281,21 +284,31 @@ class NCService: NSObject {
                                                               metadatasInDownload: metadatasInDownload)
         }
 
-        // Synchronize Files
-        let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account))
+        // Refresh downloading metadata after directory synchronization.
+        metadatasInDownload = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                    withLimit: nil)
+
+        // Synchronize offline files.
+        let files = await self.database.getTableLocalFilesAsync(
+            predicate: NSPredicate(format: "account == %@ AND offline == true", account)
+        )
+        let ocIdsInDownload = Set(metadatasInDownload?.map(\.ocId) ?? [])
+
         for file in files {
-            if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
-               await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId,
-                                                         fileName: metadata.fileName,
-                                                         etag: metadata.etag,
-                                                         metadatasInDownload: metadatasInDownload,
-                                                         userId: metadata.userId,
-                                                         urlBase: metadata.urlBase),
-               metadata.status == self.global.metadataStatusNormal {
-                await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
-                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
+            guard let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
+                  metadata.status == self.global.metadataStatusNormal,
+                  await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId,
+                                                            fileName: metadata.fileName,
+                                                            etag: metadata.etag,
+                                                            ocIdsInDownload: ocIdsInDownload,
+                                                            userId: metadata.userId,
+                                                            urlBase: metadata.urlBase) else {
+                continue
             }
+
+            await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                      session: NCNetworking.shared.sessionDownloadBackground,
+                                                                      selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 

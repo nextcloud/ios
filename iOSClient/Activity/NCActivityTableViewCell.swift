@@ -5,7 +5,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import Queuer
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!

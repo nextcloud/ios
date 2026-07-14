@@ -83,23 +83,13 @@ extension NCTrash: UICollectionViewDataSource {
                     return
                 }
 
-                await NCUtility().createImageFileFrom(
+                let image = await NCUtility().createImageFileFrom(
                     data: data,
-                    ocId: identifier,
-                    etag: etag,
-                    userId: self.session.userId,
-                    urlBase: self.session.urlBase)
-
-                let image = await NCUtility().getImage(
                     ocId: identifier,
                     etag: etag,
                     ext: NCGlobal.shared.previewExt256,
                     userId: self.session.userId,
                     urlBase: self.session.urlBase)
-
-                guard !Task.isCancelled else {
-                    return
-                }
 
                 await MainActor.run {
                     guard let visibleIndexPath = collectionView.indexPathsForVisibleItems.first(where: { visibleIndexPath in

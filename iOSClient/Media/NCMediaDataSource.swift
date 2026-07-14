@@ -8,24 +8,55 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource() async {
-        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", self.session.account)) else {
+        let account = self.session.account
+
+        guard let tblAccount = await self.database.getTableAccountAsync(
+            predicate: NSPredicate(format: "account == %@", account)
+        ) else {
             return
         }
+
+        guard self.session.account == account else {
+            return
+        }
+
         let mediaPredicate = self.imageCache.getMediaPredicate(
             session: self.session,
             mediaPath: tblAccount.mediaPath,
             showOnlyImages: self.showOnlyImages,
             showOnlyVideos: self.showOnlyVideos)
 
-        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) {
+        guard self.session.account == account else {
+            return
+        }
+
+        if let metadatas = await self.database.getMetadatasAsync(
+            predicate: mediaPredicate,
+            sortedByKeyPath: "date",
+            ascending: false
+        ) {
+            guard self.session.account == account else {
+                return
+            }
+
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
+                    guard self.isViewActived,
+                          self.session.account == account else {
+                        return
+                    }
+
                     self.dataSource = NCMediaDataSource(metadatas: metadatas)
                     self.collectionViewReloadDataKeepingPosition()
                 }
             }
         } else {
             await MainActor.run {
+                guard self.isViewActived,
+                      self.session.account == account else {
+                    return
+                }
+
                 self.dataSource.clearCompactMetadatas()
                 self.collectionViewReloadData()
             }
@@ -124,6 +155,10 @@ extension NCMedia {
         collectionView.layoutIfNeeded()
 
         DispatchQueue.main.async {
+            guard self.isViewActived else {
+                return
+            }
+
             self.collectionView.layoutIfNeeded()
             self.restoreScrollAnchor(anchor)
             self.setElements()
@@ -147,8 +182,16 @@ extension NCMedia {
             return true
         }
 
-        guard shouldContinue,
-              let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard shouldContinue else {
+            return
+        }
+        let account = self.session.account
+
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
             return
         }
 
@@ -214,16 +257,35 @@ extension NCMedia {
             }
         }
 
+        guard self.session.account == account else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+            return
+        }
+
         // SEARCH NEW MEDIA
         //
         if firstDateNew == .distantFuture || lastDateNew == .distantPast {
             await self.searchNetworkNewMedia(firstDate: firstDateNew,
                                              lastDate: lastDateNew,
-                                             mediaPath: tblAccount.mediaPath) {
+                                             mediaPath: tblAccount.mediaPath,
+                                             account: account) {
                 Task {
+                    guard self.session.account == account else {
+                        return
+                    }
                     await self.loadDataSource()
                 }
             }
+        }
+        guard self.session.account == account else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+            return
         }
 
         guard let firstDate, let lastDate else {
@@ -234,11 +296,21 @@ extension NCMedia {
             return
         }
 
+        // VERIFY MEDIA
+        //
         await self.verifyNetworkMedia(firstDate: firstDate,
                                       lastDate: lastDate,
-                                      mediaPath: tblAccount.mediaPath) {
+                                      mediaPath: tblAccount.mediaPath,
+                                      account: account) {
             Task {
+                guard self.session.account == account else {
+                    return
+                }
+
                 await self.debouncerLoadDataSource.call {
+                    guard self.session.account == account else {
+                        return
+                    }
                     await self.loadDataSource()
                 }
             }
@@ -250,64 +322,69 @@ extension NCMedia {
         }
     }
 
+    /// Searches the server for new media within the given date range,
+    /// syncs the returned files with the local database, and refreshes the UI.
     internal func searchNetworkNewMedia(firstDate: Date,
                                         lastDate: Date,
                                         mediaPath: String,
+                                        account: String,
                                         update: @escaping () -> Void) async {
         let limit = await MainActor.run {
             max(self.collectionView.visibleCells.count * 3, 300)
         }
 
-        await self.searchVerifyNetworkMedia(path: mediaPath,
-                                            firstDate: firstDate,
-                                            lastDate: lastDate,
-                                            account: self.session.account,
-                                            paginate: false,
-                                            limit: limit) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.session.account,
-                    name: "searchMedia")
-                await NCNetworking.shared.networkingTasks.track(
-                    identifier: identifier,
-                    task: task)
-            }
-        } update: { files in
-            if firstDate == .distantFuture,
-               lastDate == .distantPast,
-               files.isEmpty {
-                Task { @MainActor in
-                    self.dataSource.clearCompactMetadatas()
-                    self.collectionViewReloadData()
-                }
-            } else {
-                Task.detached {
-                    await self.updateMediaMetadatas(files: files,
-                                                    firstDate: firstDate as NSDate,
-                                                    lastDate: lastDate as NSDate,
-                                                    mediaPath: mediaPath) {
-                        update()
-                    }
-                }
-            }
-        } finish: { }
-    }
-
-    internal func verifyNetworkMedia(firstDate: Date,
-                                     lastDate: Date,
-                                     mediaPath: String,
-                                     update: @escaping () -> Void,
-                                     finish: @escaping () -> Void) async {
-        await self.searchVerifyNetworkMedia(
+        await NCMediaNetwork().searchMediaPage(
             path: mediaPath,
             firstDate: firstDate,
             lastDate: lastDate,
-            account: self.session.account,
+            account: account,
+            paginate: false,
+            limit: limit) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: account,
+                        name: "searchMedia")
+                    await NCNetworking.shared.networkingTasks.track(
+                        identifier: identifier,
+                        task: task)
+                }
+            } update: { files in
+                guard self.session.account == account else {
+                    return
+                }
+                await self.updateMediaMetadatas(files: files,
+                                                firstDate: firstDate as NSDate,
+                                                lastDate: lastDate as NSDate,
+                                                mediaPath: mediaPath,
+                                                account: account) {
+                    guard self.session.account == account else {
+                        return
+                    }
+                    if self.isViewActived {
+                        update()
+                    }
+                }
+            } finish: { }
+    }
+
+    /// Verifies the media currently visible in the collection against the server,
+    /// syncs each result page with the local database, and refreshes the UI.
+    internal func verifyNetworkMedia(firstDate: Date,
+                                     lastDate: Date,
+                                     mediaPath: String,
+                                     account: String,
+                                     update: @escaping () -> Void,
+                                     finish: @escaping () -> Void) async {
+        await NCMediaNetwork().searchMediaPage(
+            path: mediaPath,
+            firstDate: firstDate,
+            lastDate: lastDate,
+            account: account,
             paginate: true,
-            limit: 100000) { task in
+            limit: 1000000) { task in
                 Task.detached {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: self.session.account,
+                        account: account,
                         name: "verifyNetworkMedia"
                     )
                     await NCNetworking.shared.networkingTasks.track(
@@ -315,15 +392,22 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                Task.detached {
-                    if let firstDate = files.first?.date as? NSDate,
-                       let lastDate = files.last?.date as? NSDate {
-                        await self.updateMediaMetadatas(files: files,
-                                                        firstDate: firstDate,
-                                                        lastDate: lastDate,
-                                                        mediaPath: mediaPath) {
-                            update()
-                        }
+                guard self.session.account == account else {
+                    return
+                }
+                let pageFirstDate = (files.first?.date as? NSDate) ?? firstDate as NSDate
+                let pageLastDate = (files.last?.date as? NSDate) ?? lastDate as NSDate
+
+                await self.updateMediaMetadatas(files: files,
+                                                firstDate: pageFirstDate,
+                                                lastDate: pageLastDate,
+                                                mediaPath: mediaPath,
+                                                account: account) {
+                    guard self.session.account == account else {
+                        return
+                    }
+                    if self.isViewActived {
+                        update()
                     }
                 }
             } finish: {
@@ -335,7 +419,11 @@ extension NCMedia {
                                       firstDate: NSDate,
                                       lastDate: NSDate,
                                       mediaPath: String,
+                                      account: String,
                                       update: @escaping () -> Void) async {
+        guard self.session.account == account else {
+            return
+        }
         // DB
         let mediaPredicate = self.imageCache.getMediaPredicate(
             session: self.session,
@@ -349,21 +437,63 @@ extension NCMedia {
             predicate: predicate,
             sortedByKeyPath: "date",
             ascending: false) ?? []
+        guard self.session.account == account else {
+            return
+        }
         let results = await self.database.syncPlaceholderMetadatasAsync(files: files,
                                                                         metadatas: metadatas)
-
-        // DELETE
-        var ocIdsToDelete: [String] = []
-        for metadata in results.deleted {
-            let existsResult = await self.networking.fileExists(serverUrlFileName: metadata.serverUrlFileName,
-                                                                account: metadata.account)
-            if existsResult.errorCode == 404 {
-                ocIdsToDelete.append(metadata.ocId)
-            }
+        guard self.session.account == account else {
+            return
         }
-        await self.database.deleteMetadatasAsync(ocIds: ocIdsToDelete)
-        if ocIdsToDelete.count > 0 || results.inserted > 0 || results.updated > 0 {
+        // DELETE
+        let deletedMetadatas = results.deleted
+
+        // Confirm every deletion candidate with WebDAV before removing it from
+        // the local database, regardless of whether the search is paginated.
+        let maximumConcurrentChecks = max(1, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+
+        if results.inserted > 0 || results.updated > 0,
+           self.isViewActived,
+           self.session.account == account {
             update()
+        }
+
+        for batchStart in stride(from: 0, to: deletedMetadatas.count, by: maximumConcurrentChecks) {
+            let batchEnd = min(batchStart + maximumConcurrentChecks, deletedMetadatas.count)
+            let batch = deletedMetadatas[batchStart..<batchEnd]
+
+            let ocIdsToDelete = await withTaskGroup(of: String?.self, returning: Set<String>.self) { group in
+                for metadata in batch {
+                    group.addTask {
+                        let existsResult = await self.networking.fileExists(
+                            serverUrlFileName: metadata.serverUrlFileName,
+                            account: metadata.account
+                        )
+                        return existsResult.errorCode == 404 ? metadata.ocId : nil
+                    }
+                }
+
+                var ocIds = Set<String>()
+                for await ocId in group {
+                    if let ocId {
+                        ocIds.insert(ocId)
+                    }
+                }
+                return ocIds
+            }
+
+            guard !ocIdsToDelete.isEmpty else {
+                continue
+            }
+
+            guard self.session.account == account else {
+                return
+            }
+            await self.database.deleteMetadatasAsync(ocIds: Array(ocIdsToDelete))
+            if self.isViewActived,
+               self.session.account == account {
+                update()
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Rasmus Wøldike
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -200,6 +201,15 @@ final class NCPreferences: NSObject {
         }
         set {
             setUserDefaults(newValue, forKey: "removePhotoCameraRoll")
+        }
+    }
+
+    var saveCameraMediaToCameraRoll: Bool {
+        get {
+            return getBoolPreference(key: "saveCameraMediaToCameraRoll", defaultValue: true)
+        }
+        set {
+            setUserDefaults(newValue, forKey: "saveCameraMediaToCameraRoll")
         }
     }
 

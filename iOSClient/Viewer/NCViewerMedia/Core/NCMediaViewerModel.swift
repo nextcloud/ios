@@ -728,13 +728,26 @@ final class NCMediaViewerModel: ObservableObject {
         } catch is CancellationError {
             return
         } catch {
-            setState(
-                .failed(
-                    previewURL: previewURL,
-                    message: ""
-                ),
-                for: ocId
-            )
+            if metadata.classFile == NKTypeClassFile.image.rawValue,
+               let previewURL {
+                setState(
+                    .image(
+                        previewURL: previewURL,
+                        localURL: nil,
+                        livePhotoURL: nil,
+                        progress: nil
+                    ),
+                    for: ocId
+                )
+            } else {
+                setState(
+                    .failed(
+                        previewURL: previewURL,
+                        message: ""
+                    ),
+                    for: ocId
+                )
+            }
         }
     }
 
@@ -1146,11 +1159,10 @@ private extension NCMediaViewerPageState {
         case .video(nil, nil):
             return true
 
-        case .audio(_, nil):
-            return true
+        case .audio:
+            return false
 
         case .image(_, .some, _, _),
-             .audio(_, .some),
              .video,
              .loadingMetadata,
              .metadataMissing,

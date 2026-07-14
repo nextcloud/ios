@@ -73,6 +73,8 @@
 "_no_albums_"               = "No albums";
 "_denied_album_"            = "This app does not have access to \"Photos\". You can enable access in Privacy Settings.";
 "_denied_camera_"           = "This app does not have access to the \"Camera\". You can enable access in Privacy Settings.";
+"_save_to_camera_roll_"        = "Save to camera roll";
+"_save_to_camera_roll_desc_"   = "When enabled, photos and videos taken with the in-app camera will also be saved to your iOS camera roll.";
 "_force_start_"             = "Force the start";
 "_account_does_not_exist_"  = "The account %@ does not exist. Please log in again.";
 "_sharing_"                 = "Sharing";
@@ -433,9 +435,15 @@
 "_remote_"                      = "Remote";
 "_remote_group_"                = "Remote group";
 "_conversation_"                = "Conversation";
-
-"_no_transfer_"                     = "No transfers yet";
-"_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
+"_no_transfer_"                 = "No transfers yet";
+"_no_transfer_sub_"             = "Uploads and downloads from this device will show up here";
+"_no_transfer_in_progress_"     = "No transfers in progress";
+"_no_transfer_in_progress_sub_" = "Active uploads and downloads from this device will appear here.";
+"_no_transfer_in_waiting_"      = "No transfers waiting";
+"_no_transfer_in_waiting_sub_"  = "Transfers waiting to start will appear here.";
+"_no_transfer_in_error_"        = "No transfer errors";
+"_no_transfer_in_error_sub_"    = "Transfers that need your attention will appear here.";
+"_transfers_waiting_shown_"     = "%1$d of %2$d transfers waiting";
 "_no_activity_footer_"              = "No more activities to load";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
@@ -496,9 +504,9 @@
 "_manage_file_offline_"             = "Manage offline files";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
-"_create_new_document_"             = "Create new document";
-"_create_new_spreadsheet_"          = "Create new spreadsheet";
-"_create_new_presentation_"         = "Create new presentation";
+"_create_new_document_"             = "Document";
+"_create_new_spreadsheet_"          = "Spreadsheet";
+"_create_new_presentation_"         = "Presentation";
 "_go_online_"                       = "Go online to see the document";
 "_intro_1_title_"                   = "Keep your data secure and under your control";
 "_intro_2_title_"                   = "Secure collaboration & file exchange";
@@ -696,6 +704,7 @@
 "_image_file_could_not_be_decoded_" = "Image file could not be decoded";
 "_media_not_available_" = "Media not available";
 "_no_assistant_installed_"  = "Assistant is not installed on this server. Ask your administrator to install the Assistant app";
+"_open_in_office_" = "Open in Office";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
@@ -778,6 +787,20 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_back_up_new_photos_only_" = "Back up new photos/videos only";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
+"_auto_upload_no_new_items_to_upload_" = "No new items to upload";
+"_focused_auto_upload_" = "Focused Auto Upload";
+"_focused_auto_upload_settings_footer_" = "Keep the app open and darken the screen while auto upload is backing up at higher speed.";
+"_focused_auto_upload_intro_heading_" = "Keep backing up with the screen darkened.";
+"_focused_auto_upload_intro_message_" = "Photos and videos will continue backing up at higher speed while the screen is darkened. During the process:";
+"_focused_auto_upload_wifi_" = "Connect to Wi-Fi";
+"_focused_auto_upload_charger_" = "Connect to charger";
+"_focused_auto_upload_do_not_exit_" = "Do not exit the app";
+"_enable_focused_auto_upload_" = "Enable Focused Auto Upload";
+"_focused_auto_upload_backing_up_" = "Backing up";
+"_focused_auto_upload_completed_" = "Upload completed!";
+"_focused_auto_upload_countdown_" = "Do not lock the screen or exit the app. The screen will turn dark in %d seconds.";
+"_stop_focused_auto_upload_" = "Stop Focused Auto Upload";
+"_finish_" = "Finish";
 "_item_with_same_name_already_exists_" = "An item with the same name already exists.";
 
 // MARK: Migration Multi Domains

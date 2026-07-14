@@ -82,6 +82,8 @@ class NCShareUserCell: UITableViewCell {
             labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
         }
 
+        /*
+
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
         let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
@@ -95,10 +97,12 @@ class NCShareUserCell: UITableViewCell {
             imageItem.image = results.image
         }
 
+
         if !(results.tblAvatar?.loaded ?? false),
            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, account: metadata.account, view: self))
         }
+        */
 
         stackViewQuickStatus.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
 
@@ -188,36 +192,44 @@ class NCSearchUserDropDownCell: DropDownCell {
             centerTitle.constant = 0
         }
 
-        imageItem.image = utility.loadUserImage(for: sharee.shareWith, displayName: nil, urlBase: session.urlBase)
-
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: sharee.shareWith)
-        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
-        if results.image == nil {
-            let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+        if let image = NCImageCache.shared.getImageCache(key: fileName) {
+            self.imageItem.image = image
+        } else {
+            let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                self.imageItem.image = image
+                NCImageCache.shared.addImageCache(image: image, key: fileName)
+            }
 
-            NextcloudKit.shared.downloadAvatar(
-                user: sharee.shareWith,
-                fileNameLocalPath: fileNameLocalPath,
-                sizeImage: NCGlobal.shared.avatarSize,
-                avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etagResource: etag,
-                account: session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                                    path: sharee.shareWith,
-                                                                                                    name: "downloadAvatar")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                } completion: { _, imageAvatar, _, etag, _, error in
-                    if error == .success, let etag = etag, let imageAvatar = imageAvatar {
-                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
-                        self.imageItem.image = imageAvatar
-                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
-                        self.imageItem.image = imageAvatar
+            let user = sharee.shareWith
+            let account = session.account
+
+            Task {
+                let etagResource = await NCManageDatabase.shared.getTableAvatarAsync(fileName: fileName)?.etag
+                await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                         priority: .userInitiated) {
+                    let results = await NextcloudKit.shared.downloadAvatarAsync(
+                        user: user,
+                        fileNameLocalPath: fileNameLocalPath,
+                        sizeImage: NCGlobal.shared.avatarSize,
+                        avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                        etagResource: etagResource,
+                        account: account)
+
+                    if results.error == .success,
+                       let image = results.imageAvatar,
+                       let etag = results.etag,
+                       etag != etagResource {
+                        NCImageCache.shared.addImageCache(image: image, key: fileName)
+                        await NCManageDatabase.shared.addAvatarAsync(fileName: fileName, etag: etag)
+                        await MainActor.run {
+                            self.imageItem.image = image
+                        }
                     }
                 }
+            }
         }
     }
 }

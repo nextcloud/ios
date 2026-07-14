@@ -6,16 +6,16 @@ import Foundation
 import NextcloudKit
 import Alamofire
 
-extension NCMedia {
-    func searchVerifyNetworkMedia(path: String,
-                                  firstDate: Date,
-                                  lastDate: Date,
-                                  account: String,
-                                  paginate: Bool,
-                                  limit: Int,
-                                  taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                                  update: @escaping (_ files: [NKFile]) -> Void,
-                                  finish: @escaping () -> Void) async {
+final class NCMediaNetwork {
+    func searchMediaPage(path: String,
+                         firstDate: Date,
+                         lastDate: Date,
+                         account: String,
+                         paginate: Bool,
+                         limit: Int,
+                         taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                         update: @escaping (_ files: [NKFile]) async -> Void,
+                         finish: @escaping () -> Void) async {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             finish()
             return
@@ -23,7 +23,7 @@ extension NCMedia {
         let nkComm = NextcloudKit.shared.nkCommonInstance
         let href = "/files/" + nkSession.userId + path
 
-        let elementDate = "d:" + global.mediaPropOrder
+        let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
         let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = lastDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
 
@@ -49,7 +49,7 @@ extension NCMedia {
         while true {
             var isPaginate: Bool = false
             let options = NKRequestOptions(timeout: 180,
-                                           taskDescription: self.global.taskDescriptionRetrievesProperties,
+                                           taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties,
                                            paginate: paginate,
                                            paginateToken: paginateToken,
                                            paginateOffset: paginateOffset,
@@ -64,7 +64,7 @@ extension NCMedia {
                     let files = filesUnordered.sorted {
                         $0.date > $1.date
                     }
-                    update(files)
+                    await update(files)
                 }
                 let allHeaderFields = results.responseData?.response?.allHeaderFields
                 if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
@@ -90,18 +90,18 @@ extension NCMedia {
         }
     }
 
-    private func getRequestBodySearchMedia(href: String,
-                                           elementDate: String,
-                                           lessDate: String,
-                                           greaterDate: String,
-                                           limit: String) -> String {
+    internal func getRequestBodySearchMedia(href: String,
+                                            elementDate: String,
+                                            lessDate: String,
+                                            greaterDate: String,
+                                            limit: String) -> String {
         let request = """
         <?xml version=\"1.0\"?>
         <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
             <d:basicsearch>
 
             <!-- ====================================================== -->
-            <!-- SELECT: return only the Nextcloud internal object id   -->
+            <!-- SELECT: return the Nextcloud internal object           -->
             <!-- ====================================================== -->
 
             <d:select>
@@ -113,12 +113,14 @@ extension NCMedia {
                     <upload_time xmlns="http://nextcloud.org/ns"/>
                     <size xmlns="http://owncloud.org/ns"/>
                     <has-preview xmlns="http://nextcloud.org/ns"/>
+                    <metadata-files-live-photo xmlns="http://nextcloud.org/ns"/>
                 </d:prop>
             </d:select>
 
             <!-- ===================================================== -->
             <!-- FROM: recursive search starting from the given href   -->
             <!-- ===================================================== -->
+
             <d:from>
                 <d:scope>
                     <d:href>\(href)</d:href>
@@ -131,6 +133,7 @@ extension NCMedia {
             <!-- 1) Filter only image and video content types          -->
             <!-- 2) Apply a date range on elementDate                  -->
             <!-- ===================================================== -->
+
             <d:where>
                 <d:and>
 
@@ -165,6 +168,7 @@ extension NCMedia {
             <!-- Primary sort on elementDate (descending)              -->
             <!-- Secondary sort on displayname for deterministic order -->
             <!-- ===================================================== -->
+
             <d:orderby>
                 <d:order>
                     <d:prop><\(elementDate)/></d:prop>
@@ -179,6 +183,7 @@ extension NCMedia {
             <!-- ===================================================== -->
             <!-- LIMIT: maximum number of results returned             -->
             <!-- ===================================================== -->
+
             <d:limit>
                 <d:nresults>\(limit)</d:nresults>
             </d:limit>

@@ -477,6 +477,9 @@ extension NCManageDatabase {
     }
 
     func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
+        if metadatas.isEmpty {
+            return
+        }
         let detached = metadatas.map { $0.detachedCopy() }
 
         await core.performRealmWriteAsync { realm in
@@ -666,19 +669,6 @@ extension NCManageDatabase {
                 result.serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: result.serverUrl, fileName: result.fileName)
                 result.status = NCGlobal.shared.metadataStatusNormal
                 result.sessionDate = nil
-            }
-        }
-    }
-
-    func setMetadataLivePhotoByServerAsync(account: String,
-                                           ocId: String,
-                                           livePhotoFile: String) async {
-        await core.performRealmWriteAsync { realm in
-            if let result = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND ocId == %@", account, ocId)
-                .first {
-                result.isFlaggedAsLivePhotoByServer = true
-                result.livePhotoFile = livePhotoFile
             }
         }
     }
@@ -1019,7 +1009,7 @@ extension NCManageDatabase {
                 .sorted(byKeyPath: sortedByKeyPath,
                         ascending: ascending)
 
-            if let limit {
+            if let limit, limit > 0 {
                 let sliced = results.prefix(limit)
                 return sliced.map { $0.detachedCopy() }
             } else {
@@ -1353,6 +1343,23 @@ extension NCManageDatabase {
         }
     }
 
+    /// Returns detached (unmanaged) copies of `tableMetadata` objects matching the provided ocIds.
+    /// - Parameter fileIds: Array of fileId strings used to fetch corresponding metadata.
+    /// - Returns: An array of detached `tableMetadata` objects. Empty if no matches are found.
+    func getMetadatasFromFileIdsAsync(_ fileIds: [String]) async -> [tableMetadata] {
+        guard !fileIds.isEmpty else {
+            return []
+        }
+
+        return await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .where {
+                    $0.fileId.in(fileIds)
+                }
+                .map { $0.detachedCopy() }
+        } ?? []
+    }
+
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
     /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
     func getMetadatasAsync(predicate: NSPredicate,
@@ -1467,23 +1474,39 @@ extension NCManageDatabase {
         }
     }
 
-    func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {
+    func getTransferAsync(tranfersSuccess: [tableMetadata], status: [Int], offset: Int, limit: Int) async -> (metadatas: [tableMetadata], inWaiting: Int, inProgress: Int, inError: Int) {
         await core.performRealmReadAsync { realm in
-            let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
+            let allTransfers = realm.objects(tableMetadata.self)
+                .filter("status != 0")
+
+            let excludedIds = Set(tranfersSuccess.compactMap(\.ocIdTransfer))
+
+            let inWaiting = allTransfers.filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting).count
+            let inProgress = allTransfers.filter("status IN %@", NCGlobal.shared.metadatasStatusDownloadingUploading).count
+            let inError = allTransfers.filter("status IN %@", NCGlobal.shared.metadatasStatusInError).count
+
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true),
+                RealmSwift.SortDescriptor(keyPath: "ocId", ascending: true)
             ]
 
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
+            let results = allTransfers
+                .filter("status IN %@", status)
                 .sorted(by: sortDescriptors)
+                .filter { !excludedIds.contains($0.ocIdTransfer) }
 
-            let excludedIds = Set(tranfersSuccess.compactMap { $0.ocIdTransfer })
-            let filtered = results.filter { !excludedIds.contains($0.ocIdTransfer) }
+            let startIndex = min(offset, results.count)
+            let endIndex = min(startIndex + limit, results.count)
+            let metadatas = results[startIndex..<endIndex].map { $0.detachedCopy() }
 
-            return filtered.map { $0.detachedCopy() }
-        } ?? []
+            return (
+                metadatas: metadatas,
+                inWaiting: inWaiting,
+                inProgress: inProgress,
+                inError: inError
+            )
+        } ?? (metadatas: [], inWaiting: 0, inProgress: 0, inError: 0)
     }
 
     func getMetadatasStatusCountAsync(status: [Int]) async -> Int {

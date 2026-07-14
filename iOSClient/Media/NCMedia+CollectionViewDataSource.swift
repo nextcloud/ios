@@ -72,11 +72,21 @@ extension NCMedia: UICollectionViewDataSource {
                 let iconName = metadata.iconName
                 let account = metadata.account
 
+                // Retrieves and stores complete metadata when the media record is a placeholder.
+                if metadata.placeholder {
+                    let result = await self.networking.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                    guard !Task.isCancelled,
+                          result.error == .success,
+                          let metadata = result.metadata else {
+                        return
+                    }
+                    await self.database.addMetadataAsync(metadata)
+                }
+
                 let result = await NextcloudKit.shared.downloadPreviewAsync(
                     fileId: metadata.fileId,
                     etag: metadata.etag,
-                    account: account,
-                    options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+                    account: account
                 )
 
                 guard !Task.isCancelled,
@@ -85,19 +95,10 @@ extension NCMedia: UICollectionViewDataSource {
                     return
                 }
 
-                NCUtility().createImageFileFrom(data: data, metadata: metadata)
-
-                let image = NCUtility().getImage(
-                    ocId: metadata.ocId,
-                    etag: metadata.etag,
-                    ext: ext,
-                    userId: metadata.userId,
-                    urlBase: metadata.urlBase
-                )
-
-                guard !Task.isCancelled else {
-                    return
-                }
+                let image = NCUtility().createImageFileFrom(
+                    data: data,
+                    metadata: metadata,
+                    ext: ext)
 
                 await MainActor.run {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
@@ -168,7 +169,7 @@ extension NCMedia: UICollectionViewDataSource {
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                            currentCell.identifier == compactMetadata.ocId, let image {
-                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext, cost: indexPath.row)
+                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext)
                             currentCell.image.image = image
                         }
                     }

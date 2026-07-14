@@ -75,23 +75,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     return
                 }
 
-                await NCUtility().createImageFileFrom(data: data,
-                                                      ocId: ocId,
-                                                      etag: etag,
-                                                      userId: self.session.userId,
-                                                      urlBase: self.session.urlBase)
-
-                let image = await NCUtility().getImage(
+                let image = await NCUtility().createImageFileFrom(
+                    data: data,
                     ocId: ocId,
                     etag: etag,
                     ext: ext,
                     userId: self.session.userId,
-                    urlBase: self.session.urlBase
-                )
-
-                guard !Task.isCancelled else {
-                    return
-                }
+                    urlBase: self.session.urlBase)
 
                 await MainActor.run {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
@@ -320,23 +310,30 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     ///   - metadatas: The list of metadata entries to cache.
     ///   - priority: The task priority to use (default is `.utility`).
     func cachingAsync(metadatas: [tableMetadata], priority: TaskPriority = .utility) {
-        Task.detached(priority: priority) {
-            for (cost, metadata) in metadatas.enumerated() {
-                // Skip if not an image or video
-                guard metadata.isImageOrVideo else { continue }
-                // Check if image is already cached
-                let alreadyCached = NCImageCache.shared.getImageCache(ocId: metadata.ocId,
-                                                                      etag: metadata.etag,
-                                                                      ext: self.global.previewExt256) != nil
-                guard !alreadyCached else {
+        let previewExt = global.previewExt256
+
+        Task.detached(priority: priority) { [utility] in
+            for metadata in metadatas {
+                guard !Task.isCancelled,
+                      metadata.isImageOrVideo,
+                      NCImageCache.shared.getImageCache(ocId: metadata.ocId,
+                                                        etag: metadata.etag,
+                                                        ext: previewExt) == nil else {
                     continue
                 }
 
-                // caching preview
-                //
-                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256, userId: metadata.userId, urlBase: metadata.urlBase) {
-                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
+                guard let image = utility.getImage(ocId: metadata.ocId,
+                                                   etag: metadata.etag,
+                                                   ext: previewExt,
+                                                   userId: metadata.userId,
+                                                   urlBase: metadata.urlBase) else {
+                    continue
                 }
+
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId,
+                                                  etag: metadata.etag,
+                                                  image: image,
+                                                  ext: previewExt)
             }
         }
     }

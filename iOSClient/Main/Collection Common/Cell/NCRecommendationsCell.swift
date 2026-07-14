@@ -17,7 +17,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCRecommendationsCellDelegate?
-    var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
+    var representedFileId: String?
 
     var metadata: tableMetadata? {
         didSet {

@@ -63,11 +63,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             }
         }
 
-        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain) {
-            self.dismiss(animated: true)
-        }
+        let close = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            style: .plain,
+            target: self,
+            action: #selector(viewClose)
+        )
+        close.accessibilityLabel = NSLocalizedString("_close_", comment: "")
 
-        self.navigationItem.leftBarButtonItems = [close]
+        navigationItem.rightBarButtonItem = close
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -116,13 +120,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCNotificationCell else { return UITableViewCell() }
-        cell.delegate = self
-        cell.selectionStyle = .none
-        cell.index = indexPath
 
         let notification = notifications[indexPath.row]
+        cell.delegate = self
+        cell.selectionStyle = .none
+        cell.identifier = notification.idNotification
+
         let urlIcon = URL(string: notification.icon)
         var image: UIImage?
 
@@ -132,6 +136,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         }
 
         if let image = image {
+            cell.icon.contentMode = .scaleAspectFit
             cell.icon.image = image.withTintColor(NCBrandColor.shared.getElement(account: session.account), renderingMode: .alwaysOriginal)
         }
 
@@ -145,17 +150,48 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             cell.avatarLeadingMargin.constant = 50
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: user)
-            let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
-
-            if results.image == nil {
-                cell.avatar?.image = utility.loadUserImage(for: user, displayName: json["user"]?["name"].string, urlBase: session.urlBase)
+            if let image = NCImageCache.shared.getImageCache(key: fileName) {
+                cell.avatar?.image = image
             } else {
-                cell.avatar?.image = results.image
-            }
+                let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
-            if !(results.tblAvatar?.loaded ?? false),
-               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, account: session.account, view: tableView))
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.avatar?.image = image
+                    NCImageCache.shared.addImageCache(image: image, key: fileName)
+                }
+
+                let account = session.account
+                let identifier = notification.idNotification
+
+                Task {
+                    let etagResource = await NCManageDatabase.shared.getTableAvatarAsync(fileName: fileName)?.etag
+                    await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                             priority: .userInitiated) {
+                        let results = await NextcloudKit.shared.downloadAvatarAsync(
+                            user: user,
+                            fileNameLocalPath: fileNameLocalPath,
+                            sizeImage: NCGlobal.shared.avatarSize,
+                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                            etagResource: etagResource,
+                            account: account)
+
+                        if results.error == .success,
+                           let image = results.imageAvatar,
+                           let etag = results.etag,
+                           etag != etagResource {
+                            NCImageCache.shared.addImageCache(image: image, key: fileName)
+                            await NCManageDatabase.shared.addAvatarAsync(fileName: fileName, etag: etag)
+                            await MainActor.run {
+                                guard
+                                    let cell = self.tableView.cellForRow(at: indexPath) as? NCNotificationCell,
+                                    cell.identifier == identifier else {
+                                    return
+                                }
+                                cell.avatar?.image = image
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -375,7 +411,7 @@ class NCNotificationCell: UITableViewCell {
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
 
     var user = ""
-    var index = IndexPath()
+    var identifier: Int = 0
 
     weak var delegate: NCNotificationCellDelegate?
     var notification: NKNotifications?

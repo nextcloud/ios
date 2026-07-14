@@ -4,7 +4,6 @@
 
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
 import OpenSSL
-import Queuer
 import SwiftUI
 #endif
 
@@ -84,11 +83,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let progressQuantizer = ProgressQuantizer()
 
 #if !EXTENSION
-    let metadataTranfersSuccess = NCMetadataTranfersSuccess()
-
-    // OPERATIONQUEUE
-    let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let metadataDownloadTranfersSuccess = NCMetadataDownloadTranfersSuccess()
+    let metadataUploadTranfersSuccess = NCMetadataUploadTranfersSuccess()
 #endif
 
     // MARK: - init

@@ -194,7 +194,7 @@ class NCAccount: NSObject {
             return
         }
         let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-        await showErrorBanner(windowScene: windowScene, text: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), errorCode: NCGlobal.shared.errorUnauthorized401)
+        await showErrorBanner(windowScene: windowScene, text: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), errorCode: NCGlobal.shared.errorUnauthorized)
 
         let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tblAccount.urlBase, token: token, account: account) { task in
             Task {

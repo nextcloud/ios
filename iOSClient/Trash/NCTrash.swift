@@ -108,7 +108,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "NCTrash")
-            await NCTransferCoordinator.shared.cancelAll()
         }
     }
 

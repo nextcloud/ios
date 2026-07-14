@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2024 Aditya Tyagi
 // SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Rasmus Wøldike
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
@@ -64,6 +65,19 @@ struct NCSettingsAdvancedView: View {
                 }
             }, footer: {
                 Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
+                    .font(.footnote)
+            })
+
+            // Save camera media to camera roll
+            Section(content: {
+                Toggle(NSLocalizedString("_save_to_camera_roll_", comment: ""), isOn: $model.saveCameraMediaToCameraRoll)
+                    .font(.body)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.saveCameraMediaToCameraRoll) {
+                        model.updateSaveCameraMediaToCameraRoll()
+                    }
+            }, footer: {
+                Text(NSLocalizedString("_save_to_camera_roll_desc_", comment: ""))
                     .font(.footnote)
             })
             // Section : Files App

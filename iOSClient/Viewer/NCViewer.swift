@@ -14,7 +14,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
 
     @MainActor
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCMediaViewerTransitionSource?) async -> UIViewController? {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCMediaViewerTransitionSource?, selectedEditor: String? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
         await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
@@ -68,7 +68,7 @@ class NCViewer: NSObject {
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
 
             // PDF
-            if metadata.isPDF {
+            if metadata.isPDF, selectedEditor == nil {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
 
                 vc?.metadata = metadata
@@ -80,12 +80,23 @@ class NCViewer: NSObject {
 
             // DirectEditing
             if metadata.isAvailableDirectEditingEditorView {
-                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
+                let availableEditors = utility.editorsDirectEditing(
+                    account: metadata.account,
+                    contentType: metadata.contentType
+                ).map { $0.lowercased() }
+                let editors: [String]
+
+                if availableEditors.contains("text") {
+                    editors = ["text"]
+                } else {
+                    editors = availableEditors
+                }
+
                 guard let editorAdapter = NCDirectEditorAdapter.resolve(from: editors) else {
                     self.QLPreview(metadata: metadata, delegate: delegate)
                     return nil
                 }
-                let editor = editorAdapter.apiKey
+                let editor = selectedEditor ?? editorAdapter.apiKey
                 let editorViewController = editorAdapter.viewControllerEditor
                 let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
                 if metadata.url.isEmpty {

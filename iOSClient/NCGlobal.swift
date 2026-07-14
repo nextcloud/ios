@@ -130,7 +130,7 @@ final class NCGlobal: Sendable {
     //
     let errorNotModified: Int                   = 304
     let errorBadRequest: Int                    = 400
-    let errorUnauthorized401: Int               = 401
+    let errorUnauthorized: Int                  = 401
     let errorForbidden: Int                     = 403
     let errorResourceNotFound: Int              = 404
     let errorMethodNotSupported: Int            = 405
@@ -159,6 +159,7 @@ final class NCGlobal: Sendable {
     let errorVersionMismatch: Int               = -99989
     let errorNCSessionNotFound: Int             = -99988
     let errorNotPermission: Int                 = -99987
+    let errorTaskCancelled: Int                 = -99986
 
 
     // E2EE
@@ -231,9 +232,9 @@ final class NCGlobal: Sendable {
     let metadataStatusForScreenAwake            = [-1, -2, 1, 2]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
-    let metadataStatusTransfers                 = [-2, -3, 2, 3, 10, 11, 12, 13, 14, 15]
 
     let metadatasStatusInWaiting                = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadatasStatusInError                  = [-3, 3]
     let metadatasStatusInWaitingDownloadUpload  = [-1, 1]
     let metadatasStatusDownloadingUploading     = [-2, 2]
 
@@ -384,8 +385,11 @@ final class NCGlobal: Sendable {
     let logTagDatabase                      = "DB"
     let logTagSpeedUpSyncMetadata           = "SYNC METADATA"
     let logTagNetworkingTasks               = "NETWORKING TASKS"
-    let logTagMetadataTransfers             = "METADATA TRANSFERS"
+    let logTagMetadataUploadTransfers       = "METADATA UPLOAD TRANSFERS"
+    let logTagMetadataDownloadTransfers     = "METADATA DOWNLOAD TRANSFERS"
     let logTagViewer                        = "VIEWERS"
+    let logTagMediaBackfill                 = "MEDIA BACKFILL"
+    let logTagMediaPlaceholder              = "MEDIA PLACEHOLDER"
 
     // USER DEFAULTS
     //

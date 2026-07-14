@@ -4,7 +4,6 @@
 
 import UIKit
 import NextcloudKit
-import Queuer
 import Photos
 import LucidBanner
 
@@ -756,71 +755,6 @@ extension NCNetworking {
                     completition(nil, false, error)
                 }
             }
-        }
-    }
-}
-
-class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
-    let utilityFileSystem = NCUtilityFileSystem()
-    var user: String
-    var fileName: String
-    var etag: String?
-    var view: UIView?
-    var account: String
-    var isPreviewImage: Bool
-
-    init(user: String, fileName: String, account: String, view: UIView?, isPreviewImage: Bool = false) {
-        self.user = user
-        self.fileName = fileName
-        self.account = account
-        self.view = view
-        self.isPreviewImage = isPreviewImage
-        self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-    }
-
-    override func start() {
-        guard !isCancelled else {
-            return self.finish()
-        }
-        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-
-        NextcloudKit.shared.downloadAvatar(user: user,
-                                           fileNameLocalPath: fileNameLocalPath,
-                                           sizeImage: NCGlobal.shared.avatarSize,
-                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                           etagResource: self.etag,
-                                           account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                            path: self.user,
-                                                                                            name: "downloadAvatar")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { _, image, _, etag, _, error in
-            if error == .success, let image {
-                NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
-                #if !EXTENSION
-                NCImageCache.shared.addImageCache(image: image, key: self.fileName)
-                #endif
-
-                DispatchQueue.main.async {
-                    let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
-                    for case let cell as NCCellMainProtocol in visibleCells {
-                        if self.user == cell.metadata?.ownerId {
-                            if self.isPreviewImage, let previewImage = cell.previewImg {
-                                UIView.transition(with: previewImage, duration: 0.75, options: .transitionCrossDissolve, animations: { previewImage.image = image}, completion: nil)
-                            } else if let cellList = cell as? NCListCell {
-                                cellList.setSharedAvatarImage(image)
-                            }
-                            break
-                        }
-                    }
-                }
-            } else if error.errorCode == NCGlobal.shared.errorNotModified {
-                NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
-            }
-            self.finish()
         }
     }
 }
