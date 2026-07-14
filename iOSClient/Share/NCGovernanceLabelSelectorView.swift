@@ -61,13 +61,13 @@ struct NCGovernanceLabelSelectorView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(NSLocalizedString("_cancel_", comment: "")) {
+                    Button(NSLocalizedString("_cancel_", comment: ""), systemImage: "xmark") {
                         dismiss()
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(NSLocalizedString("_save_", comment: "")) {
+                    Button(NSLocalizedString("_save_", comment: ""), systemImage: "checkmark.circle.fill") {
                         Task {
                             isSaving = true
                             await onSave(selected)
