@@ -8,8 +8,7 @@ import NextcloudKit
 
 extension NCNetworking {
     func noServerErrorAccount(_ account: String) -> Bool {
-        guard let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
-        else {
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) else {
             return true
         }
         let unavailableArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnavailable) as? [String] ?? []
@@ -24,8 +23,7 @@ extension NCNetworking {
     }
 
     func removeServerErrorAccount(_ account: String) {
-        guard let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
-        else {
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) else {
             return
         }
         var unauthorizedArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnauthorized) as? [String] ?? []
@@ -45,8 +43,7 @@ extension NCNetworking {
     }
 
     func checkServerError(account: String, controller: NCMainTabBarController?) async {
-        guard let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
-        else {
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) else {
             return
         }
         var unavailableArray = groupDefaults.array(forKey: nkComm.groupDefaultsUnavailable) as? [String] ?? []
