@@ -61,11 +61,12 @@ extension NCNetworking {
             }
             switch resultsServerStatus.result {
             case .success(let serverInfo):
-                // Remove the error (503) from groupDefaults
+                // Always remove the (503) error for the account from groupDefaults.
                 unavailableArray.removeAll { $0 == account }
                 groupDefaults.set(unavailableArray, forKey: nkComm.groupDefaultsUnavailable)
 
                 if serverInfo.maintenance {
+                    // Show maintenance mode warning.
                     let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
                     await showWarningBanner(windowScene: windowScene,
                                             subtitle: "_maintenance_mode_",
