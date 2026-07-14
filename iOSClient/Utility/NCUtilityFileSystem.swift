@@ -786,54 +786,114 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     func cleanUpAsync() async {
         let days = TimeInterval(NCPreferences().cleanUpDay)
-        if days == 0 {
+        guard days > 0 else {
             return
         }
+
         let database = NCManageDatabase.shared
         let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
-        let url = URL(fileURLWithPath: getDirectoryProviderStorage())
-        var offlineDir: [String] = []
+        let storageURL = URL(fileURLWithPath: getDirectoryProviderStorage())
         let manager = FileManager.default
 
-        let tblDirectories = await database.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
-        for tblDirectory in tblDirectories {
-            if let tblMetadata = await database.getMetadataFromOcIdAsync(tblDirectory.ocId) {
-                offlineDir.append(self.getDirectoryProviderStorageOcId(tblMetadata.ocId, userId: tblMetadata.userId, urlBase: tblMetadata.urlBase))
+        var offlineDirectories: [String] = []
+
+        let directories = await database.getTablesDirectoryAsync(
+            predicate: NSPredicate(format: "offline == true"),
+            sorted: "serverUrl",
+            ascending: true
+        )
+
+        for directory in directories {
+            guard let metadata = await database.getMetadataFromOcIdAsync(directory.ocId) else {
+                continue
             }
+
+            let path = getDirectoryProviderStorageOcId(
+                metadata.ocId,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase
+            )
+
+            offlineDirectories.append(path)
         }
 
-        let tblLocalFiles = await NCManageDatabase.shared.getTableLocalFilesAsync(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+        let localFiles = await database.getTableLocalFilesAsync(
+            predicate: NSPredicate(format: "offline == false"),
+            sorted: "lastOpeningDate",
+            ascending: true
+        )
 
-        let fileURLs = await enumerateFilesAsync(at: url, includingPropertiesForKeys: [.isRegularFileKey])
+        let localFilesByOcId = Dictionary(
+            uniqueKeysWithValues: localFiles.map { ($0.ocId, $0) }
+        )
+
+        let fileURLs = await enumerateFilesAsync(
+            at: storageURL,
+            includingPropertiesForKeys: [.isRegularFileKey]
+        )
+
+        var processedOcIds = Set<String>()
+
         for fileURL in fileURLs {
-            if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
-                if attributes[.size] as? Double == 0 { continue }
-                if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
-                // check directory offline
-                let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
-                if !filter.isEmpty {
+            guard let attributes = try? manager.attributesOfItem(atPath: fileURL.path),
+                  attributes[.type] as? FileAttributeType != .typeDirectory,
+                  ((attributes[.size] as? NSNumber)?.uint64Value ?? 0) > 0 else {
+                continue
+            }
+
+            if offlineDirectories.contains(where: {
+                fileURL.path == $0 || fileURL.path.hasPrefix($0 + "/")
+            }) {
+                continue
+            }
+
+            if let modificationDate = attributes[.modificationDate] as? Date,
+               modificationDate < minimumDate {
+                let fileName = fileURL.lastPathComponent
+
+                if fileName.hasSuffix(NCGlobal.shared.previewExt256) ||
+                    fileName.hasSuffix(NCGlobal.shared.previewExt512) ||
+                    fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
+                    try? manager.removeItem(at: fileURL)
                     continue
                 }
-                // -----------------------
-                if let modificationDate = attributes[.modificationDate] as? Date,
-                   modificationDate < minimumDate {
-                    let fileName = fileURL.lastPathComponent
-                    if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
-                        try? manager.removeItem(atPath: fileURL.path)
-                    }
-                }
-                // -----------------------
-                let folderURL = fileURL.deletingLastPathComponent()
-                let ocId = folderURL.lastPathComponent
-                if let tblLocalFile = tblLocalFiles.filter({ $0.ocId == ocId }).first,
-                    (tblLocalFile.lastOpeningDate as Date) < minimumDate {
-                    do {
-                        try manager.removeItem(atPath: fileURL.path)
-                    } catch { }
-                    manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                    await NCManageDatabase.shared.deleteLocalFileAsync(id: ocId)
-                }
             }
+
+            let directoryURL = fileURL.deletingLastPathComponent()
+            let ocId = directoryURL.lastPathComponent
+
+            guard !processedOcIds.contains(ocId),
+                  let localFile = localFilesByOcId[ocId],
+                  (localFile.lastOpeningDate as Date) < minimumDate else {
+                continue
+            }
+
+            processedOcIds.insert(ocId)
+
+            guard let directoryContents = try? manager.contentsOfDirectory(
+                at: directoryURL,
+                includingPropertiesForKeys: [.isRegularFileKey],
+                options: []
+            ) else {
+                continue
+            }
+
+            for itemURL in directoryContents {
+                guard let itemAttributes = try? manager.attributesOfItem(atPath: itemURL.path),
+                      itemAttributes[.type] as? FileAttributeType != .typeDirectory,
+                      ((itemAttributes[.size] as? NSNumber)?.uint64Value ?? 0) > 0 else {
+                    continue
+                }
+
+                try? manager.removeItem(at: itemURL)
+                manager.createFile(
+                    atPath: itemURL.path,
+                    contents: nil,
+                    attributes: nil
+                )
+            }
+
+            await database.deleteLocalFileAsync(id: ocId)
         }
     }
 
