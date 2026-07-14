@@ -193,16 +193,25 @@ final class NCMediaMetadataBackgroundProcessor {
                 account: metadata.account
             )
 
-            guard !Task.isCancelled,
-                  result.error == .success,
-                  let file = result.files?.first else {
+            guard !Task.isCancelled else {
                 return false
             }
 
-            let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-            await database.addMetadataAsync(metadata)
+            switch result.error.errorCode {
+            case 0:
+                if let file = result.files?.first {
+                    let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+                    await database.addMetadataAsync(metadata)
+                }
+                return true
 
-            return true
+            case 404:
+                await database.deleteMetadataAsync(ocId: metadata.ocId)
+                return true
+
+            default:
+                return false
+            }
         }
 
         await withTaskGroup(of: Bool.self) { group in
