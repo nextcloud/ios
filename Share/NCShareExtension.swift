@@ -127,6 +127,8 @@ class NCShareExtension: UIViewController {
         if let windowScene = view.window?.windowScene {
             banner = LucidBannerRegistry.shared.banner(for: windowScene)
         }
+
+        NCExtensionUIContext.shared.viewController = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -544,4 +546,14 @@ extension NCShareExtension: NCPasscodeDelegate {
             }
         }
     }
+}
+
+/// Stores a weak reference to the active Share Extension view controller so shared async code can present UI without retaining the extension controller.
+@MainActor
+final class NCExtensionUIContext {
+    static let shared = NCExtensionUIContext()
+
+    weak var viewController: UIViewController?
+
+    private init() {}
 }

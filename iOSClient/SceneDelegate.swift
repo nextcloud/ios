@@ -632,6 +632,17 @@ final class SceneManager {
         return nil
     }
 
+    func getController(account: String?) -> NCMainTabBarController? {
+        if let account {
+            for controller in sceneController.keys {
+                if account == controller.account {
+                    return controller
+                }
+            }
+        }
+        return nil
+    }
+
     func getControllers() -> [NCMainTabBarController] {
         return Array(sceneController.keys)
     }
