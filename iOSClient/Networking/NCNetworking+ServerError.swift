@@ -71,18 +71,18 @@ extension NCNetworking {
                                             subtitle: "_maintenance_mode_",
                                             systemImage: "xmark.icloud.fill",
                                             imageAnimation: .none,
-                                            errorCode: 503)
+                                            errorCode: global.errorMaintenance)
                 }
             case .failure:
                 break
             }
-        // Unauthorized
+        // Unauthorized (401)
         } else if unauthorizedArray.contains(account) {
             nkLog(error: "Unauthorized for \(account)")
 
             try? await Task.sleep(for: .seconds(0.5))
             await NCAccount().checkRemoteUser(account: account, controller: controller)
-        /// ToS
+        /// ToS (403)
         } else if tosArray.contains(account) {
             nkLog(error: "Terms of service for \(account)")
 
