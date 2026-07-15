@@ -8,11 +8,11 @@ import NextcloudKit
 // MARK: - Media Viewer Page View
 
 struct NCMediaViewerPageView: View {
+    @ObservedObject var model: NCMediaViewerModel
     @ObservedObject var page: NCMediaViewerPageModel
 
     let isChromeHidden: Bool
     let onToggleChrome: () -> Void
-    let isSelected: Bool
 
     let canGoPrevious: Bool
     let canGoNext: Bool
@@ -25,6 +25,10 @@ struct NCMediaViewerPageView: View {
 
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
+
+    private var isSelected: Bool {
+        model.selectedIndex == page.index
+    }
 
     // MARK: - Body
 

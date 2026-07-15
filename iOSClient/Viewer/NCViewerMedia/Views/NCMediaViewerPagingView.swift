@@ -336,6 +336,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         let didChangePage = lastVisibleIndex != index
         lastVisibleIndex = index
+
         if didChangePage {
             onZoomChanged(false)
         }
@@ -344,6 +345,16 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             index,
             animated: animated
         )
+
+        if !animated {
+            isUserPaging = false
+            model.setSelectedIndex(index)
+            refreshVisibleCells()
+
+            Task {
+                await model.displayPage(at: index)
+            }
+        }
 
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
@@ -442,13 +453,11 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
-    private func configure(
-        cell: NCMediaViewerPagingCell,
-        page: NCMediaViewerPageModel
-    ) {
+    private func configure(cell: NCMediaViewerPagingCell, page: NCMediaViewerPageModel) {
         let pageBackgroundColor = backgroundColor(for: page)
 
         cell.configure(
+            model: model,
             page: page,
             isSelected: !isUserPaging && page.index == model.selectedIndex,
             isChromeHidden: model.isChromeHidden,
@@ -735,6 +744,7 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
     // MARK: - Configuration
 
     func configure(
+        model: NCMediaViewerModel,
         page: NCMediaViewerPageModel,
         isSelected: Bool,
         isChromeHidden: Bool,
@@ -756,10 +766,10 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
 
         let view = AnyView(
             NCMediaViewerPageView(
+                model: model,
                 page: page,
                 isChromeHidden: isChromeHidden,
                 onToggleChrome: onToggleChrome,
-                isSelected: isSelected,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 shouldAutoPlay: shouldAutoPlay,
