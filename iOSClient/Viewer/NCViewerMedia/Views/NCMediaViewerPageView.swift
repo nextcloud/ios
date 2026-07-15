@@ -23,6 +23,7 @@ struct NCMediaViewerPageView: View {
     let onNextPage: (_ shouldAutoPlay: Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
     let onAutoPlayConsumed: () -> Void
+    let onZoomChanged: (Bool) -> Void
 
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
@@ -389,7 +390,8 @@ struct NCMediaViewerPageView: View {
                 fullURL: localURL,
                 videoURL: livePhotoURL,
                 backgroundStyle: backgroundStyle,
-                topOverlayInset: livePhotoTopOverlayInset
+                topOverlayInset: livePhotoTopOverlayInset,
+                onZoomChanged: onZoomChanged
             )
             .background(Color.ncViewerBackground(backgroundStyle))
             .contentShape(Rectangle())
@@ -399,7 +401,8 @@ struct NCMediaViewerPageView: View {
                 identifier: page.ocId,
                 previewURL: previewURL,
                 fullURL: localURL,
-                backgroundStyle: backgroundStyle
+                backgroundStyle: backgroundStyle,
+                onZoomChanged: onZoomChanged
             )
             .contentShape(Rectangle())
             .gesture(chromeToggleGesture())
@@ -412,7 +415,8 @@ struct NCMediaViewerPageView: View {
             identifier: page.ocId,
             previewURL: previewURL,
             fullURL: nil,
-            backgroundStyle: backgroundStyle
+            backgroundStyle: backgroundStyle,
+            onZoomChanged: onZoomChanged
         )
         .contentShape(Rectangle())
         .gesture(chromeToggleGesture())

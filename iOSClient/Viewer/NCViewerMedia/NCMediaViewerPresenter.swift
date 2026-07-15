@@ -121,6 +121,7 @@ final class NCMediaViewerPresenter: NSObject {
     private weak var dismissPanGestureView: UIView?
     private var isTrackingDismissPan = false
     private var isDismissing = false
+    private var isCurrentImageZoomed = false
 
     private override init() {
         super.init()
@@ -147,10 +148,14 @@ final class NCMediaViewerPresenter: NSObject {
         self.closingTransitionSourceProvider = closingTransitionSourceProvider
         forcedClosingOcId = nil
         isDismissing = false
+        isCurrentImageZoomed = false
 
         let hostingController = NCMediaViewerHostingController(
             model: model,
             contextMenuController: contextMenuController,
+            onZoomChanged: { [weak self] isZoomed in
+                self?.isCurrentImageZoomed = isZoomed
+            },
             onClose: { [weak self] ocId in
                 guard let self else {
                     return
@@ -520,6 +525,7 @@ final class NCMediaViewerPresenter: NSObject {
         currentModel = nil
         closingTransitionSourceProvider = nil
         forcedClosingOcId = nil
+        isCurrentImageZoomed = false
     }
 
     // MARK: - Helpers
@@ -571,6 +577,9 @@ extension NCMediaViewerPresenter: UIGestureRecognizerDelegate {
               let panGesture = gestureRecognizer as? UIPanGestureRecognizer,
               let view = panGesture.view else {
             return true
+        }
+        guard !isCurrentImageZoomed else {
+            return false
         }
 
         let velocity = panGesture.velocity(in: view)

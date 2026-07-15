@@ -14,6 +14,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
     let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
+    let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
 
     // MARK: - UIViewRepresentable
@@ -67,6 +68,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
         context.coordinator.model = model
         context.coordinator.navigationBar = navigationBar
         context.coordinator.onVisibleMetadataChanged = onVisibleMetadataChanged
+        context.coordinator.onZoomChanged = onZoomChanged
         context.coordinator.onClose = onClose
         context.coordinator.updateCollectionBackground()
 
@@ -93,6 +95,7 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
             contextMenuController: contextMenuController,
             navigationBar: navigationBar,
             onVisibleMetadataChanged: onVisibleMetadataChanged,
+            onZoomChanged: onZoomChanged,
             onClose: onClose
         )
     }
@@ -120,6 +123,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     let contextMenuController: NCMainTabBarController?
     weak var navigationBar: UINavigationBar?
     var onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
+    var onZoomChanged: (Bool) -> Void
     var onClose: (_ ocId: String?) -> Void
 
     private var didScrollToInitialIndex = false
@@ -136,12 +140,14 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         contextMenuController: NCMainTabBarController?,
         navigationBar: UINavigationBar?,
         onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void,
+        onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void
     ) {
         self.model = model
         self.contextMenuController = contextMenuController
         self.navigationBar = navigationBar
         self.onVisibleMetadataChanged = onVisibleMetadataChanged
+        self.onZoomChanged = onZoomChanged
         self.onClose = onClose
 
         super.init()
@@ -328,7 +334,11 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
+        let didChangePage = lastVisibleIndex != index
         lastVisibleIndex = index
+        if didChangePage {
+            onZoomChanged(false)
+        }
 
         jumpToIndex(
             index,
@@ -421,7 +431,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         // Selection is finalized when the scroll animation ends.
         isUserPaging = true
-        lastVisibleIndex = targetIndex
 
         updateCollectionBackground(for: targetIndex)
         updateVisibleMetadataTitle(for: targetIndex)
@@ -462,11 +471,20 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                     shouldAutoPlay: shouldAutoPlay
                 )
             },
-            onClose: { [weak self] ocId in
-                self?.onClose(ocId)
-            },
             onAutoPlayConsumed: { [weak model] in
                 model?.clearAutoPlayIfNeeded(for: page.index)
+            },
+            onZoomChanged: { [weak self] isZoomed in
+                guard let self,
+                      !self.isUserPaging,
+                      page.index == self.model.selectedIndex else {
+                    return
+                }
+
+                self.onZoomChanged(isZoomed)
+            },
+            onClose: { [weak self] ocId in
+                self?.onClose(ocId)
             },
             contextMenuController: contextMenuController,
             navigationBar: navigationBar
@@ -556,6 +574,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
 
         lastVisibleIndex = index
+        onZoomChanged(false)
         model.setSelectedIndex(index)
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
@@ -617,6 +636,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
 
         lastVisibleIndex = index
+        onZoomChanged(false)
         model.setSelectedIndex(index)
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
@@ -725,8 +745,9 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         onToggleChrome: @escaping () -> Void,
         onPreviousPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
         onNextPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
-        onClose: @escaping (_ ocId: String?) -> Void,
         onAutoPlayConsumed: @escaping () -> Void,
+        onZoomChanged: @escaping (Bool) -> Void,
+        onClose: @escaping (_ ocId: String?) -> Void,
         contextMenuController: NCMainTabBarController?,
         navigationBar: UINavigationBar?
     ) {
@@ -746,6 +767,7 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
                 onNextPage: onNextPage,
                 onClose: onClose,
                 onAutoPlayConsumed: onAutoPlayConsumed,
+                onZoomChanged: onZoomChanged,
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar
             )
