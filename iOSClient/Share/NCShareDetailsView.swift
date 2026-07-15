@@ -11,10 +11,19 @@ struct NCShareDetailsView: View {
     @State private var activeSelector: GovernanceSelector?
 
     private enum GovernanceSelector: String, Identifiable {
+        case sensitivity
         case retention
         case hold
 
         var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .sensitivity: return "_sensitivity_label_"
+            case .retention: return "_file_retention_"
+            case .hold: return "_legal_hold_"
+            }
+        }
     }
 
     init(metadata: tableMetadata) {
@@ -31,12 +40,12 @@ struct NCShareDetailsView: View {
                         Section(header:
                                     Text(NSLocalizedString("_governance_", comment: "")).font(.headline)
                         ) {
-                            labelPicker(
+                            labelSelectorRow(
                                 title: "_sensitivity_label_",
                                 labels: data.availableSensitivityLabels,
-                                selection: $model.selectedSensitivityLabelID
-                            ) { oldValue, newValue in
-                                await model.applySensitivityLabel(from: oldValue, to: newValue)
+                                selectedIDs: sensitivitySelection
+                            ) {
+                                activeSelector = .sensitivity
                             }
 
                             labelSelectorRow(
@@ -58,17 +67,7 @@ struct NCShareDetailsView: View {
                     }
                     .tint(Color(NCBrandColor.shared.getElement(account: model.account)))
                     .sheet(item: $activeSelector) { selector in
-                        let isRetention = selector == .retention
-
-                        NCGovernanceLabelSelectorView(
-                            title: isRetention ? "_file_retention_" : "_legal_hold_",
-                            labels: isRetention ? data.availableRetentionLabels : data.availableHoldLabels,
-                            account: model.account,
-                            initialSelection: isRetention ? model.selectedRetentionLabelIDs : model.selectedHoldLabelIDs
-                        ) { newSelection in
-                            await model.saveLabels(type: isRetention ? .retention : .hold, selectedIDs: newSelection)
-                        }
-                        .presentationDetents([.medium, .large])
+                        selectorSheet(selector, data: data)
                     }
 
                 case .error(let error):
@@ -80,26 +79,46 @@ struct NCShareDetailsView: View {
         }
     }
 
-    private func labelPicker(
-        title: String,
-        labels: [NKGovernanceLabel],
-        selection: Binding<String>,
-        onChange: @escaping (_ oldValue: String, _ newValue: String) async -> Void
-    ) -> some View {
-        HStack {
-            Text(NSLocalizedString(title, comment: ""))
-                .cappedFont(.body, maxDynamicType: .accessibility2)
-            Spacer()
-            Picker("", selection: selection) {
-                Text(NSLocalizedString("_none_", comment: "")).tag("")
-                ForEach(labels, id: \.id) { label in
-                    Text(label.name).tag(label.id)
-                }
-            }
-            .pickerStyle(.menu)
+    private var sensitivitySelection: Set<String> {
+        model.selectedSensitivityLabelID.isEmpty ? [] : [model.selectedSensitivityLabelID]
+    }
+
+    private func selectorSheet(_ selector: GovernanceSelector, data: GovernanceData) -> some View {
+        let labels: [NKGovernanceLabel]
+        let initialSelection: Set<String>
+
+        switch selector {
+        case .sensitivity:
+            labels = data.availableSensitivityLabels
+            initialSelection = sensitivitySelection
+        case .retention:
+            labels = data.availableRetentionLabels
+            initialSelection = model.selectedRetentionLabelIDs
+        case .hold:
+            labels = data.availableHoldLabels
+            initialSelection = model.selectedHoldLabelIDs
         }
-        .onChange(of: selection.wrappedValue) { oldValue, newValue in
-            Task { await onChange(oldValue, newValue) }
+
+        return NCGovernanceLabelSelectorView(
+            title: selector.title,
+            labels: labels,
+            account: model.account,
+            allowsMultipleSelection: selector != .sensitivity,
+            initialSelection: initialSelection
+        ) { newSelection in
+            await save(selector, newSelection: newSelection)
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    private func save(_ selector: GovernanceSelector, newSelection: Set<String>) async {
+        switch selector {
+        case .sensitivity:
+            await model.applySensitivityLabel(from: model.selectedSensitivityLabelID, to: newSelection.first ?? "")
+        case .retention:
+            await model.saveLabels(type: .retention, selectedIDs: newSelection)
+        case .hold:
+            await model.saveLabels(type: .hold, selectedIDs: newSelection)
         }
     }
 

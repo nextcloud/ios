@@ -42,25 +42,31 @@ final class NCShareDetailsGovernanceModel {
         async let hold = NextcloudKit.shared.getGovernanceAvailableHoldLabels(entityId: entityID, account: account)
         async let entity = NextcloudKit.shared.getGovernanceLabels(entityId: entityID, account: account)
 
-        guard let entityLabels = await entity.labels,
-              let sensitivityLabels = await sensitivity.labels,
-              let retentionLabels = await retention.labels,
-              let holdLabels = await hold.labels
-        else { return }
+        let entityResult = await entity
+        let sensitivityLabels = await sensitivity.labels
+        let retentionLabels = await retention.labels
+        let holdLabels = await hold.labels
 
-        selectedSensitivityLabelID = entityLabels.sensitivity?.id ?? ""
-        selectedRetentionLabelIDs = Set(entityLabels.retention.map(\.id))
-        // NKGovernanceEntityLabels exposes no hold, so applied holds can't be preselected.
+        if entityResult.labels == nil, sensitivityLabels == nil, retentionLabels == nil, holdLabels == nil {
+            state = .error(entityResult.error)
+            return
+        }
+
+        let entityLabels = entityResult.labels
+        selectedSensitivityLabelID = entityLabels?.sensitivity?.id ?? ""
+        selectedRetentionLabelIDs = Set(entityLabels?.retention.map(\.id) ?? [])
+        selectedHoldLabelIDs = Set(entityLabels?.hold.map(\.id) ?? [])
 
         state = .loaded(GovernanceData(
-            availableSensitivityLabels: sensitivityLabels,
-            availableRetentionLabels: retentionLabels,
-            availableHoldLabels: holdLabels
+            availableSensitivityLabels: sensitivityLabels ?? [],
+            availableRetentionLabels: retentionLabels ?? [],
+            availableHoldLabels: holdLabels ?? []
         ))
     }
 
     func applySensitivityLabel(from oldID: String, to newID: String) async {
         await applyLabel(type: .sensitivity, oldID: oldID, newID: newID)
+        selectedSensitivityLabelID = newID
     }
 
     /// Persists a multi-selection by diffing against what's applied and calling set/remove per changed label.

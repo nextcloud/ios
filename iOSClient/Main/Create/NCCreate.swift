@@ -195,6 +195,9 @@ class NCCreate: NSObject {
                     if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
                         pages.remove(at: idx)
                     }
+                    if !capabilities.governanceEnabled, let idx = pages.firstIndex(of: .details) {
+                        pages.remove(at: idx)
+                    }
 
                     shareViewController?.pages = pages
                     shareViewController?.metadata = metadata

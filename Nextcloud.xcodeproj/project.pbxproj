@@ -6630,10 +6630,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F7C55C9E2FB5B83A004A974F /* NextcloudKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = NextcloudKit;
-		};
 		F3374AEF2D78B01B002A38F9 /* BitCollections */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
@@ -6960,6 +6956,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		F7C55C9E2FB5B83A004A974F /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NextcloudKit;
 		};
 		F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */ = {
 			isa = XCSwiftPackageProductDependency;
