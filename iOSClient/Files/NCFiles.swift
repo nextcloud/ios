@@ -292,57 +292,74 @@ class NCFiles: NCCollectionViewCommon {
         //
         // E2EE section
         //
+        let error = await sectionE2ee(ocId: ocId)
+        if error != .success {
+            navigationController?.popViewController(animated: false)
 
-        let lock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl)
-        let resultsE2eeGetMetadata = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: account)
-
-        guard resultsE2eeGetMetadata.error == .success,
-              let e2eMetadata = resultsE2eeGetMetadata.e2eMetadata,
-              let version = resultsE2eeGetMetadata.version else {
-            if resultsE2eeGetMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
-                if error != .success {
-                    await showErrorBanner(windowScene: windowScene,
-                                          text: error.errorDescription,
-                                          errorCode: error.errorCode)
-                }
-            } else {
-                await showErrorBanner(windowScene: windowScene,
-                                      text: resultsE2eeGetMetadata.error.errorDescription,
-                                      errorCode: resultsE2eeGetMetadata.error.errorCode)
-            }
-            return(metadatas, resultsE2eeGetMetadata.error, reloadRequired)
-        }
-
-        var error = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
-                                                              signature: resultsE2eeGetMetadata.signature,
-                                                              serverUrl: serverUrl, session: self.session)
-
-        if error == .success {
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-            if version == "v1", capabilities.e2EEApiVersion.hasPrefix("2.") {
-                await showInfoBanner(windowScene: windowScene, text: "Conversion metadata v1 to v2 required, please wait...")
-                nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
-                NCActivityIndicator.shared.start()
-
-                error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
-                if error != .success {
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
-                }
-                NCActivityIndicator.shared.stop()
-            }
-        } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
         }
 
-        // Error: Go back
-        if error != .success {
-            navigationController?.popViewController(animated: false)
+        return (metadatas, error, reloadRequired)
+    }
+
+    private func sectionE2ee(ocId: String) async -> NKError {
+        var returnError = NKError()
+
+        // Get Metadata
+        let lock = await self.database.getE2ETokenLockAsync(account: session.account, serverUrl: serverUrl)
+        var result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)
+
+        if result.error != .success {
+            // Metadata not found ? Try to resend it
+            if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                nkLog(tag: self.global.logTagE2EE, message: "E2ee metadata not found, resend.")
+                await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
+                result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)
+            } else {
+                return result.error
+            }
         }
 
-        return (metadatas, error, reloadRequired)
+        guard result.error == .success,
+              let e2eMetadata = result.e2eMetadata,
+              let version = result.version else {
+            nkLog(tag: self.global.logTagE2EE, message: returnError.errorDescription)
+            return result.error
+        }
+
+        // Decode metadata
+        returnError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
+                                                                signature: result.signature,
+                                                                serverUrl: serverUrl,
+                                                                session: self.session)
+
+        // Old protocolo V1 ? -> Conversion
+        if returnError == .success {
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+            if version == "v1", capabilities.e2EEApiVersion.hasPrefix("2.") {
+                nkLog(tag: self.global.logTagE2EE, message: "E2ee Conversion v1 to v2.")
+                returnError = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: session.account)
+            }
+        // Checksums error ? (Desktop bug)
+        } else if returnError.errorCode == global.errorE2EEKeyChecksums || returnError.errorCode == global.errorE2EEKeyChecksumsEmpty {
+            let shouldContinue = await UIAlertController.showAlert(
+                from: self,
+                title: "_e2ee_checksum_error_title_",
+                message: "_e2ee_checksum_error_message_",
+                cancelAction: "_cancel_",
+                cancelStyle: .cancel,
+                continueAction: "_continue_",
+                continueStyle: .destructive
+            )
+            if shouldContinue {
+                nkLog(tag: self.global.logTagE2EE, message: "E2ee checksum unavailable - cpollo2onversion metadata requested from user.")
+                returnError = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
+            }
+        }
+
+        return returnError
     }
 
     func open(metadata: tableMetadata?) async {
