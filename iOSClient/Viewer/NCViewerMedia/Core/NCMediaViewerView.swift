@@ -9,6 +9,7 @@ import SwiftUI
 /// Main SwiftUI media viewer.
 struct NCMediaViewerView: View {
     @StateObject private var model: NCMediaViewerModel
+
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
     let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void

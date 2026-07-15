@@ -23,14 +23,21 @@ enum NCMediaViewerPageState {
 
 // MARK: - Page Model
 
-struct NCMediaViewerPageModel: Identifiable {
+@MainActor
+final class NCMediaViewerPageModel: ObservableObject, Identifiable {
     let id: String
     let index: Int
     let ocId: String
-    var metadata: tableMetadata?
-    var state: NCMediaViewerPageState
 
-    init(index: Int, ocId: String, metadata: tableMetadata? = nil, state: NCMediaViewerPageState = .idle) {
+    @Published var metadata: tableMetadata?
+    @Published var state: NCMediaViewerPageState
+
+    init(
+        index: Int,
+        ocId: String,
+        metadata: tableMetadata? = nil,
+        state: NCMediaViewerPageState = .idle
+    ) {
         self.id = ocId
         self.index = index
         self.ocId = ocId
@@ -250,7 +257,12 @@ final class NCMediaViewerModel: ObservableObject {
             return cachedPage
         }
 
-        let page = NCMediaViewerPageModel(index: index, ocId: ocId, metadata: nil, state: .idle)
+        let page = NCMediaViewerPageModel(
+            index: index,
+            ocId: ocId,
+            metadata: nil,
+            state: .idle
+        )
 
         cachedPagesByOcId[ocId] = page
         return page
@@ -381,11 +393,18 @@ final class NCMediaViewerModel: ObservableObject {
             await self.loadPage(index: index)
         }
 
-        loadingTasksByOcId[ocId] = NCMediaViewerLoadingTask(identifier: identifier, kind: .selected, task: task)
+        loadingTasksByOcId[ocId] = NCMediaViewerLoadingTask(
+            identifier: identifier,
+            kind: .selected,
+            task: task
+        )
 
         await task.value
 
-        clearLoadingTaskIfCurrent(ocId: ocId, identifier: identifier)
+        clearLoadingTaskIfCurrent(
+            ocId: ocId,
+            identifier: identifier
+        )
     }
 
     /// Reloads the page from the beginning, forcing a fresh metadata resolution before rebuilding the preview and media state.
@@ -455,11 +474,20 @@ final class NCMediaViewerModel: ObservableObject {
         isChromeHidden.toggle()
     }
 
-    func previewURL(for metadata: tableMetadata, ext: String) async -> URL? {
-        await loader.previewURL(for: metadata, ext: ext)
+    func previewURL(
+        for metadata: tableMetadata,
+        ext: String
+    ) async -> URL? {
+        await loader.previewURL(
+            for: metadata,
+            ext: ext
+        )
     }
 
-    func localPreviewURL(for metadata: tableMetadata, ext: String) -> URL? {
+    func localPreviewURL(
+        for metadata: tableMetadata,
+        ext: String
+    ) -> URL? {
         let localPath = utilityFileSystem.getDirectoryProviderStorageImageOcId(
             metadata.ocId,
             etag: metadata.etag,
@@ -475,7 +503,9 @@ final class NCMediaViewerModel: ObservableObject {
         return URL(fileURLWithPath: localPath)
     }
 
-    func resolveMetadataForThumbnail(at index: Int) async -> tableMetadata? {
+    func resolveMetadataForThumbnail(
+        at index: Int
+    ) async -> tableMetadata? {
         guard let ocId = ocId(at: index) else {
             return nil
         }
@@ -844,7 +874,8 @@ final class NCMediaViewerModel: ObservableObject {
             return
         }
 
-        if metadata.classFile == NKTypeClassFile.image.rawValue, let previewURL {
+        if metadata.classFile == NKTypeClassFile.image.rawValue,
+           let previewURL {
             setState(
                 .image(
                     previewURL: previewURL,
@@ -932,7 +963,9 @@ final class NCMediaViewerModel: ObservableObject {
         )
     }
 
-    private func pageState(for ocId: String) -> NCMediaViewerPageState {
+    private func pageState(
+        for ocId: String
+    ) -> NCMediaViewerPageState {
         cachedPagesByOcId[ocId]?.state ?? .idle
     }
 
@@ -963,7 +996,9 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func shouldLoadPreview(for metadata: tableMetadata) -> Bool {
+    private func shouldLoadPreview(
+        for metadata: tableMetadata
+    ) -> Bool {
         switch metadata.classFile {
         case NKTypeClassFile.image.rawValue,
              NKTypeClassFile.audio.rawValue,
@@ -975,13 +1010,19 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
-    private func setMetadata(_ metadata: tableMetadata, for ocId: String) {
+    private func setMetadata(
+        _ metadata: tableMetadata,
+        for ocId: String
+    ) {
         updatePage(ocId: ocId) { page in
             page.metadata = metadata
         }
     }
 
-    private func setState(_ state: NCMediaViewerPageState, for ocId: String) {
+    private func setState(
+        _ state: NCMediaViewerPageState,
+        for ocId: String
+    ) {
         updatePage(ocId: ocId) { page in
             page.state = state
         }
@@ -1079,29 +1120,38 @@ final class NCMediaViewerModel: ObservableObject {
     private func updatePage(
         ocId: String,
         publishRevision: Bool = true,
-        mutation: (inout NCMediaViewerPageModel) -> Void
+        mutation: (NCMediaViewerPageModel) -> Void
     ) {
         guard let index = ocIds.firstIndex(of: ocId) else {
             return
         }
 
-        var page = cachedPagesByOcId[ocId] ?? NCMediaViewerPageModel(
-            index: index,
-            ocId: ocId,
-            metadata: nil,
-            state: .idle
-        )
+        let page: NCMediaViewerPageModel
 
-        mutation(&page)
+        if let cachedPage = cachedPagesByOcId[ocId] {
+            page = cachedPage
+        } else {
+            page = NCMediaViewerPageModel(
+                index: index,
+                ocId: ocId,
+                metadata: nil,
+                state: .idle
+            )
 
-        cachedPagesByOcId[ocId] = page
+            cachedPagesByOcId[ocId] = page
+        }
+
+        mutation(page)
 
         if publishRevision {
             revision &+= 1
         }
     }
 
-    private func setThumbnailMetadata(_ metadata: tableMetadata, for ocId: String) {
+    private func setThumbnailMetadata(
+        _ metadata: tableMetadata,
+        for ocId: String
+    ) {
         updatePage(
             ocId: ocId,
             publishRevision: false
@@ -1120,7 +1170,6 @@ final class NCMediaViewerModel: ObservableObject {
 
         loadingTasksByOcId[ocId] = nil
     }
-
 }
 
 // MARK: - NCMediaViewerPageState Helpers

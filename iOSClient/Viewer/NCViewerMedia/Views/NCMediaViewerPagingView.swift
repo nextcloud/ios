@@ -11,6 +11,7 @@ import NextcloudKit
 
 struct NCMediaViewerPagingView: UIViewRepresentable {
     @ObservedObject var model: NCMediaViewerModel
+
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
     let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
@@ -86,7 +87,6 @@ struct NCMediaViewerPagingView: UIViewRepresentable {
         }
 
         context.coordinator.jumpToSelectedIndexIfNeeded(animated: false)
-        context.coordinator.refreshVisibleCells()
     }
 
     func makeCoordinator() -> NCMediaViewerPagingCoordinator {
@@ -783,8 +783,8 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
             currentOcId = page.ocId
         }
 
-        if let hostingController {
-            hostingController.rootView = view
+        if let hostingController,
+           currentOcId == page.ocId {
             hostingController.view.backgroundColor = backgroundColor
             hostingController.view.frame = contentView.bounds
         } else {
