@@ -42,26 +42,24 @@ class NCEndToEndMetadata: NSObject {
         data.printJson()
 
         if (try? JSONDecoder().decode(E2eeV1.self, from: data)) != nil {
-            return await decodeMetadataV1(metadata, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
+            return await decodeMetadataV1(metadata,
+                                          serverUrl: serverUrl,
+                                          ocIdServerUrl: directory.ocId,
+                                          session: session)
         } else if (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil {
-            return await decodeMetadataV12(metadata, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, session: session)
+            return await decodeMetadataV12(metadata,
+                                           serverUrl: serverUrl,
+                                           ocIdServerUrl: directory.ocId,
+                                           session: session)
         } else if (try? JSONDecoder().decode(E2eeV2.self, from: data)) != nil {
             return await decodeMetadataV2(metadata,
                                           signature: signature,
                                           serverUrl: serverUrl,
                                           ocIdServerUrl: directory.ocId,
                                           session: session)
-
-            /*
-            if result.requiredEncodeMetadata, result.error == .success {
-                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
-                return error
-            } else {
-                return result.error
-            }
-            */
         } else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Unable to decode the metadata file")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEVersion,
+                           errorDescription: "Unable to decode the metadata file")
         }
     }
 }

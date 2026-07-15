@@ -362,31 +362,6 @@ extension NCEndToEndMetadata {
                 returnError = NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksumsEmpty,
                                       errorDescription: NSLocalizedString("_e2ee_key_no_checksums_found_", comment: ""))
             }
-                // Desktop bug CHECKSUM not present
-                /*
-                var controller: UIViewController?
-#if EXTENSION
-                controller = await MainActor.run {
-                    NCExtensionUIContext.shared.viewController
-                }
-#else
-                controller = await SceneManager.shared.getController(account: session.account)
-#endif
-                let shouldContinue = await showAlert(from: controller,
-                                                     title: "_e2ee_checksum_empty_title_",
-                                                     message: "_e2ee_checksum_empty_message_",
-                                                     cancelAction: "_go_back_",
-                                                     continueAction: "_continue_anyway_")
-                if shouldContinue {
-                    requiredEncodeMetadata = true
-                } else {
-                    return (
-                        NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                                errorDescription: NSLocalizedString("_e2ee_key_no_checksums_found_", comment: "")),
-                        requiredEncodeMetadata
-                    )
-                }
-                */
 
             if let keyChecksums, !keyChecksums.isEmpty {
                 let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey)
