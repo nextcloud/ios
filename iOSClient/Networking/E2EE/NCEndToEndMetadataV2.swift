@@ -360,7 +360,7 @@ extension NCEndToEndMetadata {
 
             if keyChecksums == nil || keyChecksums?.isEmpty == true {
                 returnError = NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksumsEmpty,
-                                      errorDescription: NSLocalizedString("_e2ee_key_no_checksums_found_", comment: ""))
+                                      errorDescription: NSLocalizedString("_e2ee_key_no_checksum_found_", comment: ""))
             }
 
             if let keyChecksums, !keyChecksums.isEmpty {
@@ -369,7 +369,7 @@ extension NCEndToEndMetadata {
                     // Hash is correct 
                 } else {
                     returnError = NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums,
-                                          errorDescription: NSLocalizedString("_e2ee_key_checksums_", comment: ""))
+                                          errorDescription: NSLocalizedString("_e2ee_key_checksum_", comment: ""))
                 }
             }
 
