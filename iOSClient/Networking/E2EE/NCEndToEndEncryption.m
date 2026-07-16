@@ -119,7 +119,7 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
 
     // Common Name = UserID.
     addName("CN", cUserId);
-    
+
     // The organization of the cert.
     addName("O",  "Nextcloud");
     
