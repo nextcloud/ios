@@ -48,7 +48,7 @@ struct NCShareDetailsView: View {
                                 activeSelector = .sensitivity
                             }
 
-                            labelSelectorRow(
+                            labelSelectorSubtitleRow(
                                 title: "_file_retention_",
                                 labels: data.availableRetentionLabels,
                                 selectedIDs: model.selectedRetentionLabelIDs
@@ -56,7 +56,7 @@ struct NCShareDetailsView: View {
                                 activeSelector = .retention
                             }
 
-                            labelSelectorRow(
+                            labelSelectorSubtitleRow(
                                 title: "_legal_hold_",
                                 labels: data.availableHoldLabels,
                                 selectedIDs: model.selectedHoldLabelIDs
@@ -139,6 +139,33 @@ struct NCShareDetailsView: View {
                 Text(summary(labels: labels, selectedIDs: selectedIDs))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+
+    private func labelSelectorSubtitleRow(
+        title: String,
+        labels: [NKGovernanceLabel],
+        selectedIDs: Set<String>,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(NSLocalizedString(title, comment: ""))
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                        .foregroundStyle(.primary)
+
+                    Text(summary(labels: labels, selectedIDs: selectedIDs))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
