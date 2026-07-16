@@ -99,6 +99,28 @@ struct NCManageE2EEView: View {
                                 )
                             )
                             .cappedFont(.body, maxDynamicType: .accessibility2)
+
+                            HStack {
+                                Label {
+                                    Text(NSLocalizedString("_certificate_renew_", comment: ""))
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                                } icon: {
+                                    Image(systemName: "arrow.clockwise")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                                        .fontWeight(.light)
+                                        .frame(width: 25, height: 25)
+                                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                                }
+                                Spacer()
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                Task {
+                                    await model.renewCertificate()
+                                }
+                            }
                         } header: {
                             Text(NSLocalizedString("_certificate_", comment: ""))
                                 .font(.headline)
