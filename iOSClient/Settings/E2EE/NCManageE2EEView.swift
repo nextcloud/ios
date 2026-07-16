@@ -79,6 +79,31 @@ struct NCManageE2EEView: View {
                             }
                         }
                     }
+
+                    if let certificateValidity = model.certificateValidity {
+                        Section {
+                            LabeledContent(
+                                NSLocalizedString("_certificate_valid_from_", comment: ""),
+                                value: certificateValidity.notBefore.formatted(
+                                    date: .long,
+                                    time: .standard
+                                )
+                            )
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
+
+                            LabeledContent(
+                                NSLocalizedString("_certificate_valid_until_", comment: ""),
+                                value: certificateValidity.notAfter.formatted(
+                                    date: .long,
+                                    time: .standard
+                                )
+                            )
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
+                        } header: {
+                            Text(NSLocalizedString("_certificate_", comment: ""))
+                                .font(.headline)
+                        }
+                    }
 #if DEBUG
                     deleteCerificateSection
 #endif

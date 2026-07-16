@@ -12,6 +12,20 @@ class NCNetworkingE2EE: NSObject {
     let e2EEApiVersion1 = "v1"
     let e2EEApiVersion2 = "v2"
 
+    public struct X509CertificateValidity {
+        let notBefore: Date
+        let notAfter: Date
+
+        var isValid: Bool {
+            let now = Date()
+            return now >= notBefore && now <= notAfter
+        }
+
+        var isExpired: Bool {
+            Date() > notAfter
+        }
+    }
+
     func isInUpload(account: String, serverUrl: String) async -> Bool {
         let counter = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)",
                                                                                    account,
@@ -307,6 +321,222 @@ class NCNetworkingE2EE: NSObject {
             if resultsLockE2EEFolder.error == .success {
                 await self.database.deleteE2ETokenLockAsync(account: account, serverUrl: result.serverUrl)
             }
+        }
+    }
+
+
+
+
+    /// Extracts the validity dates from an X.509 certificate encoded in PEM format.
+    ///
+    /// - Parameter pemCertificate: The complete PEM certificate, including
+    ///   `BEGIN CERTIFICATE` and `END CERTIFICATE` markers.
+    /// - Returns: The certificate validity interval, or `nil` if the certificate
+    ///   cannot be decoded.
+    func getX509CertificateValidity(from pemCertificate: String) -> X509CertificateValidity? {
+        let base64Certificate = pemCertificate
+            .replacingOccurrences(
+                of: "-----BEGIN CERTIFICATE-----",
+                with: ""
+            )
+            .replacingOccurrences(
+                of: "-----END CERTIFICATE-----",
+                with: ""
+            )
+            .components(separatedBy: .whitespacesAndNewlines)
+            .joined()
+
+        guard let certificateData = Data(base64Encoded: base64Certificate) else {
+            return nil
+        }
+
+        var reader = ASN1Reader(data: certificateData)
+
+        guard let certificateSequence = reader.readElement(expectedTag: 0x30) else {
+            return nil
+        }
+
+        var certificateReader = ASN1Reader(data: certificateSequence)
+
+        guard let tbsCertificateData = certificateReader.readElement(expectedTag: 0x30) else {
+            return nil
+        }
+
+        var tbsReader = ASN1Reader(data: tbsCertificateData)
+
+        // Optional explicit version field: [0] EXPLICIT Version.
+        if tbsReader.peekTag() == 0xA0 {
+            guard tbsReader.readElement() != nil else {
+                return nil
+            }
+        }
+
+        // serialNumber
+        guard tbsReader.readElement(expectedTag: 0x02) != nil else {
+            return nil
+        }
+
+        // signature
+        guard tbsReader.readElement(expectedTag: 0x30) != nil else {
+            return nil
+        }
+
+        // issuer
+        guard tbsReader.readElement(expectedTag: 0x30) != nil else {
+            return nil
+        }
+
+        // validity
+        guard let validityData = tbsReader.readElement(expectedTag: 0x30) else {
+            return nil
+        }
+
+        var validityReader = ASN1Reader(data: validityData)
+
+        guard let notBefore = validityReader.readTime(),
+              let notAfter = validityReader.readTime() else {
+            return nil
+        }
+
+        return X509CertificateValidity(
+            notBefore: notBefore,
+            notAfter: notAfter
+        )
+    }
+
+    private struct ASN1Reader {
+        private let data: Data
+        private var offset = 0
+
+        init(data: Data) {
+            self.data = data
+        }
+
+        mutating func peekTag() -> UInt8? {
+            guard offset < data.count else {
+                return nil
+            }
+
+            return data[offset]
+        }
+
+        mutating func readElement(
+            expectedTag: UInt8? = nil
+        ) -> Data? {
+            guard offset < data.count else {
+                return nil
+            }
+
+            let tag = data[offset]
+            offset += 1
+
+            if let expectedTag, tag != expectedTag {
+                return nil
+            }
+
+            guard let length = readLength(),
+                  length >= 0,
+                  offset + length <= data.count else {
+                return nil
+            }
+
+            let value = data.subdata(in: offset..<(offset + length))
+            offset += length
+
+            return value
+        }
+
+        mutating func readTime() -> Date? {
+            guard let tag = peekTag(),
+                  tag == 0x17 || tag == 0x18,
+                  let value = readElement(expectedTag: tag),
+                  let string = String(data: value, encoding: .ascii) else {
+                return nil
+            }
+
+            switch tag {
+            case 0x17:
+                return Self.parseUTCTime(string)
+
+            case 0x18:
+                return Self.parseGeneralizedTime(string)
+
+            default:
+                return nil
+            }
+        }
+
+        private mutating func readLength() -> Int? {
+            guard offset < data.count else {
+                return nil
+            }
+
+            let firstByte = data[offset]
+            offset += 1
+
+            if firstByte & 0x80 == 0 {
+                return Int(firstByte)
+            }
+
+            let byteCount = Int(firstByte & 0x7F)
+
+            guard byteCount > 0,
+                  byteCount <= MemoryLayout<Int>.size,
+                  offset + byteCount <= data.count else {
+                return nil
+            }
+
+            var length = 0
+
+            for _ in 0..<byteCount {
+                guard length <= (Int.max >> 8) else {
+                    return nil
+                }
+
+                length = (length << 8) | Int(data[offset])
+                offset += 1
+            }
+
+            return length
+        }
+
+        private static func parseUTCTime(_ value: String) -> Date? {
+            parseDate(
+                value,
+                formats: [
+                    "yyMMddHHmmss'Z'",
+                    "yyMMddHHmm'Z'"
+                ]
+            )
+        }
+
+        private static func parseGeneralizedTime(_ value: String) -> Date? {
+            parseDate(
+                value,
+                formats: [
+                    "yyyyMMddHHmmss'Z'",
+                    "yyyyMMddHHmm'Z'"
+                ]
+            )
+        }
+
+        private static func parseDate(
+            _ value: String,
+            formats: [String]
+        ) -> Date? {
+            for format in formats {
+                let formatter = DateFormatter()
+                formatter.calendar = Calendar(identifier: .gregorian)
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                formatter.timeZone = TimeZone(secondsFromGMT: 0)
+                formatter.dateFormat = format
+
+                if let date = formatter.date(from: value) {
+                    return date
+                }
+            }
+
+            return nil
         }
     }
 }
