@@ -70,6 +70,8 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
             let e2ee = NCEndToEndSetup(controller: controller)
             let certificate = try await e2ee.renewCertificate()
             self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
+            await showInfoBanner(windowScene: windowScene,
+                                 text: "_e2e_renew_certificate_success_")
         } catch let error as NKError {
             if error.errorCode == NSUserCancelledError {
                 return
