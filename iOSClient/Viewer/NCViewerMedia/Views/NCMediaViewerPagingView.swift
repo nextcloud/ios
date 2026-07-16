@@ -768,7 +768,6 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
             NCMediaViewerPageView(
                 model: model,
                 page: page,
-                isChromeHidden: isChromeHidden,
                 onToggleChrome: onToggleChrome,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
@@ -783,7 +782,6 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
             )
             .id(page.ocId)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(backgroundColor))
             .ignoresSafeArea()
         )
 

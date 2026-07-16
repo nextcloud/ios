@@ -310,8 +310,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         floatingTitleView.update(
             primaryText: primaryTitle,
-            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date),
-            textColor: .white
+            secondaryText: floatingTitleDateFormatter.string(from: metadata.date as Date)
         )
     }
 

@@ -279,8 +279,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
         floatingTitleView.update(
             primaryText: primaryTitle,
-            secondaryText: floatingTitleSecondaryText(for: metadata),
-            textColor: floatingTitleTextColor(for: backgroundColor)
+            secondaryText: floatingTitleSecondaryText(for: metadata)
         )
     }
 

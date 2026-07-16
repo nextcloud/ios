@@ -35,7 +35,7 @@ struct NCMediaViewerView: View {
 
     var body: some View {
         ZStack {
-            Color.ncViewerBackground(.system)
+            Color.black
                 .ignoresSafeArea()
 
             NCMediaViewerPagingView(
@@ -85,7 +85,6 @@ struct NCMediaViewerView: View {
                 .zIndex(10)
             }
         }
-        .background(Color.ncViewerBackground(.system))
         .ignoresSafeArea()
         .statusBarHidden(true)
         .task {

@@ -11,7 +11,6 @@ struct NCMediaViewerPageView: View {
     @ObservedObject var model: NCMediaViewerModel
     @ObservedObject var page: NCMediaViewerPageModel
 
-    let isChromeHidden: Bool
     let onToggleChrome: () -> Void
 
     let canGoPrevious: Bool
@@ -98,7 +97,7 @@ struct NCMediaViewerPageView: View {
     private var backgroundStyle: NCViewerBackgroundStyle {
         ncViewerBackgroundStyle(
             for: page.metadata,
-            isChromeHidden: isChromeHidden
+            isChromeHidden: model.isChromeHidden
         )
     }
 
@@ -205,7 +204,7 @@ struct NCMediaViewerPageView: View {
                 localURL: localURL,
                 previewURL: previewURL,
                 isSelected: isSelected,
-                isChromeHidden: isChromeHidden,
+                isChromeHidden: model.isChromeHidden,
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
