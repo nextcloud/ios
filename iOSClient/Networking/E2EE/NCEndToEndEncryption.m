@@ -120,20 +120,17 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     // Common Name = UserID.
     addName("CN", cUserId);
     
-    // The organizational unit for the cert. Usually this is a department.
-    addName("OU", "Certificate Authority");
-    
     // The organization of the cert.
     addName("O",  "Nextcloud");
     
     // The city of the organization.
-    addName("L",  "Vicenza");
+    addName("L",  "Stuttgart");
     
     // The state/province of the organization.
-    addName("S",  "Italy");
-    
+    addName("ST",  "Baden-Wuerttemberg");
+
     // The country (ISO 3166) of the organization
-    addName("C",  "IT");
+    addName("C",  "DE");
     
     X509_set_issuer_name(x509, name);
     
