@@ -28,9 +28,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
         configureStackView()
         updateAppearance()
 
-        registerForTraitChanges([UITraitUserInterfaceStyle.self]) {
-            [weak self] (_: NCMediaViewerFloatingTitleView, _: UITraitCollection) in
-
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (_: NCMediaViewerFloatingTitleView, _: UITraitCollection) in
             self?.updateAppearance()
         }
     }
@@ -237,3 +235,4 @@ final class NCMediaViewerFloatingTitleView: UIView {
         secondaryLabel.textColor = textColor.withAlphaComponent(0.82)
     }
 }
+

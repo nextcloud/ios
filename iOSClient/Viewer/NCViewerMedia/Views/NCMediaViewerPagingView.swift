@@ -834,10 +834,4 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         contentView.addSubview(hostingController.view)
         self.hostingController = hostingController
     }
-
-    func updateBackgroundColor(_ backgroundColor: UIColor) {
-        self.backgroundColor = backgroundColor
-        contentView.backgroundColor = backgroundColor
-        hostingController?.view.backgroundColor = backgroundColor
-    }
 }
