@@ -37,30 +37,21 @@ final class NCShareDetailsGovernanceModel {
     private var entityID: String { metadata.fileId }
 
     func load() async {
-        async let sensitivity = NextcloudKit.shared.getGovernanceAvailableSensitivityLabels(entityId: entityID, account: account)
-        async let retention = NextcloudKit.shared.getGovernanceAvailableRetentionLabels(entityId: entityID, account: account)
-        async let hold = NextcloudKit.shared.getGovernanceAvailableHoldLabels(entityId: entityID, account: account)
-        async let entity = NextcloudKit.shared.getGovernanceLabels(entityId: entityID, account: account)
+        let result = await NextcloudKit.shared.getGovernanceAvailableLabels(entityId: entityID, account: account)
 
-        let entityResult = await entity
-        let sensitivityLabels = await sensitivity.labels
-        let retentionLabels = await retention.labels
-        let holdLabels = await hold.labels
-
-        if entityResult.labels == nil, sensitivityLabels == nil, retentionLabels == nil, holdLabels == nil {
-            state = .error(entityResult.error)
+        guard let labels = result.labels else {
+            state = .error(result.error)
             return
         }
 
-        let entityLabels = entityResult.labels
-        selectedSensitivityLabelID = entityLabels?.sensitivity?.id ?? ""
-        selectedRetentionLabelIDs = Set(entityLabels?.retention.map(\.id) ?? [])
-        selectedHoldLabelIDs = Set(entityLabels?.hold.map(\.id) ?? [])
+        selectedSensitivityLabelID = labels.sensitivity.first(where: \.isAssigned)?.id ?? ""
+        selectedRetentionLabelIDs = Set(labels.retention.filter(\.isAssigned).map(\.id))
+        selectedHoldLabelIDs = Set(labels.hold.filter(\.isAssigned).map(\.id))
 
         state = .loaded(GovernanceData(
-            availableSensitivityLabels: sensitivityLabels ?? [],
-            availableRetentionLabels: retentionLabels ?? [],
-            availableHoldLabels: holdLabels ?? []
+            availableSensitivityLabels: labels.sensitivity,
+            availableRetentionLabels: labels.retention,
+            availableHoldLabels: labels.hold
         ))
     }
 
