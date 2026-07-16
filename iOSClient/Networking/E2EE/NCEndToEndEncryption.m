@@ -239,6 +239,51 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     return publicKey;
 }
 
+- (NSString *)extractPublicKeyFromCertificateSigningRequest:(NSString *)pemCSR
+{
+    const char *ptrCSR = [pemCSR cStringUsingEncoding:NSUTF8StringEncoding];
+
+    BIO *csrBio = BIO_new_mem_buf(
+        ptrCSR,
+        (int)strlen(ptrCSR)
+    );
+
+    if (!csrBio) {
+        return nil;
+    }
+
+    X509_REQ *csr = PEM_read_bio_X509_REQ(
+        csrBio,
+        NULL,
+        NULL,
+        NULL
+    );
+
+    if (!csr) {
+        fprintf(stderr, "unable to parse CSR in memory\n");
+        BIO_free(csrBio);
+        return nil;
+    }
+
+    EVP_PKEY *pkey = X509_REQ_get_pubkey(csr);
+
+    if (!pkey) {
+        X509_REQ_free(csr);
+        BIO_free(csrBio);
+        return nil;
+    }
+
+    NSString *publicKey = [self pubKeyToString:pkey];
+
+    EVP_PKEY_free(pkey);
+    X509_REQ_free(csr);
+    BIO_free(csrBio);
+
+    NSLog(@"[INFO] \n%@", publicKey);
+
+    return publicKey;
+}
+
 - (BOOL)saveToDiskPEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directory:(NSString *)directory
 {
     FILE *f;
