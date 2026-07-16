@@ -8,7 +8,6 @@ import NextcloudKit
 // MARK: - AVPlayer Presenter
 @MainActor
 enum NCVideoAVPlayerPresenter {
-
     // MARK: - State
     private static weak var currentViewController: NCVideoAVPlayerViewController?
     private static var currentURL: URL?

@@ -17,6 +17,7 @@ struct NCLivePhotoViewerContentView: View {
     let videoURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle
     let topOverlayInset: CGFloat
+    let onZoomChanged: (Bool) -> Void
 
     @State private var livePhoto: PHLivePhoto?
     @State private var isPlayingLivePhoto = false
@@ -28,7 +29,8 @@ struct NCLivePhotoViewerContentView: View {
         fullURL: URL?,
         videoURL: URL?,
         backgroundStyle: NCViewerBackgroundStyle = .system,
-        topOverlayInset: CGFloat = 0
+        topOverlayInset: CGFloat = 0,
+        onZoomChanged: @escaping (Bool) -> Void = { _ in }
     ) {
         self.identifier = identifier
         self.previewURL = previewURL
@@ -36,6 +38,7 @@ struct NCLivePhotoViewerContentView: View {
         self.videoURL = videoURL
         self.backgroundStyle = backgroundStyle
         self.topOverlayInset = topOverlayInset
+        self.onZoomChanged = onZoomChanged
     }
 
     var body: some View {
@@ -95,7 +98,8 @@ struct NCLivePhotoViewerContentView: View {
             previewURL: previewURL,
             fullURL: fullURL,
             backgroundStyle: backgroundStyle,
-            allowsImageAnalysis: false
+            allowsImageAnalysis: false,
+            onZoomChanged: onZoomChanged
         )
     }
 

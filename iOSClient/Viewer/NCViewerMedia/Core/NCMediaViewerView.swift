@@ -9,9 +9,11 @@ import SwiftUI
 /// Main SwiftUI media viewer.
 struct NCMediaViewerView: View {
     @StateObject private var model: NCMediaViewerModel
+
     let contextMenuController: NCMainTabBarController?
     let navigationBar: UINavigationBar?
     let onVisibleMetadataChanged: (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void
+    let onZoomChanged: (Bool) -> Void
     let onClose: (_ ocId: String?) -> Void
 
     /// Creates the media viewer view.
@@ -20,12 +22,14 @@ struct NCMediaViewerView: View {
         contextMenuController: NCMainTabBarController? = nil,
         navigationBar: UINavigationBar? = nil,
         onVisibleMetadataChanged: @escaping (_ metadata: tableMetadata?, _ backgroundColor: UIColor) -> Void = { _, _ in },
+        onZoomChanged: @escaping (Bool) -> Void = { _ in },
         onClose: @escaping (_ ocId: String?) -> Void = { _ in }
     ) {
         _model = StateObject(wrappedValue: model)
         self.contextMenuController = contextMenuController
         self.navigationBar = navigationBar
         self.onVisibleMetadataChanged = onVisibleMetadataChanged
+        self.onZoomChanged = onZoomChanged
         self.onClose = onClose
     }
 
@@ -39,6 +43,7 @@ struct NCMediaViewerView: View {
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar,
                 onVisibleMetadataChanged: onVisibleMetadataChanged,
+                onZoomChanged: onZoomChanged,
                 onClose: onClose
             )
             .ignoresSafeArea()
