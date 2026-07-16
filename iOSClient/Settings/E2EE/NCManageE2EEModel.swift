@@ -66,43 +66,24 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
 
     @MainActor
     func renewCertificate() async {
-        guard let privateKeyPEM = preference.getEndToEndPrivateKey(account: self.session.account) else {
-            return
-        }
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-        let options = NCNetworkingE2EE().getOptions(account: session.account, capabilities: capabilities)
         do {
-            let csr = try networkingE2EE.createCertificateSigningRequest(
-                privateKeyPEM: privateKeyPEM,
-                commonName: self.session.userId
+            let e2ee = NCEndToEndSetup(controller: controller)
+            let certificate = try await e2ee.renewCertificate()
+            self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
+        } catch let error as NKError {
+            if error.errorCode == NSUserCancelledError {
+                return
+            }
+            await showErrorBanner(
+                windowScene: windowScene,
+                text: error.errorDescription
             )
-
-            let results = await NextcloudKit.shared.signE2EECertificateAsync(certificate: csr, account: self.session.account, options: options)
-
-            guard results.error == .success,
-                  let certificate = results.certificate
-            else {
-                throw results.error == .success
-                    ? NKError(
-                        errorCode: global.errorInternalError,
-                        errorDescription: NSLocalizedString("_e2ee_setup_sign_certificate_", comment: "")
-                    )
-                    : results.error
-            }
-
-            // Verify PublicKey
-            let extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
-            guard extractedPublicKey == NCEndToEndEncryption.shared().generatedPublicKey else {
-                throw NKError(
-                    errorCode: global.errorInternalError,
-                    errorDescription: NSLocalizedString("_e2ee_setup_extract_publickey_", comment: "")
-                )
-            }
-
-            preference.setEndToEndCertificate(account: self.session.account, certificate: certificate)
-
         } catch {
-            await showErrorBanner( windowScene: windowScene, text: error.localizedDescription)
+            // fallback (non NKError)
+            await showErrorBanner(
+                windowScene: windowScene,
+                text: error.localizedDescription
+            )
         }
     }
 
@@ -220,4 +201,3 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
         }
     }
 }
-
