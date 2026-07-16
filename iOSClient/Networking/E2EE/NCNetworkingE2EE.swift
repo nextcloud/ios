@@ -26,6 +26,15 @@ class NCNetworkingE2EE: NSObject {
         }
     }
 
+    enum E2EECSRError: Error {
+        case invalidPrivateKey
+        case unableToCreateRequest
+        case unableToSetSubject
+        case unableToSetPublicKey
+        case unableToSignRequest
+        case unableToEncodeRequest
+    }
+
     func isInUpload(account: String, serverUrl: String) async -> Bool {
         let counter = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)",
                                                                                    account,
@@ -324,9 +333,6 @@ class NCNetworkingE2EE: NSObject {
         }
     }
 
-
-
-
     /// Extracts the validity dates from an X.509 certificate encoded in PEM format.
     ///
     /// - Parameter pemCertificate: The complete PEM certificate, including
@@ -538,5 +544,146 @@ class NCNetworkingE2EE: NSObject {
 
             return nil
         }
+    }
+
+    /// Creates a new PKCS#10 certificate signing request using an existing
+    /// RSA private key.
+    ///
+    /// The generated CSR preserves the existing key pair because the public key
+    /// is derived directly from the supplied private key.
+    ///
+    /// - Parameters:
+    ///   - privateKeyPEM: The existing private key encoded in PEM format.
+    ///   - commonName: The certificate common name.
+    ///   - country: The two-letter country code.
+    ///   - state: The state or province.
+    ///   - locality: The locality or city.
+    ///   - organization: The organization name.
+    /// - Returns: The PKCS#10 certificate signing request encoded in PEM format.
+    func createCertificateSigningRequest(
+        privateKeyPEM: String,
+        commonName: String,
+        country: String = "DE",
+        state: String = "Baden-Wuerttemberg",
+        locality: String = "Stuttgart",
+        organization: String = "Nextcloud"
+    ) throws -> String {
+        let privateKeyBIO: OpaquePointer? = privateKeyPEM.withCString { pointer in
+            BIO_new_mem_buf(
+                pointer,
+                Int32(privateKeyPEM.utf8.count)
+            )
+        }
+
+        guard let privateKeyBIO else {
+            throw E2EECSRError.invalidPrivateKey
+        }
+
+        defer {
+            BIO_free(privateKeyBIO)
+        }
+
+        guard let privateKey = PEM_read_bio_PrivateKey(
+            privateKeyBIO,
+            nil,
+            nil,
+            nil
+        ) else {
+            throw E2EECSRError.invalidPrivateKey
+        }
+
+        defer {
+            EVP_PKEY_free(privateKey)
+        }
+
+        guard let request = X509_REQ_new() else {
+            throw E2EECSRError.unableToCreateRequest
+        }
+
+        defer {
+            X509_REQ_free(request)
+        }
+
+        guard X509_REQ_set_version(request, 0) == 1,
+              let subject = X509_REQ_get_subject_name(request) else {
+            throw E2EECSRError.unableToCreateRequest
+        }
+
+        func addSubjectEntry(
+            _ name: String,
+            value: String
+        ) -> Bool {
+            name.withCString { namePointer in
+                value.withCString { valuePointer in
+                    X509_NAME_add_entry_by_txt(
+                        subject,
+                        namePointer,
+                        MBSTRING_UTF8,
+                        UnsafePointer<UInt8>(
+                            OpaquePointer(valuePointer)
+                        ),
+                        -1,
+                        -1,
+                        0
+                    ) == 1
+                }
+            }
+        }
+
+        guard addSubjectEntry("C", value: country),
+              addSubjectEntry("ST", value: state),
+              addSubjectEntry("L", value: locality),
+              addSubjectEntry("O", value: organization),
+              addSubjectEntry("CN", value: commonName) else {
+            throw E2EECSRError.unableToSetSubject
+        }
+
+        guard X509_REQ_set_pubkey(request, privateKey) == 1 else {
+            throw E2EECSRError.unableToSetPublicKey
+        }
+
+        guard X509_REQ_sign(
+            request,
+            privateKey,
+            EVP_sha256()
+        ) > 0 else {
+            throw E2EECSRError.unableToSignRequest
+        }
+
+        guard let outputBIO = BIO_new(BIO_s_mem()) else {
+            throw E2EECSRError.unableToEncodeRequest
+        }
+
+        defer {
+            BIO_free(outputBIO)
+        }
+
+        guard PEM_write_bio_X509_REQ(outputBIO, request) == 1 else {
+            throw E2EECSRError.unableToEncodeRequest
+        }
+
+        let length = BIO_ctrl_pending(outputBIO)
+
+        guard length > 0 else {
+            throw E2EECSRError.unableToEncodeRequest
+        }
+
+        var buffer = [UInt8](repeating: 0, count: Int(length))
+
+        let bytesRead = BIO_read(
+            outputBIO,
+            &buffer,
+            Int32(buffer.count)
+        )
+
+        guard bytesRead > 0,
+              let csr = String(
+                  bytes: buffer.prefix(Int(bytesRead)),
+                  encoding: .utf8
+              ) else {
+            throw E2EECSRError.unableToEncodeRequest
+        }
+
+        return csr
     }
 }
