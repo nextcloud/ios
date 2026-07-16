@@ -47,7 +47,7 @@ struct NCGovernanceLabelSelectorView: View {
                     Button {
                         toggle(label.id)
                     } label: {
-                        row(dot: color(for: label), name: label.name, isSelected: selected.contains(label.id))
+                        row(dot: label.displayColor, name: label.name, isSelected: selected.contains(label.id))
                     }
                 }
             }
@@ -96,7 +96,7 @@ struct NCGovernanceLabelSelectorView: View {
                 .frame(width: 10, height: 10)
 
             Text(name)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.primary)
 
             Spacer()
 
@@ -119,9 +119,11 @@ struct NCGovernanceLabelSelectorView: View {
             selected.insert(id)
         }
     }
+}
 
-    private func color(for label: NKGovernanceLabel) -> Color {
-        if let color = UIColor(hex: label.color) {
+extension NKGovernanceLabel {
+    var displayColor: Color {
+        if let color = UIColor(hex: color) {
             return Color(color)
         }
 

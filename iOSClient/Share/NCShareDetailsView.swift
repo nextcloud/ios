@@ -132,17 +132,17 @@ struct NCShareDetailsView: View {
             HStack {
                 Text(NSLocalizedString(title, comment: ""))
                     .cappedFont(.body, maxDynamicType: .accessibility2)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.primary)
 
                 Spacer()
 
                 Text(summary(labels: labels, selectedIDs: selectedIDs))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .lineLimit(1)
 
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color(.tertiaryLabel))
             }
         }
     }
@@ -158,20 +158,42 @@ struct NCShareDetailsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(NSLocalizedString(title, comment: ""))
                         .cappedFont(.body, maxDynamicType: .accessibility2)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.primary)
 
-                    Text(summary(labels: labels, selectedIDs: selectedIDs))
+                    subtitle(labels: labels, selectedIDs: selectedIDs)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color(.tertiaryLabel))
             }
         }
+    }
+
+    private func subtitle(labels: [NKGovernanceLabel], selectedIDs: Set<String>) -> Text {
+        let selected = labels.filter { selectedIDs.contains($0.id) }
+
+        guard !selected.isEmpty else {
+            return Text(NSLocalizedString("_none_", comment: ""))
+        }
+
+        var text = Text("")
+
+        for (index, label) in selected.enumerated() {
+            if index > 0 {
+                text = text + Text(", ")
+            }
+
+            text = text
+                + Text(Image(systemName: "circle.fill")).font(.caption2).foregroundStyle(label.displayColor)
+                + Text(" \(label.name)")
+        }
+
+        return text
     }
 
     private func summary(labels: [NKGovernanceLabel], selectedIDs: Set<String>) -> String {
