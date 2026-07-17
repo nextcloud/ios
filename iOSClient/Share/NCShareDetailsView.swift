@@ -40,7 +40,7 @@ struct NCShareDetailsView: View {
                         Section(header:
                                     Text(NSLocalizedString("_governance_", comment: "")).font(.headline)
                         ) {
-                            labelSelectorRow(
+                            labelSelectorSubtitleRow(
                                 title: "_sensitivity_label_",
                                 labels: data.availableSensitivityLabels,
                                 selectedIDs: sensitivitySelection
@@ -122,31 +122,6 @@ struct NCShareDetailsView: View {
         }
     }
 
-    private func labelSelectorRow(
-        title: String,
-        labels: [NKGovernanceLabel],
-        selectedIDs: Set<String>,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack {
-                Text(NSLocalizedString(title, comment: ""))
-                    .cappedFont(.body, maxDynamicType: .accessibility2)
-                    .foregroundStyle(Color.primary)
-
-                Spacer()
-
-                Text(summary(labels: labels, selectedIDs: selectedIDs))
-                    .foregroundStyle(Color.secondary)
-                    .lineLimit(1)
-
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Color(.tertiaryLabel))
-            }
-        }
-    }
-
     private func labelSelectorSubtitleRow(
         title: String,
         labels: [NKGovernanceLabel],
@@ -196,16 +171,6 @@ struct NCShareDetailsView: View {
         return text
     }
 
-    private func summary(labels: [NKGovernanceLabel], selectedIDs: Set<String>) -> String {
-        guard !selectedIDs.isEmpty else {
-            return NSLocalizedString("_none_", comment: "")
-        }
-
-        return labels
-            .filter { selectedIDs.contains($0.id) }
-            .map(\.name)
-            .joined(separator: ", ")
-    }
 }
 
 final class NCShareDetailsViewController: UIHostingController<NCShareDetailsView>, NCSharePagingContent {
