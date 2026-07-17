@@ -13,6 +13,7 @@ import NextcloudKit
 @MainActor
 final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerView>, UIAdaptivePresentationControllerDelegate {
     private let model: NCMediaViewerModel
+    private let onZoomChanged: (Bool) -> Void
     private let onClose: (_ ocId: String?) -> Void
     private weak var contextMenuController: NCMainTabBarController?
 
@@ -77,10 +78,12 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     init(
         model: NCMediaViewerModel,
         contextMenuController: NCMainTabBarController?,
+        onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void
     ) {
         self.model = model
         self.contextMenuController = contextMenuController
+        self.onZoomChanged = onZoomChanged
         self.onClose = onClose
 
         super.init(
@@ -89,6 +92,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 contextMenuController: contextMenuController,
                 navigationBar: nil,
                 onVisibleMetadataChanged: { _, _ in },
+                onZoomChanged: onZoomChanged,
                 onClose: { _ in }
             )
         )
@@ -190,6 +194,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     backgroundColor: backgroundColor
                 )
             },
+            onZoomChanged: onZoomChanged,
             onClose: { [weak self] ocId in
                 self?.close(ocId: ocId)
             }
@@ -274,8 +279,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
         floatingTitleView.update(
             primaryText: primaryTitle,
-            secondaryText: floatingTitleSecondaryText(for: metadata),
-            textColor: floatingTitleTextColor(for: backgroundColor)
+            secondaryText: floatingTitleSecondaryText(for: metadata)
         )
     }
 

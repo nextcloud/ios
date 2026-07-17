@@ -11,6 +11,7 @@ struct NCImageZoomView: UIViewRepresentable {
     let image: UIImage
     let backgroundStyle: NCViewerBackgroundStyle
     let allowsImageAnalysis: Bool
+    let onZoomChanged: (Bool) -> Void
 
     private let minimumZoomScale: CGFloat = 1
     private let maximumZoomScale: CGFloat = 5
@@ -19,11 +20,13 @@ struct NCImageZoomView: UIViewRepresentable {
     init(
         image: UIImage,
         backgroundStyle: NCViewerBackgroundStyle = .system,
-        allowsImageAnalysis: Bool = true
+        allowsImageAnalysis: Bool = true,
+        onZoomChanged: @escaping (Bool) -> Void = { _ in }
     ) {
         self.image = image
         self.backgroundStyle = backgroundStyle
         self.allowsImageAnalysis = allowsImageAnalysis
+        self.onZoomChanged = onZoomChanged
     }
 
     // MARK: - UIViewRepresentable
@@ -60,6 +63,7 @@ struct NCImageZoomView: UIViewRepresentable {
         context.coordinator.minimumZoomScale = minimumZoomScale
         context.coordinator.maximumZoomScale = maximumZoomScale
         context.coordinator.doubleTapZoomScale = doubleTapZoomScale
+        context.coordinator.onZoomChanged = onZoomChanged
 
         if allowsImageAnalysis {
             analyzeImageIfAvailable(
@@ -95,6 +99,7 @@ struct NCImageZoomView: UIViewRepresentable {
         context.coordinator.minimumZoomScale = minimumZoomScale
         context.coordinator.maximumZoomScale = maximumZoomScale
         context.coordinator.doubleTapZoomScale = doubleTapZoomScale
+        context.coordinator.onZoomChanged = onZoomChanged
 
         scrollView.backgroundColor = .ncViewerBackground(backgroundStyle)
         scrollView.minimumZoomScale = minimumZoomScale
@@ -151,6 +156,7 @@ struct NCImageZoomView: UIViewRepresentable {
         var minimumZoomScale: CGFloat = 1
         var maximumZoomScale: CGFloat = 5
         var doubleTapZoomScale: CGFloat = 2.5
+        var onZoomChanged: (Bool) -> Void = { _ in }
 
         private var lastBoundsSize: CGSize = .zero
 
@@ -161,6 +167,10 @@ struct NCImageZoomView: UIViewRepresentable {
 
         func scrollViewDidZoom(_ scrollView: UIScrollView) {
             centerImageView()
+
+            onZoomChanged(
+                scrollView.zoomScale > scrollView.minimumZoomScale + 0.01
+            )
         }
 
         // MARK: - Layout

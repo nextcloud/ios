@@ -119,21 +119,18 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
 
     // Common Name = UserID.
     addName("CN", cUserId);
-    
-    // The organizational unit for the cert. Usually this is a department.
-    addName("OU", "Certificate Authority");
-    
+
     // The organization of the cert.
     addName("O",  "Nextcloud");
     
     // The city of the organization.
-    addName("L",  "Vicenza");
+    addName("L",  "Stuttgart");
     
     // The state/province of the organization.
-    addName("S",  "Italy");
-    
+    addName("ST",  "Baden-Wuerttemberg");
+
     // The country (ISO 3166) of the organization
-    addName("C",  "IT");
+    addName("C",  "DE");
     
     X509_set_issuer_name(x509, name);
     
@@ -236,6 +233,51 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     X509_free(certX509);
     
     NSLog(@"[INFO] \n%@", publicKey);
+    return publicKey;
+}
+
+- (NSString *)extractPublicKeyFromCertificateSigningRequest:(NSString *)pemCSR
+{
+    const char *ptrCSR = [pemCSR cStringUsingEncoding:NSUTF8StringEncoding];
+
+    BIO *csrBio = BIO_new_mem_buf(
+        ptrCSR,
+        (int)strlen(ptrCSR)
+    );
+
+    if (!csrBio) {
+        return nil;
+    }
+
+    X509_REQ *csr = PEM_read_bio_X509_REQ(
+        csrBio,
+        NULL,
+        NULL,
+        NULL
+    );
+
+    if (!csr) {
+        fprintf(stderr, "unable to parse CSR in memory\n");
+        BIO_free(csrBio);
+        return nil;
+    }
+
+    EVP_PKEY *pkey = X509_REQ_get_pubkey(csr);
+
+    if (!pkey) {
+        X509_REQ_free(csr);
+        BIO_free(csrBio);
+        return nil;
+    }
+
+    NSString *publicKey = [self pubKeyToString:pkey];
+
+    EVP_PKEY_free(pkey);
+    X509_REQ_free(csr);
+    BIO_free(csrBio);
+
+    NSLog(@"[INFO] \n%@", publicKey);
+
     return publicKey;
 }
 

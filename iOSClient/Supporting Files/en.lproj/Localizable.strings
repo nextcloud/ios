@@ -46,6 +46,7 @@
 "_ok_"                      = "OK";
 "_done_"                    = "Done";
 "_clear_"                   = "Clear";
+"_continue_anyway_"         = "Continue anyway";
 "_selected_"                = "Selected";
 "_no_active_account_"       = "No account found";
 "_info_"                    = "Info";
@@ -85,6 +86,7 @@
 "_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites.";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
+"_go_back_"                 = "Go Back";
 "_search_"                  = "Search";
 "_search_or_create_tags"    = "Search or create tag";
 "_tags_"                    = "Tags";
@@ -823,8 +825,10 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_no_metadata_" = "End-to-end encryption error, cannot get metadata";
 "_e2ee_filedrop_ciphertext_" = "End-to-end encryption error, filedrop ciphertext failed";
 "_e2ee_key_ciphertext_" = "End-to-end encryption error, key ciphertext failed";
-"_e2ee_key_no_checksums_found_" = "End-to-end encryption error, no checksums found";
-"_e2ee_key_checksums_" = "End-to-end encryption error, key checksums failed";
+"_e2ee_key_no_checksum_found_" = "End-to-end encryption error, no checksum found";
+"_e2ee_checksum_error_title_" = "End-to-end encryption checksum error";
+"_e2ee_checksum_error_message_" = "The encrypted file checksum is missing or invalid.\n\nThis may be caused by incomplete, outdated, or inconsistent encryption metadata and does not necessarily mean that the file or server has been compromised.\n\nContinue only if you trust this server and understand the risk. Otherwise, exit without opening the file.";
+"_e2ee_key_checksum_" = "End-to-end encryption error, key checksum failed";
 "_e2ee_decode_metadata_" = "End-to-end encryption error, cannot decode metadata";
 "_e2ee_no_lock_" = "End-to-end encryption error, unable to lock file";
 "_e2ee_no_decrypt_metadata_" = "End-to-end encryption error, cannot decrypt metadata";
@@ -845,6 +849,12 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_setup_store_privatekey_" = "Private key generation returned no usable key";
 "_e2ee_setup_verify_publickey_" = "Public key does not match the certificate";
 "_e2ee_setup_generate_passphrase_" = "Unable to generate a passphrase";
+"_e2ee_setup_privatekey_missing_" = "The End-to-end encryption private key could not be found.";
+"_e2e_renew_certificate_success_" = "Your end-to-end encryption certificate has been renewed successfully.";
+"_certificate_valid_from_" = "Valid from";
+"_certificate_valid_until_" = "Valid until";
+"_certificate_" = "Certificate";
+"_certificate_renew_" = "Renew certificate";
 
 // Share details — Governance
 "_governance_"                      = "Governance";

@@ -8,6 +8,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
     private let primaryLabel = UILabel()
     private let secondaryLabel = UILabel()
     private let stackView = UIStackView()
+    private let blurView = UIVisualEffectView(effect: nil)
     private weak var navigationBar: UINavigationBar?
     private var navigationBarConstraints: [NSLayoutConstraint] = []
     private var centerXConstraint: NSLayoutConstraint?
@@ -18,11 +19,18 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .clear
-        layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layoutMargins = UIEdgeInsets(top: 6, left: 14, bottom: 6, right: 14)
+        clipsToBounds = false
         isAccessibilityElement = true
 
         configureLabels()
+        configureBlurView()
         configureStackView()
+        updateAppearance()
+
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (_: NCMediaViewerFloatingTitleView, _: UITraitCollection) in
+            self?.updateAppearance()
+        }
     }
 
     @available(*, unavailable)
@@ -71,7 +79,9 @@ final class NCMediaViewerFloatingTitleView: UIView {
             return
         }
 
-        heightConstraint?.constant = navigationItemHeight(in: navigationBar)
+        let height = navigationItemHeight(in: navigationBar)
+        heightConstraint?.constant = height
+        blurView.layer.cornerRadius = height / 2
     }
 
     // Use visible bar item height when possible.
@@ -122,37 +132,44 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
     func update(
         primaryText: String?,
-        secondaryText: String?,
-        textColor: UIColor
+        secondaryText: String?
     ) {
-        let normalizedPrimaryText = primaryText?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let normalizedSecondaryText = secondaryText?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedPrimaryText = primaryText?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let normalizedSecondaryText = secondaryText?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
 
         primaryLabel.text = normalizedPrimaryText
-        primaryLabel.textColor = textColor
         secondaryLabel.text = normalizedSecondaryText
-        secondaryLabel.textColor = textColor.withAlphaComponent(0.82)
         secondaryLabel.isHidden = normalizedSecondaryText?.isEmpty ?? true
         isHidden = normalizedPrimaryText?.isEmpty ?? true
 
-        accessibilityLabel = [normalizedPrimaryText, normalizedSecondaryText]
-            .compactMap { text in
-                guard let text, !text.isEmpty else { return nil }
-                return text
+        updateAppearance()
+
+        accessibilityLabel = [
+            normalizedPrimaryText,
+            normalizedSecondaryText
+        ]
+        .compactMap { text in
+            guard let text, !text.isEmpty else {
+                return nil
             }
-            .joined(separator: ", ")
+
+            return text
+        }
+        .joined(separator: ", ")
     }
 
     func clear() {
         update(
             primaryText: nil,
-            secondaryText: nil,
-            textColor: .white
+            secondaryText: nil
         )
     }
 
     private func configureLabels() {
-        primaryLabel.font = .preferredFont(forTextStyle: .subheadline)
+        primaryLabel.font = .preferredFont(forTextStyle: .footnote)
         primaryLabel.textColor = .white
         primaryLabel.textAlignment = .center
         primaryLabel.adjustsFontForContentSizeCategory = true
@@ -167,6 +184,21 @@ final class NCMediaViewerFloatingTitleView: UIView {
         secondaryLabel.numberOfLines = 1
     }
 
+    private func configureBlurView() {
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        blurView.isUserInteractionEnabled = false
+        blurView.clipsToBounds = true
+        blurView.layer.cornerCurve = .continuous
+        addSubview(blurView)
+
+        NSLayoutConstraint.activate([
+            blurView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            blurView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            blurView.topAnchor.constraint(equalTo: topAnchor),
+            blurView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
     private func configureStackView() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -177,6 +209,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
         stackView.addArrangedSubview(primaryLabel)
         stackView.addArrangedSubview(secondaryLabel)
         addSubview(stackView)
+        bringSubviewToFront(stackView)
 
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
@@ -186,4 +219,20 @@ final class NCMediaViewerFloatingTitleView: UIView {
             stackView.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor)
         ])
     }
+
+    private func updateAppearance() {
+        let isDarkMode = traitCollection.userInterfaceStyle == .dark
+
+        blurView.effect = UIBlurEffect(
+            style: isDarkMode
+                ? .systemChromeMaterialDark
+                : .systemChromeMaterialLight
+        )
+
+        let textColor: UIColor = isDarkMode ? .white : .black
+
+        primaryLabel.textColor = textColor
+        secondaryLabel.textColor = textColor.withAlphaComponent(0.82)
+    }
 }
+

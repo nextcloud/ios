@@ -8,7 +8,6 @@ import UIKit
 // MARK: - Playback Controls
 
 extension NCVideoAVPlayerViewController {
-
     private func seek(bySeconds seconds: Double) {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
