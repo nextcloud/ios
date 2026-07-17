@@ -372,6 +372,8 @@
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F743C89E2E5B25A1000173A9 /* UIScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F743C89D2E5B2595000173A9 /* UIScene+Extension.swift */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
+		F745E910300A01AB00A9EF0F /* NCMediaUtilLivePhotoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745E90F300A01A800A9EF0F /* NCMediaUtilLivePhotoModel.swift */; };
+		F745E912300A01E100A9EF0F /* NCMediaUtilLivePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745E911300A01DF00A9EF0F /* NCMediaUtilLivePhotoView.swift */; };
 		F746EC51273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F746EC52273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
@@ -1484,6 +1486,8 @@
 		F74230F22C79B57200CA1ACA /* NCNetworking+Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Task.swift"; sourceTree = "<group>"; };
 		F743C89D2E5B2595000173A9 /* UIScene+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScene+Extension.swift"; sourceTree = "<group>"; };
 		F745B252222D88AE00346520 /* NCLoginQRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginQRCode.swift; sourceTree = "<group>"; };
+		F745E90F300A01A800A9EF0F /* NCMediaUtilLivePhotoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaUtilLivePhotoModel.swift; sourceTree = "<group>"; };
+		F745E911300A01DF00A9EF0F /* NCMediaUtilLivePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaUtilLivePhotoView.swift; sourceTree = "<group>"; };
 		F747EB0C2C4AC1FF00F959A8 /* NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift"; sourceTree = "<group>"; };
 		F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Share.swift"; sourceTree = "<group>"; };
 		F749B650297B0F2400087535 /* NCManageDatabase+Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Avatar.swift"; sourceTree = "<group>"; };
@@ -2568,6 +2572,15 @@
 			path = NCViewerDirectEditing;
 			sourceTree = "<group>";
 		};
+		F745E913300A01E900A9EF0F /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				F745E911300A01DF00A9EF0F /* NCMediaUtilLivePhotoView.swift */,
+				F745E90F300A01A800A9EF0F /* NCMediaUtilLivePhotoModel.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		F749ED342FAF0EE200CE8DFA /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -3411,6 +3424,7 @@
 			isa = PBXGroup;
 			children = (
 				F720B5B72507B9A5008C94E5 /* Cell */,
+				F745E913300A01E900A9EF0F /* Util */,
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
 				F7501C312212E57400FB1415 /* NCMedia.swift */,
 				F7BD09FF2C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift */,
@@ -4854,6 +4868,7 @@
 				AA8D31662D411FA100FE2775 /* NCShareDateCell.swift in Sources */,
 				F3F442EE2DDE292D00FD701F /* NCMetadataPermissions.swift in Sources */,
 				F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */,
+				F745E912300A01E100A9EF0F /* NCMediaUtilLivePhotoView.swift in Sources */,
 				AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */,
 				AA8D31682D41224800FE2775 /* NCShareToggleCell.swift in Sources */,
 				F7A846DE2BB01ACB0024816F /* NCTrashCellProtocol.swift in Sources */,
@@ -4929,6 +4944,7 @@
 				AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */,
 				F73EF7BF2B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				F39A1EE22D0AF8A400DAD522 /* Albums.swift in Sources */,
+				F745E910300A01AB00A9EF0F /* NCMediaUtilLivePhotoModel.swift in Sources */,
 				F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F761856C29E98543006EB3B0 /* NCIntroCollectionViewCell.swift in Sources */,
 				F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */,
