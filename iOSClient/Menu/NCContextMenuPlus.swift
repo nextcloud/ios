@@ -434,8 +434,7 @@ class NCContextMenuPlus: NSObject {
 
         menuPlusButton.menu = plusMenu
         menuPlusButton.showsMenuAsPrimaryAction = true
-        menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: session.account)
-        menuPlusButton.tintColor = .white
+        menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: session.account))
         menuPlusButton.alpha = 1
 
         // E2EE Offline disable
