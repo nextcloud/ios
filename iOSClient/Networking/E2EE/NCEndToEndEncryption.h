@@ -54,5 +54,6 @@
 - (NSString *)createSHA512:(NSString *)string;
 - (NSString *)createSHA256:(NSData *)data;
 - (NSString *)extractPublicKeyFromCertificate:(NSString *)pemCertificate;
+- (NSString *)extractPublicKeyFromCertificateSigningRequest:(NSString *)pemCSR;
 
 @end
