@@ -79,7 +79,7 @@ struct NCManageE2EEView: View {
                             }
                         }
                     }
-
+#if DEBUG
                     if let certificateValidity = model.certificateValidity {
                         Section {
                             LabeledContent(
@@ -91,13 +91,26 @@ struct NCManageE2EEView: View {
                             )
                             .cappedFont(.body, maxDynamicType: .accessibility2)
 
-                            LabeledContent(
-                                NSLocalizedString("_certificate_valid_until_", comment: ""),
-                                value: certificateValidity.notAfter.formatted(
-                                    date: .long,
-                                    time: .standard
+                            LabeledContent {
+                                Text(
+                                    certificateValidity.notAfter.formatted(
+                                        date: .long,
+                                        time: .standard
+                                    )
                                 )
-                            )
+                                .foregroundStyle(
+                                    certificateExpirationColor(certificateValidity.notAfter)
+                                )
+                                .fontWeight(
+                                    Date() >= (Calendar.current.date(
+                                        byAdding: .month,
+                                        value: -1,
+                                        to: certificateValidity.notAfter
+                                    ) ?? certificateValidity.notAfter) ? .semibold : .regular
+                                )
+                            } label: {
+                                Text(NSLocalizedString("_certificate_valid_until_", comment: ""))
+                            }
                             .cappedFont(.body, maxDynamicType: .accessibility2)
 
                             HStack {
@@ -126,7 +139,7 @@ struct NCManageE2EEView: View {
                                 .font(.headline)
                         }
                     }
-#if DEBUG
+
                     deleteCerificateSection
 #endif
                 }
@@ -277,6 +290,16 @@ struct NCManageE2EEView: View {
                 }
             }
         }
+    }
+
+    private func certificateExpirationColor(_ expirationDate: Date) -> Color {
+        let warningDate = Calendar.current.date(
+            byAdding: .month,
+            value: -1,
+            to: expirationDate
+        ) ?? expirationDate
+
+        return Date() >= warningDate ? .orange : .primary
     }
 }
 

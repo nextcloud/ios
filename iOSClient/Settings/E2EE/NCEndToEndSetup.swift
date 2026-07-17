@@ -25,6 +25,7 @@ class NCEndToEndSetup {
     let global = NCGlobal.shared
     let preference = NCPreferences()
     let networkingE2EE = NCNetworkingE2EE()
+    let endToEndEncryption = NCEndToEndEncryption.shared()
 
     var extractedPublicKey: String?
     var controller: NCMainTabBarController?
@@ -84,11 +85,11 @@ class NCEndToEndSetup {
                               errorDescription: NSLocalizedString("_e2ee_setup_get_certificate_", comment: ""))
             }
             preference.setEndToEndCertificate(account: self.session.account, certificate: certificate)
-            self.extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
+            self.extractedPublicKey = endToEndEncryption?.extractPublicKey(fromCertificate: certificate)
 
         case NCGlobal.shared.errorResourceNotFound:
             // Create CSR
-            guard let csr = NCEndToEndEncryption.shared().createCSR(self.session.userId, directory: self.utilityFileSystem.directoryUserData) else {
+            guard let csr = endToEndEncryption?.createCSR(self.session.userId, directory: self.utilityFileSystem.directoryUserData) else {
                 throw NKError(errorCode: global.errorInternalError,
                               errorDescription: NSLocalizedString("_e2ee_setup_create_csr_", comment: ""))
             }
@@ -107,8 +108,8 @@ class NCEndToEndSetup {
             }
 
             // Verify PublicKey
-            let extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
-            guard extractedPublicKey == NCEndToEndEncryption.shared().generatedPublicKey else {
+            let extractedPublicKey = endToEndEncryption?.extractPublicKey(fromCertificate: certificate)
+            guard extractedPublicKey == endToEndEncryption?.generatedPublicKey else {
                 throw NKError(
                     errorCode: global.errorInternalError,
                     errorDescription: NSLocalizedString("_e2ee_setup_extract_publickey_", comment: "")
@@ -155,7 +156,7 @@ class NCEndToEndSetup {
 
             let passphrase = try await requestPassphraseAsync()
 
-            guard let privateKeyData = NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyCipher, passphrase: passphrase),
+            guard let privateKeyData = endToEndEncryption?.decryptPrivateKey(privateKeyCipher, passphrase: passphrase),
                   let keyData = Data(base64Encoded: privateKeyData),
                   let privateKey = String(data: keyData, encoding: .utf8)
             else {
@@ -221,7 +222,7 @@ class NCEndToEndSetup {
     private func createNewE2EE(e2ePassphrase: String, copyPassphrase: Bool) async throws {
         var privateKeyString: NSString?
 
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(
+        guard let privateKeyCipher = endToEndEncryption?.encryptPrivateKey(
             session.userId,
             directory: utilityFileSystem.directoryUserData,
             passphrase: e2ePassphrase,
@@ -298,7 +299,8 @@ class NCEndToEndSetup {
     ///   - `NKError` if certificate is missing or validation fails
     private func verifyPublicKey(_ publicKey: String) throws {
         guard let certificate = preference.getEndToEndCertificate(account: session.account),
-              NCEndToEndEncryption.shared().verifyCertificate(certificate, publicKey: publicKey)
+              let endToEndEncryption,
+              endToEndEncryption.verifyCertificate(certificate, publicKey: publicKey)
         else {
             throw NKError(
                 errorCode: global.errorInternalError,
@@ -418,18 +420,10 @@ class NCEndToEndSetup {
     ///   a server request fails, or the returned certificate does not contain
     ///   the expected public key.
     func renewCertificate() async throws -> String {
-        let capabilities = await NKCapabilities.shared.getCapabilities(
-            for: session.account
-        )
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
 
-        options = networkingE2EE.getOptions(
-            account: session.account,
-            capabilities: capabilities
-        )
-
-        guard let privateKeyPEM = preference.getEndToEndPrivateKey(
-            account: session.account
-        ) else {
+        guard let privateKeyPEM = preference.getEndToEndPrivateKey(account: session.account) else {
             throw NKError(
                 errorCode: global.errorInternalError,
                 errorDescription: NSLocalizedString(
@@ -439,13 +433,8 @@ class NCEndToEndSetup {
             )
         }
 
-        let csr = try networkingE2EE.createCertificateSigningRequest(
-            privateKeyPEM: privateKeyPEM,
-            commonName: session.userId
-        )
-
-        guard let csrPublicKey = NCEndToEndEncryption.shared()
-            .extractPublicKey(fromCertificateSigningRequest: csr) else {
+        let csr = try networkingE2EE.createCertificateSigningRequest(privateKeyPEM: privateKeyPEM, commonName: session.userId)
+        guard let csrPublicKey = endToEndEncryption?.extractPublicKey(fromCertificateSigningRequest: csr) else {
             throw NKError(
                 errorCode: global.errorInternalError,
                 errorDescription: NSLocalizedString(
@@ -455,23 +444,14 @@ class NCEndToEndSetup {
             )
         }
 
-        let deleteError = await NextcloudKit.shared
-            .deleteE2EEPublicKeyAsync(
-                account: session.account,
-                options: options
-            )
-            .error
-
+        let deleteError = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: session.account, options: options).error
         guard deleteError == .success else {
             throw deleteError
         }
 
-        let signResult = await NextcloudKit.shared.signE2EECertificateAsync(
-            certificate: csr,
-            account: session.account,
-            options: options
-        )
-
+        let signResult = await NextcloudKit.shared.signE2EECertificateAsync(certificate: csr,
+                                                                            account: session.account,
+                                                                            options: options)
         guard signResult.error == .success,
               let certificate = signResult.certificate else {
             throw signResult.error == .success
@@ -485,9 +465,7 @@ class NCEndToEndSetup {
                 : signResult.error
         }
 
-        let extractedPublicKey = NCEndToEndEncryption.shared()
-            .extractPublicKey(fromCertificate: certificate)
-
+        let extractedPublicKey = endToEndEncryption?.extractPublicKey(fromCertificate: certificate)
         guard extractedPublicKey == csrPublicKey else {
             throw NKError(
                 errorCode: global.errorInternalError,
@@ -498,10 +476,7 @@ class NCEndToEndSetup {
             )
         }
 
-        preference.setEndToEndCertificate(
-            account: session.account,
-            certificate: certificate
-        )
+        preference.setEndToEndCertificate(account: session.account, certificate: certificate)
 
         return certificate
     }
