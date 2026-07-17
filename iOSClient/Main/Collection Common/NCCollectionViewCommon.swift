@@ -547,8 +547,22 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         }
     }
 
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // (+)
+    @MainActor
+    func setSearchBarLoading(_ loading: Bool) {
+        guard let textField = searchController?.searchBar.searchTextField else {
+            return
+        }
+        if loading {
+            let spinner = UIActivityIndicatorView(style: .medium)
+            spinner.startAnimating()
+            textField.rightView = spinner
+            textField.rightViewMode = .always
+        } else {
+            textField.rightView = nil
+        }
+    }
+
+    func willDismissSearchController(_ searchController: UISearchController) {
         self.mainNavigationController?.menuPlus?.hiddenPlusButton(false)
 
         self.isSearchingMode = false
@@ -570,21 +584,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
             // update Option menu
             await mainNavigationController?.updateMenuOption()
-        }
-    }
-
-    @MainActor
-    func setSearchBarLoading(_ loading: Bool) {
-        guard let textField = searchController?.searchBar.searchTextField else {
-            return
-        }
-        if loading {
-            let spinner = UIActivityIndicatorView(style: .medium)
-            spinner.startAnimating()
-            textField.rightView = spinner
-            textField.rightViewMode = .always
-        } else {
-            textField.rightView = nil
         }
     }
 

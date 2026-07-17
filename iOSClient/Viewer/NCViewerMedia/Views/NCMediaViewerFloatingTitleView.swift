@@ -235,4 +235,3 @@ final class NCMediaViewerFloatingTitleView: UIView {
         secondaryLabel.textColor = textColor.withAlphaComponent(0.82)
     }
 }
-
