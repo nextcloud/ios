@@ -442,6 +442,15 @@ class NCContextMenuPlus: NSObject {
     }
 
     @MainActor
+    func hiddenPlusButton(isEditMode: Bool, isSearchingMode: Bool, animation: Bool = true) {
+        if isEditMode || isSearchingMode {
+            hiddenPlusButton(true, animation: animation)
+        } else {
+            hiddenPlusButton(false, animation: animation)
+        }
+    }
+
+    @MainActor
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
         guard let menuPlusButton else {
             return

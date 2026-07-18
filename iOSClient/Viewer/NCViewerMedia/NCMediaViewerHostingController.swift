@@ -372,12 +372,8 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             let index = model.selectedIndex
             isShowingDetail = true
 
-            NCUtility().getExif(metadata: metadata) { [weak self] exif in
+            NCUtility().getExif(metadata: metadata) { exif in
                 Task { @MainActor in
-                    guard let self else {
-                        return
-                    }
-
                     self.presentDetailView(
                         metadata: metadata,
                         index: index,

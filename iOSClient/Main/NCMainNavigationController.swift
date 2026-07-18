@@ -183,6 +183,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     self.controller?.availableNotifications = true
                 }
                 await self.collectionViewCommonTrailingItemGroups()
+                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -193,7 +194,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task { @MainActor [weak self] in
                 guard let self else { return }
 
-                // Menu Plus
+                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -201,11 +202,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
+            // (+)
             // PLUS BUTTON ONLY IN FILES
-            if viewController is NCFiles {
-                self.menuPlus?.hiddenPlusButton(false)
+            if let viewController = viewController as? NCFiles {
+                self.menuPlus?.hiddenPlusButton(isEditMode: viewController.isEditMode,
+                                                isSearchingMode: viewController.isSearchingMode,
+                                                animation: false)
             } else {
-                self.menuPlus?.hiddenPlusButton(true, animation: false)
+                self.menuPlus?.hiddenPlusButton(true,
+                                                animation: false)
             }
             // MENU
             setNavigationBarAppearance()
