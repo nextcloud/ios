@@ -33,6 +33,7 @@ class NCFiles: NCCollectionViewCommon {
                 if let userInfo = notification.userInfo,
                    let account = userInfo["account"] as? String,
                    self.controller?.account == account {
+                    // (+)
                     self.mainNavigationController?.menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
                     self.mainNavigationController?.menuPlusButton.tintColor = .white
                 }
@@ -63,6 +64,7 @@ class NCFiles: NCCollectionViewCommon {
                     }
                     if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
+                        // (+)
                         self.mainNavigationController?.menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
                         self.mainNavigationController?.menuPlusButton.tintColor = .white
                     }
@@ -105,7 +107,7 @@ class NCFiles: NCCollectionViewCommon {
         super.viewDidAppear(animated)
 
         Task {
-            // Plus Menu reload
+            // (+)
             await self.mainNavigationController?.menuPlus?.create(session: session)
 
             // Server data
@@ -142,6 +144,7 @@ class NCFiles: NCCollectionViewCommon {
             // disable + button if no create permission
             let color = NCBrandColor.shared.getElement(account: self.session.account)
 
+            // (+)
             if let menuPlusButton = self.mainNavigationController?.menuPlusButton {
                 menuPlusButton.isEnabled = metadataFolder.isCreatable
                 menuPlusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray

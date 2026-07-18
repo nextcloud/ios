@@ -244,6 +244,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
                 // Wait 1.5 seconds before resetting the button alpha
                 try? await Task.sleep(for: .seconds(1.5))
+                // (+)
                 self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
             }
         }
@@ -402,6 +403,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
+        // (+)
         self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
     }
 
@@ -528,14 +530,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         // TIP
         dismissTip()
 
-        // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(true)
-
         if !isSearchingMode {
             self.isSearchingMode = true
             self.dataSource.removeAll()
             self.collectionView.reloadData()
         }
+
+        // (+)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -563,12 +565,13 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     }
 
     func willDismissSearchController(_ searchController: UISearchController) {
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(false)
-
         self.isSearchingMode = false
         self.networkSearchInProgress = false
         self.searchResultText = nil
         self.searchResultStore = nil
+
+        // (+)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
 
         Task {
             await searchOperationHandle.cancel()
