@@ -86,14 +86,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
     // Use visible bar item height when possible.
     private func navigationItemHeight(in navigationBar: UINavigationBar) -> CGFloat {
-        let heights = navigationBar.subviews.flatMap { subview in
-            navigationItemHeights(
-                from: subview,
-                in: navigationBar
-            )
-        }
-
-        return heights.max() ?? navigationBar.bounds.height
+        min(48, navigationBar.bounds.height)
     }
 
     private func navigationItemHeights(
@@ -110,7 +103,10 @@ final class NCMediaViewerFloatingTitleView: UIView {
         }
 
         let frame = view.convert(view.bounds, to: navigationBar)
-        let isVisibleNavigationFrame = frame.minY >= -1 &&
+        let isNavigationButton = view is UIControl
+
+        let isVisibleNavigationFrame = isNavigationButton &&
+            frame.minY >= -1 &&
             frame.maxY <= navigationBar.bounds.height + 1 &&
             frame.height > 20 &&
             frame.width > 20 &&
@@ -169,14 +165,20 @@ final class NCMediaViewerFloatingTitleView: UIView {
     }
 
     private func configureLabels() {
-        primaryLabel.font = .preferredFont(forTextStyle: .footnote)
+        primaryLabel.font = UIFontMetrics(forTextStyle: .footnote).scaledFont(
+            for: .systemFont(ofSize: 13),
+            maximumPointSize: 15
+        )
         primaryLabel.textColor = .white
         primaryLabel.textAlignment = .center
         primaryLabel.adjustsFontForContentSizeCategory = true
         primaryLabel.lineBreakMode = .byTruncatingMiddle
         primaryLabel.numberOfLines = 1
 
-        secondaryLabel.font = .preferredFont(forTextStyle: .caption2)
+        secondaryLabel.font = UIFontMetrics(forTextStyle: .caption2).scaledFont(
+            for: .systemFont(ofSize: 11),
+            maximumPointSize: 13
+        )
         secondaryLabel.textColor = .white.withAlphaComponent(0.82)
         secondaryLabel.textAlignment = .center
         secondaryLabel.adjustsFontForContentSizeCategory = true
