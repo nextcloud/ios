@@ -58,12 +58,18 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
             let centerXConstraint = centerXAnchor.constraint(equalTo: navigationBar.centerXAnchor)
             let heightConstraint = heightAnchor.constraint(equalToConstant: navigationItemHeight(in: navigationBar))
+            let topConstraint = topAnchor.constraint(equalTo: navigationBar.topAnchor, constant: verticalOffset)
             self.centerXConstraint = centerXConstraint
             self.heightConstraint = heightConstraint
 
             navigationBarConstraints = [
-                centerXConstraint, centerYAnchor.constraint(equalTo: navigationBar.centerYAnchor, constant: verticalOffset),
-                heightConstraint, widthAnchor.constraint(lessThanOrEqualTo: navigationBar.widthAnchor, multiplier: widthMultiplier)
+                centerXConstraint,
+                topConstraint,
+                heightConstraint,
+                widthAnchor.constraint(
+                    lessThanOrEqualTo: navigationBar.widthAnchor,
+                    multiplier: widthMultiplier
+                )
             ]
             NSLayoutConstraint.activate(navigationBarConstraints)
             self.navigationBar = navigationBar
@@ -85,49 +91,11 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
         let height = navigationItemHeight(in: navigationBar)
         heightConstraint?.constant = height
-        blurView.layer.cornerRadius = height / 2
     }
 
     // Use visible bar item height when possible.
     private func navigationItemHeight(in navigationBar: UINavigationBar) -> CGFloat {
         min(44, navigationBar.bounds.height)
-    }
-
-    private func navigationItemHeights(
-        from view: UIView,
-        in navigationBar: UINavigationBar
-    ) -> [CGFloat] {
-        guard view !== self,
-              !view.isDescendant(of: self),
-              !view.isHidden,
-              view.alpha > 0.01,
-              view.bounds.width > 0,
-              view.bounds.height > 0 else {
-            return []
-        }
-
-        let frame = view.convert(view.bounds, to: navigationBar)
-        let isNavigationButton = view is UIControl
-
-        let isVisibleNavigationFrame = isNavigationButton &&
-            frame.minY >= -1 &&
-            frame.maxY <= navigationBar.bounds.height + 1 &&
-            frame.height > 20 &&
-            frame.width > 20 &&
-            frame.width < navigationBar.bounds.width * 0.6
-
-        let childHeights = view.subviews.flatMap { subview in
-            navigationItemHeights(
-                from: subview,
-                in: navigationBar
-            )
-        }
-
-        if isVisibleNavigationFrame {
-            return childHeights + [frame.height]
-        }
-
-        return childHeights
     }
 
     func update(
