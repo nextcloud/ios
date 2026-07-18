@@ -38,6 +38,12 @@ final class NCMediaViewerFloatingTitleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        blurView.layer.cornerRadius = bounds.height / 2
+    }
+
     // Attach directly to the navigation bar to match real button layout.
     func attach(
         to navigationBar: UINavigationBar,
@@ -56,10 +62,8 @@ final class NCMediaViewerFloatingTitleView: UIView {
             self.heightConstraint = heightConstraint
 
             navigationBarConstraints = [
-                centerXConstraint,
-                topAnchor.constraint(equalTo: navigationBar.topAnchor, constant: verticalOffset),
-                heightConstraint,
-                widthAnchor.constraint(lessThanOrEqualTo: navigationBar.widthAnchor, multiplier: widthMultiplier)
+                centerXConstraint, centerYAnchor.constraint(equalTo: navigationBar.centerYAnchor, constant: verticalOffset),
+                heightConstraint, widthAnchor.constraint(lessThanOrEqualTo: navigationBar.widthAnchor, multiplier: widthMultiplier)
             ]
             NSLayoutConstraint.activate(navigationBarConstraints)
             self.navigationBar = navigationBar
@@ -86,7 +90,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
     // Use visible bar item height when possible.
     private func navigationItemHeight(in navigationBar: UINavigationBar) -> CGFloat {
-        min(48, navigationBar.bounds.height)
+        min(44, navigationBar.bounds.height)
     }
 
     private func navigationItemHeights(
@@ -188,10 +192,18 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
     private func configureBlurView() {
         blurView.translatesAutoresizingMaskIntoConstraints = false
-        blurView.isUserInteractionEnabled = false
         blurView.clipsToBounds = true
-        blurView.layer.cornerCurve = .continuous
-        addSubview(blurView)
+        blurView.isUserInteractionEnabled = false
+
+        if #available(iOS 26.0, *) {
+            let effect = UIGlassEffect()
+            effect.isInteractive = false
+            blurView.effect = effect
+        } else {
+            blurView.effect = UIBlurEffect(style: .systemMaterial)
+        }
+
+        insertSubview(blurView, at: 0)
 
         NSLayoutConstraint.activate([
             blurView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -206,30 +218,40 @@ final class NCMediaViewerFloatingTitleView: UIView {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.distribution = .fill
-        stackView.spacing = 2
-
+        stackView.spacing = 0
         stackView.addArrangedSubview(primaryLabel)
         stackView.addArrangedSubview(secondaryLabel)
+        stackView.isUserInteractionEnabled = false
+
         addSubview(stackView)
-        bringSubviewToFront(stackView)
 
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.topAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.topAnchor),
-            stackView.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor)
+            stackView.leadingAnchor.constraint(
+                equalTo: layoutMarginsGuide.leadingAnchor
+            ),
+            stackView.trailingAnchor.constraint(
+                equalTo: layoutMarginsGuide.trailingAnchor
+            ),
+            stackView.centerYAnchor.constraint(
+                equalTo: centerYAnchor
+            )
         ])
     }
 
     private func updateAppearance() {
         let isDarkMode = traitCollection.userInterfaceStyle == .dark
 
-        blurView.effect = UIBlurEffect(
-            style: isDarkMode
-                ? .systemChromeMaterialDark
-                : .systemChromeMaterialLight
-        )
+        if #available(iOS 26.0, *) {
+            let glassEffect = UIGlassEffect()
+            glassEffect.isInteractive = false
+            blurView.effect = glassEffect
+        } else {
+            blurView.effect = UIBlurEffect(
+                style: isDarkMode
+                    ? .systemChromeMaterialDark
+                    : .systemChromeMaterialLight
+            )
+        }
 
         let textColor: UIColor = isDarkMode ? .white : .black
 
