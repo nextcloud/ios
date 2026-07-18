@@ -244,6 +244,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
                 // Wait 1.5 seconds before resetting the button alpha
                 try? await Task.sleep(for: .seconds(1.5))
+                // (+)
                 self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
             }
         }
@@ -402,6 +403,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
+        // (+)
         self.mainNavigationController?.menuPlus?.resetPlusButtonAlpha()
     }
 
@@ -528,14 +530,14 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         // TIP
         dismissTip()
 
-        // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(true)
-
         if !isSearchingMode {
             self.isSearchingMode = true
             self.dataSource.removeAll()
             self.collectionView.reloadData()
         }
+
+        // (+)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -544,32 +546,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             Task {
                 await self.search()
             }
-        }
-    }
-
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // (+)
-        self.mainNavigationController?.menuPlus?.hiddenPlusButton(false)
-
-        self.isSearchingMode = false
-        self.networkSearchInProgress = false
-        self.searchResultText = nil
-        self.searchResultStore = nil
-
-        Task {
-            await searchOperationHandle.cancel()
-            await reloadDataSource()
-
-            // Restore Layout
-            if let layoutForViewLayoutStore {
-                let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
-                layoutForView.layout = layoutForViewLayoutStore
-                await setLayout(layoutForView: layoutForView)
-            }
-            layoutForViewLayoutStore = nil
-
-            // update Option menu
-            await mainNavigationController?.updateMenuOption()
         }
     }
 
@@ -585,6 +561,32 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             textField.rightViewMode = .always
         } else {
             textField.rightView = nil
+        }
+    }
+
+    func willDismissSearchController(_ searchController: UISearchController) {
+        self.isSearchingMode = false
+        self.networkSearchInProgress = false
+        self.searchResultText = nil
+        self.searchResultStore = nil
+
+        // (+)
+        self.mainNavigationController?.menuPlus?.hiddenPlusButton(isEditMode: self.isEditMode, isSearchingMode: self.isSearchingMode)
+
+        Task {
+            await searchOperationHandle.cancel()
+            await reloadDataSource()
+
+            // Restore Layout
+            if let layoutForViewLayoutStore {
+                let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
+                layoutForView.layout = layoutForViewLayoutStore
+                await setLayout(layoutForView: layoutForView)
+            }
+            layoutForViewLayoutStore = nil
+
+            // update Option menu
+            await mainNavigationController?.updateMenuOption()
         }
     }
 
