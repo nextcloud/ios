@@ -35,7 +35,6 @@ class NCFiles: NCCollectionViewCommon {
                    self.controller?.account == account {
                     // (+)
                     self.mainNavigationController?.menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
-                    self.mainNavigationController?.menuPlusButton.tintColor = .white
                 }
             }
         }
