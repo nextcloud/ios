@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d återstående nedladdning tillåten</string>
+			<string>%d tillåten hämtning återstår</string>
 			<key>other</key>
-			<string>%d återstående nedladdningar tillåtna</string>
+			<string>%d tillåtna hämtningar återstår</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_items_left_</key>
