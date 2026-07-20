@@ -34,7 +34,7 @@ class NCFiles: NCCollectionViewCommon {
                    let account = userInfo["account"] as? String,
                    self.controller?.account == account {
                     // re-tint the + button
-                    self.mainNavigationController?.menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: account))
+                    self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: NCSession.shared.getSession(account: account))
                 }
             }
         }
@@ -64,7 +64,7 @@ class NCFiles: NCCollectionViewCommon {
                     if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
                         // re-tint the + button for the new account
-                        self.mainNavigationController?.menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: account))
+                        self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: NCSession.shared.getSession(account: account))
                     }
 
                     self.navigationController?.popToRootViewController(animated: false)
@@ -139,13 +139,8 @@ class NCFiles: NCCollectionViewCommon {
         if let metadataFolder {
             nkLog(info: "Inside metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
 
-            // disable + button if no create permission
-            let color = NCBrandColor.shared.getElement(account: self.session.account)
-
-            if let menuPlusButton = self.mainNavigationController?.menuPlusButton {
-                menuPlusButton.isEnabled = metadataFolder.isCreatable
-                menuPlusButton.setPlusButtonColor(metadataFolder.isCreatable ? color : .lightGray)
-            }
+            // disable + button if no create permission or E2EE offline
+            self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: self.session)
         }
 
         let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,

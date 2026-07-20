@@ -427,6 +427,8 @@ class NCContextMenuPlus: NSObject {
         let plusMenu = UIMenu(children: plusMenuElements)
 
         // PLUS BUTTON
+        updatePlusButtonEnabled(session: session)
+
         if menuPlusButton.menu != nil,
            !capabilitiesChanged {
             return
@@ -434,11 +436,22 @@ class NCContextMenuPlus: NSObject {
 
         menuPlusButton.menu = plusMenu
         menuPlusButton.showsMenuAsPrimaryAction = true
-        menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: session.account))
         menuPlusButton.alpha = 1
+    }
 
-        // E2EE Offline disable
-        menuPlusButton.isEnabled = isNetworkReachable || !isDirectoryE2EE
+    func updatePlusButtonEnabled(session: NCSession.Session) {
+        guard let controller, let menuPlusButton else {
+            return
+        }
+
+        let metadataFolder = (controller.currentViewController() as? NCCollectionViewCommon)?.metadataFolder
+        let isDirectoryE2EE = metadataFolder?.e2eEncrypted ?? false
+        let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
+
+        let isEnabled = (metadataFolder?.isCreatable ?? true) && (isNetworkReachable || !isDirectoryE2EE)
+
+        menuPlusButton.isEnabled = isEnabled
+        menuPlusButton.setPlusButtonColor(isEnabled ? NCBrandColor.shared.getElement(account: session.account) : .lightGray)
     }
 
     @MainActor

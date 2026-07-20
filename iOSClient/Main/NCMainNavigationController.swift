@@ -12,7 +12,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    let menuPlusButton = UIButton(type: .system)
+    let menuPlusButton: UIButton = NCMenuPlusButton(type: .system)
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -448,6 +448,27 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 applyTint(item, color: color)
             }
         }
+    }
+}
+
+private final class NCMenuPlusButton: UIButton {
+    // Disable hit testing if the button has low alpha, is hidden, or disabled.
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if let view = super.hitTest(point, with: event) {
+            return view
+        }
+
+        guard !isEnabled, !isHidden, alpha >= 0.01, bounds.contains(point) else {
+            return nil
+        }
+
+        return self
+    }
+
+    override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        guard isEnabled else { return nil }
+
+        return super.contextMenuInteraction(interaction, configurationForMenuAtLocation: location)
     }
 }
 
