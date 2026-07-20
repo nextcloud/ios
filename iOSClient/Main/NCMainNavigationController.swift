@@ -452,7 +452,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 }
 
 private final class NCMenuPlusButton: UIButton {
-    // Disable hit testing if the button has low alpha, is hidden, or disabled.
+    // Keep hit testing so taps don't fall through if the button is disabled, hidden or low alpha.
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if let view = super.hitTest(point, with: event) {
             return view
