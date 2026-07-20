@@ -444,14 +444,26 @@ class NCContextMenuPlus: NSObject {
             return
         }
 
-        let metadataFolder = (controller.currentViewController() as? NCCollectionViewCommon)?.metadataFolder
-        let isDirectoryE2EE = metadataFolder?.e2eEncrypted ?? false
-        let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
-
-        let isEnabled = (metadataFolder?.isCreatable ?? true) && (isNetworkReachable || !isDirectoryE2EE)
+        let isEnabled = isPlusButtonEnabled(for: controller)
 
         menuPlusButton.isEnabled = isEnabled
         menuPlusButton.setPlusButtonColor(isEnabled ? NCBrandColor.shared.getElement(account: session.account) : .lightGray)
+    }
+
+    private func isPlusButtonEnabled(for controller: NCMainTabBarController) -> Bool {
+        guard let metadataFolder = (controller.currentViewController() as? NCCollectionViewCommon)?.metadataFolder else {
+            return true
+        }
+
+        guard metadataFolder.isCreatable else {
+            return false
+        }
+
+        guard metadataFolder.e2eEncrypted else {
+            return true
+        }
+
+        return NextcloudKit.shared.isNetworkReachable()
     }
 
     @MainActor
