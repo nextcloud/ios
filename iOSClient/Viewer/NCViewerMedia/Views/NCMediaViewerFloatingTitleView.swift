@@ -5,32 +5,45 @@
 import UIKit
 
 final class NCMediaViewerFloatingTitleView: UIView {
-    private let primaryLabel = UILabel()
-    private let secondaryLabel = UILabel()
-    private let stackView = UIStackView()
-    private let blurView = UIVisualEffectView(effect: nil)
     private weak var navigationBar: UINavigationBar?
     private var navigationBarConstraints: [NSLayoutConstraint] = []
     private var centerXConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
+
+    private let titleButton: UIButton = {
+        let button: UIButton
+
+        if #available(iOS 26.0, *) {
+            var configuration = UIButton.Configuration.glass()
+            button = UIButton(configuration: configuration)
+        } else {
+            var configuration = UIButton.Configuration.plain()
+            button = UIButton(configuration: configuration)
+        }
+
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = false
+        button.adjustsImageSizeForAccessibilityContentSizeCategory = false
+
+        return button
+    }()
 
     init() {
         super.init(frame: .zero)
 
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .clear
-        layoutMargins = UIEdgeInsets(top: 6, left: 14, bottom: 6, right: 14)
         clipsToBounds = false
         isAccessibilityElement = true
 
-        configureLabels()
-        configureBlurView()
-        configureStackView()
-        updateAppearance()
+        addSubview(titleButton)
 
-        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (_: NCMediaViewerFloatingTitleView, _: UITraitCollection) in
-            self?.updateAppearance()
-        }
+        NSLayoutConstraint.activate([
+            titleButton.leadingAnchor.constraint(equalTo: leadingAnchor),
+            titleButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            titleButton.topAnchor.constraint(equalTo: topAnchor),
+            titleButton.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
     }
 
     @available(*, unavailable)
@@ -41,15 +54,15 @@ final class NCMediaViewerFloatingTitleView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        blurView.layer.cornerRadius = bounds.height / 2
+        var configuration = titleButton.configuration
+        configuration?.titleAlignment = .center
+        configuration?.titleLineBreakMode = .byTruncatingMiddle
+
+        titleButton.configuration = configuration
+        titleButton.titleLabel?.numberOfLines = 1
     }
 
-    // Attach directly to the navigation bar to match real button layout.
-    func attach(
-        to navigationBar: UINavigationBar,
-        widthMultiplier: CGFloat = 0.36,
-        verticalOffset: CGFloat = 0
-    ) {
+    func attach(to navigationBar: UINavigationBar, widthMultiplier: CGFloat = 0.36, verticalOffset: CGFloat = 0) {
         if self.navigationBar !== navigationBar || superview !== navigationBar {
             navigationBarConstraints.forEach { $0.isActive = false }
             navigationBarConstraints.removeAll()
@@ -93,40 +106,8 @@ final class NCMediaViewerFloatingTitleView: UIView {
         heightConstraint?.constant = height
     }
 
-    // Use visible bar item height when possible.
     private func navigationItemHeight(in navigationBar: UINavigationBar) -> CGFloat {
         min(44, navigationBar.bounds.height)
-    }
-
-    func update(
-        primaryText: String?,
-        secondaryText: String?
-    ) {
-        let normalizedPrimaryText = primaryText?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let normalizedSecondaryText = secondaryText?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        primaryLabel.text = normalizedPrimaryText
-        secondaryLabel.text = normalizedSecondaryText
-        secondaryLabel.isHidden = normalizedSecondaryText?.isEmpty ?? true
-        isHidden = normalizedPrimaryText?.isEmpty ?? true
-
-        updateAppearance()
-
-        accessibilityLabel = [
-            normalizedPrimaryText,
-            normalizedSecondaryText
-        ]
-        .compactMap { text in
-            guard let text, !text.isEmpty else {
-                return nil
-            }
-
-            return text
-        }
-        .joined(separator: ", ")
     }
 
     func clear() {
@@ -136,94 +117,48 @@ final class NCMediaViewerFloatingTitleView: UIView {
         )
     }
 
-    private func configureLabels() {
-        primaryLabel.font = UIFontMetrics(forTextStyle: .footnote).scaledFont(
-            for: .systemFont(ofSize: 13),
-            maximumPointSize: 15
+    func update(primaryText: String?, secondaryText: String?) {
+        var configuration = titleButton.configuration
+
+        configuration?.attributedTitle = AttributedString(
+            primaryText ?? "",
+            attributes: AttributeContainer([
+                .font: UIFont.systemFont(
+                    ofSize: 13,
+                    weight: .semibold
+                )
+            ])
         )
-        primaryLabel.textColor = .white
-        primaryLabel.textAlignment = .center
-        primaryLabel.adjustsFontForContentSizeCategory = true
-        primaryLabel.lineBreakMode = .byTruncatingMiddle
-        primaryLabel.numberOfLines = 1
 
-        secondaryLabel.font = UIFontMetrics(forTextStyle: .caption2).scaledFont(
-            for: .systemFont(ofSize: 11),
-            maximumPointSize: 13
-        )
-        secondaryLabel.textColor = .white.withAlphaComponent(0.82)
-        secondaryLabel.textAlignment = .center
-        secondaryLabel.adjustsFontForContentSizeCategory = true
-        secondaryLabel.lineBreakMode = .byTruncatingTail
-        secondaryLabel.numberOfLines = 1
-    }
-
-    private func configureBlurView() {
-        blurView.translatesAutoresizingMaskIntoConstraints = false
-        blurView.clipsToBounds = true
-        blurView.isUserInteractionEnabled = false
-
-        if #available(iOS 26.0, *) {
-            let effect = UIGlassEffect()
-            effect.isInteractive = false
-            blurView.effect = effect
-        } else {
-            blurView.effect = UIBlurEffect(style: .systemMaterial)
-        }
-
-        insertSubview(blurView, at: 0)
-
-        NSLayoutConstraint.activate([
-            blurView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            blurView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            blurView.topAnchor.constraint(equalTo: topAnchor),
-            blurView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
-    }
-
-    private func configureStackView() {
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .fill
-        stackView.spacing = 0
-        stackView.addArrangedSubview(primaryLabel)
-        stackView.addArrangedSubview(secondaryLabel)
-        stackView.isUserInteractionEnabled = false
-
-        addSubview(stackView)
-
-        NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(
-                equalTo: layoutMarginsGuide.leadingAnchor
-            ),
-            stackView.trailingAnchor.constraint(
-                equalTo: layoutMarginsGuide.trailingAnchor
-            ),
-            stackView.centerYAnchor.constraint(
-                equalTo: centerYAnchor
+        if let secondaryText,
+           !secondaryText.isEmpty {
+            configuration?.attributedSubtitle = AttributedString(
+                secondaryText,
+                attributes: AttributeContainer([
+                    .font: UIFont.systemFont(
+                        ofSize: 11,
+                        weight: .regular
+                    )
+                ])
             )
-        ])
-    }
-
-    private func updateAppearance() {
-        let isDarkMode = traitCollection.userInterfaceStyle == .dark
-
-        if #available(iOS 26.0, *) {
-            let glassEffect = UIGlassEffect()
-            glassEffect.isInteractive = false
-            blurView.effect = glassEffect
         } else {
-            blurView.effect = UIBlurEffect(
-                style: isDarkMode
-                    ? .systemChromeMaterialDark
-                    : .systemChromeMaterialLight
-            )
+            configuration?.attributedSubtitle = nil
         }
+        titleButton.configuration = configuration
 
-        let textColor: UIColor = isDarkMode ? .white : .black
+        isHidden = primaryText?.isEmpty ?? true
 
-        primaryLabel.textColor = textColor
-        secondaryLabel.textColor = textColor.withAlphaComponent(0.82)
+        accessibilityLabel = [
+            primaryText,
+            secondaryText
+        ]
+        .compactMap { text in
+            guard let text, !text.isEmpty else {
+                return nil
+            }
+
+            return text
+        }
+        .joined(separator: ", ")
     }
 }
