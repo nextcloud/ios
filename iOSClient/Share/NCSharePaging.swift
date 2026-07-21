@@ -298,5 +298,10 @@ private struct NCViewControllerRepresentable: UIViewControllerRepresentable {
     let viewController: UIViewController
 
     func makeUIViewController(context: Context) -> UIViewController { viewController }
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+
+        // TabView(.page) does not propagate appearance trait changes to represented VCs (as of iOS 18.4), seems a SwiftUI bug...
+        uiViewController.view.overrideUserInterfaceStyle = context.environment.colorScheme == .dark ? .dark : .light
+    }
 }
