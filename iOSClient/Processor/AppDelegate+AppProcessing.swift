@@ -137,6 +137,27 @@ extension AppDelegate {
                 guard !Task.isCancelled else {
                     return false
                 }
+
+                nkLog(tag: self.global.logTagMediaPreview,
+                      emoji: .start,
+                      message: "Start media preview backfill for account \(account.account)")
+
+                let previewStatus = await NCMediaPreviewBackfillProcessor().runPreviewBackfill(
+                    account: account,
+                    limit: 100
+                ) { succeeded, failed in
+                    nkLog(tag: self.global.logTagMediaPreview,
+                          emoji: .info,
+                          message: "Media preview backfill progress: succeeded \(succeeded) - failed \(failed) account \(account.account)")
+                }
+
+                nkLog(tag: self.global.logTagMediaPreview,
+                      emoji: previewStatus.isSuccessful ? .stop : .error,
+                      message: previewStatus.logMessage)
+
+                guard !Task.isCancelled else {
+                    return false
+                }
             }
 
             return true
