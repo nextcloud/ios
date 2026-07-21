@@ -137,6 +137,4 @@ final class NCMediaPlaceholderHydrationProcessor {
 
         return .completed(account: account.account, total: total, succeeded: succeeded, failed: failed)
     }
-
 }
-

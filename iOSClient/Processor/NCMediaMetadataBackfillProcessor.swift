@@ -126,4 +126,3 @@ final class NCMediaMetadataBackfillProcessor {
         return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
     }
 }
-
