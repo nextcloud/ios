@@ -64,9 +64,8 @@ extension NCMedia: UICollectionViewDataSource {
             await NCTransferCoordinator.shared.start(
                 identifier: ocId,
                 priority: .visible
-            ) { [weak self] in
-                guard let self,
-                      let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
+            ) {
+                guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                     return
                 }
                 let iconName = metadata.iconName

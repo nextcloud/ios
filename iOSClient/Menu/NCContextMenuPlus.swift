@@ -427,6 +427,8 @@ class NCContextMenuPlus: NSObject {
         let plusMenu = UIMenu(children: plusMenuElements)
 
         // PLUS BUTTON
+        updatePlusButtonEnabled(session: session)
+
         if menuPlusButton.menu != nil,
            !capabilitiesChanged {
             return
@@ -434,12 +436,43 @@ class NCContextMenuPlus: NSObject {
 
         menuPlusButton.menu = plusMenu
         menuPlusButton.showsMenuAsPrimaryAction = true
-        menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: session.account)
-        menuPlusButton.tintColor = .white
         menuPlusButton.alpha = 1
+    }
 
-        // E2EE Offline disable
-        menuPlusButton.isEnabled = isNetworkReachable || !isDirectoryE2EE
+    func updatePlusButtonEnabled(session: NCSession.Session) {
+        guard let controller, let menuPlusButton else {
+            return
+        }
+
+        let isEnabled = isPlusButtonEnabled(for: controller)
+
+        menuPlusButton.isEnabled = isEnabled
+        menuPlusButton.setPlusButtonColor(isEnabled ? NCBrandColor.shared.getElement(account: session.account) : .lightGray)
+    }
+
+    private func isPlusButtonEnabled(for controller: NCMainTabBarController) -> Bool {
+        guard let metadataFolder = (controller.currentViewController() as? NCCollectionViewCommon)?.metadataFolder else {
+            return true
+        }
+
+        guard metadataFolder.isCreatable else {
+            return false
+        }
+
+        guard metadataFolder.e2eEncrypted else {
+            return true
+        }
+
+        return NextcloudKit.shared.isNetworkReachable()
+    }
+
+    @MainActor
+    func hiddenPlusButton(isEditMode: Bool, isSearchingMode: Bool, animation: Bool = true) {
+        if isEditMode || isSearchingMode {
+            hiddenPlusButton(true, animation: animation)
+        } else {
+            hiddenPlusButton(false, animation: animation)
+        }
     }
 
     @MainActor

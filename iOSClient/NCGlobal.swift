@@ -393,6 +393,7 @@ final class NCGlobal: Sendable {
     let logTagViewer                        = "VIEWERS"
     let logTagMediaBackfill                 = "MEDIA BACKFILL"
     let logTagMediaPlaceholder              = "MEDIA PLACEHOLDER"
+    let logTagMediaPreview                  = "MEDIA PREVIEW"
 
     // USER DEFAULTS
     //

@@ -12,7 +12,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    let menuPlusButton = UIButton(type: .system)
+    let menuPlusButton: UIButton = NCMenuPlusButton(type: .system)
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -116,19 +116,26 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         // PLUS BUTTON MENU
         let buttonSize: CGFloat = 44
-        let plusConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
+        let plusConfiguration = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)
         let plusImage = UIImage(systemName: "plus", withConfiguration: plusConfiguration)?.withRenderingMode(.alwaysTemplate)
-        menuPlusButton.setImage(plusImage, for: .normal)
-        menuPlusButton.tintColor = .white
-        menuPlusButton.contentHorizontalAlignment = .center
-        menuPlusButton.contentVerticalAlignment = .center
-        menuPlusButton.backgroundColor = NCBrandColor.shared.getElement(account: session.account)
-        menuPlusButton.layer.cornerRadius = buttonSize / 2
-        menuPlusButton.layer.masksToBounds = false
-        menuPlusButton.layer.shadowColor = UIColor.black.cgColor
-        menuPlusButton.layer.shadowOpacity = 0.18
-        menuPlusButton.layer.shadowRadius = 8
-        menuPlusButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+
+        if #available(iOS 26.0, *) {
+            var glassConfiguration = UIButton.Configuration.prominentGlass()
+            glassConfiguration.image = plusImage
+            menuPlusButton.configuration = glassConfiguration
+        } else {
+            menuPlusButton.setImage(plusImage, for: .normal)
+            menuPlusButton.contentHorizontalAlignment = .center
+            menuPlusButton.contentVerticalAlignment = .center
+            menuPlusButton.layer.cornerRadius = buttonSize / 2
+            menuPlusButton.layer.masksToBounds = false
+            menuPlusButton.layer.shadowColor = UIColor.black.cgColor
+            menuPlusButton.layer.shadowOpacity = 0.18
+            menuPlusButton.layer.shadowRadius = 8
+            menuPlusButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+        }
+
+        menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: session.account))
         menuPlusButton.showsMenuAsPrimaryAction = true
         menuPlusButton.translatesAutoresizingMaskIntoConstraints = false
         menuPlusButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
@@ -176,6 +183,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     self.controller?.availableNotifications = true
                 }
                 await self.collectionViewCommonTrailingItemGroups()
+                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -186,7 +194,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task { @MainActor [weak self] in
                 guard let self else { return }
 
-                // Menu Plus
+                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -194,11 +202,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
+            // (+)
             // PLUS BUTTON ONLY IN FILES
-            if viewController is NCFiles {
-                self.menuPlus?.hiddenPlusButton(false)
+            if let viewController = viewController as? NCFiles {
+                self.menuPlus?.hiddenPlusButton(isEditMode: viewController.isEditMode,
+                                                isSearchingMode: viewController.isSearchingMode,
+                                                animation: false)
             } else {
-                self.menuPlus?.hiddenPlusButton(true, animation: false)
+                self.menuPlus?.hiddenPlusButton(true,
+                                                animation: false)
             }
             // MENU
             setNavigationBarAppearance()
@@ -435,6 +447,38 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             for item in visibleItems {
                 applyTint(item, color: color)
             }
+        }
+    }
+}
+
+private final class NCMenuPlusButton: UIButton {
+    // Keep hit testing so taps don't fall through if the button is disabled, hidden or low alpha.
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if let view = super.hitTest(point, with: event) {
+            return view
+        }
+
+        guard !isEnabled, !isHidden, alpha >= 0.01, bounds.contains(point) else {
+            return nil
+        }
+
+        return self
+    }
+
+    override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        guard isEnabled else { return nil }
+
+        return super.contextMenuInteraction(interaction, configurationForMenuAtLocation: location)
+    }
+}
+
+extension UIButton {
+    func setPlusButtonColor(_ color: UIColor) {
+        if #available(iOS 26.0, *) {
+            tintColor = color
+        } else {
+            backgroundColor = color
+            tintColor = .white
         }
     }
 }

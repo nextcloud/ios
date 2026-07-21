@@ -20,9 +20,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         self.layoutForView = self.database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         // is a Directory E2EE
         if isSearchingMode {
-            self.isDirectoryE2EE = false
+            self.isCurrentDirectoryE2EE = false
         } else {
-            self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
+            self.isCurrentDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         }
         return self.dataSource.numberOfItemsInSection(section)
     }
@@ -119,7 +119,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
 
         // E2EE create preview
-        if self.isDirectoryE2EE,
+        if self.isCurrentDirectoryE2EE,
            metadata.isImageOrVideo,
            !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             utility.createImageFileFrom(metadata: metadata)

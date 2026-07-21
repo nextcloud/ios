@@ -7,10 +7,8 @@ import NextcloudKit
 import BackgroundTasks
 
 extension AppDelegate {
-    // Schedules the next processing task.
-    //
-    // The scheduler may delay execution depending on device conditions,
-    // battery state, thermal conditions, and system policy.
+
+    /// Schedules the next background processing task.
     func scheduleAppProcessing() {
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: global.processingTask)
 
@@ -26,16 +24,7 @@ extension AppDelegate {
         }
     }
 
-    /// Handles the lifecycle of the app processing background task.
-    ///
-    /// The task opens the background database, schedules its next execution, and then runs either
-    /// the weekly maintenance cleanup or the background synchronization pipeline. The sync pipeline
-    /// performs auto-upload, media metadata backfill, and placeholder hydration for the active account.
-    ///
-    /// The underlying Swift task is cancelled when iOS expires the background execution time, and the
-    /// processing task is marked successful only when all scheduled work finishes without cancellation.
-    ///
-    /// - Parameter task: The system-provided background processing task.
+    /// Handles background maintenance, media backfill, placeholder hydration, and preview generation.
     func handleProcessingTask(_ task: BGProcessingTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
@@ -45,7 +34,7 @@ extension AppDelegate {
             return
         }
 
-        // Schedule next processing task.
+        // Schedule the next processing task.
         scheduleAppProcessing()
 
         let processingTask = Task { () -> Bool in
@@ -56,15 +45,14 @@ extension AppDelegate {
                 return true
             }
 
-            // Auto Upload
+            // Auto upload.
             await NCAutoUpload.shared.autoUploadBackgroundSync()
 
             guard !Task.isCancelled else {
                 return false
             }
 
-            // If possible, cleaning every week.
-            //
+            // Weekly cleanup.
             if NCPreferences().cleaningWeek() {
                 nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Start cleaning week")
 
@@ -95,13 +83,12 @@ extension AppDelegate {
                 return false
             }
 
-            let mediaProcessor = NCMediaMetadataBackgroundProcessor()
-
+            // Media metadata backfill for the active account.
             nkLog(tag: self.global.logTagMediaBackfill,
                   emoji: .start,
                   message: "Start media metadata backfill for account \(activeAccount.account)")
 
-            let backfillStatus = await mediaProcessor.runBackfill(
+            let backfillStatus = await NCMediaMetadataBackfillProcessor().runBackfill(
                 account: activeAccount,
                 limit: 250
             ) { offset, inserted, updated in
@@ -119,11 +106,12 @@ extension AppDelegate {
             }
 
             for account in sortedAccounts {
+                // Placeholder hydration and preview backfill for all accounts.
                 nkLog(tag: self.global.logTagMediaPlaceholder,
                       emoji: .start,
                       message: "Start media metadata placeholder hydration for account \(account.account)")
 
-                let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
+                let hydrationStatus = await NCMediaPlaceholderHydrationProcessor().runPlaceholderHydration(
                     account: account,
                     limit: 100
                 ) { succeeded in
@@ -135,6 +123,28 @@ extension AppDelegate {
                 nkLog(tag: self.global.logTagMediaPlaceholder,
                       emoji: hydrationStatus.isSuccessful ? .stop : .error,
                       message: hydrationStatus.logMessage)
+
+                guard !Task.isCancelled else {
+                    return false
+                }
+
+                // Media preview backfill.
+                nkLog(tag: self.global.logTagMediaPreview,
+                      emoji: .start,
+                      message: "Start media preview backfill for account \(account.account)")
+
+                let previewStatus = await NCMediaPreviewBackfillProcessor().runPreviewBackfill(
+                    account: account,
+                    limit: 100
+                ) { succeeded, failed in
+                    nkLog(tag: self.global.logTagMediaPreview,
+                          emoji: .info,
+                          message: "Media preview backfill progress: succeeded \(succeeded) - failed \(failed) account \(account.account)")
+                }
+
+                nkLog(tag: self.global.logTagMediaPreview,
+                      emoji: previewStatus.isSuccessful ? .stop : .error,
+                      message: previewStatus.logMessage)
 
                 guard !Task.isCancelled else {
                     return false

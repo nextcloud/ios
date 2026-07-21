@@ -26,10 +26,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%d item left</string>
 			<key>other</key>
-			<string>%d items left</string>
+			<string>剩餘 %d 個項目</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -42,10 +40,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>You have %d item to back up</string>
 			<key>other</key>
-			<string>You have %d items to back up</string>
+			<string>您有 %d 個項目需要備份</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -58,10 +54,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%d failed</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>%d 次失敗</string>
 		</dict>
 	</dict>
 </dict>
