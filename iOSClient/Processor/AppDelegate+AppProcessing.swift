@@ -95,13 +95,11 @@ extension AppDelegate {
                 return false
             }
 
-            let mediaProcessor = NCMediaMetadataBackgroundProcessor()
-
             nkLog(tag: self.global.logTagMediaBackfill,
                   emoji: .start,
                   message: "Start media metadata backfill for account \(activeAccount.account)")
 
-            let backfillStatus = await mediaProcessor.runBackfill(
+            let backfillStatus = await NCMediaMetadataBackfillProcessor().runBackfill(
                 account: activeAccount,
                 limit: 250
             ) { offset, inserted, updated in
@@ -123,7 +121,7 @@ extension AppDelegate {
                       emoji: .start,
                       message: "Start media metadata placeholder hydration for account \(account.account)")
 
-                let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
+                let hydrationStatus = await NCMediaPlaceholderHydrationProcessor().runPlaceholderHydration(
                     account: account,
                     limit: 100
                 ) { succeeded in
@@ -135,6 +133,27 @@ extension AppDelegate {
                 nkLog(tag: self.global.logTagMediaPlaceholder,
                       emoji: hydrationStatus.isSuccessful ? .stop : .error,
                       message: hydrationStatus.logMessage)
+
+                guard !Task.isCancelled else {
+                    return false
+                }
+
+                nkLog(tag: self.global.logTagMediaPreview,
+                      emoji: .start,
+                      message: "Start media preview backfill for account \(account.account)")
+
+                let previewStatus = await NCMediaPreviewBackfillProcessor().runPreviewBackfill(
+                    account: account,
+                    limit: 100
+                ) { succeeded, failed in
+                    nkLog(tag: self.global.logTagMediaPreview,
+                          emoji: .info,
+                          message: "Media preview backfill progress: succeeded \(succeeded) - failed \(failed) account \(account.account)")
+                }
+
+                nkLog(tag: self.global.logTagMediaPreview,
+                      emoji: previewStatus.isSuccessful ? .stop : .error,
+                      message: previewStatus.logMessage)
 
                 guard !Task.isCancelled else {
                     return false
