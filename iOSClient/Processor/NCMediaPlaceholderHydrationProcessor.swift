@@ -5,12 +5,16 @@
 import Foundation
 import NextcloudKit
 
+/// Completes placeholder media metadata by retrieving the full properties from the server.
 final class NCMediaPlaceholderHydrationProcessor {
+
+    /// Represents the result of a placeholder hydration execution.
     enum PlaceholderHydrationStatus {
         case skippedNoPlaceholders(account: String)
         case completed(account: String, total: Int, succeeded: Int, failed: Int)
         case cancelled(account: String, total: Int, succeeded: Int, failed: Int)
 
+        /// Returns whether the hydration completed successfully or had no work to perform.
         var isSuccessful: Bool {
             switch self {
             case .skippedNoPlaceholders, .completed:
@@ -20,6 +24,7 @@ final class NCMediaPlaceholderHydrationProcessor {
             }
         }
 
+        /// Returns a log message describing the hydration result.
         var logMessage: String {
             switch self {
             case .skippedNoPlaceholders(let account):
@@ -36,7 +41,7 @@ final class NCMediaPlaceholderHydrationProcessor {
         }
     }
 
-    /// Completes media metadata placeholders by retrieving and storing their full properties.
+    /// Hydrates placeholder metadata concurrently by retrieving their full server properties.
     func runPlaceholderHydration(
         account: tableAccount,
         limit: Int,
@@ -62,6 +67,7 @@ final class NCMediaPlaceholderHydrationProcessor {
 
         let total = metadatas.count
 
+        /// Hydrates a single placeholder metadata entry.
         func hydrate(_ metadata: tableMetadata) async -> Bool {
             guard !Task.isCancelled else {
                 return false

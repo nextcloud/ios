@@ -5,7 +5,10 @@
 import Foundation
 import NextcloudKit
 
+/// Retrieves and stores missing media previews from the server.
 final class NCMediaPreviewBackfillProcessor {
+
+    /// Represents the result of a media preview backfill execution.
     enum PreviewBackfillStatus {
         case skippedNoPreviews(account: String)
 
@@ -23,6 +26,7 @@ final class NCMediaPreviewBackfillProcessor {
             failed: Int
         )
 
+        /// Returns whether the preview backfill completed successfully or had no work to perform.
         var isSuccessful: Bool {
             switch self {
             case .skippedNoPreviews, .completed:
@@ -33,6 +37,7 @@ final class NCMediaPreviewBackfillProcessor {
             }
         }
 
+        /// Returns a log message describing the preview backfill result.
         var logMessage: String {
             switch self {
             case .skippedNoPreviews(let account):
@@ -62,7 +67,7 @@ final class NCMediaPreviewBackfillProcessor {
         }
     }
 
-    /// Retrieves missing media previews while skipping previews that previously failed.
+    /// Processes missing media previews concurrently, skipping previously failed items.
     func runPreviewBackfill(
         account: tableAccount,
         limit: Int,
@@ -117,12 +122,14 @@ final class NCMediaPreviewBackfillProcessor {
         var succeeded = 0
         var failed = 0
 
+        /// Represents the result of processing a single preview.
         enum PreviewResult {
             case succeeded
             case failed
             case cancelled
         }
 
+        /// Processes a single missing media preview.
         func process(_ metadata: tableMetadata) async -> PreviewResult {
             guard !Task.isCancelled else {
                 return .cancelled
@@ -202,6 +209,7 @@ final class NCMediaPreviewBackfillProcessor {
         )
     }
 
+    /// Downloads and stores a preview for the specified metadata.
     private func requestPreview(metadata: tableMetadata) async -> NKError {
         guard !Task.isCancelled else {
             return NKError(
