@@ -31,7 +31,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var backgroundImageView = UIImageView()
     internal var serverUrl: String = ""
     internal var isEditMode = false
-    internal var isDirectoryE2EE = false
+    // whether the displayed folder is E2EE; refreshed on each collection view data-source pass
+    internal var isCurrentDirectoryE2EE = false
     internal var fileSelect: [String] = []
     internal var metadataFolder: tableMetadata?
     internal var richWorkspaceText: String?
