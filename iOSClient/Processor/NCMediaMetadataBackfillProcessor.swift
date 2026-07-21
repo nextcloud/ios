@@ -5,13 +5,19 @@
 import Foundation
 import NextcloudKit
 
+/// Incrementally scans the remote media archive and creates missing local metadata placeholders.
+///
+/// The current offset is persisted so interrupted executions can resume later.
+/// Once the archive has been fully processed, subsequent executions are skipped.
 final class NCMediaMetadataBackfillProcessor {
+    /// Represents the result of a media metadata backfill execution.
     enum BackfillStatus {
         case skippedAlreadyCompleted(account: String)
         case completed(account: String, processed: Int, inserted: Int, updated: Int)
         case failed(account: String, processed: Int, inserted: Int, updated: Int, errorCode: Int, errorDescription: String)
         case cancelled(account: String, processed: Int, inserted: Int, updated: Int)
 
+        /// Returns whether the backfill completed successfully or was already completed.
         var isSuccessful: Bool {
             switch self {
             case .skippedAlreadyCompleted, .completed:
@@ -21,6 +27,7 @@ final class NCMediaMetadataBackfillProcessor {
             }
         }
 
+        /// Returns a log message describing the backfill result.
         var logMessage: String {
             switch self {
             case .skippedAlreadyCompleted(let account):
@@ -38,7 +45,7 @@ final class NCMediaMetadataBackfillProcessor {
         }
     }
 
-    /// Progressively scans the media archive and creates missing metadata placeholders.
+    /// Processes the remote media archive page by page and creates missing metadata placeholders.
     func runBackfill(
         account: tableAccount,
         limit: Int,
@@ -57,10 +64,8 @@ final class NCMediaMetadataBackfillProcessor {
         var inserted = 0
         var updated = 0
 
-        let backfill = NCMediaMetadataBackfill(account: account.account)
-
         while !Task.isCancelled {
-            let result = await backfill.run(
+            let result = await runSearch(
                 mediaPath: account.mediaPath,
                 account: account.account,
                 offset: offset,
@@ -124,5 +129,75 @@ final class NCMediaMetadataBackfillProcessor {
         }
 
         return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
+    }
+
+    /// Executes a single paginated media search and handles task cancellation.
+    private func runSearch(mediaPath: String,
+                           account: String,
+                           offset: Int,
+                           token: String? = nil,
+                           count: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError?) {
+        let result = await fetchMediaPage(path: mediaPath,
+                                          account: account,
+                                          offset: offset,
+                                          token: token,
+                                          count: count)
+
+        guard !Task.isCancelled else {
+            return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorTaskCancelled, errorDescription: "Task cancelled for account: \(account)"))
+        }
+
+        return result
+    }
+
+    /// Fetches a page of media files from the server using offset and token pagination.
+    private func fetchMediaPage(path: String,
+                                account: String,
+                                offset: Int,
+                                token: String? = nil,
+                                count: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError) {
+        guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
+            return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: "Session not found for account: \(account)"))
+        }
+        let nkComm = NextcloudKit.shared.nkCommonInstance
+        let href = "/files/" + nkSession.userId + path
+
+        let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
+        let lessDateString = Date.distantFuture.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let greaterDateString = Date.distantPast.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let httpBodyString = String(format: NCMediaNetwork().getRequestBodySearchMedia(
+            href: href,
+            elementDate: elementDate,
+            lessDate: lessDateString,
+            greaterDate: greaterDateString,
+            limit: String(1000000))
+        )
+
+        guard let httpBody = httpBodyString.data(using: .utf8) else {
+            return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorPreconditionFailed, errorDescription: "Body error for account: \(account)"))
+        }
+
+        let options = NKRequestOptions(timeout: 240,
+                                       taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties,
+                                       paginate: true,
+                                       paginateToken: token,
+                                       paginateOffset: offset,
+                                       paginateCount: count)
+
+        let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options)
+        if results.error == .success, let files = results.files {
+            let allHeaderFields = results.responseData?.response?.allHeaderFields
+            var token: String?
+            if let result = nkComm.findHeader("x-nc-paginate-token", allHeaderFields: allHeaderFields) {
+                token = result
+            }
+            var paginate: Bool = false
+            if let result = nkComm.findHeader("x-nc-paginate", allHeaderFields: allHeaderFields) {
+                paginate = Bool(result) ?? false
+            }
+            return (files, token, paginate, results.error)
+        } else {
+            return (nil, nil, false, results.error)
+        }
     }
 }
