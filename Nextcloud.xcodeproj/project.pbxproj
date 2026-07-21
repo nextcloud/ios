@@ -768,6 +768,9 @@
 		F7BDC1D4300F440A00C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BDC1D1300F440600C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift */; };
 		F7BDC1D5300F440A00C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BDC1D1300F440600C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift */; };
 		F7BDC1D6300F440A00C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BDC1D1300F440600C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift */; };
+		F7BDC1D8300F4E8E00C5D9FA /* NCMediaMetadataBackfillProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BDC1D7300F4E8A00C5D9FA /* NCMediaMetadataBackfillProcessor.swift */; };
+		F7BDC1DA300F4F2800C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BDC1D9300F4F2500C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift */; };
+		F7BDC1DC300F4F9700C5D9FA /* NCMediaPreviewBackfillProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BDC1DB300F4F9500C5D9FA /* NCMediaPreviewBackfillProcessor.swift */; };
 		F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BF9D832934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
 		F7BF9D842934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
@@ -794,7 +797,6 @@
 		F7C55CC92FB5CE74004A974F /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C55CC32FB5CE74004A974F /* ActionViewController.swift */; };
 		F7C55CCA2FB5CE74004A974F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7C55CC42FB5CE74004A974F /* Images.xcassets */; };
 		F7C55CCC2FB5CE74004A974F /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C55CC72FB5CE74004A974F /* MainInterface.storyboard */; };
-		F7C630712FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */; };
 		F7C6307F2FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */; };
 		F7C630802FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */; };
 		F7C630872FFF6DE100257EEB /* NCMetadataDownloadTranfersSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C630832FFF6DDF00257EEB /* NCMetadataDownloadTranfersSuccess.swift */; };
@@ -1762,6 +1764,9 @@
 		F7BD0A012C4689A4003A4A6D /* NCMedia+CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMedia+CollectionViewDelegate.swift"; sourceTree = "<group>"; };
 		F7BD0A032C4689E9003A4A6D /* NCMedia+MediaLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMedia+MediaLayout.swift"; sourceTree = "<group>"; };
 		F7BDC1D1300F440600C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+MediaPreviewBackfill.swift"; sourceTree = "<group>"; };
+		F7BDC1D7300F4E8A00C5D9FA /* NCMediaMetadataBackfillProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaMetadataBackfillProcessor.swift; sourceTree = "<group>"; };
+		F7BDC1D9300F4F2500C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaceholderHydrationProcessor.swift; sourceTree = "<group>"; };
+		F7BDC1DB300F4F9500C5D9FA /* NCMediaPreviewBackfillProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPreviewBackfillProcessor.swift; sourceTree = "<group>"; };
 		F7BE7C25290AC8C9002ABB61 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Intent.strings; sourceTree = "<group>"; };
 		F7BE7C27290ADEFD002ABB61 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Intent.strings; sourceTree = "<group>"; };
 		F7BE7C29290ADEFD002ABB61 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Intent.strings; sourceTree = "<group>"; };
@@ -1818,7 +1823,6 @@
 		F7C55CC32FB5CE74004A974F /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		F7C55CC42FB5CE74004A974F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7C55CC62FB5CE74004A974F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaMetadataBackgroundProcessor.swift; sourceTree = "<group>"; };
 		F7C6307E2FFE4F8000257EEB /* UIWindowScene+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindowScene+Extension.swift"; sourceTree = "<group>"; };
 		F7C630832FFF6DDF00257EEB /* NCMetadataDownloadTranfersSuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMetadataDownloadTranfersSuccess.swift; sourceTree = "<group>"; };
 		F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+RecommendedFiles.swift"; sourceTree = "<group>"; };
@@ -3138,6 +3142,25 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		F7BDC1DD300F4FF800C5D9FA /* Processor */ = {
+			isa = PBXGroup;
+			children = (
+				F7110AE32F9774130095AA5C /* AppDelegate+AppProcessing.swift */,
+				F7BDC1DB300F4F9500C5D9FA /* NCMediaPreviewBackfillProcessor.swift */,
+				F7BDC1D9300F4F2500C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift */,
+				F7BDC1D7300F4E8A00C5D9FA /* NCMediaMetadataBackfillProcessor.swift */,
+			);
+			path = Processor;
+			sourceTree = "<group>";
+		};
+		F7BDC1DE300F502C00C5D9FA /* Refresh */ = {
+			isa = PBXGroup;
+			children = (
+				F7110ADF2F9773210095AA5C /* AppDelegate+AppRefresh.swift */,
+			);
+			path = Refresh;
+			sourceTree = "<group>";
+		};
 		F7BFFA621A24D7300044ED85 /* Login */ = {
 			isa = PBXGroup;
 			children = (
@@ -3532,16 +3555,15 @@
 			isa = PBXGroup;
 			children = (
 				AA517BB42D66149900F8D37C /* .tx */,
+				F7BDC1DD300F4FF800C5D9FA /* Processor */,
+				F7BDC1DE300F502C00C5D9FA /* Refresh */,
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
-				F7110ADF2F9773210095AA5C /* AppDelegate+AppRefresh.swift */,
-				F7110AE32F9774130095AA5C /* AppDelegate+AppProcessing.swift */,
 				F7CAFE1A2F16AA8600DB35A5 /* main.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */,
 				F77DD6A72C5CC093009448FB /* NCSession.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
-				F7C630702FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift */,
 				F718E2572DF2D5C3004038AF /* NCBackgroundLocationUploadManager.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
@@ -4830,7 +4852,6 @@
 				F7CDB5C52FA33CA300F72306 /* NCMediaViewerModel.swift in Sources */,
 				F7CDB5C62FA33CA300F72306 /* NCMediaViewerView.swift in Sources */,
 				F7CDB5CC2FA33CA300F72306 /* NCNextcloudMediaViewerLoader.swift in Sources */,
-				F7C630712FFE206100257EEB /* NCMediaMetadataBackgroundProcessor.swift in Sources */,
 				F76341182EBE0BC60056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,
 				F79377052FBD86AF00DE56DE /* NCMediaViewerFloatingTitleView.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
@@ -4838,6 +4859,7 @@
 				F34E1AD92ECC839100FA10C3 /* EmojiTextField.swift in Sources */,
 				F768822E2C0DD1E7001CF441 /* NCSettingsBundleHelper.swift in Sources */,
 				F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */,
+				F7BDC1DC300F4F9700C5D9FA /* NCMediaPreviewBackfillProcessor.swift in Sources */,
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
@@ -5097,6 +5119,7 @@
 				F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F76687072B7D067400779E3F /* NCAudioRecorderViewController.swift in Sources */,
 				F77B0F893008ABDC00EE4AE1 /* NCBlurEffectsTestView.swift in Sources */,
+				F7BDC1D8300F4E8E00C5D9FA /* NCMediaMetadataBackfillProcessor.swift in Sources */,
 				AA8E03DA2D2ED83300E7E89C /* TransientShare.swift in Sources */,
 				F7A03E2F2D425A14007AA677 /* NCFavoriteNavigationController.swift in Sources */,
 				F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
@@ -5121,6 +5144,7 @@
 				F7C6307F2FFE4F8000257EEB /* UIWindowScene+Extension.swift in Sources */,
 				F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
+				F7BDC1DA300F4F2800C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift in Sources */,
 				F7DA0F672F66AA0D0033020C /* ShowBanner.swift in Sources */,
 				F752BA052E58C05200616A26 /* Maintenance.swift in Sources */,
 				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,

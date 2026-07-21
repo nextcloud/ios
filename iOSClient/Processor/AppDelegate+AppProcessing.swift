@@ -95,13 +95,11 @@ extension AppDelegate {
                 return false
             }
 
-            let mediaProcessor = NCMediaMetadataBackgroundProcessor()
-
             nkLog(tag: self.global.logTagMediaBackfill,
                   emoji: .start,
                   message: "Start media metadata backfill for account \(activeAccount.account)")
 
-            let backfillStatus = await mediaProcessor.runBackfill(
+            let backfillStatus = await NCMediaMetadataBackfillProcessor().runBackfill(
                 account: activeAccount,
                 limit: 250
             ) { offset, inserted, updated in
@@ -123,7 +121,7 @@ extension AppDelegate {
                       emoji: .start,
                       message: "Start media metadata placeholder hydration for account \(account.account)")
 
-                let hydrationStatus = await mediaProcessor.runPlaceholderHydration(
+                let hydrationStatus = await NCMediaPlaceholderHydrationProcessor().runPlaceholderHydration(
                     account: account,
                     limit: 100
                 ) { succeeded in
