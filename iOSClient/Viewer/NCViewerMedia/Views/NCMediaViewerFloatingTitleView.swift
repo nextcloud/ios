@@ -9,6 +9,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
     private var navigationBarConstraints: [NSLayoutConstraint] = []
     private var centerXConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
+    private var lastLayoutWidth: CGFloat = 0
 
     private let titleButton: UIButton = {
         let button: UIButton
@@ -54,12 +55,25 @@ final class NCMediaViewerFloatingTitleView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        guard bounds.width != lastLayoutWidth else {
+            return
+        }
+
+        lastLayoutWidth = bounds.width
+
+        let leadingInset = titleButton.configuration?.contentInsets.leading ?? 0
+        let trailingInset = titleButton.configuration?.contentInsets.trailing ?? 0
+
+        titleButton.titleLabel?.preferredMaxLayoutWidth = max(0, bounds.width - leadingInset - trailingInset)
+        titleButton.titleLabel?.numberOfLines = 1
+        titleButton.titleLabel?.lineBreakMode = .byTruncatingMiddle
+
         var configuration = titleButton.configuration
         configuration?.titleAlignment = .center
         configuration?.titleLineBreakMode = .byTruncatingMiddle
-
         titleButton.configuration = configuration
-        titleButton.titleLabel?.numberOfLines = 1
+
+        titleButton.invalidateIntrinsicContentSize()
     }
 
     func attach(to navigationBar: UINavigationBar, widthMultiplier: CGFloat = 0.36, verticalOffset: CGFloat = 0) {
@@ -80,7 +94,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
                 topConstraint,
                 heightConstraint,
                 widthAnchor.constraint(
-                    lessThanOrEqualTo: navigationBar.widthAnchor,
+                    equalTo: navigationBar.widthAnchor,
                     multiplier: widthMultiplier
                 )
             ]
@@ -91,6 +105,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
         navigationBar.bringSubviewToFront(self)
         updateNavigationItemHeight()
         updateHorizontalAlignment()
+        setNeedsLayout()
     }
 
     func updateHorizontalAlignment() {
@@ -145,6 +160,9 @@ final class NCMediaViewerFloatingTitleView: UIView {
             configuration?.attributedSubtitle = nil
         }
         titleButton.configuration = configuration
+
+        lastLayoutWidth = 0
+        setNeedsLayout()
 
         isHidden = primaryText?.isEmpty ?? true
 
