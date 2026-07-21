@@ -207,6 +207,8 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableExternalSites.self)
         self.clearTable(tableLivePhoto.self)
         self.clearTable(tableLocalFile.self)
+        self.clearTable(tableMediaMetadataBackfill.self)
+        self.clearTable(tableMediaPreviewBackfill.self)
         self.clearTable(tableMetadata.self)
         self.clearTable(tableMetadataTag.self)
         self.clearTable(tableRecommendedFiles.self)
