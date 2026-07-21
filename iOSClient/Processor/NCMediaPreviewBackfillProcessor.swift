@@ -228,14 +228,7 @@ final class NCMediaPreviewBackfillProcessor {
             return result.error
         }
 
-        let image = NCUtility().createImageFileFrom(data: data, metadata: metadata, ext: NCGlobal.shared.previewExt1024)
-
-        guard image != nil else {
-            return NKError(
-                errorCode: NCGlobal.shared.errorInternalError,
-                errorDescription: "Unable to create preview image"
-            )
-        }
+        NCUtility().createImageFileFrom(data: data, metadata: metadata)
 
         return .success
     }
