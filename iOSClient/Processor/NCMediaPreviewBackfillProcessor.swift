@@ -7,25 +7,25 @@ import NextcloudKit
 
 final class NCMediaPreviewBackfillProcessor {
     enum PreviewBackfillStatus {
-        case skippedNoMetadatas(account: String)
+        case skippedNoPreviews(account: String)
+
         case completed(
             account: String,
             total: Int,
             succeeded: Int,
-            failed: Int,
-            skipped: Int
+            failed: Int
         )
+
         case cancelled(
             account: String,
             total: Int,
             succeeded: Int,
-            failed: Int,
-            skipped: Int
+            failed: Int
         )
 
         var isSuccessful: Bool {
             switch self {
-            case .skippedNoMetadatas, .completed:
+            case .skippedNoPreviews, .completed:
                 return true
 
             case .cancelled:
@@ -35,36 +35,29 @@ final class NCMediaPreviewBackfillProcessor {
 
         var logMessage: String {
             switch self {
-            case .skippedNoMetadatas(let account):
-                return "Media preview backfill skipped for account \(account): no metadata found"
+            case .skippedNoPreviews(let account):
+                return "Media preview backfill skipped for account \(account): no previews to process"
 
             case .completed(
                 let account,
                 let total,
                 let succeeded,
-                let failed,
-                let skipped
+                let failed
             ):
-                let pending = max(
-                    0,
-                    total - succeeded - failed - skipped
-                )
-
-                return "Media preview backfill completed for account \(account): total \(total) - succeeded \(succeeded) - failed \(failed) - skipped \(skipped) - pending \(pending)"
+                return "Media preview backfill completed for account \(account): total \(total) - succeeded \(succeeded) - failed \(failed)"
 
             case .cancelled(
                 let account,
                 let total,
                 let succeeded,
-                let failed,
-                let skipped
+                let failed
             ):
                 let pending = max(
                     0,
-                    total - succeeded - failed - skipped
+                    total - succeeded - failed
                 )
 
-                return "Media preview backfill cancelled for account \(account): total \(total) - succeeded \(succeeded) - failed \(failed) - skipped \(skipped) - pending \(pending)"
+                return "Media preview backfill cancelled for account \(account): total \(total) - succeeded \(succeeded) - failed \(failed) - pending \(pending)"
             }
         }
     }
@@ -72,55 +65,65 @@ final class NCMediaPreviewBackfillProcessor {
     /// Retrieves missing media previews while skipping previews that previously failed.
     func runPreviewBackfill(
         account: tableAccount,
-        metadatas: [tableMetadata],
+        limit: Int,
         update: @escaping (
             _ succeeded: Int,
-            _ failed: Int,
-            _ skipped: Int
+            _ failed: Int
         ) async -> Void
     ) async -> PreviewBackfillStatus {
         let database = NCManageDatabase.shared
-        let maximumConcurrentRequests = min(
-            8,
-            NCBrandOptions.shared.httpMaximumConnectionsPerHost
-        )
+        let utilityFileSystem = NCUtilityFileSystem()
+        let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+        let session = NCSession.Session(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
+        let mediaPredicate = NCImageCache.shared.getMediaPredicate(
+            session: session,
+            mediaPath: account.mediaPath,
+            showOnlyImages: false,
+            showOnlyVideos: false)
+        guard let metadatasMedia = await database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) else {
+            return .skippedNoPreviews(account: account.account)
+        }
+
+        let failedOcIds = await database.getFailedMediaPreviewOcIdsAsync(account: account.account)
+        var metadatas: [tableMetadata] = []
+        metadatas.reserveCapacity(limit)
+
+        for metadata in metadatasMedia {
+            guard !Task.isCancelled else {
+                break
+            }
+            guard !failedOcIds.contains(metadata.ocId) else {
+                continue
+            }
+            let imageExists = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+
+            guard !imageExists else {
+                continue
+            }
+
+            metadatas.append(metadata)
+            if metadatas.count >= limit {
+                break
+            }
+        }
 
         guard !metadatas.isEmpty else {
-            return .skippedNoMetadatas(
-                account: account.account
-            )
+            await database.clearTableAsync(tableMediaPreviewBackfill.self, account: account.account)
+            return .skippedNoPreviews(account: account.account)
         }
 
         let total = metadatas.count
 
         var succeeded = 0
         var failed = 0
-        var skipped = 0
 
         enum PreviewResult {
             case succeeded
             case failed
-            case skipped
             case cancelled
         }
 
-        func process(
-            _ metadata: tableMetadata
-        ) async -> PreviewResult {
-            guard !Task.isCancelled else {
-                return .cancelled
-            }
-
-            let alreadyFailed = await database
-                .isMediaPreviewBackfillFailedAsync(
-                    account: metadata.account,
-                    ocId: metadata.ocId
-                )
-
-            guard !alreadyFailed else {
-                return .skipped
-            }
-
+        func process(_ metadata: tableMetadata) async -> PreviewResult {
             guard !Task.isCancelled else {
                 return .cancelled
             }
@@ -132,21 +135,14 @@ final class NCMediaPreviewBackfillProcessor {
             }
 
             guard error.errorCode == 0 else {
-                await database.addMediaPreviewBackfillFailureAsync(
-                    account: metadata.account,
-                    ocId: metadata.ocId,
-                    errorCode: error.errorCode
-                )
-
+                await database.addMediaPreviewBackfillFailureAsync(account: metadata.account, ocId: metadata.ocId)
                 return .failed
             }
 
             return .succeeded
         }
 
-        await withTaskGroup(
-            of: PreviewResult.self
-        ) { group in
+        await withTaskGroup(of: PreviewResult.self) { group in
             var iterator = metadatas.makeIterator()
 
             for _ in 0..<maximumConcurrentRequests {
@@ -167,11 +163,9 @@ final class NCMediaPreviewBackfillProcessor {
                 case .failed:
                     failed += 1
 
-                case .skipped:
-                    skipped += 1
-
                 case .cancelled:
-                    break
+                    group.cancelAll()
+                    continue
                 }
 
                 guard !Task.isCancelled else {
@@ -194,23 +188,17 @@ final class NCMediaPreviewBackfillProcessor {
                 account: account.account,
                 total: total,
                 succeeded: succeeded,
-                failed: failed,
-                skipped: skipped
+                failed: failed
             )
         }
 
-        await update(
-            succeeded,
-            failed,
-            skipped
-        )
+        await update(succeeded, failed)
 
         return .completed(
             account: account.account,
             total: total,
             succeeded: succeeded,
-            failed: failed,
-            skipped: skipped
+            failed: failed
         )
     }
 
@@ -240,7 +228,7 @@ final class NCMediaPreviewBackfillProcessor {
             return result.error
         }
 
-        let image = NCUtility().createImageFileFrom(data: data,metadata: metadata, ext: NCGlobal.shared.previewExt1024)
+        let image = NCUtility().createImageFileFrom(data: data, metadata: metadata, ext: NCGlobal.shared.previewExt1024)
 
         guard image != nil else {
             return NKError(

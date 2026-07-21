@@ -3146,9 +3146,9 @@
 			isa = PBXGroup;
 			children = (
 				F7110AE32F9774130095AA5C /* AppDelegate+AppProcessing.swift */,
-				F7BDC1DB300F4F9500C5D9FA /* NCMediaPreviewBackfillProcessor.swift */,
-				F7BDC1D9300F4F2500C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift */,
 				F7BDC1D7300F4E8A00C5D9FA /* NCMediaMetadataBackfillProcessor.swift */,
+				F7BDC1D9300F4F2500C5D9FA /* NCMediaPlaceholderHydrationProcessor.swift */,
+				F7BDC1DB300F4F9500C5D9FA /* NCMediaPreviewBackfillProcessor.swift */,
 			);
 			path = Processor;
 			sourceTree = "<group>";
