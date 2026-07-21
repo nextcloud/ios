@@ -189,7 +189,7 @@ extension tableMetadata {
     }
 
     var isCopyableMovable: Bool {
-        !isDirectoryE2EE && !e2eEncrypted || NCMetadataPermissions.canMoveAndDelete(self)
+        !isDirectoryE2EE && !e2eEncrypted && NCMetadataPermissions.canMoveAndDelete(self)
     }
 
     var isModifiableWithQuickLook: Bool {
