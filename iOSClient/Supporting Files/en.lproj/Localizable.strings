@@ -707,6 +707,7 @@
 "_media_not_available_" = "Media not available";
 "_no_assistant_installed_"  = "Assistant is not installed on this server. Ask your administrator to install the Assistant app";
 "_open_in_office_" = "Open in Office";
+"_select_date_" = "Select date";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

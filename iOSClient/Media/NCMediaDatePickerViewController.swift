@@ -92,22 +92,30 @@ struct NCMediaDatePickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Spacer()
+            ZStack {
+                Text(NSLocalizedString("_select_date_", comment: ""))
+                    .font(.system(size: 17, weight: .semibold))
+                    .lineLimit(1)
 
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 18, weight: .medium))
-                        .frame(width: 24, height: 24)
+                HStack {
+                    Spacer()
+
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 17, weight: .semibold))
+                            .frame(width: 24, height: 24)
+                    }
+                    .modifier(NCMediaCloseButtonStyle())
+                    .frame(width: 44, height: 44)
+                    .accessibilityLabel(
+                        Text(NSLocalizedString("_close_", comment: ""))
+                    )
                 }
-                .modifier(NCMediaCloseButtonStyle())
-                .frame(width: 44, height: 44)
-                .accessibilityLabel(Text(NSLocalizedString("_close_", comment: "")))
             }
-            .padding(.horizontal, 12)
-            .padding(.top, 4)
+            .frame(height: 52)
+            .padding(.horizontal, 16)
 
             Picker("", selection: $model.selectedYearMonth) {
                 ForEach(model.availableYearMonths, id: \.self) { yearMonth in
@@ -130,18 +138,18 @@ struct NCMediaDatePickerView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+}
 
-    private struct NCMediaCloseButtonStyle: ViewModifier {
-        @ViewBuilder
-        func body(content: Content) -> some View {
-            if #available(iOS 26.0, *) {
-                content
-                    .buttonStyle(.glass)
-                    .buttonBorderShape(.circle)
-            } else {
-                content
-                    .buttonStyle(.plain)
-            }
+private struct NCMediaCloseButtonStyle: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+        } else {
+            content
+                .buttonStyle(.plain)
         }
     }
 }
