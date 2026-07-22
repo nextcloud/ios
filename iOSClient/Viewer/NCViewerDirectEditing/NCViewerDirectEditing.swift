@@ -34,20 +34,21 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if !metadata.ocId.hasPrefix("TEMP") {
-            let moreButton = UIBarButtonItem(
-                image: NCImageCache.shared.getImageButtonMore(),
-                primaryAction: nil,
-                menu: UIMenu(title: "", children: [
-                    UIDeferredMenuElement.uncached { [self] completion in
-                        if let menu = NCContextMenuViewer(metadata: self.metadata, controller: self.tabBarController as? NCMainTabBarController, webView: true, sender: self).viewMenu() {
-                            completion(menu.children)
-                        }
+        let moreButton = UIBarButtonItem(
+            image: NCImageCache.shared.getImageButtonMore(),
+            primaryAction: nil,
+            menu: UIMenu(title: "", children: [
+                UIDeferredMenuElement.uncached { [self] completion in
+                    if let menu = NCContextMenuViewer(metadata: self.metadata,
+                                                      controller: self.tabBarController as? NCMainTabBarController,
+                                                      viewController: self.tabBarController,
+                                                      webView: true,
+                                                      sender: self).viewMenu() {
+                        completion(menu.children)
                     }
-                ]))
-
-            items.append(moreButton)
-        }
+                }
+            ]))
+        items.append(moreButton)
 
         let group = UIBarButtonItemGroup(
             barButtonItems: items,
@@ -128,6 +129,12 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        if isMovingFromParent || navigationController?.isBeingDismissed == true {
+            if #available(iOS 26.0, *) {
+                navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+            }
+        }
+
         if #available(iOS 18.0, *) {
             tabBarController?.setTabBarHidden(false, animated: true)
         } else {
@@ -172,6 +179,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
 
             if message.body as? String == "share" {
                 NCCreate().createShare(controller: self.controller,
+                                       presentViewController: self.controller,
                                        metadata: metadata, page: .sharing)
             }
 
@@ -210,10 +218,6 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if #available(iOS 26.0, *) {
-            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
-        }
-
         NCActivityIndicator.shared.stop()
     }
 
@@ -248,7 +252,7 @@ extension NCViewerDirectEditing: NCTransferDelegate {
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -257,7 +261,7 @@ extension NCViewerDirectEditing: NCTransferDelegate {
                         destination: String?,
                         error: NKError) {
         Task {@MainActor in
-            if status == NCGlobal.shared.networkingStatusFavorite,
+            if networkingStatus == NCGlobal.shared.networkingStatusFavorite,
                self.metadata.ocId == ocId,
                let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) {
                 self.metadata = metadata

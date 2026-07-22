@@ -5,6 +5,7 @@
 import UIKit
 import NextcloudKit
 import QuickLook
+import SwiftUI
 
 class NCViewer: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -13,7 +14,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
 
     @MainActor
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCMediaViewerTransitionSource?, selectedEditor: String? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
         await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
@@ -41,18 +42,25 @@ class NCViewer: NSObject {
 
         // IMAGE AUDIO VIDEO
         else if metadata.isImage || metadata.isAudioOrVideo {
-            let viewerMediaPageContainer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage
+            let mediaOcIds = ocIds ?? [metadata.ocId]
+            let model = NCMediaViewerModel(currentMetadata: metadata, ocIds: mediaOcIds, session: session, loader: NCMediaViewerLoader())
 
-            viewerMediaPageContainer?.delegateViewController = delegate
-            if let ocIds {
-                viewerMediaPageContainer?.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
-                viewerMediaPageContainer?.ocIds = ocIds
-            } else {
-                viewerMediaPageContainer?.currentIndex = 0
-                viewerMediaPageContainer?.ocIds = [metadata.ocId]
-            }
-
-            return viewerMediaPageContainer
+            NCMediaViewerPresenter.shared.show(
+                model: model,
+                viewerTransitionSource: viewerTransitionSource,
+                from: delegate?.view,
+                contextMenuController: delegate?.tabBarController as? NCMainTabBarController,
+                closingTransitionSourceProvider: { ocId in
+                    if let provider = delegate as? NCCollectionViewCommon {
+                        return provider.viewerTransitionSource(for: ocId)
+                    } else if let provider = delegate as? NCMedia {
+                        return provider.viewerTransitionSource(for: ocId)
+                    } else {
+                        return nil
+                    }
+                }
+            )
+            return nil
         }
 
         // DOCUMENTS
@@ -60,7 +68,7 @@ class NCViewer: NSObject {
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
 
             // PDF
-            if metadata.isPDF {
+            if metadata.isPDF, selectedEditor == nil {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
 
                 vc?.metadata = metadata
@@ -72,12 +80,23 @@ class NCViewer: NSObject {
 
             // DirectEditing
             if metadata.isAvailableDirectEditingEditorView {
-                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
+                let availableEditors = utility.editorsDirectEditing(
+                    account: metadata.account,
+                    contentType: metadata.contentType
+                ).map { $0.lowercased() }
+                let editors: [String]
+
+                if availableEditors.contains("text") {
+                    editors = ["text"]
+                } else {
+                    editors = availableEditors
+                }
+
                 guard let editorAdapter = NCDirectEditorAdapter.resolve(from: editors) else {
                     self.QLPreview(metadata: metadata, delegate: delegate)
                     return nil
                 }
-                let editor = editorAdapter.apiKey
+                let editor = selectedEditor ?? editorAdapter.apiKey
                 let editorViewController = editorAdapter.viewControllerEditor
                 let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
                 if metadata.url.isEmpty {
@@ -187,7 +206,7 @@ class NCViewer: NSObject {
             // Document Interaction Controller
             if let controller = delegate?.tabBarController as? NCMainTabBarController {
                 Task {
-                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
                 }
             }
         }

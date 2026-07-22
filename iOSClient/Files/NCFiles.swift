@@ -8,7 +8,6 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    internal var fileNameBlink: String?
     internal var lastOffsetY: CGFloat = 0
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
@@ -34,8 +33,8 @@ class NCFiles: NCCollectionViewCommon {
                 if let userInfo = notification.userInfo,
                    let account = userInfo["account"] as? String,
                    self.controller?.account == account {
-                    let color = NCBrandColor.shared.getElement(account: account)
-                    self.mainNavigationController?.menuToolbar.items?.forEach { $0.tintColor = color }
+                    // re-tint the + button
+                    self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: NCSession.shared.getSession(account: account))
                 }
             }
         }
@@ -64,10 +63,8 @@ class NCFiles: NCCollectionViewCommon {
                     }
                     if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
-                        let color = NCBrandColor.shared.getElement(account: account)
-                        self.mainNavigationController?.menuToolbar.items?.forEach {
-                            $0.tintColor = color
-                        }
+                        // re-tint the + button for the new account
+                        self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: NCSession.shared.getSession(account: account))
                     }
 
                     self.navigationController?.popToRootViewController(animated: false)
@@ -107,13 +104,8 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if !self.dataSource.isEmpty() {
-            blinkCell(fileName: self.fileNameBlink)
-            fileNameBlink = nil
-        }
-
         Task {
-            // Plus Menu reload
+            // (+)
             await self.mainNavigationController?.menuPlus?.create(session: session)
 
             // Server data
@@ -132,12 +124,6 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        fileNameBlink = nil
-    }
-
     // MARK: - DataSource
 
     override func reloadDataSource() async {
@@ -153,15 +139,8 @@ class NCFiles: NCCollectionViewCommon {
         if let metadataFolder {
             nkLog(info: "Inside metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
 
-            // disable + button if no create permission
-            let color = NCBrandColor.shared.getElement(account: self.session.account)
-
-            if let items = self.mainNavigationController?.menuToolbar.items {
-                for item in items {
-                    item.isEnabled = metadataFolder.isCreatable
-                    item.tintColor = metadataFolder.isCreatable ? color : .lightGray
-                }
-            }
+            // disable + button if no create permission or E2EE offline
+            self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: self.session)
         }
 
         let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,
@@ -190,7 +169,12 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
-        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: forced)
+        // Check whether the folder contains placeholder metadata.
+        // When placeholders exist, force a remote folder read to refresh their data.
+        let hasPlaceholder = await database.getMetadataFolderPlaceholderAsync(account: self.session.account, serverUrl: self.serverUrl)
+
+        let effectiveForced = forced || hasPlaceholder
+        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: effectiveForced)
         guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
             return
         }
@@ -302,84 +286,81 @@ class NCFiles: NCCollectionViewCommon {
         //
         // E2EE section
         //
+        let error = await sectionE2ee(ocId: ocId)
+        if error != .success {
+            navigationController?.popViewController(animated: false)
 
-        let lock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl)
-        let resultsE2eeGetMetadata = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: account)
-
-        guard resultsE2eeGetMetadata.error == .success,
-              let e2eMetadata = resultsE2eeGetMetadata.e2eMetadata,
-              let version = resultsE2eeGetMetadata.version else {
-            if resultsE2eeGetMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
-                if error != .success {
-                    await showErrorBanner(windowScene: windowScene,
-                                          text: error.errorDescription,
-                                          errorCode: error.errorCode)
-                }
-            } else {
-                await showErrorBanner(windowScene: windowScene,
-                                      text: resultsE2eeGetMetadata.error.errorDescription,
-                                      errorCode: resultsE2eeGetMetadata.error.errorCode)
-            }
-            return(metadatas, resultsE2eeGetMetadata.error, reloadRequired)
-        }
-
-        var error = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
-                                                              signature: resultsE2eeGetMetadata.signature,
-                                                              serverUrl: serverUrl, session: self.session)
-
-        if error == .success {
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-            if version == "v1", capabilities.e2EEApiVersion.hasPrefix("2.") {
-                await showInfoBanner(windowScene: windowScene, text: "Conversion metadata v1 to v2 required, please wait...")
-                nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
-                NCActivityIndicator.shared.start()
-
-                error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
-                if error != .success {
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
-                }
-                NCActivityIndicator.shared.stop()
-            }
-        } else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
         }
 
-        // Error: Go back
-        if error != .success {
-            navigationController?.popViewController(animated: false)
-        }
-
         return (metadatas, error, reloadRequired)
     }
 
-    func blinkCell(fileName: String?) {
-        if let fileName = fileName, let metadata = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
-            if let indexPath = indexPath {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    UIView.animate(withDuration: 0.3) {
-                        self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-                    } completion: { _ in
-                        if let cell = self.collectionView.cellForItem(at: indexPath) {
-                            cell.backgroundColor = .darkGray
-                            UIView.animate(withDuration: 2) {
-                                cell.backgroundColor = .clear
-                            }
-                        }
-                    }
-                }
+    private func sectionE2ee(ocId: String) async -> NKError {
+        var returnError = NKError()
+
+        // Get Metadata
+        let lock = await self.database.getE2ETokenLockAsync(account: session.account, serverUrl: serverUrl)
+        var result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)
+
+        if result.error != .success {
+            // Metadata not found ? Try to resend it
+            if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                nkLog(tag: self.global.logTagE2EE, message: "E2ee metadata not found, resend.")
+                await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
+                result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)
+            } else {
+                return result.error
             }
         }
+
+        guard result.error == .success,
+              let e2eMetadata = result.e2eMetadata,
+              let version = result.version else {
+            nkLog(tag: self.global.logTagE2EE, message: returnError.errorDescription)
+            return result.error
+        }
+
+        // Decode metadata
+        returnError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
+                                                                signature: result.signature,
+                                                                serverUrl: serverUrl,
+                                                                session: self.session)
+
+        // Old protocolo V1 ? -> Conversion
+        if returnError == .success {
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+            if version == "v1", capabilities.e2EEApiVersion.hasPrefix("2.") {
+                nkLog(tag: self.global.logTagE2EE, message: "E2ee Conversion v1 to v2.")
+                returnError = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: session.account)
+            }
+        // Checksums error ? (Desktop bug)
+        } else if returnError.errorCode == global.errorE2EEKeyChecksums || returnError.errorCode == global.errorE2EEKeyChecksumsEmpty {
+            let shouldContinue = await UIAlertController.showAlert(
+                from: self,
+                title: "_e2ee_checksum_error_title_",
+                message: "_e2ee_checksum_error_message_",
+                cancelAction: "_cancel_",
+                cancelStyle: .cancel,
+                continueAction: "_continue_",
+                continueStyle: .destructive
+            )
+            if shouldContinue {
+                nkLog(tag: self.global.logTagE2EE, message: "E2ee checksum unavailable - cpollo2onversion metadata requested from user.")
+                returnError = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
+            }
+        }
+
+        return returnError
     }
 
     func open(metadata: tableMetadata?) async {
         guard let metadata else {
             return
         }
-        await didSelectMetadata(metadata, withOcIds: false)
+        await didSelectMetadata(metadata, withOcIds: false, viewerTransitionSource: nil)
     }
 
     // MARK: - NCAccountSettingsModelDelegate

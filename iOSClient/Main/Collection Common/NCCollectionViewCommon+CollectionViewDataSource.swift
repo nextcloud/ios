@@ -20,21 +20,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         self.layoutForView = self.database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         // is a Directory E2EE
         if isSearchingMode {
-            self.isDirectoryE2EE = false
+            self.isCurrentDirectoryE2EE = false
         } else {
-            self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
+            self.isCurrentDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         }
         return self.dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            guard let cell = cell as? NCCellMainProtocol,
+                  let identifier = cell.metadata?.ocId else {
                 return
             }
 
-            for case let operation as NCCollectionViewDownloadThumbnail in self.networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
+            Task {
+                await NCTransferCoordinator.shared.cancel(identifier: identifier)
             }
         }
     }
@@ -43,13 +44,74 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
             return
         }
-        let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
-        let ext = self.global.getSizeExtension(column: self.numberOfColumns)
 
-        if metadata.hasPreview,
-           !existsImagePreview,
-           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
+        let ocId = metadata.ocId
+        let etag = metadata.etag
+        let fileId = metadata.fileId
+        let iconName = metadata.iconName
+        let account = metadata.account
+
+        let ext = self.global.getSizeExtension(column: self.numberOfColumns)
+        let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        guard metadata.hasPreview,
+              !imageExists else {
+            return
+        }
+
+        Task {
+            await NCTransferCoordinator.shared.start(
+                identifier: ocId,
+                priority: .visible
+            ) {
+                let result = await NextcloudKit.shared.downloadPreviewAsync(
+                    fileId: fileId,
+                    etag: etag,
+                    account: account)
+
+                guard !Task.isCancelled,
+                      result.error == .success,
+                      let data = result.responseData?.data else {
+                    return
+                }
+
+                let image = await NCUtility().createImageFileFrom(
+                    data: data,
+                    ocId: ocId,
+                    etag: etag,
+                    ext: ext,
+                    userId: self.session.userId,
+                    urlBase: self.session.urlBase)
+
+                await MainActor.run {
+                    guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
+                        self.dataSource.getMetadata(indexPath: $0)?.ocId == ocId
+                    }),
+                          let cell = self.collectionView.cellForItem(at: visibleIndexPath) as? NCCellMainProtocol,
+                          cell.metadata?.ocId == ocId else {
+                        return
+                    }
+
+                    if let image, let imageItem = cell.previewImg {
+                        imageItem.contentMode = .scaleAspectFill
+
+                        UIView.transition(
+                            with: imageItem,
+                            duration: 0.75,
+                            options: .transitionCrossDissolve
+                        ) {
+                            imageItem.image = image
+                        }
+                    } else {
+                        cell.previewImg?.contentMode = .scaleAspectFit
+                        cell.previewImg?.image = NCUtility().loadImage(
+                            named: iconName,
+                            useTypeIconFile: true,
+                            account: account
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -57,7 +119,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
 
         // E2EE create preview
-        if self.isDirectoryE2EE,
+        if self.isCurrentDirectoryE2EE,
            metadata.isImageOrVideo,
            !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             utility.createImageFileFrom(metadata: metadata)
@@ -248,23 +310,30 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     ///   - metadatas: The list of metadata entries to cache.
     ///   - priority: The task priority to use (default is `.utility`).
     func cachingAsync(metadatas: [tableMetadata], priority: TaskPriority = .utility) {
-        Task.detached(priority: priority) {
-            for (cost, metadata) in metadatas.enumerated() {
-                // Skip if not an image or video
-                guard metadata.isImageOrVideo else { continue }
-                // Check if image is already cached
-                let alreadyCached = NCImageCache.shared.getImageCache(ocId: metadata.ocId,
-                                                                      etag: metadata.etag,
-                                                                      ext: self.global.previewExt256) != nil
-                guard !alreadyCached else {
+        let previewExt = global.previewExt256
+
+        Task.detached(priority: priority) { [utility] in
+            for metadata in metadatas {
+                guard !Task.isCancelled,
+                      metadata.isImageOrVideo,
+                      NCImageCache.shared.getImageCache(ocId: metadata.ocId,
+                                                        etag: metadata.etag,
+                                                        ext: previewExt) == nil else {
                     continue
                 }
 
-                // caching preview
-                //
-                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256, userId: metadata.userId, urlBase: metadata.urlBase) {
-                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
+                guard let image = utility.getImage(ocId: metadata.ocId,
+                                                   etag: metadata.etag,
+                                                   ext: previewExt,
+                                                   userId: metadata.userId,
+                                                   urlBase: metadata.urlBase) else {
+                    continue
                 }
+
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId,
+                                                  etag: metadata.etag,
+                                                  image: image,
+                                                  ext: previewExt)
             }
         }
     }

@@ -11,10 +11,15 @@ import LocalAuthentication
 class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscodeViewControllerDelegate {
     var passcodeType = ""
 
+    let preference = NCPreferences()
+    let networkingE2EE = NCNetworkingE2EE()
+    let global = NCGlobal()
+
     @Published var controller: NCMainTabBarController?
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
     @Published var navigateBack: Bool = false
+    @Published var certificateValidity: NCNetworkingE2EE.X509CertificateValidity?
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -37,11 +42,15 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
     /// Triggered when the view appears.
     func onViewAppear() {
         if capabilities.e2EEEnabled {
-            isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
+            isEndToEndEnabled = preference.isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
+                if let certificate = preference.getEndToEndCertificate(account: session.account) {
+                    self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
+                }
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
             } else {
-                NextcloudKit.shared.getE2EECertificate(account: session.account) { _ in
+                let options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
+                NextcloudKit.shared.getE2EECertificate(account: session.account, options: options) { _ in
                 } completion: { _, _, _, _, error in
                     if error == .success {
                         self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
@@ -52,6 +61,31 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
             }
         } else {
             navigateBack = true
+        }
+    }
+
+    @MainActor
+    func renewCertificate() async {
+        do {
+            let e2ee = NCEndToEndSetup(controller: controller)
+            let certificate = try await e2ee.renewCertificate()
+            self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
+            await showInfoBanner(windowScene: windowScene,
+                                 text: "_e2e_renew_certificate_success_")
+        } catch let error as NKError {
+            if error.errorCode == NSUserCancelledError {
+                return
+            }
+            await showErrorBanner(
+                windowScene: windowScene,
+                text: error.errorDescription
+            )
+        } catch {
+            // fallback (non NKError)
+            await showErrorBanner(
+                windowScene: windowScene,
+                text: error.localizedDescription
+            )
         }
     }
 

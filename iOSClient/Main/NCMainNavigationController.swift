@@ -12,7 +12,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    let menuToolbar = UIToolbar()
+    let menuPlusButton: UIButton = NCMenuPlusButton(type: .system)
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -105,7 +105,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
         transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         transfersButtonItem.primaryAction = UIAction(handler: { _ in
-            let rootView = TransfersView(session: self.session, onClose: { [weak self] in
+            let rootView = TransfersView(session: self.session, onClose: { [weak self = self] in
                 self?.dismiss(animated: true)
             })
             let hosting = UIHostingController(rootView: rootView)
@@ -115,49 +115,44 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         })
 
         // PLUS BUTTON MENU
-        let widthAnchor: CGFloat
-        let trailingAnchor: CGFloat
-        let trailingAnchorPad: CGFloat
+        let buttonSize: CGFloat = 44
+        let plusConfiguration = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+        let plusImage = UIImage(systemName: "plus", withConfiguration: plusConfiguration)?.withRenderingMode(.alwaysTemplate)
 
         if #available(iOS 26.0, *) {
-            widthAnchor = 44
-            trailingAnchor = -15
-            trailingAnchorPad = -20
+            var glassConfiguration = UIButton.Configuration.prominentGlass()
+            glassConfiguration.image = plusImage
+            menuPlusButton.configuration = glassConfiguration
         } else {
-            let appearance = UIToolbarAppearance()
-            appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = .clear
-            appearance.backgroundEffect = nil
-            appearance.shadowColor = .clear
-
-            menuToolbar.standardAppearance = appearance
-            menuToolbar.compactAppearance  = appearance
-            menuToolbar.scrollEdgeAppearance = appearance
-            menuToolbar.isTranslucent = true
-
-            widthAnchor = 100
-            trailingAnchor = 28
-            trailingAnchorPad = -10
+            menuPlusButton.setImage(plusImage, for: .normal)
+            menuPlusButton.contentHorizontalAlignment = .center
+            menuPlusButton.contentVerticalAlignment = .center
+            menuPlusButton.layer.cornerRadius = buttonSize / 2
+            menuPlusButton.layer.masksToBounds = false
+            menuPlusButton.layer.shadowColor = UIColor.black.cgColor
+            menuPlusButton.layer.shadowOpacity = 0.18
+            menuPlusButton.layer.shadowRadius = 8
+            menuPlusButton.layer.shadowOffset = CGSize(width: 0, height: 4)
         }
 
-        view.addSubview(menuToolbar)
-        menuToolbar.translatesAutoresizingMaskIntoConstraints = false
+        menuPlusButton.setPlusButtonColor(NCBrandColor.shared.getElement(account: session.account))
+        menuPlusButton.showsMenuAsPrimaryAction = true
+        menuPlusButton.translatesAutoresizingMaskIntoConstraints = false
+        menuPlusButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
 
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            NSLayoutConstraint.activate([
-                menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchorPad),
-                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-                menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
-                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-                menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
-            ])
-        }
+        view.addSubview(menuPlusButton)
 
-        menuPlus = NCContextMenuPlus(menuToolbar: menuToolbar, controller: controller)
+        let trailingAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
+        let bottomAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? -28 : -22
+
+        NSLayoutConstraint.activate([
+            menuPlusButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
+            menuPlusButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: bottomAnchor),
+            menuPlusButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            menuPlusButton.heightAnchor.constraint(equalToConstant: buttonSize)
+        ])
+
+        menuPlus = NCContextMenuPlus(menuPlusButton: menuPlusButton, controller: controller)
 
         // CAPABILITIES UPDATE
         //
@@ -188,6 +183,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     self.controller?.availableNotifications = true
                 }
                 await self.collectionViewCommonTrailingItemGroups()
+                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -198,7 +194,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task { @MainActor [weak self] in
                 guard let self else { return }
 
-                // Menu Plus
+                // (+)
                 await self.menuPlus?.create(session: session)
             }
         }
@@ -206,11 +202,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
+            // (+)
             // PLUS BUTTON ONLY IN FILES
-            if viewController is NCFiles {
-                self.menuPlus?.hiddenPlusButton(false)
+            if let viewController = viewController as? NCFiles {
+                self.menuPlus?.hiddenPlusButton(isEditMode: viewController.isEditMode,
+                                                isSearchingMode: viewController.isSearchingMode,
+                                                animation: false)
             } else {
-                self.menuPlus?.hiddenPlusButton(true, animation: false)
+                self.menuPlus?.hiddenPlusButton(true,
+                                                animation: false)
             }
             // MENU
             setNavigationBarAppearance()
@@ -236,13 +236,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             collectionViewCommon.navigationItem.searchController = nil
 
             let cancel = UIBarButtonItem(
-                title: NSLocalizedString("_cancel_", comment: ""),
+                image: UIImage(systemName: "xmark"),
                 style: .plain
             ) {
                 Task {
                     await collectionViewCommon.setEditMode(false)
                 }
             }
+            cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
 
             let group = UIBarButtonItemGroup(
                 barButtonItems: [cancel],
@@ -260,11 +261,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             trashViewController.tabBarSelect.show()
 
             let cancel = UIBarButtonItem(
-                title: NSLocalizedString("_cancel_", comment: ""),
+                image: UIImage(systemName: "xmark"),
                 style: .plain
             ) {
                 trashViewController.setEditMode(false)
             }
+            cancel.accessibilityLabel = NSLocalizedString("_cancel_", comment: "")
 
             let group = UIBarButtonItemGroup(
                 barButtonItems: [cancel],
@@ -292,7 +294,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
-              !(topViewController is NCViewerMediaPage),
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichDocument),
               !(topViewController is NCViewerDirectEditing)
@@ -446,6 +447,38 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             for item in visibleItems {
                 applyTint(item, color: color)
             }
+        }
+    }
+}
+
+private final class NCMenuPlusButton: UIButton {
+    // Keep hit testing so taps don't fall through if the button is disabled, hidden or low alpha.
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if let view = super.hitTest(point, with: event) {
+            return view
+        }
+
+        guard !isEnabled, !isHidden, alpha >= 0.01, bounds.contains(point) else {
+            return nil
+        }
+
+        return self
+    }
+
+    override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        guard isEnabled else { return nil }
+
+        return super.contextMenuInteraction(interaction, configurationForMenuAtLocation: location)
+    }
+}
+
+extension UIButton {
+    func setPlusButtonColor(_ color: UIColor) {
+        if #available(iOS 26.0, *) {
+            tintColor = color
+        } else {
+            backgroundColor = color
+            tintColor = .white
         }
     }
 }

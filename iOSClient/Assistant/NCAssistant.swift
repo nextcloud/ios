@@ -34,9 +34,9 @@ struct NCAssistant: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("_close_")
-                            .cappedFont(.body, maxDynamicType: .accessibility2)
+                        Image(systemName: "xmark")
                     }
+                    .accessibilityLabel(NSLocalizedString("_close_", comment: ""))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: NCAssistantChatConversations(conversationsModel: conversationsModel, selectedConversation: chatModel.selectedConversation) { conversation in

@@ -13,9 +13,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d remaining download allowed</string>
+			<string>%d download rimanente consentito</string>
+			<key>many</key>
+			<string>%d download rimanenti consentiti</string>
 			<key>other</key>
-			<string>%d remaining downloads allowed</string>
+			<string>%d download rimanenti consentiti</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_items_left_</key>
@@ -29,9 +31,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d item left</string>
+			<string>%d elemento rimasto</string>
+			<key>many</key>
+			<string>%d elementi rimasti</string>
 			<key>other</key>
-			<string>%d items left</string>
+			<string>%d elementi rimasti</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -45,9 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d item to back up</string>
+			<string>Hai %d elemento da salvare</string>
+			<key>many</key>
+			<string>Hai %d elementi da salvare</string>
 			<key>other</key>
-			<string>You have %d items to back up</string>
+			<string>Hai %d elementi da salvare</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -61,9 +67,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d failed</string>
+			<string>%d fallito</string>
+			<key>many</key>
+			<string>%d falliti</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>%d falliti</string>
 		</dict>
 	</dict>
 </dict>

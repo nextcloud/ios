@@ -183,7 +183,7 @@ struct NCMoreView: View {
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
-    
+
     private func menuRow(_ item: NCMoreModel.Item) -> some View {
         Button {
             model.perform(item.destination)

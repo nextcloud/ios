@@ -17,12 +17,23 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCRecommendationsCellDelegate?
-    var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
+    var representedFileId: String?
 
     var metadata: tableMetadata? {
         didSet {
             delegate?.openContextMenu(with: metadata, button: buttonMore, sender: self) /* preconfigure UIMenu with each metadata */
         }
+    }
+
+    func viewerTransitionSource() -> NCMediaViewerTransitionSource? {
+        guard let imageView = image,
+              let image = imageView.image,
+              let window = imageView.window else {
+            return nil
+        }
+        let sourceFrame = imageView.convert(imageView.bounds, to: window)
+
+        return NCMediaViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
     }
 
     override func awakeFromNib() {

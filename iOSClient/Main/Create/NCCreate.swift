@@ -15,55 +15,56 @@ class NCCreate: NSObject {
     let global = NCGlobal.shared
 
     @MainActor
-    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) async {
-        let session = NCSession.shared.getSession(account: account)
+    func createDocument(controller: NCMainTabBarController,
+                        serverUrl: String,
+                        fileName: String,
+                        editorId: String,
+                        creatorId: String? = nil,
+                        templateId: String,
+                        session: NCSession.Session) async {
+        let windowScene = SceneManager.shared.getWindowScene(controller: controller)
         guard let viewController = controller.currentViewController() else {
             return
         }
-        var UUID = NSUUID().uuidString
-        UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
-        var options = NKRequestOptions()
-        let serverUrl = controller.currentServerUrl()
+        let fileNamePath = utilityFileSystem.getRelativeFilePath(fileName, serverUrl: serverUrl, session: session)
+        let serverUrlFileName = serverUrl + "/" + fileName
 
         if let creatorId, let adapter = NCDirectEditorAdapter.resolve(from: [editorId]) {
-            options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
-            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { task in
+            let options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
+            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: session.account, options: options) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
                                                                                                 path: fileNamePath,
                                                                                                 name: "textCreateFile")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
-            guard results.error == .success, let url = results.url else {
-                Task {
-                    let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                }
+            guard results.error == .success else {
+                await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
                 return
             }
-            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
-                ocId: UUID,
-                serverUrl: serverUrl,
-                url: url,
-                session: session,
-                sceneIdentifier: controller.sceneIdentifier)
-            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+
+            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+            guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
+                await showErrorBanner(windowScene: windowScene, text: resultsReadFile.error.errorDescription, errorCode: resultsReadFile.error.errorCode)
+                return
+            }
+
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
 
         } else if editorId == "collabora" {
 
-            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: account) { task in
+            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: session.account) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
                                                                                                 path: fileNamePath,
                                                                                                 name: "CreateRichdocuments")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
-            guard results.error == .success, let url = results.url else {
+            guard results.error == .success else {
                 Task {
                     let windowScene = SceneManager.shared.getWindowScene(controller: controller)
                     await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
@@ -71,15 +72,13 @@ class NCCreate: NSObject {
                 return
             }
 
-            let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
-                ocId: UUID,
-                serverUrl: serverUrl,
-                url: url,
-                session: session,
-                sceneIdentifier: controller.sceneIdentifier)
+            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+            guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
+                await showErrorBanner(windowScene: windowScene, text: resultsReadFile.error.errorDescription, errorCode: resultsReadFile.error.errorCode)
+                return
+            }
 
-            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController, viewerTransitionSource: nil) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -157,7 +156,7 @@ class NCCreate: NSObject {
         return (templates, selectedTemplate, ext)
     }
 
-    func createShare(controller: NCMainTabBarController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
+    func createShare(controller: NCMainTabBarController?, presentViewController: UIViewController?, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         guard let controller else {
             return
         }
@@ -211,7 +210,7 @@ class NCCreate: NSObject {
 
                     shareNavigationController?.modalPresentationStyle = .formSheet
                     if let shareNavigationController = shareNavigationController {
-                        controller.present(shareNavigationController, animated: true, completion: nil)
+                        presentViewController?.present(shareNavigationController, animated: true, completion: nil)
                     }
                 }
             }
@@ -224,8 +223,8 @@ class NCCreate: NSObject {
     ///   - controller: Main tab bar controller used to present the activity view.
     ///   - sender: The UI element that triggered the action (for iPad popover anchoring).
     @MainActor
-    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) async {
-        guard let controller else {
+    func createActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, presentViewController: UIViewController?, sender: Any?) async {
+        guard let controller, let presentViewController else {
             return
         }
 
@@ -303,14 +302,21 @@ class NCCreate: NSObject {
 
         // iPad popover configuration
         if let popover = activityViewController.popoverPresentationController {
-            if let view = sender as? UIView {
-                popover.sourceView = view
-                popover.sourceRect = view.bounds
+            if let barButtonItem = sender as? UIBarButtonItem {
+                // Anchor the popover to the bar button item.
+                popover.barButtonItem = barButtonItem
+
+            } else if let sourceView = sender as? UIView {
+                // Anchor the popover to the sender view.
+                popover.sourceView = sourceView
+                popover.sourceRect = sourceView.bounds
+
             } else {
-                popover.sourceView = controller.view
+                // Fallback: anchor the popover to the center of the presenting view.
+                popover.sourceView = presentViewController.view
                 popover.sourceRect = CGRect(
-                    x: controller.view.bounds.midX,
-                    y: controller.view.bounds.midY,
+                    x: presentViewController.view.bounds.midX,
+                    y: presentViewController.view.bounds.midY,
                     width: 0,
                     height: 0
                 )
@@ -318,7 +324,7 @@ class NCCreate: NSObject {
             }
         }
 
-        controller.present(activityViewController, animated: true)
+        presentViewController.present(activityViewController, animated: true)
     }
 
     // MARK: - Private helper

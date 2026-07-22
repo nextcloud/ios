@@ -378,4 +378,56 @@ extension UIAlertController {
             }
         }
     }
+
+    /// Presents a localized confirmation alert and asynchronously returns the user's choice.
+    ///
+    /// - Parameters:
+    ///   - viewController: The view controller used to present the alert.
+    ///   - title: The localization key for the alert title.
+    ///   - message: The localization key for the alert message.
+    ///   - cancelAction: The localization key for the cancel action title.
+    ///   - continueAction: The localization key for the destructive confirmation action title.
+    /// - Returns: `true` if the user confirms the action; otherwise, `false`.
+    @MainActor
+    static func showAlert(
+        from viewController: UIViewController?,
+        title: String,
+        message: String,
+        cancelAction: String,
+        cancelStyle: UIAlertAction.Style,
+        continueAction: String,
+        continueStyle: UIAlertAction.Style
+    ) async -> Bool {
+        guard let viewController else {
+            return false
+        }
+
+        return await withCheckedContinuation { continuation in
+            let alertController = UIAlertController(
+                title: NSLocalizedString(title, comment: ""),
+                message: NSLocalizedString(message, comment: ""),
+                preferredStyle: .alert
+            )
+
+            alertController.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString(cancelAction, comment: ""),
+                    style: cancelStyle
+                ) { _ in
+                    continuation.resume(returning: false)
+                }
+            )
+
+            alertController.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString(continueAction, comment: ""),
+                    style: continueStyle
+                ) { _ in
+                    continuation.resume(returning: true)
+                }
+            )
+
+            viewController.present(alertController, animated: true)
+        }
+    }
 }

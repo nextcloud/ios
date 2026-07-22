@@ -4,7 +4,6 @@
 
 import Foundation
 import UIKit
-import LRUCache
 import NextcloudKit
 import RealmSwift
 
@@ -15,121 +14,124 @@ final class NCImageCache: @unchecked Sendable {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private let database = NCManageDatabase.shared
-
     private let allowExtensions = [NCGlobal.shared.previewExt256]
-    private var brandElementColor: UIColor?
 
-    private var observerToken: NSObjectProtocol?
+    public var countLimit: Int = 1500 {
+        didSet {
+            cache.countLimit = countLimit
+        }
+    }
 
-    public var countLimit: Int = 2000
-    lazy var cache: LRUCache<String, UIImage> = {
-        return LRUCache<String, UIImage>(countLimit: countLimit)
-    }()
+    private let cache = NSCache<NSString, UIImage>()
 
     public var isLoadingCache: Bool = false
     public var controller: UITabBarController?
 
     init() {
-        observerToken = NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil) { _ in
-            self.cache.removeAll()
-            self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
+        cache.countLimit = countLimit
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil) { _ in
+            self.cache.removeAllObjects()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.cache.removeAll()
-            self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
+            self.cache.removeAllObjects()
         }
 
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
 #if !EXTENSION
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
             Task {
                 guard let controller = self.controller as? NCMainTabBarController,
-                    !self.isLoadingCache else {
+                      !self.isLoadingCache else {
                     return
                 }
 
-                var cost: Int = 0
+                self.isLoadingCache = true
+
                 let session = await NCSession.shared.getSession(account: controller.account)
 
-                if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", controller.account)),
-                   NCImageCache.shared.cache.count == 0 {
+                guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", controller.account)) else {
+                    self.isLoadingCache = false
+                    return
+                }
 
-                    // MEDIA
-                    let predicate = self.getMediaPredicate(session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
-                    guard let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "date", limit: self.countLimit) else {
-                        return
-                    }
+                let predicate = self.getMediaPredicate(session: session,
+                                                       mediaPath: tblAccount.mediaPath,
+                                                       showOnlyImages: false,
+                                                       showOnlyVideos: false)
+                guard let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                             sortedByKeyPath: "date",
+                                                                             limit: self.countLimit) else {
+                    self.isLoadingCache = false
+                    return
+                }
 
-                    self.isLoadingCache = true
-                    self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
-                        autoreleasepool {
-                            self.cache.removeAll()
-                            for metadata in metadatas {
-                                guard !isAppInBackground else {
-                                    self.cache.removeAll()
-                                    break
-                                }
-                                if let image = self.utility.getImage(ocId: metadata.ocId,
-                                                                     etag: metadata.etag,
-                                                                     ext: self.global.previewExt256,
-                                                                     userId: metadata.userId,
-                                                                     urlBase: metadata.urlBase) {
-                                    self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
-                                    cost += 1
-                                }
+                self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
+                    autoreleasepool {
+                        self.cache.removeAllObjects()
+                        for metadata in metadatas {
+                            guard !isAppInBackground else {
+                                self.cache.removeAllObjects()
+                                break
                             }
-                            self.isLoadingCache = false
+
+                            if let image = self.utility.getImage(ocId: metadata.ocId,
+                                                                 etag: metadata.etag,
+                                                                 ext: self.global.previewExt256,
+                                                                 userId: metadata.userId,
+                                                                 urlBase: metadata.urlBase) {
+                                self.addImageCache(ocId: metadata.ocId,
+                                                   etag: metadata.etag,
+                                                   image: image,
+                                                   ext: self.global.previewExt256)
+                            }
                         }
+
+                        self.isLoadingCache = false
                     }
                 }
             }
+        }
 #endif
-        }
-    }
-
-    deinit {
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     func allowExtensions(ext: String) -> Bool {
         return allowExtensions.contains(ext)
     }
 
-    func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
+    func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }
 
-        cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
+        cache.setObject(image, forKey: (ocId + etag + ext) as NSString)
     }
 
-    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String, cost: Int) {
+    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
         guard allowExtensions.contains(ext) else { return }
 
-        cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
+        cache.setObject(image, forKey: (ocId + etag + ext) as NSString)
     }
 
     func addImageCache(image: UIImage, key: String) {
-        cache.setValue(image, forKey: key)
+        cache.setObject(image, forKey: key as NSString)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        return cache.value(forKey: ocId + etag + ext)
+        return cache.object(forKey: (ocId + etag + ext) as NSString)
     }
 
     func getImageCache(key: String) -> UIImage? {
-        return cache.value(forKey: key)
+        return cache.object(forKey: key as NSString)
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
-        for i in 0..<allowExtensions.count {
-            cache.removeValue(forKey: ocIdPlusEtag + allowExtensions[i])
+        for ext in allowExtensions {
+            cache.removeObject(forKey: (ocIdPlusEtag + ext) as NSString)
         }
     }
 
     func removeAll() {
-        cache.removeAll()
+        cache.removeAllObjects()
     }
 
     // MARK: - MEDIA -
@@ -143,7 +145,6 @@ final class NCImageCache: @unchecked Sendable {
         let showBothPredicate = """
         account == %@ AND
         serverUrl BEGINSWITH %@ AND
-        mediaSearch == true AND
         hasPreview == true AND
         (
         classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
@@ -154,7 +155,6 @@ final class NCImageCache: @unchecked Sendable {
         let showOnlyPredicateImage = """
         account == %@ AND
         serverUrl BEGINSWITH %@ AND
-        mediaSearch == true AND
         hasPreview == true AND
         (
         classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
@@ -165,7 +165,6 @@ final class NCImageCache: @unchecked Sendable {
         let showOnlyPredicateVideo = """
         account == %@ AND
         serverUrl BEGINSWITH %@ AND
-        mediaSearch == true AND
         hasPreview == true AND
         classFile == 'video' AND
         NOT (status IN %@)

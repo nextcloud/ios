@@ -27,7 +27,12 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
         model.startTimer(navigationItem: controller.navigationItem)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if model.previewStore[index].assetType == .livePhoto && model.previewStore[index].asset.type == .livePhoto && model.previewStore[index].data == nil {
+            if index < model.previewStore.count,
+               let asset = model.previewStore[index].asset,
+               model.previewStore[index].assetType == .livePhoto,
+               asset.type == .livePhoto,
+               model.previewStore[index].data == nil {
+
                 Task {
                     let windowScene = SceneManager.shared.getWindowScene(controller: self.model.controller)
                     await showInfoBanner(windowScene: windowScene, text: "_message_disable_livephoto_")
