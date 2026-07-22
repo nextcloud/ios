@@ -2,202 +2,168 @@
 // SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import SwiftUI
 import UIKit
 
 @MainActor
-final class NCMediaDatePickerViewController: UIViewController {
+final class NCMediaDatePickerViewController: UIHostingController<NCMediaDatePickerView> {
+    private let model: NCMediaDatePickerModel
+
+    var onDateSelected: ((NCYearMonth) -> Void)? {
+        get {
+            model.onDateSelected
+        }
+        set {
+            model.onDateSelected = newValue
+        }
+    }
+
+    init(
+        availableYearMonths: [NCYearMonth],
+        selectedYearMonth: NCYearMonth?
+    ) {
+        let model = NCMediaDatePickerModel(
+            availableYearMonths: availableYearMonths,
+            selectedYearMonth: selectedYearMonth
+        )
+
+        self.model = model
+
+        super.init(
+            rootView: NCMediaDatePickerView(model: model)
+        )
+
+        view.backgroundColor = .clear
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - Model
+
+@MainActor
+final class NCMediaDatePickerModel: ObservableObject {
+    let availableYearMonths: [NCYearMonth]
+
+    @Published var selectedYearMonth: NCYearMonth?
+
     var onDateSelected: ((NCYearMonth) -> Void)?
-
-    private let availableYearMonths: [NCYearMonth]
-    private let selectedYearMonth: NCYearMonth?
-
-    private let pickerView = UIPickerView()
 
     init(
         availableYearMonths: [NCYearMonth],
         selectedYearMonth: NCYearMonth?
     ) {
         self.availableYearMonths = availableYearMonths
-        self.selectedYearMonth = selectedYearMonth
 
-        super.init(nibName: nil, bundle: nil)
+        if let selectedYearMonth,
+           availableYearMonths.contains(selectedYearMonth) {
+            self.selectedYearMonth = selectedYearMonth
+        } else {
+            self.selectedYearMonth = availableYearMonths.first
+        }
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    func title(for yearMonth: NCYearMonth) -> String {
+        var components = DateComponents()
+        components.year = yearMonth.year
+        components.month = yearMonth.month
+        components.day = 1
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        view.backgroundColor = .systemBackground
-
-        pickerView.dataSource = self
-        pickerView.delegate = self
-        pickerView.translatesAutoresizingMaskIntoConstraints = false
-
-        let cancelButton = UIButton(type: .system)
-        cancelButton.setTitle(
-            NSLocalizedString("_cancel_", comment: ""),
-            for: .normal
-        )
-        cancelButton.addTarget(
-            self,
-            action: #selector(cancelButtonTouchUpInside),
-            for: .touchUpInside
-        )
-
-        let confirmButton = UIButton(type: .system)
-        confirmButton.setTitle(
-            NSLocalizedString("_go_to_", comment: ""),
-            for: .normal
-        )
-        confirmButton.titleLabel?.font = .systemFont(
-            ofSize: 17,
-            weight: .semibold
-        )
-        confirmButton.addTarget(
-            self,
-            action: #selector(confirmButtonTouchUpInside),
-            for: .touchUpInside
-        )
-
-        let buttonsStackView = UIStackView(
-            arrangedSubviews: [
-                cancelButton,
-                UIView(),
-                confirmButton
-            ]
-        )
-        buttonsStackView.axis = .horizontal
-        buttonsStackView.alignment = .center
-        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(pickerView)
-        view.addSubview(buttonsStackView)
-
-        NSLayoutConstraint.activate([
-            buttonsStackView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: 8
-            ),
-            buttonsStackView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 20
-            ),
-            buttonsStackView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -20
-            ),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 44),
-
-            pickerView.topAnchor.constraint(
-                equalTo: buttonsStackView.bottomAnchor,
-                constant: 8
-            ),
-            pickerView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor
-            ),
-            pickerView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor
-            ),
-            pickerView.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor
-            )
-        ])
-
-        selectCurrentYearMonth()
-    }
-
-    private func selectCurrentYearMonth() {
-        guard let selectedYearMonth,
-              let row = availableYearMonths.firstIndex(
-                of: selectedYearMonth
-              ) else {
-            return
+        guard let date = Calendar.current.date(from: components) else {
+            return "\(yearMonth.month) \(yearMonth.year)"
         }
 
-        pickerView.selectRow(
-            row,
-            inComponent: 0,
-            animated: false
+        return date.formatted(
+            .dateTime
+                .month(.wide)
+                .year()
         )
-    }
-
-    @objc
-    private func cancelButtonTouchUpInside() {
-        dismiss(animated: true)
-    }
-
-    @objc
-    private func confirmButtonTouchUpInside() {
-        let row = pickerView.selectedRow(inComponent: 0)
-
-        guard availableYearMonths.indices.contains(row) else {
-            return
-        }
-
-        let selectedYearMonth = availableYearMonths[row]
-
-        dismiss(animated: true) { [weak self] in
-            self?.onDateSelected?(selectedYearMonth)
-        }
     }
 }
 
-extension NCMediaDatePickerViewController: UIPickerViewDataSource {
-    nonisolated func numberOfComponents(
-        in pickerView: UIPickerView
-    ) -> Int {
-        1
-    }
+// MARK: - View
 
-    nonisolated func pickerView(
-        _ pickerView: UIPickerView,
-        numberOfRowsInComponent component: Int
-    ) -> Int {
-        MainActor.assumeIsolated {
-            availableYearMonths.count
-        }
-    }
-}
+struct NCMediaDatePickerView: View {
+    @ObservedObject var model: NCMediaDatePickerModel
 
-extension NCMediaDatePickerViewController: UIPickerViewDelegate {
-    nonisolated func pickerView(
-        _ pickerView: UIPickerView,
-        titleForRow row: Int,
-        forComponent component: Int
-    ) -> String? {
-        MainActor.assumeIsolated {
-            guard availableYearMonths.indices.contains(row) else {
-                return nil
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 18, weight: .medium))
+                        .frame(width: 24, height: 24)
+                }
+                .modifier(NCMediaCloseButtonStyle())
+                .frame(width: 44, height: 44)
+                .accessibilityLabel(Text(NSLocalizedString("_close_", comment: "")))
             }
+            .padding(.horizontal, 12)
+            .padding(.top, 4)
 
-            let yearMonth = availableYearMonths[row]
-
-            var components = DateComponents()
-            components.year = yearMonth.year
-            components.month = yearMonth.month
-            components.day = 1
-
-            guard let date = Calendar.current.date(
-                from: components
-            ) else {
-                return nil
+            Picker("", selection: $model.selectedYearMonth) {
+                ForEach(model.availableYearMonths, id: \.self) { yearMonth in
+                    Text(model.title(for: yearMonth))
+                        .tag(Optional(yearMonth))
+                }
             }
+            .pickerStyle(.wheel)
+            .labelsHidden()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .layoutPriority(1)
+            .clipped()
+            .onChange(of: model.selectedYearMonth) { _, selectedYearMonth in
+                guard let selectedYearMonth else {
+                    return
+                }
 
-            return date.formatted(
-                .dateTime
-                    .month(.wide)
-                    .year()
-            )
+                model.onDateSelected?(selectedYearMonth)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private struct NCMediaCloseButtonStyle: ViewModifier {
+        @ViewBuilder
+        func body(content: Content) -> some View {
+            if #available(iOS 26.0, *) {
+                content
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+            } else {
+                content
+                    .buttonStyle(.plain)
+            }
         }
     }
-
-    nonisolated func pickerView(
-        _ pickerView: UIPickerView,
-        rowHeightForComponent component: Int
-    ) -> CGFloat {
-        44
-    }
 }
+
+#if DEBUG
+#Preview("Media Date Picker") {
+    NCMediaDatePickerView(
+        model: NCMediaDatePickerModel(
+            availableYearMonths: [
+                NCYearMonth(year: 2026, month: 7),
+                NCYearMonth(year: 2026, month: 6),
+                NCYearMonth(year: 2026, month: 5),
+                NCYearMonth(year: 2026, month: 4),
+                NCYearMonth(year: 2026, month: 3),
+                NCYearMonth(year: 2026, month: 2),
+                NCYearMonth(year: 2026, month: 1),
+                NCYearMonth(year: 2025, month: 12),
+                NCYearMonth(year: 2025, month: 11)
+            ],
+            selectedYearMonth: NCYearMonth(year: 2026, month: 7)
+        )
+    )
+    .frame(height: 340)
+}
+#endif

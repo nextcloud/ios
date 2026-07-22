@@ -108,8 +108,13 @@ extension NCMedia {
         }
 
         if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.medium()]
+            sheet.detents = [
+                .custom(identifier: .init("mediaDatePicker")) { _ in
+                    200
+                }
+            ]
             sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         }
 
         present(viewController, animated: true)
