@@ -37,22 +37,23 @@ extension NCMedia {
             let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
 
             if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getCompactMetadata(indexPath: firstAttribute.indexPath) {
-                titleDate?.text = utility.getTitleFromDate(metadata.date)
+                buttonDate.setTitle(utility.getTitleFromDate(metadata.date), for: .normal)
                 return
             }
         }
 
-        titleDate?.text = ""
+        buttonDate.setTitle("", for: .normal)
     }
 
     func setElements() {
-        let highTextTitle = titleDate.frame.height
+        let highTextTitle = buttonDate.frame.height
         let isOver = self.collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top && self.collectionView.contentOffset.y != -view.safeAreaInsets.top
 
         if isOver || dataSource.compactMetadatas.isEmpty {
             UIView.animate(withDuration: 0.3) { [self] in
                 gradientView.isHidden = true
-                titleDate?.textColor = NCBrandColor.shared.textColor
+                buttonDate.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
+                buttonDate.tintColor = NCBrandColor.shared.textColor
                 activityIndicator.color = NCBrandColor.shared.textColor
 
                 if #unavailable(iOS 26.0) {
@@ -62,7 +63,8 @@ extension NCMedia {
         } else {
             UIView.animate(withDuration: 0.3) { [self] in
                 gradientView.isHidden = false
-                titleDate?.textColor = .white
+                buttonDate.setTitleColor(.white, for: .normal)
+                buttonDate.tintColor = .white
                 activityIndicator.color = .white
 
                 if #unavailable(iOS 26.0) {

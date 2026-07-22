@@ -9,7 +9,7 @@ import RealmSwift
 
 class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var titleDate: UILabel!
+    @IBOutlet weak var buttonDate: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var gradientView: UIView!
 
@@ -131,8 +131,9 @@ class NCMedia: UIViewController {
         gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
         gradientView.layer.insertSublayer(gradientLayer, at: 0)
 
-        titleDate.text = ""
-        titleDate?.textColor = .white
+        buttonDate.setTitle("", for: .normal)
+        buttonDate.setTitleColor(.white, for: .normal)
+        buttonDate.tintColor = .white
         activityIndicator.color = .white
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))

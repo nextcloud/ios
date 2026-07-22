@@ -531,6 +531,7 @@ public class NCMediaDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private(set) var compactMetadatas: [NCCompactMetadata] = []
+    private(set) var firstIndexByYearMonth: [NCYearMonth: Int] = [:]
 
     override init() { super.init() }
 
@@ -540,6 +541,10 @@ public class NCMediaDataSource: NSObject {
         self.compactMetadatas = metadatas.map {
             getCompactMetadataFromMetadata($0)
         }
+
+        self.firstIndexByYearMonth = makeFirstIndexByYearMonth(
+            from: compactMetadatas
+        )
     }
 
     private func getCompactMetadataFromMetadata(_ metadata: tableMetadata) -> NCCompactMetadata {
@@ -594,5 +599,46 @@ public class NCMediaDataSource: NSObject {
         self.compactMetadatas.removeAll { item in
             ocId.contains(item.ocId)
         }
+    }
+
+    private func makeFirstIndexByYearMonth(from metadatas: [NCCompactMetadata]) -> [NCYearMonth: Int] {
+        var result: [NCYearMonth: Int] = [:]
+
+        for (index, metadata) in metadatas.enumerated() {
+            guard let yearMonth = NCYearMonth(date: metadata.date) else {
+                continue
+            }
+
+            if result[yearMonth] == nil {
+                result[yearMonth] = index
+            }
+        }
+
+        return result
+    }
+
+    public func firstIndex(year: Int, month: Int) -> Int? {
+        firstIndexByYearMonth[NCYearMonth(year: year, month: month)]
+    }
+}
+
+public struct NCYearMonth: Hashable {
+    public let year: Int
+    public let month: Int
+
+    public init(year: Int, month: Int) {
+        self.year = year
+        self.month = month
+    }
+
+    init?(date: Date, calendar: Calendar = .current) {
+        let components = calendar.dateComponents([.year, .month], from: date)
+
+        guard let year = components.year,
+              let month = components.month else {
+            return nil
+        }
+
+        self.init(year: year, month: month)
     }
 }
