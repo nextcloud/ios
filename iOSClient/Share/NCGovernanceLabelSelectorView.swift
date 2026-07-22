@@ -61,7 +61,7 @@ struct NCGovernanceLabelSelectorView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(NSLocalizedString("_save_", comment: ""), systemImage: "checkmark.circle.fill") {
+                    Button(NSLocalizedString("_save_", comment: ""), systemImage: "checkmark") {
                         Task {
                             isSaving = true
                             await onSave(selected)
