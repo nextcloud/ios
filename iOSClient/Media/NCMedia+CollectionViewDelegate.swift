@@ -67,7 +67,7 @@ extension NCMedia: UICollectionViewDelegate {
                 )
             }
 
-            let ocIds = dataSource.compactMetadatas.map(\.ocId)
+            let ocIds = dataSource.allOcIds
 
             if let viewController = await NCViewer().getViewerController(
                 metadata: metadata,

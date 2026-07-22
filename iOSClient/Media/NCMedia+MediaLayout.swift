@@ -24,19 +24,21 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
-        var height: Double = 0
-        if dataSource.compactMetadatas.count == 0 {
-            height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
-        }
-        return Float(height)
+        if dataSource.isEmpty() {
+            return section == 0
+            ? Float(utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20))
+            : .zero
+          }
+
+          return 40.0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        if dataSource.compactMetadatas.count == 0 {
+        guard !dataSource.isEmpty() else {
             return .zero
-        } else {
-            return 100.0
         }
+
+        return section == dataSource.numberOfSections - 1 ? 100.0 : .zero
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {

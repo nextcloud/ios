@@ -34,7 +34,10 @@ extension NCMedia {
 
     func setTitleDate() {
         let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
-            $0.item < $1.item
+            if $0.section == $1.section {
+                return $0.item < $1.item
+            }
+            return $0.section < $1.section
         }
 
         guard let firstIndexPath = visibleIndexPaths.first,
@@ -125,7 +128,15 @@ extension NCMedia {
     }
 
     private func currentVisibleYearMonth() -> NCYearMonth? {
-        guard let firstIndexPath = collectionView.indexPathsForVisibleItems.min(by: { $0.item < $1.item }),
+        let firstIndexPath = collectionView.indexPathsForVisibleItems.min {
+            if $0.section == $1.section {
+                return $0.item < $1.item
+            }
+
+            return $0.section < $1.section
+        }
+
+        guard let firstIndexPath,
               let metadata = dataSource.getCompactMetadata(indexPath: firstIndexPath) else {
             return nil
         }
@@ -153,19 +164,6 @@ extension NCMedia {
 
         collectionView.layoutIfNeeded()
         setTitleDate()
-    }
-
-    private func formattedTitle(year: Int, month: Int) -> String {
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = 1
-
-        guard let date = Calendar.current.date(from: components) else {
-            return ""
-        }
-
-        return date.formatted(.dateTime .month(.wide) .year())
     }
 }
 
@@ -249,15 +247,8 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         await self.database.deleteMetadataAsync(id: ocId)
 
         await MainActor.run {
-            if let indexPath = self.dataSource.indexPath(forOcId: ocId) {
-                self.collectionView.performBatchUpdates {
-                    self.dataSource.removeCompactMetadata([ocId])
-                    self.collectionView.deleteItems(at: [indexPath])
-                }
-            } else {
-                self.dataSource.removeCompactMetadata([ocId])
-                self.collectionViewReloadData()
-            }
+            self.dataSource.removeCompactMetadata([ocId])
+            self.collectionViewReloadData()
         }
     }
 }

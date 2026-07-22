@@ -277,7 +277,7 @@ extension NCMedia: UIScrollViewDelegate {
         }
     }
 
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView,willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             searchNewMedia()
         }

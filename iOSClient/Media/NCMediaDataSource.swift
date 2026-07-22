@@ -522,18 +522,18 @@ public class NCMediaDataSource: NSObject {
         }
     }
 
+    public struct NCMediaSection {
+        let yearMonth: NCYearMonth
+        var compactMetadatas: [NCCompactMetadata]
+    }
+
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private(set) var compactMetadatas: [NCCompactMetadata] = []
-    private(set) var firstIndexByYearMonth: [NCYearMonth: Int] = [:]
+    private(set) var sections: [NCMediaSection] = []
 
     var availableYearMonths: [NCYearMonth] {
-        firstIndexByYearMonth.keys.sorted {
-            if $0.year == $1.year {
-                return $0.month > $1.month
-            }
-            return $0.year > $1.year
-        }
+        sections.map(\.yearMonth)
     }
 
     override init() { super.init() }
@@ -545,9 +545,7 @@ public class NCMediaDataSource: NSObject {
             getCompactMetadataFromMetadata($0)
         }
 
-        self.firstIndexByYearMonth = makeFirstIndexByYearMonth(
-            from: compactMetadatas
-        )
+        self.sections = makeSections(from: compactMetadatas)
     }
 
     private func getCompactMetadataFromMetadata(_ metadata: tableMetadata) -> NCCompactMetadata {
@@ -564,39 +562,73 @@ public class NCMediaDataSource: NSObject {
     // MARK: -
 
     func clearCompactMetadatas() {
-        self.compactMetadatas.removeAll()
-        self.firstIndexByYearMonth.removeAll()
+        compactMetadatas.removeAll()
+        sections.removeAll()
     }
 
     func isEmpty() -> Bool {
         return self.compactMetadatas.isEmpty
     }
 
-    func indexPath(forOcId ocId: String) -> IndexPath? {
-        guard let index = self.compactMetadatas.firstIndex(where: { $0.ocId == ocId }) else {
+    var numberOfSections: Int {
+        sections.count
+    }
+
+    func numberOfItems(in section: Int) -> Int {
+        guard sections.indices.contains(section) else {
+            return 0
+        }
+
+        return sections[section].compactMetadatas.count
+    }
+
+    func yearMonth(for section: Int) -> NCYearMonth? {
+        guard sections.indices.contains(section) else {
             return nil
         }
 
-        return IndexPath(item: index, section: 0)
+        return sections[section].yearMonth
     }
 
-    func getCompactMetadata(indexPath: IndexPath) -> NCCompactMetadata? {
-        if indexPath.row < self.compactMetadatas.count {
-            return self.compactMetadatas[indexPath.row]
+    var allOcIds: [String] {
+        compactMetadatas.map(\.ocId)
+    }
+
+    func indexPath(forOcId ocId: String) -> IndexPath? {
+        for (sectionIndex, section) in sections.enumerated() {
+            guard let itemIndex = section.compactMetadatas.firstIndex(where: {
+                $0.ocId == ocId
+            }) else {
+                continue
+            }
+
+            return IndexPath(
+                item: itemIndex,
+                section: sectionIndex
+            )
         }
 
         return nil
     }
 
-    func getCompactMetadatas(indexPaths: [IndexPath]) -> [NCCompactMetadata] {
-        var metadatas: [NCCompactMetadata] = []
-        for indexPath in indexPaths {
-            if indexPath.row < self.compactMetadatas.count {
-                metadatas.append(self.compactMetadatas[indexPath.row])
-            }
+    func getCompactMetadata(indexPath: IndexPath) -> NCCompactMetadata? {
+        guard sections.indices.contains(indexPath.section) else {
+            return nil
         }
 
-        return metadatas
+        let metadatas = sections[indexPath.section].compactMetadatas
+
+        guard metadatas.indices.contains(indexPath.item) else {
+            return nil
+        }
+
+        return metadatas[indexPath.item]
+    }
+
+    func getCompactMetadatas(indexPaths: [IndexPath]) -> [NCCompactMetadata] {
+        indexPaths.compactMap {
+            getCompactMetadata(indexPath: $0)
+        }
     }
 
     func removeCompactMetadata(_ ocIds: [String]) {
@@ -606,40 +638,56 @@ public class NCMediaDataSource: NSObject {
             ocIds.contains(metadata.ocId)
         }
 
-        firstIndexByYearMonth = makeFirstIndexByYearMonth(
-            from: compactMetadatas
-        )
+        sections = makeSections(from: compactMetadatas)
     }
 
     func firstIndexPath(year: Int, month: Int) -> IndexPath? {
-        guard let index = firstIndex(
+        let yearMonth = NCYearMonth(
             year: year,
             month: month
-        ) else {
+        )
+
+        guard let sectionIndex = sections.firstIndex(where: {
+            $0.yearMonth == yearMonth
+        }) else {
             return nil
         }
 
-        return IndexPath(item: index, section: 0)
+        guard !sections[sectionIndex].compactMetadatas.isEmpty else {
+            return nil
+        }
+
+        return IndexPath(
+            item: 0,
+            section: sectionIndex
+        )
     }
 
-    func firstIndex(year: Int, month: Int) -> Int? {
-        firstIndexByYearMonth[NCYearMonth(year: year, month: month)]
-    }
+    private func makeSections(
+        from metadatas: [NCCompactMetadata]
+    ) -> [NCMediaSection] {
+        var sections: [NCMediaSection] = []
 
-    private func makeFirstIndexByYearMonth(from metadatas: [NCCompactMetadata]) -> [NCYearMonth: Int] {
-        var result: [NCYearMonth: Int] = [:]
-
-        for (index, metadata) in metadatas.enumerated() {
+        for metadata in metadatas {
             guard let yearMonth = NCYearMonth(date: metadata.date) else {
                 continue
             }
 
-            if result[yearMonth] == nil {
-                result[yearMonth] = index
+            if sections.last?.yearMonth == yearMonth {
+                sections[sections.count - 1]
+                    .compactMetadatas
+                    .append(metadata)
+            } else {
+                sections.append(
+                    NCMediaSection(
+                        yearMonth: yearMonth,
+                        compactMetadatas: [metadata]
+                    )
+                )
             }
         }
 
-        return result
+        return sections
     }
 }
 

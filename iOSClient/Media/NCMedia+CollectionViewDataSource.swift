@@ -9,27 +9,107 @@ import RealmSwift
 extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == mediaSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
-            header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.getElement(account: session.account)])
-            if self.searchMediaInProgress {
-                header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
-            } else {
-                header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
+            guard let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: "sectionFirstHeaderEmptyData",
+                for: indexPath
+            ) as? NCSectionFirstHeaderEmptyData else {
+                return NCSectionFirstHeaderEmptyData()
             }
-            header.emptyDescription.text = ""
-            return header
-        } else {
-            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let images = dataSource.compactMetadatas.filter({ $0.isImage }).count
-            let video = dataSource.compactMetadatas.count - images
 
-            footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
+            if dataSource.isEmpty() {
+                header.emptyImage.isHidden = false
+                header.emptyDescription.isHidden = false
+
+                header.emptyImage.image = utility.loadImage(
+                    named: "photo",
+                    colors: [
+                        NCBrandColor.shared.getElement(
+                            account: session.account
+                        )
+                    ]
+                )
+
+                if searchMediaInProgress {
+                    header.emptyTitle.text = NSLocalizedString(
+                        "_search_in_progress_",
+                        comment: ""
+                    )
+                } else {
+                    header.emptyTitle.text = NSLocalizedString(
+                        "_tutorial_photo_view_",
+                        comment: ""
+                    )
+                }
+
+                header.emptyDescription.text = ""
+            } else {
+                header.emptyImage.isHidden = true
+                header.emptyDescription.isHidden = true
+
+                guard let yearMonth = dataSource.yearMonth(
+                    for: indexPath.section
+                ) else {
+                    header.emptyTitle.text = nil
+                    return header
+                }
+
+                var components = DateComponents()
+                components.year = yearMonth.year
+                components.month = yearMonth.month
+                components.day = 1
+
+                if let date = Calendar.current.date(from: components) {
+                    header.emptyTitle.text = date.formatted(
+                        .dateTime
+                            .month(.wide)
+                            .year()
+                    )
+                } else {
+                    header.emptyTitle.text =
+                        "\(yearMonth.month)/\(yearMonth.year)"
+                }
+            }
+
+            return header
+        }
+
+        guard let footer = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: "sectionFooter",
+            for: indexPath
+        ) as? NCSectionFooter else {
+            return NCSectionFooter()
+        }
+
+        guard indexPath.section == dataSource.numberOfSections - 1 else {
+            footer.setTitleLabel("")
             return footer
         }
+
+        let images = dataSource.compactMetadatas.filter(\.isImage).count
+        let videos = dataSource.compactMetadatas.count - images
+
+        footer.setTitleLabel(
+            "\(images) "
+            + NSLocalizedString("_images_", comment: "")
+            + " • "
+            + "\(videos) "
+            + NSLocalizedString("_video_", comment: "")
+        )
+
+        return footer
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        dataSource.compactMetadatas.count
+        guard !dataSource.isEmpty() else {
+            return 0
+        }
+        return dataSource.numberOfItems(in: section)
+    }
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        dataSource.isEmpty() ? 1 : dataSource.numberOfSections
     }
 
     func collectionView(_ collectionView: UICollectionView,
