@@ -34,7 +34,7 @@ struct NCShareDetailsView: View {
         ZStack {
             switch model.state {
                 case .loading:
-                    Text("Loading")
+                    ProgressView()
                 case .loaded(let data):
                     Form {
                         Section(header:
@@ -70,8 +70,8 @@ struct NCShareDetailsView: View {
                         selectorSheet(selector, data: data)
                     }
 
-                case .error(let error):
-                    Text(error.localizedDescription)
+                case .error:
+                    Text(NSLocalizedString("_governance_labels_load_error_", comment: ""))
             }
         }
         .task {

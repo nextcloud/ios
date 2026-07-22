@@ -862,3 +862,5 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_file_retention_"                  = "File retention";
 "_legal_hold_"                      = "Legal hold";
 "_none_"                            = "None";
+"_sections_"                        = "Sections";
+"_governance_labels_load_error_"    = "Governance labels could not be loaded.";

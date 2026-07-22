@@ -14,7 +14,7 @@ struct GovernanceData {
 enum GovernanceViewState {
     case loading
     case loaded(GovernanceData)
-    case error(Error)
+    case error
 }
 
 @MainActor
@@ -40,7 +40,8 @@ final class NCShareDetailsGovernanceModel {
         let result = await NextcloudKit.shared.getGovernanceAvailableLabels(entityId: entityID, account: account)
 
         guard let labels = result.labels else {
-            state = .error(result.error)
+            nkLog(error: "Could not load governance labels: \(result.error.errorDescription) (\(result.error.errorCode))")
+            state = .error
             return
         }
 

@@ -4114,7 +4114,7 @@
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
-				F783034028B511D200B84583 /* XCLocalSwiftPackageReference "../NextcloudKit-nc-governance" */,
+				F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */,
 				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */,
 				F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */,
@@ -6503,13 +6503,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		F783034028B511D200B84583 /* XCLocalSwiftPackageReference "../NextcloudKit-nc-governance" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../NextcloudKit-nc-governance";
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -6620,6 +6613,14 @@
 			repositoryURL = "https://github.com/httpswift/swifter.git";
 			requirement = {
 				branch = stable;
+				kind = branch;
+			};
+		};
+		F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
+			requirement = {
+				branch = "nc-governance";
 				kind = branch;
 			};
 		};
@@ -6766,6 +6767,7 @@
 		};
 		F37208B72BAB63EF006B5430 /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F37208B92BAB63EF006B5430 /* TLPhotoPicker */ = {
@@ -6880,18 +6882,22 @@
 		};
 		F72AD70C28C24B93006CB92D /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F72AD70E28C24BA1006CB92D /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F72AD71028C24BBB006CB92D /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F72AD71228C24BCC006CB92D /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F72D7EB6263B1207000B3DFC /* MarkdownKit */ = {
@@ -6916,6 +6922,7 @@
 		};
 		F7490E8A29882CE4009DCE94 /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F753BA92281FD8020015BFB6 /* EasyTipView */ = {
@@ -6980,6 +6987,7 @@
 		};
 		F783034328B5142B00B84583 /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F788ECC6263AAAFA00ADC67F /* MarkdownKit */ = {
@@ -6994,6 +7002,7 @@
 		};
 		F7A8D72328F1771B008BBE1C /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F7A8D72728F17728008BBE1C /* RealmSwift */ = {
@@ -7003,6 +7012,7 @@
 		};
 		F7C55C9E2FB5B83A004A974F /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
 		};
 		F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */ = {

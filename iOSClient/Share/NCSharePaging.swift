@@ -276,6 +276,7 @@ struct NCSharePagingContentView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .accessibilityLabel(NSLocalizedString("_sections_", comment: ""))
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .tint(tint)
