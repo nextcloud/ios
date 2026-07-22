@@ -46,6 +46,9 @@
                                 <rect key="frame" x="0.0" y="100" width="75" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="buttonDateTouchUpInside:" destination="EFX-fO-Oip" eventType="touchUpInside" id="g8s-Mm-A7h"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>

@@ -33,16 +33,54 @@ extension NCMedia {
     }
 
     func setTitleDate() {
-        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
-            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
+        if let pinnedYearMonth {
+            currentDisplayedYearMonth = pinnedYearMonth
 
-            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getCompactMetadata(indexPath: firstAttribute.indexPath) {
-                buttonDate.setTitle(utility.getTitleFromDate(metadata.date), for: .normal)
-                return
-            }
+            buttonDate.configuration?.title = formattedTitle(
+                year: pinnedYearMonth.year,
+                month: pinnedYearMonth.month
+            )
+
+            return
         }
 
-        buttonDate.setTitle("", for: .normal)
+        let visibleTop = collectionView.contentOffset.y
+            + collectionView.adjustedContentInset.top
+
+        guard let layoutAttributes = collectionView.collectionViewLayout
+            .layoutAttributesForElements(in: collectionView.bounds) else {
+            buttonDate.configuration?.title = ""
+            currentDisplayedYearMonth = nil
+            return
+        }
+
+        guard let firstVisibleAttribute = layoutAttributes
+            .filter({
+                $0.representedElementCategory == .cell &&
+                $0.frame.maxY > visibleTop
+            })
+            .sorted(by: {
+                if $0.frame.minY == $1.frame.minY {
+                    return $0.frame.minX < $1.frame.minX
+                }
+
+                return $0.frame.minY < $1.frame.minY
+            })
+            .first,
+              let metadata = dataSource.getCompactMetadata(
+                  indexPath: firstVisibleAttribute.indexPath
+              ) else {
+            buttonDate.configuration?.title = ""
+            currentDisplayedYearMonth = nil
+            return
+        }
+
+        let yearMonth = NCYearMonth(date: metadata.date)
+
+        currentDisplayedYearMonth = yearMonth
+
+        buttonDate.configuration?.title =
+            utility.getTitleFromDate(metadata.date)
     }
 
     func setElements() {
@@ -78,6 +116,91 @@ extension NCMedia {
         )
 
         setTitleDate()
+    }
+
+    @IBAction func buttonDateTouchUpInside(_ sender: UIButton) {
+        presentMediaDatePicker()
+    }
+
+    private func presentMediaDatePicker() {
+        let viewController = NCMediaDatePickerViewController(
+            availableYearMonths: dataSource.availableYearMonths,
+            selectedYearMonth: currentDisplayedYearMonth
+        )
+
+        viewController.onDateSelected = { [weak self] yearMonth in
+            self?.scrollToMedia(
+                year: yearMonth.year,
+                month: yearMonth.month
+            )
+        }
+
+        if let sheet = viewController.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        present(viewController, animated: true)
+    }
+
+    private func currentVisibleYearMonth() -> NCYearMonth? {
+        guard let layoutAttributes = collectionView.collectionViewLayout
+            .layoutAttributesForElements(in: collectionView.bounds)?
+            .sorted(by: {
+                $0.frame.minY < $1.frame.minY ||
+                ($0.frame.minY == $1.frame.minY &&
+                 $0.frame.minX < $1.frame.minX)
+            }),
+              let firstAttribute = layoutAttributes.first,
+              let metadata = dataSource.getCompactMetadata(
+                  indexPath: firstAttribute.indexPath
+              ) else {
+            return nil
+        }
+
+        return NCYearMonth(date: metadata.date)
+    }
+
+    private func scrollToMedia(year: Int, month: Int) {
+        guard let indexPath = dataSource.firstIndexPath(year: year, month: month) else {
+            return
+        }
+        let yearMonth = NCYearMonth(year: year, month: month)
+
+        pinnedYearMonth = yearMonth
+        currentDisplayedYearMonth = yearMonth
+
+        collectionView.layoutIfNeeded()
+
+        guard let attributes = collectionView.collectionViewLayout
+            .layoutAttributesForItem(at: indexPath) else {
+            return
+        }
+
+        let targetOffsetY = attributes.frame.minY - collectionView.adjustedContentInset.top
+
+        collectionView.setContentOffset(
+            CGPoint(
+                x: collectionView.contentOffset.x,
+                y: targetOffsetY
+            ),
+            animated: false
+        )
+
+        buttonDate.configuration?.title = formattedTitle(year: year, month: month)
+    }
+
+    private func formattedTitle(year: Int, month: Int) -> String {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+
+        guard let date = Calendar.current.date(from: components) else {
+            return ""
+        }
+
+        return date.formatted(.dateTime .month(.wide) .year())
     }
 }
 

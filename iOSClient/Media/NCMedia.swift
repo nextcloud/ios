@@ -61,6 +61,9 @@ class NCMedia: UIViewController {
         let deltaY: CGFloat
     }
 
+    var pinnedYearMonth: NCYearMonth?
+    var currentDisplayedYearMonth: NCYearMonth?
+
     @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -285,6 +288,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        pinnedYearMonth = nil
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {

@@ -533,6 +533,15 @@ public class NCMediaDataSource: NSObject {
     private(set) var compactMetadatas: [NCCompactMetadata] = []
     private(set) var firstIndexByYearMonth: [NCYearMonth: Int] = [:]
 
+    var availableYearMonths: [NCYearMonth] {
+        firstIndexByYearMonth.keys.sorted {
+            if $0.year == $1.year {
+                return $0.month > $1.month
+            }
+            return $0.year > $1.year
+        }
+    }
+
     override init() { super.init() }
 
     init(metadatas: [tableMetadata]) {
@@ -562,6 +571,7 @@ public class NCMediaDataSource: NSObject {
 
     func clearCompactMetadatas() {
         self.compactMetadatas.removeAll()
+        self.firstIndexByYearMonth.removeAll()
     }
 
     func isEmpty() -> Bool {
@@ -595,10 +605,31 @@ public class NCMediaDataSource: NSObject {
         return metadatas
     }
 
-    func removeCompactMetadata(_ ocId: [String]) {
-        self.compactMetadatas.removeAll { item in
-            ocId.contains(item.ocId)
+    func removeCompactMetadata(_ ocIds: [String]) {
+        let ocIds = Set(ocIds)
+
+        compactMetadatas.removeAll { metadata in
+            ocIds.contains(metadata.ocId)
         }
+
+        firstIndexByYearMonth = makeFirstIndexByYearMonth(
+            from: compactMetadatas
+        )
+    }
+
+    func firstIndexPath(year: Int, month: Int) -> IndexPath? {
+        guard let index = firstIndex(
+            year: year,
+            month: month
+        ) else {
+            return nil
+        }
+
+        return IndexPath(item: index, section: 0)
+    }
+
+    func firstIndex(year: Int, month: Int) -> Int? {
+        firstIndexByYearMonth[NCYearMonth(year: year, month: month)]
     }
 
     private func makeFirstIndexByYearMonth(from metadatas: [NCCompactMetadata]) -> [NCYearMonth: Int] {
@@ -615,10 +646,6 @@ public class NCMediaDataSource: NSObject {
         }
 
         return result
-    }
-
-    public func firstIndex(year: Int, month: Int) -> Int? {
-        firstIndexByYearMonth[NCYearMonth(year: year, month: month)]
     }
 }
 
