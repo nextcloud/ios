@@ -61,9 +61,6 @@ class NCMedia: UIViewController {
         let deltaY: CGFloat
     }
 
-    var pinnedYearMonth: NCYearMonth?
-    var currentDisplayedYearMonth: NCYearMonth?
-
     @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -144,9 +141,15 @@ class NCMedia: UIViewController {
         configuration.titleTextAttributesTransformer =
             UIConfigurationTextAttributesTransformer { incoming in
                 var outgoing = incoming
-                outgoing.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+                outgoing.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
                 return outgoing
             }
+        configuration.subtitleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+            return outgoing
+        }
+        configuration.titlePadding = 1
         buttonDate.configuration = configuration
 
         activityIndicator.color = .white
@@ -288,7 +291,6 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        pinnedYearMonth = nil
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
