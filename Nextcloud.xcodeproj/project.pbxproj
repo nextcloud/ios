@@ -6620,7 +6620,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = "nc-governance";
+				branch = main;
 				kind = branch;
 			};
 		};
