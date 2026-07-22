@@ -9,15 +9,15 @@ import RealmSwift
 extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == mediaSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(
-                ofKind: kind,
-                withReuseIdentifier: "sectionFirstHeaderEmptyData",
-                for: indexPath
-            ) as? NCSectionFirstHeaderEmptyData else {
-                return NCSectionFirstHeaderEmptyData()
-            }
-
             if dataSource.isEmpty() {
+                guard let header = collectionView.dequeueReusableSupplementaryView(
+                    ofKind: kind,
+                    withReuseIdentifier: "sectionFirstHeaderEmptyData",
+                    for: indexPath
+                ) as? NCSectionFirstHeaderEmptyData else {
+                    return NCSectionFirstHeaderEmptyData()
+                }
+
                 header.emptyImage.isHidden = false
                 header.emptyDescription.isHidden = false
 
@@ -43,32 +43,36 @@ extension NCMedia: UICollectionViewDataSource {
                 }
 
                 header.emptyDescription.text = ""
+
+                return header
+            }
+
+            guard let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: "sectionHeader",
+                for: indexPath
+            ) as? NCMediaSectionHeader else {
+                return NCMediaSectionHeader()
+            }
+
+            guard let yearMonth = dataSource.yearMonth(for: indexPath.section) else {
+                header.titleLabel.text = nil
+                return header
+            }
+
+            var components = DateComponents()
+            components.year = yearMonth.year
+            components.month = yearMonth.month
+            components.day = 1
+
+            if let date = Calendar.current.date(from: components) {
+                header.titleLabel.text = date.formatted(
+                    .dateTime
+                        .month(.wide)
+                        .year()
+                )
             } else {
-                header.emptyImage.isHidden = true
-                header.emptyDescription.isHidden = true
-
-                guard let yearMonth = dataSource.yearMonth(
-                    for: indexPath.section
-                ) else {
-                    header.emptyTitle.text = nil
-                    return header
-                }
-
-                var components = DateComponents()
-                components.year = yearMonth.year
-                components.month = yearMonth.month
-                components.day = 1
-
-                if let date = Calendar.current.date(from: components) {
-                    header.emptyTitle.text = date.formatted(
-                        .dateTime
-                            .month(.wide)
-                            .year()
-                    )
-                } else {
-                    header.emptyTitle.text =
-                        "\(yearMonth.month)/\(yearMonth.year)"
-                }
+                header.titleLabel.text = "\(yearMonth.month)/\(yearMonth.year)"
             }
 
             return header
