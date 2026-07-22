@@ -66,7 +66,7 @@ extension NCMedia {
     @MainActor
     func collectionViewReloadData() {
         collectionView.reloadData()
-        setElements()
+        setTitleDate()
     }
 
     // MARK: - Keeping position
@@ -161,7 +161,7 @@ extension NCMedia {
 
             self.collectionView.layoutIfNeeded()
             self.restoreScrollAnchor(anchor)
-            self.setElements()
+            self.setTitleDate()
         }
     }
 
@@ -178,7 +178,6 @@ extension NCMedia {
                 return false
             }
             self.searchMediaInProgress = true
-            self.activityIndicator.startAnimating()
             return true
         }
 
@@ -189,7 +188,6 @@ extension NCMedia {
 
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             await MainActor.run {
-                self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
             }
             return
@@ -259,7 +257,6 @@ extension NCMedia {
 
         guard self.session.account == account else {
             await MainActor.run {
-                self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
             }
             return
@@ -282,7 +279,6 @@ extension NCMedia {
         }
         guard self.session.account == account else {
             await MainActor.run {
-                self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
             }
             return
@@ -290,7 +286,6 @@ extension NCMedia {
 
         guard let firstDate, let lastDate else {
             Task { @MainActor in
-                self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
             }
             return
@@ -316,7 +311,6 @@ extension NCMedia {
             }
         } finish: {
             Task { @MainActor in
-                self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
             }
         }

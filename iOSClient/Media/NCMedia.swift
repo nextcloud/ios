@@ -9,9 +9,6 @@ import RealmSwift
 
 class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var buttonDate: UIButton!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var gradientView: UIView!
 
     let layout = NCMediaLayout()
     let gradientLayer = CAGradientLayer()
@@ -60,6 +57,13 @@ class NCMedia: UIViewController {
         let deltaX: CGFloat
         let deltaY: CGFloat
     }
+
+    internal lazy var buttonDateBarItem = UIBarButtonItem(
+        title: nil,
+        style: .plain,
+        target: self,
+        action: #selector(presentMediaDatePicker)
+    )
 
     @MainActor
     var session: NCSession.Session {
@@ -128,31 +132,8 @@ class NCMedia: UIViewController {
             UIColor.clear.cgColor
         ]
 
-        gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
-        gradientView.layer.insertSublayer(gradientLayer, at: 0)
-
-        var configuration = buttonDate.configuration ?? UIButton.Configuration.plain()
-        configuration.title = ""
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
-        configuration.image = UIImage(systemName: "chevron.down", withConfiguration: symbolConfiguration)
-        configuration.imagePlacement = .trailing
-        configuration.imagePadding = 8
-        configuration.baseForegroundColor = .white
-        configuration.titleTextAttributesTransformer =
-            UIConfigurationTextAttributesTransformer { incoming in
-                var outgoing = incoming
-                outgoing.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-                return outgoing
-            }
-        configuration.subtitleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-            var outgoing = incoming
-            outgoing.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-            return outgoing
-        }
-        configuration.titlePadding = 1
-        buttonDate.configuration = configuration
-
-        activityIndicator.color = .white
+        navigationItem.leftItemsSupplementBackButton = true
+        navigationItem.leftBarButtonItem = nil
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
@@ -230,8 +211,6 @@ class NCMedia: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        gradientLayer.frame = gradientView.bounds
     }
 
     func searchNewMedia() {
@@ -287,7 +266,7 @@ extension NCMedia: UIScrollViewDelegate {
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
         }
-        setElements()
+        setTitleDate()
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

@@ -41,63 +41,67 @@ extension NCMedia {
               let lastIndexPath = visibleIndexPaths.last,
               let firstMetadata = dataSource.getCompactMetadata(indexPath: firstIndexPath),
               let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
-            buttonDate.configuration?.title = ""
-            buttonDate.configuration?.subtitle = nil
-            buttonDate.configuration?.image = nil
-            buttonDate.isEnabled = false
+            navigationItem.leftBarButtonItem = nil
             return
         }
 
-        let firstDateTitle = utility.getTitleFromDate(firstMetadata.date)
-        let lastDateTitle = utility.getTitleFromDate(lastMetadata.date)
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+        let firstDate = firstMetadata.date
+        let lastDate = lastMetadata.date
+        let calendar = Calendar.current
 
-        buttonDate.configuration?.title = firstDateTitle
-        buttonDate.configuration?.subtitle = firstDateTitle == lastDateTitle ? nil : lastDateTitle
-        buttonDate.configuration?.image = UIImage(systemName: "chevron.down", withConfiguration: symbolConfiguration)
-        buttonDate.isEnabled = true
-    }
+        let firstYear = calendar.component(.year, from: firstDate)
+        let lastYear = calendar.component(.year, from: lastDate)
 
-    func setElements() {
-        let highTextTitle = buttonDate.frame.height
-        let isOver =
-            collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top &&
-            collectionView.contentOffset.y != -view.safeAreaInsets.top
+        let title: String
 
-        let shouldHideGradient = isOver || dataSource.compactMetadatas.isEmpty
-        let foregroundColor: UIColor = shouldHideGradient ? NCBrandColor.shared.textColor : .white
-        var configuration = buttonDate.configuration
-        configuration?.baseForegroundColor = foregroundColor
-        buttonDate.configuration = configuration
-        activityIndicator.color = foregroundColor
+        if calendar.isDate(firstDate, inSameDayAs: lastDate) {
+            title = firstDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+        } else if firstYear == lastYear {
+            let firstDateTitle = firstDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+            )
 
-        if #unavailable(iOS 26.0) {
-            (navigationController as? NCMediaNavigationController)?
-                .updateRightBarButtonsTint(to: foregroundColor)
+            let lastDateTitle = lastDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+
+            title = "\(firstDateTitle) – \(lastDateTitle)"
+        } else {
+            let firstDateTitle = firstDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+
+            let lastDateTitle = lastDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+
+            title = "\(firstDateTitle) – \(lastDateTitle)"
         }
 
-        if !shouldHideGradient {
-            gradientView.isHidden = false
+        buttonDateBarItem.title = title
+
+        if navigationItem.leftBarButtonItem !== buttonDateBarItem {
+            navigationItem.leftBarButtonItem = buttonDateBarItem
         }
-
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                self.gradientView.alpha = shouldHideGradient ? 0 : 1
-            },
-            completion: { _ in
-                self.gradientView.isHidden = shouldHideGradient
-            }
-        )
-
-        setTitleDate()
     }
 
-    @IBAction func buttonDateTouchUpInside(_ sender: UIButton) {
-        presentMediaDatePicker()
-    }
-
-    private func presentMediaDatePicker() {
+    @objc func presentMediaDatePicker() {
         let viewController = NCMediaDatePickerViewController(
             availableYearMonths: dataSource.availableYearMonths,
             selectedYearMonth: currentVisibleYearMonth()

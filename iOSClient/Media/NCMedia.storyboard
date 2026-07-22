@@ -31,46 +31,17 @@
                                     <outlet property="delegate" destination="EFX-fO-Oip" id="s3n-CL-8X2"/>
                                 </connections>
                             </collectionView>
-                            <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j5r-Rn-Fcf">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="150" id="vHc-Kv-Q8h"/>
-                                </constraints>
-                            </view>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="9bK-ms-LxX">
-                                <rect key="frame" x="70" y="107.66666666666667" width="20" height="20"/>
-                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </activityIndicatorView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xeo-hC-QaN">
-                                <rect key="frame" x="0.0" y="100" width="75" height="35"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="buttonDateTouchUpInside:" destination="EFX-fO-Oip" eventType="touchUpInside" id="g8s-Mm-A7h"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>
                         <constraints>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="1bp-sm-u0X"/>
-                            <constraint firstItem="Xeo-hC-QaN" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="FdH-tF-9vB"/>
-                            <constraint firstItem="Xeo-hC-QaN" firstAttribute="trailing" secondItem="9bK-ms-LxX" secondAttribute="trailing" constant="-15" id="KjO-GV-pkx"/>
-                            <constraint firstItem="j5r-Rn-Fcf" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="P9X-dE-aZ9"/>
-                            <constraint firstAttribute="trailing" secondItem="j5r-Rn-Fcf" secondAttribute="trailing" id="V7I-TU-9SS"/>
                             <constraint firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
                             <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="nIB-3t-o2I"/>
-                            <constraint firstItem="Xeo-hC-QaN" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="sAM-kU-SwW"/>
-                            <constraint firstItem="j5r-Rn-Fcf" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="uEo-1J-sZ1"/>
-                            <constraint firstItem="9bK-ms-LxX" firstAttribute="centerY" secondItem="Xeo-hC-QaN" secondAttribute="centerY" id="vOm-Ut-Muh"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="activityIndicator" destination="9bK-ms-LxX" id="dpp-13-6UO"/>
-                        <outlet property="buttonDate" destination="Xeo-hC-QaN" id="tl9-ER-S8n"/>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
-                        <outlet property="gradientView" destination="j5r-Rn-Fcf" id="rJD-yb-zV2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJ0-Le-6eT" userLabel="First Responder" sceneMemberID="firstResponder"/>
