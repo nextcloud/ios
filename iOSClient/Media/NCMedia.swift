@@ -152,7 +152,7 @@ class NCMedia: UIViewController {
 
                 self.layoutType = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "").layout
                 self.imageCache.removeAll()
-                await self.loadDataSource()
+
                 await self.searchMediaUI(true)
             }
         }
@@ -195,16 +195,15 @@ class NCMedia: UIViewController {
         }
 
         Task {
-            await loadDataSource()
+            await networking.transferDispatcher.addDelegate(self)
+            await self.debouncerLoadDataSource.call {
+                await self.loadDataSource()
+            }
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        Task {
-            await networking.transferDispatcher.addDelegate(self)
-        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -215,6 +214,9 @@ class NCMedia: UIViewController {
         super.viewDidDisappear(animated)
 
         Task {
+            await debouncerSearch.cancel()
+            await debouncerLoadDataSource.cancel()
+
             await networking.transferDispatcher.removeDelegate(self)
             await networkRemoveAll()
         }
@@ -302,7 +304,9 @@ extension NCMedia: NCSelectDelegate {
             await database.setAccountMediaPathAsync(mediaPath, account: session.account)
 
             imageCache.removeAll()
-            await loadDataSource()
+            await self.debouncerLoadDataSource.call {
+                await self.loadDataSource()
+            }
             searchNewMedia()
         }
     }

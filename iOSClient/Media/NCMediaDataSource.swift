@@ -10,13 +10,18 @@ extension NCMedia {
     func loadDataSource() async {
         let account = self.session.account
 
+        guard !Task.isCancelled else {
+            return
+        }
+
         guard let tblAccount = await self.database.getTableAccountAsync(
             predicate: NSPredicate(format: "account == %@", account)
         ) else {
             return
         }
 
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
 
@@ -26,28 +31,40 @@ extension NCMedia {
             showOnlyImages: self.showOnlyImages,
             showOnlyVideos: self.showOnlyVideos)
 
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
 
-        if let metadatas = await self.database.getMetadatasAsync(
-            predicate: mediaPredicate,
-            sortedByKeyPath: "date",
-            ascending: false
-        ) {
-            guard self.session.account == account else {
+        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) {
+            guard !Task.isCancelled,
+                  self.session.account == account else {
                 return
             }
 
-            self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
+            self.database.filterAndNormalizeLivePhotos(from: metadatas) { [weak self] metadatas in
+                guard let self else {
+                    return
+                }
+
                 Task { @MainActor in
-                    guard self.isViewActived,
-                          self.session.account == account else {
+                    guard !Task.isCancelled,
+                          self.session.account == account,
+                          self.view.window != nil,
+                          self.tabBarController?.selectedViewController === self.navigationController else {
+                        return
+                    }
+                    let dataSource = NCMediaDataSource(metadatas: metadatas)
+
+                    guard !Task.isCancelled,
+                          self.session.account == account,
+                          self.view.window != nil,
+                          self.tabBarController?.selectedViewController === self.navigationController else {
                         return
                     }
 
-                    self.dataSource = NCMediaDataSource(metadatas: metadatas)
-                    self.collectionViewReloadDataKeepingPosition()
+                    self.dataSource = dataSource
+                    self.collectionView.reloadData()
                 }
             }
         } else {
@@ -145,24 +162,6 @@ extension NCMedia {
             ),
             animated: false
         )
-    }
-
-    @MainActor
-    func collectionViewReloadDataKeepingPosition() {
-        let anchor = captureScrollAnchor()
-
-        collectionView.reloadData()
-        collectionView.layoutIfNeeded()
-
-        DispatchQueue.main.async {
-            guard self.isViewActived else {
-                return
-            }
-
-            self.collectionView.layoutIfNeeded()
-            self.restoreScrollAnchor(anchor)
-            self.setTitleDate()
-        }
     }
 
     // MARK: - Search media
@@ -273,7 +272,9 @@ extension NCMedia {
                     guard self.session.account == account else {
                         return
                     }
-                    await self.loadDataSource()
+                    await self.debouncerLoadDataSource.call {
+                        await self.loadDataSource()
+                    }
                 }
             }
         }
@@ -306,7 +307,9 @@ extension NCMedia {
                     guard self.session.account == account else {
                         return
                     }
-                    await self.loadDataSource()
+                    await self.debouncerLoadDataSource.call {
+                        await self.loadDataSource()
+                    }
                 }
             }
         } finish: {
@@ -494,7 +497,6 @@ extension NCMedia {
 
 // MARK: -
 
-@MainActor
 public class NCMediaDataSource: NSObject {
     public class NCCompactMetadata: NSObject {
         let date: Date
@@ -663,28 +665,46 @@ public class NCMediaDataSource: NSObject {
         )
     }
 
-    private func makeSections(
-        from metadatas: [NCCompactMetadata]
-    ) -> [NCMediaSection] {
+    private func makeSections(from metadatas: [NCCompactMetadata]) -> [NCMediaSection] {
+        guard !metadatas.isEmpty else {
+            return []
+        }
+
         var sections: [NCMediaSection] = []
+        sections.reserveCapacity(24)
+
+        var currentYearMonth: NCYearMonth?
+        var currentMetadatas: [NCCompactMetadata] = []
 
         for metadata in metadatas {
             guard let yearMonth = NCYearMonth(date: metadata.date) else {
                 continue
             }
 
-            if sections.last?.yearMonth == yearMonth {
-                sections[sections.count - 1]
-                    .compactMetadatas
-                    .append(metadata)
+            if yearMonth == currentYearMonth {
+                currentMetadatas.append(metadata)
             } else {
-                sections.append(
-                    NCMediaSection(
-                        yearMonth: yearMonth,
-                        compactMetadatas: [metadata]
+                if let currentYearMonth, !currentMetadatas.isEmpty {
+                    sections.append(
+                        NCMediaSection(
+                            yearMonth: currentYearMonth,
+                            compactMetadatas: currentMetadatas
+                        )
                     )
-                )
+                }
+
+                currentYearMonth = yearMonth
+                currentMetadatas = [metadata]
             }
+        }
+
+        if let currentYearMonth, !currentMetadatas.isEmpty {
+            sections.append(
+                NCMediaSection(
+                    yearMonth: currentYearMonth,
+                    compactMetadatas: currentMetadatas
+                )
+            )
         }
 
         return sections
