@@ -131,9 +131,21 @@ class NCMedia: UIViewController {
         gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
         gradientView.layer.insertSublayer(gradientLayer, at: 0)
 
-        buttonDate.setTitle("", for: .normal)
-        buttonDate.setTitleColor(.white, for: .normal)
-        buttonDate.tintColor = .white
+        var configuration = buttonDate.configuration ?? UIButton.Configuration.plain()
+        configuration.title = ""
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+        configuration.image = UIImage(systemName: "chevron.down", withConfiguration: symbolConfiguration)
+        configuration.imagePlacement = .trailing
+        configuration.imagePadding = 8
+        configuration.baseForegroundColor = .white
+        configuration.titleTextAttributesTransformer =
+            UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+                return outgoing
+            }
+        buttonDate.configuration = configuration
+
         activityIndicator.color = .white
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))

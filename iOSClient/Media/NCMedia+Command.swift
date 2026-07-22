@@ -47,31 +47,36 @@ extension NCMedia {
 
     func setElements() {
         let highTextTitle = buttonDate.frame.height
-        let isOver = self.collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top && self.collectionView.contentOffset.y != -view.safeAreaInsets.top
+        let isOver =
+            collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top &&
+            collectionView.contentOffset.y != -view.safeAreaInsets.top
 
-        if isOver || dataSource.compactMetadatas.isEmpty {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.isHidden = true
-                buttonDate.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-                buttonDate.tintColor = NCBrandColor.shared.textColor
-                activityIndicator.color = NCBrandColor.shared.textColor
+        let shouldHideGradient = isOver || dataSource.compactMetadatas.isEmpty
+        let foregroundColor: UIColor = shouldHideGradient ? NCBrandColor.shared.textColor : .white
+        var configuration = buttonDate.configuration
+        configuration?.baseForegroundColor = foregroundColor
+        buttonDate.configuration = configuration
+        activityIndicator.color = foregroundColor
 
-                if #unavailable(iOS 26.0) {
-                    (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: NCBrandColor.shared.textColor)
-                }
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.isHidden = false
-                buttonDate.setTitleColor(.white, for: .normal)
-                buttonDate.tintColor = .white
-                activityIndicator.color = .white
-
-                if #unavailable(iOS 26.0) {
-                    (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
-                }
-            }
+        if #unavailable(iOS 26.0) {
+            (navigationController as? NCMediaNavigationController)?
+                .updateRightBarButtonsTint(to: foregroundColor)
         }
+
+        if !shouldHideGradient {
+            gradientView.isHidden = false
+        }
+
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                self.gradientView.alpha = shouldHideGradient ? 0 : 1
+            },
+            completion: { _ in
+                self.gradientView.isHidden = shouldHideGradient
+            }
+        )
+
         setTitleDate()
     }
 }
