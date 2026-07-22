@@ -30,7 +30,7 @@ extension NCMedia: NCMediaLayoutDelegate {
             : .zero
           }
 
-          return 40.0
+          return 80.0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {

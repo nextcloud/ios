@@ -151,16 +151,34 @@ extension NCMedia {
 
         collectionView.layoutIfNeeded()
 
-        guard let attributes = collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath) else {
-            return
+        let sectionIndexPath = IndexPath(item: 0, section: indexPath.section)
+
+        if let attributes = collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
+            ofKind: mediaSectionHeader,
+            at: sectionIndexPath
+        ) {
+            let spacingBelowNavigationBar: CGFloat = 16
+
+            let targetOffsetY = max(
+                -collectionView.adjustedContentInset.top,
+                attributes.frame.minY
+                    - collectionView.adjustedContentInset.top
+                    - spacingBelowNavigationBar
+            )
+
+            collectionView.setContentOffset(
+                CGPoint(x: collectionView.contentOffset.x, y: targetOffsetY),
+                animated: false
+            )
+        } else if let attributes = collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
+            // Fallback
+            let targetOffsetY = attributes.frame.minY - collectionView.adjustedContentInset.top
+
+            collectionView.setContentOffset(
+                CGPoint(x: collectionView.contentOffset.x, y: targetOffsetY),
+                animated: false
+            )
         }
-
-        let targetOffsetY = attributes.frame.minY - collectionView.adjustedContentInset.top
-
-        collectionView.setContentOffset(
-            CGPoint(x: collectionView.contentOffset.x, y: targetOffsetY),
-            animated: false
-        )
 
         collectionView.layoutIfNeeded()
         setTitleDate()
