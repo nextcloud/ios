@@ -29,11 +29,7 @@ public class NCMediaLayout: UICollectionViewLayout {
     private let unionSize = 20
 
     // MARK: - Public Properties
-    public var columnCount: Int = 0 {
-        didSet {
-            invalidateIfNotEqual(oldValue, newValue: columnCount)
-        }
-    }
+    public private(set) var columnCount: Int = 1
     public var minimumColumnSpacing: Float = 1.0 {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: minimumColumnSpacing)
@@ -70,14 +66,14 @@ public class NCMediaLayout: UICollectionViewLayout {
         }
     }
     public override var collectionViewContentSize: CGSize {
-        let numberOfSections = collectionView?.numberOfSections
-        if numberOfSections == 0 {
-            return CGSize.zero
+        guard let collectionView else {
+            return .zero
         }
-        var contentSize = collectionView?.bounds.size
 
-        contentSize?.height = CGFloat(columnHeights[0])
-        return contentSize!
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: CGFloat(columnHeights.max() ?? 0)
+        )
     }
     public var frameWidth: Float = 0
     public var itemWidth: Float = 0
@@ -101,8 +97,11 @@ public class NCMediaLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
-        columnCount = delegate.getColumnCount()
-        (delegate as? NCMedia)?.buildMediaPhotoVideo(columnCount: columnCount)
+        let resolvedColumnCount = max(1, delegate.getColumnCount())
+
+        if columnCount != resolvedColumnCount {
+            columnCount = resolvedColumnCount
+        }
 
         // Initialize variables
         headersAttribute.removeAll(keepingCapacity: false)
@@ -126,7 +125,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             */
             let minimumInteritemSpacing: Float = delegate.collectionView(collectionView, layout: self, minimumInteritemSpacingForSection: section)
             let sectionInset: UIEdgeInsets = delegate.collectionView(collectionView, layout: self, insetForSection: section)
-            frameWidth = Float(collectionView.frame.size.width - sectionInset.left - sectionInset.right)
+            frameWidth = Float(collectionView.bounds.width - sectionInset.left - sectionInset.right)
             itemWidth = ((frameWidth - Float(columnCount - 1) * Float(minimumColumnSpacing)) / Float(columnCount))
 
             /*
@@ -139,7 +138,7 @@ public class NCMediaLayout: UICollectionViewLayout {
 
             if headerHeight > 0 {
                 attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: mediaSectionHeader, with: NSIndexPath(item: 0, section: section) as IndexPath)
-                attributes.frame = CGRect(x: headerInset.left, y: CGFloat(top), width: collectionView.frame.size.width - (headerInset.left + headerInset.right), height: CGFloat(headerHeight))
+                attributes.frame = CGRect(x: headerInset.left, y: CGFloat(top), width: collectionView.bounds.width - (headerInset.left + headerInset.right), height: CGFloat(headerHeight))
 
                 headersAttribute[section] = attributes
                 allItemAttributes.append(attributes)
@@ -167,7 +166,9 @@ public class NCMediaLayout: UICollectionViewLayout {
                 if UIView.userInterfaceLayoutDirection(for: collectionView.semanticContentAttribute) == .leftToRight {
                     xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
                 } else {
-                    xOffset = Float(collectionView.frame.width) - Float(sectionInset.right) - Float(itemWidth + minimumColumnSpacing) * Float(columnIndex + 1)
+                    xOffset = Float(collectionView.bounds.width)
+                        - Float(sectionInset.right)
+                        - Float(itemWidth + minimumColumnSpacing) * Float(columnIndex + 1)
                 }
 
                 let yOffset = columnHeights[columnIndex]
@@ -191,13 +192,30 @@ public class NCMediaLayout: UICollectionViewLayout {
             * 4. Section footer
             */
             let columnIndex = longestColumnIndex()
-            top = columnHeights[columnIndex] - minimumInteritemSpacing + Float(sectionInset.bottom)
+            top = columnHeights[columnIndex]
+
+            if itemCount > 0 {
+                top -= minimumInteritemSpacing
+            }
+
+            top += Float(sectionInset.bottom)
+            let footerInset = delegate.collectionView(
+                collectionView,
+                layout: self,
+                insetForFooterInSection: section
+            )
+
             top += Float(footerInset.top)
-            let footerHeight = delegate.collectionView(collectionView, layout: self, heightForFooterInSection: section)
+
+            let footerHeight = delegate.collectionView(
+                collectionView,
+                layout: self,
+                heightForFooterInSection: section
+            )
 
             if footerHeight > 0 {
                 attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: mediaSectionFooter, with: NSIndexPath(item: 0, section: section) as IndexPath)
-                attributes.frame = CGRect(x: footerInset.left, y: CGFloat(top), width: collectionView.frame.size.width - (footerInset.left + footerInset.right), height: CGFloat(footerHeight))
+                attributes.frame = CGRect(x: footerInset.left, y: CGFloat(top), width: collectionView.bounds.width - (footerInset.left + footerInset.right), height: CGFloat(footerHeight))
 
                 footersAttribute[section] = attributes
                 allItemAttributes.append(attributes)
@@ -211,15 +229,24 @@ public class NCMediaLayout: UICollectionViewLayout {
         }
 
         // Build union rects
-        var idx = 0
-        let itemCounts = allItemAttributes.count
+        unionRects.removeAll(keepingCapacity: true)
 
-        while idx < itemCounts {
-            let rect1 = allItemAttributes[idx].frame
-            idx = min(idx + unionSize, itemCounts) - 1
-            let rect2 = allItemAttributes[idx].frame
-            unionRects.append(rect1.union(rect2))
-            idx += 1
+        var startIndex = 0
+
+        while startIndex < allItemAttributes.count {
+            let endIndex = min(
+                startIndex + unionSize,
+                allItemAttributes.count
+            )
+
+            var unionRect = allItemAttributes[startIndex].frame
+
+            for index in (startIndex + 1)..<endIndex {
+                unionRect = unionRect.union(allItemAttributes[index].frame)
+            }
+
+            unionRects.append(unionRect)
+            startIndex = endIndex
         }
     }
 
