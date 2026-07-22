@@ -8,35 +8,79 @@ import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Task {
-            guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath),
-                  let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
+        Task { @MainActor in
+            guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+                return
+            }
 
             if isEditMode {
+                guard let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else {
+                    return
+                }
+
                 if let index = fileSelect.firstIndex(of: compactMetadata.ocId) {
                     fileSelect.remove(at: index)
-                    cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
+                    cell.selected(
+                        false,
+                        color: NCBrandColor.shared.getElement(account: session.account)
+                    )
                 } else {
                     fileSelect.append(compactMetadata.ocId)
-                    cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
+                    cell.selected(
+                        true,
+                        color: NCBrandColor.shared.getElement(account: session.account)
+                    )
                 }
+
                 tabBarSelect.selectCount = fileSelect.count
-            } else if let metadata = await self.database.getMetadataFromOcIdAsync(compactMetadata.ocId) {
-                let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
-                var viewerTransitionSource: NCMediaViewerTransitionSource?
-                let ocIds = dataSource.compactMetadatas.map { $0.ocId }
+                return
+            }
 
-                if let imageView = cell.image,
-                   let image = imageView.image,
-                   let window = imageView.window {
-                    let sourceFrame = imageView.convert(imageView.bounds, to: window)
-                    viewerTransitionSource = NCMediaViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
-                }
+            guard let metadata = await database.getMetadataFromOcIdAsync(compactMetadata.ocId),
+                  dataSource.getCompactMetadata(indexPath: indexPath)?.ocId == compactMetadata.ocId else {
+                return
+            }
 
-                if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: ocIds, image: image, delegate: self, viewerTransitionSource: viewerTransitionSource) {
-                    vc.view.backgroundColor = .clear
-                    self.navigationController?.pushViewController(vc, animated: false)
-                }
+            let image = utility.getImage(
+                ocId: metadata.ocId,
+                etag: metadata.etag,
+                ext: global.previewExt1024,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase
+            )
+
+            var viewerTransitionSource: NCMediaViewerTransitionSource?
+
+            if let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+               let imageView = cell.image,
+               let transitionImage = imageView.image,
+               let window = imageView.window {
+                let sourceFrame = imageView.convert(
+                    imageView.bounds,
+                    to: window
+                )
+
+                viewerTransitionSource = NCMediaViewerTransitionSource(
+                    image: transitionImage,
+                    sourceFrame: sourceFrame,
+                    cornerRadius: imageView.layer.cornerRadius
+                )
+            }
+
+            let ocIds = dataSource.compactMetadatas.map(\.ocId)
+
+            if let viewController = await NCViewer().getViewerController(
+                metadata: metadata,
+                ocIds: ocIds,
+                image: image,
+                delegate: self,
+                viewerTransitionSource: viewerTransitionSource
+            ) {
+                viewController.view.backgroundColor = .clear
+                navigationController?.pushViewController(
+                    viewController,
+                    animated: false
+                )
             }
         }
     }

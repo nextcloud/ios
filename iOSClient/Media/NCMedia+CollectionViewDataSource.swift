@@ -29,9 +29,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.compactMetadatas.count
-        self.numberOfColumns = getColumnCount()
-        return numberOfItemsInSection
+        dataSource.compactMetadatas.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -65,27 +63,33 @@ extension NCMedia: UICollectionViewDataSource {
                 identifier: ocId,
                 priority: .visible
             ) {
-                guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
+                guard var metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                     return
                 }
-                let iconName = metadata.iconName
-                let account = metadata.account
 
-                // Retrieves and stores complete metadata when the media record is a placeholder.
                 if metadata.placeholder {
-                    let result = await self.networking.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                    let result = await self.networking.readFileAsync(
+                        serverUrlFileName: metadata.serverUrlFileName,
+                        account: metadata.account
+                    )
+
                     guard !Task.isCancelled,
                           result.error == .success,
-                          let metadata = result.metadata else {
+                          let hydratedMetadata = result.metadata else {
                         return
                     }
-                    await self.database.addMetadataAsync(metadata)
+
+                    await self.database.addMetadataAsync(hydratedMetadata)
+                    metadata = hydratedMetadata
                 }
+
+                let iconName = metadata.iconName
+                let account = metadata.account
 
                 let result = await NextcloudKit.shared.downloadPreviewAsync(
                     fileId: metadata.fileId,
                     etag: metadata.etag,
-                    account: account
+                    account: metadata.account
                 )
 
                 guard !Task.isCancelled,

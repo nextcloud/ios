@@ -56,16 +56,20 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        if typeLayout == global.mediaLayoutSquare {
-            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        } else {
-            guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return .zero }
+        let defaultSize = CGSize(
+            width: collectionView.bounds.width / CGFloat(columnCount),
+            height: collectionView.bounds.width / CGFloat(columnCount)
+        )
 
-            if compactMetadata.imageSize != CGSize.zero {
-                return compactMetadata.imageSize
-            } else {
-                return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-            }
+        guard typeLayout != global.mediaLayoutSquare else {
+            return defaultSize
         }
+
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath),
+              compactMetadata.imageSize != .zero else {
+            return defaultSize
+        }
+
+        return compactMetadata.imageSize
     }
 }

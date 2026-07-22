@@ -138,7 +138,11 @@ class NCMedia: UIViewController {
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { [weak self] notification in
+            guard let self else {
+                return
+            }
+
             Task { @MainActor in
                 guard let userInfo = notification.userInfo,
                    let account = userInfo["account"] as? String else {
@@ -152,7 +156,11 @@ class NCMedia: UIViewController {
             }
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { [weak self] _ in
+            guard let self else {
+                return
+            }
+
             Task {
                 await self.dataSource.clearCompactMetadatas()
                 self.imageCache.removeAll()
@@ -160,7 +168,11 @@ class NCMedia: UIViewController {
             }
         }
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
+            guard let self else {
+                return
+            }
+
             Task {
                 await self.networkRemoveAll()
             }
@@ -207,10 +219,6 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
     }
 
     func searchNewMedia() {
@@ -262,29 +270,22 @@ class NCMedia: UIViewController {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        setTitleDate()
+
         if !dataSource.compactMetadatas.isEmpty {
-            setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
         }
-        setTitleDate()
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    }
-
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView,willDecelerate decelerate: Bool) {
         if !decelerate {
-            if !decelerate {
-                searchNewMedia()
-            }
+            searchNewMedia()
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         searchNewMedia()
     }
-
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) { }
 }
 
 // MARK: -
