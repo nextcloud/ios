@@ -47,24 +47,40 @@ extension NCMedia {
                     return
                 }
 
-                Task { @MainActor in
-                    guard !Task.isCancelled,
-                          self.session.account == account,
-                          self.view.window != nil,
-                          self.tabBarController?.selectedViewController === self.navigationController else {
+                Task.detached(priority: .userInitiated) { [weak self] in
+                    guard let self else {
                         return
                     }
+
+                    let shouldContinue = await MainActor.run {
+                        self.isViewActived &&
+                        self.session.account == account &&
+                        self.view.window != nil &&
+                        self.tabBarController?.selectedViewController === self.navigationController
+                    }
+
+                    guard shouldContinue,
+                          !Task.isCancelled else {
+                        return
+                    }
+
                     let dataSource = NCMediaDataSource(metadatas: metadatas)
 
-                    guard !Task.isCancelled,
-                          self.session.account == account,
-                          self.view.window != nil,
-                          self.tabBarController?.selectedViewController === self.navigationController else {
+                    guard !Task.isCancelled else {
                         return
                     }
 
-                    self.dataSource = dataSource
-                    self.collectionView.reloadData()
+                    await MainActor.run {
+                        guard self.isViewActived,
+                              self.session.account == account,
+                              self.view.window != nil,
+                              self.tabBarController?.selectedViewController === self.navigationController else {
+                            return
+                        }
+
+                        self.dataSource = dataSource
+                        self.collectionView.reloadData()
+                    }
                 }
             }
         } else {
