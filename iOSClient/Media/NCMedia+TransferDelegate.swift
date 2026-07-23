@@ -10,9 +10,28 @@ import NextcloudKit
 
 extension NCMedia: NCTransferDelegate {
     func transferReloadData(serverUrl: String?) {
-        Task {
-            await self.debouncerSearch.call {
+        Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await self.debouncerLoadDataSource.call {
                 await self.loadDataSource()
+            }
+        }
+
+        searchMediaTask?.cancel()
+
+        searchMediaTask = Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await self.debouncerSearch.call {
+                guard !Task.isCancelled else {
+                    return
+                }
+
                 await self.searchMediaUI()
             }
         }

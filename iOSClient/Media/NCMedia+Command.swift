@@ -184,6 +184,7 @@ extension NCMedia {
         setTitleDate()
     }
 
+    @MainActor
     func updateLeftBarButtonItems(date: UIBarButtonItem?, activity: Bool? = nil) {
         let isActivityVisible = activity ?? searchActivityIndicator.isAnimating
 
@@ -201,6 +202,9 @@ extension NCMedia {
         }
 
         navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
+        if items.isEmpty {
+            collectionView.reloadData()
+        }
     }
 }
 

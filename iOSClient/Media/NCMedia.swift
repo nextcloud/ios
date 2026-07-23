@@ -57,6 +57,9 @@ class NCMedia: UIViewController {
         let deltaY: CGFloat
     }
 
+    var searchMediaTask: Task<Void, Never>?
+    var buildDataSourceTask: Task<Void, Never>?
+
     var searchMediaInProgress: Bool = false {
         didSet {
             guard oldValue != searchMediaInProgress else {
@@ -248,9 +251,16 @@ class NCMedia: UIViewController {
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()
+
         timerSearchNewMedia = Timer.scheduledTimer(withTimeInterval: timeIntervalSearchNewMedia, repeats: false) { [weak self] _ in
-            Task { [weak self] in
-                guard let self else { return }
+            guard let self else {
+                return
+            }
+            self.searchMediaTask?.cancel()
+            self.searchMediaTask = Task { [weak self] in
+                guard let self else {
+                    return
+                }
                 await self.searchMediaUI()
             }
         }

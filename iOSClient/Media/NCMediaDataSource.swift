@@ -46,8 +46,9 @@ extension NCMedia {
                 guard let self else {
                     return
                 }
+                self.buildDataSourceTask?.cancel()
 
-                Task.detached(priority: .userInitiated) { [weak self] in
+                self.buildDataSourceTask = Task(priority: .userInitiated) { [weak self] in
                     guard let self else {
                         return
                     }
@@ -71,7 +72,8 @@ extension NCMedia {
                     }
 
                     await MainActor.run {
-                        guard self.isViewActived,
+                        guard !Task.isCancelled,
+                              self.isViewActived,
                               self.session.account == account,
                               self.view.window != nil,
                               self.tabBarController?.selectedViewController === self.navigationController else {
@@ -79,14 +81,15 @@ extension NCMedia {
                         }
 
                         self.dataSource = dataSource
-                        self.collectionView.reloadData()
+                        self.collectionViewReloadData()
                     }
                 }
             }
         } else {
             await MainActor.run {
                 guard self.isViewActived,
-                      self.session.account == account else {
+                      self.session.account == account,
+                      !Task.isCancelled else {
                     return
                 }
 
@@ -185,13 +188,14 @@ extension NCMedia {
     func searchMediaUI(_ distant: Bool = false) async {
         let shouldContinue = await MainActor.run { () -> Bool in
             guard self.isViewActived,
-                    !self.searchMediaInProgress,
-                    !self.isPinchGestureActive,
-                    !self.showOnlyImages,
-                    !self.showOnlyVideos,
-                    !self.isEditMode else {
+                  !self.searchMediaInProgress,
+                  !self.isPinchGestureActive,
+                  !self.showOnlyImages,
+                  !self.showOnlyVideos,
+                  !self.isEditMode else {
                 return false
             }
+
             self.searchMediaInProgress = true
             return true
         }
@@ -199,12 +203,21 @@ extension NCMedia {
         guard shouldContinue else {
             return
         }
-        let account = self.session.account
 
+        await searchMediaUIInternal(distant)
+
+        await MainActor.run {
+            self.searchMediaInProgress = false
+        }
+    }
+
+    private func searchMediaUIInternal(_ distant: Bool) async {
+        guard !Task.isCancelled else {
+            return
+        }
+
+        let account = self.session.account
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
-            await MainActor.run {
-                self.searchMediaInProgress = false
-            }
             return
         }
 
@@ -270,10 +283,9 @@ extension NCMedia {
             }
         }
 
-        guard self.session.account == account else {
-            await MainActor.run {
-                self.searchMediaInProgress = false
-            }
+        guard !Task.isCancelled,
+              self.isViewActived,
+              self.session.account == account else {
             return
         }
 
@@ -284,27 +296,28 @@ extension NCMedia {
                                              lastDate: lastDateNew,
                                              mediaPath: tblAccount.mediaPath,
                                              account: account) {
-                Task {
-                    guard self.session.account == account else {
+                Task { [weak self] in
+                    guard let self else {
                         return
                     }
+
                     await self.debouncerLoadDataSource.call {
+                        guard self.isViewActived,
+                              self.session.account == account else {
+                            return
+                        }
+
                         await self.loadDataSource()
                     }
                 }
             }
         }
-        guard self.session.account == account else {
-            await MainActor.run {
-                self.searchMediaInProgress = false
-            }
-            return
-        }
 
-        guard let firstDate, let lastDate else {
-            Task { @MainActor in
-                self.searchMediaInProgress = false
-            }
+        guard !Task.isCancelled,
+              self.isViewActived,
+              self.session.account == account,
+              let firstDate,
+              let lastDate else {
             return
         }
 
@@ -314,25 +327,21 @@ extension NCMedia {
                                       lastDate: lastDate,
                                       mediaPath: tblAccount.mediaPath,
                                       account: account) {
-            Task {
-                guard self.session.account == account else {
+            Task { [weak self] in
+                guard let self else {
                     return
                 }
 
                 await self.debouncerLoadDataSource.call {
-                    guard self.session.account == account else {
+                    guard self.isViewActived,
+                          self.session.account == account else {
                         return
                     }
-                    await self.debouncerLoadDataSource.call {
-                        await self.loadDataSource()
-                    }
+
+                    await self.loadDataSource()
                 }
             }
-        } finish: {
-            Task { @MainActor in
-                self.searchMediaInProgress = false
-            }
-        }
+        } finish: { }
     }
 
     /// Searches the server for new media within the given date range,
@@ -362,17 +371,23 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                guard self.session.account == account else {
+                guard !Task.isCancelled,
+                      self.session.account == account else {
                     return
                 }
-                await self.updateMediaMetadatas(files: files,
-                                                firstDate: firstDate as NSDate,
-                                                lastDate: lastDate as NSDate,
-                                                mediaPath: mediaPath,
-                                                account: account) {
-                    guard self.session.account == account else {
+
+                await self.updateMediaMetadatas(
+                    files: files,
+                    firstDate: firstDate as NSDate,
+                    lastDate: lastDate as NSDate,
+                    mediaPath: mediaPath,
+                    account: account
+                ) {
+                    guard !Task.isCancelled,
+                          self.session.account == account else {
                         return
                     }
+
                     if self.isViewActived {
                         update()
                     }
@@ -395,7 +410,7 @@ extension NCMedia {
             account: account,
             paginate: true,
             limit: 1000000) { task in
-                Task.detached {
+                Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                         account: account,
                         name: "verifyNetworkMedia"
@@ -405,20 +420,26 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                guard self.session.account == account else {
+                guard !Task.isCancelled,
+                      self.session.account == account else {
                     return
                 }
+
                 let pageFirstDate = (files.first?.date as? NSDate) ?? firstDate as NSDate
                 let pageLastDate = (files.last?.date as? NSDate) ?? lastDate as NSDate
 
-                await self.updateMediaMetadatas(files: files,
-                                                firstDate: pageFirstDate,
-                                                lastDate: pageLastDate,
-                                                mediaPath: mediaPath,
-                                                account: account) {
-                    guard self.session.account == account else {
+                await self.updateMediaMetadatas(
+                    files: files,
+                    firstDate: pageFirstDate,
+                    lastDate: pageLastDate,
+                    mediaPath: mediaPath,
+                    account: account
+                ) {
+                    guard !Task.isCancelled,
+                          self.session.account == account else {
                         return
                     }
+
                     if self.isViewActived {
                         update()
                     }
@@ -434,7 +455,8 @@ extension NCMedia {
                                       mediaPath: String,
                                       account: String,
                                       update: @escaping () -> Void) async {
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
         // DB
@@ -450,12 +472,14 @@ extension NCMedia {
             predicate: predicate,
             sortedByKeyPath: "date",
             ascending: false) ?? []
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
         let results = await self.database.syncPlaceholderMetadatasAsync(files: files,
                                                                         metadatas: metadatas)
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
         // DELETE
@@ -472,22 +496,41 @@ extension NCMedia {
         }
 
         for batchStart in stride(from: 0, to: deletedMetadatas.count, by: maximumConcurrentChecks) {
+            guard !Task.isCancelled,
+                  self.session.account == account else {
+                return
+            }
+
             let batchEnd = min(batchStart + maximumConcurrentChecks, deletedMetadatas.count)
             let batch = deletedMetadatas[batchStart..<batchEnd]
 
             let ocIdsToDelete = await withTaskGroup(of: String?.self, returning: Set<String>.self) { group in
                 for metadata in batch {
                     group.addTask {
+                        guard !Task.isCancelled else {
+                            return nil
+                        }
+
                         let existsResult = await self.networking.fileExists(
                             serverUrlFileName: metadata.serverUrlFileName,
                             account: metadata.account
                         )
+
+                        guard !Task.isCancelled else {
+                            return nil
+                        }
+
                         return existsResult.errorCode == 404 ? metadata.ocId : nil
                     }
                 }
 
                 var ocIds = Set<String>()
                 for await ocId in group {
+                    guard !Task.isCancelled else {
+                        group.cancelAll()
+                        return ocIds
+                    }
+
                     if let ocId {
                         ocIds.insert(ocId)
                     }
@@ -495,13 +538,15 @@ extension NCMedia {
                 return ocIds
             }
 
+            guard !Task.isCancelled,
+                  self.session.account == account else {
+                return
+            }
+
             guard !ocIdsToDelete.isEmpty else {
                 continue
             }
 
-            guard self.session.account == account else {
-                return
-            }
             await self.database.deleteMetadatasAsync(ocIds: Array(ocIdsToDelete))
             if self.isViewActived,
                self.session.account == account {
