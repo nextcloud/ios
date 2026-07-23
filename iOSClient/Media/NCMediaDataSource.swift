@@ -29,74 +29,67 @@ extension NCMedia {
             session: self.session,
             mediaPath: tblAccount.mediaPath,
             showOnlyImages: self.showOnlyImages,
-            showOnlyVideos: self.showOnlyVideos)
+            showOnlyVideos: self.showOnlyVideos
+        )
 
         guard !Task.isCancelled,
               self.session.account == account else {
             return
         }
 
-        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "date", ascending: false) {
-            guard !Task.isCancelled,
-                  self.session.account == account else {
+        let compactMetadatas = await self.database.getMediaCompactMetadatasAsync(
+            predicate: mediaPredicate,
+            sortedByKeyPath: "date",
+            ascending: false
+        )
+
+        guard !Task.isCancelled,
+              self.session.account == account else {
+            return
+        }
+
+        self.buildDataSourceTask?.cancel()
+
+        self.buildDataSourceTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else {
                 return
             }
 
-            self.database.filterAndNormalizeLivePhotos(from: metadatas) { [weak self] metadatas in
-                guard let self else {
-                    return
-                }
-                self.buildDataSourceTask?.cancel()
-
-                self.buildDataSourceTask = Task(priority: .userInitiated) { [weak self] in
-                    guard let self else {
-                        return
-                    }
-
-                    let shouldContinue = await MainActor.run {
-                        self.isViewActived &&
-                        self.session.account == account &&
-                        self.view.window != nil &&
-                        self.tabBarController?.selectedViewController === self.navigationController
-                    }
-
-                    guard shouldContinue,
-                          !Task.isCancelled else {
-                        return
-                    }
-
-                    let dataSource = NCMediaDataSource(metadatas: metadatas)
-
-                    guard !Task.isCancelled else {
-                        return
-                    }
-
-                    await MainActor.run {
-                        guard !Task.isCancelled,
-                              self.isViewActived,
-                              self.session.account == account,
-                              self.view.window != nil,
-                              self.tabBarController?.selectedViewController === self.navigationController else {
-                            return
-                        }
-
-                        self.dataSource = dataSource
-                        self.collectionViewReloadData()
-                    }
-                }
+            let shouldContinue = await MainActor.run {
+                self.isViewActived &&
+                self.session.account == account &&
+                self.view.window != nil &&
+                self.tabBarController?.selectedViewController === self.navigationController
             }
-        } else {
+
+            guard shouldContinue,
+                  !Task.isCancelled else {
+                return
+            }
+
+            let dataSource = NCMediaDataSource(
+                compactMetadatas: compactMetadatas
+            )
+
+            guard !Task.isCancelled else {
+                return
+            }
+
             await MainActor.run {
-                guard self.isViewActived,
+                guard !Task.isCancelled,
+                      self.isViewActived,
                       self.session.account == account,
-                      !Task.isCancelled else {
+                      self.view.window != nil,
+                      self.tabBarController?.selectedViewController === self.navigationController else {
                     return
                 }
 
-                self.dataSource.clearCompactMetadatas()
+                self.dataSource = dataSource
                 self.collectionViewReloadData()
             }
         }
+
+        await self.buildDataSourceTask?.value
     }
 
     @MainActor
@@ -568,13 +561,13 @@ public class NCMediaDataSource: NSObject {
         let isVideo: Bool
         let ocId: String
 
-        init(date: Date,
-             etag: String,
-             imageSize: CGSize,
-             isImage: Bool,
-             isLivePhoto: Bool,
-             isVideo: Bool,
-             ocId: String) {
+        public init(date: Date,
+                    etag: String,
+                    imageSize: CGSize,
+                    isImage: Bool,
+                    isLivePhoto: Bool,
+                    isVideo: Bool,
+                    ocId: String) {
             self.date = date
             self.etag = etag
             self.imageSize = imageSize
@@ -601,22 +594,24 @@ public class NCMediaDataSource: NSObject {
 
     override init() { super.init() }
 
-    init(metadatas: [tableMetadata]) {
+    init(compactMetadatas: [NCCompactMetadata]) {
         super.init()
 
-        let result = makeDataSource(from: metadatas)
+        let result = makeDataSource(from: compactMetadatas)
 
         self.compactMetadatas = result.compactMetadatas
         self.sections = result.sections
     }
 
-    private func makeDataSource(from metadatas: [tableMetadata]) -> (compactMetadatas: [NCCompactMetadata], sections: [NCMediaSection]) {
-        guard !metadatas.isEmpty else {
+    private func makeDataSource(
+        from compactMetadatas: [NCCompactMetadata]
+    ) -> (
+        compactMetadatas: [NCCompactMetadata],
+        sections: [NCMediaSection]
+    ) {
+        guard !compactMetadatas.isEmpty else {
             return ([], [])
         }
-
-        var compactMetadatas: [NCCompactMetadata] = []
-        compactMetadatas.reserveCapacity(metadatas.count)
 
         var sections: [NCMediaSection] = []
         sections.reserveCapacity(24)
@@ -624,11 +619,7 @@ public class NCMediaDataSource: NSObject {
         var currentYearMonth: NCYearMonth?
         var currentSectionMetadatas: [NCCompactMetadata] = []
 
-        for metadata in metadatas {
-            let compactMetadata = getCompactMetadataFromMetadata(metadata)
-
-            compactMetadatas.append(compactMetadata)
-
+        for compactMetadata in compactMetadatas {
             guard let yearMonth = NCYearMonth(date: compactMetadata.date) else {
                 continue
             }
@@ -661,18 +652,10 @@ public class NCMediaDataSource: NSObject {
             )
         }
 
-        return (compactMetadatas, sections)
-    }
-
-    private func getCompactMetadataFromMetadata(_ metadata: tableMetadata) -> NCCompactMetadata {
-        let date = metadata.date as Date
-        return NCCompactMetadata(date: date,
-                                 etag: metadata.etag,
-                                 imageSize: CGSize(width: metadata.width, height: metadata.height),
-                                 isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
-                                 isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                                 isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
-                                 ocId: metadata.ocId)
+        return (
+            compactMetadatas,
+            sections
+        )
     }
 
     // MARK: -
