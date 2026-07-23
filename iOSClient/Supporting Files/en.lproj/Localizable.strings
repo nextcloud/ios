@@ -856,3 +856,12 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_certificate_valid_until_" = "Valid until";
 "_certificate_" = "Certificate";
 "_certificate_renew_" = "Renew certificate";
+
+// Share details — Governance
+"_governance_"                      = "Governance";
+"_sensitivity_label_"               = "Sensitivity label";
+"_file_retention_"                  = "File retention";
+"_legal_hold_"                      = "Legal hold";
+"_none_"                            = "None";
+"_sections_"                        = "Sections";
+"_governance_labels_load_error_"    = "Governance labels could not be loaded.";
