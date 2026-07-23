@@ -559,11 +559,64 @@ public class NCMediaDataSource: NSObject {
     init(metadatas: [tableMetadata]) {
         super.init()
 
-        self.compactMetadatas = metadatas.map {
-            getCompactMetadataFromMetadata($0)
+        let result = makeDataSource(from: metadatas)
+
+        self.compactMetadatas = result.compactMetadatas
+        self.sections = result.sections
+    }
+
+    private func makeDataSource(from metadatas: [tableMetadata]) -> (compactMetadatas: [NCCompactMetadata], sections: [NCMediaSection]) {
+        guard !metadatas.isEmpty else {
+            return ([], [])
         }
 
-        self.sections = makeSections(from: compactMetadatas)
+        var compactMetadatas: [NCCompactMetadata] = []
+        compactMetadatas.reserveCapacity(metadatas.count)
+
+        var sections: [NCMediaSection] = []
+        sections.reserveCapacity(24)
+
+        var currentYearMonth: NCYearMonth?
+        var currentSectionMetadatas: [NCCompactMetadata] = []
+
+        for metadata in metadatas {
+            let compactMetadata = getCompactMetadataFromMetadata(metadata)
+
+            compactMetadatas.append(compactMetadata)
+
+            guard let yearMonth = NCYearMonth(date: compactMetadata.date) else {
+                continue
+            }
+
+            if currentYearMonth == yearMonth {
+                currentSectionMetadatas.append(compactMetadata)
+            } else {
+                if let currentYearMonth,
+                   !currentSectionMetadatas.isEmpty {
+                    sections.append(
+                        NCMediaSection(
+                            yearMonth: currentYearMonth,
+                            compactMetadatas: currentSectionMetadatas
+                        )
+                    )
+                }
+
+                currentYearMonth = yearMonth
+                currentSectionMetadatas = [compactMetadata]
+            }
+        }
+
+        if let currentYearMonth,
+           !currentSectionMetadatas.isEmpty {
+            sections.append(
+                NCMediaSection(
+                    yearMonth: currentYearMonth,
+                    compactMetadatas: currentSectionMetadatas
+                )
+            )
+        }
+
+        return (compactMetadatas, sections)
     }
 
     private func getCompactMetadataFromMetadata(_ metadata: tableMetadata) -> NCCompactMetadata {
@@ -650,13 +703,25 @@ public class NCMediaDataSource: NSObject {
     }
 
     func removeCompactMetadata(_ ocIds: [String]) {
+        guard !ocIds.isEmpty else {
+            return
+        }
+
         let ocIds = Set(ocIds)
 
         compactMetadatas.removeAll { metadata in
             ocIds.contains(metadata.ocId)
         }
 
-        sections = makeSections(from: compactMetadatas)
+        sections = sections.compactMap { section in
+            var section = section
+
+            section.compactMetadatas.removeAll { metadata in
+                ocIds.contains(metadata.ocId)
+            }
+
+            return section.compactMetadatas.isEmpty ? nil : section
+        }
     }
 
     func firstIndexPath(year: Int, month: Int) -> IndexPath? {
@@ -679,51 +744,6 @@ public class NCMediaDataSource: NSObject {
             item: 0,
             section: sectionIndex
         )
-    }
-
-    private func makeSections(from metadatas: [NCCompactMetadata]) -> [NCMediaSection] {
-        guard !metadatas.isEmpty else {
-            return []
-        }
-
-        var sections: [NCMediaSection] = []
-        sections.reserveCapacity(24)
-
-        var currentYearMonth: NCYearMonth?
-        var currentMetadatas: [NCCompactMetadata] = []
-
-        for metadata in metadatas {
-            guard let yearMonth = NCYearMonth(date: metadata.date) else {
-                continue
-            }
-
-            if yearMonth == currentYearMonth {
-                currentMetadatas.append(metadata)
-            } else {
-                if let currentYearMonth, !currentMetadatas.isEmpty {
-                    sections.append(
-                        NCMediaSection(
-                            yearMonth: currentYearMonth,
-                            compactMetadatas: currentMetadatas
-                        )
-                    )
-                }
-
-                currentYearMonth = yearMonth
-                currentMetadatas = [metadata]
-            }
-        }
-
-        if let currentYearMonth, !currentMetadatas.isEmpty {
-            sections.append(
-                NCMediaSection(
-                    yearMonth: currentYearMonth,
-                    compactMetadatas: currentMetadatas
-                )
-            )
-        }
-
-        return sections
     }
 }
 
