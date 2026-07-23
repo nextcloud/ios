@@ -58,6 +58,7 @@ struct NCGovernanceLabelSelectorView: View {
                     Button(NSLocalizedString("_cancel_", comment: ""), systemImage: "xmark") {
                         dismiss()
                     }
+                    .tint(Color.primary)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
@@ -69,6 +70,7 @@ struct NCGovernanceLabelSelectorView: View {
                             dismiss()
                         }
                     }
+                    .buttonStyle(.borderedProminent)
                 }
             }
             .overlay {
