@@ -40,7 +40,6 @@ final class NCImageCache: @unchecked Sendable {
 
 #if !EXTENSION
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
-            /*
             Task {
                 guard let controller = self.controller as? NCMainTabBarController,
                       !self.isLoadingCache else {
@@ -56,43 +55,38 @@ final class NCImageCache: @unchecked Sendable {
                     return
                 }
 
-                let predicate = self.getMediaPredicate(session: session,
-                                                       mediaPath: tblAccount.mediaPath,
-                                                       showOnlyImages: false,
-                                                       showOnlyVideos: false)
-                guard let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                                             sortedByKeyPath: "date",
-                                                                             limit: self.countLimit) else {
-                    self.isLoadingCache = false
-                    return
-                }
+                let mediaPredicate = self.getMediaPredicate(session: session,
+                                                            mediaPath: tblAccount.mediaPath,
+                                                            showOnlyImages: false,
+                                                            showOnlyVideos: false)
 
-                self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
-                    autoreleasepool {
-                        self.cache.removeAllObjects()
-                        for metadata in metadatas {
-                            guard !isAppInBackground else {
-                                self.cache.removeAllObjects()
-                                break
-                            }
+                let compactMetadatas = await self.database.getMediaCompactMetadatasAsync(
+                    predicate: mediaPredicate,
+                    sortedByKeyPath: "date",
+                    ascending: false
+                )
 
-                            if let image = self.utility.getImage(ocId: metadata.ocId,
-                                                                 etag: metadata.etag,
-                                                                 ext: self.global.previewExt256,
-                                                                 userId: metadata.userId,
-                                                                 urlBase: metadata.urlBase) {
-                                self.addImageCache(ocId: metadata.ocId,
-                                                   etag: metadata.etag,
-                                                   image: image,
-                                                   ext: self.global.previewExt256)
-                            }
+                autoreleasepool {
+                    self.cache.removeAllObjects()
+                    for compactMetadata in compactMetadatas {
+                        guard !isAppInBackground else {
+                            self.cache.removeAllObjects()
+                            break
                         }
-
-                        self.isLoadingCache = false
+                        if let image = self.utility.getImage(ocId: compactMetadata.ocId,
+                                                             etag: compactMetadata.etag,
+                                                             ext: self.global.previewExt256,
+                                                             userId: session.userId,
+                                                             urlBase: session.urlBase) {
+                            self.addImageCache(ocId: compactMetadata.ocId,
+                                               etag: compactMetadata.etag,
+                                               image: image,
+                                               ext: self.global.previewExt256)
+                        }
                     }
+                    self.isLoadingCache = false
                 }
             }
-            */
         }
 #endif
     }
