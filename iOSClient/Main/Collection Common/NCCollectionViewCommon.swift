@@ -92,7 +92,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var currentScale: CGFloat = 1.0
     internal var maxColumns: Int {
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 44)
+        let column = Int(screenWidth / 55)
 
         return column
     }

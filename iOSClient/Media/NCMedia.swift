@@ -40,7 +40,7 @@ class NCMedia: UIViewController {
     var currentScale: CGFloat = 1.0
     var maxColumns: Int {
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 44)
+        let column = Int(screenWidth / 55)
 
         return column
     }
@@ -321,7 +321,6 @@ class NCMedia: UIViewController {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
         case 4...5: pointSize = 25
-        case 6...Int(maxColumns): pointSize = 20
         default: pointSize = 20
         }
         if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
