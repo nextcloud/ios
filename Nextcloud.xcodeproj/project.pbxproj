@@ -50,6 +50,9 @@
 		AAFC0D0B2F9AA10000F0A001 /* NCAutoUploadCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D0A2F9AA10000F0A001 /* NCAutoUploadCounter.swift */; };
 		AB6000012F60000100FE2775 /* NCTagEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000002F60000100FE2775 /* NCTagEditorModel.swift */; };
 		AB6000032F60000200FE2775 /* NCTagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000022F60000200FE2775 /* NCTagEditorView.swift */; };
+		AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000012F70000100FE2776 /* NCShareDetailsView.swift */; };
+		AB7000042F70000100FE2776 /* NCShareDetailsGovernanceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000032F70000100FE2776 /* NCShareDetailsGovernanceModel.swift */; };
+		AB7000062F70000100FE2776 /* NCGovernanceLabelSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000052F70000100FE2776 /* NCGovernanceLabelSelectorView.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF22B206277B4E4C00DAB0CC /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
@@ -134,7 +137,6 @@
 		F37208A62BAB63EE006B5430 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A52BAB63EE006B5430 /* SwiftRichString */; };
 		F37208AA2BAB63EE006B5430 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208A92BAB63EE006B5430 /* MarkdownKit */; };
 		F37208B22BAB63EF006B5430 /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B12BAB63EF006B5430 /* DropDown */; };
-		F37208B42BAB63EF006B5430 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B32BAB63EF006B5430 /* Parchment */; };
 		F37208B62BAB63EF006B5430 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B52BAB63EF006B5430 /* EasyTipView */; };
 		F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B72BAB63EF006B5430 /* NextcloudKit */; };
 		F37208BA2BAB63EF006B5430 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F37208B92BAB63EF006B5430 /* TLPhotoPicker */; };
@@ -755,7 +757,6 @@
 		F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
-		F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7BB7E4627A18C56009B9F29 /* Parchment */; };
 		F7BC287E26663F6C004D46C5 /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */; };
 		F7BD0A002C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BD09FF2C468925003A4A6D /* NCMedia+CollectionViewDataSource.swift */; };
@@ -1294,6 +1295,9 @@
 		AAFC0D0A2F9AA10000F0A001 /* NCAutoUploadCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAutoUploadCounter.swift; sourceTree = "<group>"; };
 		AB6000002F60000100FE2775 /* NCTagEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorModel.swift; sourceTree = "<group>"; };
 		AB6000022F60000200FE2775 /* NCTagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTagEditorView.swift; sourceTree = "<group>"; };
+		AB7000012F70000100FE2776 /* NCShareDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareDetailsView.swift; sourceTree = "<group>"; };
+		AB7000032F70000100FE2776 /* NCShareDetailsGovernanceModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShareDetailsGovernanceModel.swift; sourceTree = "<group>"; };
+		AB7000052F70000100FE2776 /* NCGovernanceLabelSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCGovernanceLabelSelectorView.swift; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
 		AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+DataSource.swift"; sourceTree = "<group>"; };
@@ -1998,7 +2002,6 @@
 				F37208B22BAB63EF006B5430 /* DropDown in Frameworks */,
 				F37208BC2BAB63EF006B5430 /* OpenSSL in Frameworks */,
 				F37208B82BAB63EF006B5430 /* NextcloudKit in Frameworks */,
-				F37208B42BAB63EF006B5430 /* Parchment in Frameworks */,
 				F37208BE2BAB63F0006B5430 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2071,7 +2074,6 @@
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
-				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */,
@@ -2506,6 +2508,9 @@
 				AF2D7C7D2742559100ADF566 /* NCShareUserCell.swift */,
 				AF93471727E2361E002537EE /* NCShareHeader.xib */,
 				AF93471527E2361E002537EE /* NCShareHeader.swift */,
+				AB7000012F70000100FE2776 /* NCShareDetailsView.swift */,
+				AB7000032F70000100FE2776 /* NCShareDetailsGovernanceModel.swift */,
+				AB7000052F70000100FE2776 /* NCGovernanceLabelSelectorView.swift */,
 				AFCE353827E5DE0400FEA6C2 /* Shareable.swift */,
 				AA8E03D92D2ED83300E7E89C /* TransientShare.swift */,
 			);
@@ -3738,7 +3743,6 @@
 				F37208A52BAB63EE006B5430 /* SwiftRichString */,
 				F37208A92BAB63EE006B5430 /* MarkdownKit */,
 				F37208B12BAB63EF006B5430 /* DropDown */,
-				F37208B32BAB63EF006B5430 /* Parchment */,
 				F37208B52BAB63EF006B5430 /* EasyTipView */,
 				F37208B72BAB63EF006B5430 /* NextcloudKit */,
 				F37208B92BAB63EF006B5430 /* TLPhotoPicker */,
@@ -3907,7 +3911,6 @@
 				F788ECC6263AAAFA00ADC67F /* MarkdownKit */,
 				F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */,
 				F76DA968277B77EA0082465B /* DropDown */,
-				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
 				F72AD70C28C24B93006CB92D /* NextcloudKit */,
 				F734B06528E75C0100E180D5 /* TLPhotoPicker */,
@@ -4110,7 +4113,6 @@
 				F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
-				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
 				F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */,
 				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
@@ -4815,6 +4817,9 @@
 				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
+				AB7000022F70000100FE2776 /* NCShareDetailsView.swift in Sources */,
+				AB7000042F70000100FE2776 /* NCShareDetailsGovernanceModel.swift in Sources */,
+				AB7000062F70000100FE2776 /* NCGovernanceLabelSelectorView.swift in Sources */,
 				F7C687E92D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F74D50352C9855A000BBBF4C /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */,
 				F7802B322BD5584F00D74270 /* NCMedia+DragDrop.swift in Sources */,
@@ -6635,14 +6640,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rechsteiner/Parchment";
-			requirement = {
-				kind = exactVersion;
-				version = 3.3.0;
-			};
-		};
 		F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tylerjonesio/vlckit-spm";
@@ -6762,11 +6759,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */;
 			productName = DropDown;
-		};
-		F37208B32BAB63EF006B5430 /* Parchment */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
-			productName = Parchment;
 		};
 		F37208B52BAB63EF006B5430 /* EasyTipView */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -7017,11 +7009,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7BB7E4627A18C56009B9F29 /* Parchment */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */;
-			productName = Parchment;
 		};
 		F7C55C9E2FB5B83A004A974F /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
