@@ -209,21 +209,39 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         if tabBarSelect == nil {
-            tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
+            tabBarSelect = NCMediaSelectTabBar(
+                controller: self.tabBarController,
+                viewController: self,
+                delegate: self
+            )
         }
 
-        Task {
-            await (self.navigationController as? NCMediaNavigationController)?.setNavigationRightItems()
+        Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await (self.navigationController as? NCMediaNavigationController)?
+                .setNavigationRightItems()
+
             if #unavailable(iOS 26.0) {
-                (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
+                (self.navigationController as? NCMediaNavigationController)?
+                    .updateRightBarButtonsTint(to: .white)
             }
         }
 
-        Task {
-            await networking.transferDispatcher.addDelegate(self)
-            await self.debouncerLoadDataSource.call {
-                await self.loadDataSource()
+        Task { [weak self] in
+            guard let self else {
+                return
             }
+
+            await self.networking.transferDispatcher.addDelegate(self)
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            await self.loadDataSource()
         }
     }
 
@@ -238,15 +256,29 @@ class NCMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        Task {
-            await debouncerSearch.cancel()
-            await debouncerLoadDataSource.cancel()
+        searchMediaTask?.cancel()
+        searchMediaTask = nil
 
-            await networking.transferDispatcher.removeDelegate(self)
-            await networkRemoveAll()
+        buildDataSourceTask?.cancel()
+        buildDataSourceTask = nil
+
+        Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await self.debouncerSearch.cancel()
+            await self.debouncerLoadDataSource.cancel()
+
+            await self.networking.transferDispatcher.removeDelegate(self)
+            await self.networkRemoveAll()
         }
 
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
     }
 
     func searchNewMedia() {
