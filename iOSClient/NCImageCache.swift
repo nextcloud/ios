@@ -40,6 +40,7 @@ final class NCImageCache: @unchecked Sendable {
 
 #if !EXTENSION
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
+            /*
             Task {
                 guard let controller = self.controller as? NCMainTabBarController,
                       !self.isLoadingCache else {
@@ -91,6 +92,7 @@ final class NCImageCache: @unchecked Sendable {
                     }
                 }
             }
+            */
         }
 #endif
     }
