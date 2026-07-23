@@ -24,7 +24,6 @@ class NCMedia: UIViewController {
     var dataSource = NCMediaDataSource()
     var isEditMode = false
     var fileSelect: [String] = []
-    var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     var showOnlyImages = false
@@ -58,12 +57,35 @@ class NCMedia: UIViewController {
         let deltaY: CGFloat
     }
 
+    var searchMediaInProgress: Bool = false {
+        didSet {
+            guard oldValue != searchMediaInProgress else {
+                return
+            }
+
+            updateLeftBarButtonItems(
+                date: navigationItem.leftBarButtonItems?.first === buttonDateBarItem ? buttonDateBarItem : nil,
+                activity: searchMediaInProgress
+            )
+        }
+    }
+
     internal lazy var buttonDateBarItem = UIBarButtonItem(
         title: nil,
         style: .plain,
         target: self,
         action: #selector(presentMediaDatePicker)
     )
+
+    internal lazy var searchActivityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
+
+    internal lazy var searchActivityBarButtonItem: UIBarButtonItem = {
+        UIBarButtonItem(customView: searchActivityIndicator)
+    }()
 
     @MainActor
     var session: NCSession.Session {

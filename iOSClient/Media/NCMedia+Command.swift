@@ -44,7 +44,7 @@ extension NCMedia {
               let lastIndexPath = visibleIndexPaths.last,
               let firstMetadata = dataSource.getCompactMetadata(indexPath: firstIndexPath),
               let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
-            navigationItem.leftBarButtonItem = nil
+            updateLeftBarButtonItems(date: nil)
             return
         }
 
@@ -100,7 +100,7 @@ extension NCMedia {
         buttonDateBarItem.title = title
 
         if navigationItem.leftBarButtonItem !== buttonDateBarItem {
-            navigationItem.leftBarButtonItem = buttonDateBarItem
+            updateLeftBarButtonItems(date: buttonDateBarItem)
         }
     }
 
@@ -182,6 +182,25 @@ extension NCMedia {
 
         collectionView.layoutIfNeeded()
         setTitleDate()
+    }
+
+    func updateLeftBarButtonItems(date: UIBarButtonItem?, activity: Bool? = nil) {
+        let isActivityVisible = activity ?? searchActivityIndicator.isAnimating
+
+        var items: [UIBarButtonItem] = []
+
+        if let date {
+            items.append(date)
+        }
+
+        if isActivityVisible {
+            searchActivityIndicator.startAnimating()
+            items.append(searchActivityBarButtonItem)
+        } else {
+            searchActivityIndicator.stopAnimating()
+        }
+
+        navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
     }
 }
 
