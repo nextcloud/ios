@@ -77,6 +77,11 @@ public class NCMediaLayout: UICollectionViewLayout {
     }
     public var frameWidth: Float = 0
     public var itemWidth: Float = 0
+    public var overlaysSectionHeader = false {
+        didSet {
+            invalidateIfNotEqual(oldValue, newValue: overlaysSectionHeader)
+        }
+    }
 
     // MARK: - Private Properties
     private weak var delegate: NCMediaLayoutDelegate? {
@@ -131,22 +136,49 @@ public class NCMediaLayout: UICollectionViewLayout {
             /*
             * 2. Section header
             */
-            let headerHeight: Float = delegate.collectionView(collectionView, layout: self, heightForHeaderInSection: section)
-            let headerInset: UIEdgeInsets = delegate.collectionView(collectionView, layout: self, insetForHeaderInSection: section)
+            let headerHeight = delegate.collectionView(
+                collectionView,
+                layout: self,
+                heightForHeaderInSection: section
+            )
 
-            top += Float(headerInset.top)
+            let headerInset = delegate.collectionView(
+                collectionView,
+                layout: self,
+                insetForHeaderInSection: section
+            )
 
             if headerHeight > 0 {
-                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: mediaSectionHeader, with: NSIndexPath(item: 0, section: section) as IndexPath)
-                attributes.frame = CGRect(x: headerInset.left, y: CGFloat(top), width: collectionView.bounds.width - (headerInset.left + headerInset.right), height: CGFloat(headerHeight))
+                if !overlaysSectionHeader {
+                    top += Float(headerInset.top)
+                }
+
+                attributes = UICollectionViewLayoutAttributes(
+                    forSupplementaryViewOfKind: mediaSectionHeader,
+                    with: IndexPath(item: 0, section: section)
+                )
+
+                attributes.frame = CGRect(
+                    x: headerInset.left,
+                    y: CGFloat(top + (overlaysSectionHeader ? Float(headerInset.top) : 0)),
+                    width: collectionView.bounds.width - headerInset.left - headerInset.right,
+                    height: CGFloat(headerHeight)
+                )
+
+                if overlaysSectionHeader {
+                    attributes.zIndex = 1_000
+                } else {
+                    top = Float(attributes.frame.maxY) + Float(headerInset.bottom)
+                }
 
                 headersAttribute[section] = attributes
                 allItemAttributes.append(attributes)
-
-                top = Float(attributes.frame.maxY) + Float(headerInset.bottom)
             }
 
-            top += Float(sectionInset.top)
+            if !overlaysSectionHeader {
+                top += Float(sectionInset.top)
+            }
+
             for idx in 0..<columnCount {
                 columnHeights[idx] = top
             }
