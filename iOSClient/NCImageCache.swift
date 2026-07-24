@@ -4,44 +4,51 @@
 
 import Foundation
 import UIKit
-import NextcloudKit
-import RealmSwift
 
 final class NCImageCache: @unchecked Sendable {
     static let shared = NCImageCache()
 
     private let utility = NCUtility()
-    private let utilityFileSystem = NCUtilityFileSystem()
-    private let global = NCGlobal.shared
-    private let database = NCManageDatabase.shared
     private let cache = NSCache<NSString, UIImage>()
 
-    public var countLimit: Int = 1500 {
+    public var maximumCachedImages: Int = 1500 {
         didSet {
-            cache.countLimit = countLimit
+            cache.countLimit = maximumCachedImages
         }
     }
 
-    init() {
-        cache.countLimit = countLimit
+    private init() {
+        cache.countLimit = maximumCachedImages
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil) { _ in
-            self.cache.removeAllObjects()
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            self?.cache.removeAllObjects()
         }
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.cache.removeAllObjects()
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            self?.cache.removeAllObjects()
         }
+    }
+
+    private func cacheKey(ocId: String, etag: String, ext: String) -> NSString {
+        "\(ocId)\(etag)\(ext)" as NSString
     }
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard let image = UIImage(data: data) else { return }
 
-        cache.setObject(image, forKey: (ocId + etag + ext) as NSString)
+        cache.setObject(image, forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
-        cache.setObject(image, forKey: (ocId + etag + ext) as NSString)
+        cache.setObject(image, forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
     }
 
     func addImageCache(image: UIImage, key: String) {
@@ -49,17 +56,17 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        return cache.object(forKey: (ocId + etag + ext) as NSString)
+        return cache.object(forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
     }
 
     func getImageCache(key: String) -> UIImage? {
         return cache.object(forKey: key as NSString)
     }
 
-    func removeImageCache(ocIdPlusEtag: String) {
-        cache.removeObject(forKey: (ocIdPlusEtag + global.previewExt256) as NSString)
-        cache.removeObject(forKey: (ocIdPlusEtag + global.previewExt512) as NSString)
-        cache.removeObject(forKey: (ocIdPlusEtag + global.previewExt1024) as NSString)
+    func removeImageCache(ocId: String, etag: String) {
+        cache.removeObject(forKey: cacheKey(ocId: ocId, etag: etag, ext: NCGlobal.shared.previewExt256))
+        cache.removeObject(forKey: cacheKey(ocId: ocId, etag: etag, ext: NCGlobal.shared.previewExt512))
+        cache.removeObject(forKey: cacheKey(ocId: ocId, etag: etag, ext: NCGlobal.shared.previewExt1024))
     }
 
     func removeAll() {

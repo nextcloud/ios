@@ -341,7 +341,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func removeImageCache(metadatas: [tableMetadata]) {
         DispatchQueue.global().async {
             for metadata in metadatas {
-                NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
+                NCImageCache.shared.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
             }
         }
     }

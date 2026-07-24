@@ -335,8 +335,6 @@ extension NCNetworking {
             await NCManageDatabase.shared.deleteVideoAsync(metadata.ocId)
             await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-
-            NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
         }
 
         await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
