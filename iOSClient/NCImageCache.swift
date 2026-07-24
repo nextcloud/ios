@@ -14,18 +14,13 @@ final class NCImageCache: @unchecked Sendable {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private let database = NCManageDatabase.shared
-    private let allowExtensions = [NCGlobal.shared.previewExt256]
+    private let cache = NSCache<NSString, UIImage>()
 
     public var countLimit: Int = 1500 {
         didSet {
             cache.countLimit = countLimit
         }
     }
-
-    private let cache = NSCache<NSString, UIImage>()
-
-    public var isLoadingCache: Bool = false
-    public var controller: UITabBarController?
 
     init() {
         cache.countLimit = countLimit
@@ -37,80 +32,15 @@ final class NCImageCache: @unchecked Sendable {
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.cache.removeAllObjects()
         }
-
-#if !EXTENSION
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
-            guard let self else {
-                return
-            }
-
-            Task {
-                guard let controller = self.controller as? NCMainTabBarController,
-                      !self.isLoadingCache else {
-                    return
-                }
-
-                self.isLoadingCache = true
-
-                defer {
-                    self.isLoadingCache = false
-                }
-
-                let session = await NCSession.shared.getSession(account: controller.account)
-
-                guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", controller.account)) else {
-                    return
-                }
-
-                let mediaPredicate = self.getMediaPredicate(session: session,
-                                                            mediaPath: tblAccount.mediaPath,
-                                                            showOnlyImages: false,
-                                                            showOnlyVideos: false)
-
-                let compactMetadatas = await self.database.getMediaCompactMetadatasAsync(
-                    predicate: mediaPredicate,
-                    sortedByKeyPath: "date",
-                    ascending: false
-                )
-
-                autoreleasepool {
-                    self.cache.removeAllObjects()
-                    for compactMetadata in compactMetadatas {
-                        guard !isAppInBackground else {
-                            self.cache.removeAllObjects()
-                            break
-                        }
-                        if let image = self.utility.getImage(ocId: compactMetadata.ocId,
-                                                             etag: compactMetadata.etag,
-                                                             ext: self.global.previewExt256,
-                                                             userId: session.userId,
-                                                             urlBase: session.urlBase) {
-                            self.addImageCache(ocId: compactMetadata.ocId,
-                                               etag: compactMetadata.etag,
-                                               image: image,
-                                               ext: self.global.previewExt256)
-                        }
-                    }
-                }
-            }
-        }
-#endif
-    }
-
-    func allowExtensions(ext: String) -> Bool {
-        return allowExtensions.contains(ext)
     }
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
-        guard allowExtensions.contains(ext),
-              let image = UIImage(data: data) else { return }
+        guard let image = UIImage(data: data) else { return }
 
         cache.setObject(image, forKey: (ocId + etag + ext) as NSString)
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
-        guard allowExtensions.contains(ext) else { return }
-
         cache.setObject(image, forKey: (ocId + etag + ext) as NSString)
     }
 
@@ -127,67 +57,13 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
-        for ext in allowExtensions {
-            cache.removeObject(forKey: (ocIdPlusEtag + ext) as NSString)
-        }
+        cache.removeObject(forKey: (ocIdPlusEtag + global.previewExt256) as NSString)
+        cache.removeObject(forKey: (ocIdPlusEtag + global.previewExt512) as NSString)
+        cache.removeObject(forKey: (ocIdPlusEtag + global.previewExt1024) as NSString)
     }
 
     func removeAll() {
         cache.removeAllObjects()
-    }
-
-    // MARK: - MEDIA -
-
-    func getMediaPredicate(session: NCSession.Session,
-                           mediaPath: String,
-                           showOnlyImages: Bool,
-                           showOnlyVideos: Bool) -> NSPredicate {
-        let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
-
-        let showBothPredicate = """
-        account == %@ AND
-        serverUrl BEGINSWITH %@ AND
-        hasPreview == true AND
-        (
-        classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
-        ) AND
-        NOT (status IN %@)
-        """
-
-        let showOnlyPredicateImage = """
-        account == %@ AND
-        serverUrl BEGINSWITH %@ AND
-        hasPreview == true AND
-        (
-        classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
-        ) AND
-        NOT (status IN %@)
-        """
-
-        let showOnlyPredicateVideo = """
-        account == %@ AND
-        serverUrl BEGINSWITH %@ AND
-        hasPreview == true AND
-        classFile == 'video' AND
-        NOT (status IN %@)
-        """
-
-        if showOnlyImages {
-            return NSPredicate(format: showOnlyPredicateImage,
-                               session.account,
-                               startServerUrl,
-                               global.metadataStatusHideInView)
-        } else if showOnlyVideos {
-            return NSPredicate(format: showOnlyPredicateVideo,
-                               session.account,
-                               startServerUrl,
-                               global.metadataStatusHideInView)
-        } else {
-            return NSPredicate(format: showBothPredicate,
-                               session.account,
-                               startServerUrl,
-                               global.metadataStatusHideInView)
-        }
     }
 
     // MARK: -

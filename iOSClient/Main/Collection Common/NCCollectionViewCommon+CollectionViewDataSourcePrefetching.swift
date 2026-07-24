@@ -8,9 +8,9 @@ import UIKit
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        guard !isSearchingMode,
-              imageCache.allowExtensions(ext: ext)
-        else { return }
+        guard !isSearchingMode else {
+            return
+        }
 
         for indexPath in indexPaths {
             if let metadata = self.dataSource.getMetadata(indexPath: indexPath),

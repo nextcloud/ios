@@ -247,19 +247,32 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if cell.image.image == nil {
-            if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.image.image = utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
-            } else {
-                let session = self.session
-                DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
-                    DispatchQueue.main.async {
-                        if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                           currentCell.identifier == compactMetadata.ocId, let image {
-                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext)
-                            currentCell.image.image = image
-                        }
+            let session = self.session
+
+            DispatchQueue.global(qos: .userInteractive).async {
+                let image = self.utility.getImage(
+                    ocId: compactMetadata.ocId,
+                    etag: compactMetadata.etag,
+                    ext: ext,
+                    userId: session.userId,
+                    urlBase: session.urlBase
+                )
+
+                DispatchQueue.main.async {
+                    guard let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+                          currentCell.identifier == compactMetadata.ocId,
+                          let image else {
+                        return
                     }
+
+                    self.imageCache.addImageCache(
+                        ocId: compactMetadata.ocId,
+                        etag: compactMetadata.etag,
+                        image: image,
+                        ext: ext
+                    )
+
+                    currentCell.image.image = image
                 }
             }
         }

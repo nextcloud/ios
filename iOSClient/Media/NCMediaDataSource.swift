@@ -25,7 +25,7 @@ extension NCMedia {
             return
         }
 
-        let mediaPredicate = self.imageCache.getMediaPredicate(
+        let mediaPredicate = NCMedia.getMediaPredicate(
             session: self.session,
             mediaPath: tblAccount.mediaPath,
             showOnlyImages: self.showOnlyImages,
@@ -453,7 +453,7 @@ extension NCMedia {
             return
         }
         // DB
-        let mediaPredicate = self.imageCache.getMediaPredicate(
+        let mediaPredicate = NCMedia.getMediaPredicate(
             session: self.session,
             mediaPath: mediaPath,
             showOnlyImages: self.showOnlyImages,
@@ -547,6 +547,62 @@ extension NCMedia {
             }
         }
     }
+
+    // MARK: - MEDIA PREDICATE -
+
+    nonisolated static func getMediaPredicate(session: NCSession.Session,
+                                              mediaPath: String,
+                                              showOnlyImages: Bool,
+                                              showOnlyVideos: Bool) -> NSPredicate {
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + mediaPath
+        let global = NCGlobal()
+
+        let showBothPredicate = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateImage = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateVideo = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        hasPreview == true AND
+        classFile == 'video' AND
+        NOT (status IN %@)
+        """
+
+        if showOnlyImages {
+            return NSPredicate(format: showOnlyPredicateImage,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
+        } else if showOnlyVideos {
+            return NSPredicate(format: showOnlyPredicateVideo,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
+        } else {
+            return NSPredicate(format: showBothPredicate,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
+        }
+    }
+
 }
 
 // MARK: -
