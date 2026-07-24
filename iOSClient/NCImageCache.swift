@@ -39,7 +39,11 @@ final class NCImageCache: @unchecked Sendable {
         }
 
 #if !EXTENSION
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
+            guard let self else {
+                return
+            }
+
             Task {
                 guard let controller = self.controller as? NCMainTabBarController,
                       !self.isLoadingCache else {
@@ -48,10 +52,13 @@ final class NCImageCache: @unchecked Sendable {
 
                 self.isLoadingCache = true
 
+                defer {
+                    self.isLoadingCache = false
+                }
+
                 let session = await NCSession.shared.getSession(account: controller.account)
 
                 guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", controller.account)) else {
-                    self.isLoadingCache = false
                     return
                 }
 
@@ -84,7 +91,6 @@ final class NCImageCache: @unchecked Sendable {
                                                ext: self.global.previewExt256)
                         }
                     }
-                    self.isLoadingCache = false
                 }
             }
         }
