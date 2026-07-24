@@ -45,8 +45,36 @@ class NCMedia: UIViewController {
         return column
     }
     var transitionColumns = false
-    var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
+    var numberOfColumns: Int = 0 {
+        didSet {
+            guard oldValue > 0,
+                  numberOfColumns != oldValue else {
+                return
+            }
+
+            let oldExtension = global.getSizeExtension(column: oldValue)
+            let newExtension = global.getSizeExtension(column: numberOfColumns)
+
+            guard oldExtension != newExtension else {
+                return
+            }
+
+            cacheWindowTask?.cancel()
+            cacheWindowTask = nil
+            lastCacheCenterIndex = nil
+
+            imageCache.removeAll()
+        }
+    }
+    let cacheWindowRadius = NCImageCache.shared.maximumCachedImages / 2
+    let cacheWindowUpdateThreshold = NCImageCache.shared.maximumCachedImages / 6
+    var lastCacheCenterIndex: Int?
+    var cacheWindowTask: Task<Void, Never>?
+    struct ImageCacheWindowItem: Sendable {
+        let ocId: String
+        let etag: String
+    }
 
     let debouncerLoadDataSource = NCDebouncer(delay: .seconds(3), maxEventCount: 10)
     let debouncerSearch = NCDebouncer(delay: .seconds(2), maxEventCount: 10)
@@ -168,7 +196,6 @@ class NCMedia: UIViewController {
             guard let self else {
                 return
             }
-
             Task { @MainActor in
                 guard let userInfo = notification.userInfo,
                    let account = userInfo["account"] as? String else {
@@ -176,6 +203,10 @@ class NCMedia: UIViewController {
                 }
 
                 self.layoutType = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "").layout
+
+                self.cacheWindowTask?.cancel()
+                self.cacheWindowTask = nil
+                self.lastCacheCenterIndex = nil
                 self.imageCache.removeAll()
 
                 await self.searchMediaUI(true)
@@ -183,13 +214,17 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { [weak self] _ in
-            guard let self else {
-                return
-            }
+            Task { @MainActor [weak self] in
+                guard let self else {
+                    return
+                }
 
-            Task {
-                await self.dataSource.clearCompactMetadatas()
+                self.cacheWindowTask?.cancel()
+                self.cacheWindowTask = nil
+                self.lastCacheCenterIndex = nil
                 self.imageCache.removeAll()
+
+                self.dataSource.clearCompactMetadatas()
                 await self.searchMediaUI(true)
             }
         }
@@ -242,6 +277,14 @@ class NCMedia: UIViewController {
             }
 
             await self.loadDataSource()
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            self.collectionView.layoutIfNeeded()
+            self.setTitleDate()
+            self.updateImageCacheWindow()
         }
     }
 
@@ -261,6 +304,10 @@ class NCMedia: UIViewController {
 
         buildDataSourceTask?.cancel()
         buildDataSourceTask = nil
+
+        cacheWindowTask?.cancel()
+        cacheWindowTask = nil
+        lastCacheCenterIndex = nil
 
         Task { [weak self] in
             guard let self else {
@@ -330,6 +377,106 @@ class NCMedia: UIViewController {
             videoImage = image
         }
     }
+
+    // MARK: - Image Cache
+
+    @MainActor
+    func updateImageCacheWindow() {
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
+
+        guard !visibleIndexPaths.isEmpty else {
+            return
+        }
+
+        let centerIndexPath = visibleIndexPaths[visibleIndexPaths.count / 2]
+        guard let centerIndex = dataSource.globalIndex(for: centerIndexPath) else {
+            return
+        }
+
+        if let lastCacheCenterIndex,
+           abs(centerIndex - lastCacheCenterIndex) < cacheWindowUpdateThreshold {
+            return
+        }
+
+        lastCacheCenterIndex = centerIndex
+
+        cacheWindowTask?.cancel()
+
+        cacheWindowTask = Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await self.loadImageCacheWindow(around: centerIndex)
+        }
+    }
+
+    @MainActor
+    private func loadImageCacheWindow(around centerIndex: Int) async {
+        let metadataCount = dataSource.compactMetadatas.count
+
+        guard metadataCount > 0 else {
+            return
+        }
+
+        let lowerBound = max(0, centerIndex - cacheWindowRadius)
+        let upperBound = min(
+            metadataCount,
+            centerIndex + cacheWindowRadius + 1
+        )
+
+        let ext = global.getSizeExtension(column: numberOfColumns)
+        let userId = session.userId
+        let urlBase = session.urlBase
+
+        let items = dataSource.compactMetadatas[lowerBound..<upperBound].map {
+            ImageCacheWindowItem(
+                ocId: $0.ocId,
+                etag: $0.etag
+            )
+        }
+
+        for item in items {
+            guard !Task.isCancelled else {
+                return
+            }
+
+            guard imageCache.getImageCache(
+                ocId: item.ocId,
+                etag: item.etag,
+                ext: ext
+            ) == nil else {
+                continue
+            }
+
+            let image = await Task.detached(priority: .utility) {
+                autoreleasepool {
+                    self.utility.getImage(
+                        ocId: item.ocId,
+                        etag: item.etag,
+                        ext: ext,
+                        userId: userId,
+                        urlBase: urlBase
+                    )
+                }
+            }.value
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            guard let image else {
+                continue
+            }
+
+            imageCache.addImageCache(
+                ocId: item.ocId,
+                etag: item.etag,
+                image: image,
+                ext: ext
+            )
+        }
+    }
 }
 
 // MARK: -
@@ -343,14 +490,24 @@ extension NCMedia: UIScrollViewDelegate {
         }
     }
 
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(
+        _ scrollView: UIScrollView,
+        willDecelerate decelerate: Bool
+    ) {
         if !decelerate {
+            updateImageCacheWindow()
             searchNewMedia()
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        updateImageCacheWindow()
         searchNewMedia()
+    }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        lastCacheCenterIndex = nil
+        updateImageCacheWindow()
     }
 }
 

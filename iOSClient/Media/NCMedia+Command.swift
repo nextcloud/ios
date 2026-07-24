@@ -182,6 +182,9 @@ extension NCMedia {
 
         collectionView.layoutIfNeeded()
         setTitleDate()
+
+        lastCacheCenterIndex = nil
+        updateImageCacheWindow()
     }
 
     @MainActor

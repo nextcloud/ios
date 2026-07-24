@@ -766,6 +766,24 @@ public class NCMediaDataSource: NSObject {
         return nil
     }
 
+    func globalIndex(for indexPath: IndexPath) -> Int? {
+        guard sections.indices.contains(indexPath.section) else {
+            return nil
+        }
+
+        let sectionMetadatas = sections[indexPath.section].compactMetadatas
+
+        guard sectionMetadatas.indices.contains(indexPath.item) else {
+            return nil
+        }
+
+        let previousItemsCount = sections[..<indexPath.section].reduce(0) {
+            $0 + $1.compactMetadatas.count
+        }
+
+        return previousItemsCount + indexPath.item
+    }
+
     func getCompactMetadata(indexPath: IndexPath) -> NCCompactMetadata? {
         guard sections.indices.contains(indexPath.section) else {
             return nil
