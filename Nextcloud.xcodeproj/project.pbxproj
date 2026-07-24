@@ -6330,7 +6330,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 34.0.0;
+				MARKETING_VERSION = 34.1.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -6396,7 +6396,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 34.0.0;
+				MARKETING_VERSION = 34.1.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -6640,8 +6640,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = exactVersion;
+				version = 7.4.1;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
