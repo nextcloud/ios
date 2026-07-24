@@ -56,11 +56,11 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        return cache.object(forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
+        cache.object(forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
     }
 
     func getImageCache(key: String) -> UIImage? {
-        return cache.object(forKey: key as NSString)
+        cache.object(forKey: key as NSString)
     }
 
     func removeImageCache(ocId: String, etag: String) {
@@ -76,31 +76,31 @@ final class NCImageCache: @unchecked Sendable {
     // MARK: -
 
     func getImageFile(colors: [UIColor] = [NCBrandColor.shared.iconImageColor2]) -> UIImage {
-        return utility.loadImage(named: "doc", colors: colors)
+        utility.loadImage(named: "doc", colors: colors)
     }
 
     func getImageShared(colors: [UIColor] = NCBrandColor.shared.iconImageMultiColors) -> UIImage {
-        return utility.loadImage(named: "person.fill.badge.plus", colors: colors)
+        utility.loadImage(named: "person.fill.badge.plus", colors: colors)
     }
 
     func getImageCanShare(colors: [UIColor] = NCBrandColor.shared.iconImageMultiColors) -> UIImage {
-        return utility.loadImage(named: "person.fill.badge.plus", colors: colors)
+        utility.loadImage(named: "person.fill.badge.plus", colors: colors)
     }
 
     func getImageShareByLink(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "link", colors: colors)
+        utility.loadImage(named: "link", colors: colors)
     }
 
     func getImageFavorite(colors: [UIColor] = [NCBrandColor.shared.yellowFavorite]) -> UIImage {
-        return utility.loadImage(named: "star.fill", colors: colors)
+        utility.loadImage(named: "star.fill", colors: colors)
     }
 
     func getImageOfflineFlag(colors: [UIColor] = [.systemGreen]) -> UIImage {
-        return utility.loadImage(named: "arrow.down.circle.fill", colors: colors)
+        utility.loadImage(named: "arrow.down.circle.fill", colors: colors)
     }
 
     func getImageLocal(colors: [UIColor] = [.systemGreen]) -> UIImage {
-        return utility.loadImage(named: "checkmark.circle.fill", colors: colors)
+        utility.loadImage(named: "checkmark.circle.fill", colors: colors)
     }
 
     func getImageCheckedYes(color: UIColor) -> UIImage? {
@@ -116,42 +116,42 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func getImageButtonMore(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "ellipsis", colors: colors)
+        utility.loadImage(named: "ellipsis", colors: colors)
     }
 
     func getImageButtonStop(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "stop.circle", colors: colors)
+        utility.loadImage(named: "stop.circle", colors: colors)
     }
 
     func getImageButtonMoreLock(colors: [UIColor] = [NCBrandColor.shared.iconImageColor]) -> UIImage {
-        return utility.loadImage(named: "lock.fill", colors: colors)
+        utility.loadImage(named: "lock.fill", colors: colors)
     }
 
     func getFolder(account: String) -> UIImage {
-        return UIImage(named: "folder")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folder")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 
     func getFolderEncrypted(account: String) -> UIImage {
-        return UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 
     func getFolderSharedWithMe(account: String) -> UIImage {
-        return UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 
     func getFolderPublic(account: String) -> UIImage {
-        return UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 
     func getFolderGroup(account: String) -> UIImage {
-        return UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 
     func getFolderExternal(account: String) -> UIImage {
-        return UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 
     func getFolderAutomaticUpload(account: String) -> UIImage {
-        return UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.getElement(account: account))
+        UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.getElement(account: account))
     }
 }
