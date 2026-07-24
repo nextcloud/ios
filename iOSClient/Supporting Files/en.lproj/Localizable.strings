@@ -294,7 +294,7 @@
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
-"_log_file_clear_alert_"        = "Log file cleared \n successfully!";
+"_log_file_clear_alert_"        = "Log file cleared!";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
@@ -850,7 +850,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_setup_verify_publickey_" = "Public key does not match the certificate";
 "_e2ee_setup_generate_passphrase_" = "Unable to generate a passphrase";
 "_e2ee_setup_privatekey_missing_" = "The End-to-end encryption private key could not be found.";
-"_e2e_renew_certificate_success_" = "Your end-to-end encryption certificate has been renewed successfully.";
+"_e2e_renew_certificate_success_" = "Your end-to-end encryption certificate has been renewed.";
 "_certificate_valid_from_" = "Valid from";
 "_certificate_valid_until_" = "Valid until";
 "_certificate_" = "Certificate";
