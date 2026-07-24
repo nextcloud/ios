@@ -33,44 +33,181 @@ extension NCMedia {
     }
 
     func setTitleDate() {
-        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
-            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
-
-            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getCompactMetadata(indexPath: firstAttribute.indexPath) {
-                titleDate?.text = utility.getTitleFromDate(metadata.date)
-                return
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
+            if $0.section == $1.section {
+                return $0.item < $1.item
             }
+            return $0.section < $1.section
         }
 
-        titleDate?.text = ""
+        guard let firstIndexPath = visibleIndexPaths.first,
+              let lastIndexPath = visibleIndexPaths.last,
+              let firstMetadata = dataSource.getCompactMetadata(indexPath: firstIndexPath),
+              let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
+            updateLeftBarButtonItems(date: nil)
+            return
+        }
+
+        let firstDate = firstMetadata.date
+        let lastDate = lastMetadata.date
+        let calendar = Calendar.current
+
+        let firstYear = calendar.component(.year, from: firstDate)
+        let lastYear = calendar.component(.year, from: lastDate)
+
+        let title: String
+
+        if calendar.isDate(firstDate, inSameDayAs: lastDate) {
+            title = firstDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+        } else if firstYear == lastYear {
+            let firstDateTitle = firstDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+            )
+
+            let lastDateTitle = lastDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+
+            title = "\(firstDateTitle) – \(lastDateTitle)"
+        } else {
+            let firstDateTitle = firstDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+
+            let lastDateTitle = lastDate.formatted(
+                .dateTime
+                    .day()
+                    .month(.abbreviated)
+                    .year()
+            )
+
+            title = "\(firstDateTitle) – \(lastDateTitle)"
+        }
+
+        buttonDateBarItem.title = title
+
+        if navigationItem.leftBarButtonItem !== buttonDateBarItem {
+            updateLeftBarButtonItems(date: buttonDateBarItem)
+        }
     }
 
-    func setElements() {
-        let highTextTitle = titleDate.frame.height
-        let isOver = self.collectionView.contentOffset.y + highTextTitle <= -view.safeAreaInsets.top && self.collectionView.contentOffset.y != -view.safeAreaInsets.top
+    @objc func presentMediaDatePicker() {
+        let viewController = NCMediaDatePickerViewController(
+            availableYearMonths: dataSource.availableYearMonths,
+            selectedYearMonth: currentVisibleYearMonth()
+        )
 
-        if isOver || dataSource.compactMetadatas.isEmpty {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.isHidden = true
-                titleDate?.textColor = NCBrandColor.shared.textColor
-                activityIndicator.color = NCBrandColor.shared.textColor
-
-                if #unavailable(iOS 26.0) {
-                    (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: NCBrandColor.shared.textColor)
-                }
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.isHidden = false
-                titleDate?.textColor = .white
-                activityIndicator.color = .white
-
-                if #unavailable(iOS 26.0) {
-                    (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
-                }
-            }
+        viewController.onDateSelected = { [weak self] yearMonth in
+            self?.scrollToMedia(year: yearMonth.year, month: yearMonth.month)
         }
+
+        if let sheet = viewController.sheetPresentationController {
+            sheet.detents = [
+                .custom(identifier: .init("mediaDatePicker")) { _ in
+                    200
+                }
+            ]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+
+        present(viewController, animated: true)
+    }
+
+    private func currentVisibleYearMonth() -> NCYearMonth? {
+        let firstIndexPath = collectionView.indexPathsForVisibleItems.min {
+            if $0.section == $1.section {
+                return $0.item < $1.item
+            }
+
+            return $0.section < $1.section
+        }
+
+        guard let firstIndexPath,
+              let metadata = dataSource.getCompactMetadata(indexPath: firstIndexPath) else {
+            return nil
+        }
+
+        return NCYearMonth(date: metadata.date)
+    }
+
+    private func scrollToMedia(year: Int, month: Int) {
+        guard let indexPath = dataSource.firstIndexPath(year: year, month: month) else {
+            return
+        }
+
+        collectionView.layoutIfNeeded()
+
+        let sectionIndexPath = IndexPath(item: 0, section: indexPath.section)
+
+        if let attributes = collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
+            ofKind: mediaSectionHeader,
+            at: sectionIndexPath
+        ) {
+            let spacingBelowNavigationBar: CGFloat = 16
+
+            let targetOffsetY = max(
+                -collectionView.adjustedContentInset.top,
+                attributes.frame.minY
+                    - collectionView.adjustedContentInset.top
+                    - spacingBelowNavigationBar
+            )
+
+            collectionView.setContentOffset(
+                CGPoint(x: collectionView.contentOffset.x, y: targetOffsetY),
+                animated: false
+            )
+        } else if let attributes = collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
+            // Fallback
+            let targetOffsetY = attributes.frame.minY - collectionView.adjustedContentInset.top
+
+            collectionView.setContentOffset(
+                CGPoint(x: collectionView.contentOffset.x, y: targetOffsetY),
+                animated: false
+            )
+        }
+
+        collectionView.layoutIfNeeded()
         setTitleDate()
+
+        lastCacheCenterIndex = nil
+        updateImageCacheWindow()
+    }
+
+    @MainActor
+    func updateLeftBarButtonItems(date: UIBarButtonItem?, activity: Bool? = nil) {
+        let isActivityVisible = activity ?? searchActivityIndicator.isAnimating
+
+        var items: [UIBarButtonItem] = []
+
+        if let date {
+            items.append(date)
+        }
+
+        if isActivityVisible {
+            searchActivityIndicator.startAnimating()
+            items.append(searchActivityBarButtonItem)
+        } else {
+            searchActivityIndicator.stopAnimating()
+        }
+
+        navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
+        if items.isEmpty {
+            collectionView.reloadData()
+        }
     }
 }
 
@@ -154,15 +291,8 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         await self.database.deleteMetadataAsync(id: ocId)
 
         await MainActor.run {
-            if let indexPath = self.dataSource.indexPath(forOcId: ocId) {
-                self.collectionView.performBatchUpdates {
-                    self.dataSource.removeCompactMetadata([ocId])
-                    self.collectionView.deleteItems(at: [indexPath])
-                }
-            } else {
-                self.dataSource.removeCompactMetadata([ocId])
-                self.collectionViewReloadData()
-            }
+            self.dataSource.removeCompactMetadata([ocId])
+            self.collectionViewReloadData()
         }
     }
 }

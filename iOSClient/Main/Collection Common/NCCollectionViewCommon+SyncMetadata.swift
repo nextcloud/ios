@@ -64,7 +64,7 @@ extension NCCollectionViewCommon {
     /// all tracked `URLSessionTask` are cancelled on any exit path via `defer`.
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
-    func networkSyncMetadata(metadatas: [tableMetadata]) async {
+    private func networkSyncMetadata(metadatas: [tableMetadata]) async {
         // Order by date (descending)
         let metadatas = metadatas.sorted {
             ($0.date as Date) > ($1.date as Date)

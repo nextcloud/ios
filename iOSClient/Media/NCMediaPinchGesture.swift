@@ -18,23 +18,29 @@ extension NCMedia {
             }
 
             if originalColumns != numberOfColumns {
+                collectionView.transform = .identity
+                currentScale = 1.0
 
-                self.collectionView.transform = .identity
-                self.currentScale = 1.0
+                buildMediaPhotoVideo(columnCount: numberOfColumns)
 
-                UIView.transition(with: self.collectionView, duration: 0.20, options: .transitionCrossDissolve) {
-
-                    self.collectionView.reloadData()
+                UIView.transition(
+                    with: collectionView,
+                    duration: 0.20,
+                    options: .transitionCrossDissolve
+                ) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
-
+                    self.collectionView.reloadData()
                 } completion: { _ in
-
-                    self.database.updatePhotoLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") { layout in
+                    self.database.updatePhotoLayoutForView(
+                        account: self.session.account,
+                        key: self.global.layoutViewMedia,
+                        serverUrl: ""
+                    ) { layout in
                         layout.columnPhoto = self.numberOfColumns
                     }
-
                 }
             }
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                 self.transitionColumns = false
             }
@@ -43,14 +49,17 @@ extension NCMedia {
         switch gestureRecognizer.state {
         case .began:
             Task {
-                await self.networkRemoveAll()
+                await networkRemoveAll()
             }
+
             lastScale = gestureRecognizer.scale
             lastNumberOfColumns = numberOfColumns
+
         case .changed:
             guard !transitionColumns else {
                 return
             }
+
             let scale = gestureRecognizer.scale
             let scaleChange = scale / lastScale
 
@@ -60,16 +69,21 @@ extension NCMedia {
             updateNumberOfColumns()
 
             if numberOfColumns > 1 && numberOfColumns < maxColumns {
-                collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+                collectionView.transform = CGAffineTransform(
+                    scaleX: currentScale,
+                    y: currentScale
+                )
             }
 
             lastScale = scale
+
         case .ended:
             UIView.animate(withDuration: 0.30) {
                 self.currentScale = 1.0
                 self.collectionView.transform = .identity
                 self.setTitleDate()
             }
+
         default:
             break
         }

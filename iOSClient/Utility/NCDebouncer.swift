@@ -9,6 +9,7 @@ public actor NCDebouncer {
     private let maxEventCount: Int
     private var eventCount: Int = 0
     private var pendingTask: Task<Void, Never>?
+    private var executionTask: Task<Void, Never>?
     private var latestBlock: (@MainActor @Sendable () async -> Void)?
     private var isPaused: Bool = false
 
@@ -25,8 +26,6 @@ public actor NCDebouncer {
         latestBlock = block
 
         guard !isPaused else {
-            // We only store the latest block and count events,
-            // but we never schedule or commit while paused.
             eventCount += 1
             return
         }
@@ -50,12 +49,9 @@ public actor NCDebouncer {
         }
 
         isPaused = true
+
         pendingTask?.cancel()
         pendingTask = nil
-    }
-
-    public func isPausedNow() -> Bool {
-        return isPaused
     }
 
     public func resume() {
@@ -65,7 +61,6 @@ public actor NCDebouncer {
 
         isPaused = false
 
-        // If something accumulated while paused, commit immediately.
         if latestBlock != nil {
             commit()
         }
@@ -74,20 +69,41 @@ public actor NCDebouncer {
     public func cancel() {
         pendingTask?.cancel()
         pendingTask = nil
+
+        executionTask?.cancel()
+        executionTask = nil
+
         latestBlock = nil
         eventCount = 0
+    }
+
+    public func isPausedNow() -> Bool {
+        isPaused
     }
 
     // MARK: - Internal
 
     private func scheduleIfNeeded() {
-        guard pendingTask == nil, !isPaused else {
+        guard pendingTask == nil,
+              !isPaused else {
             return
         }
 
         pendingTask = Task { [weak self] in
-            guard let self else { return }
-            try? await Task.sleep(for: self.delay)
+            guard let self else {
+                return
+            }
+
+            do {
+                try await Task.sleep(for: self.delay)
+            } catch {
+                return
+            }
+
+            guard !Task.isCancelled else {
+                return
+            }
+
             await self.commit()
         }
     }
@@ -101,13 +117,32 @@ public actor NCDebouncer {
         pendingTask = nil
         eventCount = 0
 
-        guard let block = latestBlock else {
+        guard executionTask == nil,
+              let block = latestBlock else {
             return
         }
+
         latestBlock = nil
 
-        Task { @MainActor in
+        executionTask = Task { @MainActor [weak self] in
+            guard !Task.isCancelled else {
+                await self?.executionDidFinish()
+                return
+            }
+
             await block()
+            await self?.executionDidFinish()
         }
+    }
+
+    private func executionDidFinish() {
+        executionTask = nil
+
+        guard !isPaused,
+              latestBlock != nil else {
+            return
+        }
+
+        commit()
     }
 }

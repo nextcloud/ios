@@ -7,10 +7,6 @@ import UIKit
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        guard !imageCache.isLoadingCache,
-              imageCache.allowExtensions(ext: ext) else {
-            return
-        }
         let compactMetadatas = self.dataSource.getCompactMetadatas(indexPaths: indexPaths)
 
         compactMetadatas.forEach { compactMetadata in
