@@ -73,6 +73,7 @@ class NCMedia: UIViewController {
     var lastCacheCenterIndex: Int?
     var cacheWindowTask: Task<Void, Never>?
     var missingImageCacheKeys: Set<String> = []
+    var imageLoadingTasks: [String: Task<Void, Never>] = [:]
     struct ImageCacheWindowItem: Sendable {
         let ocId: String
         let etag: String
@@ -166,7 +167,6 @@ class NCMedia: UIViewController {
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         collectionView.backgroundColor = .systemBackground
-        collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self

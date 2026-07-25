@@ -11,7 +11,7 @@ final class NCImageCache: @unchecked Sendable {
     private let utility = NCUtility()
     private let cache = NSCache<NSString, UIImage>()
 
-    public var maximumCachedImages: Int = 1500 {
+    public var maximumCachedImages: Int = 500 {
         didSet {
             cache.countLimit = maximumCachedImages
         }
