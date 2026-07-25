@@ -219,17 +219,25 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "mediaCell",
+            for: indexPath
+        ) as? NCMediaCell else {
             fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
-        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return cell }
 
-        let ext = global.getSizeExtension(column: self.numberOfColumns)
-        let imageCache = imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext)
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+            return cell
+        }
 
-        cell.image.image = imageCache
+        let ocId = compactMetadata.ocId
+        let etag = compactMetadata.etag
+        let ext = global.getSizeExtension(column: numberOfColumns)
+        let cacheKey = "\(ocId)-\(etag)-\(ext)"
+
+        cell.image.image = imageCache.getImageCache(ocId: ocId, etag: etag, ext: ext)
         cell.date = compactMetadata.date
-        cell.identifier = compactMetadata.ocId
+        cell.identifier = ocId
         cell.imageStatus.image = nil
 
         if cell.image.frame.width > 60 {
@@ -240,40 +248,62 @@ extension NCMedia: UICollectionViewDataSource {
             }
         }
 
-        if isEditMode, fileSelect.contains(compactMetadata.ocId) {
-            cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
-        } else {
-            cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
+        let selectionColor = NCBrandColor.shared.getElement(
+            account: session.account
+        )
+
+        cell.selected(isEditMode && fileSelect.contains(ocId), color: selectionColor)
+
+        guard cell.image.image == nil,
+              imageLoadingTasks[cacheKey] == nil else {
+            return cell
         }
 
-        if cell.image.image == nil {
-            let session = self.session
+        let userId = session.userId
+        let urlBase = session.urlBase
 
-            DispatchQueue.global(qos: .userInteractive).async {
-                let image = self.utility.getImage(
-                    ocId: compactMetadata.ocId,
-                    etag: compactMetadata.etag,
+        imageLoadingTasks[cacheKey] = Task(priority: .utility) { [weak self, weak collectionView] in
+            guard let self else {
+                return
+            }
+
+            let image = await Task.detached(priority: .utility) {
+                self.utility.getImage(
+                    ocId: ocId,
+                    etag: etag,
                     ext: ext,
-                    userId: session.userId,
-                    urlBase: session.urlBase
+                    userId: userId,
+                    urlBase: urlBase
                 )
+            }.value
 
-                DispatchQueue.main.async {
-                    guard let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                          currentCell.identifier == compactMetadata.ocId,
-                          let image else {
-                        return
-                    }
-
-                    self.imageCache.addImageCache(
-                        ocId: compactMetadata.ocId,
-                        etag: compactMetadata.etag,
-                        image: image,
-                        ext: ext
-                    )
-
-                    currentCell.image.image = image
+            guard !Task.isCancelled else {
+                await MainActor.run {
+                    self.imageLoadingTasks[cacheKey] = nil
                 }
+                return
+            }
+
+            await MainActor.run {
+                defer {
+                    self.imageLoadingTasks[cacheKey] = nil
+                }
+
+                guard let image else {
+                    return
+                }
+
+                self.imageCache.addImageCache(ocId: ocId, etag: etag, image: image, ext: ext)
+
+                guard let collectionView,
+                      let currentCell = collectionView.cellForItem(
+                        at: indexPath
+                      ) as? NCMediaCell,
+                      currentCell.identifier == ocId else {
+                    return
+                }
+
+                currentCell.image.image = image
             }
         }
 

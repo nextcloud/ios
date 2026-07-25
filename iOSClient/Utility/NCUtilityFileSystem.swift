@@ -266,18 +266,25 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return 0
     }
 
-    func fileProviderStorageImageExists(_ ocId: String, etag: String, ext: String, userId: String, urlBase: String) -> Bool {
-        let fileNamePath = getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext, userId: userId, urlBase: urlBase)
-        do {
-            let fileNamePathAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
-            let fileSize: UInt64 = fileNamePathAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            if fileSize > 0 {
-                return true
-            } else {
-                return false
-            }
-        } catch { }
-        return false
+    func fileProviderStorageImageExists(_ ocId: String,
+                                        etag: String,
+                                        ext: String,
+                                        userId: String,
+                                        urlBase: String) -> Bool {
+        let fileNamePath = getDirectoryProviderStorageImageOcId(
+            ocId,
+            etag: etag,
+            ext: ext,
+            userId: userId,
+            urlBase: urlBase
+        )
+
+        guard let attributes = try? fileManager.attributesOfItem(atPath: fileNamePath) else {
+            return false
+        }
+
+        let fileSize = attributes[.size] as? UInt64 ?? 0
+        return fileSize > 0
     }
 
     func fileProviderStorageImageExists(_ ocId: String, etag: String, userId: String, urlBase: String) -> Bool {

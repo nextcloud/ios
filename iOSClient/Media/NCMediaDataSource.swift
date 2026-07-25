@@ -95,7 +95,6 @@ extension NCMedia {
     @MainActor
     func collectionViewReloadData() {
         collectionView.reloadData()
-        setTitleDate()
     }
 
     // MARK: - Keeping position

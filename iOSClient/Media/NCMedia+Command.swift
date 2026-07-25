@@ -33,20 +33,30 @@ extension NCMedia {
     }
 
     func setTitleDate() {
-        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
-            if $0.section == $1.section {
-                return $0.item < $1.item
-            }
-            return $0.section < $1.section
-        }
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
 
-        guard let firstIndexPath = visibleIndexPaths.first,
-              let lastIndexPath = visibleIndexPaths.last,
+        guard let firstIndexPath = visibleIndexPaths.min(),
+              let lastIndexPath = visibleIndexPaths.max(),
               let firstMetadata = dataSource.getCompactMetadata(indexPath: firstIndexPath),
               let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
-            updateLeftBarButtonItems(date: nil)
+            if dataSource.isEmpty() {
+                lastVisibleDateRange = nil
+                updateLeftBarButtonItems(date: nil)
+            }
+
             return
         }
+
+        if lastVisibleDateRange?.first == firstIndexPath,
+           lastVisibleDateRange?.last == lastIndexPath,
+           navigationItem.leftBarButtonItem === buttonDateBarItem {
+            return
+        }
+
+        lastVisibleDateRange = (
+            first: firstIndexPath,
+            last: lastIndexPath
+        )
 
         let firstDate = firstMetadata.date
         let lastDate = lastMetadata.date
@@ -97,7 +107,9 @@ extension NCMedia {
             title = "\(firstDateTitle) – \(lastDateTitle)"
         }
 
-        buttonDateBarItem.title = title
+        if buttonDateBarItem.title != title {
+            buttonDateBarItem.title = title
+        }
 
         if navigationItem.leftBarButtonItem !== buttonDateBarItem {
             updateLeftBarButtonItems(date: buttonDateBarItem)
@@ -181,7 +193,6 @@ extension NCMedia {
         }
 
         collectionView.layoutIfNeeded()
-        setTitleDate()
 
         lastCacheCenterIndex = nil
         updateImageCacheWindow()
