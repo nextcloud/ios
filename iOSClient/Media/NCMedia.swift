@@ -112,6 +112,7 @@ class NCMedia: UIViewController {
         target: self,
         action: #selector(presentMediaDatePicker)
     )
+    internal var lastVisibleDateRange: (first: IndexPath, last: IndexPath)?
 
     internal lazy var searchActivityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .medium)
