@@ -290,7 +290,6 @@ class NCMedia: UIViewController {
             }
 
             self.collectionView.layoutIfNeeded()
-            self.setTitleDate()
             self.updateImageCacheWindow()
         }
     }
@@ -334,6 +333,14 @@ class NCMedia: UIViewController {
             object: nil
         )
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        setTitleDate()
+    }
+
+    // MARK: - Timer search media
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()

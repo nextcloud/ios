@@ -44,7 +44,9 @@ extension NCMedia {
               let lastIndexPath = visibleIndexPaths.last,
               let firstMetadata = dataSource.getCompactMetadata(indexPath: firstIndexPath),
               let lastMetadata = dataSource.getCompactMetadata(indexPath: lastIndexPath) else {
-            updateLeftBarButtonItems(date: nil)
+            if dataSource.isEmpty() {
+                updateLeftBarButtonItems(date: nil)
+            }
             return
         }
 
@@ -181,7 +183,6 @@ extension NCMedia {
         }
 
         collectionView.layoutIfNeeded()
-        setTitleDate()
 
         lastCacheCenterIndex = nil
         updateImageCacheWindow()
