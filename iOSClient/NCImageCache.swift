@@ -235,7 +235,7 @@ private actor MediaWindowCache {
         }
     }
 
-    private func load(imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem], centerIndex: Int, ext: String,session: NCSession.Session) async {
+    private func load(imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem], centerIndex: Int, ext: String, session: NCSession.Session) async {
         let itemCount = imageCacheWindowItems.count
         guard imageCacheWindowItems.indices.contains(centerIndex) else {
             return
