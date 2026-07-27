@@ -67,30 +67,24 @@ extension NCCollectionViewCommon {
 
         // Image
         //
-        if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            cell.previewImg?.image = image
-            cell.previewImg?.contentMode = .scaleAspectFill
-        } else {
-            if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.previewImg?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
-            }
+        if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
+            cell.previewImg?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
+        }
 
-            DispatchQueue.global(qos: .userInteractive).async {
-                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
-                if let image {
-                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
-                    DispatchQueue.main.async {
-                        cell.previewImg?.image = image
-                        cell.previewImg?.contentMode = .scaleAspectFill
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        cell.previewImg?.contentMode = .scaleAspectFit
-                        if metadata.iconName.isEmpty {
-                            cell.previewImg?.image = NCImageCache.shared.getImageFile()
-                        } else {
-                            cell.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                        }
+        DispatchQueue.global(qos: .userInteractive).async {
+            let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
+            if let image {
+                DispatchQueue.main.async {
+                    cell.previewImg?.image = image
+                    cell.previewImg?.contentMode = .scaleAspectFill
+                }
+            } else {
+                DispatchQueue.main.async {
+                    cell.previewImg?.contentMode = .scaleAspectFit
+                    if metadata.iconName.isEmpty {
+                        cell.previewImg?.image = NCImageCache.shared.getImageFile()
+                    } else {
+                        cell.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                     }
                 }
             }

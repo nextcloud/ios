@@ -138,8 +138,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
             await NCService().startRequestServicesServer(account: self.session.account, controller: self.controller)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterClearCache)
-
             NCActivityIndicator.shared.stop()
         }
     }

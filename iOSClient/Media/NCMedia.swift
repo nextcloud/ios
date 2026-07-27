@@ -193,20 +193,9 @@ class NCMedia: UIViewController {
                 self.layoutType = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "").layout
 
                 self.imageCache.removeAll()
-
-                await self.searchMediaUI(true)
-            }
-        }
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self else {
-                    return
-                }
-
-                imageCache.removeAll()
-
                 self.dataSource.clearCompactMetadatas()
+                self.setTitleDate()
+
                 await self.searchMediaUI(true)
             }
         }
@@ -266,6 +255,7 @@ class NCMedia: UIViewController {
 
             self.collectionView.layoutIfNeeded()
             self.updateImageCacheWindow()
+            self.setTitleDate()
         }
     }
 
