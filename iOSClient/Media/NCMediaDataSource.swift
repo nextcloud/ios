@@ -638,6 +638,8 @@ public class NCMediaDataSource: NSObject {
         var compactMetadatas: [NCCompactMetadata]
     }
 
+    var imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem] = []
+
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private(set) var compactMetadatas: [NCCompactMetadata] = []
@@ -656,16 +658,18 @@ public class NCMediaDataSource: NSObject {
 
         self.compactMetadatas = result.compactMetadatas
         self.sections = result.sections
+        self.imageCacheWindowItems = result.imageCacheWindowItems
     }
 
     private func makeDataSource(
         from compactMetadatas: [NCCompactMetadata]
     ) -> (
         compactMetadatas: [NCCompactMetadata],
-        sections: [NCMediaSection]
+        sections: [NCMediaSection],
+        imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem]
     ) {
         guard !compactMetadatas.isEmpty else {
-            return ([], [])
+            return ([], [], [])
         }
 
         var sections: [NCMediaSection] = []
@@ -674,7 +678,16 @@ public class NCMediaDataSource: NSObject {
         var currentYearMonth: NCYearMonth?
         var currentSectionMetadatas: [NCCompactMetadata] = []
 
+        var imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem] = []
+
         for compactMetadata in compactMetadatas {
+            imageCacheWindowItems.append(
+                NCImageCache.ImageCacheWindowItem(
+                    ocId: compactMetadata.ocId,
+                    etag: compactMetadata.etag
+                )
+            )
+
             guard let yearMonth = NCYearMonth(date: compactMetadata.date) else {
                 continue
             }
@@ -709,7 +722,8 @@ public class NCMediaDataSource: NSObject {
 
         return (
             compactMetadatas,
-            sections
+            sections,
+            imageCacheWindowItems
         )
     }
 

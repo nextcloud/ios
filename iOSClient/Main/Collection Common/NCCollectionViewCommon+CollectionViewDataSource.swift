@@ -304,45 +304,4 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         return ownerId
     }
-
-    /// Caches preview images asynchronously for the provided metadata entries.
-    /// - Parameters:
-    ///   - metadatas: The list of metadata entries to cache.
-    ///   - priority: The task priority to use (default is `.utility`).
-    func cachingAsync(metadatas: [tableMetadata], priority: TaskPriority = .utility) {
-        let previewExt = global.previewExt256
-
-        Task.detached(priority: priority) { [utility] in
-            for metadata in metadatas {
-                guard !Task.isCancelled,
-                      metadata.isImageOrVideo,
-                      NCImageCache.shared.getImageCache(ocId: metadata.ocId,
-                                                        etag: metadata.etag,
-                                                        ext: previewExt) == nil else {
-                    continue
-                }
-
-                guard let image = utility.getImage(ocId: metadata.ocId,
-                                                   etag: metadata.etag,
-                                                   ext: previewExt,
-                                                   userId: metadata.userId,
-                                                   urlBase: metadata.urlBase) else {
-                    continue
-                }
-
-                NCImageCache.shared.addImageCache(ocId: metadata.ocId,
-                                                  etag: metadata.etag,
-                                                  image: image,
-                                                  ext: previewExt)
-            }
-        }
-    }
-
-    func removeImageCache(metadatas: [tableMetadata]) {
-        DispatchQueue.global().async {
-            for metadata in metadatas {
-                NCImageCache.shared.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
-            }
-        }
-    }
 }
