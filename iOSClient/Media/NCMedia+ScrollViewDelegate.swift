@@ -30,7 +30,6 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        lastCacheCenterIndex = nil
-        updateImageCacheWindow()
+        updateImageCacheWindow(force: true)
     }
 }

@@ -60,28 +60,10 @@ class NCMedia: UIViewController {
                 return
             }
 
-            cacheWindowTask?.cancel()
-            cacheWindowTask = nil
-            lastCacheCenterIndex = nil
-
             imageCache.removeAll()
-            missingImageCacheKeys.removeAll()
         }
     }
-    let cacheWindowRadius = NCImageCache.shared.maximumCachedImages / 2
-    let cacheWindowUpdateThreshold = NCImageCache.shared.maximumCachedImages / 6
-    var lastCacheCenterIndex: Int?
-    var cacheWindowTask: Task<Void, Never>?
-    var missingImageCacheKeys: Set<String> = []
     var imageLoadingTasks: [String: Task<Void, Never>] = [:]
-    struct ImageCacheWindowItem: Sendable {
-        let ocId: String
-        let etag: String
-    }
-    private func imageCacheKey(ocId: String, etag: String, ext: String) -> String {
-        "\(ocId)-\(etag)-\(ext)"
-    }
-
     let debouncerLoadDataSource = NCDebouncer(delay: .seconds(3), maxEventCount: 10)
     let debouncerSearch = NCDebouncer(delay: .seconds(2), maxEventCount: 10)
 
@@ -210,11 +192,7 @@ class NCMedia: UIViewController {
 
                 self.layoutType = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "").layout
 
-                self.cacheWindowTask?.cancel()
-                self.cacheWindowTask = nil
-                self.lastCacheCenterIndex = nil
                 self.imageCache.removeAll()
-                self.missingImageCacheKeys.removeAll()
 
                 await self.searchMediaUI(true)
             }
@@ -226,11 +204,7 @@ class NCMedia: UIViewController {
                     return
                 }
 
-                self.cacheWindowTask?.cancel()
-                self.cacheWindowTask = nil
-                self.lastCacheCenterIndex = nil
-                self.imageCache.removeAll()
-                self.missingImageCacheKeys.removeAll()
+                imageCache.removeAll()
 
                 self.dataSource.clearCompactMetadatas()
                 await self.searchMediaUI(true)
@@ -312,9 +286,7 @@ class NCMedia: UIViewController {
         buildDataSourceTask?.cancel()
         buildDataSourceTask = nil
 
-        cacheWindowTask?.cancel()
-        cacheWindowTask = nil
-        lastCacheCenterIndex = nil
+        imageCache.removeAll()
 
         Task { [weak self] in
             guard let self else {
@@ -393,118 +365,34 @@ class NCMedia: UIViewController {
         }
     }
 
-    // MARK: - Image Cache
-
     @MainActor
-    func updateImageCacheWindow() {
+    func updateImageCacheWindow(force: Bool = false) {
+        guard !dataSource.compactMetadatas.isEmpty else {
+            return
+        }
+
         let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
 
-        guard !visibleIndexPaths.isEmpty else {
-            return
-        }
+        let centerIndex: Int
 
-        let centerIndexPath = visibleIndexPaths[visibleIndexPaths.count / 2]
-        guard let centerIndex = dataSource.globalIndex(for: centerIndexPath) else {
-            return
-        }
+        if !visibleIndexPaths.isEmpty {
+            let centerIndexPath = visibleIndexPaths[visibleIndexPaths.count / 2]
 
-        if let lastCacheCenterIndex,
-           abs(centerIndex - lastCacheCenterIndex) < cacheWindowUpdateThreshold {
-            return
-        }
-
-        lastCacheCenterIndex = centerIndex
-
-        cacheWindowTask?.cancel()
-
-        cacheWindowTask = Task { [weak self] in
-            guard let self else {
+            guard let visibleCenterIndex = dataSource.globalIndex(for: centerIndexPath) else {
                 return
             }
 
-            await self.loadImageCacheWindow(around: centerIndex)
-        }
-    }
-
-    @MainActor
-    private func loadImageCacheWindow(around centerIndex: Int) async {
-        let metadataCount = dataSource.compactMetadatas.count
-
-        guard metadataCount > 0 else {
-            return
+            centerIndex = visibleCenterIndex
+        } else {
+            centerIndex = 0
         }
 
-        let lowerBound = max(0, centerIndex - cacheWindowRadius)
-        let upperBound = min(metadataCount, centerIndex + cacheWindowRadius + 1)
-        let ext = global.getSizeExtension(column: numberOfColumns)
-        let userId = session.userId
-        let urlBase = session.urlBase
-
-        let items = dataSource.compactMetadatas[lowerBound..<upperBound].map {
-            ImageCacheWindowItem(ocId: $0.ocId, etag: $0.etag)
-        }
-
-        var cacheHits = 0
-        var diskReads = 0
-        var knownMissingImages = 0
-        var newMissingImages = 0
-        var loadedImages = 0
-
-        print("[MEDIA CACHE] START center: \(centerIndex) range: \(lowerBound)..<\(upperBound) items: \(items.count) ext: \(ext)")
-
-        for item in items {
-            guard !Task.isCancelled else {
-                print("[MEDIA CACHE] CANCELLED center: \(centerIndex) hits: \(cacheHits) diskReads: \(diskReads) knownMissing: \(knownMissingImages) newMissing: \(newMissingImages) loaded: \(loadedImages)")
-                return
-            }
-
-            let key = imageCacheKey(ocId: item.ocId, etag: item.etag, ext: ext)
-
-            if missingImageCacheKeys.contains(key) {
-                knownMissingImages += 1
-                continue
-            }
-
-            if imageCache.getImageCache(ocId: item.ocId, etag: item.etag, ext: ext) != nil {
-                cacheHits += 1
-                continue
-            }
-
-            diskReads += 1
-
-            let image = await Task.detached(priority: .utility) {
-                autoreleasepool {
-                    NCUtility().getImage(
-                        ocId: item.ocId,
-                        etag: item.etag,
-                        ext: ext,
-                        userId: userId,
-                        urlBase: urlBase
-                    )
-                }
-            }.value
-
-            guard !Task.isCancelled else {
-                print("[MEDIA CACHE] CANCELLED center: \(centerIndex) hits: \(cacheHits) diskReads: \(diskReads) knownMissing: \(knownMissingImages) newMissing: \(newMissingImages) loaded: \(loadedImages)")
-                return
-            }
-
-            guard let image else {
-                missingImageCacheKeys.insert(key)
-                newMissingImages += 1
-                continue
-            }
-
-            imageCache.addImageCache(
-                ocId: item.ocId,
-                etag: item.etag,
-                image: image,
-                ext: ext
-            )
-
-            loadedImages += 1
-        }
-
-        print("[MEDIA CACHE] END center: \(centerIndex) hits: \(cacheHits) diskReads: \(diskReads) knownMissing: \(knownMissingImages) newMissing: \(newMissingImages) loaded: \(loadedImages)")
+        imageCache.updateImageCacheWindow(
+            imageCacheWindowItems: dataSource.imageCacheWindowItems,
+            centerIndex: centerIndex,
+            numberOfColumns: numberOfColumns,
+            session: session,
+            force: force
+        )
     }
 }

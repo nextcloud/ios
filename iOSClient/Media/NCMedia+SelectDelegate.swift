@@ -16,7 +16,6 @@ extension NCMedia: NCSelectDelegate {
             await database.setAccountMediaPathAsync(mediaPath, account: session.account)
 
             self.imageCache.removeAll()
-            self.missingImageCacheKeys.removeAll()
 
             await self.debouncerLoadDataSource.call {
                 await self.loadDataSource()
