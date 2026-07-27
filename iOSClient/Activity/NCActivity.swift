@@ -302,45 +302,38 @@ extension NCActivity: UITableViewDataSource {
             cell.configureAvatarMenu()
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            if let image = NCImageCache.shared.getImageCache(key: fileName) {
+            let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar?.image = image
-            } else {
-                let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.avatar?.image = image
-                    NCImageCache.shared.addImageCache(image: image, key: fileName)
-                }
+            }
+            let user = activity.user
+            let idActivity = activity.idActivity
+            let account = session.account
 
-                let user = activity.user
-                let idActivity = activity.idActivity
-                let account = session.account
+            Task {
+                let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
+                await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                         priority: .userInitiated) {
+                let results = await NextcloudKit.shared.downloadAvatarAsync(
+                    user: user,
+                    fileNameLocalPath: fileNameLocalPath,
+                    sizeImage: NCGlobal.shared.avatarSize,
+                    avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                    etagResource: etagResource,
+                    account: account)
 
-                Task {
-                    let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
-                    await NCTransferCoordinator.shared.start(identifier: fileName,
-                                                             priority: .userInitiated) {
-                    let results = await NextcloudKit.shared.downloadAvatarAsync(
-                        user: user,
-                        fileNameLocalPath: fileNameLocalPath,
-                        sizeImage: NCGlobal.shared.avatarSize,
-                        avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                        etagResource: etagResource,
-                        account: account)
-
-                        if results.error == .success,
-                           let image = results.imageAvatar,
-                           let etag = results.etag,
-                           etag != etagResource {
-                            NCImageCache.shared.addImageCache(image: image, key: fileName)
-                            await self.database.addAvatarAsync(fileName: fileName, etag: etag)
-                            await MainActor.run {
-                                guard
-                                    let cell = self.tableView.cellForRow(at: indexPath) as? NCActivityTableViewCell,
-                                    cell.idActivity == idActivity else {
-                                    return
-                                }
-                                cell.avatar?.image = image
+                    if results.error == .success,
+                       let image = results.imageAvatar,
+                       let etag = results.etag,
+                       etag != etagResource {
+                        await self.database.addAvatarAsync(fileName: fileName, etag: etag)
+                        await MainActor.run {
+                            guard
+                                let cell = self.tableView.cellForRow(at: indexPath) as? NCActivityTableViewCell,
+                                cell.idActivity == idActivity else {
+                                return
                             }
+                            cell.avatar?.image = image
                         }
                     }
                 }

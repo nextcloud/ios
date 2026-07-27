@@ -41,32 +41,12 @@ final class NCImageCache: @unchecked Sendable {
         "\(ocId)\(etag)\(ext)" as NSString
     }
 
-    func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
-        guard let image = UIImage(data: data) else { return }
-
-        cache.setObject(image, forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
-    }
-
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
         cache.setObject(image, forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
     }
 
-    func addImageCache(image: UIImage, key: String) {
-        cache.setObject(image, forKey: key as NSString)
-    }
-
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
         cache.object(forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
-    }
-
-    func getImageCache(key: String) -> UIImage? {
-        cache.object(forKey: key as NSString)
-    }
-
-    func removeImageCache(ocId: String, etag: String) {
-        cache.removeObject(forKey: cacheKey(ocId: ocId, etag: etag, ext: NCGlobal.shared.previewExt256))
-        cache.removeObject(forKey: cacheKey(ocId: ocId, etag: etag, ext: NCGlobal.shared.previewExt512))
-        cache.removeObject(forKey: cacheKey(ocId: ocId, etag: etag, ext: NCGlobal.shared.previewExt1024))
     }
 
     func removeAll() {
