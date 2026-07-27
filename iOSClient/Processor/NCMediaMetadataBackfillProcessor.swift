@@ -46,6 +46,9 @@ final class NCMediaMetadataBackfillProcessor {
     }
 
     /// Processes the remote media archive page by page and creates missing metadata placeholders.
+    ///
+    /// An interrupted cycle resumes immediately from the stored offset.
+    /// A completed cycle starts again after the configured interval.
     func runBackfill(
         account: tableAccount,
         limit: Int,
@@ -53,16 +56,18 @@ final class NCMediaMetadataBackfillProcessor {
     ) async -> BackfillStatus {
         let database = NCManageDatabase.shared
         let state = await database.getMediaMetadataBackfillAsync(account: account.account)
-
-        guard state?.lastCompletedCycleDate == nil else {
-            return .skippedAlreadyCompleted(account: account.account)
-        }
-
+        let cycleInterval: TimeInterval = 7 * 24 * 60 * 60 // week
         var offset = state?.offset ?? 0
         var token: String?
         var processed = 0
         var inserted = 0
         var updated = 0
+
+        if state?.offset == 0,
+           let lastCompletedCycleDate = state?.lastCompletedCycleDate,
+           Date().timeIntervalSince(lastCompletedCycleDate) < cycleInterval {
+            return .skippedAlreadyCompleted(account: account.account)
+        }
 
         while !Task.isCancelled {
             let result = await runSearch(
