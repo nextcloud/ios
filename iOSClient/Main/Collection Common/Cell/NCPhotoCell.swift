@@ -71,22 +71,48 @@ extension NCCollectionViewCommon {
             cell.previewImg?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
         }
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
+        let ocId = metadata.ocId
+        let etag = metadata.etag
+        let userId = metadata.userId
+        let urlBase = metadata.urlBase
+        let iconName = metadata.iconName
+        let account = metadata.account
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self, weak cell] in
+            guard let self else {
+                return
+            }
+
+            let image = self.utility.getImage(
+                ocId: ocId,
+                etag: etag,
+                ext: ext,
+                userId: userId,
+                urlBase: urlBase
+            )
+
+            let fallbackImage: UIImage?
+
             if let image {
-                DispatchQueue.main.async {
-                    cell.previewImg?.image = image
-                    cell.previewImg?.contentMode = .scaleAspectFill
-                }
+                fallbackImage = image
+            } else if iconName.isEmpty {
+                fallbackImage = NCImageCache.shared.getImageFile()
             } else {
-                DispatchQueue.main.async {
-                    cell.previewImg?.contentMode = .scaleAspectFit
-                    if metadata.iconName.isEmpty {
-                        cell.previewImg?.image = NCImageCache.shared.getImageFile()
-                    } else {
-                        cell.previewImg?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                    }
+                fallbackImage = self.utility.loadImage(
+                    named: iconName,
+                    useTypeIconFile: true,
+                    account: account
+                )
+            }
+
+            DispatchQueue.main.async {
+                guard let cell,
+                      cell.metadata?.ocId == ocId else {
+                    return
                 }
+
+                cell.previewImg?.image = fallbackImage
+                cell.previewImg?.contentMode = image == nil ? .scaleAspectFit : .scaleAspectFill
             }
         }
 
