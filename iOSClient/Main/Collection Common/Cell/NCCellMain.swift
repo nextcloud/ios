@@ -7,7 +7,7 @@ import UIKit
 import NextcloudKit
 import RealmSwift
 
-protocol NCCellMainProtocol {
+protocol NCCellMainProtocol: AnyObject {
     var metadata: tableMetadata? {get set }
     var previewImg: UIImageView? { get set }
     var localImg: UIImageView? { get set }
@@ -139,17 +139,46 @@ extension NCCollectionViewCommon {
         }
 
         if metadata.name == global.appName {
-            let ext = global.getSizeExtension(column: self.numberOfColumns)
+            let ext = global.getSizeExtension(column: numberOfColumns)
+            let ocId = metadata.ocId
 
-            if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase) {
-                cell.previewImg?.image = image
+            if metadata.iconName.isEmpty {
+                cell.previewImg?.image = imageCache.getImageFile()
+            } else {
+                cell.previewImg?.image = utility.loadImage(
+                    named: metadata.iconName,
+                    useTypeIconFile: true,
+                    account: metadata.account
+                )
             }
 
-            if cell.previewImg?.image == nil {
-                if metadata.iconName.isEmpty {
-                    cell.previewImg?.image = NCImageCache.shared.getImageFile()
-                } else {
-                    cell.previewImg?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            cell.previewImg?.contentMode = .scaleAspectFit
+
+            DispatchQueue.global(qos: .userInitiated).async { [weak self, weak cell] in
+                guard let self else {
+                    return
+                }
+
+                let image = self.utility.getImage(
+                    ocId: metadata.ocId,
+                    etag: metadata.etag,
+                    ext: ext,
+                    userId: metadata.userId,
+                    urlBase: metadata.urlBase
+                )
+
+                guard let image else {
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    guard let cell,
+                          cell.metadata?.ocId == ocId else {
+                        return
+                    }
+
+                    cell.previewImg?.image = image
+                    cell.previewImg?.contentMode = .scaleAspectFill
                 }
             }
         } else {

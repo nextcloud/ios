@@ -17,9 +17,9 @@ extension NCMedia: UICollectionViewDataSource {
                 ) as? NCSectionFirstHeaderEmptyData else {
                     return NCSectionFirstHeaderEmptyData()
                 }
-
                 header.emptyImage.isHidden = false
                 header.emptyDescription.isHidden = false
+                header.isUserInteractionEnabled = false
 
                 header.emptyImage.image = utility.loadImage(
                     named: "photo",
@@ -54,6 +54,7 @@ extension NCMedia: UICollectionViewDataSource {
             ) as? NCMediaSectionHeader else {
                 return NCMediaSectionHeader()
             }
+            header.isUserInteractionEnabled = false
 
             guard let yearMonth = dataSource.yearMonth(for: indexPath.section) else {
                 header.titleLabel.text = nil
