@@ -87,9 +87,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     // MARK: - Video Player Menu
 
-    private func makeVideoPlayerMenu(
-        metadata: tableMetadata
-    ) -> UIMenu? {
+    private func makeVideoPlayerMenu(metadata: tableMetadata) -> UIMenu? {
         guard metadata.classFile == NKTypeClassFile.video.rawValue else {
             return nil
         }
@@ -108,19 +106,11 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             ocId: metadata.ocId
         )
 
-        let actions: [UIMenuElement]
+        let alwaysUseVLCAction: UIAction
 
         switch playback.engine {
         case .avFoundation:
-            let useVLCAction = UIAction(
-                title: NSLocalizedString("_play_with_vlc_", comment: ""),
-                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate)
-            ) { _ in
-                // Prepares VLC but leaves the video on the cover.
-                NCVideoPlaybackController.shared.switchToVLC()
-            }
-
-            let alwaysUseVLCAction = UIAction(
+            alwaysUseVLCAction = UIAction(
                 title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
                 image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
                 state: .off
@@ -131,29 +121,15 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     ocId: metadata.ocId
                 )
 
-                // Prepares VLC but leaves the video on the cover.
                 NCVideoPlaybackController.shared.switchToVLC()
             }
 
-            actions = [
-                useVLCAction,
-                alwaysUseVLCAction
-            ]
-
         case .vlc:
-            // Show the VLC options only when this video was explicitly forced to VLC.
             guard alwaysUseVLC else {
                 return nil
             }
 
-            let useVLCAction = UIAction(
-                title: NSLocalizedString("_play_with_vlc_", comment: ""),
-                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate)
-            ) { _ in
-                NCVideoPlaybackController.shared.switchToVLC()
-            }
-
-            let disableAlwaysUseVLCAction = UIAction(
+            alwaysUseVLCAction = UIAction(
                 title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
                 image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
                 state: .on
@@ -163,12 +139,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     account: metadata.account,
                     ocId: metadata.ocId
                 )
-            }
 
-            actions = [
-                useVLCAction,
-                disableAlwaysUseVLCAction
-            ]
+                NCVideoPlaybackController.shared.retryAVFoundation()
+            }
 
         case .loading,
              .failed:
@@ -178,7 +151,9 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         return UIMenu(
             title: "",
             options: .displayInline,
-            children: actions
+            children: [
+                alwaysUseVLCAction
+            ]
         )
     }
 

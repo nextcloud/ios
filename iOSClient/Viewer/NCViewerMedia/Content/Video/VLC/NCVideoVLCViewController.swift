@@ -547,6 +547,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     func stop() {
+        stopControlsHideTimer()
         isPlaybackRequested = false
         isReplayFromBeginningRequested = false
 

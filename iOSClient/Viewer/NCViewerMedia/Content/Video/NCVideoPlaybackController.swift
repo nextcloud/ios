@@ -147,6 +147,39 @@ final class NCVideoPlaybackController: ObservableObject {
         )
     }
 
+    func retryAVFoundation() {
+        guard let currentURL else {
+            return
+        }
+
+        let token = UUID()
+        loadToken = token
+
+        statusObservation?.invalidate()
+        statusObservation = nil
+
+        avProbePlayer?.pause()
+        avProbePlayer = nil
+        avProbeItem = nil
+
+        engine = .loading
+
+        var httpHeaders: [String: String] = [:]
+
+        if let currentUserAgent,
+           !currentUserAgent.isEmpty,
+           !currentURL.isFileURL {
+            httpHeaders["User-Agent"] = currentUserAgent
+        }
+
+        prepareAVFoundation(
+            url: currentURL,
+            userAgent: currentUserAgent,
+            httpHeaders: httpHeaders,
+            token: token
+        )
+    }
+
     func stopIfCurrent(ocId: String) {
         guard currentOcId == ocId else {
             return
