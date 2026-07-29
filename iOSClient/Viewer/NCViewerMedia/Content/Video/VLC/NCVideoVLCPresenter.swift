@@ -146,6 +146,9 @@ enum NCVideoVLCPresenter {
             return
         }
 
+        // Stop VLC synchronously before changing the Media Viewer page.
+        currentViewController.stop()
+
         currentViewController.dismiss(animated: false) {
             clearCurrent(currentViewController)
         }

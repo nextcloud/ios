@@ -189,10 +189,14 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
             updatePlayPauseButton()
             showControls(animated: false)
             stopControlsHideTimer()
+        } else if mediaPlayer.state == .ended ||
+                    mediaPlayer.state == .stopped {
+            restartPlaybackFromBeginning()
         } else {
             isPlaybackRequested = true
             updatePlayPauseButton()
             mediaPlayer.play()
+            startProgressTimer()
             scheduleControlsHide()
         }
 

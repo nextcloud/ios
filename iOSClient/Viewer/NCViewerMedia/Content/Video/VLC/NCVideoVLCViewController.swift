@@ -22,6 +22,7 @@ final class NCVideoVLCViewController: UIViewController {
     private var shouldAutoPlayOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
+    private var isReplayFromBeginningRequested = false
 
     // MARK: - Paging Callbacks
 
@@ -545,8 +546,10 @@ final class NCVideoVLCViewController: UIViewController {
         stopControlsHideTimer()
     }
 
-    private func stop() {
+    func stop() {
+        stopControlsHideTimer()
         isPlaybackRequested = false
+        isReplayFromBeginningRequested = false
 
         mediaPlayer.stop()
         mediaPlayer.media = nil
@@ -556,6 +559,40 @@ final class NCVideoVLCViewController: UIViewController {
         updatePlayPauseButton()
         updateProgressControls()
         clearVLCTrackMenuItems()
+    }
+
+    func restartPlaybackFromBeginning() {
+        isReplayFromBeginningRequested = true
+        isPlaybackRequested = true
+        updatePlayPauseButton()
+
+        if mediaPlayer.state == .stopped {
+            startReplayAfterStop()
+        } else {
+            mediaPlayer.stop()
+        }
+    }
+
+    private func startReplayAfterStop() {
+        guard isReplayFromBeginningRequested else {
+            return
+        }
+
+        isReplayFromBeginningRequested = false
+
+        let media = VLCMedia(url: url)
+
+        if let userAgent,
+           !userAgent.isEmpty,
+           !url.isFileURL {
+            media.addOption(":http-user-agent=\(userAgent)")
+        }
+
+        mediaPlayer.media = media
+        mediaPlayer.play()
+
+        startProgressTimer()
+        scheduleControlsHide()
     }
 
     private func attachDrawable() {
@@ -577,9 +614,24 @@ final class NCVideoVLCViewController: UIViewController {
         case .playing:
             isPlaybackRequested = true
 
+        case .ended:
+            isPlaybackRequested = false
+            stopProgressTimer()
+            updatePlayPauseButton()
+            updateProgressLabels(position: 1)
+            showControls(animated: true)
+            stopControlsHideTimer()
+            return
+
+        case .stopped:
+            if isReplayFromBeginningRequested {
+                startReplayAfterStop()
+                return
+            }
+
+            isPlaybackRequested = false
+
         case .paused,
-             .stopped,
-             .ended,
              .error:
             isPlaybackRequested = false
 
