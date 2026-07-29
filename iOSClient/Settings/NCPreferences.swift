@@ -604,6 +604,37 @@ final class NCPreferences: NSObject {
         setUserDefaults(weekString, forKey: "cleaningWeek")
     }
 
+    // MARK: - Video
+
+    func alwaysUseVLCForVideo(account: String, ocId: String) -> Bool {
+        let key = alwaysUseVLCForVideoKey(
+            account: account,
+            ocId: ocId
+        )
+
+        return UserDefaults.standard.object(forKey: key) as? Bool == true
+    }
+
+    func setAlwaysUseVLCForVideo(_ value: Bool, account: String, ocId: String) {
+        let key = alwaysUseVLCForVideoKey(
+            account: account,
+            ocId: ocId
+        )
+
+        if value {
+            UserDefaults.standard.set(true, forKey: key)
+        } else {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
+
+    private func alwaysUseVLCForVideoKey(
+        account: String,
+        ocId: String
+    ) -> String {
+        "Preferences_alwaysUseVLCForVideo_\(account)|\(ocId)"
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

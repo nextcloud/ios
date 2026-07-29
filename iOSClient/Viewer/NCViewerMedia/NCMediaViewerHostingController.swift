@@ -39,27 +39,38 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             menu: nil
         )
 
-        item.menu = UIMenu(title: "", children: [
-            UIDeferredMenuElement.uncached { [weak self, weak item] completion in
-                guard let self,
-                      let metadata = self.model.selectedMetadata else {
-                    completion([])
-                    return
-                }
+        item.menu = UIMenu(
+            title: "",
+            children: [
+                UIDeferredMenuElement.uncached { [weak self, weak item] completion in
+                    guard let self,
+                          let metadata = self.model.selectedMetadata else {
+                        completion([])
+                        return
+                    }
 
-                if let menu = NCContextMenuViewer(
-                    metadata: metadata,
-                    controller: self.contextMenuController,
-                    viewController: self,
-                    webView: false,
-                    sender: item
-                ).viewMenu() {
-                    completion(menu.children)
-                } else {
-                    completion([])
+                    var menuChildren: [UIMenuElement] = []
+
+                    if let viewerMenu = NCContextMenuViewer(
+                        metadata: metadata,
+                        controller: self.contextMenuController,
+                        viewController: self,
+                        webView: false,
+                        sender: item
+                    ).viewMenu() {
+                        menuChildren.append(contentsOf: viewerMenu.children)
+                    }
+
+                    if let videoPlayerMenu = self.makeVideoPlayerMenu(
+                        metadata: metadata
+                    ) {
+                        menuChildren.append(videoPlayerMenu)
+                    }
+
+                    completion(menuChildren)
                 }
-            }
-        ])
+            ]
+        )
 
         return item
     }()
@@ -73,6 +84,103 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         target: self,
         action: #selector(mediaDetailButtonTapped)
     )
+
+    // MARK: - Video Player Menu
+
+    private func makeVideoPlayerMenu(
+        metadata: tableMetadata
+    ) -> UIMenu? {
+        guard metadata.classFile == NKTypeClassFile.video.rawValue else {
+            return nil
+        }
+
+        let playback = NCVideoPlaybackController.shared
+
+        guard playback.isCurrentVideo(
+            ocId: metadata.ocId,
+            etag: metadata.etag
+        ) else {
+            return nil
+        }
+
+        let alwaysUseVLC = NCPreferences().alwaysUseVLCForVideo(
+            account: metadata.account,
+            ocId: metadata.ocId
+        )
+
+        let actions: [UIMenuElement]
+
+        switch playback.engine {
+        case .avFoundation:
+            let useVLCAction = UIAction(
+                title: NSLocalizedString("_play_with_vlc_", comment: ""),
+                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate)
+            ) { _ in
+                // Prepares VLC but leaves the video on the cover.
+                NCVideoPlaybackController.shared.switchToVLC()
+            }
+
+            let alwaysUseVLCAction = UIAction(
+                title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
+                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
+                state: .off
+            ) { _ in
+                NCPreferences().setAlwaysUseVLCForVideo(
+                    true,
+                    account: metadata.account,
+                    ocId: metadata.ocId
+                )
+
+                // Prepares VLC but leaves the video on the cover.
+                NCVideoPlaybackController.shared.switchToVLC()
+            }
+
+            actions = [
+                useVLCAction,
+                alwaysUseVLCAction
+            ]
+
+        case .vlc:
+            // Show the VLC options only when this video was explicitly forced to VLC.
+            guard alwaysUseVLC else {
+                return nil
+            }
+
+            let useVLCAction = UIAction(
+                title: NSLocalizedString("_play_with_vlc_", comment: ""),
+                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate)
+            ) { _ in
+                NCVideoPlaybackController.shared.switchToVLC()
+            }
+
+            let disableAlwaysUseVLCAction = UIAction(
+                title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
+                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
+                state: .on
+            ) { _ in
+                NCPreferences().setAlwaysUseVLCForVideo(
+                    false,
+                    account: metadata.account,
+                    ocId: metadata.ocId
+                )
+            }
+
+            actions = [
+                useVLCAction,
+                disableAlwaysUseVLCAction
+            ]
+
+        case .loading,
+             .failed:
+            return nil
+        }
+
+        return UIMenu(
+            title: "",
+            options: .displayInline,
+            children: actions
+        )
+    }
 
     /// Creates a media viewer hosting controller.
     init(

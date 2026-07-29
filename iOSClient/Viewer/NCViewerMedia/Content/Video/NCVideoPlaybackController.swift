@@ -47,7 +47,7 @@ final class NCVideoPlaybackController: ObservableObject {
     private var currentOcId: String?
     private var currentEtag: String?
     private var currentURL: URL?
-    private var currentFileName: String?
+    private var currentUserAgent: String?
     private var loadToken = UUID()
 
     private init() { }
@@ -94,7 +94,7 @@ final class NCVideoPlaybackController: ObservableObject {
         currentOcId = metadata.ocId
         currentEtag = metadata.etag
         currentURL = url
-        currentFileName = fileName
+        currentUserAgent = userAgent
         engine = .loading
 
         if url.isFileURL,
@@ -104,6 +104,15 @@ final class NCVideoPlaybackController: ObservableObject {
         }
 
         configureAudioSession()
+
+        if NCPreferences().alwaysUseVLCForVideo(account: metadata.account, ocId: metadata.ocId) {
+            resolveWithVLC(
+                url: url,
+                userAgent: userAgent,
+                token: token
+            )
+            return
+        }
 
         if shouldUseVLCWithoutAVFoundation(
             url: url,
@@ -118,11 +127,23 @@ final class NCVideoPlaybackController: ObservableObject {
         }
 
         prepareAVFoundation(
-            metadata: metadata,
             url: url,
             userAgent: userAgent,
             httpHeaders: url.isFileURL ? [:] : httpHeaders,
             token: token
+        )
+    }
+
+    // Changes only the prepared engine. Playback still starts from the cover.
+    func switchToVLC() {
+        guard let currentURL else {
+            return
+        }
+
+        resolveWithVLC(
+            url: currentURL,
+            userAgent: currentUserAgent,
+            token: loadToken
         )
     }
 
@@ -133,6 +154,7 @@ final class NCVideoPlaybackController: ObservableObject {
 
         stop()
     }
+
     // Releases the current prepared playback state and pending AVFoundation probes.
     func stop() {
         loadToken = UUID()
@@ -147,15 +169,13 @@ final class NCVideoPlaybackController: ObservableObject {
         currentOcId = nil
         currentEtag = nil
         currentURL = nil
-        currentFileName = nil
-
+        currentUserAgent = nil
         engine = .loading
     }
 
     // MARK: - AVFoundation
 
     private func prepareAVFoundation(
-        metadata: tableMetadata,
         url: URL,
         userAgent: String?,
         httpHeaders: [String: String],
