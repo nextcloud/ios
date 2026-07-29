@@ -4,7 +4,6 @@
 
 import AVFoundation
 import UIKit
-import SwiftUI
 import MobileVLCKit
 import NextcloudKit
 import UniformTypeIdentifiers
@@ -72,30 +71,6 @@ final class NCVideoVLCViewController: UIViewController {
             animated: animated
         )
     }
-
-    // MARK: - Navigation Items
-
-    private lazy var moreNavigationItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(
-            image: NCImageCache.shared.getImageButtonMore(),
-            primaryAction: nil,
-            menu: nil
-        )
-
-        item.menu = makeMoreMenu(sender: item)
-
-        return item
-    }()
-
-    private lazy var mediaDetailNavigationItem = UIBarButtonItem(
-        image: NCUtility().loadImage(
-            named: "info.circle",
-            colors: [NCBrandColor.shared.iconImageColor]
-        ),
-        style: .plain,
-        target: self,
-        action: #selector(mediaDetailButtonTapped)
-    )
 
     // MARK: - Init
 
@@ -248,8 +223,6 @@ final class NCVideoVLCViewController: UIViewController {
         updateTitleLabel(metadata: metadata)
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
 
-        refreshMoreMenu()
-
         if urlChanged {
             start()
         }
@@ -289,11 +262,6 @@ final class NCVideoVLCViewController: UIViewController {
             target: self,
             action: #selector(closeTapped)
         )
-
-        navigationItem.rightBarButtonItems = [
-            moreNavigationItem,
-            mediaDetailNavigationItem
-        ]
     }
 
     private func configureFloatingTitleViewIfNeeded() {
@@ -315,65 +283,9 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    private func refreshMoreMenu() {
-        moreNavigationItem.menu = makeMoreMenu(sender: moreNavigationItem)
-    }
-
-    // Use the real menu anchor as sender so popovers are presented from the correct source.
-    private func makeMoreMenu(sender: Any?) -> UIMenu {
-        UIMenu(title: "", children: [
-            UIDeferredMenuElement.uncached { [weak self] completion in
-                guard let self else {
-                    completion([])
-                    return
-                }
-
-                if let menu = NCContextMenuViewer(
-                    metadata: self.metadata,
-                    controller: self.contextMenuController,
-                    viewController: self,
-                    webView: false,
-                    sender: sender
-                ).viewMenu() {
-                    completion(menu.children)
-                } else {
-                    completion([])
-                }
-            }
-        ])
-    }
-
     @objc
     private func closeTapped() {
         close()
-    }
-
-    @objc
-    private func mediaDetailButtonTapped() {
-        presentDetailView(animated: true)
-    }
-
-    private func presentDetailView(animated: Bool) {
-        let detailView = NCMediaViewerDetailView(
-            metadata: metadata,
-            exif: ExifData()
-        )
-
-        let hostingController = UIHostingController(rootView: detailView)
-        hostingController.modalPresentationStyle = .pageSheet
-
-        if let sheetPresentationController = hostingController.sheetPresentationController {
-            sheetPresentationController.detents = [.medium(), .large()]
-            sheetPresentationController.prefersGrabberVisible = true
-            sheetPresentationController.preferredCornerRadius = 24
-            sheetPresentationController.prefersEdgeAttachedInCompactHeight = true
-            sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = false
-        }
-
-        present(
-            hostingController,
-            animated: animated
-        )
     }
 
     func close() {
