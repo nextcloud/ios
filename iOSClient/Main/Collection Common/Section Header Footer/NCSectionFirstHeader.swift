@@ -294,7 +294,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
             guard result.error == .success,
                   let data = result.responseData?.data,
-                  let image = NCUtility().createImageFileFrom(
+                  let image = utility.createImageFileFrom(
                     data: data,
                     ocId: metadata.ocId,
                     etag: metadata.etag,

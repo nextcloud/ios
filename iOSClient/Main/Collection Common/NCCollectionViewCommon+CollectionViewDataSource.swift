@@ -75,13 +75,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     return
                 }
 
-                let image = await NCUtility().createImageFileFrom(
+                let image = await self.utility.createImageFileFrom(
                     data: data,
                     ocId: ocId,
                     etag: etag,
                     ext: ext,
                     userId: self.session.userId,
                     urlBase: self.session.urlBase)
+
+                if let image {
+                    self.imageCache.addImageCache(ocId: ocId, etag: etag, image: image, ext: ext)
+                }
 
                 await MainActor.run {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
@@ -104,7 +108,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                     } else {
                         cell.previewImg?.contentMode = .scaleAspectFit
-                        cell.previewImg?.image = NCUtility().loadImage(
+                        cell.previewImg?.image = self.utility.loadImage(
                             named: iconName,
                             useTypeIconFile: true,
                             account: account

@@ -501,38 +501,44 @@ extension NCCollectionViewCommon {
         // AVATAR
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
-            let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+
+            if let image = NCImageCache.shared.getImageCache(key: fileName) {
                 cell.setSharedAvatarImage(image)
-            }
-            let user = metadata.ownerId
-            let ocId = metadata.ocId
-            let account = metadata.account
+            } else {
+                let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.setSharedAvatarImage(image)
+                }
+                let user = metadata.ownerId
+                let ocId = metadata.ocId
+                let account = metadata.account
 
-            Task {
-                let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
-                await NCTransferCoordinator.shared.start(identifier: fileName,
-                                                         priority: .userInitiated) {
-                    let results = await NextcloudKit.shared.downloadAvatarAsync(
-                        user: user,
-                        fileNameLocalPath: fileNameLocalPath,
-                        sizeImage: NCGlobal.shared.avatarSize,
-                        avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                        etagResource: etagResource,
-                        account: account)
+                Task {
+                    let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
+                    await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                             priority: .userInitiated) {
+                        let results = await NextcloudKit.shared.downloadAvatarAsync(
+                            user: user,
+                            fileNameLocalPath: fileNameLocalPath,
+                            sizeImage: NCGlobal.shared.avatarSize,
+                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                            etagResource: etagResource,
+                            account: account)
 
-                    if results.error == .success,
-                       let image = results.imageAvatar,
-                       let etag = results.etag,
-                       etag != etagResource {
-                        await self.database.addAvatarAsync(fileName: fileName, etag: etag)
-                        await MainActor.run {
-                            guard
-                                let cell = self.collectionView.cellForItem(at: indexPath) as? NCListCell,
-                                cell.metadata?.ocId == ocId else {
-                                return
+                        if results.error == .success,
+                           let image = results.imageAvatar,
+                           let etag = results.etag,
+                           etag != etagResource {
+                            self.imageCache.addImageCache(image: image, key: fileName)
+                            await self.database.addAvatarAsync(fileName: fileName, etag: etag)
+                            await MainActor.run {
+                                guard
+                                    let cell = self.collectionView.cellForItem(at: indexPath) as? NCListCell,
+                                    cell.metadata?.ocId == ocId else {
+                                    return
+                                }
+                                cell.setSharedAvatarImage(image)
                             }
-                            cell.setSharedAvatarImage(image)
                         }
                     }
                 }

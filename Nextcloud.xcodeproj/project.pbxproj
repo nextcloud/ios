@@ -215,6 +215,7 @@
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F70C8742301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70C8741301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */; };
@@ -1402,6 +1403,7 @@
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
+		F70C8741301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift"; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
 		F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -2694,6 +2696,7 @@
 				F7743A132C33F13A0034F670 /* NCCollectionViewCommon+CollectionViewDataSource.swift */,
 				F7743A112C33F0A20034F670 /* NCCollectionViewCommon+CollectionViewDelegate.swift */,
 				F747EB0C2C4AC1FF00F959A8 /* NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift */,
+				F70C8741301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */,
 				F7D890742BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift */,
 				F799DF872C4B83CC003410B5 /* NCCollectionViewCommon+EasyTipView.swift */,
 				F778231D2C42C07C001BB94F /* NCCollectionViewCommon+MediaLayout.swift */,
@@ -4894,6 +4897,7 @@
 				F78ACD52219046DC0088454D /* NCSectionFirstHeader.swift in Sources */,
 				F743C89E2E5B25A1000173A9 /* UIScene+Extension.swift in Sources */,
 				F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
+				F70C8742301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */,
 				F710D2022405826100A6033D /* NCContextMenuViewer.swift in Sources */,
 				F7EDBB582FA8D00200098C42 /* NCMediaViewerAppearance.swift in Sources */,
 				F74E3EEB2FB0AD8500252FA0 /* Notification+Extension.swift in Sources */,
