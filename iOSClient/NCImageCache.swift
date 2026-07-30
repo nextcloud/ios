@@ -53,8 +53,16 @@ final class NCImageCache: @unchecked Sendable {
         cache.setObject(image, forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
     }
 
+    func addImageCache(image: UIImage, key: String) {
+        cache.setObject(image, forKey: key as NSString)
+    }
+
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
         cache.object(forKey: cacheKey(ocId: ocId, etag: etag, ext: ext))
+    }
+
+    func getImageCache(key: String) -> UIImage? {
+        return cache.object(forKey: key as NSString)
     }
 
     func removeAll() {

@@ -256,6 +256,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
 
+        collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
