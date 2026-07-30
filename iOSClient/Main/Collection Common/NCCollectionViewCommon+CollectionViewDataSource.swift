@@ -159,11 +159,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
+        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // E2EE create preview
         if self.isCurrentDirectoryE2EE,
            metadata.isImageOrVideo,
-           !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
+           !existsImagePreview {
             utility.createImageFileFrom(metadata: metadata)
         }
 
@@ -175,18 +176,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
                 gridCell.delegate = self
-                return self.gridCell(cell: gridCell, indexPath: indexPath, metadata: metadata)
+                return self.gridCell(cell: gridCell, indexPath: indexPath, metadata: metadata, existsImagePreview: existsImagePreview)
             }
         } else if isLayoutGrid {
             // LAYOUT GRID
             let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
             gridCell.delegate = self
-            return self.gridCell(cell: gridCell, indexPath: indexPath, metadata: metadata)
+            return self.gridCell(cell: gridCell, indexPath: indexPath, metadata: metadata, existsImagePreview: existsImagePreview)
         } else {
             // LAYOUT LIST
             let listCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
             listCell.delegate = self
-            return self.listCell(cell: listCell, indexPath: indexPath, metadata: metadata)
+            return self.listCell(cell: listCell, indexPath: indexPath, metadata: metadata, existsImagePreview: existsImagePreview)
         }
     }
 

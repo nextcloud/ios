@@ -412,7 +412,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 
 #if !EXTENSION
 extension NCCollectionViewCommon {
-    func listCell(cell: NCListCell, indexPath: IndexPath, metadata: tableMetadata) -> NCListCell {
+    func listCell(cell: NCListCell, indexPath: IndexPath, metadata: tableMetadata, existsImagePreview: Bool) -> NCListCell {
         defer {
             let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
             if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
@@ -422,7 +422,6 @@ extension NCCollectionViewCommon {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
-        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // CONTENT MODE
         cell.previewImg?.layer.borderWidth = 0
