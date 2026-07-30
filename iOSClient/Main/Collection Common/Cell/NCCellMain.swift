@@ -142,6 +142,9 @@ extension NCCollectionViewCommon {
             let ext = global.getSizeExtension(column: self.numberOfColumns)
             if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                 cell.previewImg?.image = image
+            } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase) {
+                imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+                cell.previewImg?.image = image
             } else if cell.previewImg?.image == nil {
                 if metadata.iconName.isEmpty {
                     cell.previewImg?.image = imageCache.getImageFile()
@@ -174,37 +177,14 @@ extension NCCollectionViewCommon {
             if !metadata.iconUrl.isEmpty {
                 if let user = getAvatarFromIconUrl(metadata: metadata) {
                     let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: user)
-                    let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
                     if let image = NCImageCache.shared.getImageCache(key: fileName) {
                         cell.previewImg?.image = image
                     } else {
-                        let account = metadata.account
-                        let ocId = metadata.ocId
-
-                        Task {
-                            let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
-                            let results = await NextcloudKit.shared.downloadAvatarAsync(
-                                user: user,
-                                fileNameLocalPath: fileNameLocalPath,
-                                sizeImage: NCGlobal.shared.avatarSize,
-                                avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                etagResource: etagResource,
-                                account: account)
-
-                            if results.error == .success,
-                               let image = results.imageAvatar,
-                               let etag = results.etag,
-                               etag != etagResource {
-                                imageCache.addImageCache(image: image, key: fileName)
-                                await self.database.addAvatarAsync(fileName: fileName, etag: etag)
-                                await MainActor.run {
-                                    guard cell.metadata?.ocId == ocId else {
-                                        return
-                                    }
-                                    cell.previewImg?.image = image
-                                }
-                            }
+                        let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            cell.previewImg?.image = image
+                            imageCache.addImageCache(image: image, key: fileName)
                         }
                     }
                 }

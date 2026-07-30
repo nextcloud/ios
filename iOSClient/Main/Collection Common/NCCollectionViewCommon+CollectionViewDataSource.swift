@@ -51,6 +51,48 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let iconName = metadata.iconName
         let account = metadata.account
 
+        // AVATAR
+        //
+        if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
+            let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
+            let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+
+            if UIImage(contentsOfFile: fileNameLocalPath) == nil,
+               let user = getAvatarFromIconUrl(metadata: metadata) {
+                Task {
+                    let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
+                    await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                             priority: .userInitiated) {
+                        let results = await NextcloudKit.shared.downloadAvatarAsync(
+                            user: user,
+                            fileNameLocalPath: fileNameLocalPath,
+                            sizeImage: NCGlobal.shared.avatarSize,
+                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                            etagResource: etagResource,
+                            account: account)
+
+                        if results.error == .success,
+                           let image = results.imageAvatar,
+                           let etag = results.etag,
+                           etag != etagResource {
+                            self.imageCache.addImageCache(image: image, key: fileName)
+                            await self.database.addAvatarAsync(fileName: fileName, etag: etag)
+                            await MainActor.run {
+                                guard
+                                    let cell = self.collectionView.cellForItem(at: indexPath) as? NCListCell,
+                                    cell.metadata?.ocId == ocId else {
+                                    return
+                                }
+                                cell.setSharedAvatarImage(image)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // PREVIEW IMAGE
+        //
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
         let imageExists = self.utilityFileSystem.fileProviderStorageImageExists(ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
@@ -82,10 +124,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     ext: ext,
                     userId: self.session.userId,
                     urlBase: self.session.urlBase)
-
-                if let image {
-                    self.imageCache.addImageCache(ocId: ocId, etag: etag, image: image, ext: ext)
-                }
 
                 await MainActor.run {
                     guard let visibleIndexPath = self.collectionView.indexPathsForVisibleItems.first(where: {
