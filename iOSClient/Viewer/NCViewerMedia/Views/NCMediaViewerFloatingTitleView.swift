@@ -5,11 +5,9 @@
 import UIKit
 
 final class NCMediaViewerFloatingTitleView: UIView {
-    private weak var navigationBar: UINavigationBar?
-    private var navigationBarConstraints: [NSLayoutConstraint] = []
-    private var centerXConstraint: NSLayoutConstraint?
-    private var heightConstraint: NSLayoutConstraint?
     private var lastLayoutWidth: CGFloat = 0
+    private let maximumWidth: CGFloat = 400
+    private let preferredHeight: CGFloat = 44
 
     private let titleButton: UIButton = {
         let button: UIButton
@@ -32,10 +30,22 @@ final class NCMediaViewerFloatingTitleView: UIView {
     init() {
         super.init(frame: .zero)
 
-        translatesAutoresizingMaskIntoConstraints = false
+        translatesAutoresizingMaskIntoConstraints = true
         backgroundColor = .clear
-        clipsToBounds = false
+        clipsToBounds = true
         isAccessibilityElement = true
+
+        titleButton.clipsToBounds = true
+        titleButton.titleLabel?.numberOfLines = 1
+        titleButton.titleLabel?.lineBreakMode = .byTruncatingMiddle
+        titleButton.titleLabel?.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
+        titleButton.titleLabel?.setContentHuggingPriority(
+            .defaultLow,
+            for: .horizontal
+        )
 
         addSubview(titleButton)
 
@@ -45,11 +55,21 @@ final class NCMediaViewerFloatingTitleView: UIView {
             titleButton.topAnchor.constraint(equalTo: topAnchor),
             titleButton.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+
+        setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(
+            width: maximumWidth,
+            height: preferredHeight
+        )
     }
 
     override func layoutSubviews() {
@@ -63,66 +83,32 @@ final class NCMediaViewerFloatingTitleView: UIView {
 
         let leadingInset = titleButton.configuration?.contentInsets.leading ?? 0
         let trailingInset = titleButton.configuration?.contentInsets.trailing ?? 0
+        let availableWidth = max(
+            0,
+            bounds.width - leadingInset - trailingInset
+        )
 
-        titleButton.titleLabel?.preferredMaxLayoutWidth = max(0, bounds.width - leadingInset - trailingInset)
+        titleButton.titleLabel?.preferredMaxLayoutWidth = availableWidth
         titleButton.titleLabel?.numberOfLines = 1
         titleButton.titleLabel?.lineBreakMode = .byTruncatingMiddle
+        titleButton.titleLabel?.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
+
+        titleButton.subtitleLabel?.preferredMaxLayoutWidth = availableWidth
+        titleButton.subtitleLabel?.numberOfLines = 1
+        titleButton.subtitleLabel?.lineBreakMode = .byTruncatingMiddle
+        titleButton.subtitleLabel?.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
 
         var configuration = titleButton.configuration
         configuration?.titleAlignment = .center
         configuration?.titleLineBreakMode = .byTruncatingMiddle
+        configuration?.subtitleLineBreakMode = .byTruncatingMiddle
         titleButton.configuration = configuration
-
-        titleButton.invalidateIntrinsicContentSize()
-    }
-
-    func attach(to navigationBar: UINavigationBar, widthMultiplier: CGFloat = 0.36, verticalOffset: CGFloat = 0) {
-        if self.navigationBar !== navigationBar || superview !== navigationBar {
-            navigationBarConstraints.forEach { $0.isActive = false }
-            navigationBarConstraints.removeAll()
-            removeFromSuperview()
-            navigationBar.addSubview(self)
-
-            let centerXConstraint = centerXAnchor.constraint(equalTo: navigationBar.centerXAnchor)
-            let heightConstraint = heightAnchor.constraint(equalToConstant: navigationItemHeight(in: navigationBar))
-            let topConstraint = topAnchor.constraint(equalTo: navigationBar.topAnchor, constant: verticalOffset)
-            self.centerXConstraint = centerXConstraint
-            self.heightConstraint = heightConstraint
-
-            navigationBarConstraints = [
-                centerXConstraint,
-                topConstraint,
-                heightConstraint,
-                widthAnchor.constraint(
-                    equalTo: navigationBar.widthAnchor,
-                    multiplier: widthMultiplier
-                )
-            ]
-            NSLayoutConstraint.activate(navigationBarConstraints)
-            self.navigationBar = navigationBar
-        }
-
-        navigationBar.bringSubviewToFront(self)
-        updateNavigationItemHeight()
-        updateHorizontalAlignment()
-        setNeedsLayout()
-    }
-
-    func updateHorizontalAlignment() {
-        centerXConstraint?.constant = 0
-    }
-
-    func updateNavigationItemHeight() {
-        guard let navigationBar else {
-            return
-        }
-
-        let height = navigationItemHeight(in: navigationBar)
-        heightConstraint?.constant = height
-    }
-
-    private func navigationItemHeight(in navigationBar: UINavigationBar) -> CGFloat {
-        min(44, navigationBar.bounds.height)
     }
 
     func clear() {
@@ -160,6 +146,7 @@ final class NCMediaViewerFloatingTitleView: UIView {
             configuration?.attributedSubtitle = nil
         }
         titleButton.configuration = configuration
+        invalidateIntrinsicContentSize()
 
         lastLayoutWidth = 0
         setNeedsLayout()
