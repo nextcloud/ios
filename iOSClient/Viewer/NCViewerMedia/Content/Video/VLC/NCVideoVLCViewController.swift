@@ -175,7 +175,6 @@ final class NCVideoVLCViewController: UIViewController {
 
         attachDrawable()
         updateControlsNavigationBar()
-        configureFloatingTitleViewIfNeeded()
     }
 
     override func viewWillTransition(
@@ -192,7 +191,6 @@ final class NCVideoVLCViewController: UIViewController {
         }, completion: { [weak self] _ in
             self?.attachDrawable()
             self?.updateControlsNavigationBar()
-            self?.configureFloatingTitleViewIfNeeded()
         })
     }
 
@@ -254,7 +252,7 @@ final class NCVideoVLCViewController: UIViewController {
     private func configureNavigationItem() {
         title = nil
         navigationItem.title = nil
-        navigationItem.titleView = nil
+        navigationItem.titleView = floatingTitleView
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.backward"),
@@ -262,14 +260,6 @@ final class NCVideoVLCViewController: UIViewController {
             target: self,
             action: #selector(closeTapped)
         )
-    }
-
-    private func configureFloatingTitleViewIfNeeded() {
-        guard let navigationBar = navigationController?.navigationBar else {
-            return
-        }
-
-        floatingTitleView.attach(to: navigationBar)
     }
 
     private func updateTitleLabel(metadata: tableMetadata) {

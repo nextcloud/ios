@@ -251,7 +251,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         super.viewDidLayoutSubviews()
 
         updateRootViewNavigationBarIfNeeded()
-        configureFloatingTitleViewIfNeeded()
     }
 
     private func updateRootViewNavigationBarIfNeeded() {
@@ -309,10 +308,11 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     // MARK: - Navigation
 
     /// Configures the navigation item used by the viewer.
+    /// Configures the navigation item used by the viewer.
     private func configureNavigationItem() {
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.title = nil
-        navigationItem.titleView = nil
+        navigationItem.titleView = floatingTitleView
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
@@ -335,15 +335,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 self?.setChromeHidden(isHidden, animated: true)
             }
             .store(in: &cancellables)
-    }
-
-    /// Configures the floating title view inside the navigation bar chrome.
-    private func configureFloatingTitleViewIfNeeded() {
-        guard let navigationBar = navigationController?.navigationBar else {
-            return
-        }
-
-        floatingTitleView.attach(to: navigationBar)
     }
 
     /// Updates the floating title using the current media metadata.

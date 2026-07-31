@@ -210,7 +210,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         updatePictureInPictureLayout()
         updateControlsNavigationBar()
-        configureFloatingTitleViewIfNeeded()
     }
 
     override func viewWillTransition(
@@ -227,7 +226,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }, completion: { [weak self] _ in
             self?.updatePictureInPictureLayout()
             self?.updateControlsNavigationBar()
-            self?.configureFloatingTitleViewIfNeeded()
         })
     }
 
@@ -288,7 +286,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func configureNavigationItem() {
         title = nil
         navigationItem.title = nil
-        navigationItem.titleView = nil
+        navigationItem.titleView = floatingTitleView
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.backward"),
@@ -296,14 +294,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
             target: self,
             action: #selector(closeTapped)
         )
-    }
-
-    private func configureFloatingTitleViewIfNeeded() {
-        guard let navigationBar = navigationController?.navigationBar else {
-            return
-        }
-
-        floatingTitleView.attach(to: navigationBar)
     }
 
     private func updateTitleLabel(metadata: tableMetadata) {
