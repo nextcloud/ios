@@ -284,11 +284,13 @@ private extension NCVideoViewerContentView {
 
     @MainActor
     func stopPlaybackForDeselection() {
-        resetPlaybackPresentationState()
+        guard isCurrentPlaybackVideo() else { return }
 
         NCVideoAVPlayerPresenter.dismiss()
-        NCVideoVLCPresenter.dismiss()
-        playback.stop()
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            playback.stopIfCurrent(ocId: metadata.ocId)
+        }
     }
 
     @MainActor

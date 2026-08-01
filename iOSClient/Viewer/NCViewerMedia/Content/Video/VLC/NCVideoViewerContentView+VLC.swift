@@ -40,25 +40,17 @@ extension NCVideoViewerContentView {
 
     @MainActor
     func goToPreviousPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onPreviousPage?()
+        }
     }
 
     @MainActor
     func goToNextPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onNextPage?()
+        }
     }
 }

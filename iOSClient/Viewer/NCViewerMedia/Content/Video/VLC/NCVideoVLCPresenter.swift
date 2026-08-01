@@ -13,6 +13,8 @@ enum NCVideoVLCPresenter {
     private static weak var currentViewController: NCVideoVLCViewController?
     private static var currentURL: URL?
     private static var isPresenting = false
+    private static var isDismissing = false
+    private static var dismissCompletions: [() -> Void] = []
 
     // MARK: - Public API
     // Presents or updates the single VLC fullscreen controller.
@@ -30,6 +32,9 @@ enum NCVideoVLCPresenter {
         onClose: ((_ ocId: String?) -> Void)? = nil
     ) {
         let url = preparedPlayback.url
+
+        guard !isDismissing else { return }
+
         if currentURL == url,
            let currentViewController {
             currentViewController.update(
@@ -141,21 +146,53 @@ enum NCVideoVLCPresenter {
         isPresenting = false
     }
 
-    static func dismissCurrent() {
-        guard let currentViewController else {
+    static func dismissCurrent(completion: (() -> Void)? = nil) {
+        if let completion {
+            dismissCompletions.append(completion)
+        }
+
+        guard !isDismissing else { return }
+        guard let viewController = currentViewController else {
+            finishDismissal(for: nil)
             return
         }
 
-        // Stop VLC synchronously before changing the Media Viewer page.
-        currentViewController.stop()
+        isDismissing = true
+        viewController.stop { [weak viewController] in
+            guard let viewController else {
+                finishDismissal(for: nil)
+                return
+            }
 
-        currentViewController.dismiss(animated: false) {
-            clearCurrent(currentViewController)
+            let controllerToDismiss =
+                viewController.navigationController ?? viewController
+
+            controllerToDismiss.dismiss(animated: false) {
+                finishDismissal(for: viewController)
+            }
         }
     }
 
-    static func dismiss() {
-        dismissCurrent()
+    static func dismiss(completion: (() -> Void)? = nil) {
+        dismissCurrent(completion: completion)
+    }
+
+    private static func finishDismissal(
+        for viewController: NCVideoVLCViewController?
+    ) {
+        if let viewController {
+            clearCurrent(viewController)
+        } else {
+            currentViewController = nil
+            currentURL = nil
+            isPresenting = false
+        }
+
+        isDismissing = false
+
+        let completions = dismissCompletions
+        dismissCompletions.removeAll()
+        completions.forEach { $0() }
     }
 
     // MARK: - Private

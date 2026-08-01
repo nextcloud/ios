@@ -50,6 +50,8 @@ final class NCVideoVLCViewController: UIViewController {
 
     internal let mediaPlayer = VLCMediaPlayer()
     private var externalSubtitleURL: URL?
+    private var isStopInFlight = false
+    private var stopCompletions: [() -> Void] = []
 
     internal var progressTimer: Timer?
     internal var controlsHideTimer: Timer?
@@ -104,8 +106,8 @@ final class NCVideoVLCViewController: UIViewController {
 
     deinit {
         stopControlsHideTimer()
+        stopProgressTimer()
         mediaPlayer.delegate = nil
-        stop()
     }
 
     // MARK: - Lifecycle
@@ -205,27 +207,33 @@ final class NCVideoVLCViewController: UIViewController {
         contextMenuController: NCMainTabBarController?
     ) {
         let urlChanged = self.url != preparedPlayback.url
+        let applyConfiguration = { [weak self] in
+            guard let self else { return }
 
-        if urlChanged {
-            stop()
+            self.metadata = metadata
+            self.userAgent = userAgent
+            self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
+            self.isChromeHidden = isChromeHidden
+            self.contextMenuController = contextMenuController
+            self.updateViewerBackgroundIfNeeded()
+            self.updateTitleLabel(metadata: metadata)
+            self.refreshVLCTrackMenuItemsWhenPlayerIsActive()
+            self.updatePlayPauseButton()
+        }
+
+        guard urlChanged else {
+            applyConfiguration()
+            return
+        }
+
+        stop { [weak self] in
+            guard let self else { return }
+
             self.preparedPlayback = preparedPlayback
             self.url = preparedPlayback.url
+            applyConfiguration()
+            self.start()
         }
-
-        self.metadata = metadata
-        self.userAgent = userAgent
-        self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
-        self.isChromeHidden = isChromeHidden
-        self.contextMenuController = contextMenuController
-        updateViewerBackgroundIfNeeded()
-        updateTitleLabel(metadata: metadata)
-        refreshVLCTrackMenuItemsWhenPlayerIsActive()
-
-        if urlChanged {
-            start()
-        }
-
-        updatePlayPauseButton()
     }
 
     private var viewerBackgroundColor: UIColor {
@@ -281,35 +289,17 @@ final class NCVideoVLCViewController: UIViewController {
     func close() {
         let closeCallback = onClose
         let closingOcId = metadata.ocId
-        let controllerToDismiss = navigationController ?? self
 
-        NCVideoVLCPresenter.clearCurrent(self)
-
-        controllerToDismiss.dismiss(animated: false) { [weak self] in
-            self?.stopControlsHideTimer()
-            self?.stopProgressTimer()
-            self?.stop()
-
-            DispatchQueue.main.async {
-                closeCallback?(closingOcId)
-            }
+        NCVideoVLCPresenter.dismiss {
+            closeCallback?(closingOcId)
         }
     }
 
     func closeImmediately() {
         let closeCallback = onClose
-        let controllerToDismiss = navigationController ?? self
 
-        NCVideoVLCPresenter.clearCurrent(self)
-
-        controllerToDismiss.dismiss(animated: false) { [weak self] in
-            self?.stopControlsHideTimer()
-            self?.stopProgressTimer()
-            self?.stop()
-
-            DispatchQueue.main.async {
-                closeCallback?(nil)
-            }
+        NCVideoVLCPresenter.dismiss {
+            closeCallback?(nil)
         }
     }
 
@@ -448,19 +438,41 @@ final class NCVideoVLCViewController: UIViewController {
         stopControlsHideTimer()
     }
 
-    func stop() {
+    func stop(completion: (() -> Void)? = nil) {
+        if let completion {
+            stopCompletions.append(completion)
+        }
+
+        guard !isStopInFlight else { return }
+
+        let hadPendingPlaybackRequest = isPlaybackRequested
         stopControlsHideTimer()
+        stopProgressTimer()
         isPlaybackRequested = false
         isReplayFromBeginningRequested = false
 
+        if mediaPlayer.media == nil ||
+            (mediaPlayer.state == .stopped && !hadPendingPlaybackRequest) {
+            finishStop()
+            return
+        }
+
+        isStopInFlight = true
         mediaPlayer.stop()
+    }
+
+    private func finishStop() {
+        isStopInFlight = false
         mediaPlayer.media = nil
         mediaPlayer.drawable = nil
         externalSubtitleURL = nil
-        stopProgressTimer()
         updatePlayPauseButton()
         updateProgressControls()
         clearVLCTrackMenuItems()
+
+        let completions = stopCompletions
+        stopCompletions.removeAll()
+        completions.forEach { $0() }
     }
 
     func restartPlaybackFromBeginning() {
@@ -512,6 +524,13 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     private func handleMediaPlayerStateChange() {
+        if isStopInFlight {
+            if mediaPlayer.state == .stopped {
+                finishStop()
+            }
+            return
+        }
+
         switch mediaPlayer.state {
         case .playing:
             isPlaybackRequested = true
