@@ -21,9 +21,7 @@ extension NCVideoViewerContentView {
             return
         }
 
-        presentedVLCURL = preparedPlayback.url
-
-        NCVideoVLCPresenter.present(
+        let didPresent = NCVideoVLCPresenter.present(
             metadata: metadata,
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
@@ -36,29 +34,30 @@ extension NCVideoViewerContentView {
             onNext: goToNextPageFromVLC,
             onClose: closeFromFullscreenVideo
         )
+
+        guard didPresent else {
+            presentedVLCURL = nil
+            hasRequestedPlayback = false
+            isLaunchingPlayback = false
+            return
+        }
+
+        presentedVLCURL = preparedPlayback.url
     }
 
     @MainActor
     func goToPreviousPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onPreviousPage?()
+        }
     }
 
     @MainActor
     func goToNextPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onNextPage?()
+        }
     }
 }
