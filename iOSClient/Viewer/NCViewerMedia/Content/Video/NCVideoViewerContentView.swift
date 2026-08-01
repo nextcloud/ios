@@ -119,6 +119,7 @@ private extension NCVideoViewerContentView {
                 NCVideoPlaybackCoverView(
                     previewURL: previewURL,
                     isPlayEnabled: isPlaybackCoverPlayEnabled,
+                    isLoading: isPlaybackCoverLoading,
                     isLaunchingPlayback: isLaunchingPlayback,
                     onToggleChrome: onToggleChrome,
                     onPlay: playFromCover
@@ -136,6 +137,7 @@ private extension NCVideoViewerContentView {
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
                 isPlayEnabled: false,
+                isLoading: true,
                 isLaunchingPlayback: true,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
@@ -189,6 +191,7 @@ private extension NCVideoViewerContentView {
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
                 isPlayEnabled: false,
+                isLoading: false,
                 isLaunchingPlayback: false,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
@@ -211,6 +214,18 @@ private extension NCVideoViewerContentView {
 // MARK: - Playback Cover
 
 private extension NCVideoViewerContentView {
+    var isPlaybackCoverLoading: Bool {
+        guard isSelected else {
+            return false
+        }
+
+        if case .loading = playback.engine {
+            return true
+        }
+
+        return false
+    }
+
     var isPlaybackCoverPlayEnabled: Bool {
         guard isSelected,
               isCurrentPlaybackVideo() else {

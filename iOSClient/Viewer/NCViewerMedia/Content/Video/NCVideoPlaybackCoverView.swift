@@ -8,6 +8,7 @@ struct NCVideoPlaybackCoverView: View {
     let previewURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle = .system
     let isPlayEnabled: Bool
+    let isLoading: Bool
     let isLaunchingPlayback: Bool
     let onToggleChrome: (() -> Void)?
     let onPlay: () -> Void
@@ -50,16 +51,26 @@ struct NCVideoPlaybackCoverView: View {
 
                 onPlay()
             } label: {
-                Image(systemName: "play.fill")
-                    .font(.system(size: 36, weight: .regular))
-                    .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
-                    .videoControlIconShadow()
-                    .frame(width: 62, height: 62)
-                    .coverPlayButtonBackground(isEnabled: isPlayEnabled)
+                ZStack {
+                    if isLoading || isLaunchingPlayback {
+                        ProgressView()
+                            .controlSize(.large)
+                            .tint(.white)
+                            .transition(.opacity)
+                    } else {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 36, weight: .regular))
+                            .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
+                            .videoControlIconShadow()
+                            .transition(.opacity)
+                    }
+                }
+                .frame(width: 62, height: 62)
+                .coverPlayButtonBackground(isEnabled: isPlayEnabled)
             }
-            .disabled(!isPlayEnabled || isLaunchingPlayback)
-            .opacity(isLaunchingPlayback ? 0 : 1)
-            .scaleEffect(isLaunchingPlayback ? 1.12 : 1)
+            .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
+            .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
+            .animation(.easeInOut(duration: 0.18), value: isLoading)
             .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
             .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
         }
@@ -111,16 +122,18 @@ private extension View {
     NCVideoPlaybackCoverView(
         previewURL: NCVideoPlaybackCoverPreviewImage.url,
         isPlayEnabled: true,
+        isLoading: false,
         isLaunchingPlayback: false,
         onToggleChrome: {},
         onPlay: {}
     )
 }
 
-#Preview("Video Playback Cover - Disabled") {
+#Preview("Video Playback Cover - Loading") {
     NCVideoPlaybackCoverView(
         previewURL: NCVideoPlaybackCoverPreviewImage.url,
         isPlayEnabled: false,
+        isLoading: true,
         isLaunchingPlayback: false,
         onToggleChrome: {},
         onPlay: {}
