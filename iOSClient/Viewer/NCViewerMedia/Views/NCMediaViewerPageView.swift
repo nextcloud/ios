@@ -203,6 +203,7 @@ struct NCMediaViewerPageView: View {
                 metadata: metadata,
                 localURL: localURL,
                 previewURL: previewURL,
+                userAgent: userAgent,
                 isSelected: isSelected,
                 isChromeHidden: model.isChromeHidden,
                 contextMenuController: contextMenuController,
