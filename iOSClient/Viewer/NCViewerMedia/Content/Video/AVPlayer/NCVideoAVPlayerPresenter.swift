@@ -26,7 +26,8 @@ enum NCVideoAVPlayerPresenter {
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
         onNext: (() -> Void)? = nil,
-        onClose: ((_ ocId: String?) -> Void)? = nil
+        onClose: ((_ ocId: String?) -> Void)? = nil,
+        onPlaybackError: (() -> Void)? = nil
     ) {
         let url = preparedPlayback.url
         if currentURL == url,
@@ -44,6 +45,7 @@ enum NCVideoAVPlayerPresenter {
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onClose = onClose
+            currentViewController.onPlaybackError = onPlaybackError
 
             return
         }
@@ -66,6 +68,7 @@ enum NCVideoAVPlayerPresenter {
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onClose = onClose
+            currentViewController.onPlaybackError = onPlaybackError
 
             currentURL = url
             return
@@ -105,6 +108,7 @@ enum NCVideoAVPlayerPresenter {
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
         viewController.onClose = onClose
+        viewController.onPlaybackError = onPlaybackError
 
         currentViewController = viewController
         currentURL = url
@@ -141,18 +145,23 @@ enum NCVideoAVPlayerPresenter {
         isPresenting = false
     }
 
-    static func dismissCurrent() {
+    static func dismissCurrent(completion: (() -> Void)? = nil) {
         guard let currentViewController else {
+            completion?()
             return
         }
 
-        currentViewController.dismiss(animated: false) {
+        let controllerToDismiss =
+            currentViewController.navigationController ?? currentViewController
+
+        controllerToDismiss.dismiss(animated: false) {
             clearCurrent(currentViewController)
+            completion?()
         }
     }
 
-    static func dismiss() {
-        dismissCurrent()
+    static func dismiss(completion: (() -> Void)? = nil) {
+        dismissCurrent(completion: completion)
     }
 
     // MARK: - Private

@@ -47,6 +47,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
     var onClose: ((_ ocId: String?) -> Void)?
+    var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
     var canGoNext = false
 
@@ -78,8 +79,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var itemStatusObservation: NSKeyValueObservation?
     private var timeControlStatusObservation: NSKeyValueObservation?
     private var playbackEndObserver: NSObjectProtocol?
+    private var playbackFailureObserver: NSObjectProtocol?
     private var timeObserverToken: Any?
     private var preparedURL: URL?
+    private var hasReportedPlaybackError = false
     internal var isPlaybackRequested = false
 
     var isPictureInPictureActive: Bool {
@@ -479,6 +482,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        hasReportedPlaybackError = false
         isPlaybackRequested = shouldAutoPlayOnStart
 
         guard preparedURL != url else {
@@ -609,6 +613,16 @@ final class NCVideoAVPlayerViewController: UIViewController {
             ) { [weak self] _ in
                 self?.handlePlaybackEnded()
             }
+
+            playbackFailureObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemFailedToPlayToEndTime,
+                object: currentItem,
+                queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    self?.reportPlaybackErrorIfNeeded()
+                }
+            }
         }
     }
 
@@ -628,11 +642,21 @@ final class NCVideoAVPlayerViewController: UIViewController {
             NotificationCenter.default.removeObserver(playbackEndObserver)
             self.playbackEndObserver = nil
         }
+
+        if let playbackFailureObserver {
+            NotificationCenter.default.removeObserver(playbackFailureObserver)
+            self.playbackFailureObserver = nil
+        }
     }
 
     private func handleCurrentItemStatusChange() {
         updateProgressControls()
         updateSeekingState()
+
+        if player.currentItem?.status == .failed {
+            reportPlaybackErrorIfNeeded()
+            return
+        }
 
         guard player.currentItem?.status == .readyToPlay else {
             updatePlayPauseButton()
@@ -653,6 +677,28 @@ final class NCVideoAVPlayerViewController: UIViewController {
             showControls(animated: false)
             scheduleControlsHide()
         }
+    }
+
+    private func reportPlaybackErrorIfNeeded() {
+        guard !hasReportedPlaybackError else {
+            return
+        }
+
+        hasReportedPlaybackError = true
+        isPlaybackRequested = false
+
+        let playerError = player.currentItem?.error as NSError?
+        let errorDomain = playerError?.domain ?? "unknown"
+        let errorCode = playerError?.code ?? 0
+
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .error,
+            message: "VIDEO AVPlayer playback failed domain: \(errorDomain), code: \(errorCode)",
+            consoleOnly: false
+        )
+
+        onPlaybackError?()
     }
 
     private func handleTimeControlStatusChange() {

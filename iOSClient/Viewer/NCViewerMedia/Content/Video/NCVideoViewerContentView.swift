@@ -203,6 +203,19 @@ private extension NCVideoViewerContentView {
 
                 Text(NSLocalizedString("_video_not_available_", comment: ""))
                     .font(.headline)
+
+                Button {
+                    retryPlayback()
+                } label: {
+                    Label(
+                        NSLocalizedString("_retry_", comment: ""),
+                        systemImage: "arrow.clockwise"
+                    )
+                    .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.white)
+                .foregroundStyle(.black)
             }
             .foregroundStyle(.white)
             .padding(24)
@@ -513,6 +526,25 @@ extension NCVideoViewerContentView {
         presentedVLCURL = nil
         hasRequestedPlayback = false
         isLaunchingPlayback = false
+    }
+
+    @MainActor
+    func showPlaybackError() {
+        resetPlaybackPresentationState()
+        playback.stopIfCurrent(ocId: metadata.ocId)
+        errorMessage = ""
+    }
+
+    @MainActor
+    func retryPlayback() {
+        errorMessage = nil
+        resetPlaybackPresentationState()
+        playback.stopIfCurrent(ocId: metadata.ocId)
+        loadGeneration = UUID()
+
+        Task {
+            await loadVideoIfSelected()
+        }
     }
 
     @MainActor

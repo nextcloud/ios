@@ -34,8 +34,16 @@ extension NCVideoViewerContentView {
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromAVPlayer,
             onNext: goToNextPageFromAVPlayer,
-            onClose: closeFromFullscreenVideo
+            onClose: closeFromFullscreenVideo,
+            onPlaybackError: handleAVPlayerPlaybackError
         )
+    }
+
+    @MainActor
+    func handleAVPlayerPlaybackError() {
+        NCVideoAVPlayerPresenter.dismiss {
+            showPlaybackError()
+        }
     }
 
     @MainActor
