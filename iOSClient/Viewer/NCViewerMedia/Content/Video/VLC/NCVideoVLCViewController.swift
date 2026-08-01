@@ -427,6 +427,7 @@ final class NCVideoVLCViewController: UIViewController {
         updatePlayPauseButton()
 
         if shouldAutoPlayOnStart {
+            logPlaybackRequest()
             mediaPlayer.play()
         }
 
@@ -523,7 +524,47 @@ final class NCVideoVLCViewController: UIViewController {
         mediaPlayer.drawable = drawableView
     }
 
+    private func logPlaybackRequest() {
+        let scheme = url.scheme ?? "unknown"
+        let host = url.host ?? (url.isFileURL ? "local" : "unknown")
+
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .start,
+            message: "VIDEO VLC play requested scheme: \(scheme), host: \(host)",
+            consoleOnly: false
+        )
+    }
+
     private func handleMediaPlayerStateChange() {
+        let stateDescription: String
+
+        switch mediaPlayer.state {
+        case .stopped:
+            stateDescription = "stopped"
+        case .opening:
+            stateDescription = "opening"
+        case .buffering:
+            stateDescription = "buffering"
+        case .ended:
+            stateDescription = "ended"
+        case .error:
+            stateDescription = "error"
+        case .playing:
+            stateDescription = "playing"
+        case .paused:
+            stateDescription = "paused"
+        default:
+            stateDescription = "unknown"
+        }
+
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: mediaPlayer.state == .error ? .error : .debug,
+            message: "VIDEO VLC state: \(stateDescription)",
+            consoleOnly: false
+        )
+
         if isStopInFlight {
             if mediaPlayer.state == .stopped {
                 finishStop()

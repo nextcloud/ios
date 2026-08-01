@@ -21,9 +21,7 @@ extension NCVideoViewerContentView {
             return
         }
 
-        presentedVLCURL = preparedPlayback.url
-
-        NCVideoVLCPresenter.present(
+        let didPresent = NCVideoVLCPresenter.present(
             metadata: metadata,
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
@@ -36,6 +34,15 @@ extension NCVideoViewerContentView {
             onNext: goToNextPageFromVLC,
             onClose: closeFromFullscreenVideo
         )
+
+        guard didPresent else {
+            presentedVLCURL = nil
+            hasRequestedPlayback = false
+            isLaunchingPlayback = false
+            return
+        }
+
+        presentedVLCURL = preparedPlayback.url
     }
 
     @MainActor
