@@ -333,6 +333,7 @@ struct NCMediaViewerPageView: View {
             NCVideoPlaybackCoverView(
                 previewURL: nil,
                 isPlayEnabled: false,
+                isLoading: false,
                 isLaunchingPlayback: false,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }

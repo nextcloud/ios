@@ -28,6 +28,7 @@ final class NCVideoVLCViewController: UIViewController {
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
     var onClose: ((_ ocId: String?) -> Void)?
+    var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
     var canGoNext = false
 
@@ -51,6 +52,7 @@ final class NCVideoVLCViewController: UIViewController {
     internal let mediaPlayer = VLCMediaPlayer()
     private var externalSubtitleURL: URL?
     private var isStopInFlight = false
+    private var hasReportedPlaybackError = false
     private var stopCompletions: [() -> Void] = []
 
     internal var progressTimer: Timer?
@@ -420,6 +422,7 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        hasReportedPlaybackError = false
         isPlaybackRequested = shouldAutoPlayOnStart
         attachDrawable()
 
@@ -536,6 +539,16 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
+    private func reportPlaybackErrorIfNeeded() {
+        guard !hasReportedPlaybackError else {
+            return
+        }
+
+        hasReportedPlaybackError = true
+        isPlaybackRequested = false
+        onPlaybackError?()
+    }
+
     private func handleMediaPlayerStateChange() {
         let stateDescription: String
 
@@ -569,6 +582,11 @@ final class NCVideoVLCViewController: UIViewController {
             if mediaPlayer.state == .stopped {
                 finishStop()
             }
+            return
+        }
+
+        if mediaPlayer.state == .error {
+            reportPlaybackErrorIfNeeded()
             return
         }
 

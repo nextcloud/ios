@@ -119,6 +119,7 @@ private extension NCVideoViewerContentView {
                 NCVideoPlaybackCoverView(
                     previewURL: previewURL,
                     isPlayEnabled: isPlaybackCoverPlayEnabled,
+                    isLoading: isPlaybackCoverLoading,
                     isLaunchingPlayback: isLaunchingPlayback,
                     onToggleChrome: onToggleChrome,
                     onPlay: playFromCover
@@ -136,6 +137,7 @@ private extension NCVideoViewerContentView {
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
                 isPlayEnabled: false,
+                isLoading: true,
                 isLaunchingPlayback: true,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
@@ -189,6 +191,7 @@ private extension NCVideoViewerContentView {
             NCVideoPlaybackCoverView(
                 previewURL: previewURL,
                 isPlayEnabled: false,
+                isLoading: false,
                 isLaunchingPlayback: false,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
@@ -200,6 +203,19 @@ private extension NCVideoViewerContentView {
 
                 Text(NSLocalizedString("_video_not_available_", comment: ""))
                     .font(.headline)
+
+                Button {
+                    retryPlayback()
+                } label: {
+                    Label(
+                        NSLocalizedString("_retry_", comment: ""),
+                        systemImage: "arrow.clockwise"
+                    )
+                    .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.white)
+                .foregroundStyle(.black)
             }
             .foregroundStyle(.white)
             .padding(24)
@@ -211,6 +227,18 @@ private extension NCVideoViewerContentView {
 // MARK: - Playback Cover
 
 private extension NCVideoViewerContentView {
+    var isPlaybackCoverLoading: Bool {
+        guard isSelected else {
+            return false
+        }
+
+        if case .loading = playback.engine {
+            return true
+        }
+
+        return false
+    }
+
     var isPlaybackCoverPlayEnabled: Bool {
         guard isSelected,
               isCurrentPlaybackVideo() else {
@@ -498,6 +526,25 @@ extension NCVideoViewerContentView {
         presentedVLCURL = nil
         hasRequestedPlayback = false
         isLaunchingPlayback = false
+    }
+
+    @MainActor
+    func showPlaybackError() {
+        resetPlaybackPresentationState()
+        playback.stopIfCurrent(ocId: metadata.ocId)
+        errorMessage = ""
+    }
+
+    @MainActor
+    func retryPlayback() {
+        errorMessage = nil
+        resetPlaybackPresentationState()
+        playback.stopIfCurrent(ocId: metadata.ocId)
+        loadGeneration = UUID()
+
+        Task {
+            await loadVideoIfSelected()
+        }
     }
 
     @MainActor

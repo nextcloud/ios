@@ -32,7 +32,8 @@ extension NCVideoViewerContentView {
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromVLC,
             onNext: goToNextPageFromVLC,
-            onClose: closeFromFullscreenVideo
+            onClose: closeFromFullscreenVideo,
+            onPlaybackError: handleVLCPlaybackError
         )
 
         guard didPresent else {
@@ -43,6 +44,13 @@ extension NCVideoViewerContentView {
         }
 
         presentedVLCURL = preparedPlayback.url
+    }
+
+    @MainActor
+    func handleVLCPlaybackError() {
+        NCVideoVLCPresenter.dismiss {
+            showPlaybackError()
+        }
     }
 
     @MainActor

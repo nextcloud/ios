@@ -29,7 +29,8 @@ enum NCVideoVLCPresenter {
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
         onNext: (() -> Void)? = nil,
-        onClose: ((_ ocId: String?) -> Void)? = nil
+        onClose: ((_ ocId: String?) -> Void)? = nil,
+        onPlaybackError: (() -> Void)? = nil
     ) -> Bool {
         let url = preparedPlayback.url
 
@@ -51,6 +52,7 @@ enum NCVideoVLCPresenter {
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onClose = onClose
+            currentViewController.onPlaybackError = onPlaybackError
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
             return true
@@ -73,6 +75,7 @@ enum NCVideoVLCPresenter {
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
             currentViewController.onClose = onClose
+            currentViewController.onPlaybackError = onPlaybackError
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
 
@@ -114,6 +117,7 @@ enum NCVideoVLCPresenter {
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
         viewController.onClose = onClose
+        viewController.onPlaybackError = onPlaybackError
         viewController.canGoPrevious = canGoPrevious
         viewController.canGoNext = canGoNext
 
