@@ -52,7 +52,9 @@ final class NCVideoVLCViewController: UIViewController {
     internal let mediaPlayer = VLCMediaPlayer()
     private var externalSubtitleURL: URL?
     private var isStopInFlight = false
+    private var hasEnteredPlaybackPipeline = false
     private var hasReportedPlaybackError = false
+    private var playbackStartupTimeoutTask: Task<Void, Never>?
     private var stopCompletions: [() -> Void] = []
 
     internal var progressTimer: Timer?
@@ -107,6 +109,7 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     deinit {
+        playbackStartupTimeoutTask?.cancel()
         stopControlsHideTimer()
         stopProgressTimer()
         mediaPlayer.delegate = nil
@@ -422,8 +425,10 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        hasEnteredPlaybackPipeline = false
         hasReportedPlaybackError = false
         isPlaybackRequested = shouldAutoPlayOnStart
+        cancelPlaybackStartupTimeout()
         attachDrawable()
 
         mediaPlayer.media = preparedPlayback.media
@@ -432,6 +437,7 @@ final class NCVideoVLCViewController: UIViewController {
         if shouldAutoPlayOnStart {
             logPlaybackRequest()
             mediaPlayer.play()
+            startPlaybackStartupTimeout()
         }
 
         updatePlayPauseButton()
@@ -452,6 +458,7 @@ final class NCVideoVLCViewController: UIViewController {
         let hadPendingPlaybackRequest = isPlaybackRequested
         stopControlsHideTimer()
         stopProgressTimer()
+        cancelPlaybackStartupTimeout()
         isPlaybackRequested = false
         isReplayFromBeginningRequested = false
 
@@ -497,6 +504,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         isReplayFromBeginningRequested = false
+        hasEnteredPlaybackPipeline = false
 
         let media = VLCMedia(url: url)
 
@@ -508,6 +516,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         mediaPlayer.media = media
         mediaPlayer.play()
+        startPlaybackStartupTimeout()
 
         startProgressTimer()
         scheduleControlsHide()
@@ -539,6 +548,45 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
+    private func startPlaybackStartupTimeout() {
+        cancelPlaybackStartupTimeout()
+
+        guard isPlaybackRequested,
+              !mediaPlayer.isPlaying,
+              mediaPlayer.state != .playing else {
+            return
+        }
+
+        playbackStartupTimeoutTask = Task { @MainActor [weak self] in
+            do {
+                try await Task.sleep(for: .seconds(15))
+            } catch {
+                return
+            }
+
+            guard let self,
+                  self.isPlaybackRequested,
+                  !self.mediaPlayer.isPlaying,
+                  self.mediaPlayer.state != .playing else {
+                return
+            }
+
+            nkLog(
+                tag: NCGlobal.shared.logTagViewer,
+                emoji: .error,
+                message: "VIDEO VLC playback startup timed out",
+                consoleOnly: false
+            )
+
+            self.reportPlaybackErrorIfNeeded()
+        }
+    }
+
+    private func cancelPlaybackStartupTimeout() {
+        playbackStartupTimeoutTask?.cancel()
+        playbackStartupTimeoutTask = nil
+    }
+
     private func reportPlaybackErrorIfNeeded() {
         guard !hasReportedPlaybackError else {
             return
@@ -546,6 +594,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         hasReportedPlaybackError = true
         isPlaybackRequested = false
+        cancelPlaybackStartupTimeout()
         onPlaybackError?()
     }
 
@@ -591,8 +640,19 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         switch mediaPlayer.state {
+        case .opening,
+             .buffering,
+             .playing:
+            hasEnteredPlaybackPipeline = true
+
+        default:
+            break
+        }
+
+        switch mediaPlayer.state {
         case .playing:
             isPlaybackRequested = true
+            cancelPlaybackStartupTimeout()
 
         case .ended:
             isPlaybackRequested = false
@@ -609,7 +669,20 @@ final class NCVideoVLCViewController: UIViewController {
                 return
             }
 
+            if isPlaybackRequested,
+               hasEnteredPlaybackPipeline {
+                nkLog(
+                    tag: NCGlobal.shared.logTagViewer,
+                    emoji: .error,
+                    message: "VIDEO VLC playback stopped before reaching playing",
+                    consoleOnly: false
+                )
+                reportPlaybackErrorIfNeeded()
+                return
+            }
+
             isPlaybackRequested = false
+            cancelPlaybackStartupTimeout()
 
         case .paused,
              .error:

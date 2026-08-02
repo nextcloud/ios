@@ -80,6 +80,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var timeControlStatusObservation: NSKeyValueObservation?
     private var playbackEndObserver: NSObjectProtocol?
     private var playbackFailureObserver: NSObjectProtocol?
+    private var playbackStartupTimeoutTask: Task<Void, Never>?
     private var timeObserverToken: Any?
     private var preparedURL: URL?
     private var hasReportedPlaybackError = false
@@ -484,8 +485,10 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func start() {
         hasReportedPlaybackError = false
         isPlaybackRequested = shouldAutoPlayOnStart
+        cancelPlaybackStartupTimeout()
 
         guard preparedURL != url else {
+            startPlaybackStartupTimeout()
             updatePlayPauseButton()
             updateProgressControls()
             updateSeekingState()
@@ -503,6 +506,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         if shouldAutoPlayOnStart,
            player.timeControlStatus != .playing {
             player.play()
+            startPlaybackStartupTimeout()
         }
 
         updatePlayPauseButton()
@@ -513,6 +517,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func stop() {
         preparedURL = nil
         isPlaybackRequested = false
+        cancelPlaybackStartupTimeout()
 
         player.pause()
         cleanupObservers()
@@ -679,6 +684,43 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
     }
 
+    private func startPlaybackStartupTimeout() {
+        cancelPlaybackStartupTimeout()
+
+        guard shouldAutoPlayOnStart,
+              player.timeControlStatus != .playing else {
+            return
+        }
+
+        playbackStartupTimeoutTask = Task { @MainActor [weak self] in
+            do {
+                try await Task.sleep(for: .seconds(15))
+            } catch {
+                return
+            }
+
+            guard let self,
+                  self.isPlaybackRequested,
+                  self.player.timeControlStatus != .playing else {
+                return
+            }
+
+            nkLog(
+                tag: NCGlobal.shared.logTagViewer,
+                emoji: .error,
+                message: "VIDEO AVPlayer playback startup timed out",
+                consoleOnly: false
+            )
+
+            self.reportPlaybackErrorIfNeeded()
+        }
+    }
+
+    private func cancelPlaybackStartupTimeout() {
+        playbackStartupTimeoutTask?.cancel()
+        playbackStartupTimeoutTask = nil
+    }
+
     private func reportPlaybackErrorIfNeeded() {
         guard !hasReportedPlaybackError else {
             return
@@ -686,6 +728,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         hasReportedPlaybackError = true
         isPlaybackRequested = false
+        cancelPlaybackStartupTimeout()
 
         let playerError = player.currentItem?.error as NSError?
         let errorDomain = playerError?.domain ?? "unknown"
@@ -703,8 +746,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     private func handleTimeControlStatusChange() {
         switch player.timeControlStatus {
-        case .playing,
-             .waitingToPlayAtSpecifiedRate:
+        case .playing:
+            isPlaybackRequested = true
+            cancelPlaybackStartupTimeout()
+
+        case .waitingToPlayAtSpecifiedRate:
             isPlaybackRequested = true
 
         case .paused:
@@ -735,6 +781,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     private func handlePlaybackEnded() {
         isPlaybackRequested = false
+        cancelPlaybackStartupTimeout()
 
         updatePlayPauseButton()
         updateProgressControls()
