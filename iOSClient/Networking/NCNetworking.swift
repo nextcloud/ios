@@ -36,6 +36,12 @@ protocol NCTransferDelegate: AnyObject {
                                    serverUrl: String)
 }
 
+enum NCServerCertificateTrustStatus: Sendable {
+    case systemTrusted
+    case userTrusted
+    case untrusted
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
@@ -57,6 +63,12 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
     let nkComm = NextcloudKit.shared.nkCommonInstance
+
+    private let certificateTrustStatusQueue = DispatchQueue(
+        label: "com.nextcloud.networking.certificate-trust-status",
+        attributes: .concurrent
+    )
+    private var certificateTrustStatuses: [String: NCServerCertificateTrustStatus] = [:]
 
     var lastReachability: Bool = true
     var networkReachability: NKTypeReachability?
@@ -138,6 +150,40 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) { }
 
+    func certificateTrustStatus(for host: String) -> NCServerCertificateTrustStatus? {
+        guard !host.isEmpty else {
+            return nil
+        }
+
+        return certificateTrustStatusQueue.sync {
+            certificateTrustStatuses[host.lowercased()]
+        }
+    }
+
+    func requiresUserTrustedCertificate(for host: String) -> Bool {
+        certificateTrustStatus(for: host) == .userTrusted
+    }
+
+    func resetCertificateTrustStatus(for host: String) {
+        guard !host.isEmpty else {
+            return
+        }
+
+        _ = certificateTrustStatusQueue.sync(flags: .barrier) {
+            certificateTrustStatuses.removeValue(forKey: host.lowercased())
+        }
+    }
+
+    private func setCertificateTrustStatus(_ status: NCServerCertificateTrustStatus, for host: String) {
+        guard !host.isEmpty else {
+            return
+        }
+
+        certificateTrustStatusQueue.async(flags: .barrier) {
+            self.certificateTrustStatuses[host.lowercased()] = status
+        }
+    }
+
     // MARK: - Pinning check
 
     public func checkTrustedChallenge(_ session: URLSession,
@@ -154,6 +200,12 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
 #else
         let protectionSpace = challenge.protectionSpace
+
+        guard protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = protectionSpace.host
         let certificateSavedPath = (directoryCertificate as NSString).appendingPathComponent("\(host).der")
@@ -161,6 +213,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         guard let trust = protectionSpace.serverTrust,
               let certificates = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
               let certificate = certificates.first else {
+            setCertificateTrustStatus(.untrusted, for: host)
             completionHandler(.performDefaultHandling, nil)
             return
         }
@@ -177,19 +230,25 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             let tmpPath = (directoryCertificate as NSString).appendingPathComponent("\(host).tmp")
             try? certificateData.write(to: URL(fileURLWithPath: tmpPath), options: .atomic)
 
-            var isTrusted = false
+            let trustStatus: NCServerCertificateTrustStatus
 
             if isServerTrusted {
-                isTrusted = true
+                trustStatus = .systemTrusted
             } else if let savedData = try? Data(contentsOf: URL(fileURLWithPath: certificateSavedPath)),
                       savedData == certificateData {
-                isTrusted = true
+                trustStatus = .userTrusted
+            } else {
+                trustStatus = .untrusted
             }
 
+            self.setCertificateTrustStatus(trustStatus, for: host)
+
             DispatchQueue.main.async {
-                if isTrusted {
+                switch trustStatus {
+                case .systemTrusted, .userTrusted:
                     completionHandler(.useCredential, URLCredential(trust: trust))
-                } else {
+
+                case .untrusted:
                     (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
                     completionHandler(.performDefaultHandling, nil)
                 }
