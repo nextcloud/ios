@@ -10,6 +10,8 @@ struct NCVideoPlaybackCoverView: View {
     let isPlayEnabled: Bool
     let isLoading: Bool
     let isLaunchingPlayback: Bool
+    let statusMessage: String?
+    let onCancel: (() -> Void)?
     let onToggleChrome: (() -> Void)?
     let onPlay: () -> Void
 
@@ -44,35 +46,62 @@ struct NCVideoPlaybackCoverView: View {
                     onToggleChrome?()
                 }
 
-            Button {
-                guard isPlayEnabled else {
-                    return
-                }
-
-                onPlay()
-            } label: {
-                ZStack {
-                    if isLoading || isLaunchingPlayback {
-                        ProgressView()
-                            .controlSize(.large)
-                            .tint(.white)
-                            .transition(.opacity)
-                    } else {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 36, weight: .regular))
-                            .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
-                            .videoControlIconShadow()
-                            .transition(.opacity)
+            VStack(spacing: 12) {
+                Button {
+                    guard isPlayEnabled else {
+                        return
                     }
+
+                    onPlay()
+                } label: {
+                    ZStack {
+                        if isLoading || isLaunchingPlayback {
+                            ProgressView()
+                                .controlSize(.large)
+                                .tint(.white)
+                                .transition(.opacity)
+                        } else {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 36, weight: .regular))
+                                .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
+                                .videoControlIconShadow()
+                                .transition(.opacity)
+                        }
+                    }
+                    .frame(width: 62, height: 62)
+                    .coverPlayButtonBackground(isEnabled: isPlayEnabled)
                 }
-                .frame(width: 62, height: 62)
-                .coverPlayButtonBackground(isEnabled: isPlayEnabled)
+                .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
+                .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
+                .animation(.easeInOut(duration: 0.18), value: isLoading)
+                .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
+                .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
+
+                if let statusMessage {
+                    VStack(spacing: 10) {
+                        Text(statusMessage)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+
+                        if let onCancel {
+                            Button(NSLocalizedString("_cancel_", comment: "")) {
+                                onCancel()
+                            }
+                            .font(.subheadline.weight(.semibold))
+                            .buttonStyle(.borderedProminent)
+                            .tint(.white)
+                            .foregroundStyle(.black)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(
+                        .black.opacity(0.46),
+                        in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    )
+                }
             }
-            .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
-            .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
-            .animation(.easeInOut(duration: 0.18), value: isLoading)
-            .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
-            .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
         }
     }
 }
@@ -124,6 +153,8 @@ private extension View {
         isPlayEnabled: true,
         isLoading: false,
         isLaunchingPlayback: false,
+        statusMessage: nil,
+        onCancel: nil,
         onToggleChrome: {},
         onPlay: {}
     )
@@ -135,6 +166,8 @@ private extension View {
         isPlayEnabled: false,
         isLoading: true,
         isLaunchingPlayback: false,
+        statusMessage: NSLocalizedString("_download_in_progress_", comment: ""),
+        onCancel: {},
         onToggleChrome: {},
         onPlay: {}
     )

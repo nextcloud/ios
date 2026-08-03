@@ -213,7 +213,13 @@ struct NCMediaViewerPageView: View {
                 onPreviousPage: goToPreviousPageFromVideo,
                 onNextPage: goToNextPageFromVideo,
                 onToggleChrome: onToggleChrome,
-                onClose: onClose
+                onClose: onClose,
+                downloadVideo: {
+                    try await model.downloadVideoForPlayback(metadata)
+                },
+                cancelVideoDownload: {
+                    await model.cancelVideoDownload(for: metadata.ocId)
+                }
             )
             .id("\(page.ocId)-remote")
             .background(Color.ncViewerBackground(backgroundStyle))
@@ -335,6 +341,8 @@ struct NCMediaViewerPageView: View {
                 isPlayEnabled: false,
                 isLoading: false,
                 isLaunchingPlayback: false,
+                statusMessage: nil,
+                onCancel: nil,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
             )

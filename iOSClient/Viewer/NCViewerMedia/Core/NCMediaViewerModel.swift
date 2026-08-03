@@ -449,6 +449,14 @@ final class NCMediaViewerModel: ObservableObject {
         }
     }
 
+    func downloadVideoForPlayback(_ metadata: tableMetadata) async throws -> URL {
+        try await loader.downloadMedia(for: metadata)
+    }
+
+    func cancelVideoDownload(for ocId: String) async {
+        await loader.cancelDownload(for: ocId)
+    }
+
     func setSelectedIndex(_ index: Int) {
         guard ocIds.indices.contains(index) else {
             return
