@@ -22,6 +22,8 @@ struct NCVideoViewerContentView: View {
     let onNextPage: (() -> Void)?
     let onToggleChrome: (() -> Void)?
     let onClose: ((_ ocId: String?) -> Void)?
+    let downloadVideo: (@MainActor () async throws -> URL)?
+    let cancelVideoDownload: (@MainActor () async -> Void)?
 
     @ObservedObject private var playback = NCVideoPlaybackController.shared
 
@@ -30,9 +32,13 @@ struct NCVideoViewerContentView: View {
     @State var presentedVLCURL: URL?
     @State var hasRequestedPlayback = false
     @State var isLaunchingPlayback = false
+    @State private var resolvedPlaybackURL: URL?
+    @State private var isDownloadingPlayback = false
+    @State private var playbackDownloadTask: Task<Void, Never>?
     @State private var loadGeneration = UUID()
 
     private let resolver = NCVideoURLResolver()
+    private let forceDownloadBeforePlaybackForTesting = false
 
     @MainActor
     private static var resolvingTasks = [String: Task<(url: URL?, autoplay: Bool, error: NKError), Never>]()
@@ -51,7 +57,9 @@ struct NCVideoViewerContentView: View {
         onPreviousPage: (() -> Void)? = nil,
         onNextPage: (() -> Void)? = nil,
         onToggleChrome: (() -> Void)? = nil,
-        onClose: ((_ ocId: String?) -> Void)? = nil
+        onClose: ((_ ocId: String?) -> Void)? = nil,
+        downloadVideo: (@MainActor () async throws -> URL)? = nil,
+        cancelVideoDownload: (@MainActor () async -> Void)? = nil
     ) {
         self.metadata = metadata
         self.localURL = localURL
@@ -67,6 +75,8 @@ struct NCVideoViewerContentView: View {
         self.onNextPage = onNextPage
         self.onToggleChrome = onToggleChrome
         self.onClose = onClose
+        self.downloadVideo = downloadVideo
+        self.cancelVideoDownload = cancelVideoDownload
     }
 
     var body: some View {
@@ -113,7 +123,8 @@ private extension NCVideoViewerContentView {
         if let errorMessage {
             failedView(errorMessage)
         } else if !hasRequestedPlayback {
-            if case .failed(let message) = playback.engine {
+            if case .failed(let message) = playback.engine,
+               !requiresUserTrustedCertificateDownload {
                 failedView(message)
             } else {
                 NCVideoPlaybackCoverView(
@@ -121,6 +132,12 @@ private extension NCVideoViewerContentView {
                     isPlayEnabled: isPlaybackCoverPlayEnabled,
                     isLoading: isPlaybackCoverLoading,
                     isLaunchingPlayback: isLaunchingPlayback,
+                    statusMessage: isDownloadingPlayback
+                        ? NSLocalizedString("_download_in_progress_", comment: "")
+                        : nil,
+                    onCancel: isDownloadingPlayback
+                        ? { cancelPlaybackDownload() }
+                        : nil,
                     onToggleChrome: onToggleChrome,
                     onPlay: playFromCover
                 )
@@ -139,6 +156,8 @@ private extension NCVideoViewerContentView {
                 isPlayEnabled: false,
                 isLoading: true,
                 isLaunchingPlayback: true,
+                statusMessage: nil,
+                onCancel: nil,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
             )
@@ -193,6 +212,8 @@ private extension NCVideoViewerContentView {
                 isPlayEnabled: false,
                 isLoading: false,
                 isLaunchingPlayback: false,
+                statusMessage: nil,
+                onCancel: nil,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
             )
@@ -232,6 +253,10 @@ private extension NCVideoViewerContentView {
             return false
         }
 
+        if requiresUserTrustedCertificateDownload {
+            return isDownloadingPlayback
+        }
+
         if case .loading = playback.engine {
             return true
         }
@@ -240,8 +265,15 @@ private extension NCVideoViewerContentView {
     }
 
     var isPlaybackCoverPlayEnabled: Bool {
-        guard isSelected,
-              isCurrentPlaybackVideo() else {
+        guard isSelected else {
+            return false
+        }
+
+        if requiresUserTrustedCertificateDownload {
+            return downloadVideo != nil && !isDownloadingPlayback
+        }
+
+        guard isCurrentPlaybackVideo() else {
             return false
         }
 
@@ -264,6 +296,11 @@ private extension NCVideoViewerContentView {
         }
 
         isLaunchingPlayback = true
+
+        if requiresUserTrustedCertificateDownload {
+            downloadAndPlayVideo()
+            return
+        }
 
         switch playback.engine {
         case .avFoundation(let preparedPlayback):
@@ -312,6 +349,8 @@ private extension NCVideoViewerContentView {
 
     @MainActor
     func stopPlaybackForDeselection() {
+        cancelPlaybackDownload()
+
         guard isCurrentPlaybackVideo() else { return }
 
         NCVideoAVPlayerPresenter.dismiss()
@@ -438,6 +477,12 @@ private extension NCVideoViewerContentView {
         }
 
         hasRequestedPlayback = false
+        resolvedPlaybackURL = url
+
+        if requiresUserTrustedCertificateDownload(for: url) {
+            playback.stopIfCurrent(ocId: metadata.ocId)
+            return
+        }
 
         playback.loadVideo(
             metadata: metadata,
@@ -461,6 +506,116 @@ private extension NCVideoViewerContentView {
         return [
             "User-Agent": userAgent
         ]
+    }
+}
+
+// MARK: - User-Trusted Certificate Download
+
+private extension NCVideoViewerContentView {
+    var requiresUserTrustedCertificateDownload: Bool {
+        guard localURL == nil,
+              let resolvedPlaybackURL else {
+            return false
+        }
+
+        return requiresUserTrustedCertificateDownload(for: resolvedPlaybackURL)
+    }
+
+    func requiresUserTrustedCertificateDownload(for url: URL) -> Bool {
+        guard !url.isFileURL else {
+            return false
+        }
+
+        if forceDownloadBeforePlaybackForTesting {
+            return true
+        }
+
+        let hosts = [
+            url.host,
+            URL(string: metadata.urlBase)?.host
+        ]
+        .compactMap { $0 }
+
+        return hosts.contains { host in
+            NCNetworking.shared.requiresUserTrustedCertificate(for: host)
+        }
+    }
+
+    @MainActor
+    func downloadAndPlayVideo() {
+        guard let downloadVideo else {
+            isLaunchingPlayback = false
+            errorMessage = ""
+            return
+        }
+
+        let expectedTaskIdentifier = taskIdentifier
+        let expectedLoadGeneration = loadGeneration
+
+        playbackDownloadTask?.cancel()
+        isDownloadingPlayback = true
+        errorMessage = nil
+
+        playbackDownloadTask = Task { @MainActor in
+            do {
+                let downloadedURL = try await downloadVideo()
+                try Task.checkCancellation()
+
+                guard isStableSelection(
+                    expectedTaskIdentifier: expectedTaskIdentifier,
+                    expectedLoadGeneration: expectedLoadGeneration
+                ) else {
+                    return
+                }
+
+                playbackDownloadTask = nil
+                isDownloadingPlayback = false
+                resolvedPlaybackURL = downloadedURL
+                hasRequestedPlayback = true
+
+                playback.loadVideo(
+                    metadata: metadata,
+                    url: downloadedURL,
+                    fileName: resolvedFileName,
+                    userAgent: userAgent,
+                    httpHeaders: [:]
+                )
+            } catch is CancellationError {
+                return
+            } catch {
+                guard expectedTaskIdentifier == taskIdentifier,
+                      expectedLoadGeneration == loadGeneration,
+                      isSelected else {
+                    return
+                }
+
+                playbackDownloadTask = nil
+                isDownloadingPlayback = false
+                isLaunchingPlayback = false
+                errorMessage = ""
+            }
+        }
+    }
+
+    @MainActor
+    func cancelPlaybackDownload() {
+        guard playbackDownloadTask != nil || isDownloadingPlayback else {
+            return
+        }
+
+        playbackDownloadTask?.cancel()
+        playbackDownloadTask = nil
+        isDownloadingPlayback = false
+        isLaunchingPlayback = false
+        hasRequestedPlayback = false
+
+        guard let cancelVideoDownload else {
+            return
+        }
+
+        Task { @MainActor in
+            await cancelVideoDownload()
+        }
     }
 }
 
