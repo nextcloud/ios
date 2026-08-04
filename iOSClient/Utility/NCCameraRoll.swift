@@ -7,6 +7,7 @@ import Photos
 import UIKit
 import NextcloudKit
 import AVFoundation
+import UniformTypeIdentifiers
 
 /// Structure representing an extracted asset result
 struct ExtractedAsset {
@@ -167,22 +168,27 @@ final class NCCameraRoll: CameraRollExtractor {
 
         // Determine file extension and prepare filename
         let ext = (asset.originalFilename as NSString).pathExtension.lowercased()
-        let fileName = metadataUpdatedFilename(for: asset, original: metadata.fileNameView, ext: ext, native: metadata.nativeFormat)
+        let convertToJPEG = Self.shouldConvertToJPEG(fileExtension: ext, nativeFormat: metadata.nativeFormat)
+        let fileName = Self.outputFileName(
+            for: metadata.fileNameView,
+            sourceFileExtension: ext,
+            nativeFormat: metadata.nativeFormat
+        )
         let filePath = NSTemporaryDirectory() + fileName
 
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
-        // Safely set the content type if available
-        if let type = contentType(for: asset, ext: ext) {
-            metadata.contentType = type
+        if convertToJPEG {
+            metadata.contentType = UTType.jpeg.preferredMIMEType ?? "image/jpeg"
+            metadata.typeIdentifier = UTType.jpeg.identifier
         }
 
         // Extract file data from asset
         switch asset.mediaType {
         case .image:
-            try await extractImage(asset: asset, ext: ext, filePath: filePath, compatibilityFormat: !metadata.nativeFormat)
+            try await extractImage(asset: asset, ext: ext, filePath: filePath, convertToJPEG: convertToJPEG)
         case .video:
             try await extractVideo( asset: asset, filePath: filePath)
         default:
@@ -206,18 +212,24 @@ final class NCCameraRoll: CameraRollExtractor {
         }
     }
 
-    private func metadataUpdatedFilename(for asset: PHAsset, original: String, ext: String, native: Bool) -> String {
-        if asset.mediaType == .image && (ext == "heic" || ext == "dng") && !native {
-            return (original as NSString).deletingPathExtension + ".jpg"
+    static func shouldConvertToJPEG(fileExtension: String, nativeFormat: Bool) -> Bool {
+        guard !nativeFormat,
+              let sourceType = UTType(filenameExtension: fileExtension)
+        else {
+            return false
         }
-        return original
+
+        return sourceType == .heic ||
+            sourceType == .heif ||
+            sourceType.conforms(to: .rawImage)
     }
 
-    private func contentType(for asset: PHAsset, ext: String) -> String? {
-        if asset.mediaType == .image && (ext == "heic" || ext == "dng") {
-            return "image/jpeg"
+    static func outputFileName(for fileName: String, sourceFileExtension: String, nativeFormat: Bool) -> String {
+        guard shouldConvertToJPEG(fileExtension: sourceFileExtension, nativeFormat: nativeFormat) else {
+            return fileName
         }
-        return nil
+
+        return (fileName as NSString).deletingPathExtension + ".jpg"
     }
 
     private func updateMetadataForUpload(metadata: tableMetadata, size: Int, chunkSize: Int) -> tableMetadata? {
@@ -240,13 +252,15 @@ final class NCCameraRoll: CameraRollExtractor {
         return await self.database.addAndReturnMetadataAsync(metadata)
     }
 
-    private func extractImage(asset: PHAsset, ext: String, filePath: String, compatibilityFormat: Bool) async throws {
+    private func extractImage(asset: PHAsset, ext: String, filePath: String, convertToJPEG: Bool) async throws {
         let imageData: Data = try await withCheckedThrowingContinuation { continuation in
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.deliveryMode = compatibilityFormat ? .opportunistic : .highQualityFormat
+            options.deliveryMode = convertToJPEG ? .opportunistic : .highQualityFormat
             options.isSynchronous = true
-            if ext == "dng" { options.version = .original }
+            if let sourceType = UTType(filenameExtension: ext), sourceType.conforms(to: .rawImage) {
+                options.version = .original
+            }
 
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
                 if let data {
@@ -257,9 +271,9 @@ final class NCCameraRoll: CameraRollExtractor {
             }
         }
 
-        // Transform only if compatibilityFormat is requested
+        // Transform only formats that require a compatibility conversion.
         let finalData: Data
-        if compatibilityFormat {
+        if convertToJPEG {
             guard let ciImage = CIImage(data: imageData),
                   let colorSpace = ciImage.colorSpace,
                   let jpegData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace)
