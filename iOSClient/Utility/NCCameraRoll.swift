@@ -4,7 +4,8 @@
 
 import Foundation
 import Photos
-import UIKit
+import CoreImage
+import ImageIO
 import NextcloudKit
 import AVFoundation
 import UniformTypeIdentifiers
@@ -256,10 +257,12 @@ final class NCCameraRoll: CameraRollExtractor {
         let imageData: Data = try await withCheckedThrowingContinuation { continuation in
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.deliveryMode = convertToJPEG ? .opportunistic : .highQualityFormat
+            options.deliveryMode = .highQualityFormat
             options.isSynchronous = true
             if let sourceType = UTType(filenameExtension: ext), sourceType.conforms(to: .rawImage) {
                 options.version = .original
+            } else {
+                options.version = .current
             }
 
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
@@ -274,9 +277,16 @@ final class NCCameraRoll: CameraRollExtractor {
         // Transform only formats that require a compatibility conversion.
         let finalData: Data
         if convertToJPEG {
+            let compressionQuality = CIImageRepresentationOption(
+                rawValue: kCGImageDestinationLossyCompressionQuality as String
+            )
             guard let ciImage = CIImage(data: imageData),
                   let colorSpace = ciImage.colorSpace,
-                  let jpegData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace)
+                  let jpegData = CIContext().jpegRepresentation(
+                    of: ciImage,
+                    colorSpace: colorSpace,
+                    options: [compressionQuality: 1.0]
+                  )
             else {
                 throw NSError(domain: "ExtractAssetError", code: 3, userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])
             }
@@ -294,6 +304,7 @@ final class NCCameraRoll: CameraRollExtractor {
                 let options = PHVideoRequestOptions()
                 options.isNetworkAccessAllowed = true
                 options.version = .current
+                options.deliveryMode = .highQualityFormat
 
                 PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, _, _ in
                     if let asset = asset {
@@ -309,10 +320,17 @@ final class NCCameraRoll: CameraRollExtractor {
 
         if let urlAsset = videoAsset as? AVURLAsset {
             try FileManager.default.copyItem(at: urlAsset.url, to: URL(fileURLWithPath: filePath))
-        } else if let composition = videoAsset as? AVComposition, composition.tracks.count > 1,
+        } else if let composition = videoAsset as? AVComposition,
                   let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetPassthrough) {
+            let fileExtension = (filePath as NSString).pathExtension
+            guard let outputFileType = Self.videoOutputFileType(fileExtension: fileExtension),
+                  exporter.supportedFileTypes.contains(outputFileType)
+            else {
+                throw NSError(domain: "ExtractAssetError", code: 6, userInfo: [NSLocalizedDescriptionKey: "Unsupported video container"])
+            }
+
             exporter.outputURL = URL(fileURLWithPath: filePath)
-            exporter.outputFileType = .mp4
+            exporter.outputFileType = outputFileType
             exporter.shouldOptimizeForNetworkUse = true
             nonisolated(unsafe) let localExporter = exporter
 
@@ -332,6 +350,16 @@ final class NCCameraRoll: CameraRollExtractor {
         }
     }
 
+    static func videoOutputFileType(fileExtension: String) -> AVFileType? {
+        guard let contentType = UTType(filenameExtension: fileExtension),
+              contentType.conforms(to: .movie)
+        else {
+            return nil
+        }
+
+        return AVFileType(rawValue: contentType.identifier)
+    }
+
     /// Represents a camera roll extractor that creates metadata for Live Photos.
     /// This method is compatible with Swift 6, avoids non-Sendable captures,
     /// and performs safe background processing.
@@ -340,7 +368,6 @@ final class NCCameraRoll: CameraRollExtractor {
             return nil
         }
         nonisolated(unsafe) let session = NCSession.shared.getSession(account: metadata.account)
-        let options = PHLivePhotoRequestOptions()
         let ocId = UUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileName,
@@ -350,36 +377,17 @@ final class NCCameraRoll: CameraRollExtractor {
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             : NCGlobal.shared.chunkSizeMBCellular
 
-        options.deliveryMode = .fastFormat
-        options.isNetworkAccessAllowed = true
-
-        // UIScreen.main.bounds safely in Swift 6
-        let screenSize = await MainActor.run {
-            UIScreen.main.bounds.size
-        }
-
-        // Request the live photo from the asset
-        let livePhoto = await withCheckedContinuation { (continuation: CheckedContinuation<PHLivePhoto?, Never>) in
-            PHImageManager.default().requestLivePhoto(
-                for: asset,
-                targetSize: screenSize,
-                contentMode: .default,
-                options: options
-            ) { photo, _ in
-                continuation.resume(returning: photo)
-            }
-        }
-
-        guard let livePhoto else {
-            return nil
-        }
-
-        // Find the paired video component of the Live Photo
-        let videoResource = PHAssetResource.assetResources(for: livePhoto)
-            .first(where: { $0.type == .pairedVideo })
+        // Prefer the full-size rendered component for edited Live Photos, then fall back
+        // to the original paired video when no rendered resource exists.
+        let resources = PHAssetResource.assetResources(for: asset)
+        let videoResource = resources.first(where: { $0.type == .fullSizePairedVideo })
+            ?? resources.first(where: { $0.type == .pairedVideo })
         guard let resource = videoResource else {
             return nil
         }
+
+        let options = PHAssetResourceRequestOptions()
+        options.isNetworkAccessAllowed = true
 
         do {
             try FileManager.default.removeItem(atPath: fileNamePath)
@@ -401,7 +409,7 @@ final class NCCameraRoll: CameraRollExtractor {
 
         // Write video resource to file and create metadata
         return await withCheckedContinuation { (continuation: CheckedContinuation<tableMetadata?, Never>) in
-            PHAssetResourceManager.default().writeData(for: resource, toFile: URL(fileURLWithPath: fileNamePath), options: nil ) { error in
+            PHAssetResourceManager.default().writeData(for: resource, toFile: URL(fileURLWithPath: fileNamePath), options: options) { error in
                 guard error == nil else {
                     continuation.resume(returning: nil)
                     return
