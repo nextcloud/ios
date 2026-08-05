@@ -102,22 +102,49 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         do {
+            let destinationDirectoryPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(
+                metadataSource.ocId,
+                userId: metadataSource.userId,
+                urlBase: metadataSource.urlBase
+            )
+            let destinationDirectoryURL = URL(fileURLWithPath: destinationDirectoryPath, isDirectory: true)
             let result = try await extractImageVideoFromAssetLocalIdentifier(
                 metadata: metadataSource,
-                modifyMetadataForUpload: true
+                modifyMetadataForUpload: false,
+                temporaryDirectory: destinationDirectoryURL
+            )
+            let extractedURL = URL(fileURLWithPath: result.filePath)
+            defer {
+                try? FileManager.default.removeItem(at: extractedURL)
+            }
+
+            let destinationURL = destinationDirectoryURL.appendingPathComponent(result.metadata.fileNameView)
+            try promoteExtractedFile(
+                at: extractedURL,
+                to: destinationURL
             )
 
-            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.metadata.ocId,
-                                                                                fileName: result.metadata.fileNameView,
-                                                                                userId: result.metadata.userId,
-                                                                                urlBase: result.metadata.urlBase)
-            self.utilityFileSystem.moveFile(atPath: result.filePath, toPath: toPath)
-            metadatas.append(result.metadata)
+            let finalSize = self.utilityFileSystem.getFileSize(filePath: destinationURL.path)
+            guard finalSize > 0,
+                  finalSize == result.metadata.size,
+                  let extractedMetadata = await updateMetadataForUploadAsync(
+                      metadata: result.metadata,
+                      size: Int(finalSize),
+                      chunkSize: chunkSize
+                  ) else {
+                throw NSError(
+                    domain: "ExtractAssetError",
+                    code: 8,
+                    userInfo: [NSLocalizedDescriptionKey: "Extracted file validation failed"]
+                )
+            }
+
+            metadatas.append(extractedMetadata)
 
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-            if result.metadata.isLivePhoto,
+            if extractedMetadata.isLivePhoto,
                let asset = fetchAssets.firstObject,
-               let livePhotoMetadata = await createMetadataLivePhoto(metadata: result.metadata, asset: asset) {
+               let livePhotoMetadata = await createMetadataLivePhoto(metadata: extractedMetadata, asset: asset) {
                 if let metadata = self.database.addAndReturnMetadata(livePhotoMetadata) {
                     metadatas.append(metadata)
                 }
@@ -153,7 +180,11 @@ final class NCCameraRoll: CameraRollExtractor {
     ///   - originalMetadata: Metadata describing the asset
     ///   - modifyMetadataForUpload: Whether to update metadata for upload and store it in the database
     /// - Returns: An `ExtractedAsset` containing the updated metadata and path to the extracted file
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool) async throws -> ExtractedAsset {
+    func extractImageVideoFromAssetLocalIdentifier(
+        metadata: tableMetadata,
+        modifyMetadataForUpload: Bool,
+        temporaryDirectory: URL = FileManager.default.temporaryDirectory
+    ) async throws -> ExtractedAsset {
         // Determine the appropriate chunk size based on the current network connection
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
@@ -175,7 +206,12 @@ final class NCCameraRoll: CameraRollExtractor {
             sourceFileExtension: ext,
             nativeFormat: metadata.nativeFormat
         )
-        let filePath = NSTemporaryDirectory() + fileName
+        let fileURL = Self.extractionTemporaryURL(
+            fileName: fileName,
+            ocId: metadata.ocId,
+            directory: temporaryDirectory
+        )
+        let filePath = fileURL.path
 
         metadata.fileName = fileName
         metadata.fileNameView = fileName
@@ -210,6 +246,30 @@ final class NCCameraRoll: CameraRollExtractor {
             }
         } else {
             return ExtractedAsset(metadata: metadata, filePath: filePath)
+        }
+    }
+
+    static func extractionTemporaryURL(fileName: String, ocId: String, directory: URL) -> URL {
+        directory.appendingPathComponent(
+            ".\(fileName).\(ocId).\(UUID().uuidString).uploading"
+        )
+    }
+
+    private func promoteExtractedFile(at sourceURL: URL, to destinationURL: URL) throws {
+        let sourceAttributes = try FileManager.default.attributesOfItem(atPath: sourceURL.path)
+        let sourceSize = sourceAttributes[.size] as? Int64 ?? 0
+        guard sourceSize > 0 else {
+            throw NSError(
+                domain: "ExtractAssetError",
+                code: 8,
+                userInfo: [NSLocalizedDescriptionKey: "Extracted temporary file is empty"]
+            )
+        }
+
+        if FileManager.default.fileExists(atPath: destinationURL.path) {
+            _ = try FileManager.default.replaceItemAt(destinationURL, withItemAt: sourceURL)
+        } else {
+            try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
         }
     }
 
@@ -316,7 +376,9 @@ final class NCCameraRoll: CameraRollExtractor {
             }
         }
 
-        self.utilityFileSystem.removeFile(atPath: filePath)
+        if FileManager.default.fileExists(atPath: filePath) {
+            try FileManager.default.removeItem(atPath: filePath)
+        }
 
         if let urlAsset = videoAsset as? AVURLAsset {
             try FileManager.default.copyItem(at: urlAsset.url, to: URL(fileURLWithPath: filePath))

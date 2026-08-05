@@ -75,4 +75,24 @@ struct NCCameraRollTests {
         #expect(NCCameraRoll.videoOutputFileType(fileExtension: "m4v") == .m4v)
         #expect(NCCameraRoll.videoOutputFileType(fileExtension: "jpg") == nil)
     }
+
+    @Test("Concurrent extractions use distinct temporary paths")
+    func extractionTemporaryPathsAreUnique() {
+        let directory = FileManager.default.temporaryDirectory
+        let firstURL = NCCameraRoll.extractionTemporaryURL(
+            fileName: "26-08-04 10-51-42 7473.jpg",
+            ocId: "camera-roll-transfer",
+            directory: directory
+        )
+        let secondURL = NCCameraRoll.extractionTemporaryURL(
+            fileName: "26-08-04 10-51-42 7473.jpg",
+            ocId: "camera-roll-transfer",
+            directory: directory
+        )
+
+        #expect(firstURL != secondURL)
+        #expect(firstURL.deletingLastPathComponent() == directory)
+        #expect(firstURL.pathExtension == "uploading")
+        #expect(firstURL.lastPathComponent.contains("camera-roll-transfer"))
+    }
 }

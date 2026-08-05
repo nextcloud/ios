@@ -201,12 +201,14 @@ extension NCNetworking {
         taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
         start: @escaping () -> Void = { }
     ) async -> NKError {
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(
+        let directoryLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(
             metadata.ocId,
-            fileName: metadata.fileName,
             userId: metadata.userId,
             urlBase: metadata.urlBase
         )
+        let fileNameLocalPath = URL(fileURLWithPath: directoryLocalPath, isDirectory: true)
+            .appendingPathComponent(metadata.fileName)
+            .path
         let localFileSize = utilityFileSystem.getFileSize(filePath: fileNameLocalPath)
 
         if localFileSize == 0 && metadata.size != 0 {
@@ -365,7 +367,17 @@ extension NCNetworking {
         nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
         if error.errorCode == NSURLErrorCancelled {
-            await uploadCancelFile(metadata: metadata)
+            if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
+                await NCManageDatabase.shared.setMetadataSessionAsync(
+                    ocId: metadata.ocId,
+                    sessionTaskIdentifier: 0,
+                    sessionError: error.errorDescription,
+                    status: self.global.metadataStatusUploadError,
+                    errorCode: error.errorCode
+                )
+            } else {
+                await uploadCancelFile(metadata: metadata)
+            }
         } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) && error.errorDescription.localizedCaseInsensitiveContains("virus") {
             await uploadCancelFile(metadata: metadata)
             #if !EXTENSION
