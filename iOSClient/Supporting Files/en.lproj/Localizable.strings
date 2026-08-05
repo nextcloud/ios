@@ -709,6 +709,7 @@
 "_open_in_office_" = "Open in Office";
 "_select_date_" = "Select date";
 "_always_play_with_vlc_" = "Always play with VLC";
+"_account_not_available_" = "Account not available";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
