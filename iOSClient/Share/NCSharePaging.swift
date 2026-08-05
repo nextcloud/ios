@@ -179,9 +179,11 @@ class NCSharePaging: UIViewController {
         case .sharing:
             let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
-            // The unified share tab fully replaces the legacy NCShare UI on newer servers.
+            // Newer servers get the unified share list; older ones keep the legacy NCShare UI.
             if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: Self.unifiedSharingMinVersion) {
-                return UIHostingController(rootView: UnifiedShareView(fileName: metadata.fileNameView, account: metadata.account))
+                let brandColor = Color(NCBrandColor.shared.getElement(account: metadata.account))
+                return UIHostingController(rootView: UnifiedShareListView(fileName: metadata.fileNameView, account: metadata.account, sourceId: metadata.ocId, tint: brandColor)
+                    .tint(brandColor))
             }
 
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {
@@ -259,12 +261,16 @@ class NCSharePaging: UIViewController {
     }
 
     @objc private func addShareTapped(_ sender: UIBarButtonItem) {
-        let viewController = UIHostingController(rootView: UnifiedShareEditView(fileName: metadata.fileNameView, account: metadata.account))
+        let viewController = UIHostingController(rootView: NavigationStack {
+            UnifiedShareEditView(fileName: metadata.fileNameView, account: metadata.account, sourceId: metadata.ocId)
+        }
+        .tint(Color(NCBrandColor.shared.getElement(account: metadata.account))))
         viewController.modalPresentationStyle = .pageSheet
+        // Not swipe-dismissable — the sheet must be closed via its X button.
+        viewController.isModalInPresentation = true
 
         if let sheet = viewController.sheetPresentationController {
             sheet.detents = [.large()]
-            sheet.prefersGrabberVisible = true
         }
 
         present(viewController, animated: true)
