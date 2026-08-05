@@ -9,7 +9,17 @@ import KeychainAccess
 import NextcloudKit
 
 final class NCPreferences: NSObject {
+    private static let userDefaultsMigrationKey = "NCPreferencesUserDefaultsMigrationVersion"
+    private static let userDefaultsMigrationVersion = 1
+
     let keychain = Keychain(service: "com.nextcloud.keychain")
+    private let userDefaults: UserDefaults
+
+    override init() {
+        userDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) ?? .standard
+        super.init()
+        migrateUserDefaultsToAppGroupIfNeeded()
+    }
 
     var showDescription: Bool {
         get {
@@ -612,7 +622,7 @@ final class NCPreferences: NSObject {
             ocId: ocId
         )
 
-        return UserDefaults.standard.object(forKey: key) as? Bool == true
+        return userDefaults.object(forKey: key) as? Bool == true
     }
 
     func setAlwaysUseVLCForVideo(_ value: Bool, account: String, ocId: String) {
@@ -622,9 +632,9 @@ final class NCPreferences: NSObject {
         )
 
         if value {
-            UserDefaults.standard.set(true, forKey: key)
+            userDefaults.set(true, forKey: key)
         } else {
-            UserDefaults.standard.removeObject(forKey: key)
+            userDefaults.removeObject(forKey: key)
         }
     }
 
@@ -645,13 +655,36 @@ final class NCPreferences: NSObject {
         }
     }
 
+    private func migrateUserDefaultsToAppGroupIfNeeded() {
+        guard userDefaults !== UserDefaults.standard,
+              Bundle.main.object(forInfoDictionaryKey: "NSExtension") == nil,
+              userDefaults.integer(forKey: Self.userDefaultsMigrationKey) < Self.userDefaultsMigrationVersion else {
+            return
+        }
+
+        defer {
+            userDefaults.set(Self.userDefaultsMigrationVersion, forKey: Self.userDefaultsMigrationKey)
+        }
+
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier,
+              let legacyPreferences = UserDefaults.standard.persistentDomain(forName: bundleIdentifier) else {
+            return
+        }
+
+        for (key, value) in legacyPreferences where key.hasPrefix("Preferences_") {
+            if userDefaults.object(forKey: key) == nil {
+                userDefaults.set(value, forKey: key)
+            }
+        }
+    }
+
     func removeAll() {
         try? keychain.removeAll()
     }
 
     private func setUserDefaults(_ value: Any?, forKey key: String) {
         let keyPreferences = "Preferences_\(key)"
-        UserDefaults.standard.set(value, forKey: keyPreferences)
+        userDefaults.set(value, forKey: keyPreferences)
     }
 
     private func getBoolPreference(key: String, account: String? = nil, defaultValue: Bool) -> Bool {
@@ -659,17 +692,16 @@ final class NCPreferences: NSObject {
         let userDefaultsKey = account != nil ? "Preferences_\(key)_\(suffix)" : "Preferences_\(key)"
         let keychainKey = account != nil ? "\(key)\(suffix)" : key
 
-        if let value = UserDefaults.standard.object(forKey: userDefaultsKey) as? Bool {
+        if let value = userDefaults.object(forKey: userDefaultsKey) as? Bool {
             return value
         }
 
         if let value = try? keychain.get(keychainKey), let boolValue = Bool(value) {
-            UserDefaults.standard.set(boolValue, forKey: userDefaultsKey)
+            userDefaults.set(boolValue, forKey: userDefaultsKey)
             try? keychain.remove(keychainKey)
             return boolValue
         }
 
-        UserDefaults.standard.set(defaultValue, forKey: userDefaultsKey)
         return defaultValue
     }
 
@@ -678,17 +710,16 @@ final class NCPreferences: NSObject {
         let userDefaultsKey = account != nil ? "Preferences_\(key)_\(suffix)" : "Preferences_\(key)"
         let keychainKey = account != nil ? "\(key)\(suffix)" : key
 
-        if let value = UserDefaults.standard.object(forKey: userDefaultsKey) as? String {
+        if let value = userDefaults.object(forKey: userDefaultsKey) as? String {
             return value
         }
 
         if let value = try? keychain.get(keychainKey) {
-            UserDefaults.standard.set(value, forKey: userDefaultsKey)
+            userDefaults.set(value, forKey: userDefaultsKey)
             try? keychain.remove(keychainKey)
             return value
         }
 
-        UserDefaults.standard.set(defaultValue, forKey: userDefaultsKey)
         return defaultValue
     }
 
@@ -697,17 +728,16 @@ final class NCPreferences: NSObject {
         let userDefaultsKey = account != nil ? "Preferences_\(key)_\(suffix)" : "Preferences_\(key)"
         let keychainKey = account != nil ? "\(key)\(suffix)" : key
 
-        if let value = UserDefaults.standard.object(forKey: userDefaultsKey) as? Int {
+        if let value = userDefaults.object(forKey: userDefaultsKey) as? Int {
             return value
         }
 
         if let value = try? keychain.get(keychainKey), let intValue = Int(value) {
-            UserDefaults.standard.set(intValue, forKey: userDefaultsKey)
+            userDefaults.set(intValue, forKey: userDefaultsKey)
             try? keychain.remove(keychainKey)
             return intValue
         }
 
-        UserDefaults.standard.set(defaultValue, forKey: userDefaultsKey)
         return defaultValue
     }
 }
