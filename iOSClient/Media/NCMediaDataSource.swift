@@ -84,6 +84,10 @@ extension NCMedia {
                     return
                 }
 
+                guard !self.dataSource.hasSameContent(as: dataSource) else {
+                    return
+                }
+
                 self.dataSource = dataSource
                 self.collectionViewReloadData()
             }
@@ -728,6 +732,26 @@ public class NCMediaDataSource: NSObject {
     }
 
     // MARK: -
+
+    func hasSameContent(as otherDataSource: NCMediaDataSource) -> Bool {
+        guard compactMetadatas.count == otherDataSource.compactMetadatas.count else {
+            return false
+        }
+
+        for (currentMetadata, otherMetadata) in zip(
+            compactMetadatas,
+            otherDataSource.compactMetadatas
+        ) {
+            guard currentMetadata.ocId == otherMetadata.ocId,
+                  currentMetadata.etag == otherMetadata.etag,
+                  currentMetadata.date == otherMetadata.date,
+                  currentMetadata.isLivePhoto == otherMetadata.isLivePhoto else {
+                return false
+            }
+        }
+
+        return true
+    }
 
     func clearCompactMetadatas() {
         compactMetadatas.removeAll()
