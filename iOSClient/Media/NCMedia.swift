@@ -200,6 +200,7 @@ class NCMedia: UIViewController {
                 self.dataSource.clearCompactMetadatas()
                 self.setTitleDate()
 
+                await self.loadDataSource(forced: true)
                 await self.searchMediaUI(true)
             }
         }

@@ -7,7 +7,7 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia {
-    func loadDataSource() async {
+    func loadDataSource(forced: Bool = false) async {
         let account = self.session.account
 
         guard !Task.isCancelled else {
@@ -56,10 +56,12 @@ extension NCMedia {
             }
 
             let shouldContinue = await MainActor.run {
-                self.isViewActived &&
-                self.session.account == account &&
-                self.view.window != nil &&
-                self.tabBarController?.selectedViewController === self.navigationController
+                forced || (
+                    self.isViewActived &&
+                    self.session.account == account &&
+                    self.view.window != nil &&
+                    self.tabBarController?.selectedViewController === self.navigationController
+                )
             }
 
             guard shouldContinue,
@@ -77,10 +79,12 @@ extension NCMedia {
 
             await MainActor.run {
                 guard !Task.isCancelled,
-                      self.isViewActived,
-                      self.session.account == account,
-                      self.view.window != nil,
-                      self.tabBarController?.selectedViewController === self.navigationController else {
+                      forced || (
+                          self.isViewActived &&
+                          self.session.account == account &&
+                          self.view.window != nil &&
+                          self.tabBarController?.selectedViewController === self.navigationController
+                      ) else {
                     return
                 }
 
