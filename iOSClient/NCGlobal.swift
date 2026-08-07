@@ -40,6 +40,14 @@ final class NCGlobal: Sendable {
     let twoFactorNotificatioName                    = "twofactor_nextcloud_notification"
     let termsOfServiceName                          = "terms_of_service"
 
+    // OFFICE
+    //
+    let editorText: String                          = "text"
+    let editorEuroOffice: String                    = "eurooffice"
+    let editorCollabora: String                     = "richdocuments"
+    let editorOnlyOffice: String                    = "onlyoffice"
+    var priorityEditors: [String] {[editorText, editorEuroOffice, editorCollabora, editorOnlyOffice]}
+
     // Intro selector
     //
     let introLogin: Int                             = 0
