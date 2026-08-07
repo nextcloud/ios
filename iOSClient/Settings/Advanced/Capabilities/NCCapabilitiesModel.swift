@@ -34,6 +34,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     }
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let global = NCGlobal.shared
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -69,9 +70,9 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
         image = utility.loadImage(named: "trash")
         capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: cap.filesUndelete))
 
-        let editors = cap.directEditingCreators
+        let editors = cap.editorCreators
         for editor in editors {
-            if editor.editor.lowercased() == "text" {
+            if editor.editor.lowercased() == global.editorText {
                 textEditor = true
             } else if editor.editor.lowercased() == "onlyoffice" {
                 onlyofficeEditor = true

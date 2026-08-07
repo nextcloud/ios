@@ -406,7 +406,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     case self.global.actionTextDocument:
                         let session = SceneManager.shared.getSession(scene: scene)
                         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-                        guard let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }) else {
+                        guard let creator = capabilities.editorCreators.first(where: { $0.editor == global.editorText }) else {
                             return
                         }
                         let serverUrl = controller.currentServerUrl()
@@ -415,7 +415,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         await NCCreate().createDocument(controller: controller,
                                                         serverUrl: serverUrl,
                                                         fileName: fileName,
-                                                        editorId: "text",
+                                                        editorId: global.editorText,
                                                         creatorId: creator.identifier,
                                                         templateId: "document",
                                                         session: session)

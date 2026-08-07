@@ -7,6 +7,7 @@ import NextcloudKit
 
 class NCRichWorkspaceCommon: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
 
     func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
@@ -18,7 +19,7 @@ class NCRichWorkspaceCommon: NSObject {
         }
 
         guard let capabilities = NCNetworking.shared.capabilities[session.account],
-              let textCreators = capabilities.directEditingCreators.filter({ $0.editor == "text" }).first else {
+              let textCreators = capabilities.editorCreators.filter({ $0.editor == global.editorText }).first else {
             return
         }
 
@@ -68,7 +69,7 @@ class NCRichWorkspaceCommon: NSObject {
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-                NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { task in
+                NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: global.editorText, account: metadata.account) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                     path: fileNamePath,

@@ -48,6 +48,7 @@ class NCContextMenuPlus: NSObject {
         let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
+        let global = NCGlobal.shared
         let serverUrl = controller.currentServerUrl()
 
         let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
@@ -55,8 +56,8 @@ class NCContextMenuPlus: NSObject {
         let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
-        let creatorsByEditor = Dictionary(grouping: capabilities.directEditingCreators, by: \.editor)
-        let directEditingSignature = capabilities.directEditingCreators
+        let creatorsByEditor = Dictionary(grouping: capabilities.editorCreators, by: \.editor)
+        let directEditingSignature = capabilities.editorCreators
             .sorted { $0.identifier < $1.identifier }
             .map { creator in
                 "\(creator.identifier)|\(creator.editor)|\(creator.ext)|\(creator.mimetype)|\(creator.templates)"
@@ -167,7 +168,7 @@ class NCContextMenuPlus: NSObject {
         //
         if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v34) {
             // FOLDER INFO
-            if let textCreators = creatorsByEditor["text"],
+            if let textCreators = creatorsByEditor[global.editorText],
                !textCreators.isEmpty,
                directory?.richWorkspace == nil,
                !isDirectoryE2EE,
@@ -188,7 +189,7 @@ class NCContextMenuPlus: NSObject {
                                     controller: controller,
                                     serverUrl: serverUrl,
                                     fileName: fileName,
-                                    editorId: "text",
+                                    editorId: global.editorText,
                                     creatorId: "textdocument",
                                     templateId: "",
                                     session: session)
@@ -213,7 +214,7 @@ class NCContextMenuPlus: NSObject {
             }
             // TEXT
             if isNetworkReachable,
-               let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
+               let creator = capabilities.editorCreators.first(where: { $0.editor == global.editorText }),
                !isDirectoryE2EE {
                 menuTextElements.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
                                                  image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
@@ -223,7 +224,7 @@ class NCContextMenuPlus: NSObject {
                         await NCCreate().createDocument(controller: controller,
                                                         serverUrl: serverUrl,
                                                         fileName: fileName,
-                                                        editorId: "text",
+                                                        editorId: global.editorText,
                                                         creatorId: creator.identifier,
                                                         templateId: "document",
                                                         session: session)
@@ -292,7 +293,7 @@ class NCContextMenuPlus: NSObject {
             //
             for editorId in creatorsByEditor.keys.sorted() {
                 guard NCDirectEditorAdapter.resolve(from: [editorId]) != nil,
-                      editorId != "text" else {
+                      editorId != global.editorText else {
                     continue
                 }
 

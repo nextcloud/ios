@@ -31,7 +31,7 @@ final class NCDocumentEditorCoordinator: NSObject {
 
     func selectEditor() async -> UIViewController? {
         let availableEditors = Set(
-            utility.editorsDirectEditing(
+            utility.editorsEditing(
                 account: metadata.account,
                 contentType: metadata.contentType
             )
