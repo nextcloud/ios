@@ -74,9 +74,9 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
         for editor in editors {
             if editor.editor.lowercased() == global.editorText {
                 textEditor = true
-            } else if editor.editor.lowercased() == "onlyoffice" {
+            } else if editor.editor.lowercased() == global.editorOnlyOffice {
                 onlyofficeEditor = true
-            } else if editor.editor.lowercased() == "eurooffice" {
+            } else if editor.editor.lowercased() == global.editorEuroOffice {
                 euroOfficeEditor = true
             }
         }

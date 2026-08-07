@@ -51,6 +51,8 @@ final class NCDocumentEditorCoordinator: NSObject {
             return await makeDirectEditingViewController(editor: global.editorEuroOffice)
         } else if selectedEditor == global.editorCollabora.lowercased() {
             return await makeCollaboraViewController()
+        } else if selectedEditor == global.editorOnlyOffice.lowercased() {
+            return await makeDirectEditingViewController(editor: global.editorOnlyOffice)
         }
 
         return nil
@@ -59,19 +61,14 @@ final class NCDocumentEditorCoordinator: NSObject {
     // MARK: - Text editor
 
     private func makeDirectEditingViewController(editor: String) async -> UIViewController? {
-        guard let editorAdapter = NCDirectEditorAdapter.resolve(
-            from: [editor]
-        ) else {
+        guard let editorAdapter = NCDirectEditorAdapter.resolve(from: [editor]) else {
             return nil
         }
 
         let account = metadata.account
         let editorIdentifier = selectedEditor ?? editorAdapter.apiKey
         let editorViewController = editorAdapter.viewControllerEditor
-        let options = NKRequestOptions(
-            customUserAgent: editorAdapter.userAgent(utility)
-        )
-
+        let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
         let link: String
 
         if metadata.url.isEmpty {
@@ -106,12 +103,8 @@ final class NCDocumentEditorCoordinator: NSObject {
 
             NCActivityIndicator.shared.stop()
 
-            guard results.error == .success,
-                  let generatedURL = results.url else {
-                let windowScene = SceneManager.shared.getWindowScene(
-                    controller: delegate?.tabBarController as? NCMainTabBarController
-                )
-
+            guard results.error == .success, let generatedURL = results.url else {
+                let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
                 await showErrorBanner(
                     windowScene: windowScene,
                     text: results.error.errorDescription,
@@ -168,10 +161,7 @@ final class NCDocumentEditorCoordinator: NSObject {
             NCActivityIndicator.shared.stop()
 
             guard results.error == .success, let generatedURL = results.url else {
-                let windowScene = SceneManager.shared.getWindowScene(
-                    controller: delegate?.tabBarController as? NCMainTabBarController
-                )
-
+                let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
                 await showErrorBanner(
                     windowScene: windowScene,
                     text: results.error.errorDescription,
