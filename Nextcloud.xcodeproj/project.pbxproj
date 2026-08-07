@@ -3025,8 +3025,8 @@
 			isa = PBXGroup;
 			children = (
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
-				F7C8A9393025B74B004E3A10 /* NCDocumentEditorCoordinator.swift */,
 				F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */,
+				F7C8A93B3025BCBC004E3A10 /* NCViewerDocument */,
 				F7CDB5C12FA33CA300F72306 /* NCViewerMedia */,
 				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
@@ -3286,6 +3286,14 @@
 				F7C55CC72FB5CE74004A974F /* MainInterface.storyboard */,
 			);
 			path = "Action Assistant";
+			sourceTree = "<group>";
+		};
+		F7C8A93B3025BCBC004E3A10 /* NCViewerDocument */ = {
+			isa = PBXGroup;
+			children = (
+				F7C8A9393025B74B004E3A10 /* NCDocumentEditorCoordinator.swift */,
+			);
+			path = NCViewerDocument;
 			sourceTree = "<group>";
 		};
 		F7C9739328F17131002C43E2 /* WidgetDashboardIntentHandler */ = {
