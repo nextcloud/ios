@@ -180,6 +180,10 @@ class NCMedia: UIViewController {
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
+        Task {
+            await loadDataSource()
+        }
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { [weak self] notification in
             guard let self else {
                 return
@@ -196,6 +200,7 @@ class NCMedia: UIViewController {
                 self.dataSource.clearCompactMetadatas()
                 self.setTitleDate()
 
+                await self.loadDataSource(forced: true)
                 await self.searchMediaUI(true)
             }
         }
@@ -247,7 +252,7 @@ class NCMedia: UIViewController {
                 return
             }
 
-            await self.loadDataSource()
+            self.searchNewMedia()
 
             guard !Task.isCancelled else {
                 return
@@ -263,8 +268,6 @@ class NCMedia: UIViewController {
         super.viewDidAppear(animated)
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
-
-        searchNewMedia()
     }
 
     override func viewDidDisappear(_ animated: Bool) {

@@ -7,7 +7,7 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia {
-    func loadDataSource() async {
+    func loadDataSource(forced: Bool = false) async {
         let account = self.session.account
 
         guard !Task.isCancelled else {
@@ -56,10 +56,12 @@ extension NCMedia {
             }
 
             let shouldContinue = await MainActor.run {
-                self.isViewActived &&
-                self.session.account == account &&
-                self.view.window != nil &&
-                self.tabBarController?.selectedViewController === self.navigationController
+                forced || (
+                    self.isViewActived &&
+                    self.session.account == account &&
+                    self.view.window != nil &&
+                    self.tabBarController?.selectedViewController === self.navigationController
+                )
             }
 
             guard shouldContinue,
@@ -77,10 +79,16 @@ extension NCMedia {
 
             await MainActor.run {
                 guard !Task.isCancelled,
-                      self.isViewActived,
-                      self.session.account == account,
-                      self.view.window != nil,
-                      self.tabBarController?.selectedViewController === self.navigationController else {
+                      forced || (
+                          self.isViewActived &&
+                          self.session.account == account &&
+                          self.view.window != nil &&
+                          self.tabBarController?.selectedViewController === self.navigationController
+                      ) else {
+                    return
+                }
+
+                guard !self.dataSource.hasSameContent(as: dataSource) else {
                     return
                 }
 
@@ -728,6 +736,26 @@ public class NCMediaDataSource: NSObject {
     }
 
     // MARK: -
+
+    func hasSameContent(as otherDataSource: NCMediaDataSource) -> Bool {
+        guard compactMetadatas.count == otherDataSource.compactMetadatas.count else {
+            return false
+        }
+
+        for (currentMetadata, otherMetadata) in zip(
+            compactMetadatas,
+            otherDataSource.compactMetadatas
+        ) {
+            guard currentMetadata.ocId == otherMetadata.ocId,
+                  currentMetadata.etag == otherMetadata.etag,
+                  currentMetadata.date == otherMetadata.date,
+                  currentMetadata.isLivePhoto == otherMetadata.isLivePhoto else {
+                return false
+            }
+        }
+
+        return true
+    }
 
     func clearCompactMetadatas() {
         compactMetadatas.removeAll()
