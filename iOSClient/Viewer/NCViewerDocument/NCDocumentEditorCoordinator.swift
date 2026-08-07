@@ -20,7 +20,7 @@ final class NCDocumentEditorCoordinator: NSObject {
     let selectedEditor: String?
     let delegate: UIViewController?
 
-    init(metadata: tableMetadata, image: UIImage?, selectedEditor: String? = nil, delegate: UIViewController?) {
+    init(metadata: tableMetadata, image: UIImage?, selectedEditor: String?, delegate: UIViewController?) {
         self.metadata = metadata
         self.image = image
         self.selectedEditor = selectedEditor
@@ -29,7 +29,7 @@ final class NCDocumentEditorCoordinator: NSObject {
         super.init()
     }
 
-    func selectOffice() async -> UIViewController? {
+    func selectEditor() async -> UIViewController? {
         let availableEditors = Set(
             utility.editorsDirectEditing(
                 account: metadata.account,
