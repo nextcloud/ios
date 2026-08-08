@@ -248,17 +248,17 @@ extension tableMetadata {
             return false
         }
         let utility = NCUtility()
-        let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType).map { $0.lowercased() }
+        let editorsEditing = utility.editorsEditing(account: account, contentType: contentType).map { $0.lowercased() }
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
         let capabilities = NCNetworking.shared.capabilities[account]
 
         if let capabilities,
            capabilities.richDocumentsEnabled,
            richDocumentEditor,
-           directEditingEditors.isEmpty {
+           editorsEditing.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if !directEditingEditors.isEmpty {
+        } else if !editorsEditing.isEmpty {
             return true
         }
         return false
@@ -280,7 +280,7 @@ extension tableMetadata {
         guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
+        let editors = NCUtility().editorsEditing(account: account, contentType: contentType)
         return !editors.isEmpty
     }
 

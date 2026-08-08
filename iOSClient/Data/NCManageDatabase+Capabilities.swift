@@ -91,8 +91,8 @@ extension NCManageDatabase {
                     capabilities = await NKCapabilities.shared.getCapabilities(for: account)
                 }
 
-                capabilities?.directEditingEditors = editors
-                capabilities?.directEditingCreators = creators
+                capabilities?.editorEditors = editors
+                capabilities?.editorCreators = creators
 
                 if let capabilities {
                     await NKCapabilities.shared.setCapabilities(for: account, capabilities: capabilities)

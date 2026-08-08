@@ -38,11 +38,11 @@ final class NCUtility: NSObject, Sendable {
         return false
     }
 
-    func editorsDirectEditing(account: String, contentType: String) -> [String] {
+    func editorsEditing(account: String, contentType: String) -> [String] {
         var identifiers: [String] = []
         let capabilities = NCNetworking.shared.capabilities[account]
 
-        capabilities?.directEditingEditors.forEach { editor in
+        capabilities?.editorEditors.forEach { editor in
             editor.mimetypes.forEach { mimetype in
                 if mimetype == contentType {
                     identifiers.append(editor.identifier)
