@@ -24,7 +24,7 @@ extension NCMedia {
             }
         }
 
-        self.collectionView.reloadData()
+        collectionViewReloadData()
 
         Task {
             await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
@@ -216,7 +216,7 @@ extension NCMedia {
 
         navigationItem.leftBarButtonItems = items.isEmpty ? nil : items
         if items.isEmpty {
-            collectionView.reloadData()
+            collectionViewReloadData()
         }
     }
 }

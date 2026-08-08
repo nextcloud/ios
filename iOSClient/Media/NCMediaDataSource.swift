@@ -8,6 +8,14 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource(forced: Bool = false) async {
+        defer {
+            datasourceMediaInProgress = false
+        }
+        datasourceMediaInProgress = true
+        if self.dataSource.isEmpty() {
+            collectionViewReloadData()
+        }
+
         let account = self.session.account
 
         guard !Task.isCancelled else {

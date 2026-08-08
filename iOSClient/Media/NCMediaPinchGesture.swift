@@ -45,7 +45,7 @@ extension NCMedia {
                 options: .transitionCrossDissolve
             ) {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.reloadData()
+                self.collectionViewReloadData()
                 self.collectionView.layoutIfNeeded()
 
                 guard let updatedAttributes = self.collectionView

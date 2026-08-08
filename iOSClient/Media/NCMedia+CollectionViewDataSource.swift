@@ -30,7 +30,7 @@ extension NCMedia: UICollectionViewDataSource {
                     ]
                 )
 
-                if searchMediaInProgress {
+                if searchMediaInProgress || datasourceMediaInProgress {
                     header.emptyTitle.text = NSLocalizedString(
                         "_search_in_progress_",
                         comment: ""
