@@ -76,6 +76,7 @@ class NCMedia: UIViewController {
     var searchMediaTask: Task<Void, Never>?
     var buildDataSourceTask: Task<Void, Never>?
 
+    var datasourceMediaInProgress: Bool = false
     var searchMediaInProgress: Bool = false {
         didSet {
             guard oldValue != searchMediaInProgress else {
