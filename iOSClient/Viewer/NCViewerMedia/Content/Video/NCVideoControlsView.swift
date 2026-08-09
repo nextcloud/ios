@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import AVKit
+import Combine
 import SwiftUI
 import UIKit
 
@@ -79,6 +80,7 @@ final class NCVideoControlsView: UIView {
 
     // MARK: - State
 
+    // Keep the hosted hierarchy stable so playback updates do not dismiss an open menu.
     private var state = NCVideoControlsState()
     private var topActionsTopConstraint: NSLayoutConstraint?
     private weak var navigationBar: UINavigationBar?
@@ -92,20 +94,21 @@ final class NCVideoControlsView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureLayout()
-        updateHostedView()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         configureLayout()
-        updateHostedView()
     }
 
     // MARK: - Public Updates
 
     func updatePlayPauseButton(isPlaying: Bool) {
+        guard state.isPlaying != isPlaying else {
+            return
+        }
+
         state.isPlaying = isPlaying
-        updateHostedView()
     }
 
     func updateProgress(
@@ -113,15 +116,25 @@ final class NCVideoControlsView: UIView {
         elapsedText: String,
         remainingText: String
     ) {
-        state.progress = max(0, min(1, progress))
+        let progress = max(0, min(1, progress))
+
+        guard state.progress != progress ||
+                state.elapsedText != elapsedText ||
+                state.remainingText != remainingText else {
+            return
+        }
+
+        state.progress = progress
         state.elapsedText = elapsedText
         state.remainingText = remainingText
-        updateHostedView()
     }
 
     func setSeekingEnabled(_ isEnabled: Bool) {
+        guard state.isSeekingEnabled != isEnabled else {
+            return
+        }
+
         state.isSeekingEnabled = isEnabled
-        updateHostedView()
     }
 
     func setPictureInPictureVisible(_ isVisible: Bool) {
@@ -134,22 +147,16 @@ final class NCVideoControlsView: UIView {
 
     func setTopActionsMode(_ mode: NCVideoControlsTopActionsMode) {
         let didChangeMode = state.topActionsMode != mode
-        var didResetTrackItems = false
         let hasTrackItems = !state.subtitleTrackItems.isEmpty || !state.audioTrackItems.isEmpty
 
-        state.topActionsMode = mode
+        if didChangeMode {
+            state.topActionsMode = mode
+        }
 
         if mode != .vlcTracks, hasTrackItems {
             state.subtitleTrackItems = []
             state.audioTrackItems = []
-            didResetTrackItems = true
         }
-
-        guard didChangeMode || didResetTrackItems else {
-            return
-        }
-
-        updateHostedView()
     }
 
     func setSubtitleTrackMenuItems(_ items: [NCVideoTrackMenuItem]) {
@@ -158,7 +165,6 @@ final class NCVideoControlsView: UIView {
         }
 
         state.subtitleTrackItems = items
-        updateHostedView()
     }
 
     func setAudioTrackMenuItems(_ items: [NCVideoTrackMenuItem]) {
@@ -167,7 +173,6 @@ final class NCVideoControlsView: UIView {
         }
 
         state.audioTrackItems = items
-        updateHostedView()
     }
 
     // Keeps top actions aligned below the real navigation bar.
@@ -258,11 +263,6 @@ final class NCVideoControlsView: UIView {
 
         state.topActionsTopOffset = topOffset
         topActionsTopConstraint.constant = topOffset
-        updateHostedView()
-    }
-
-    private func updateHostedView() {
-        hostingController.rootView = makeRootView()
     }
 
     private func makeRootView() -> NCVideoControlsSwiftUIView {
@@ -304,7 +304,6 @@ final class NCVideoControlsView: UIView {
                     return
                 }
                 state.progress = progress
-                updateHostedView()
                 delegate?.videoControlsDidEndScrubbing(self, progress: progress)
             },
             onPictureInPicture: { [weak self] in
@@ -337,22 +336,22 @@ final class NCVideoControlsView: UIView {
 
 // MARK: - SwiftUI State
 
-private struct NCVideoControlsState: Equatable {
-    var isPlaying = false
-    var progress: Float = 0
-    var elapsedText = "0:00"
-    var remainingText = "−0:00"
-    var isSeekingEnabled = true
-    var topActionsMode: NCVideoControlsTopActionsMode = .none
-    var subtitleTrackItems: [NCVideoTrackMenuItem] = []
-    var audioTrackItems: [NCVideoTrackMenuItem] = []
-    var topActionsTopOffset: CGFloat = 0
+private final class NCVideoControlsState: ObservableObject {
+    @Published var isPlaying = false
+    @Published var progress: Float = 0
+    @Published var elapsedText = "0:00"
+    @Published var remainingText = "−0:00"
+    @Published var isSeekingEnabled = true
+    @Published var topActionsMode: NCVideoControlsTopActionsMode = .none
+    @Published var subtitleTrackItems: [NCVideoTrackMenuItem] = []
+    @Published var audioTrackItems: [NCVideoTrackMenuItem] = []
+    @Published var topActionsTopOffset: CGFloat = 0
 }
 
 // MARK: - SwiftUI Controls
 
 private struct NCVideoControlsSwiftUIView: View {
-    let state: NCVideoControlsState
+    @ObservedObject var state: NCVideoControlsState
     let onSeekBackward: () -> Void
     let onPlayPause: () -> Void
     let onSeekForward: () -> Void
