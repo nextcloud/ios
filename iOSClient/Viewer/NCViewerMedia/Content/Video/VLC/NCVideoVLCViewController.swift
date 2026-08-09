@@ -6,7 +6,6 @@ import AVFoundation
 import UIKit
 import MobileVLCKit
 import NextcloudKit
-import UniformTypeIdentifiers
 
 // MARK: - VLC View Controller
 
@@ -774,25 +773,100 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     func presentExternalSubtitlePicker() {
-        let picker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [.item],
-            asCopy: true
-        )
-        picker.delegate = self
-        picker.allowsMultipleSelection = false
-        present(picker, animated: true)
+        guard presentedViewController == nil,
+              let navigationController = makeExternalSubtitlePicker() else {
+            return
+        }
+
+        navigationController.modalPresentationStyle = .formSheet
+        present(navigationController, animated: true)
+    }
+
+    private func makeExternalSubtitlePicker() -> UINavigationController? {
+        let session = NCSession.shared.getSession(account: metadata.account)
+
+        guard !session.account.isEmpty,
+              let navigationController = UIStoryboard(
+                  name: "NCSelect",
+                  bundle: nil
+              ).instantiateInitialViewController() as? UINavigationController,
+              let rootViewController = navigationController.topViewController as? NCSelect else {
+            return nil
+        }
+
+        let utilityFileSystem = NCUtilityFileSystem()
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
+        var serverUrl = metadata.serverUrl
+        var viewControllers: [NCSelect] = []
+
+        while true {
+            let viewController: NCSelect?
+
+            if serverUrl == homeServerUrl {
+                viewController = rootViewController
+            } else {
+                viewController = UIStoryboard(
+                    name: "NCSelect",
+                    bundle: nil
+                ).instantiateViewController(
+                    withIdentifier: "NCSelect.storyboard"
+                ) as? NCSelect
+            }
+
+            guard let viewController else {
+                return nil
+            }
+
+            configureExternalSubtitlePicker(
+                viewController,
+                serverUrl: serverUrl,
+                homeServerUrl: homeServerUrl,
+                session: session
+            )
+            viewControllers.insert(viewController, at: 0)
+
+            guard serverUrl != homeServerUrl,
+                  let parentServerUrl = utilityFileSystem.serverDirectoryUp(
+                      serverUrl: serverUrl,
+                      home: homeServerUrl
+                  ) else {
+                break
+            }
+
+            serverUrl = parentServerUrl
+        }
+
+        navigationController.setViewControllers(viewControllers, animated: false)
+        return navigationController
+    }
+
+    private func configureExternalSubtitlePicker(
+        _ viewController: NCSelect,
+        serverUrl: String,
+        homeServerUrl: String,
+        session: NCSession.Session
+    ) {
+        let folderName = (serverUrl as NSString).lastPathComponent.removingPercentEncoding
+
+        viewController.delegate = self
+        viewController.typeOfCommandView = .nothing
+        viewController.enableSelectFile = true
+        viewController.allowedFileExtensions = supportedExternalSubtitleExtensions
+        viewController.titleCurrentFolder = serverUrl == homeServerUrl
+            ? NCBrandOptions.shared.brand
+            : folderName ?? (serverUrl as NSString).lastPathComponent
+        viewController.serverUrl = serverUrl
+        viewController.session = session
+        viewController.controller = contextMenuController
+        viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
+    }
+
+    private var supportedExternalSubtitleExtensions: Set<String> {
+        ["srt", "vtt", "ass", "ssa", "sub"]
     }
 
     private func isSupportedExternalSubtitleURL(_ url: URL) -> Bool {
-        let supportedExtensions: Set<String> = [
-            "srt",
-            "vtt",
-            "ass",
-            "ssa",
-            "sub"
-        ]
-
-        return supportedExtensions.contains(url.pathExtension.lowercased())
+        supportedExternalSubtitleExtensions.contains(url.pathExtension.lowercased())
     }
 
     private func loadExternalSubtitle(url: URL) {
@@ -1064,19 +1138,56 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
     }
 }
 
-// MARK: - Document Picker Delegate
+// MARK: - Nextcloud Subtitle Picker Delegate
 
-extension NCVideoVLCViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else {
+extension NCVideoVLCViewController: NCSelectDelegate {
+    func dismissSelect(
+        serverUrl: String?,
+        metadata: tableMetadata?,
+        type: String,
+        items: [Any],
+        overwrite: Bool,
+        copy: Bool,
+        move: Bool,
+        session: NCSession.Session,
+        controller: NCMainTabBarController?
+    ) {
+        guard let metadata else {
+            showControls(animated: true)
             return
         }
 
-        loadExternalSubtitle(url: url)
-        showControls(animated: true)
-    }
+        Task { @MainActor [weak self] in
+            guard let self else {
+                return
+            }
 
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        showControls(animated: true)
+            let utilityFileSystem = NCUtilityFileSystem()
+
+            if !utilityFileSystem.fileProviderStorageExists(metadata) {
+                let result = await NCNetworking.shared.downloadFile(metadata: metadata)
+
+                guard result.nkError == .success else {
+                    nkLog(
+                        tag: NCGlobal.shared.logTagViewer,
+                        emoji: .error,
+                        message: "VIDEO VLC subtitle download error: \(result.nkError.errorDescription)",
+                        consoleOnly: true
+                    )
+                    showControls(animated: true)
+                    return
+                }
+            }
+
+            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
+                metadata.ocId,
+                fileName: metadata.fileName,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase
+            )
+
+            loadExternalSubtitle(url: URL(fileURLWithPath: localPath))
+            showControls(animated: true)
+        }
     }
 }
