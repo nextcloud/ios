@@ -31,9 +31,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d item left</string>
+			<string>%d élément restant</string>
+			<key>many</key>
+			<string>%d éléments restants</string>
 			<key>other</key>
-			<string>%d items left</string>
+			<string>%d éléments restants</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -47,9 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d item to back up</string>
+			<string>Vous avez %d élément à sauvegarder</string>
+			<key>many</key>
+			<string>Vous avez %d éléments à sauvegarder</string>
 			<key>other</key>
-			<string>You have %d items to back up</string>
+			<string>Vous avez %d éléments à sauvegarder</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -63,9 +67,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d failed</string>
+			<string>%d a échoué</string>
+			<key>many</key>
+			<string>%d ont échoué</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>%d ont échoué</string>
 		</dict>
 	</dict>
 </dict>
