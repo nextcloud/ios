@@ -173,7 +173,7 @@
 "_keep_active_for_upload_" = "Keep application active until upload is completed …";
 "_keep_active_for_transfers_" = "Keep application active until the transfers are completed …";
 "_wait_file_encryption_"  = "Please wait, encrypting file…";
-"_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
+"_passcode_counter_fail_" = "Too many failed attempts. Please wait before trying again.";
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
 "_lock_cannot_disable_mdm_" = "Disabling the passcode lock is not permitted by your configuration profile.";
@@ -617,7 +617,7 @@
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log.";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
-"_reset_wrong_passcode_"    = "Reset application";
+"_reset_wrong_passcode_"    = "Resetting application...";
 "_reset_wrong_passcode_option_" = "Reset application after 10 failed attempts";
 "_reset_wrong_passcode_desc_" = "Enabling this will remove all accounts and local data after %d failed passcode entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";

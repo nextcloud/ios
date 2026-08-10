@@ -98,6 +98,25 @@ final class NCPreferences: NSObject {
         }
     }
 
+    /// Тhe deadline date when the wrong passcode attempt lockout expires.
+    var passcodeLockoutEnd: Date? {
+        get {
+            if let value = try? keychain.get("passcodeLockoutEnd"), let result = Double(value) {
+                return Date(timeIntervalSince1970: result)
+            }
+            return nil
+        }
+        set {
+            keychain["passcodeLockoutEnd"] = newValue.map { String($0.timeIntervalSince1970) }
+        }
+    }
+
+    func clearPasscodeFailures() {
+        passcodeCounterFail = 0
+        passcodeCounterFailReset = 0
+        passcodeLockoutEnd = nil
+    }
+
     var requestPasscodeAtStart: Bool {
         get {
             let keychainOLD = Keychain(service: "Crypto Cloud")
