@@ -124,7 +124,7 @@ struct NCAudioViewerContentView: View {
                         Button {
                             playbackOptions.toggleRepeat()
                         } label: {
-                            Image(systemName: playbackOptions.isRepeatEnabled ? "repeat.circle.fill" : "repeat.circle")
+                            Image(systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1.circle")
                                 .font(.system(size: sideButtonSize, weight: .regular))
                                 .foregroundStyle(playbackOptions.isRepeatEnabled ? primaryForegroundStyle : mutedForegroundStyle)
                         }
@@ -171,14 +171,16 @@ struct NCAudioViewerContentView: View {
                 onPlayNextMedia: onPlayNextMedia
             )
             await model.load(url: localURL)
-            consumeAutoPlayIfNeeded()
+            await consumeAutoPlayIfNeeded()
         }
         .onChange(of: shouldAutoPlay) { _, newValue in
             guard newValue else {
                 return
             }
 
-            consumeAutoPlayIfNeeded()
+            Task { @MainActor in
+                await consumeAutoPlayIfNeeded()
+            }
         }
         // Stop all audio playback when the media viewer performs a global playback teardown.
         // This notification is intentionally viewer-wide and should not be used for normal
@@ -294,7 +296,16 @@ struct NCAudioViewerContentView: View {
     }
 
     @MainActor
-    private func consumeAutoPlayIfNeeded() {
+    private func consumeAutoPlayIfNeeded() async {
+        guard shouldAutoPlay else {
+            return
+        }
+
+        // The viewer-wide stop notification also releases players belonging to
+        // prefetched audio pages. Recreate this page's player before autoplaying
+        // instead of relying on the previous preload still being alive.
+        await model.load(url: localURL)
+
         guard shouldAutoPlay else {
             return
         }

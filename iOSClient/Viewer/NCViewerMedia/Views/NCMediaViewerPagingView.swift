@@ -489,9 +489,17 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 return
             }
 
-            // Wait until the current fullscreen player has fully disappeared.
-            // Otherwise the next player can be rejected while the previous
-            // AVPlayer or VLC controller is still dismissing.
+            guard classFile == NKTypeClassFile.video.rawValue else {
+                self.moveToPage(
+                    at: targetIndex,
+                    shouldAutoPlay: true
+                )
+                return
+            }
+
+            // Video transitions must wait until the current fullscreen player
+            // has fully disappeared. Audio has no fullscreen presenter and can
+            // navigate immediately through the normal paging path above.
             NCVideoAVPlayerPresenter.dismiss { [weak self] in
                 NCVideoVLCPresenter.dismiss { [weak self] in
                     guard let self,
