@@ -337,33 +337,17 @@ final class NCVideoAVPlayerViewController: UIViewController {
     func close() {
         let closeCallback = onClose
         let closingOcId = metadata.ocId
-        let controllerToDismiss = navigationController ?? self
 
-        NCVideoAVPlayerPresenter.clearCurrent(self)
-
-        controllerToDismiss.dismiss(animated: false) { [weak self] in
-            self?.stopControlsHideTimer()
-            self?.stop()
-
-            DispatchQueue.main.async {
-                closeCallback?(closingOcId)
-            }
+        NCVideoAVPlayerPresenter.dismiss {
+            closeCallback?(closingOcId)
         }
     }
 
     func closeImmediately() {
         let closeCallback = onClose
-        let controllerToDismiss = navigationController ?? self
 
-        NCVideoAVPlayerPresenter.clearCurrent(self)
-
-        controllerToDismiss.dismiss(animated: false) { [weak self] in
-            self?.stopControlsHideTimer()
-            self?.stop()
-
-            DispatchQueue.main.async {
-                closeCallback?(nil)
-            }
+        NCVideoAVPlayerPresenter.dismiss {
+            closeCallback?(nil)
         }
     }
 
@@ -555,6 +539,11 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         updatePlayPauseButton()
         updateProgressControls()
+    }
+
+    func stopForDismissal() {
+        stopControlsHideTimer()
+        stop()
     }
 
     private func applyControlsVisibilityOnStart() {

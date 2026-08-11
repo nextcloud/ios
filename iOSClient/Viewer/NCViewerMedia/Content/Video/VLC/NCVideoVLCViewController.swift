@@ -503,6 +503,13 @@ final class NCVideoVLCViewController: UIViewController {
         mediaPlayer.stop()
     }
 
+    func stopForDismissal() {
+        // A queued URL replacement no longer applies once this controller is
+        // leaving the screen and must not restart playback after dismissal.
+        stopCompletions.removeAll()
+        stop()
+    }
+
     private func finishStop() {
         isStopInFlight = false
         mediaPlayer.media = nil

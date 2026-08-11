@@ -29,7 +29,7 @@ struct NCMediaViewerPageView: View {
     let navigationBar: UINavigationBar?
 
     private var isSelected: Bool {
-        model.selectedIndex == page.index
+        model.activePageIndex == page.index
     }
 
     // MARK: - Body
@@ -254,6 +254,7 @@ struct NCMediaViewerPageView: View {
                 navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
+                isSelected: isSelected,
                 shouldAutoPlay: effectiveShouldAutoPlay,
                 playbackOptions: model.playbackOptions,
                 onPrevious: goToPreviousPage,

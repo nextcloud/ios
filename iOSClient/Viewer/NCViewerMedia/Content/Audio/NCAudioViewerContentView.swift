@@ -16,6 +16,7 @@ struct NCAudioViewerContentView: View {
     let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
+    let isSelected: Bool
     let shouldAutoPlay: Bool
     @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPrevious: (_ shouldAutoPlay: Bool) -> Void
@@ -34,6 +35,7 @@ struct NCAudioViewerContentView: View {
         navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
+        isSelected: Bool = true,
         shouldAutoPlay: Bool = false,
         playbackOptions: NCMediaPlaybackOptions,
         onPrevious: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
@@ -51,6 +53,7 @@ struct NCAudioViewerContentView: View {
         self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
+        self.isSelected = isSelected
         self.shouldAutoPlay = shouldAutoPlay
         self.playbackOptions = playbackOptions
         self.onPrevious = onPrevious
@@ -128,7 +131,7 @@ struct NCAudioViewerContentView: View {
                             ),
                             in: 0...max(model.duration, 1)
                         )
-                        .disabled(model.duration <= 0)
+                        .disabled(!isSelected || model.duration <= 0)
 
                         HStack {
                             Text(formatTime(model.currentTime))
@@ -151,6 +154,7 @@ struct NCAudioViewerContentView: View {
                                 .foregroundStyle(primaryForegroundStyle)
                         }
                         .buttonStyle(.plain)
+                        .disabled(!isSelected)
 
                         Button {
                             model.restart()
@@ -160,7 +164,7 @@ struct NCAudioViewerContentView: View {
                                 .foregroundStyle(mutedForegroundStyle)
                         }
                         .buttonStyle(.plain)
-                        .disabled(model.duration <= 0)
+                        .disabled(!isSelected || model.duration <= 0)
                         .offset(
                             x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
                         )
@@ -199,12 +203,31 @@ struct NCAudioViewerContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .task(id: localURL) {
+            guard isSelected else {
+                return
+            }
+
             model.configurePlaybackCompletion(
                 options: playbackOptions,
                 onPlayNextMedia: onPlayNextMedia
             )
             await model.load(url: localURL)
             await consumeAutoPlayIfNeeded()
+        }
+        .onChange(of: isSelected) { _, selected in
+            guard selected else {
+                model.stop()
+                return
+            }
+
+            Task { @MainActor in
+                model.configurePlaybackCompletion(
+                    options: playbackOptions,
+                    onPlayNextMedia: onPlayNextMedia
+                )
+                await model.load(url: localURL)
+                await consumeAutoPlayIfNeeded()
+            }
         }
         .onChange(of: shouldAutoPlay) { _, newValue in
             guard newValue else {
@@ -254,7 +277,7 @@ struct NCAudioViewerContentView: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(isActive ? Color.accentColor : Color.primary)
+                .foregroundStyle(isActive ? Color.accentColor : primaryForegroundStyle)
                 .shadow(
                     color: .black.opacity(0.35),
                     radius: 2,

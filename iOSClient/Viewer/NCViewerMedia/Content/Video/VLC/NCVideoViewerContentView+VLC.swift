@@ -20,6 +20,7 @@ extension NCVideoViewerContentView {
         }
 
         guard presentedVLCURL != preparedPlayback.url else {
+            consumePendingAutoPlayIfNeeded()
             return true
         }
 
@@ -49,6 +50,7 @@ extension NCVideoViewerContentView {
         }
 
         presentedVLCURL = preparedPlayback.url
+        consumePendingAutoPlayIfNeeded()
         return true
     }
 

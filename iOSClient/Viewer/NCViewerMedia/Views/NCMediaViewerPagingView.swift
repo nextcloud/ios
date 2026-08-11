@@ -130,8 +130,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     private var lastCollectionViewBoundsSize: CGSize = .zero
     private var cancellable: AnyCancellable?
     private var lastVisibleIndex: Int?
-    private var isUserPaging = false
-    private var isAutoPlayPaging = false
     private var isAdjustingLayout = false
 
     // MARK: - Init
@@ -281,10 +279,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
-        jumpToIndex(
+        guard jumpToIndex(
             index,
             animated: animated
-        )
+        ) else {
+            return
+        }
 
         didScrollToInitialIndex = true
         lastVisibleIndex = index
@@ -301,10 +301,9 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func jumpToSelectedIndexIfNeeded(animated: Bool) {
-        // During an autoplay transition, selectedIndex still represents the
-        // source page until the scroll reaches the target. Every manual paging
-        // path keeps its original continuous selection behavior.
-        guard !isAutoPlayPaging else {
+        // Programmatic transitions own the collection offset until they settle.
+        // Model publications must not snap the collection back to the source.
+        guard !model.pageTransition.isProgrammatic else {
             return
         }
 
@@ -329,35 +328,49 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         )
     }
 
+    @discardableResult
     private func scrollToIndex(
         _ index: Int,
         animated: Bool
-    ) {
+    ) -> Bool {
         guard model.numberOfPages > 0 else {
-            return
+            return false
         }
 
         guard index >= 0,
               index < model.numberOfPages else {
-            return
+            return false
+        }
+
+        guard let collectionView else {
+            return false
+        }
+
+        collectionView.layoutIfNeeded()
+
+        guard collectionView.bounds.width > 0 else {
+            return false
         }
 
         let didChangePage = lastVisibleIndex != index
-        lastVisibleIndex = index
+        let targetOffsetX = CGFloat(index) * collectionView.bounds.width
+        let shouldAnimate = animated &&
+            abs(collectionView.contentOffset.x - targetOffsetX) > 0.5
+
+        guard jumpToIndex(
+            index,
+            animated: shouldAnimate
+        ) else {
+            return false
+        }
 
         if didChangePage {
             onZoomChanged(false)
         }
 
-        jumpToIndex(
-            index,
-            animated: animated
-        )
-
-        if !animated {
-            isUserPaging = false
-            isAutoPlayPaging = false
-            model.setSelectedIndex(index)
+        if !shouldAnimate {
+            lastVisibleIndex = index
+            model.finishPageTransition(at: index)
             refreshVisibleCells()
 
             Task {
@@ -368,20 +381,24 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
+        return true
     }
 
+    @discardableResult
     private func jumpToIndex(
         _ index: Int,
         animated: Bool
-    ) {
+    ) -> Bool {
         guard let collectionView else {
-            return
+            return false
         }
 
         collectionView.layoutIfNeeded()
 
-        guard collectionView.bounds.width > 0 else {
-            return
+        guard collectionView.bounds.width > 0,
+              index >= 0,
+              index < model.numberOfPages else {
+            return false
         }
 
         if animated {
@@ -401,6 +418,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 animated: false
             )
         }
+
+        return true
     }
 
     // MARK: - Visible Cell Refresh
@@ -426,30 +445,55 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     // MARK: - Page Navigation
 
+    @discardableResult
     private func moveToPage(
         offset: Int,
         shouldAutoPlay: Bool
-    ) {
+    ) -> Bool {
         let targetIndex = model.selectedIndex + offset
 
-        moveToPage(
+        return moveToPage(
             at: targetIndex,
             shouldAutoPlay: shouldAutoPlay
         )
     }
 
+    @discardableResult
     private func moveToPage(
         at targetIndex: Int,
         shouldAutoPlay: Bool
-    ) {
+    ) -> Bool {
+        guard model.pageTransition.isIdle else {
+            return false
+        }
+
         guard targetIndex >= 0,
               targetIndex < model.numberOfPages else {
-            return
+            return false
         }
+
+        guard let collectionView else {
+            return false
+        }
+
+        collectionView.layoutIfNeeded()
+
+        guard collectionView.bounds.width > 0 else {
+            return false
+        }
+
+        let sourceIndex = model.selectedIndex
 
         if !shouldAutoPlay {
             model.setChromeHidden(false)
         }
+
+        // Deactivate the source before publishing the viewer-wide stop. This
+        // prevents synchronous player cleanup from reloading the source page.
+        model.beginPageTransition(
+            to: targetIndex,
+            shouldAutoPlay: shouldAutoPlay
+        )
 
         // Stop the current media playback before programmatic page navigation.
         // This is intentionally broad because previous/next can move across image,
@@ -459,24 +503,22 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             object: nil
         )
 
-        // Mark the transition before publishing the autoplay target. Publishing
-        // causes SwiftUI to call updateUIView, which must not restore the source
-        // index while the collection view is moving to the target page.
-        isUserPaging = true
-        isAutoPlayPaging = shouldAutoPlay
-
-        if shouldAutoPlay {
-            model.requestAutoPlay(at: targetIndex)
-        }
-
         updateCollectionBackground(for: targetIndex)
         updateVisibleMetadataTitle(for: targetIndex)
         refreshVisibleCells()
 
-        scrollToIndex(
+        guard scrollToIndex(
             targetIndex,
             animated: true
-        )
+        ) else {
+            model.finishPageTransition(at: sourceIndex)
+            updateCollectionBackground(for: sourceIndex)
+            updateVisibleMetadataTitle(for: sourceIndex)
+            refreshVisibleCells()
+            return false
+        }
+
+        return true
     }
 
     private func moveToNextMediaOfSameType(
@@ -485,16 +527,20 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         completion: @escaping NCMediaPlaybackAdvanceCompletion
     ) {
         Task { @MainActor [weak self] in
-            guard let self else {
-                return
-            }
-
-            guard self.model.selectedIndex == sourceIndex else {
+            guard let model = self?.model,
+                  self?.collectionView != nil else {
                 completion(false)
                 return
             }
 
-            guard let targetIndex = await self.model.nextMediaIndex(
+            guard model.playbackOptions.completionAction == .playNextItem,
+                  model.pageTransition.isIdle,
+                  model.activePageIndex == sourceIndex else {
+                completion(false)
+                return
+            }
+
+            guard let targetIndex = await model.nextMediaIndex(
                 after: sourceIndex,
                 matchingClassFile: classFile
             ) else {
@@ -502,17 +548,22 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 return
             }
 
-            guard self.model.selectedIndex == sourceIndex else {
+            guard let self,
+                  self.model === model,
+                  self.collectionView != nil,
+                  model.playbackOptions.completionAction == .playNextItem,
+                  model.pageTransition.isIdle,
+                  model.activePageIndex == sourceIndex else {
                 completion(false)
                 return
             }
 
             guard classFile == NKTypeClassFile.video.rawValue else {
-                self.moveToPage(
+                let didMove = self.moveToPage(
                     at: targetIndex,
                     shouldAutoPlay: true
                 )
-                completion(true)
+                completion(didMove)
                 return
             }
 
@@ -527,19 +578,30 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             NCVideoAVPlayerPresenter.dismiss { [weak self] in
                 NCVideoVLCPresenter.dismiss { [weak self] in
                     guard let self else {
+                        completion(false)
                         return
                     }
 
-                    guard self.model.selectedIndex == sourceIndex else {
-                        self.model.setChromeHidden(wasChromeHidden)
+                    guard self.model === model,
+                          self.collectionView != nil,
+                          model.playbackOptions.completionAction == .playNextItem,
+                          model.pageTransition.isIdle,
+                          model.activePageIndex == sourceIndex else {
+                        model.setChromeHidden(wasChromeHidden)
+                        completion(false)
                         return
                     }
 
-                    self.moveToPage(
+                    let didMove = self.moveToPage(
                         at: targetIndex,
                         shouldAutoPlay: true
                     )
-                    completion(true)
+
+                    if !didMove {
+                        model.setChromeHidden(wasChromeHidden)
+                    }
+
+                    completion(didMove)
                 }
             }
         }
@@ -551,8 +613,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         cell.configure(
             model: model,
             page: page,
-            isSelected: !isUserPaging && page.index == model.selectedIndex,
-            isChromeHidden: model.isChromeHidden,
             backgroundColor: pageBackgroundColor,
             canGoPrevious: page.index > 0,
             canGoNext: page.index < model.numberOfPages - 1,
@@ -572,7 +632,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 )
             },
             onNextMediaOfSameType: { [weak self] classFile, completion in
-                self?.moveToNextMediaOfSameType(
+                guard let self else {
+                    completion(false)
+                    return
+                }
+
+                self.moveToNextMediaOfSameType(
                     classFile: classFile,
                     after: page.index,
                     completion: completion
@@ -583,8 +648,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             },
             onZoomChanged: { [weak self] isZoomed in
                 guard let self,
-                      !self.isUserPaging,
-                      page.index == self.model.selectedIndex else {
+                      self.model.pageTransition.isIdle,
+                      page.index == self.model.activePageIndex else {
                     return
                 }
 
@@ -647,9 +712,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - UIScrollViewDelegate
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        // A user drag takes ownership of any in-flight autoplay transition.
-        isAutoPlayPaging = false
-        isUserPaging = true
+        // A user drag takes ownership of any in-flight transition and clears a
+        // pending autoplay request until the settled page is known.
+        model.beginPageTransition(
+            to: nil,
+            shouldAutoPlay: false
+        )
 
         // Stop the current media playback before manual page navigation.
         // This is intentionally broad because dragging can move across image,
@@ -684,7 +752,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         lastVisibleIndex = index
         onZoomChanged(false)
-        model.setSelectedIndex(index)
+        model.updateSelectedIndexDuringTransition(index)
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
@@ -732,9 +800,9 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // Auto-next keeps selectedIndex on the source page until it settles.
-        // Manual swipes preserve their original update behavior.
-        guard !isAutoPlayPaging else {
+        // Programmatic navigation commits selection only after it settles.
+        // Interactive swipes continue updating thumbnails and titles.
+        guard !model.pageTransition.isProgrammatic else {
             return
         }
 
@@ -752,7 +820,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         lastVisibleIndex = index
         onZoomChanged(false)
-        model.setSelectedIndex(index)
+        model.updateSelectedIndexDuringTransition(index)
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
@@ -789,11 +857,9 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
 
         // The settled page is now the selected page.
-        isUserPaging = false
-        isAutoPlayPaging = false
         lastVisibleIndex = index
 
-        model.setSelectedIndex(index)
+        model.finishPageTransition(at: index)
         updateCollectionBackground(for: index)
         updateVisibleMetadataTitle(for: index)
         refreshVisibleCells()
@@ -853,8 +919,6 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
     func configure(
         model: NCMediaViewerModel,
         page: NCMediaViewerPageModel,
-        isSelected: Bool,
-        isChromeHidden: Bool,
         backgroundColor: UIColor,
         canGoPrevious: Bool,
         canGoNext: Bool,

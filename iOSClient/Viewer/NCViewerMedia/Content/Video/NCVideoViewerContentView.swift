@@ -172,7 +172,6 @@ private extension NCVideoViewerContentView {
                 return
             }
 
-            onAutoPlayConsumed?()
             isLaunchingPlayback = true
             downloadAndPlayVideo()
             return
@@ -184,18 +183,14 @@ private extension NCVideoViewerContentView {
                 return
             }
 
-            if requestAVPlayerPresentation(preparedPlayback: preparedPlayback) {
-                onAutoPlayConsumed?()
-            }
+            requestAVPlayerPresentation(preparedPlayback: preparedPlayback)
 
         case .vlc(let preparedPlayback):
             guard isCurrentPlaybackVideo() else {
                 return
             }
 
-            if requestVLCPresentation(preparedPlayback: preparedPlayback) {
-                onAutoPlayConsumed?()
-            }
+            requestVLCPresentation(preparedPlayback: preparedPlayback)
 
         case .loading,
              .failed:
@@ -397,18 +392,10 @@ private extension NCVideoViewerContentView {
 
         switch playback.engine {
         case .avFoundation(let preparedPlayback):
-            if requestAVPlayerPresentation(preparedPlayback: preparedPlayback) {
-                if shouldAutoPlay {
-                    onAutoPlayConsumed?()
-                }
-            }
+            requestAVPlayerPresentation(preparedPlayback: preparedPlayback)
 
         case .vlc(let preparedPlayback):
-            if requestVLCPresentation(preparedPlayback: preparedPlayback) {
-                if shouldAutoPlay {
-                    onAutoPlayConsumed?()
-                }
-            }
+            requestVLCPresentation(preparedPlayback: preparedPlayback)
 
         case .loading,
              .failed:
@@ -645,6 +632,7 @@ private extension NCVideoViewerContentView {
     @MainActor
     func downloadAndPlayVideo() {
         guard let downloadVideo else {
+            consumePendingAutoPlayIfNeeded()
             isLaunchingPlayback = false
             errorMessage = ""
             return
@@ -693,6 +681,7 @@ private extension NCVideoViewerContentView {
                 playbackDownloadTask = nil
                 isDownloadingPlayback = false
                 isLaunchingPlayback = false
+                consumePendingAutoPlayIfNeeded()
                 errorMessage = ""
             }
         }
@@ -709,6 +698,7 @@ private extension NCVideoViewerContentView {
         isDownloadingPlayback = false
         isLaunchingPlayback = false
         hasRequestedPlayback = false
+        consumePendingAutoPlayIfNeeded()
 
         guard let cancelVideoDownload else {
             return
@@ -785,6 +775,15 @@ extension NCVideoViewerContentView {
     }
 
     @MainActor
+    func consumePendingAutoPlayIfNeeded() {
+        guard shouldAutoPlay else {
+            return
+        }
+
+        onAutoPlayConsumed?()
+    }
+
+    @MainActor
     func showPlaybackError() {
         resetPlaybackPresentationState()
         playback.stopIfCurrent(ocId: metadata.ocId)
@@ -803,15 +802,6 @@ extension NCVideoViewerContentView {
         }
     }
 
-    @MainActor
-    func performFullscreenPageTransition(
-        dismissPlayer: @escaping () -> Void,
-        changePage: @escaping () -> Void
-    ) {
-        resetPlaybackPresentationState()
-        dismissPlayer()
-        changePage()
-    }
 }
 
 // MARK: - URL Resolution

@@ -20,6 +20,7 @@ extension NCVideoViewerContentView {
         }
 
         guard presentedAVPlayerURL != preparedPlayback.url else {
+            consumePendingAutoPlayIfNeeded()
             return true
         }
 
@@ -49,6 +50,7 @@ extension NCVideoViewerContentView {
         }
 
         presentedAVPlayerURL = preparedPlayback.url
+        consumePendingAutoPlayIfNeeded()
         return true
     }
 
@@ -61,25 +63,17 @@ extension NCVideoViewerContentView {
 
     @MainActor
     func goToPreviousPageFromAVPlayer() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoAVPlayerPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
+        NCVideoAVPlayerPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onPreviousPage?()
+        }
     }
 
     @MainActor
     func goToNextPageFromAVPlayer() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoAVPlayerPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
+        NCVideoAVPlayerPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onNextPage?()
+        }
     }
 }

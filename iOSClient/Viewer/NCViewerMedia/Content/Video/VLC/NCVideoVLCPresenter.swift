@@ -13,8 +13,7 @@ enum NCVideoVLCPresenter {
     private static weak var currentViewController: NCVideoVLCViewController?
     private static var currentURL: URL?
     private static var isPresenting = false
-    private static var isDismissing = false
-    private static var dismissCompletions: [() -> Void] = []
+    private static var pendingDismissCompletions: [() -> Void]?
 
     // MARK: - Public API
     // Presents or updates the single VLC fullscreen controller.
@@ -37,7 +36,7 @@ enum NCVideoVLCPresenter {
     ) -> Bool {
         let url = preparedPlayback.url
 
-        guard !isDismissing else {
+        guard pendingDismissCompletions == nil else {
             logPresentationRejected("dismissal in progress")
             return false
         }
@@ -185,29 +184,30 @@ enum NCVideoVLCPresenter {
     }
 
     static func dismissCurrent(completion: (() -> Void)? = nil) {
-        if let completion {
-            dismissCompletions.append(completion)
+        if pendingDismissCompletions != nil {
+            if let completion {
+                pendingDismissCompletions?.append(completion)
+            }
+            return
         }
 
-        guard !isDismissing else { return }
+        pendingDismissCompletions = completion.map { [$0] } ?? []
+
         guard let viewController = currentViewController else {
             finishDismissal(for: nil)
             return
         }
 
-        isDismissing = true
-        viewController.stop { [weak viewController] in
-            guard let viewController else {
-                finishDismissal(for: nil)
-                return
-            }
+        viewController.stopForDismissal()
 
-            let controllerToDismiss =
-                viewController.navigationController ?? viewController
+        let controllerToDismiss =
+            viewController.navigationController ?? viewController
 
-            controllerToDismiss.dismiss(animated: false) {
-                finishDismissal(for: viewController)
-            }
+        // Page navigation must not depend on MobileVLCKit's asynchronous
+        // `.stopped` callback. Dismissal owns the UI transition while the
+        // controller continues its internal player cleanup independently.
+        controllerToDismiss.dismiss(animated: false) {
+            finishDismissal(for: viewController)
         }
     }
 
@@ -226,10 +226,8 @@ enum NCVideoVLCPresenter {
             isPresenting = false
         }
 
-        isDismissing = false
-
-        let completions = dismissCompletions
-        dismissCompletions.removeAll()
+        let completions = pendingDismissCompletions ?? []
+        pendingDismissCompletions = nil
         completions.forEach { $0() }
     }
 

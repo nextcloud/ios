@@ -12,6 +12,7 @@ enum NCVideoAVPlayerPresenter {
     private static weak var currentViewController: NCVideoAVPlayerViewController?
     private static var currentURL: URL?
     private static var isPresenting = false
+    private static var pendingDismissCompletions: [() -> Void]?
 
     // MARK: - Public API
     // Presents or updates the single AVPlayer fullscreen controller.
@@ -33,6 +34,11 @@ enum NCVideoAVPlayerPresenter {
         onPlaybackError: (() -> Void)? = nil
     ) -> Bool {
         let url = preparedPlayback.url
+
+        guard pendingDismissCompletions == nil else {
+            return false
+        }
+
         if currentURL == url,
            let currentViewController {
             currentViewController.update(
@@ -167,22 +173,48 @@ enum NCVideoAVPlayerPresenter {
     }
 
     static func dismissCurrent(completion: (() -> Void)? = nil) {
-        guard let currentViewController else {
-            completion?()
+        if pendingDismissCompletions != nil {
+            if let completion {
+                pendingDismissCompletions?.append(completion)
+            }
             return
         }
+
+        pendingDismissCompletions = completion.map { [$0] } ?? []
+
+        guard let currentViewController else {
+            finishDismissal(for: nil)
+            return
+        }
+
+        currentViewController.stopForDismissal()
 
         let controllerToDismiss =
             currentViewController.navigationController ?? currentViewController
 
         controllerToDismiss.dismiss(animated: false) {
-            clearCurrent(currentViewController)
-            completion?()
+            finishDismissal(for: currentViewController)
         }
     }
 
     static func dismiss(completion: (() -> Void)? = nil) {
         dismissCurrent(completion: completion)
+    }
+
+    private static func finishDismissal(
+        for viewController: NCVideoAVPlayerViewController?
+    ) {
+        if let viewController {
+            clearCurrent(viewController)
+        } else {
+            currentViewController = nil
+            currentURL = nil
+            isPresenting = false
+        }
+
+        let completions = pendingDismissCompletions ?? []
+        pendingDismissCompletions = nil
+        completions.forEach { $0() }
     }
 
     // MARK: - Private

@@ -4,12 +4,6 @@
 
 import Combine
 
-enum NCMediaPlaybackCompletionAction: Equatable {
-    case stop
-    case repeatCurrentItem
-    case playNextItem
-}
-
 typealias NCMediaPlaybackAdvanceCompletion = (_ didAdvance: Bool) -> Void
 
 // Auto-advance lookup can finish after the player reaches its end state. The
@@ -18,6 +12,12 @@ typealias NCMediaPlaybackAdvanceRequest = (@escaping NCMediaPlaybackAdvanceCompl
 
 @MainActor
 final class NCMediaPlaybackOptions: ObservableObject {
+    enum CompletionAction: Equatable {
+        case stop
+        case repeatCurrentItem
+        case playNextItem
+    }
+
     @Published private(set) var isRepeatEnabled: Bool
     @Published private(set) var isAutoAdvanceEnabled: Bool
 
@@ -29,7 +29,7 @@ final class NCMediaPlaybackOptions: ObservableObject {
         self.isAutoAdvanceEnabled = preferences?.mediaViewerAutoAdvance ?? false
     }
 
-    var completionAction: NCMediaPlaybackCompletionAction {
+    var completionAction: CompletionAction {
         if isRepeatEnabled {
             return .repeatCurrentItem
         }

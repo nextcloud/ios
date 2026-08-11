@@ -100,10 +100,28 @@ private struct NCMediaViewerLoadingTask {
 // Coordinates media paging, loading, and prefetching.
 @MainActor
 final class NCMediaViewerModel: ObservableObject {
+    enum PageTransition: Equatable {
+        case idle
+        case interactive
+        case programmatic(targetIndex: Int)
+
+        var isIdle: Bool {
+            self == .idle
+        }
+
+        var isProgrammatic: Bool {
+            if case .programmatic = self {
+                return true
+            }
+
+            return false
+        }
+    }
 
     // MARK: - Published State
 
     @Published private(set) var selectedIndex: Int
+    @Published private(set) var pageTransition = PageTransition.idle
     @Published private(set) var revision: Int = 0
     @Published private(set) var thumbnailReloadRevision: Int = 0
     @Published private(set) var isChromeHidden = false
@@ -143,6 +161,10 @@ final class NCMediaViewerModel: ObservableObject {
         selectedIndex
     }
 
+    var activePageIndex: Int? {
+        pageTransition.isIdle ? selectedIndex : nil
+    }
+
     var selectedOcId: String? {
         guard ocIds.indices.contains(selectedIndex) else {
             return nil
@@ -176,22 +198,80 @@ final class NCMediaViewerModel: ObservableObject {
         return cachedPagesByOcId[ocId]?.metadata
     }
 
-    func requestAutoPlay(at index: Int) {
-        guard ocIds.indices.contains(index) else {
-            return
-        }
-
-        autoPlayTargetIndex = index
-        revision &+= 1
-    }
-
     func clearAutoPlayIfNeeded(for index: Int) {
         guard autoPlayTargetIndex == index else {
             return
         }
 
-        autoPlayTargetIndex = nil
-        revision &+= 1
+        setAutoPlayTargetIndex(nil)
+    }
+
+    private func setAutoPlayTargetIndex(_ index: Int?) {
+        guard autoPlayTargetIndex != index else {
+            return
+        }
+
+        autoPlayTargetIndex = index
+    }
+
+    /// Deactivates media content while the collection view moves between pages.
+    /// The target becomes active only after the paging animation settles.
+    func beginPageTransition(
+        to targetIndex: Int?,
+        shouldAutoPlay: Bool
+    ) {
+        if let targetIndex,
+           !ocIds.indices.contains(targetIndex) {
+            return
+        }
+
+        if let targetIndex {
+            pageTransition = .programmatic(targetIndex: targetIndex)
+        } else {
+            pageTransition = .interactive
+        }
+
+        setAutoPlayTargetIndex(
+            shouldAutoPlay ? targetIndex : nil
+        )
+    }
+
+    /// Updates the visible selection during an interactive transition without
+    /// activating media playback on an intermediate page.
+    func updateSelectedIndexDuringTransition(_ index: Int) {
+        guard ocIds.indices.contains(index) else {
+            return
+        }
+
+        guard pageTransition == .interactive else {
+            return
+        }
+
+        guard selectedIndex != index else {
+            return
+        }
+
+        selectedIndex = index
+    }
+
+    /// Commits the page that actually settled after a transition.
+    func finishPageTransition(at index: Int) {
+        guard ocIds.indices.contains(index) else {
+            return
+        }
+
+        if selectedIndex != index {
+            selectedIndex = index
+        }
+
+        if pageTransition != .idle {
+            pageTransition = .idle
+        }
+
+        if let autoPlayTargetIndex,
+           autoPlayTargetIndex != index {
+            setAutoPlayTargetIndex(nil)
+        }
     }
 
     @MainActor
@@ -278,17 +358,15 @@ final class NCMediaViewerModel: ObservableObject {
     }
 
     func displayPage(at index: Int) async {
-        guard ocIds.indices.contains(index) else {
+        guard ocIds.indices.contains(index),
+              selectedIndex == index else {
             return
         }
 
-        if selectedIndex == index,
-           let ocId = ocId(at: index),
+        if let ocId = ocId(at: index),
            !pageState(for: ocId).needsSelectedPageLoading {
             return
         }
-
-        selectedIndex = index
 
         prefetchNeighborPages(around: index)
         await loadPageIfNeeded(index: index)
@@ -300,10 +378,11 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         guard selectedIndex != index else {
+            finishPageTransition(at: index)
             return
         }
 
-        selectedIndex = index
+        finishPageTransition(at: index)
 
         let ocId = ocIds[index]
 
@@ -464,18 +543,6 @@ final class NCMediaViewerModel: ObservableObject {
 
     func cancelVideoDownload(for ocId: String) async {
         await loader.cancelDownload(for: ocId)
-    }
-
-    func setSelectedIndex(_ index: Int) {
-        guard ocIds.indices.contains(index) else {
-            return
-        }
-
-        guard selectedIndex != index else {
-            return
-        }
-
-        selectedIndex = index
     }
 
     func prefetchVisiblePageIfNeeded(index: Int) async {
