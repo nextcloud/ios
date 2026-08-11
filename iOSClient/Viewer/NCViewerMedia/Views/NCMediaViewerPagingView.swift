@@ -483,6 +483,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
         }
 
         let sourceIndex = model.selectedIndex
+        // UIKit animates the full content offset, including every page between
+        // the source and destination. Keep the familiar animation for adjacent
+        // navigation, but jump directly when auto-advance skips other media.
+        let shouldAnimateTransition = abs(targetIndex - sourceIndex) == 1
 
         if !shouldAutoPlay {
             model.setChromeHidden(false)
@@ -509,7 +513,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         guard scrollToIndex(
             targetIndex,
-            animated: true
+            animated: shouldAnimateTransition
         ) else {
             model.finishPageTransition(at: sourceIndex)
             updateCollectionBackground(for: sourceIndex)
