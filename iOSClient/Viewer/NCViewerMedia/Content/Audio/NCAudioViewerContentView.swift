@@ -77,14 +77,21 @@ struct NCAudioViewerContentView: View {
             let playButtonSize: CGFloat = isLandscape ? 64 : 72
             let navigationBarHeight: CGFloat = isLandscape ? 32 : 44
             let minimumNavigationBarBottom: CGFloat = isLandscape ? 32 : 64
-            let fallbackNavigationBarBottom = max(
-                proxy.safeAreaInsets.top + navigationBarHeight,
+            // The navigation bar frame moves while hidden. Its safe area and
+            // bounds keep this inset stable when the bar becomes visible again.
+            let safeAreaTop = max(
+                proxy.safeAreaInsets.top,
+                navigationBar?.window?.safeAreaInsets.top ?? 0
+            )
+            let effectiveNavigationBarHeight = max(
+                navigationBar?.bounds.height ?? 0,
+                navigationBarHeight
+            )
+            let navigationBarBottom = max(
+                safeAreaTop + effectiveNavigationBarHeight,
                 minimumNavigationBarBottom
             )
-            let topActionsPadding = max(
-                navigationBar?.frame.maxY ?? 0,
-                fallbackNavigationBarBottom
-            ) + 4
+            let topActionsPadding = navigationBarBottom + 4
 
             ZStack {
                 Color.ncViewerBackground(backgroundStyle)
