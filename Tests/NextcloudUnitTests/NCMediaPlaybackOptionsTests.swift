@@ -9,14 +9,14 @@ import Testing
 struct NCMediaPlaybackOptionsTests {
     @Test("Playback stops when no completion option is enabled")
     func stopsByDefault() {
-        let options = NCMediaPlaybackOptions()
+        let options = NCMediaPlaybackOptions(preferences: nil)
 
         #expect(options.completionAction == .stop)
     }
 
     @Test("Automatic advance plays the next compatible item")
     func advancesAutomatically() {
-        let options = NCMediaPlaybackOptions()
+        let options = NCMediaPlaybackOptions(preferences: nil)
 
         options.toggleAutoAdvance()
 
@@ -25,7 +25,7 @@ struct NCMediaPlaybackOptionsTests {
 
     @Test("Disabling repeat restores normal stop behavior")
     func disablingRepeatRestoresStop() {
-        let options = NCMediaPlaybackOptions()
+        let options = NCMediaPlaybackOptions(preferences: nil)
 
         options.toggleRepeat()
         #expect(options.completionAction == .repeatCurrentItem)
@@ -36,7 +36,7 @@ struct NCMediaPlaybackOptionsTests {
 
     @Test("Repeat takes precedence over automatic advance")
     func repeatTakesPrecedence() {
-        let options = NCMediaPlaybackOptions()
+        let options = NCMediaPlaybackOptions(preferences: nil)
 
         options.toggleAutoAdvance()
         options.toggleRepeat()
@@ -46,5 +46,31 @@ struct NCMediaPlaybackOptionsTests {
         options.toggleRepeat()
 
         #expect(options.completionAction == .playNextItem)
+    }
+
+    @Test("Playback options restore and save their preferences")
+    func persistsPlaybackOptions() {
+        let preferences = NCPreferences()
+        let originalRepeat = preferences.mediaViewerRepeatCurrentItem
+        let originalAutoAdvance = preferences.mediaViewerAutoAdvance
+
+        defer {
+            preferences.mediaViewerRepeatCurrentItem = originalRepeat
+            preferences.mediaViewerAutoAdvance = originalAutoAdvance
+        }
+
+        preferences.mediaViewerRepeatCurrentItem = true
+        preferences.mediaViewerAutoAdvance = false
+
+        let options = NCMediaPlaybackOptions(preferences: preferences)
+
+        #expect(options.isRepeatEnabled)
+        #expect(!options.isAutoAdvanceEnabled)
+
+        options.toggleRepeat()
+        options.toggleAutoAdvance()
+
+        #expect(!preferences.mediaViewerRepeatCurrentItem)
+        #expect(preferences.mediaViewerAutoAdvance)
     }
 }

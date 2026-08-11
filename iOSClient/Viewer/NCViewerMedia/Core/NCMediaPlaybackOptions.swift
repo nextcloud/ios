@@ -11,8 +11,16 @@ enum NCMediaPlaybackCompletionAction: Equatable {
 
 @MainActor
 final class NCMediaPlaybackOptions: ObservableObject {
-    @Published private(set) var isRepeatEnabled = false
-    @Published private(set) var isAutoAdvanceEnabled = false
+    @Published private(set) var isRepeatEnabled: Bool
+    @Published private(set) var isAutoAdvanceEnabled: Bool
+
+    private let preferences: NCPreferences?
+
+    init(preferences: NCPreferences? = NCPreferences()) {
+        self.preferences = preferences
+        self.isRepeatEnabled = preferences?.mediaViewerRepeatCurrentItem ?? false
+        self.isAutoAdvanceEnabled = preferences?.mediaViewerAutoAdvance ?? false
+    }
 
     var completionAction: NCMediaPlaybackCompletionAction {
         if isRepeatEnabled {
@@ -28,9 +36,11 @@ final class NCMediaPlaybackOptions: ObservableObject {
 
     func toggleRepeat() {
         isRepeatEnabled.toggle()
+        preferences?.mediaViewerRepeatCurrentItem = isRepeatEnabled
     }
 
     func toggleAutoAdvance() {
         isAutoAdvanceEnabled.toggle()
+        preferences?.mediaViewerAutoAdvance = isAutoAdvanceEnabled
     }
 }
