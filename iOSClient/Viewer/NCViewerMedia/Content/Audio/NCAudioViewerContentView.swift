@@ -13,6 +13,7 @@ struct NCAudioViewerContentView: View {
     let localURL: URL
     let previewURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle
+    let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
@@ -30,6 +31,7 @@ struct NCAudioViewerContentView: View {
         localURL: URL,
         previewURL: URL? = nil,
         backgroundStyle: NCViewerBackgroundStyle = .system,
+        navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
@@ -44,6 +46,7 @@ struct NCAudioViewerContentView: View {
         self.localURL = localURL
         self.previewURL = previewURL
         self.backgroundStyle = backgroundStyle
+        self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay
@@ -72,6 +75,16 @@ struct NCAudioViewerContentView: View {
             let buttonSpacing: CGFloat = isLandscape ? 24 : 28
             let sideButtonSize: CGFloat = isLandscape ? 30 : 34
             let playButtonSize: CGFloat = isLandscape ? 64 : 72
+            let navigationBarHeight: CGFloat = isLandscape ? 32 : 44
+            let minimumNavigationBarBottom: CGFloat = isLandscape ? 32 : 64
+            let fallbackNavigationBarBottom = max(
+                proxy.safeAreaInsets.top + navigationBarHeight,
+                minimumNavigationBarBottom
+            )
+            let topActionsPadding = max(
+                navigationBar?.frame.maxY ?? 0,
+                fallbackNavigationBarBottom
+            ) + 4
 
             ZStack {
                 Color.ncViewerBackground(backgroundStyle)
@@ -120,17 +133,7 @@ struct NCAudioViewerContentView: View {
                     }
                     .padding(.horizontal, sliderHorizontalPadding)
 
-                    HStack(spacing: buttonSpacing) {
-                        Button {
-                            playbackOptions.toggleRepeat()
-                        } label: {
-                            Image(systemName: playbackOptions.isRepeatEnabled ? "repeat.1.circle.fill" : "repeat.1.circle")
-                                .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(playbackOptions.isRepeatEnabled ? primaryForegroundStyle : mutedForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
-
+                    ZStack {
                         Button {
                             model.togglePlayback()
                         } label: {
@@ -143,25 +146,46 @@ struct NCAudioViewerContentView: View {
                         Button {
                             model.restart()
                         } label: {
-                            Image(systemName: "gobackward")
+                            Image(systemName: "backward.end.circle")
                                 .font(.system(size: sideButtonSize, weight: .regular))
                                 .foregroundStyle(mutedForegroundStyle)
                         }
                         .buttonStyle(.plain)
                         .disabled(model.duration <= 0)
-
-                        Button {
-                            playbackOptions.toggleAutoAdvance()
-                        } label: {
-                            Image(systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.circle.fill" : "forward.end.circle")
-                                .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(playbackOptions.isAutoAdvanceEnabled ? primaryForegroundStyle : mutedForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
+                        .offset(
+                            x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
+                        )
                     }
+                    .frame(height: playButtonSize)
+                    .frame(maxWidth: .infinity)
                 }
                 .padding(.top, topPadding)
+
+                VStack {
+                    HStack(spacing: 8) {
+                        audioPlaybackOptionButton(
+                            systemName: "repeat.1",
+                            isActive: playbackOptions.isRepeatEnabled,
+                            accessibilityLabel: "_repeat_current_media_"
+                        ) {
+                            playbackOptions.toggleRepeat()
+                        }
+
+                        audioPlaybackOptionButton(
+                            systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
+                            isActive: playbackOptions.isAutoAdvanceEnabled,
+                            accessibilityLabel: "_play_next_media_automatically_"
+                        ) {
+                            playbackOptions.toggleAutoAdvance()
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.leading, 28)
+                    .padding(.top, topActionsPadding)
+
+                    Spacer()
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -210,6 +234,29 @@ struct NCAudioViewerContentView: View {
                     .foregroundStyle(primaryForegroundStyle.opacity(0.9))
             }
         }
+    }
+
+    private func audioPlaybackOptionButton(
+        systemName: String,
+        isActive: Bool,
+        accessibilityLabel: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 17, weight: .regular))
+                .foregroundStyle(isActive ? Color.accentColor : Color.primary)
+                .shadow(
+                    color: .black.opacity(0.35),
+                    radius: 2,
+                    x: 0,
+                    y: 1
+                )
+                .frame(width: 38, height: 38)
+                .audioControlGlassBackground(shape: Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(NSLocalizedString(accessibilityLabel, comment: ""))
     }
 
     private var previewImage: UIImage? {
@@ -329,6 +376,36 @@ struct NCAudioViewerContentView: View {
             minutes,
             remainingSeconds
         )
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func audioControlGlassBackground<BackgroundShape: SwiftUI.Shape>(
+        shape: BackgroundShape
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            self
+                .glassEffect(.regular, in: shape)
+                .overlay {
+                    shape
+                        .stroke(.white.opacity(0.58), lineWidth: 1.2)
+                }
+                .shadow(
+                    color: .black.opacity(0.18),
+                    radius: 14,
+                    x: 0,
+                    y: 4
+                )
+        } else {
+            self
+                .background(.ultraThinMaterial, in: shape)
+                .overlay {
+                    shape
+                        .stroke(.primary.opacity(0.12), lineWidth: 1)
+                }
+                .clipShape(shape)
+        }
     }
 }
 

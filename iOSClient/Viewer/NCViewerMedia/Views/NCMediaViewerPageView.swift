@@ -245,6 +245,7 @@ struct NCMediaViewerPageView: View {
                 localURL: localURL,
                 previewURL: previewURL,
                 backgroundStyle: backgroundStyle,
+                navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 shouldAutoPlay: effectiveShouldAutoPlay,
