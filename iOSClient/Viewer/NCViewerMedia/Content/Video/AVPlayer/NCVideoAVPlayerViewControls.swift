@@ -242,7 +242,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
               duration.isFinite,
               duration > 0 else {
             isScrubbing = false
-            scheduleControlsHide()
+            hideControls(animated: true)
             return
         }
 
@@ -259,7 +259,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
             Task { @MainActor in
                 self?.isScrubbing = false
                 self?.updateProgressControls()
-                self?.scheduleControlsHide()
+                self?.hideControls(animated: true)
             }
         }
     }

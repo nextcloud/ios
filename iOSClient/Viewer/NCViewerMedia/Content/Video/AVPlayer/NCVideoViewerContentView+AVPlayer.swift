@@ -28,6 +28,7 @@ extension NCVideoViewerContentView {
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: true,
+            shouldShowControlsOnStart: !shouldAutoPlay,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions,

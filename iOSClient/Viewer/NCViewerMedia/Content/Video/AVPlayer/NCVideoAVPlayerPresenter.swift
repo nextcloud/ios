@@ -20,6 +20,7 @@ enum NCVideoAVPlayerPresenter {
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
+        shouldShowControlsOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions,
@@ -39,6 +40,7 @@ enum NCVideoAVPlayerPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+                shouldShowControlsOnStart: shouldShowControlsOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
@@ -64,6 +66,7 @@ enum NCVideoAVPlayerPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+                shouldShowControlsOnStart: shouldShowControlsOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
@@ -106,6 +109,7 @@ enum NCVideoAVPlayerPresenter {
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+            shouldShowControlsOnStart: shouldShowControlsOnStart,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions
@@ -132,6 +136,13 @@ enum NCVideoAVPlayerPresenter {
         navigationController.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.white
         ]
+
+        if !shouldShowControlsOnStart {
+            navigationController.setNavigationBarHidden(
+                true,
+                animated: false
+            )
+        }
 
         presenter.present(
             navigationController,

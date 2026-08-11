@@ -447,6 +447,10 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             return
         }
 
+        if !shouldAutoPlay {
+            model.setChromeHidden(false)
+        }
+
         // Stop the current media playback before programmatic page navigation.
         // This is intentionally broad because previous/next can move across image,
         // audio, AVPlayer, and VLC pages.
@@ -497,13 +501,22 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 return
             }
 
+            // Auto-next should remain immersive while the fullscreen player is
+            // replaced. Manual paging keeps its existing chrome behavior.
+            let wasChromeHidden = self.model.isChromeHidden
+            self.model.setChromeHidden(true)
+
             // Video transitions must wait until the current fullscreen player
             // has fully disappeared. Audio has no fullscreen presenter and can
             // navigate immediately through the normal paging path above.
             NCVideoAVPlayerPresenter.dismiss { [weak self] in
                 NCVideoVLCPresenter.dismiss { [weak self] in
-                    guard let self,
-                          self.model.selectedIndex == sourceIndex else {
+                    guard let self else {
+                        return
+                    }
+
+                    guard self.model.selectedIndex == sourceIndex else {
+                        self.model.setChromeHidden(wasChromeHidden)
                         return
                     }
 

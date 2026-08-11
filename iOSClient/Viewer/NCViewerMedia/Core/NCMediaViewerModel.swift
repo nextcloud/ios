@@ -484,6 +484,14 @@ final class NCMediaViewerModel: ObservableObject {
         isChromeHidden.toggle()
     }
 
+    func setChromeHidden(_ isHidden: Bool) {
+        guard isChromeHidden != isHidden else {
+            return
+        }
+
+        isChromeHidden = isHidden
+    }
+
     func previewURL(
         for metadata: tableMetadata,
         ext: String

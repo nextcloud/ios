@@ -291,6 +291,6 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
         isScrubbing = false
         updateProgressLabels(position: progress)
         startProgressTimer()
-        scheduleControlsHide()
+        hideControls(animated: true)
     }
 }

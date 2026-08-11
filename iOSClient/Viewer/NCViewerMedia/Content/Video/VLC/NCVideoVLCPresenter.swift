@@ -23,6 +23,7 @@ enum NCVideoVLCPresenter {
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
+        shouldShowControlsOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions,
@@ -48,6 +49,7 @@ enum NCVideoVLCPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+                shouldShowControlsOnStart: shouldShowControlsOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
@@ -73,6 +75,7 @@ enum NCVideoVLCPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+                shouldShowControlsOnStart: shouldShowControlsOnStart,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
@@ -117,6 +120,7 @@ enum NCVideoVLCPresenter {
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+            shouldShowControlsOnStart: shouldShowControlsOnStart,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions
@@ -143,6 +147,13 @@ enum NCVideoVLCPresenter {
         navigationController.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.white
         ]
+
+        if !shouldShowControlsOnStart {
+            navigationController.setNavigationBarHidden(
+                true,
+                animated: false
+            )
+        }
 
         presenter.present(
             navigationController,
