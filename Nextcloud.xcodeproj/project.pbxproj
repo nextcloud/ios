@@ -40,6 +40,8 @@
 		AA8E041D2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */; };
 		AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */; };
 		AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */; };
+		AABBCC0230A8000100F0A001 /* NCMediaPlaybackOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */; };
+		AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */; };
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
@@ -845,8 +847,6 @@
 		F7CDB5C32FA33CA300F72306 /* NCMediaViewerPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CDB5B92FA33CA300F72306 /* NCMediaViewerPageView.swift */; };
 		F7CDB5C42FA33CA300F72306 /* NCImageViewerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CDB5B62FA33CA300F72306 /* NCImageViewerContentView.swift */; };
 		F7CDB5C52FA33CA300F72306 /* NCMediaViewerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CDB5B82FA33CA300F72306 /* NCMediaViewerModel.swift */; };
-		AABBCC0230A8000100F0A001 /* NCMediaPlaybackOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */; };
-		AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */; };
 		F7CDB5C62FA33CA300F72306 /* NCMediaViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CDB5BB2FA33CA300F72306 /* NCMediaViewerView.swift */; };
 		F7CDB5CC2FA33CA300F72306 /* NCNextcloudMediaViewerLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CDB5BD2FA33CA300F72306 /* NCNextcloudMediaViewerLoader.swift */; };
 		F7CDB5D32FA3448B00F72306 /* NCAudioViewerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CDB5D22FA3448A00F72306 /* NCAudioViewerContentView.swift */; };
@@ -1282,6 +1282,8 @@
 		AA9B6A902DF1D8F7009D805D /* et */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et; path = et.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilitiesResponse.swift; sourceTree = "<group>"; };
 		AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityResponse.swift; sourceTree = "<group>"; };
+		AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaybackOptions.swift; sourceTree = "<group>"; };
+		AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaybackOptionsTests.swift; sourceTree = "<group>"; };
 		AABD0C862D5F58C400F009E6 /* Server.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Server.sh; sourceTree = "<group>"; };
 		AABD0C892D5F67A200F009E6 /* XCUIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
 		AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
@@ -1859,8 +1861,6 @@
 		F7CCAB502ECF315F00F8E68B /* NCCollectionViewCommon+SyncMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SyncMetadata.swift"; sourceTree = "<group>"; };
 		F7CDB5B62FA33CA300F72306 /* NCImageViewerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageViewerContentView.swift; sourceTree = "<group>"; };
 		F7CDB5B82FA33CA300F72306 /* NCMediaViewerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerModel.swift; sourceTree = "<group>"; };
-		AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaybackOptions.swift; sourceTree = "<group>"; };
-		AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaybackOptionsTests.swift; sourceTree = "<group>"; };
 		F7CDB5B92FA33CA300F72306 /* NCMediaViewerPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerPageView.swift; sourceTree = "<group>"; };
 		F7CDB5BB2FA33CA300F72306 /* NCMediaViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerView.swift; sourceTree = "<group>"; };
 		F7CDB5BD2FA33CA300F72306 /* NCNextcloudMediaViewerLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNextcloudMediaViewerLoader.swift; sourceTree = "<group>"; };
@@ -6327,7 +6327,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6395,7 +6395,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
