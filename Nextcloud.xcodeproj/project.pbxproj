@@ -42,6 +42,8 @@
 		AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */; };
 		AABBCC0230A8000100F0A001 /* NCMediaPlaybackOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */; };
 		AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */; };
+		AABBCC0630A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0530A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift */; };
+		AABBCC0830A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */; };
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
@@ -1284,6 +1286,8 @@
 		AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityResponse.swift; sourceTree = "<group>"; };
 		AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaybackOptions.swift; sourceTree = "<group>"; };
 		AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPlaybackOptionsTests.swift; sourceTree = "<group>"; };
+		AABBCC0530A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoPlaybackPresentationContext.swift; sourceTree = "<group>"; };
+		AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoPlaybackPresentationContextTests.swift; sourceTree = "<group>"; };
 		AABD0C862D5F58C400F009E6 /* Server.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Server.sh; sourceTree = "<group>"; };
 		AABD0C892D5F67A200F009E6 /* XCUIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
 		AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
@@ -2184,6 +2188,7 @@
 			isa = PBXGroup;
 			children = (
 				AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */,
+				AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */,
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
 				AA52EB452D42AC5A0089C348 /* Placeholder.swift */,
@@ -2601,6 +2606,7 @@
 			isa = PBXGroup;
 			children = (
 				AABBCC0130A8000100F0A001 /* NCMediaPlaybackOptions.swift */,
+				AABBCC0530A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift */,
 				F7CDB5BB2FA33CA300F72306 /* NCMediaViewerView.swift */,
 				F7CDB5B82FA33CA300F72306 /* NCMediaViewerModel.swift */,
 			);
@@ -4480,6 +4486,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */,
+				AABBCC0830A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift in Sources */,
 				AA52EB472D42AC9E0089C348 /* Placeholder.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
@@ -4892,6 +4899,7 @@
 				F7CDB5C42FA33CA300F72306 /* NCImageViewerContentView.swift in Sources */,
 				F7CDB5C52FA33CA300F72306 /* NCMediaViewerModel.swift in Sources */,
 				AABBCC0230A8000100F0A001 /* NCMediaPlaybackOptions.swift in Sources */,
+				AABBCC0630A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift in Sources */,
 				F7CDB5C62FA33CA300F72306 /* NCMediaViewerView.swift in Sources */,
 				F7CDB5CC2FA33CA300F72306 /* NCNextcloudMediaViewerLoader.swift in Sources */,
 				F76341182EBE0BC60056F538 /* NCNetworking+NextcloudKitDelegate.swift in Sources */,

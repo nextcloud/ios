@@ -20,7 +20,7 @@ enum NCVideoAVPlayerPresenter {
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
-        shouldShowControlsOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions,
@@ -40,7 +40,7 @@ enum NCVideoAVPlayerPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
-                shouldShowControlsOnStart: shouldShowControlsOnStart,
+                playbackStartReason: playbackStartReason,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
@@ -66,7 +66,7 @@ enum NCVideoAVPlayerPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
-                shouldShowControlsOnStart: shouldShowControlsOnStart,
+                playbackStartReason: playbackStartReason,
                 isChromeHidden: isChromeHidden,
                 contextMenuController: contextMenuController,
                 playbackOptions: playbackOptions
@@ -109,7 +109,7 @@ enum NCVideoAVPlayerPresenter {
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: shouldAutoPlayOnStart,
-            shouldShowControlsOnStart: shouldShowControlsOnStart,
+            playbackStartReason: playbackStartReason,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
             playbackOptions: playbackOptions
@@ -137,7 +137,7 @@ enum NCVideoAVPlayerPresenter {
             .foregroundColor: UIColor.white
         ]
 
-        if !shouldShowControlsOnStart {
+        if !playbackStartReason.shouldShowControlsOnStart {
             navigationController.setNavigationBarHidden(
                 true,
                 animated: false

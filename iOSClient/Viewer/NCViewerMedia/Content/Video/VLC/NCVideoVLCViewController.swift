@@ -18,13 +18,11 @@ final class NCVideoVLCViewController: UIViewController {
     private var url: URL
     private var userAgent: String?
     private var shouldAutoPlayOnStart: Bool
-    private var shouldShowControlsOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
     internal var playbackOptions: NCMediaPlaybackOptions
     private var isReplayFromBeginningRequested = false
-    private var isRepeatRestartInProgress = false
-    private var suppressesInitialControlsUntilPlaybackStarts = false
+    internal var playbackPresentationContext: NCVideoPlaybackPresentationContext
 
     // MARK: - Paging Callbacks
 
@@ -64,7 +62,6 @@ final class NCVideoVLCViewController: UIViewController {
     internal var progressTimer: Timer?
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
-    internal var isScrubbing = false
     internal var isPlaybackRequested = false
     private weak var closePanGesture: UIPanGestureRecognizer?
 
@@ -89,7 +86,7 @@ final class NCVideoVLCViewController: UIViewController {
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
-        shouldShowControlsOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions
@@ -99,10 +96,12 @@ final class NCVideoVLCViewController: UIViewController {
         self.url = preparedPlayback.url
         self.userAgent = userAgent
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
-        self.shouldShowControlsOnStart = shouldShowControlsOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         self.playbackOptions = playbackOptions
+        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(
+            startReason: playbackStartReason
+        )
 
         super.init(
             nibName: nil,
@@ -162,7 +161,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         controlsView.setTopActionsNavigationBar(navigationController?.navigationBar)
 
-        if !shouldShowControlsOnStart {
+        if !playbackPresentationContext.shouldShowControlsOnStart {
             controlsView.alpha = 0
             controlsView.isHidden = true
         }
@@ -220,7 +219,7 @@ final class NCVideoVLCViewController: UIViewController {
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
-        shouldShowControlsOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions
@@ -232,7 +231,7 @@ final class NCVideoVLCViewController: UIViewController {
             self.metadata = metadata
             self.userAgent = userAgent
             self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
-            self.shouldShowControlsOnStart = shouldShowControlsOnStart
+            self.playbackPresentationContext.updateStartReason(playbackStartReason)
             self.isChromeHidden = isChromeHidden
             self.contextMenuController = contextMenuController
             self.playbackOptions = playbackOptions
@@ -444,11 +443,14 @@ final class NCVideoVLCViewController: UIViewController {
     private func start() {
         hasEnteredPlaybackPipeline = false
         hasReportedPlaybackError = false
-        isRepeatRestartInProgress = false
-        suppressesInitialControlsUntilPlaybackStarts = shouldAutoPlayOnStart &&
-            !shouldShowControlsOnStart &&
-            mediaPlayer.state != .playing
         isPlaybackRequested = shouldAutoPlayOnStart
+        playbackPresentationContext.prepareForPlaybackStart()
+        applyControlsVisibilityOnStart()
+
+        if mediaPlayer.state == .playing {
+            playbackPresentationContext.finishPlaybackTransition()
+        }
+
         cancelPlaybackStartupTimeout()
         attachDrawable()
 
@@ -465,11 +467,10 @@ final class NCVideoVLCViewController: UIViewController {
         updateProgressControls()
         clearVLCTrackMenuItems()
         startProgressTimer()
-        applyControlsVisibilityOnStart()
     }
 
     private func applyControlsVisibilityOnStart() {
-        if shouldShowControlsOnStart {
+        if playbackPresentationContext.shouldShowControlsOnStart {
             showControls(animated: false)
             stopControlsHideTimer()
         } else {
@@ -490,8 +491,7 @@ final class NCVideoVLCViewController: UIViewController {
         cancelPlaybackStartupTimeout()
         isPlaybackRequested = false
         isReplayFromBeginningRequested = false
-        isRepeatRestartInProgress = false
-        suppressesInitialControlsUntilPlaybackStarts = false
+        playbackPresentationContext.reset()
 
         if mediaPlayer.media == nil ||
             (mediaPlayer.state == .stopped && !hadPendingPlaybackRequest) {
@@ -624,8 +624,7 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         hasReportedPlaybackError = true
-        isRepeatRestartInProgress = false
-        suppressesInitialControlsUntilPlaybackStarts = false
+        playbackPresentationContext.reset()
         isPlaybackRequested = false
         cancelPlaybackStartupTimeout()
         onPlaybackError?()
@@ -685,8 +684,7 @@ final class NCVideoVLCViewController: UIViewController {
         switch mediaPlayer.state {
         case .playing:
             isPlaybackRequested = true
-            isRepeatRestartInProgress = false
-            suppressesInitialControlsUntilPlaybackStarts = false
+            playbackPresentationContext.finishPlaybackTransition()
             cancelPlaybackStartupTimeout()
 
         case .ended:
@@ -695,7 +693,7 @@ final class NCVideoVLCViewController: UIViewController {
 
             switch playbackOptions.completionAction {
             case .repeatCurrentItem:
-                isRepeatRestartInProgress = true
+                playbackPresentationContext.beginRepeatRestart()
                 restartPlaybackFromBeginning()
                 return
 
@@ -737,14 +735,12 @@ final class NCVideoVLCViewController: UIViewController {
             cancelPlaybackStartupTimeout()
 
         case .paused:
-            if !isRepeatRestartInProgress,
-               !suppressesInitialControlsUntilPlaybackStarts,
-               !isScrubbing {
+            if !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation {
                 isPlaybackRequested = false
             }
 
         case .error:
-            isRepeatRestartInProgress = false
+            playbackPresentationContext.reset()
             isPlaybackRequested = false
 
         default:
@@ -756,9 +752,7 @@ final class NCVideoVLCViewController: UIViewController {
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
 
         guard mediaPlayer.state == .playing else {
-            guard !isRepeatRestartInProgress,
-                  !suppressesInitialControlsUntilPlaybackStarts,
-                  !isScrubbing else {
+            guard !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation else {
                 return
             }
 
@@ -1150,7 +1144,7 @@ extension NCVideoVLCViewController: VLCMediaPlayerDelegate {
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
         Task { @MainActor in
-            guard !isScrubbing else {
+            guard !playbackPresentationContext.isSeeking else {
                 return
             }
 

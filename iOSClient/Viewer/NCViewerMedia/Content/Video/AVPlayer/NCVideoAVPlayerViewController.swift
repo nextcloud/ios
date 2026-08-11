@@ -39,7 +39,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var url: URL
     private var userAgent: String?
     private var shouldAutoPlayOnStart: Bool
-    private var shouldShowControlsOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
     internal var playbackOptions: NCMediaPlaybackOptions
@@ -75,7 +74,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
-    internal var isScrubbing = false
     private weak var closePanGesture: UIPanGestureRecognizer?
 
     private var pictureInPictureController: AVPictureInPictureController?
@@ -88,8 +86,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var preparedURL: URL?
     private var hasReportedPlaybackError = false
     internal var isPlaybackRequested = false
-    private var isRepeatRestartInProgress = false
-    private var suppressesInitialControlsUntilPlaybackStarts = false
+    internal var playbackPresentationContext: NCVideoPlaybackPresentationContext
 
     var isPictureInPictureActive: Bool {
         pictureInPictureController?.isPictureInPictureActive == true
@@ -116,7 +113,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
-        shouldShowControlsOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions
@@ -127,10 +124,12 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.player = preparedPlayback.player
         self.userAgent = userAgent
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
-        self.shouldShowControlsOnStart = shouldShowControlsOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
         self.playbackOptions = playbackOptions
+        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(
+            startReason: playbackStartReason
+        )
 
         super.init(
             nibName: nil,
@@ -190,7 +189,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         updateControlsNavigationBar()
 
-        if !shouldShowControlsOnStart {
+        if !playbackPresentationContext.shouldShowControlsOnStart {
             controlsView.alpha = 0
             controlsView.isHidden = true
         }
@@ -217,7 +216,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
         let shouldPreserveHiddenChromeBackground = isChromeHidden
 
         start()
-        applyControlsVisibilityOnStart()
 
         if shouldPreserveHiddenChromeBackground {
             updateViewerBackground(isChromeHidden: true)
@@ -255,7 +253,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         preparedPlayback: NCVideoAVPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
-        shouldShowControlsOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
         playbackOptions: NCMediaPlaybackOptions
@@ -272,7 +270,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.metadata = metadata
         self.userAgent = userAgent
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
-        self.shouldShowControlsOnStart = shouldShowControlsOnStart
+        self.playbackPresentationContext.updateStartReason(playbackStartReason)
         self.contextMenuController = contextMenuController
         self.playbackOptions = playbackOptions
         updateViewerBackground(isChromeHidden: isChromeHidden)
@@ -280,7 +278,6 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         if urlChanged {
             start()
-            applyControlsVisibilityOnStart()
         }
 
         updatePlayPauseButton()
@@ -505,10 +502,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     private func start() {
         hasReportedPlaybackError = false
-        suppressesInitialControlsUntilPlaybackStarts = shouldAutoPlayOnStart &&
-            !shouldShowControlsOnStart &&
-            player.timeControlStatus != .playing
         isPlaybackRequested = shouldAutoPlayOnStart
+        playbackPresentationContext.prepareForPlaybackStart()
+        applyControlsVisibilityOnStart()
+
+        if player.timeControlStatus == .playing {
+            playbackPresentationContext.finishPlaybackTransition()
+        }
+
         cancelPlaybackStartupTimeout()
 
         guard preparedURL != url else {
@@ -541,8 +542,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private func stop() {
         preparedURL = nil
         isPlaybackRequested = false
-        isRepeatRestartInProgress = false
-        suppressesInitialControlsUntilPlaybackStarts = false
+        playbackPresentationContext.reset()
         cancelPlaybackStartupTimeout()
 
         player.pause()
@@ -558,7 +558,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func applyControlsVisibilityOnStart() {
-        if shouldShowControlsOnStart {
+        if playbackPresentationContext.shouldShowControlsOnStart {
             showControls(animated: false)
             stopControlsHideTimer()
         } else {
@@ -638,7 +638,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             queue: .main
         ) { [weak self] _ in
             guard let self,
-                  !self.isScrubbing else {
+                  !self.playbackPresentationContext.isSeeking else {
                 return
             }
 
@@ -712,7 +712,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
             updatePlayPauseButton()
         }
 
-        if shouldShowControlsOnStart,
+        if playbackPresentationContext.shouldShowControlsOnStart,
            !controlsVisible,
            !isPictureInPictureActive {
             showControls(animated: false)
@@ -763,8 +763,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         }
 
         hasReportedPlaybackError = true
-        isRepeatRestartInProgress = false
-        suppressesInitialControlsUntilPlaybackStarts = false
+        playbackPresentationContext.reset()
         isPlaybackRequested = false
         cancelPlaybackStartupTimeout()
 
@@ -786,17 +785,14 @@ final class NCVideoAVPlayerViewController: UIViewController {
         switch player.timeControlStatus {
         case .playing:
             isPlaybackRequested = true
-            isRepeatRestartInProgress = false
-            suppressesInitialControlsUntilPlaybackStarts = false
+            playbackPresentationContext.finishPlaybackTransition()
             cancelPlaybackStartupTimeout()
 
         case .waitingToPlayAtSpecifiedRate:
             isPlaybackRequested = true
 
         case .paused:
-            if !isRepeatRestartInProgress,
-               !suppressesInitialControlsUntilPlaybackStarts,
-               !isScrubbing,
+            if !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation,
                player.currentItem?.status == .readyToPlay ||
                 player.currentItem?.status == .failed ||
                 player.currentItem == nil {
@@ -810,9 +806,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         updatePlayPauseButton()
 
         guard player.timeControlStatus == .playing else {
-            guard !isRepeatRestartInProgress,
-                  !suppressesInitialControlsUntilPlaybackStarts,
-                  !isScrubbing else {
+            guard !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation else {
                 return
             }
 
@@ -853,7 +847,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
     }
 
     private func repeatCurrentItem() {
-        isRepeatRestartInProgress = true
+        playbackPresentationContext.beginRepeatRestart()
         isPlaybackRequested = true
         updatePlayPauseButton()
 
@@ -873,7 +867,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
                 }
 
                 guard didFinish else {
-                    self.isRepeatRestartInProgress = false
+                    self.playbackPresentationContext.finishPlaybackTransition()
                     self.isPlaybackRequested = false
                     self.updatePlayPauseButton()
                     self.showControls(animated: true)

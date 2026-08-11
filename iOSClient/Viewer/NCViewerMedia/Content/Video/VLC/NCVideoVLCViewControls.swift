@@ -53,7 +53,7 @@ extension NCVideoVLCViewController {
     }
 
     func updateProgressControls() {
-        guard !isScrubbing else {
+        guard !playbackPresentationContext.isSeeking else {
             return
         }
 
@@ -171,7 +171,7 @@ extension NCVideoVLCViewController {
         ) { [weak self] _ in
             Task { @MainActor in
                 guard let self,
-                      !self.isScrubbing else {
+                      !self.playbackPresentationContext.isSeeking else {
                     return
                 }
 
@@ -238,7 +238,7 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
     func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
         showControls(animated: true)
         stopControlsHideTimer()
-        isScrubbing = true
+        playbackPresentationContext.beginSeeking()
     }
 
     func videoControlsDidTapSubtitle(_ controlsView: NCVideoControlsView) {
@@ -288,7 +288,7 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
             mediaPlayer.position = progress
         }
 
-        isScrubbing = false
+        playbackPresentationContext.finishSeeking()
         updateProgressLabels(position: progress)
         startProgressTimer()
         hideControls(animated: true)

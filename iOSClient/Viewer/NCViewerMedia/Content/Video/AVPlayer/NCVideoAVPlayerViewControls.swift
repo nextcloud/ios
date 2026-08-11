@@ -144,7 +144,7 @@ extension NCVideoAVPlayerViewController {
         ) { [weak self] _ in
             Task { @MainActor in
                 guard let self,
-                      !self.isScrubbing else {
+                      !self.playbackPresentationContext.isSeeking else {
                     return
                 }
 
@@ -211,7 +211,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
     }
 
     func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
-        isScrubbing = true
+        playbackPresentationContext.beginSeeking()
         stopControlsHideTimer()
     }
 
@@ -241,7 +241,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
         guard let duration = player.currentItem?.duration.seconds,
               duration.isFinite,
               duration > 0 else {
-            isScrubbing = false
+            playbackPresentationContext.finishSeeking()
             hideControls(animated: true)
             return
         }
@@ -257,7 +257,7 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
             toleranceAfter: .zero
         ) { [weak self] _ in
             Task { @MainActor in
-                self?.isScrubbing = false
+                self?.playbackPresentationContext.finishSeeking()
                 self?.updateProgressControls()
                 self?.hideControls(animated: true)
             }
