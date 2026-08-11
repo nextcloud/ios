@@ -13,6 +13,8 @@ protocol NCVideoControlsViewDelegate: AnyObject {
     func videoControlsDidTapSeekBackward(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapPlayPause(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapSeekForward(_ controlsView: NCVideoControlsView)
+    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView)
+    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView)
     func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView)
     func videoControls(_ controlsView: NCVideoControlsView, didSelectSubtitleTrackIndex index: Int32)
@@ -23,6 +25,10 @@ protocol NCVideoControlsViewDelegate: AnyObject {
 }
 
 extension NCVideoControlsViewDelegate {
+    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) { }
+
+    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) { }
+
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) { }
 
     func videoControlsDidTapAddExternalSubtitle(_ controlsView: NCVideoControlsView) { }
@@ -135,6 +141,19 @@ final class NCVideoControlsView: UIView {
         }
 
         state.isSeekingEnabled = isEnabled
+    }
+
+    func updatePlaybackOptions(
+        isRepeatEnabled: Bool,
+        isAutoAdvanceEnabled: Bool
+    ) {
+        if state.isRepeatEnabled != isRepeatEnabled {
+            state.isRepeatEnabled = isRepeatEnabled
+        }
+
+        if state.isAutoAdvanceEnabled != isAutoAdvanceEnabled {
+            state.isAutoAdvanceEnabled = isAutoAdvanceEnabled
+        }
     }
 
     func setPictureInPictureVisible(_ isVisible: Bool) {
@@ -286,6 +305,18 @@ final class NCVideoControlsView: UIView {
                 }
                 delegate?.videoControlsDidTapSeekForward(self)
             },
+            onToggleRepeat: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidToggleRepeat(self)
+            },
+            onToggleAutoAdvance: { [weak self] in
+                guard let self else {
+                    return
+                }
+                delegate?.videoControlsDidToggleAutoAdvance(self)
+            },
             onScrubBegan: { [weak self] in
                 guard let self else {
                     return
@@ -342,6 +373,8 @@ private final class NCVideoControlsState: ObservableObject {
     @Published var elapsedText = "0:00"
     @Published var remainingText = "−0:00"
     @Published var isSeekingEnabled = true
+    @Published var isRepeatEnabled = false
+    @Published var isAutoAdvanceEnabled = false
     @Published var topActionsMode: NCVideoControlsTopActionsMode = .none
     @Published var subtitleTrackItems: [NCVideoTrackMenuItem] = []
     @Published var audioTrackItems: [NCVideoTrackMenuItem] = []
@@ -355,6 +388,8 @@ private struct NCVideoControlsSwiftUIView: View {
     let onSeekBackward: () -> Void
     let onPlayPause: () -> Void
     let onSeekForward: () -> Void
+    let onToggleRepeat: () -> Void
+    let onToggleAutoAdvance: () -> Void
     let onScrubBegan: () -> Void
     let onScrubChanged: (Float) -> Void
     let onScrubEnded: (Float) -> Void
@@ -382,14 +417,12 @@ private struct NCVideoControlsSwiftUIView: View {
                         y: proxy.size.height - proxy.safeAreaInsets.bottom - NCVideoControlsView.bottomControlsBottomInset - (NCVideoControlsView.bottomControlsHeight / 2)
                     )
 
-                if state.topActionsMode != .none {
-                    topActions
-                        .frame(height: NCVideoControlsView.topActionsHeight)
-                        .position(
-                            x: topActionsCenterX,
-                            y: state.topActionsTopOffset + (NCVideoControlsView.topActionsHeight / 2)
-                        )
-                }
+                topActions
+                    .frame(height: NCVideoControlsView.topActionsHeight)
+                    .position(
+                        x: topActionsCenterX,
+                        y: state.topActionsTopOffset + (NCVideoControlsView.topActionsHeight / 2)
+                    )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -401,11 +434,11 @@ private struct NCVideoControlsSwiftUIView: View {
 
         switch state.topActionsMode {
         case .none:
-            visibleButtonsCount = 0
+            visibleButtonsCount = 2
         case .pictureInPicture:
-            visibleButtonsCount = 2
+            visibleButtonsCount = 4
         case .vlcTracks:
-            visibleButtonsCount = 2
+            visibleButtonsCount = 4
         }
 
         let totalWidth = (visibleButtonsCount * NCVideoControlsView.topActionsButtonSize) + (max(0, visibleButtonsCount - 1) * NCVideoControlsView.topActionsSpacing)
@@ -486,6 +519,26 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private var topActions: some View {
         HStack(spacing: NCVideoControlsView.topActionsSpacing) {
+            Button(action: onToggleRepeat) {
+                topActionIcon(
+                    systemName: "repeat.1",
+                    pointSize: 17,
+                    isActive: state.isRepeatEnabled
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
+
+            Button(action: onToggleAutoAdvance) {
+                topActionIcon(
+                    systemName: state.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
+                    pointSize: 17,
+                    isActive: state.isAutoAdvanceEnabled
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
+
             switch state.topActionsMode {
             case .none:
                 EmptyView()
@@ -610,11 +663,12 @@ private struct NCVideoControlsSwiftUIView: View {
 
     private func topActionIcon(
         systemName: String,
-        pointSize: CGFloat
+        pointSize: CGFloat,
+        isActive: Bool = false
     ) -> some View {
         Image(systemName: systemName)
             .font(.system(size: pointSize, weight: .regular))
-            .foregroundStyle(.white)
+            .foregroundStyle(isActive ? Color.accentColor : .white)
             .videoControlIconShadow()
             .frame(
                 width: NCVideoControlsView.topActionsButtonSize,

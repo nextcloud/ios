@@ -25,10 +25,12 @@ enum NCVideoVLCPresenter {
         shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
         onNext: (() -> Void)? = nil,
+        onPlaybackEnded: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil,
         onPlaybackError: (() -> Void)? = nil
     ) -> Bool {
@@ -47,10 +49,12 @@ enum NCVideoVLCPresenter {
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController
+                contextMenuController: contextMenuController,
+                playbackOptions: playbackOptions
             )
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
+            currentViewController.onPlaybackEnded = onPlaybackEnded
             currentViewController.onClose = onClose
             currentViewController.onPlaybackError = onPlaybackError
             currentViewController.canGoPrevious = canGoPrevious
@@ -70,10 +74,12 @@ enum NCVideoVLCPresenter {
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController
+                contextMenuController: contextMenuController,
+                playbackOptions: playbackOptions
             )
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
+            currentViewController.onPlaybackEnded = onPlaybackEnded
             currentViewController.onClose = onClose
             currentViewController.onPlaybackError = onPlaybackError
             currentViewController.canGoPrevious = canGoPrevious
@@ -112,10 +118,12 @@ enum NCVideoVLCPresenter {
             userAgent: userAgent,
             shouldAutoPlayOnStart: shouldAutoPlayOnStart,
             isChromeHidden: isChromeHidden,
-            contextMenuController: contextMenuController
+            contextMenuController: contextMenuController,
+            playbackOptions: playbackOptions
         )
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
+        viewController.onPlaybackEnded = onPlaybackEnded
         viewController.onClose = onClose
         viewController.onPlaybackError = onPlaybackError
         viewController.canGoPrevious = canGoPrevious

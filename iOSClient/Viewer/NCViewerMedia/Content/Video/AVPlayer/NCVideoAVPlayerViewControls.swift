@@ -194,6 +194,18 @@ extension NCVideoAVPlayerViewController: NCVideoControlsViewDelegate {
         seek(bySeconds: 10)
     }
 
+    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) {
+        playbackOptions.toggleRepeat()
+        updatePlaybackOptionsControls()
+        scheduleControlsHide()
+    }
+
+    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) {
+        playbackOptions.toggleAutoAdvance()
+        updatePlaybackOptionsControls()
+        scheduleControlsHide()
+    }
+
     func videoControlsDidTapPictureInPicture(_ controlsView: NCVideoControlsView) {
         togglePictureInPicture()
     }

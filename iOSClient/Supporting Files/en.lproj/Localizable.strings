@@ -699,6 +699,8 @@
 "_no_subtitles_available_" = "No subtitles available";
 "_no_audio_tracks_available_" = "No audio tracks available";
 "_add_external_subtitle_" = "Add external subtitle";
+"_repeat_current_media_" = "Repeat current item";
+"_play_next_media_automatically_" = "Play next item automatically";
 "_image_load_failed_" = "Image load failed";
 "_image_load_failed_" = "Image load failed";
 "_gif_file_could_not_be_decoded_" = "GIF file could not be decoded";

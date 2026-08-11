@@ -131,6 +131,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     private var cancellable: AnyCancellable?
     private var lastVisibleIndex: Int?
     private var isUserPaging = false
+    private var isAutoPlayPaging = false
     private var isAdjustingLayout = false
 
     // MARK: - Init
@@ -300,6 +301,13 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func jumpToSelectedIndexIfNeeded(animated: Bool) {
+        // During an autoplay transition, selectedIndex still represents the
+        // source page until the scroll reaches the target. Every manual paging
+        // path keeps its original continuous selection behavior.
+        guard !isAutoPlayPaging else {
+            return
+        }
+
         guard model.numberOfPages > 0 else {
             return
         }
@@ -348,6 +356,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         if !animated {
             isUserPaging = false
+            isAutoPlayPaging = false
             model.setSelectedIndex(index)
             refreshVisibleCells()
 
@@ -423,6 +432,16 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     ) {
         let targetIndex = model.selectedIndex + offset
 
+        moveToPage(
+            at: targetIndex,
+            shouldAutoPlay: shouldAutoPlay
+        )
+    }
+
+    private func moveToPage(
+        at targetIndex: Int,
+        shouldAutoPlay: Bool
+    ) {
         guard targetIndex >= 0,
               targetIndex < model.numberOfPages else {
             return
@@ -436,12 +455,15 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             object: nil
         )
 
+        // Mark the transition before publishing the autoplay target. Publishing
+        // causes SwiftUI to call updateUIView, which must not restore the source
+        // index while the collection view is moving to the target page.
+        isUserPaging = true
+        isAutoPlayPaging = shouldAutoPlay
+
         if shouldAutoPlay {
             model.requestAutoPlay(at: targetIndex)
         }
-
-        // Selection is finalized when the scroll animation ends.
-        isUserPaging = true
 
         updateCollectionBackground(for: targetIndex)
         updateVisibleMetadataTitle(for: targetIndex)
@@ -451,6 +473,39 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             targetIndex,
             animated: true
         )
+    }
+
+    private func moveToNextMediaOfSameType(
+        classFile: String,
+        after sourceIndex: Int
+    ) {
+        Task { @MainActor [weak self] in
+            guard let self,
+                  let targetIndex = await self.model.nextMediaIndex(
+                    after: sourceIndex,
+                    matchingClassFile: classFile
+                  ),
+                  self.model.selectedIndex == sourceIndex else {
+                return
+            }
+
+            // Wait until the current fullscreen player has fully disappeared.
+            // Otherwise the next player can be rejected while the previous
+            // AVPlayer or VLC controller is still dismissing.
+            NCVideoAVPlayerPresenter.dismiss { [weak self] in
+                NCVideoVLCPresenter.dismiss { [weak self] in
+                    guard let self,
+                          self.model.selectedIndex == sourceIndex else {
+                        return
+                    }
+
+                    self.moveToPage(
+                        at: targetIndex,
+                        shouldAutoPlay: true
+                    )
+                }
+            }
+        }
     }
 
     private func configure(cell: NCMediaViewerPagingCell, page: NCMediaViewerPageModel) {
@@ -464,7 +519,6 @@ final class NCMediaViewerPagingCoordinator: NSObject,
             backgroundColor: pageBackgroundColor,
             canGoPrevious: page.index > 0,
             canGoNext: page.index < model.numberOfPages - 1,
-            shouldAutoPlay: model.autoPlayTargetIndex == page.index,
             onToggleChrome: { [weak model] in
                 model?.toggleChromeVisibility()
             },
@@ -478,6 +532,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                 self?.moveToPage(
                     offset: 1,
                     shouldAutoPlay: shouldAutoPlay
+                )
+            },
+            onNextMediaOfSameType: { [weak self] classFile in
+                self?.moveToNextMediaOfSameType(
+                    classFile: classFile,
+                    after: page.index
                 )
             },
             onAutoPlayConsumed: { [weak model] in
@@ -549,6 +609,8 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     // MARK: - UIScrollViewDelegate
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        // A user drag takes ownership of any in-flight autoplay transition.
+        isAutoPlayPaging = false
         isUserPaging = true
 
         // Stop the current media playback before manual page navigation.
@@ -632,6 +694,12 @@ final class NCMediaViewerPagingCoordinator: NSObject,
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Auto-next keeps selectedIndex on the source page until it settles.
+        // Manual swipes preserve their original update behavior.
+        guard !isAutoPlayPaging else {
+            return
+        }
+
         guard isScrollGeometryStable(scrollView) else {
             return
         }
@@ -684,6 +752,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
         // The settled page is now the selected page.
         isUserPaging = false
+        isAutoPlayPaging = false
         lastVisibleIndex = index
 
         model.setSelectedIndex(index)
@@ -751,10 +820,10 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         backgroundColor: UIColor,
         canGoPrevious: Bool,
         canGoNext: Bool,
-        shouldAutoPlay: Bool,
         onToggleChrome: @escaping () -> Void,
         onPreviousPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
         onNextPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
+        onNextMediaOfSameType: @escaping (_ classFile: String) -> Void,
         onAutoPlayConsumed: @escaping () -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void,
@@ -771,9 +840,9 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
                 onToggleChrome: onToggleChrome,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
-                shouldAutoPlay: shouldAutoPlay,
                 onPreviousPage: onPreviousPage,
                 onNextPage: onNextPage,
+                onNextMediaOfSameType: onNextMediaOfSameType,
                 onClose: onClose,
                 onAutoPlayConsumed: onAutoPlayConsumed,
                 onZoomChanged: onZoomChanged,

@@ -20,12 +20,14 @@ final class NCVideoVLCViewController: UIViewController {
     private var shouldAutoPlayOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
+    internal var playbackOptions: NCMediaPlaybackOptions
     private var isReplayFromBeginningRequested = false
 
     // MARK: - Paging Callbacks
 
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
+    var onPlaybackEnded: (() -> Void)?
     var onClose: ((_ ocId: String?) -> Void)?
     var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
@@ -85,7 +87,8 @@ final class NCVideoVLCViewController: UIViewController {
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
-        contextMenuController: NCMainTabBarController?
+        contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions
     ) {
         self.metadata = metadata
         self.preparedPlayback = preparedPlayback
@@ -94,6 +97,7 @@ final class NCVideoVLCViewController: UIViewController {
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
+        self.playbackOptions = playbackOptions
 
         super.init(
             nibName: nil,
@@ -131,6 +135,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         controlsView.delegate = self
         controlsView.setTopActionsMode(.vlcTracks)
+        updatePlaybackOptionsControls()
         controlsView.alpha = 0
         controlsView.isHidden = true
         controlsView.translatesAutoresizingMaskIntoConstraints = false
@@ -208,7 +213,8 @@ final class NCVideoVLCViewController: UIViewController {
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
-        contextMenuController: NCMainTabBarController?
+        contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions
     ) {
         let urlChanged = self.url != preparedPlayback.url
         let applyConfiguration = { [weak self] in
@@ -219,10 +225,12 @@ final class NCVideoVLCViewController: UIViewController {
             self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
             self.isChromeHidden = isChromeHidden
             self.contextMenuController = contextMenuController
+            self.playbackOptions = playbackOptions
             self.updateViewerBackgroundIfNeeded()
             self.updateTitleLabel(metadata: metadata)
             self.refreshVLCTrackMenuItemsWhenPlayerIsActive()
             self.updatePlayPauseButton()
+            self.updatePlaybackOptionsControls()
         }
 
         guard urlChanged else {
@@ -656,6 +664,24 @@ final class NCVideoVLCViewController: UIViewController {
         case .ended:
             isPlaybackRequested = false
             stopProgressTimer()
+
+            switch playbackOptions.completionAction {
+            case .repeatCurrentItem:
+                restartPlaybackFromBeginning()
+                return
+
+            case .playNextItem:
+                updatePlayPauseButton()
+                updateProgressLabels(position: 1)
+                showControls(animated: true)
+                stopControlsHideTimer()
+                onPlaybackEnded?()
+                return
+
+            case .stop:
+                break
+            }
+
             updatePlayPauseButton()
             updateProgressLabels(position: 1)
             showControls(animated: true)
@@ -721,6 +747,13 @@ final class NCVideoVLCViewController: UIViewController {
         }
 
         scheduleControlsHide()
+    }
+
+    internal func updatePlaybackOptionsControls() {
+        controlsView.updatePlaybackOptions(
+            isRepeatEnabled: playbackOptions.isRepeatEnabled,
+            isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled
+        )
     }
 
     // MARK: - VLC Track Menus

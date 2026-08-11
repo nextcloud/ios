@@ -22,13 +22,15 @@ enum NCVideoAVPlayerPresenter {
         shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
         onNext: (() -> Void)? = nil,
+        onPlaybackEnded: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil,
         onPlaybackError: (() -> Void)? = nil
-    ) {
+    ) -> Bool {
         let url = preparedPlayback.url
         if currentURL == url,
            let currentViewController {
@@ -38,20 +40,22 @@ enum NCVideoAVPlayerPresenter {
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController
+                contextMenuController: contextMenuController,
+                playbackOptions: playbackOptions
             )
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
+            currentViewController.onPlaybackEnded = onPlaybackEnded
             currentViewController.onClose = onClose
             currentViewController.onPlaybackError = onPlaybackError
 
-            return
+            return true
         }
 
         if isPresenting {
-            return
+            return false
         }
 
         if let currentViewController {
@@ -61,17 +65,19 @@ enum NCVideoAVPlayerPresenter {
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
                 isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController
+                contextMenuController: contextMenuController,
+                playbackOptions: playbackOptions
             )
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
+            currentViewController.onPlaybackEnded = onPlaybackEnded
             currentViewController.onClose = onClose
             currentViewController.onPlaybackError = onPlaybackError
 
             currentURL = url
-            return
+            return true
         }
 
         guard let presenter = topViewController() else {
@@ -81,16 +87,16 @@ enum NCVideoAVPlayerPresenter {
                 message: "VIDEO AVPlayer presenter failed: no top view controller",
                 consoleOnly: true
             )
-            return
+            return false
         }
 
         if presenter is NCVideoAVPlayerViewController {
-            return
+            return false
         }
 
         if let navigationController = presenter as? UINavigationController,
            navigationController.topViewController is NCVideoAVPlayerViewController {
-            return
+            return false
         }
 
         isPresenting = true
@@ -101,12 +107,14 @@ enum NCVideoAVPlayerPresenter {
             userAgent: userAgent,
             shouldAutoPlayOnStart: shouldAutoPlayOnStart,
             isChromeHidden: isChromeHidden,
-            contextMenuController: contextMenuController
+            contextMenuController: contextMenuController,
+            playbackOptions: playbackOptions
         )
         viewController.canGoPrevious = canGoPrevious
         viewController.canGoNext = canGoNext
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
+        viewController.onPlaybackEnded = onPlaybackEnded
         viewController.onClose = onClose
         viewController.onPlaybackError = onPlaybackError
 
@@ -131,6 +139,8 @@ enum NCVideoAVPlayerPresenter {
         ) {
             isPresenting = false
         }
+
+        return true
     }
 
     static func clearCurrent(

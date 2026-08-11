@@ -16,8 +16,10 @@ struct NCAudioViewerContentView: View {
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
+    @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPrevious: (_ shouldAutoPlay: Bool) -> Void
     let onNext: (_ shouldAutoPlay: Bool) -> Void
+    let onPlayNextMedia: () -> Void
     let onAutoPlayConsumed: () -> Void
     let onToggleChrome: () -> Void
 
@@ -31,8 +33,10 @@ struct NCAudioViewerContentView: View {
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
+        playbackOptions: NCMediaPlaybackOptions,
         onPrevious: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
         onNext: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
+        onPlayNextMedia: @escaping () -> Void = {},
         onAutoPlayConsumed: @escaping () -> Void = {},
         onToggleChrome: @escaping () -> Void = {}
     ) {
@@ -43,8 +47,10 @@ struct NCAudioViewerContentView: View {
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay
+        self.playbackOptions = playbackOptions
         self.onPrevious = onPrevious
         self.onNext = onNext
+        self.onPlayNextMedia = onPlayNextMedia
         self.onAutoPlayConsumed = onAutoPlayConsumed
         self.onToggleChrome = onToggleChrome
 
@@ -116,13 +122,14 @@ struct NCAudioViewerContentView: View {
 
                     HStack(spacing: buttonSpacing) {
                         Button {
-                            model.toggleLoop()
+                            playbackOptions.toggleRepeat()
                         } label: {
-                            Image(systemName: model.isLoopEnabled ? "repeat.circle.fill" : "repeat.circle")
+                            Image(systemName: playbackOptions.isRepeatEnabled ? "repeat.circle.fill" : "repeat.circle")
                                 .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(model.isLoopEnabled ? primaryForegroundStyle : mutedForegroundStyle)
+                                .foregroundStyle(playbackOptions.isRepeatEnabled ? primaryForegroundStyle : mutedForegroundStyle)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(NSLocalizedString("_repeat_current_media_", comment: ""))
 
                         Button {
                             model.togglePlayback()
@@ -142,6 +149,16 @@ struct NCAudioViewerContentView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(model.duration <= 0)
+
+                        Button {
+                            playbackOptions.toggleAutoAdvance()
+                        } label: {
+                            Image(systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.circle.fill" : "forward.end.circle")
+                                .font(.system(size: sideButtonSize, weight: .regular))
+                                .foregroundStyle(playbackOptions.isAutoAdvanceEnabled ? primaryForegroundStyle : mutedForegroundStyle)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(NSLocalizedString("_play_next_media_automatically_", comment: ""))
                     }
                 }
                 .padding(.top, topPadding)
@@ -149,6 +166,10 @@ struct NCAudioViewerContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .task(id: localURL) {
+            model.configurePlaybackCompletion(
+                options: playbackOptions,
+                onPlayNextMedia: onPlayNextMedia
+            )
             await model.load(url: localURL)
             consumeAutoPlayIfNeeded()
         }
@@ -337,7 +358,6 @@ final class NCAudioViewerModel: ObservableObject {
     @Published private(set) var isPlaying = false
     @Published private(set) var duration: Double = 0
     @Published var currentTime: Double = 0
-    @Published private(set) var isLoopEnabled = false
 
     // MARK: - Private State
 
@@ -346,8 +366,18 @@ final class NCAudioViewerModel: ObservableObject {
     private var endObserver: NSObjectProtocol?
     private var currentURL: URL?
     private var loadedURL: URL?
+    private weak var playbackOptions: NCMediaPlaybackOptions?
+    private var onPlayNextMedia: (() -> Void)?
 
     // MARK: - Public API
+
+    func configurePlaybackCompletion(
+        options: NCMediaPlaybackOptions,
+        onPlayNextMedia: @escaping () -> Void
+    ) {
+        playbackOptions = options
+        self.onPlayNextMedia = onPlayNextMedia
+    }
 
     func load(url: URL) async {
         guard currentURL != url else {
@@ -424,10 +454,6 @@ final class NCAudioViewerModel: ObservableObject {
         } else {
             play()
         }
-    }
-
-    func toggleLoop() {
-        isLoopEnabled.toggle()
     }
 
     func restart() {
@@ -555,7 +581,8 @@ final class NCAudioViewerModel: ObservableObject {
                     return
                 }
 
-                if self.isLoopEnabled {
+                switch self.playbackOptions?.completionAction ?? .stop {
+                case .repeatCurrentItem:
                     self.currentTime = 0
 
                     player.seek(
@@ -572,7 +599,13 @@ final class NCAudioViewerModel: ObservableObject {
                             self.isPlaying = true
                         }
                     }
-                } else {
+
+                case .playNextItem:
+                    self.currentTime = self.duration
+                    self.isPlaying = false
+                    self.onPlayNextMedia?()
+
+                case .stop:
                     self.currentTime = self.duration
                     self.isPlaying = false
                 }

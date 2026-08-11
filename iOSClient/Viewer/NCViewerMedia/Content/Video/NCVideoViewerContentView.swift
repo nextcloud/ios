@@ -18,8 +18,12 @@ struct NCVideoViewerContentView: View {
     let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
+    let shouldAutoPlay: Bool
+    @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPreviousPage: (() -> Void)?
     let onNextPage: (() -> Void)?
+    let onPlayNextMedia: (() -> Void)?
+    let onAutoPlayConsumed: (() -> Void)?
     let onToggleChrome: (() -> Void)?
     let onClose: ((_ ocId: String?) -> Void)?
     let downloadVideo: (@MainActor () async throws -> URL)?
@@ -54,8 +58,12 @@ struct NCVideoViewerContentView: View {
         navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
+        shouldAutoPlay: Bool = false,
+        playbackOptions: NCMediaPlaybackOptions,
         onPreviousPage: (() -> Void)? = nil,
         onNextPage: (() -> Void)? = nil,
+        onPlayNextMedia: (() -> Void)? = nil,
+        onAutoPlayConsumed: (() -> Void)? = nil,
         onToggleChrome: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil,
         downloadVideo: (@MainActor () async throws -> URL)? = nil,
@@ -71,8 +79,12 @@ struct NCVideoViewerContentView: View {
         self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
+        self.shouldAutoPlay = shouldAutoPlay
+        self.playbackOptions = playbackOptions
         self.onPreviousPage = onPreviousPage
         self.onNextPage = onNextPage
+        self.onPlayNextMedia = onPlayNextMedia
+        self.onAutoPlayConsumed = onAutoPlayConsumed
         self.onToggleChrome = onToggleChrome
         self.onClose = onClose
         self.downloadVideo = downloadVideo
@@ -89,6 +101,10 @@ struct NCVideoViewerContentView: View {
         .background(videoBackgroundColor)
         .task(id: taskIdentifier) {
             await loadVideoIfSelected()
+            scheduleAutoPlayIfNeeded()
+        }
+        .onAppear {
+            scheduleAutoPlayIfNeeded()
         }
         .onChange(of: isSelected) { _, selected in
             loadGeneration = UUID()
@@ -100,13 +116,90 @@ struct NCVideoViewerContentView: View {
 
             Task {
                 await loadVideoIfSelected()
+                scheduleAutoPlayIfNeeded()
             }
+        }
+        .onChange(of: shouldAutoPlay) { _, shouldAutoPlay in
+            guard shouldAutoPlay else {
+                return
+            }
+
+            scheduleAutoPlayIfNeeded()
+        }
+        .onReceive(playback.$engine) { _ in
+            scheduleAutoPlayIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .ncMediaViewerStopPlayback)) { _ in
             stopPlaybackForDeselection()
         }
         .onDisappear {
             // Ignore layout-driven disappear events.
+        }
+    }
+}
+
+// MARK: - Automatic Playback
+
+private extension NCVideoViewerContentView {
+    func scheduleAutoPlayIfNeeded() {
+        // Keep the normal cover/play path completely untouched when this page
+        // is not the selected autoplay target.
+        guard isSelected,
+              shouldAutoPlay else {
+            return
+        }
+
+        Task { @MainActor in
+            // Present on the next run-loop turn, after SwiftUI has committed the
+            // selected page and the prepared playback state.
+            await Task.yield()
+            autoPlayIfNeeded()
+        }
+    }
+
+    @MainActor
+    func autoPlayIfNeeded() {
+        guard isSelected,
+              shouldAutoPlay,
+              !hasRequestedPlayback,
+              !isLaunchingPlayback else {
+            return
+        }
+
+        if requiresUserTrustedCertificateDownload {
+            guard downloadVideo != nil,
+                  !isDownloadingPlayback else {
+                return
+            }
+
+            onAutoPlayConsumed?()
+            isLaunchingPlayback = true
+            downloadAndPlayVideo()
+            return
+        }
+
+        switch playback.engine {
+        case .avFoundation(let preparedPlayback):
+            guard isCurrentPlaybackVideo() else {
+                return
+            }
+
+            if requestAVPlayerPresentation(preparedPlayback: preparedPlayback) {
+                onAutoPlayConsumed?()
+            }
+
+        case .vlc(let preparedPlayback):
+            guard isCurrentPlaybackVideo() else {
+                return
+            }
+
+            if requestVLCPresentation(preparedPlayback: preparedPlayback) {
+                onAutoPlayConsumed?()
+            }
+
+        case .loading,
+             .failed:
+            break
         }
     }
 }
@@ -304,10 +397,18 @@ private extension NCVideoViewerContentView {
 
         switch playback.engine {
         case .avFoundation(let preparedPlayback):
-            requestAVPlayerPresentation(preparedPlayback: preparedPlayback)
+            if requestAVPlayerPresentation(preparedPlayback: preparedPlayback) {
+                if shouldAutoPlay {
+                    onAutoPlayConsumed?()
+                }
+            }
 
         case .vlc(let preparedPlayback):
-            requestVLCPresentation(preparedPlayback: preparedPlayback)
+            if requestVLCPresentation(preparedPlayback: preparedPlayback) {
+                if shouldAutoPlay {
+                    onAutoPlayConsumed?()
+                }
+            }
 
         case .loading,
              .failed:

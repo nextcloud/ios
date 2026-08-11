@@ -102,6 +102,8 @@ final class NCMediaViewerModel: ObservableObject {
     @Published private(set) var isChromeHidden = false
     @Published private(set) var autoPlayTargetIndex: Int?
 
+    let playbackOptions = NCMediaPlaybackOptions()
+
     // MARK: - Dependencies
 
     private let loader: NCMediaViewerLoading
@@ -529,6 +531,33 @@ final class NCMediaViewerModel: ObservableObject {
         setThumbnailMetadata(metadata, for: ocId)
 
         return metadata
+    }
+
+    func nextMediaIndex(
+        after index: Int,
+        matchingClassFile classFile: String
+    ) async -> Int? {
+        guard ocIds.indices.contains(index),
+              index < ocIds.index(before: ocIds.endIndex) else {
+            return nil
+        }
+
+        for candidateIndex in ocIds.index(after: index)..<ocIds.endIndex {
+            guard !Task.isCancelled else {
+                return nil
+            }
+
+            guard !isThumbnailDeleted(at: candidateIndex),
+                  let metadata = await resolveMetadataForThumbnail(at: candidateIndex) else {
+                continue
+            }
+
+            if metadata.classFile == classFile {
+                return candidateIndex
+            }
+        }
+
+        return nil
     }
 
     func isThumbnailDeleted(at index: Int) -> Bool {

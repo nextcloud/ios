@@ -209,6 +209,18 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
         seek(byMilliseconds: 10_000)
     }
 
+    func videoControlsDidToggleRepeat(_ controlsView: NCVideoControlsView) {
+        playbackOptions.toggleRepeat()
+        updatePlaybackOptionsControls()
+        scheduleControlsHide()
+    }
+
+    func videoControlsDidToggleAutoAdvance(_ controlsView: NCVideoControlsView) {
+        playbackOptions.toggleAutoAdvance()
+        updatePlaybackOptionsControls()
+        scheduleControlsHide()
+    }
+
     func videoControlsDidBeginScrubbing(_ controlsView: NCVideoControlsView) {
         showControls(animated: true)
         stopControlsHideTimer()

@@ -41,11 +41,13 @@ final class NCVideoAVPlayerViewController: UIViewController {
     private var shouldAutoPlayOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
+    internal var playbackOptions: NCMediaPlaybackOptions
 
     // MARK: - Paging Callbacks
 
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
+    var onPlaybackEnded: (() -> Void)?
     var onClose: ((_ ocId: String?) -> Void)?
     var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
@@ -112,7 +114,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
-        contextMenuController: NCMainTabBarController?
+        contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions
     ) {
         self.metadata = metadata
         self.preparedPlayback = preparedPlayback
@@ -122,6 +125,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
+        self.playbackOptions = playbackOptions
 
         super.init(
             nibName: nil,
@@ -159,6 +163,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         playerContainerView.playerLayer.videoGravity = .resizeAspect
 
         controlsView.delegate = self
+        updatePlaybackOptionsControls()
         controlsView.alpha = 0
         controlsView.isHidden = true
         controlsView.translatesAutoresizingMaskIntoConstraints = false
@@ -241,7 +246,8 @@ final class NCVideoAVPlayerViewController: UIViewController {
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
         isChromeHidden: Bool = false,
-        contextMenuController: NCMainTabBarController?
+        contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions
     ) {
         let urlChanged = self.url != preparedPlayback.url
 
@@ -256,6 +262,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
         self.userAgent = userAgent
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.contextMenuController = contextMenuController
+        self.playbackOptions = playbackOptions
         updateViewerBackground(isChromeHidden: isChromeHidden)
         updateTitleLabel(metadata: metadata)
 
@@ -265,6 +272,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
         updatePlayPauseButton()
         updateProgressControls()
+        updatePlaybackOptionsControls()
     }
 
     private var viewerBackgroundColor: UIColor {
@@ -783,9 +791,59 @@ final class NCVideoAVPlayerViewController: UIViewController {
         isPlaybackRequested = false
         cancelPlaybackStartupTimeout()
 
+        switch playbackOptions.completionAction {
+        case .repeatCurrentItem:
+            repeatCurrentItem()
+            return
+
+        case .playNextItem:
+            updatePlayPauseButton()
+            updateProgressControls()
+            showControls(animated: true)
+            onPlaybackEnded?()
+            return
+
+        case .stop:
+            break
+        }
+
         updatePlayPauseButton()
         updateProgressControls()
         showControls(animated: true)
+    }
+
+    private func repeatCurrentItem() {
+        isPlaybackRequested = true
+        updatePlayPauseButton()
+
+        player.seek(
+            to: .zero,
+            toleranceBefore: .zero,
+            toleranceAfter: .zero
+        ) { [weak self, weak player] didFinish in
+            guard didFinish,
+                  let self,
+                  let player else {
+                return
+            }
+
+            Task { @MainActor in
+                guard self.player === player else {
+                    return
+                }
+
+                player.play()
+                self.updateProgressControls()
+                self.scheduleControlsHide()
+            }
+        }
+    }
+
+    internal func updatePlaybackOptionsControls() {
+        controlsView.updatePlaybackOptions(
+            isRepeatEnabled: playbackOptions.isRepeatEnabled,
+            isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled
+        )
     }
 
     private func updateControlsNavigationBar() {
