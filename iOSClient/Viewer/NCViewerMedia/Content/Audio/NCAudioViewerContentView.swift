@@ -20,7 +20,7 @@ struct NCAudioViewerContentView: View {
     @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPrevious: (_ shouldAutoPlay: Bool) -> Void
     let onNext: (_ shouldAutoPlay: Bool) -> Void
-    let onPlayNextMedia: () -> Void
+    let onPlayNextMedia: NCMediaPlaybackAdvanceRequest
     let onAutoPlayConsumed: () -> Void
     let onToggleChrome: () -> Void
 
@@ -38,7 +38,9 @@ struct NCAudioViewerContentView: View {
         playbackOptions: NCMediaPlaybackOptions,
         onPrevious: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
         onNext: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
-        onPlayNextMedia: @escaping () -> Void = {},
+        onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest = { completion in
+            completion(false)
+        },
         onAutoPlayConsumed: @escaping () -> Void = {},
         onToggleChrome: @escaping () -> Void = {}
     ) {
@@ -462,13 +464,13 @@ final class NCAudioViewerModel: ObservableObject {
     private var currentURL: URL?
     private var loadedURL: URL?
     private weak var playbackOptions: NCMediaPlaybackOptions?
-    private var onPlayNextMedia: (() -> Void)?
+    private var onPlayNextMedia: NCMediaPlaybackAdvanceRequest?
 
     // MARK: - Public API
 
     func configurePlaybackCompletion(
         options: NCMediaPlaybackOptions,
-        onPlayNextMedia: @escaping () -> Void
+        onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest
     ) {
         playbackOptions = options
         self.onPlayNextMedia = onPlayNextMedia
@@ -698,7 +700,7 @@ final class NCAudioViewerModel: ObservableObject {
                 case .playNextItem:
                     self.currentTime = self.duration
                     self.isPlaying = false
-                    self.onPlayNextMedia?()
+                    self.onPlayNextMedia? { _ in }
 
                 case .stop:
                     self.currentTime = self.duration

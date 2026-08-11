@@ -481,15 +481,29 @@ final class NCMediaViewerPagingCoordinator: NSObject,
 
     private func moveToNextMediaOfSameType(
         classFile: String,
-        after sourceIndex: Int
+        after sourceIndex: Int,
+        completion: @escaping NCMediaPlaybackAdvanceCompletion
     ) {
         Task { @MainActor [weak self] in
-            guard let self,
-                  let targetIndex = await self.model.nextMediaIndex(
-                    after: sourceIndex,
-                    matchingClassFile: classFile
-                  ),
-                  self.model.selectedIndex == sourceIndex else {
+            guard let self else {
+                return
+            }
+
+            guard self.model.selectedIndex == sourceIndex else {
+                completion(false)
+                return
+            }
+
+            guard let targetIndex = await self.model.nextMediaIndex(
+                after: sourceIndex,
+                matchingClassFile: classFile
+            ) else {
+                completion(false)
+                return
+            }
+
+            guard self.model.selectedIndex == sourceIndex else {
+                completion(false)
                 return
             }
 
@@ -498,6 +512,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                     at: targetIndex,
                     shouldAutoPlay: true
                 )
+                completion(true)
                 return
             }
 
@@ -524,6 +539,7 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                         at: targetIndex,
                         shouldAutoPlay: true
                     )
+                    completion(true)
                 }
             }
         }
@@ -555,10 +571,11 @@ final class NCMediaViewerPagingCoordinator: NSObject,
                     shouldAutoPlay: shouldAutoPlay
                 )
             },
-            onNextMediaOfSameType: { [weak self] classFile in
+            onNextMediaOfSameType: { [weak self] classFile, completion in
                 self?.moveToNextMediaOfSameType(
                     classFile: classFile,
-                    after: page.index
+                    after: page.index,
+                    completion: completion
                 )
             },
             onAutoPlayConsumed: { [weak model] in
@@ -844,7 +861,10 @@ final class NCMediaViewerPagingCell: UICollectionViewCell {
         onToggleChrome: @escaping () -> Void,
         onPreviousPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
         onNextPage: @escaping (_ shouldAutoPlay: Bool) -> Void,
-        onNextMediaOfSameType: @escaping (_ classFile: String) -> Void,
+        onNextMediaOfSameType: @escaping (
+            _ classFile: String,
+            _ completion: @escaping NCMediaPlaybackAdvanceCompletion
+        ) -> Void,
         onAutoPlayConsumed: @escaping () -> Void,
         onZoomChanged: @escaping (Bool) -> Void,
         onClose: @escaping (_ ocId: String?) -> Void,

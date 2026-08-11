@@ -28,7 +28,7 @@ enum NCVideoAVPlayerPresenter {
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
         onNext: (() -> Void)? = nil,
-        onPlaybackEnded: (() -> Void)? = nil,
+        onPlaybackEnded: NCMediaPlaybackAdvanceRequest? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil,
         onPlaybackError: (() -> Void)? = nil
     ) -> Bool {

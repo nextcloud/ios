@@ -10,6 +10,12 @@ enum NCMediaPlaybackCompletionAction: Equatable {
     case playNextItem
 }
 
+typealias NCMediaPlaybackAdvanceCompletion = (_ didAdvance: Bool) -> Void
+
+// Auto-advance lookup can finish after the player reaches its end state. The
+// result lets the player restore normal stopped controls when no item exists.
+typealias NCMediaPlaybackAdvanceRequest = (@escaping NCMediaPlaybackAdvanceCompletion) -> Void
+
 @MainActor
 final class NCMediaPlaybackOptions: ObservableObject {
     @Published private(set) var isRepeatEnabled: Bool

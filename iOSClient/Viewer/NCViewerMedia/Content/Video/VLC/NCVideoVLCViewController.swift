@@ -28,7 +28,7 @@ final class NCVideoVLCViewController: UIViewController {
 
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
-    var onPlaybackEnded: (() -> Void)?
+    var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
     var onClose: ((_ ocId: String?) -> Void)?
     var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
@@ -700,17 +700,26 @@ final class NCVideoVLCViewController: UIViewController {
             case .playNextItem:
                 updatePlayPauseButton()
                 updateProgressLabels(position: 1)
-                onPlaybackEnded?()
+
+                guard let onPlaybackEnded else {
+                    finishPlaybackWithoutAdvance()
+                    return
+                }
+
+                onPlaybackEnded { [weak self] didAdvance in
+                    guard !didAdvance else {
+                        return
+                    }
+
+                    self?.finishPlaybackWithoutAdvance()
+                }
                 return
 
             case .stop:
                 break
             }
 
-            updatePlayPauseButton()
-            updateProgressLabels(position: 1)
-            showControls(animated: true)
-            stopControlsHideTimer()
+            finishPlaybackWithoutAdvance()
             return
 
         case .stopped:
@@ -809,6 +818,13 @@ final class NCVideoVLCViewController: UIViewController {
         default:
             clearVLCTrackMenuItems()
         }
+    }
+
+    private func finishPlaybackWithoutAdvance() {
+        updatePlayPauseButton()
+        updateProgressLabels(position: 1)
+        showControls(animated: true)
+        stopControlsHideTimer()
     }
 
     func selectSubtitleTrack(index: Int32) {

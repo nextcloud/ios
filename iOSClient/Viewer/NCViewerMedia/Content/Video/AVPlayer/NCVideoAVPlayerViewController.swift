@@ -47,7 +47,7 @@ final class NCVideoAVPlayerViewController: UIViewController {
 
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
-    var onPlaybackEnded: (() -> Void)?
+    var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
     var onClose: ((_ ocId: String?) -> Void)?
     var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
@@ -834,16 +834,33 @@ final class NCVideoAVPlayerViewController: UIViewController {
         case .playNextItem:
             updatePlayPauseButton()
             updateProgressControls()
-            onPlaybackEnded?()
+
+            guard let onPlaybackEnded else {
+                finishPlaybackWithoutAdvance()
+                return
+            }
+
+            onPlaybackEnded { [weak self] didAdvance in
+                guard !didAdvance else {
+                    return
+                }
+
+                self?.finishPlaybackWithoutAdvance()
+            }
             return
 
         case .stop:
             break
         }
 
+        finishPlaybackWithoutAdvance()
+    }
+
+    private func finishPlaybackWithoutAdvance() {
         updatePlayPauseButton()
         updateProgressControls()
         showControls(animated: true)
+        stopControlsHideTimer()
     }
 
     private func repeatCurrentItem() {

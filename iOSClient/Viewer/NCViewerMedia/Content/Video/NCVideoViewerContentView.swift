@@ -22,7 +22,7 @@ struct NCVideoViewerContentView: View {
     @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPreviousPage: (() -> Void)?
     let onNextPage: (() -> Void)?
-    let onPlayNextMedia: (() -> Void)?
+    let onPlayNextMedia: NCMediaPlaybackAdvanceRequest?
     let onAutoPlayConsumed: (() -> Void)?
     let onToggleChrome: (() -> Void)?
     let onClose: ((_ ocId: String?) -> Void)?
@@ -62,7 +62,7 @@ struct NCVideoViewerContentView: View {
         playbackOptions: NCMediaPlaybackOptions,
         onPreviousPage: (() -> Void)? = nil,
         onNextPage: (() -> Void)? = nil,
-        onPlayNextMedia: (() -> Void)? = nil,
+        onPlayNextMedia: NCMediaPlaybackAdvanceRequest? = nil,
         onAutoPlayConsumed: (() -> Void)? = nil,
         onToggleChrome: (() -> Void)? = nil,
         onClose: ((_ ocId: String?) -> Void)? = nil,

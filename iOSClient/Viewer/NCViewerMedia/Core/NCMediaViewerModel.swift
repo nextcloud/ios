@@ -61,11 +61,18 @@ struct NCMediaViewerInitialModel {
     }
 
     var normalizedOcIds: [String] {
+        let candidates: [String]
+
         if ocIds.contains(currentMetadata.ocId) {
-            return ocIds
+            candidates = ocIds
         } else {
-            return [currentMetadata.ocId] + ocIds
+            candidates = [currentMetadata.ocId] + ocIds
         }
+
+        // Search and grouped data sources can expose the same item in more
+        // than one section. A media item must still have only one viewer page.
+        var seenOcIds = Set<String>()
+        return candidates.filter { seenOcIds.insert($0).inserted }
     }
 
     var currentSelectedIndex: Int {
@@ -550,12 +557,15 @@ final class NCMediaViewerModel: ObservableObject {
             return nil
         }
 
+        let sourceOcId = ocIds[index]
+
         for candidateIndex in ocIds.index(after: index)..<ocIds.endIndex {
             guard !Task.isCancelled else {
                 return nil
             }
 
-            guard !isThumbnailDeleted(at: candidateIndex),
+            guard ocIds[candidateIndex] != sourceOcId,
+                  !isThumbnailDeleted(at: candidateIndex),
                   let metadata = await resolveMetadataForThumbnail(at: candidateIndex) else {
                 continue
             }

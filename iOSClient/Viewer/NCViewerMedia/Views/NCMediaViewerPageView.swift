@@ -17,7 +17,10 @@ struct NCMediaViewerPageView: View {
     let canGoNext: Bool
     let onPreviousPage: (_ shouldAutoPlay: Bool) -> Void
     let onNextPage: (_ shouldAutoPlay: Bool) -> Void
-    let onNextMediaOfSameType: (_ classFile: String) -> Void
+    let onNextMediaOfSameType: (
+        _ classFile: String,
+        _ completion: @escaping NCMediaPlaybackAdvanceCompletion
+    ) -> Void
     let onClose: (_ ocId: String?) -> Void
     let onAutoPlayConsumed: () -> Void
     let onZoomChanged: (Bool) -> Void
@@ -214,8 +217,11 @@ struct NCMediaViewerPageView: View {
                 playbackOptions: model.playbackOptions,
                 onPreviousPage: goToPreviousPageFromVideo,
                 onNextPage: goToNextPageFromVideo,
-                onPlayNextMedia: { [onNextMediaOfSameType] in
-                    onNextMediaOfSameType(NKTypeClassFile.video.rawValue)
+                onPlayNextMedia: { [onNextMediaOfSameType] completion in
+                    onNextMediaOfSameType(
+                        NKTypeClassFile.video.rawValue,
+                        completion
+                    )
                 },
                 onAutoPlayConsumed: consumeAutoPlayIfNeeded,
                 onToggleChrome: onToggleChrome,
@@ -252,8 +258,11 @@ struct NCMediaViewerPageView: View {
                 playbackOptions: model.playbackOptions,
                 onPrevious: goToPreviousPage,
                 onNext: goToNextPage,
-                onPlayNextMedia: { [onNextMediaOfSameType] in
-                    onNextMediaOfSameType(NKTypeClassFile.audio.rawValue)
+                onPlayNextMedia: { [onNextMediaOfSameType] completion in
+                    onNextMediaOfSameType(
+                        NKTypeClassFile.audio.rawValue,
+                        completion
+                    )
                 },
                 onAutoPlayConsumed: consumeAutoPlayIfNeeded,
                 onToggleChrome: onToggleChrome
