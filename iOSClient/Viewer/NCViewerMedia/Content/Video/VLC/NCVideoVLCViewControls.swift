@@ -36,12 +36,15 @@ extension NCVideoVLCViewController {
     func startProgressTimer() {
         stopProgressTimer()
 
-        progressTimer = Timer.scheduledTimer(
-            withTimeInterval: 0.35,
+        let timer = Timer(
+            timeInterval: 0.35,
             repeats: true
         ) { [weak self] _ in
             self?.updateProgressControls()
         }
+
+        progressTimer = timer
+        RunLoop.main.add(timer, forMode: .common)
     }
 
     func stopProgressTimer() {
@@ -54,9 +57,20 @@ extension NCVideoVLCViewController {
             return
         }
 
-        let position = max(0, min(1, mediaPlayer.position))
+        let position = currentPlaybackProgress()
         updateProgressLabels(position: position)
         updatePlayPauseButton()
+    }
+
+    private func currentPlaybackProgress() -> Float {
+        let duration = mediaPlayer.media?.length.intValue ?? 0
+
+        guard duration > 0 else {
+            return max(0, min(1, mediaPlayer.position))
+        }
+
+        let elapsed = max(0, min(duration, mediaPlayer.time.intValue))
+        return Float(elapsed) / Float(duration)
     }
 
     func updateProgressLabels(position: Float) {
@@ -262,9 +276,21 @@ extension NCVideoVLCViewController: NCVideoControlsViewDelegate {
     }
 
     func videoControlsDidEndScrubbing(_ controlsView: NCVideoControlsView, progress: Float) {
-        mediaPlayer.position = progress
+        let progress = max(0, min(1, progress))
+        let duration = mediaPlayer.media?.length.intValue ?? 0
+
+        if duration > 0 {
+            let targetTime = Int32(
+                (Float(duration) * progress).rounded()
+            )
+            mediaPlayer.time = VLCTime(int: targetTime)
+        } else {
+            mediaPlayer.position = progress
+        }
+
         isScrubbing = false
-        updateProgressControls()
+        updateProgressLabels(position: progress)
+        startProgressTimer()
         scheduleControlsHide()
     }
 }
