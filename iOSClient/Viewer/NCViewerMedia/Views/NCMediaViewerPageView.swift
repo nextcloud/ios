@@ -214,6 +214,7 @@ struct NCMediaViewerPageView: View {
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
                 shouldAutoPlay: effectiveShouldAutoPlay,
+                isAutomaticAdvanceTarget: model.autoPlayTargetIndex == page.index,
                 playbackOptions: model.playbackOptions,
                 onPreviousPage: goToPreviousPageFromVideo,
                 onNextPage: goToNextPageFromVideo,

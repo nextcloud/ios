@@ -19,6 +19,7 @@ struct NCVideoViewerContentView: View {
     let canGoPrevious: Bool
     let canGoNext: Bool
     let shouldAutoPlay: Bool
+    let isAutomaticAdvanceTarget: Bool
     @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPreviousPage: (() -> Void)?
     let onNextPage: (() -> Void)?
@@ -59,6 +60,7 @@ struct NCVideoViewerContentView: View {
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         shouldAutoPlay: Bool = false,
+        isAutomaticAdvanceTarget: Bool = false,
         playbackOptions: NCMediaPlaybackOptions,
         onPreviousPage: (() -> Void)? = nil,
         onNextPage: (() -> Void)? = nil,
@@ -80,6 +82,7 @@ struct NCVideoViewerContentView: View {
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
         self.shouldAutoPlay = shouldAutoPlay
+        self.isAutomaticAdvanceTarget = isAutomaticAdvanceTarget
         self.playbackOptions = playbackOptions
         self.onPreviousPage = onPreviousPage
         self.onNextPage = onNextPage
@@ -214,6 +217,12 @@ private extension NCVideoViewerContentView {
             if case .failed(let message) = playback.engine,
                !requiresUserTrustedCertificateDownload {
                 failedView(message)
+            } else if shouldHideCoverDuringAutomaticLocalPlayback {
+                // Local auto-advance should not briefly expose the underlying
+                // cover between fullscreen video presentations.
+                Color.black
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
             } else {
                 NCVideoPlaybackCoverView(
                     previewURL: previewURL,
@@ -233,6 +242,10 @@ private extension NCVideoViewerContentView {
         } else {
             requestedPlaybackView
         }
+    }
+
+    var shouldHideCoverDuringAutomaticLocalPlayback: Bool {
+        isAutomaticAdvanceTarget && localURL != nil
     }
 
     @ViewBuilder
