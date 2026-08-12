@@ -13,11 +13,15 @@ struct NCAudioViewerContentView: View {
     let localURL: URL
     let previewURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle
+    let navigationBar: UINavigationBar?
     let canGoPrevious: Bool
     let canGoNext: Bool
+    let isSelected: Bool
     let shouldAutoPlay: Bool
+    @ObservedObject var playbackOptions: NCMediaPlaybackOptions
     let onPrevious: (_ shouldAutoPlay: Bool) -> Void
     let onNext: (_ shouldAutoPlay: Bool) -> Void
+    let onPlayNextMedia: NCMediaPlaybackAdvanceRequest
     let onAutoPlayConsumed: () -> Void
     let onToggleChrome: () -> Void
 
@@ -28,11 +32,17 @@ struct NCAudioViewerContentView: View {
         localURL: URL,
         previewURL: URL? = nil,
         backgroundStyle: NCViewerBackgroundStyle = .system,
+        navigationBar: UINavigationBar? = nil,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
+        isSelected: Bool = true,
         shouldAutoPlay: Bool = false,
+        playbackOptions: NCMediaPlaybackOptions,
         onPrevious: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
         onNext: @escaping (_ shouldAutoPlay: Bool) -> Void = { _ in },
+        onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest = { completion in
+            completion(false)
+        },
         onAutoPlayConsumed: @escaping () -> Void = {},
         onToggleChrome: @escaping () -> Void = {}
     ) {
@@ -40,11 +50,15 @@ struct NCAudioViewerContentView: View {
         self.localURL = localURL
         self.previewURL = previewURL
         self.backgroundStyle = backgroundStyle
+        self.navigationBar = navigationBar
         self.canGoPrevious = canGoPrevious
         self.canGoNext = canGoNext
+        self.isSelected = isSelected
         self.shouldAutoPlay = shouldAutoPlay
+        self.playbackOptions = playbackOptions
         self.onPrevious = onPrevious
         self.onNext = onNext
+        self.onPlayNextMedia = onPlayNextMedia
         self.onAutoPlayConsumed = onAutoPlayConsumed
         self.onToggleChrome = onToggleChrome
 
@@ -66,6 +80,23 @@ struct NCAudioViewerContentView: View {
             let buttonSpacing: CGFloat = isLandscape ? 24 : 28
             let sideButtonSize: CGFloat = isLandscape ? 30 : 34
             let playButtonSize: CGFloat = isLandscape ? 64 : 72
+            let navigationBarHeight: CGFloat = isLandscape ? 32 : 44
+            let minimumNavigationBarBottom: CGFloat = isLandscape ? 32 : 64
+            // The navigation bar frame moves while hidden. Its safe area and
+            // bounds keep this inset stable when the bar becomes visible again.
+            let safeAreaTop = max(
+                proxy.safeAreaInsets.top,
+                navigationBar?.window?.safeAreaInsets.top ?? 0
+            )
+            let effectiveNavigationBarHeight = max(
+                navigationBar?.bounds.height ?? 0,
+                navigationBarHeight
+            )
+            let navigationBarBottom = max(
+                safeAreaTop + effectiveNavigationBarHeight,
+                minimumNavigationBarBottom
+            )
+            let topActionsPadding = navigationBarBottom + 4
 
             ZStack {
                 Color.ncViewerBackground(backgroundStyle)
@@ -100,7 +131,7 @@ struct NCAudioViewerContentView: View {
                             ),
                             in: 0...max(model.duration, 1)
                         )
-                        .disabled(model.duration <= 0)
+                        .disabled(!isSelected || model.duration <= 0)
 
                         HStack {
                             Text(formatTime(model.currentTime))
@@ -114,16 +145,7 @@ struct NCAudioViewerContentView: View {
                     }
                     .padding(.horizontal, sliderHorizontalPadding)
 
-                    HStack(spacing: buttonSpacing) {
-                        Button {
-                            model.toggleLoop()
-                        } label: {
-                            Image(systemName: model.isLoopEnabled ? "repeat.circle.fill" : "repeat.circle")
-                                .font(.system(size: sideButtonSize, weight: .regular))
-                                .foregroundStyle(model.isLoopEnabled ? primaryForegroundStyle : mutedForegroundStyle)
-                        }
-                        .buttonStyle(.plain)
-
+                    ZStack {
                         Button {
                             model.togglePlayback()
                         } label: {
@@ -132,32 +154,89 @@ struct NCAudioViewerContentView: View {
                                 .foregroundStyle(primaryForegroundStyle)
                         }
                         .buttonStyle(.plain)
+                        .disabled(!isSelected)
 
                         Button {
                             model.restart()
                         } label: {
-                            Image(systemName: "gobackward")
+                            Image(systemName: "backward.end.circle")
                                 .font(.system(size: sideButtonSize, weight: .regular))
                                 .foregroundStyle(mutedForegroundStyle)
                         }
                         .buttonStyle(.plain)
-                        .disabled(model.duration <= 0)
+                        .disabled(!isSelected || model.duration <= 0)
+                        .offset(
+                            x: -(playButtonSize / 2 + buttonSpacing + sideButtonSize / 2)
+                        )
                     }
+                    .frame(height: playButtonSize)
+                    .frame(maxWidth: .infinity)
                 }
                 .padding(.top, topPadding)
+
+                VStack {
+                    HStack(spacing: 8) {
+                        audioPlaybackOptionButton(
+                            systemName: "repeat.1",
+                            isActive: playbackOptions.isRepeatEnabled,
+                            accessibilityLabel: "_repeat_current_media_"
+                        ) {
+                            playbackOptions.toggleRepeat()
+                        }
+
+                        audioPlaybackOptionButton(
+                            systemName: playbackOptions.isAutoAdvanceEnabled ? "forward.end.fill" : "forward.end",
+                            isActive: playbackOptions.isAutoAdvanceEnabled,
+                            accessibilityLabel: "_play_next_media_automatically_"
+                        ) {
+                            playbackOptions.toggleAutoAdvance()
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.leading, 28)
+                    .padding(.top, topActionsPadding)
+
+                    Spacer()
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .task(id: localURL) {
+            guard isSelected else {
+                return
+            }
+
+            model.configurePlaybackCompletion(
+                options: playbackOptions,
+                onPlayNextMedia: onPlayNextMedia
+            )
             await model.load(url: localURL)
-            consumeAutoPlayIfNeeded()
+            await consumeAutoPlayIfNeeded()
+        }
+        .onChange(of: isSelected) { _, selected in
+            guard selected else {
+                model.stop()
+                return
+            }
+
+            Task { @MainActor in
+                model.configurePlaybackCompletion(
+                    options: playbackOptions,
+                    onPlayNextMedia: onPlayNextMedia
+                )
+                await model.load(url: localURL)
+                await consumeAutoPlayIfNeeded()
+            }
         }
         .onChange(of: shouldAutoPlay) { _, newValue in
             guard newValue else {
                 return
             }
 
-            consumeAutoPlayIfNeeded()
+            Task { @MainActor in
+                await consumeAutoPlayIfNeeded()
+            }
         }
         // Stop all audio playback when the media viewer performs a global playback teardown.
         // This notification is intentionally viewer-wide and should not be used for normal
@@ -187,6 +266,29 @@ struct NCAudioViewerContentView: View {
                     .foregroundStyle(primaryForegroundStyle.opacity(0.9))
             }
         }
+    }
+
+    private func audioPlaybackOptionButton(
+        systemName: String,
+        isActive: Bool,
+        accessibilityLabel: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 17, weight: .regular))
+                .foregroundStyle(isActive ? Color.accentColor : primaryForegroundStyle)
+                .shadow(
+                    color: .black.opacity(0.35),
+                    radius: 2,
+                    x: 0,
+                    y: 1
+                )
+                .frame(width: 38, height: 38)
+                .audioControlGlassBackground(shape: Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(NSLocalizedString(accessibilityLabel, comment: ""))
     }
 
     private var previewImage: UIImage? {
@@ -273,7 +375,16 @@ struct NCAudioViewerContentView: View {
     }
 
     @MainActor
-    private func consumeAutoPlayIfNeeded() {
+    private func consumeAutoPlayIfNeeded() async {
+        guard shouldAutoPlay else {
+            return
+        }
+
+        // The viewer-wide stop notification also releases players belonging to
+        // prefetched audio pages. Recreate this page's player before autoplaying
+        // instead of relying on the previous preload still being alive.
+        await model.load(url: localURL)
+
         guard shouldAutoPlay else {
             return
         }
@@ -297,6 +408,36 @@ struct NCAudioViewerContentView: View {
             minutes,
             remainingSeconds
         )
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func audioControlGlassBackground<BackgroundShape: SwiftUI.Shape>(
+        shape: BackgroundShape
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            self
+                .glassEffect(.regular, in: shape)
+                .overlay {
+                    shape
+                        .stroke(.white.opacity(0.58), lineWidth: 1.2)
+                }
+                .shadow(
+                    color: .black.opacity(0.18),
+                    radius: 14,
+                    x: 0,
+                    y: 4
+                )
+        } else {
+            self
+                .background(.ultraThinMaterial, in: shape)
+                .overlay {
+                    shape
+                        .stroke(.primary.opacity(0.12), lineWidth: 1)
+                }
+                .clipShape(shape)
+        }
     }
 }
 
@@ -337,7 +478,6 @@ final class NCAudioViewerModel: ObservableObject {
     @Published private(set) var isPlaying = false
     @Published private(set) var duration: Double = 0
     @Published var currentTime: Double = 0
-    @Published private(set) var isLoopEnabled = false
 
     // MARK: - Private State
 
@@ -346,8 +486,18 @@ final class NCAudioViewerModel: ObservableObject {
     private var endObserver: NSObjectProtocol?
     private var currentURL: URL?
     private var loadedURL: URL?
+    private weak var playbackOptions: NCMediaPlaybackOptions?
+    private var onPlayNextMedia: NCMediaPlaybackAdvanceRequest?
 
     // MARK: - Public API
+
+    func configurePlaybackCompletion(
+        options: NCMediaPlaybackOptions,
+        onPlayNextMedia: @escaping NCMediaPlaybackAdvanceRequest
+    ) {
+        playbackOptions = options
+        self.onPlayNextMedia = onPlayNextMedia
+    }
 
     func load(url: URL) async {
         guard currentURL != url else {
@@ -424,10 +574,6 @@ final class NCAudioViewerModel: ObservableObject {
         } else {
             play()
         }
-    }
-
-    func toggleLoop() {
-        isLoopEnabled.toggle()
     }
 
     func restart() {
@@ -555,7 +701,8 @@ final class NCAudioViewerModel: ObservableObject {
                     return
                 }
 
-                if self.isLoopEnabled {
+                switch self.playbackOptions?.completionAction ?? .stop {
+                case .repeatCurrentItem:
                     self.currentTime = 0
 
                     player.seek(
@@ -572,7 +719,13 @@ final class NCAudioViewerModel: ObservableObject {
                             self.isPlaying = true
                         }
                     }
-                } else {
+
+                case .playNextItem:
+                    self.currentTime = self.duration
+                    self.isPlaying = false
+                    self.onPlayNextMedia? { _ in }
+
+                case .stop:
                     self.currentTime = self.duration
                     self.isPlaying = false
                 }

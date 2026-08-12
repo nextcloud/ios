@@ -6,19 +6,22 @@ import Foundation
 
 extension NCVideoViewerContentView {
     @MainActor
-    func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) {
+    @discardableResult
+    func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
         hasRequestedPlayback = true
-        presentVLCIfSelected(preparedPlayback: preparedPlayback)
+        return presentVLCIfSelected(preparedPlayback: preparedPlayback)
     }
 
     @MainActor
-    func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) {
+    @discardableResult
+    func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
         guard isSelected else {
-            return
+            return false
         }
 
         guard presentedVLCURL != preparedPlayback.url else {
-            return
+            consumePendingAutoPlayIfNeeded()
+            return true
         }
 
         let didPresent = NCVideoVLCPresenter.present(
@@ -26,12 +29,15 @@ extension NCVideoViewerContentView {
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: true,
+            playbackStartReason: shouldAutoPlay ? .automaticAdvance : .userInitiated,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
+            playbackOptions: playbackOptions,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromVLC,
             onNext: goToNextPageFromVLC,
+            onPlaybackEnded: onPlayNextMedia,
             onClose: closeFromFullscreenVideo,
             onPlaybackError: handleVLCPlaybackError
         )
@@ -40,10 +46,12 @@ extension NCVideoViewerContentView {
             presentedVLCURL = nil
             hasRequestedPlayback = false
             isLaunchingPlayback = false
-            return
+            return false
         }
 
         presentedVLCURL = preparedPlayback.url
+        consumePendingAutoPlayIfNeeded()
+        return true
     }
 
     @MainActor

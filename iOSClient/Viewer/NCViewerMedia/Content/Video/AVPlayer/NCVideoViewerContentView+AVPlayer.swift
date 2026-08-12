@@ -6,37 +6,52 @@ import Foundation
 
 extension NCVideoViewerContentView {
     @MainActor
-    func requestAVPlayerPresentation(preparedPlayback: NCVideoAVPreparedPlayback) {
+    @discardableResult
+    func requestAVPlayerPresentation(preparedPlayback: NCVideoAVPreparedPlayback) -> Bool {
         hasRequestedPlayback = true
-        presentAVPlayerIfSelected(preparedPlayback: preparedPlayback)
+        return presentAVPlayerIfSelected(preparedPlayback: preparedPlayback)
     }
 
     @MainActor
-    func presentAVPlayerIfSelected(preparedPlayback: NCVideoAVPreparedPlayback) {
+    @discardableResult
+    func presentAVPlayerIfSelected(preparedPlayback: NCVideoAVPreparedPlayback) -> Bool {
         guard isSelected else {
-            return
+            return false
         }
 
         guard presentedAVPlayerURL != preparedPlayback.url else {
-            return
+            consumePendingAutoPlayIfNeeded()
+            return true
         }
 
-        presentedAVPlayerURL = preparedPlayback.url
-
-        NCVideoAVPlayerPresenter.present(
+        let didPresent = NCVideoAVPlayerPresenter.present(
             metadata: metadata,
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: true,
+            playbackStartReason: shouldAutoPlay ? .automaticAdvance : .userInitiated,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
+            playbackOptions: playbackOptions,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromAVPlayer,
             onNext: goToNextPageFromAVPlayer,
+            onPlaybackEnded: onPlayNextMedia,
             onClose: closeFromFullscreenVideo,
             onPlaybackError: handleAVPlayerPlaybackError
         )
+
+        guard didPresent else {
+            presentedAVPlayerURL = nil
+            hasRequestedPlayback = false
+            isLaunchingPlayback = false
+            return false
+        }
+
+        presentedAVPlayerURL = preparedPlayback.url
+        consumePendingAutoPlayIfNeeded()
+        return true
     }
 
     @MainActor
@@ -48,25 +63,17 @@ extension NCVideoViewerContentView {
 
     @MainActor
     func goToPreviousPageFromAVPlayer() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoAVPlayerPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
+        NCVideoAVPlayerPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onPreviousPage?()
+        }
     }
 
     @MainActor
     func goToNextPageFromAVPlayer() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoAVPlayerPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
+        NCVideoAVPlayerPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onNextPage?()
+        }
     }
 }

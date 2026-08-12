@@ -633,6 +633,38 @@ final class NCPreferences: NSObject {
         setUserDefaults(weekString, forKey: "cleaningWeek")
     }
 
+    // MARK: - Media Viewer
+
+    var mediaViewerRepeatCurrentItem: Bool {
+        get {
+            getBoolPreference(
+                key: "mediaViewerRepeatCurrentItem",
+                defaultValue: false
+            )
+        }
+        set {
+            setUserDefaults(
+                newValue,
+                forKey: "mediaViewerRepeatCurrentItem"
+            )
+        }
+    }
+
+    var mediaViewerAutoAdvance: Bool {
+        get {
+            getBoolPreference(
+                key: "mediaViewerAutoAdvance",
+                defaultValue: false
+            )
+        }
+        set {
+            setUserDefaults(
+                newValue,
+                forKey: "mediaViewerAutoAdvance"
+            )
+        }
+    }
+
     // MARK: - Video
 
     func alwaysUseVLCForVideo(account: String, ocId: String) -> Bool {
