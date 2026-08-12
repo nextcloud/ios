@@ -802,7 +802,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let storageURL = URL(fileURLWithPath: getDirectoryProviderStorage())
         let manager = FileManager.default
 
-        var offlineDirectories: [String] = []
+        var protectedOcIds = Set<String>()
 
         let directories = await database.getTablesDirectoryAsync(
             predicate: NSPredicate(format: "offline == true"),
@@ -811,17 +811,20 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         )
 
         for directory in directories {
-            guard let metadata = await database.getMetadataFromOcIdAsync(directory.ocId) else {
-                continue
-            }
-
-            let path = getDirectoryProviderStorageOcId(
-                metadata.ocId,
-                userId: metadata.userId,
-                urlBase: metadata.urlBase
+            let serverUrl = directory.serverUrl.hasSuffix("/")
+                ? String(directory.serverUrl.dropLast())
+                : directory.serverUrl
+            let metadatas: [tableMetadata] = await database.getMetadatasAsync(
+                predicate: NSPredicate(
+                    format: "account == %@ AND directory == false AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)",
+                    directory.account,
+                    serverUrl,
+                    serverUrl + "/"
+                )
             )
 
-            offlineDirectories.append(path)
+            protectedOcIds.insert(directory.ocId)
+            protectedOcIds.formUnion(metadatas.map(\.ocId))
         }
 
         let localFiles = await database.getTableLocalFilesAsync(
@@ -848,9 +851,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                 continue
             }
 
-            if offlineDirectories.contains(where: {
-                fileURL.path == $0 || fileURL.path.hasPrefix($0 + "/")
-            }) {
+            let directoryURL = fileURL.deletingLastPathComponent()
+            let ocId = directoryURL.lastPathComponent
+
+            if protectedOcIds.contains(ocId) {
                 continue
             }
 
@@ -865,9 +869,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                     continue
                 }
             }
-
-            let directoryURL = fileURL.deletingLastPathComponent()
-            let ocId = directoryURL.lastPathComponent
 
             guard !processedOcIds.contains(ocId),
                   let localFile = localFilesByOcId[ocId],
