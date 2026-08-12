@@ -801,7 +801,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
         let storageURL = URL(fileURLWithPath: getDirectoryProviderStorage())
         let manager = FileManager.default
-
         var protectedOcIds = Set<String>()
 
         let directories = await database.getTablesDirectoryAsync(
@@ -850,7 +849,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                   ((attributes[.size] as? NSNumber)?.uint64Value ?? 0) > 0 else {
                 continue
             }
-
             let directoryURL = fileURL.deletingLastPathComponent()
             let ocId = directoryURL.lastPathComponent
 
