@@ -93,11 +93,6 @@ final class NCGlobal: Sendable {
     let chunkSizeMBCellular                         = 10000000
     let chunkSizeMBEthernetOrWiFi                   = 100000000
 
-    // Video
-    //
-    let maxHTTPCache: Int64                         = 10000000000   // 10 GB
-    let fileNameVideoEncoded: String                = "video_encoded.mp4"
-
     // NCViewerProviderContextMenu
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB
@@ -196,8 +191,6 @@ final class NCGlobal: Sendable {
 
     // Selector
     //
-    let selectorReadFile                        = "readFile"
-    let selectorListingFavorite                 = "listingFavorite"
     let selectorLoadFileView                    = "loadFileView"
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
@@ -206,7 +199,6 @@ final class NCGlobal: Sendable {
 
     let selectorUploadAutoUpload                = "uploadAutoUpload"
     let selectorUploadFile                      = "uploadFile"
-    let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"
 
     let selectorSaveAlbum                       = "saveAlbum"

@@ -563,16 +563,7 @@ extension NCNetworking {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer,
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
-
-        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
-            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                   userId: metadata.userId,
-                                                                                   urlBase: metadata.urlBase)
-            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
-            localFile = tableMetadata(value: metadata)
-        } else {
-            utilityFileSystem.removeFile(atPath: fileNamePath)
-        }
+        utilityFileSystem.removeFile(atPath: fileNamePath)
 
         // Live Photo
         let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
