@@ -45,13 +45,15 @@ final class NCDocumentEditorCoordinator: NSObject {
             return nil
         }
 
-        if selectedEditor == global.editorText.lowercased() {
+        if selectedEditor == global.editorText {
             return await makeDirectEditingViewController(editor: global.editorText)
-        } else if selectedEditor == global.editorEuroOffice.lowercased() {
+        } else if selectedEditor == global.editorEuroOffice {
             return await makeDirectEditingViewController(editor: global.editorEuroOffice)
-        } else if selectedEditor == global.editorCollabora.lowercased() {
+        } else if selectedEditor == global.editorWhiteboard {
+            return await makeDirectEditingViewController(editor: global.editorWhiteboard)
+        } else if selectedEditor == global.editorCollabora {
             return await makeCollaboraViewController()
-        } else if selectedEditor == global.editorOnlyOffice.lowercased() {
+        } else if selectedEditor == global.editorOnlyOffice {
             return await makeDirectEditingViewController(editor: global.editorOnlyOffice)
         }
 
@@ -68,6 +70,7 @@ final class NCDocumentEditorCoordinator: NSObject {
         let account = metadata.account
         let editorIdentifier = selectedEditor ?? editorAdapter.apiKey
         let editorViewController = editorAdapter.viewControllerEditor
+        let editorUserAgent = editorAdapter.userAgent(utility)
         let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
         let link: String
 
@@ -119,17 +122,26 @@ final class NCDocumentEditorCoordinator: NSObject {
             link = metadata.url
         }
 
-        guard let viewController = UIStoryboard(
+        let storyboard = UIStoryboard(
             name: "NCViewerDirectEditing",
             bundle: nil
-        ).instantiateInitialViewController() as? NCViewerDirectEditing else {
+        )
+
+        guard let viewController = storyboard.instantiateInitialViewController(
+            creator: { coder in
+                NCViewerDirectEditing(
+                    coder: coder,
+                    link: link,
+                    editor: editorViewController,
+                    userAgent: editorUserAgent,
+                    metadata: self.metadata,
+                    imageIcon: self.image
+                )
+            }
+        ) else {
             return nil
         }
 
-        viewController.metadata = metadata
-        viewController.editor = editorViewController
-        viewController.link = link
-        viewController.imageIcon = image
         viewController.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
         return viewController

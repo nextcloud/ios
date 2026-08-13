@@ -30,27 +30,27 @@ struct NCDirectEditorAdapter {
     }
 
     private static let registry: [String: NCDirectEditorAdapter] = [
-        "text": NCDirectEditorAdapter(
-            apiKey: "text",
-            viewControllerEditor: "nextcloud text",
+        NCGlobal.shared.editorText: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorText,
+            viewControllerEditor: NCGlobal.shared.editorText,
             userAgent: { $0.getCustomUserAgentNCText() },
             defaultExt: { _ in "md" }
         ),
-        "onlyoffice": NCDirectEditorAdapter(
-            apiKey: "onlyoffice",
-            viewControllerEditor: "onlyoffice",
+        NCGlobal.shared.editorOnlyOffice: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorOnlyOffice,
+            viewControllerEditor: NCGlobal.shared.editorOnlyOffice,
             userAgent: { $0.getCustomUserAgentOnlyOffice() },
             defaultExt: officeDefaultExt
         ),
-        "eurooffice": NCDirectEditorAdapter(
-            apiKey: "eurooffice",
-            viewControllerEditor: "onlyoffice",
+        NCGlobal.shared.editorEuroOffice: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorEuroOffice,
+            viewControllerEditor: NCGlobal.shared.editorEuroOffice,
             userAgent: { $0.getCustomUserAgentOnlyOffice() },
             defaultExt: officeDefaultExt
         ),
-        "whiteboard": NCDirectEditorAdapter(
-            apiKey: "whiteboard",
-            viewControllerEditor: "onlyoffice",
+        NCGlobal.shared.editorWhiteboard: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorWhiteboard,
+            viewControllerEditor: NCGlobal.shared.editorWhiteboard,
             userAgent: { $0.getCustomUserAgentOnlyOffice() },
             defaultExt: { _ in "whiteboard" }
         )
