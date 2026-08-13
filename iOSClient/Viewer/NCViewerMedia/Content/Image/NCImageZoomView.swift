@@ -109,15 +109,13 @@ struct NCImageZoomView: UIViewRepresentable {
         let imageChanged = context.coordinator.currentImage !== image
 
         if imageChanged {
+            let zoomState = context.coordinator.zoomState()
+
             context.coordinator.currentImage = image
             context.coordinator.resetBoundsTracking()
 
-            scrollView.setZoomScale(minimumZoomScale, animated: false)
-            scrollView.contentOffset = .zero
-            scrollView.contentInset = .zero
-
             imageView.image = image
-            context.coordinator.layoutImageViewResettingZoom()
+            context.coordinator.layoutImageView(preserving: zoomState)
 
             if allowsImageAnalysis {
                 analyzeImageIfAvailable(
@@ -148,6 +146,11 @@ struct NCImageZoomView: UIViewRepresentable {
 
     // MARK: - Coordinator
     final class Coordinator: NSObject, UIScrollViewDelegate {
+        struct ZoomState: Equatable {
+            let zoomScale: CGFloat
+            let normalizedCenter: CGPoint
+        }
+
         weak var scrollView: UIScrollView?
         weak var imageView: UIImageView?
         var currentImage: UIImage?
@@ -159,6 +162,7 @@ struct NCImageZoomView: UIViewRepresentable {
         var onZoomChanged: (Bool) -> Void = { _ in }
 
         private var lastBoundsSize: CGSize = .zero
+        private var isRestoringZoomState = false
 
         // MARK: - UIScrollViewDelegate
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -167,6 +171,10 @@ struct NCImageZoomView: UIViewRepresentable {
 
         func scrollViewDidZoom(_ scrollView: UIScrollView) {
             centerImageView()
+
+            guard !isRestoringZoomState else {
+                return
+            }
 
             onZoomChanged(
                 scrollView.zoomScale > scrollView.minimumZoomScale + 0.01
@@ -179,6 +187,37 @@ struct NCImageZoomView: UIViewRepresentable {
         }
 
         func layoutImageViewResettingZoom() {
+            layoutImageView(preserving: nil)
+        }
+
+        func zoomState() -> ZoomState? {
+            guard let scrollView,
+                  let imageView,
+                  scrollView.zoomScale > minimumZoomScale + 0.01,
+                  imageView.bounds.width > 0,
+                  imageView.bounds.height > 0 else {
+                return nil
+            }
+
+            let visibleCenter = CGPoint(
+                x: scrollView.bounds.midX,
+                y: scrollView.bounds.midY
+            )
+            let imageCenter = imageView.convert(
+                visibleCenter,
+                from: scrollView
+            )
+
+            return ZoomState(
+                zoomScale: scrollView.zoomScale,
+                normalizedCenter: CGPoint(
+                    x: min(max(imageCenter.x / imageView.bounds.width, 0), 1),
+                    y: min(max(imageCenter.y / imageView.bounds.height, 0), 1)
+                )
+            )
+        }
+
+        func layoutImageView(preserving zoomState: ZoomState?) {
             guard let scrollView,
                   let imageView,
                   let image = imageView.image else {
@@ -194,8 +233,57 @@ struct NCImageZoomView: UIViewRepresentable {
                 return
             }
 
-            let fittedSize = fittedImageSize(
+            isRestoringZoomState = true
+            defer {
+                isRestoringZoomState = false
+                onZoomChanged(
+                    scrollView.zoomScale > scrollView.minimumZoomScale + 0.01
+                )
+            }
+
+            layoutImageViewAtMinimumZoom(
                 imageSize: image.size,
+                boundsSize: boundsSize
+            )
+
+            guard let zoomState else {
+                return
+            }
+
+            let restoredZoomScale = min(
+                max(zoomState.zoomScale, minimumZoomScale),
+                maximumZoomScale
+            )
+            scrollView.setZoomScale(restoredZoomScale, animated: false)
+            centerImageView()
+
+            let imagePoint = CGPoint(
+                x: imageView.bounds.width * zoomState.normalizedCenter.x,
+                y: imageView.bounds.height * zoomState.normalizedCenter.y
+            )
+            let contentPoint = imageView.convert(imagePoint, to: scrollView)
+            let proposedContentOffset = CGPoint(
+                x: contentPoint.x - boundsSize.width * 0.5,
+                y: contentPoint.y - boundsSize.height * 0.5
+            )
+
+            scrollView.contentOffset = clampedContentOffset(
+                proposedContentOffset,
+                in: scrollView
+            )
+        }
+
+        private func layoutImageViewAtMinimumZoom(
+            imageSize: CGSize,
+            boundsSize: CGSize
+        ) {
+            guard let scrollView,
+                  let imageView else {
+                return
+            }
+
+            let fittedSize = fittedImageSize(
+                imageSize: imageSize,
                 containerSize: boundsSize
             )
 
@@ -236,24 +324,7 @@ struct NCImageZoomView: UIViewRepresentable {
                 return
             }
 
-            let fittedSize = fittedImageSize(
-                imageSize: image.size,
-                containerSize: boundsSize
-            )
-
-            scrollView.setZoomScale(minimumZoomScale, animated: false)
-            scrollView.contentInset = .zero
-            scrollView.contentOffset = .zero
-
-            imageView.frame = CGRect(
-                origin: .zero,
-                size: fittedSize
-            )
-
-            scrollView.contentSize = fittedSize
-            lastBoundsSize = boundsSize
-
-            centerImageView()
+            layoutImageViewResettingZoom()
         }
 
         private func centerImageView() {
@@ -301,6 +372,27 @@ struct NCImageZoomView: UIViewRepresentable {
             return CGSize(
                 width: imageSize.width * ratio,
                 height: imageSize.height * ratio
+            )
+        }
+
+        private func clampedContentOffset(
+            _ proposedContentOffset: CGPoint,
+            in scrollView: UIScrollView
+        ) -> CGPoint {
+            let minimumX = -scrollView.contentInset.left
+            let minimumY = -scrollView.contentInset.top
+            let maximumX = max(
+                minimumX,
+                scrollView.contentSize.width - scrollView.bounds.width + scrollView.contentInset.right
+            )
+            let maximumY = max(
+                minimumY,
+                scrollView.contentSize.height - scrollView.bounds.height + scrollView.contentInset.bottom
+            )
+
+            return CGPoint(
+                x: min(max(proposedContentOffset.x, minimumX), maximumX),
+                y: min(max(proposedContentOffset.y, minimumY), maximumY)
             )
         }
 
