@@ -7,13 +7,16 @@ import NextcloudKit
 @preconcurrency import WebKit
 
 class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
-    var webView = WKWebView()
-    var bottomConstraint: NSLayoutConstraint?
     var link: String = ""
     var editor: String = ""
+    var userAgent: String = ""
+
+    var webView = WKWebView()
+    var bottomConstraint: NSLayoutConstraint?
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
     let utility = NCUtility()
+    let global = NCGlobal.shared
     var items: [UIBarButtonItem] = []
 
     @MainActor
@@ -66,7 +69,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
         contentController.add(self, name: "DirectEditingMobileInterface")
-        if editor == "onlyoffice" {
+        if editor == global.editorEuroOffice {
             let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
             config.userContentController.addUserScript(dropSharedWorkersScript)
         }
@@ -74,6 +77,7 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.scrollView.isScrollEnabled = false
+        webView.customUserAgent = userAgent
         view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -82,12 +86,6 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
         webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint?.isActive = true
-
-        if editor == "onlyoffice" {
-            webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
-        } else if editor == "nextcloud text" {
-            webView.customUserAgent = utility.getCustomUserAgentNCText()
-        } // else: use default
 
         if let url = URL(string: link) {
             var request = URLRequest(url: url)
