@@ -189,28 +189,37 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if message.name == "DirectEditingMobileInterface" {
-            if message.body as? String == "close" {
-                viewUnload()
-            }
+        guard message.name == "DirectEditingMobileInterface",
+              let command = message.body as? String else {
+            return
+        }
 
-            if message.body as? String == "share" {
-                NCCreate().createShare(controller: self.controller,
-                                       presentViewController: self.controller,
-                                       metadata: metadata, page: .sharing)
-            }
+        switch command {
+        case "close":
+            viewUnload()
 
-            if message.body as? String == "loading" {
-                print("loading")
-            }
+        case "share":
+            NCCreate().createShare(
+                controller: controller,
+                presentViewController: controller,
+                metadata: metadata,
+                page: .sharing
+            )
 
-            if message.body as? String == "loaded" {
-                print("loaded")
-            }
+        case "reload":
+            webView.reload()
 
-            if message.body as? String == "paste" {
-                self.paste(self)
-            }
+        case "loading":
+            print("loading")
+
+        case "loaded":
+            print("loaded")
+
+        case "paste":
+            paste(self)
+
+        default:
+            break
         }
     }
 
