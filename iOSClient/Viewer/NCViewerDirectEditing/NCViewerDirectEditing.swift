@@ -6,15 +6,15 @@ import UIKit
 import NextcloudKit
 @preconcurrency import WebKit
 
-class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
-    var link: String = ""
-    var editor: String = ""
-    var userAgent: String = ""
+final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
+    var link: String
+    var editor: String
+    var userAgent: String
+    private(set) var metadata: tableMetadata
+    var imageIcon: UIImage?
 
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
-    var metadata: tableMetadata = tableMetadata()
-    var imageIcon: UIImage?
     let utility = NCUtility()
     let global = NCGlobal.shared
     var items: [UIBarButtonItem] = []
@@ -30,8 +30,27 @@ class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMes
 
     // MARK: - View Life Cycle
 
-    required init?(coder: NSCoder) {
+    init?(coder: NSCoder, link: String, editor: String, userAgent: String, metadata: tableMetadata, imageIcon: UIImage?) {
+        guard !link.isEmpty,
+              !editor.isEmpty,
+              !userAgent.isEmpty else {
+            return nil
+        }
+
+        self.link = link
+        self.editor = editor
+        self.userAgent = userAgent
+        self.metadata = metadata
+        self.imageIcon = imageIcon
+
         super.init(coder: coder)
+    }
+
+    @available(*, unavailable, message: "Use the dependency initializer")
+    required init?(coder: NSCoder) {
+        fatalError(
+            "Use init(coder:link:editor:userAgent:metadata:imageIcon:)"
+        )
     }
 
     override func viewDidLoad() {

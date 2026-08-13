@@ -122,18 +122,26 @@ final class NCDocumentEditorCoordinator: NSObject {
             link = metadata.url
         }
 
-        guard let viewController = UIStoryboard(
+        let storyboard = UIStoryboard(
             name: "NCViewerDirectEditing",
             bundle: nil
-        ).instantiateInitialViewController() as? NCViewerDirectEditing else {
+        )
+
+        guard let viewController = storyboard.instantiateInitialViewController(
+            creator: { coder in
+                NCViewerDirectEditing(
+                    coder: coder,
+                    link: link,
+                    editor: editorViewController,
+                    userAgent: editorUserAgent,
+                    metadata: self.metadata,
+                    imageIcon: self.image
+                )
+            }
+        ) else {
             return nil
         }
 
-        viewController.metadata = metadata
-        viewController.editor = editorViewController
-        viewController.link = link
-        viewController.userAgent = editorUserAgent
-        viewController.imageIcon = image
         viewController.navigationItem.setBidiSafeTitle(metadata.fileNameView)
 
         return viewController
