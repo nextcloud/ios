@@ -21,7 +21,8 @@ final class NCMediaViewerFloatingTitleView: UIView {
         }
 
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.isUserInteractionEnabled = false
+        button.isEnabled = true
+        button.tintAdjustmentMode = .normal
         button.adjustsImageSizeForAccessibilityContentSizeCategory = false
 
         return button
@@ -72,6 +73,10 @@ final class NCMediaViewerFloatingTitleView: UIView {
         )
     }
 
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        false
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
@@ -118,32 +123,36 @@ final class NCMediaViewerFloatingTitleView: UIView {
         )
     }
 
-    func update(primaryText: String?, secondaryText: String?) {
+    func update(
+        primaryText: String?,
+        secondaryText: String?
+    ) {
         var configuration = titleButton.configuration
-
-        configuration?.attributedTitle = AttributedString(
-            primaryText ?? "",
-            attributes: AttributeContainer([
-                .font: UIFont.systemFont(
+        configuration?.title = primaryText ?? ""
+        configuration?.titleTextAttributesTransformer =
+            UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = UIFont.systemFont(
                     ofSize: 13,
                     weight: .semibold
                 )
-            ])
-        )
+                return outgoing
+            }
 
         if let secondaryText,
            !secondaryText.isEmpty {
-            configuration?.attributedSubtitle = AttributedString(
-                secondaryText,
-                attributes: AttributeContainer([
-                    .font: UIFont.systemFont(
+            configuration?.subtitle = secondaryText
+            configuration?.subtitleTextAttributesTransformer =
+                UIConfigurationTextAttributesTransformer { incoming in
+                    var outgoing = incoming
+                    outgoing.font = UIFont.systemFont(
                         ofSize: 11,
                         weight: .regular
                     )
-                ])
-            )
+                    return outgoing
+                }
         } else {
-            configuration?.attributedSubtitle = nil
+            configuration?.subtitle = nil
         }
         titleButton.configuration = configuration
         invalidateIntrinsicContentSize()
