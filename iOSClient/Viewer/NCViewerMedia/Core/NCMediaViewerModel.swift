@@ -31,6 +31,7 @@ final class NCMediaViewerPageModel: ObservableObject, Identifiable {
 
     @Published var metadata: tableMetadata?
     @Published var state: NCMediaViewerPageState
+    var imageZoomState: NCImageZoomView.ZoomState?
 
     init(
         index: Int,

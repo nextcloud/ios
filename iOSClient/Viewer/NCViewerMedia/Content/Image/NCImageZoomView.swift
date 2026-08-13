@@ -8,10 +8,17 @@ import VisionKit
 
 // MARK: - Image Zoom View
 struct NCImageZoomView: UIViewRepresentable {
+    struct ZoomState: Equatable {
+        let zoomScale: CGFloat
+        let normalizedCenter: CGPoint
+    }
+
     let image: UIImage
     let backgroundStyle: NCViewerBackgroundStyle
     let allowsImageAnalysis: Bool
+    let initialZoomState: ZoomState?
     let onZoomChanged: (Bool) -> Void
+    let onZoomStateChanged: (ZoomState?) -> Void
 
     private let minimumZoomScale: CGFloat = 1
     private let maximumZoomScale: CGFloat = 5
@@ -21,12 +28,16 @@ struct NCImageZoomView: UIViewRepresentable {
         image: UIImage,
         backgroundStyle: NCViewerBackgroundStyle = .system,
         allowsImageAnalysis: Bool = true,
-        onZoomChanged: @escaping (Bool) -> Void = { _ in }
+        initialZoomState: ZoomState? = nil,
+        onZoomChanged: @escaping (Bool) -> Void = { _ in },
+        onZoomStateChanged: @escaping (ZoomState?) -> Void = { _ in }
     ) {
         self.image = image
         self.backgroundStyle = backgroundStyle
         self.allowsImageAnalysis = allowsImageAnalysis
+        self.initialZoomState = initialZoomState
         self.onZoomChanged = onZoomChanged
+        self.onZoomStateChanged = onZoomStateChanged
     }
 
     // MARK: - UIViewRepresentable
@@ -64,6 +75,8 @@ struct NCImageZoomView: UIViewRepresentable {
         context.coordinator.maximumZoomScale = maximumZoomScale
         context.coordinator.doubleTapZoomScale = doubleTapZoomScale
         context.coordinator.onZoomChanged = onZoomChanged
+        context.coordinator.onZoomStateChanged = onZoomStateChanged
+        context.coordinator.restorePersistedZoomState(initialZoomState)
 
         if allowsImageAnalysis {
             analyzeImageIfAvailable(
@@ -74,7 +87,7 @@ struct NCImageZoomView: UIViewRepresentable {
         }
 
         scrollView.onLayoutSubviews = { [weak coordinator = context.coordinator] in
-            coordinator?.layoutImageViewResettingOnBoundsChange()
+            coordinator?.layoutImageViewPreservingOnBoundsChange()
         }
 
         let doubleTapGesture = UITapGestureRecognizer(
@@ -100,6 +113,7 @@ struct NCImageZoomView: UIViewRepresentable {
         context.coordinator.maximumZoomScale = maximumZoomScale
         context.coordinator.doubleTapZoomScale = doubleTapZoomScale
         context.coordinator.onZoomChanged = onZoomChanged
+        context.coordinator.onZoomStateChanged = onZoomStateChanged
 
         scrollView.backgroundColor = .ncViewerBackground(backgroundStyle)
         scrollView.minimumZoomScale = minimumZoomScale
@@ -109,7 +123,7 @@ struct NCImageZoomView: UIViewRepresentable {
         let imageChanged = context.coordinator.currentImage !== image
 
         if imageChanged {
-            let zoomState = context.coordinator.zoomState()
+            let zoomState = context.coordinator.zoomStateForRelayout()
 
             context.coordinator.currentImage = image
             context.coordinator.resetBoundsTracking()
@@ -127,7 +141,7 @@ struct NCImageZoomView: UIViewRepresentable {
                 removeImageAnalysisInteractions(from: imageView)
             }
         } else {
-            context.coordinator.layoutImageViewResettingOnBoundsChange()
+            context.coordinator.layoutImageViewPreservingOnBoundsChange()
         }
     }
 
@@ -138,6 +152,7 @@ struct NCImageZoomView: UIViewRepresentable {
     // MARK: - Scroll View
     final class NCZoomScrollView: UIScrollView {
         var onLayoutSubviews: (() -> Void)?
+
         override func layoutSubviews() {
             super.layoutSubviews()
             onLayoutSubviews?()
@@ -146,11 +161,6 @@ struct NCImageZoomView: UIViewRepresentable {
 
     // MARK: - Coordinator
     final class Coordinator: NSObject, UIScrollViewDelegate {
-        struct ZoomState: Equatable {
-            let zoomScale: CGFloat
-            let normalizedCenter: CGPoint
-        }
-
         weak var scrollView: UIScrollView?
         weak var imageView: UIImageView?
         var currentImage: UIImage?
@@ -160,9 +170,11 @@ struct NCImageZoomView: UIViewRepresentable {
         var maximumZoomScale: CGFloat = 5
         var doubleTapZoomScale: CGFloat = 2.5
         var onZoomChanged: (Bool) -> Void = { _ in }
+        var onZoomStateChanged: (ZoomState?) -> Void = { _ in }
 
         private var lastBoundsSize: CGSize = .zero
         private var isRestoringZoomState = false
+        private var lastZoomState: ZoomState?
 
         // MARK: - UIScrollViewDelegate
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -176,9 +188,27 @@ struct NCImageZoomView: UIViewRepresentable {
                 return
             }
 
+            if scrollView.pinchGestureRecognizer?.state == .began ||
+                scrollView.pinchGestureRecognizer?.state == .changed {
+                recordCurrentZoomState()
+            }
+
             onZoomChanged(
                 scrollView.zoomScale > scrollView.minimumZoomScale + 0.01
             )
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            let isUserDriven = scrollView.panGestureRecognizer.state == .began ||
+                scrollView.panGestureRecognizer.state == .changed ||
+                scrollView.isDecelerating
+
+            guard !isRestoringZoomState,
+                  isUserDriven else {
+                return
+            }
+
+            recordCurrentZoomState()
         }
 
         // MARK: - Layout
@@ -191,11 +221,13 @@ struct NCImageZoomView: UIViewRepresentable {
         }
 
         func zoomState() -> ZoomState? {
-            guard let scrollView,
-                  let imageView,
-                  scrollView.zoomScale > minimumZoomScale + 0.01,
-                  imageView.bounds.width > 0,
-                  imageView.bounds.height > 0 else {
+            guard let scrollView else {
+                return nil
+            }
+
+            guard scrollView.zoomScale > minimumZoomScale + 0.01,
+                  scrollView.contentSize.width > 0,
+                  scrollView.contentSize.height > 0 else {
                 return nil
             }
 
@@ -203,18 +235,23 @@ struct NCImageZoomView: UIViewRepresentable {
                 x: scrollView.bounds.midX,
                 y: scrollView.bounds.midY
             )
-            let imageCenter = imageView.convert(
-                visibleCenter,
-                from: scrollView
-            )
 
             return ZoomState(
                 zoomScale: scrollView.zoomScale,
                 normalizedCenter: CGPoint(
-                    x: min(max(imageCenter.x / imageView.bounds.width, 0), 1),
-                    y: min(max(imageCenter.y / imageView.bounds.height, 0), 1)
+                    x: min(max(visibleCenter.x / scrollView.contentSize.width, 0), 1),
+                    y: min(max(visibleCenter.y / scrollView.contentSize.height, 0), 1)
                 )
             )
+        }
+
+        func zoomStateForRelayout() -> ZoomState? {
+            guard let scrollView,
+                  scrollView.bounds.size != lastBoundsSize else {
+                return zoomState()
+            }
+
+            return lastZoomState
         }
 
         func layoutImageView(preserving zoomState: ZoomState?) {
@@ -236,6 +273,7 @@ struct NCImageZoomView: UIViewRepresentable {
             isRestoringZoomState = true
             defer {
                 isRestoringZoomState = false
+                updatePersistedZoomState(zoomState ?? self.zoomState())
                 onZoomChanged(
                     scrollView.zoomScale > scrollView.minimumZoomScale + 0.01
                 )
@@ -257,11 +295,10 @@ struct NCImageZoomView: UIViewRepresentable {
             scrollView.setZoomScale(restoredZoomScale, animated: false)
             centerImageView()
 
-            let imagePoint = CGPoint(
-                x: imageView.bounds.width * zoomState.normalizedCenter.x,
-                y: imageView.bounds.height * zoomState.normalizedCenter.y
+            let contentPoint = CGPoint(
+                x: scrollView.contentSize.width * zoomState.normalizedCenter.x,
+                y: scrollView.contentSize.height * zoomState.normalizedCenter.y
             )
-            let contentPoint = imageView.convert(imagePoint, to: scrollView)
             let proposedContentOffset = CGPoint(
                 x: contentPoint.x - boundsSize.width * 0.5,
                 y: contentPoint.y - boundsSize.height * 0.5
@@ -302,8 +339,7 @@ struct NCImageZoomView: UIViewRepresentable {
             centerImageView()
         }
 
-        // Reset zoom on size changes to avoid stale offsets.
-        func layoutImageViewResettingOnBoundsChange() {
+        func layoutImageViewPreservingOnBoundsChange() {
             guard let scrollView,
                   let imageView,
                   let image = imageView.image else {
@@ -324,7 +360,28 @@ struct NCImageZoomView: UIViewRepresentable {
                 return
             }
 
-            layoutImageViewResettingZoom()
+            layoutImageView(preserving: lastZoomState)
+        }
+
+        func recordCurrentZoomState() {
+            guard let scrollView else {
+                return
+            }
+
+            guard scrollView.bounds.size == lastBoundsSize else {
+                return
+            }
+
+            updatePersistedZoomState(zoomState())
+        }
+
+        func restorePersistedZoomState(_ zoomState: ZoomState?) {
+            lastZoomState = zoomState
+        }
+
+        private func updatePersistedZoomState(_ zoomState: ZoomState?) {
+            lastZoomState = zoomState
+            onZoomStateChanged(zoomState)
         }
 
         private func centerImageView() {
@@ -399,17 +456,30 @@ struct NCImageZoomView: UIViewRepresentable {
         // MARK: - Gestures
         @objc
         func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+            guard let imageView else {
+                return
+            }
+
+            toggleZoom(
+                at: gesture.location(in: imageView),
+                animated: true
+            )
+        }
+
+        func toggleZoom(at point: CGPoint, animated: Bool) {
             guard let scrollView,
-                  let imageView else {
+                  let imageView,
+                  imageView.bounds.width > 0,
+                  imageView.bounds.height > 0 else {
                 return
             }
 
             if scrollView.zoomScale > minimumZoomScale + 0.01 {
-                scrollView.setZoomScale(minimumZoomScale, animated: true)
+                updatePersistedZoomState(nil)
+                scrollView.setZoomScale(minimumZoomScale, animated: animated)
                 return
             }
 
-            let point = gesture.location(in: imageView)
             let targetScale = min(doubleTapZoomScale, maximumZoomScale)
 
             let zoomSize = CGSize(
@@ -424,7 +494,14 @@ struct NCImageZoomView: UIViewRepresentable {
                 height: zoomSize.height
             )
 
-            scrollView.zoom(to: zoomRect, animated: true)
+            updatePersistedZoomState(ZoomState(
+                zoomScale: targetScale,
+                normalizedCenter: CGPoint(
+                    x: min(max(point.x / imageView.bounds.width, 0), 1),
+                    y: min(max(point.y / imageView.bounds.height, 0), 1)
+                )
+            ))
+            scrollView.zoom(to: zoomRect, animated: animated)
         }
     }
 

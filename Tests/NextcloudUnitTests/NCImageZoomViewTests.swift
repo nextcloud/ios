@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
+
 import Testing
 import UIKit
 @testable import Nextcloud
@@ -48,8 +49,82 @@ struct NCImageZoomViewTests {
         #expect(coordinator.zoomState() == nil)
     }
 
+    @Test("A full orientation round trip preserves zoom and focal point")
+    func preservesZoomStateAfterOrientationRoundTrip() throws {
+        let (coordinator, scrollView, _) = makeZoomView(
+            imageSize: CGSize(width: 400, height: 300)
+        )
+
+        scrollView.setZoomScale(3, animated: false)
+        scrollView.contentOffset = CGPoint(x: 0, y: 70)
+        coordinator.recordCurrentZoomState()
+
+        let zoomState = try #require(coordinator.zoomState())
+
+        for _ in 0..<3 {
+            scrollView.bounds = CGRect(
+                origin: scrollView.bounds.origin,
+                size: CGSize(width: 480, height: 320)
+            )
+            coordinator.layoutImageViewPreservingOnBoundsChange()
+
+            // UIKit can deliver automatic scrolling after a rotation finishes.
+            scrollView.contentOffset = .zero
+            coordinator.scrollViewDidScroll(scrollView)
+
+            scrollView.bounds = CGRect(
+                origin: scrollView.bounds.origin,
+                size: CGSize(width: 320, height: 480)
+            )
+            coordinator.layoutImageViewPreservingOnBoundsChange()
+
+            let restoredZoomState = try #require(coordinator.zoomState())
+            #expect(abs(restoredZoomState.zoomScale - zoomState.zoomScale) < 0.001)
+            #expect(abs(restoredZoomState.normalizedCenter.x - zoomState.normalizedCenter.x) < 0.001)
+            #expect(abs(restoredZoomState.normalizedCenter.y - zoomState.normalizedCenter.y) < 0.001)
+        }
+    }
+
+    @Test("Double-tap zoom survives view recreation and rotation")
+    func preservesDoubleTapZoomAfterViewRecreation() throws {
+        var persistedZoomState: NCImageZoomView.ZoomState?
+        let (firstCoordinator, firstScrollView, firstImageView) = makeZoomView(
+            imageSize: CGSize(width: 400, height: 300),
+            onZoomStateChanged: { persistedZoomState = $0 }
+        )
+
+        firstCoordinator.toggleZoom(
+            at: CGPoint(
+                x: firstImageView.bounds.midX,
+                y: firstImageView.bounds.midY
+            ),
+            animated: false
+        )
+
+        let expectedZoomState = try #require(persistedZoomState)
+        #expect(abs(firstScrollView.zoomScale - expectedZoomState.zoomScale) < 0.001)
+
+        let (restoredCoordinator, restoredScrollView, _) = makeZoomView(
+            imageSize: CGSize(width: 400, height: 300),
+            initialZoomState: expectedZoomState
+        )
+
+        restoredScrollView.bounds = CGRect(
+            origin: restoredScrollView.bounds.origin,
+            size: CGSize(width: 480, height: 320)
+        )
+        restoredCoordinator.layoutImageViewPreservingOnBoundsChange()
+
+        let restoredZoomState = try #require(restoredCoordinator.zoomState())
+        #expect(abs(restoredZoomState.zoomScale - expectedZoomState.zoomScale) < 0.001)
+        #expect(abs(restoredZoomState.normalizedCenter.x - expectedZoomState.normalizedCenter.x) < 0.001)
+        #expect(abs(restoredZoomState.normalizedCenter.y - expectedZoomState.normalizedCenter.y) < 0.001)
+    }
+
     private func makeZoomView(
-        imageSize: CGSize
+        imageSize: CGSize,
+        initialZoomState: NCImageZoomView.ZoomState? = nil,
+        onZoomStateChanged: @escaping (NCImageZoomView.ZoomState?) -> Void = { _ in }
     ) -> (
         NCImageZoomView.Coordinator,
         NCImageZoomView.NCZoomScrollView,
@@ -72,7 +147,9 @@ struct NCImageZoomViewTests {
         coordinator.maximumZoomScale = 5
         coordinator.scrollView = scrollView
         coordinator.imageView = imageView
-        coordinator.layoutImageViewResettingZoom()
+        coordinator.onZoomStateChanged = onZoomStateChanged
+        coordinator.restorePersistedZoomState(initialZoomState)
+        coordinator.layoutImageView(preserving: initialZoomState)
 
         return (coordinator, scrollView, imageView)
     }
