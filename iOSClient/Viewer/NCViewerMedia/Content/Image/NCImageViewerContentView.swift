@@ -13,7 +13,9 @@ struct NCImageViewerContentView: View {
     let fullURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle
     let allowsImageAnalysis: Bool
+    let initialZoomState: NCImageZoomView.ZoomState?
     let onZoomChanged: (Bool) -> Void
+    let onZoomStateChanged: (NCImageZoomView.ZoomState?) -> Void
 
     @State private var currentImage: UIImage?
     @State private var loadedPreviewURL: URL?
@@ -32,14 +34,18 @@ struct NCImageViewerContentView: View {
         fullURL: URL?,
         backgroundStyle: NCViewerBackgroundStyle = .system,
         allowsImageAnalysis: Bool = true,
-        onZoomChanged: @escaping (Bool) -> Void = { _ in }
+        initialZoomState: NCImageZoomView.ZoomState? = nil,
+        onZoomChanged: @escaping (Bool) -> Void = { _ in },
+        onZoomStateChanged: @escaping (NCImageZoomView.ZoomState?) -> Void = { _ in }
     ) {
         self.identifier = identifier
         self.previewURL = previewURL
         self.fullURL = fullURL
         self.backgroundStyle = backgroundStyle
         self.allowsImageAnalysis = allowsImageAnalysis
+        self.initialZoomState = initialZoomState
         self.onZoomChanged = onZoomChanged
+        self.onZoomStateChanged = onZoomStateChanged
     }
 
     var body: some View {
@@ -52,7 +58,9 @@ struct NCImageViewerContentView: View {
                     image: currentImage,
                     backgroundStyle: backgroundStyle,
                     allowsImageAnalysis: shouldAllowImageAnalysis,
-                    onZoomChanged: onZoomChanged
+                    initialZoomState: initialZoomState,
+                    onZoomChanged: onZoomChanged,
+                    onZoomStateChanged: onZoomStateChanged
                 )
                 .ignoresSafeArea()
             } else if let failedMessage {
