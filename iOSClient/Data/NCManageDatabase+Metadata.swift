@@ -241,36 +241,40 @@ extension tableMetadata {
         !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase)
     }
 
-    var isAvailableEditorView: Bool {
+    var isDocumentEditorAvailable: Bool {
         guard !isPDF,
               classFile == NKTypeClassFile.document.rawValue,
               NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let utility = NCUtility()
-        let directEditingEditors = utility.directEditingEditorIdentifiers(account: account, contentType: contentType).map { $0.lowercased() }
-        let supportsRichdocuments = utility.isFileSupportedByRichdocuments(self)
+        let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType)
+        let supportsRichdocuments = NCDocumentEditorSupport.isFileSupportedByRichdocuments(self)
 
         return supportsRichdocuments || !directEditingEditors.isEmpty
     }
 
-    var isAvailableRichDocumentEditorView: Bool {
-        guard let capabilities = NCNetworking.shared.capabilities[account],
+    var isLegacyRichdocumentsEditorAvailable: Bool {
+        guard !isPDF,
               classFile == NKTypeClassFile.document.rawValue,
-              capabilities.richDocumentsEnabled,
-              NextcloudKit.shared.isNetworkReachable() else { return false }
-
-        if NCUtility().isFileSupportedByRichdocuments(self) {
-            return true
+              NextcloudKit.shared.isNetworkReachable(),
+              NCDocumentEditorSupport.isFileSupportedByRichdocuments(self) else {
+            return false
         }
-        return false
+
+        let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(
+            account: account,
+            contentType: contentType
+        )
+        return !directEditingEditors.contains {
+            $0.caseInsensitiveCompare(NCGlobal.shared.editorCollabora) == .orderedSame
+        }
     }
 
-    var isAvailableDirectEditingEditorView: Bool {
+    var isDirectEditingEditorAvailable: Bool {
         guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let editors = NCUtility().directEditingEditorIdentifiers(account: account, contentType: contentType)
+        let editors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType)
         return !editors.isEmpty
     }
 

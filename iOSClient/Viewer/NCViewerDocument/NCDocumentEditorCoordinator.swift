@@ -13,7 +13,6 @@ final class NCDocumentEditorCoordinator {
     }
 
     private let utilityFileSystem = NCUtilityFileSystem()
-    private let utility = NCUtility()
     private let global = NCGlobal.shared
 
     private let metadata: tableMetadata
@@ -53,15 +52,13 @@ final class NCDocumentEditorCoordinator {
 
     private func resolveEditorRoute() -> EditorRoute? {
         let directEditingEditors = Set(
-            utility.directEditingEditorIdentifiers(
+            NCDocumentEditorSupport.directEditingEditorIdentifiers(
                 account: metadata.account,
                 contentType: metadata.contentType
             )
             .map { $0.lowercased() }
         )
-        let supportsRichdocuments = utility.isFileSupportedByRichdocuments(metadata)
-        let supportsDirectEditingCollabora = directEditingEditors.contains(global.editorCollabora.lowercased())
-        let supportsLegacyRichdocuments = supportsRichdocuments && !supportsDirectEditingCollabora
+        let supportsLegacyRichdocuments = metadata.isLegacyRichdocumentsEditorAvailable
 
         if let selectedEditor = selectedEditor?.lowercased() {
             if directEditingEditors.contains(selectedEditor) {
@@ -92,7 +89,7 @@ final class NCDocumentEditorCoordinator {
             return nil
         }
 
-        let editorUserAgent = editorAdapter.userAgent(utility)
+        let editorUserAgent = editorAdapter.userAgent()
         let options = NKRequestOptions(customUserAgent: editorUserAgent)
         guard let link = await directEditingURL(editorId: editorAdapter.apiKey, options: options) else {
             return nil

@@ -110,8 +110,8 @@ class NCContextMenuMain: NSObject {
             )
         }
 
-        if metadata.isAvailableDirectEditingEditorView {
-            let availableEditors = utility.directEditingEditorIdentifiers(
+        if metadata.isDirectEditingEditorAvailable {
+            let availableEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(
                 account: metadata.account,
                 contentType: metadata.contentType
             ).map { $0.lowercased() }

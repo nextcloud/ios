@@ -9,7 +9,6 @@ import LucidBanner
 import Alamofire
 
 class NCCreate: NSObject {
-    private let utility = NCUtility()
     private let utilityFileSystem = NCUtilityFileSystem()
 
     /// Compatibility entry point used by already-stabilized Direct Editing callers.
@@ -48,7 +47,7 @@ class NCCreate: NSObject {
         }
         let fileNamePath = utilityFileSystem.getRelativeFilePath(fileName, serverUrl: serverUrl, session: session)
         let serverUrlFileName = serverUrl + "/" + fileName
-        let options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
+        let options = NKRequestOptions(customUserAgent: adapter.userAgent())
 
         let results = await NextcloudKit.shared.createFileForDirectEditingAsync(
             fileNamePath: fileNamePath,
@@ -141,7 +140,7 @@ class NCCreate: NSObject {
             return ([fallbackTemplate], fallbackTemplate, fallbackExtension)
         }
 
-        let options = NKRequestOptions(customUserAgent: adapter.userAgent(utility))
+        let options = NKRequestOptions(customUserAgent: adapter.userAgent())
         let results = await NextcloudKit.shared.getDirectEditingTemplatesAsync(
             account: account,
             editorId: editorId,

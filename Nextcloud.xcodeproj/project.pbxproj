@@ -440,6 +440,11 @@
 		F758B45E212C569D00515F55 /* NCScanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45D212C569C00515F55 /* NCScanCell.swift */; };
 		F758B460212C56A400515F55 /* NCScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45F212C56A400515F55 /* NCScan.swift */; };
 		F75A60552FB4493A00F8247E /* NCDirectEditorAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A60542FB4493A00F8247E /* NCDirectEditorAdapter.swift */; };
+		F7E250002FE1000000000002 /* NCDocumentEditorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */; };
+		F7E250002FE1000000000003 /* NCDocumentEditorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */; };
+		F7E250002FE1000000000004 /* NCDocumentEditorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */; };
+		F7E250002FE1000000000005 /* NCDocumentEditorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */; };
+		F7E250002FE1000000000006 /* NCDocumentEditorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */; };
 		F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75CA1462962F13700B01130 /* NCHUDView.swift */; };
@@ -1538,6 +1543,7 @@
 		F758B45D212C569C00515F55 /* NCScanCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCScanCell.swift; sourceTree = "<group>"; };
 		F758B45F212C56A400515F55 /* NCScan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCScan.swift; sourceTree = "<group>"; };
 		F75A60542FB4493A00F8247E /* NCDirectEditorAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDirectEditorAdapter.swift; sourceTree = "<group>"; };
+		F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDocumentEditorSupport.swift; sourceTree = "<group>"; };
 		F75A9EE523796C6F0044CFCE /* NCNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCNetworking.swift; sourceTree = "<group>"; };
 		F75B91E21ECAE17800199C96 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75B91F71ECAE26300199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -3290,6 +3296,7 @@
 			isa = PBXGroup;
 			children = (
 				F7C8A9393025B74B004E3A10 /* NCDocumentEditorCoordinator.swift */,
+				F7E250002FE1000000000001 /* NCDocumentEditorSupport.swift */,
 			);
 			path = NCViewerDocument;
 			sourceTree = "<group>";
@@ -4466,6 +4473,7 @@
 				F763D2A32A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F749B656297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				F782FDC424E6933900666099 /* NCUtility.swift in Sources */,
+				F7E250002FE1000000000002 /* NCDocumentEditorSupport.swift in Sources */,
 				F74B6D9B2A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4582,6 +4590,7 @@
 				F7CAFE202F17A37C00DB35A5 /* ProgressQuantizer.swift in Sources */,
 				F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				F7E250002FE1000000000003 /* NCDocumentEditorSupport.swift in Sources */,
 				F71DFA222F59FB9A003A93C5 /* View+Extension.swift in Sources */,
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
@@ -4710,6 +4719,7 @@
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
 				F7D61EBD2EBF1878007F865B /* NCManageDatabase+Tag.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
+				F7E250002FE1000000000004 /* NCDocumentEditorSupport.swift in Sources */,
 				F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */,
 				F760A4952FE95D33001B212E /* NetworkingTasks.swift in Sources */,
 				F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */,
@@ -5030,6 +5040,7 @@
 				F78026122E9CFA6300B63436 /* NCTransfersModel.swift in Sources */,
 				F7EF2AEB2E43157B0081B2C9 /* NCNotification.swift in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				F7E250002FE1000000000005 /* NCDocumentEditorSupport.swift in Sources */,
 				F7C1EEA525053A9C00866ACC /* NCCollectionViewDataSource.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
@@ -5273,6 +5284,7 @@
 				F768823B2C0DD231001CF441 /* NCPreferences.swift in Sources */,
 				AA8D31532D41052300FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
 				F7A8D74228F18261008BBE1C /* NCUtility.swift in Sources */,
+				F7E250002FE1000000000006 /* NCDocumentEditorSupport.swift in Sources */,
 				F7BDC1D2300F440A00C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift in Sources */,
 				F7A8D73A28F17E28008BBE1C /* NCManageDatabase+Video.swift in Sources */,
 				F7CAFE1F2F17A37C00DB35A5 /* ProgressQuantizer.swift in Sources */,
