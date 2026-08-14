@@ -10,7 +10,7 @@ import NextcloudKit
 class NCContextMenuPlus: NSObject {
     struct CreatorMenuInfo {
         let titleKey: String
-        let templateId: String
+        let documentType: String
         let icon: String
         let sortOrder: Int
     }
@@ -31,11 +31,11 @@ class NCContextMenuPlus: NSObject {
     nonisolated static func menuInfo(for ext: String) -> CreatorMenuInfo? {
         switch ext.lowercased() {
         case "docx":
-            return CreatorMenuInfo(titleKey: "_create_new_document_", templateId: "document", icon: "doc.text", sortOrder: 0)
+            return CreatorMenuInfo(titleKey: "_create_new_document_", documentType: "document", icon: "doc.text", sortOrder: 0)
         case "xlsx":
-            return CreatorMenuInfo(titleKey: "_create_new_spreadsheet_", templateId: "spreadsheet", icon: "tablecells", sortOrder: 1)
+            return CreatorMenuInfo(titleKey: "_create_new_spreadsheet_", documentType: "spreadsheet", icon: "tablecells", sortOrder: 1)
         case "pptx":
-            return CreatorMenuInfo(titleKey: "_create_new_presentation_", templateId: "presentation", icon: "play.rectangle", sortOrder: 2)
+            return CreatorMenuInfo(titleKey: "_create_new_presentation_", documentType: "presentation", icon: "play.rectangle", sortOrder: 2)
         default:
             return nil
         }
@@ -57,17 +57,11 @@ class NCContextMenuPlus: NSObject {
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
         let creatorsByEditor = Dictionary(grouping: capabilities.directEditingCreators, by: \.editor)
-        let directEditingSignature = capabilities.directEditingCreators
-            .sorted { $0.identifier < $1.identifier }
-            .map { creator in
-                "\(creator.identifier)|\(creator.editor)|\(creator.ext)|\(creator.mimetype)|\(creator.templates)"
-            }
-            .joined(separator: ";")
-        let directEditingEditorsSignature = capabilities.directEditingEditors
-            .sorted { $0.identifier < $1.identifier }
-            .map { "\($0.identifier)|\($0.name)" }
-            .joined(separator: ";")
-        let currentCapabilitiesSignature = "\(session.account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)|\(directEditingEditorsSignature)"
+        let currentCapabilitiesSignature = makeCapabilitiesSignature(
+            capabilities: capabilities,
+            account: session.account,
+            serverUrl: serverUrl
+        )
         let capabilitiesChanged = capabilitiesSignature != currentCapabilitiesSignature
         capabilitiesSignature = currentCapabilitiesSignature
 
@@ -245,9 +239,8 @@ class NCContextMenuPlus: NSObject {
                         image: utility.loadImage(named: documentType.icon, colors: [documentType.color])
                     ) { _ in
                         Task { @MainActor in
-                            let createDocument = NCCreate()
-
                             if let directEditingCreator {
+                                let createDocument = NCCreate()
                                 let fileExt: String
                                 let templateId: String
                                 if directEditingCreator.templates {
@@ -279,20 +272,10 @@ class NCContextMenuPlus: NSObject {
                                     session: session
                                 )
                             } else {
-                                let result = await createDocument.getLegacyRichdocumentsTemplates(
+                                await self.createLegacyCollaboraFile(
                                     templateType: documentType.templateType,
-                                    account: session.account
-                                )
-                                let fileName = await NCNetworking.shared.createFileName(
-                                    fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + result.ext,
-                                    account: session.account,
-                                    serverUrl: serverUrl
-                                )
-                                await createDocument.createLegacyRichdocumentsFile(
                                     controller: controller,
                                     serverUrl: serverUrl,
-                                    fileName: fileName,
-                                    templateId: result.selectedTemplate.map { String($0.templateId) } ?? "",
                                     session: session
                                 )
                             }
@@ -481,7 +464,7 @@ class NCContextMenuPlus: NSObject {
                     options: .displayInline,
                     children: editorGroup.actions
                 )
-                editorActions.preferredElementSize = .medium
+                editorActions.preferredElementSize = editorGroup.actions.count > 3 ? .small : .medium
                 officeMenuElements.append(editorActions)
             } else {
                 officeMenuElements.append(contentsOf: officeEditorGroups.map { editorGroup in
@@ -520,6 +503,54 @@ class NCContextMenuPlus: NSObject {
         menuPlusButton.menu = plusMenu
         menuPlusButton.showsMenuAsPrimaryAction = true
         menuPlusButton.alpha = 1
+    }
+
+    private func makeCapabilitiesSignature(capabilities: NKCapabilities.Capabilities,
+                                           account: String,
+                                           serverUrl: String) -> String {
+        let creators = capabilities.directEditingCreators
+            .sorted { $0.identifier < $1.identifier }
+            .map { "\($0.identifier)|\($0.editor)|\($0.ext)|\($0.mimetype)|\($0.templates)" }
+            .joined(separator: ";")
+        let editors = capabilities.directEditingEditors
+            .sorted { $0.identifier < $1.identifier }
+            .map { "\($0.identifier)|\($0.name)" }
+            .joined(separator: ";")
+
+        return "\(account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(creators)|\(editors)"
+    }
+
+    private func createLegacyCollaboraFile(templateType: String,
+                                           controller: NCMainTabBarController,
+                                           serverUrl: String,
+                                           session: NCSession.Session) async {
+        let createDocument = NCCreate()
+        let result = await createDocument.getLegacyRichdocumentsTemplates(
+            templateType: templateType,
+            account: session.account
+        )
+        guard result.error == .success,
+              let selectedTemplate = result.selectedTemplate else {
+            await showErrorBanner(
+                windowScene: windowScene,
+                text: result.error.errorDescription,
+                errorCode: result.error.errorCode
+            )
+            return
+        }
+
+        let fileName = await NCNetworking.shared.createFileName(
+            fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + result.ext,
+            account: session.account,
+            serverUrl: serverUrl
+        )
+        await createDocument.createLegacyRichdocumentsFile(
+            controller: controller,
+            serverUrl: serverUrl,
+            fileName: fileName,
+            templateId: String(selectedTemplate.templateId),
+            session: session
+        )
     }
 
     func updatePlusButtonEnabled(session: NCSession.Session) {
@@ -614,7 +645,7 @@ class NCContextMenuPlus: NSObject {
 @MainActor
 extension NCContextMenuPlus.CreatorMenuInfo {
     var iconColor: UIColor {
-        switch templateId {
+        switch documentType {
         case "spreadsheet": return NCBrandColor.shared.spreadsheetIconColor
         case "presentation": return NCBrandColor.shared.presentationIconColor
         default: return NCBrandColor.shared.documentIconColor

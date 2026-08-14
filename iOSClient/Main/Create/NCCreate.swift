@@ -68,13 +68,18 @@ class NCCreate: NSObject {
             }
         }
 
-        guard results.error == .success else {
-            await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+        guard results.error == .success,
+              let editorURL = results.url,
+              !editorURL.isEmpty else {
+            let error: NKError = results.error == .success ? .invalidData : results.error
+            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             return
         }
 
         await openCreatedFile(
             serverUrlFileName: serverUrlFileName,
+            editorId: editorId,
+            editorURL: editorURL,
             session: session,
             controller: controller,
             viewController: viewController
@@ -109,13 +114,18 @@ class NCCreate: NSObject {
             }
         }
 
-        guard results.error == .success else {
-            await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
+        guard results.error == .success,
+              let editorURL = results.url,
+              !editorURL.isEmpty else {
+            let error: NKError = results.error == .success ? .invalidData : results.error
+            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
             return
         }
 
         await openCreatedFile(
             serverUrlFileName: serverUrlFileName,
+            editorId: NCGlobal.shared.editorCollabora,
+            editorURL: editorURL,
             session: session,
             controller: controller,
             viewController: viewController
@@ -161,7 +171,7 @@ class NCCreate: NSObject {
     }
 
     func getLegacyRichdocumentsTemplates(templateType: String,
-                                         account: String) async -> (templates: [NKRichdocumentsTemplate], selectedTemplate: NKRichdocumentsTemplate?, ext: String) {
+                                         account: String) async -> (templates: [NKRichdocumentsTemplate], selectedTemplate: NKRichdocumentsTemplate?, ext: String, error: NKError) {
         let results = await NextcloudKit.shared.getRichdocumentsTemplatesAsync(
             templateType: templateType,
             account: account
@@ -179,11 +189,14 @@ class NCCreate: NSObject {
         let templates = results.error == .success ? results.templates ?? [] : []
         let selectedTemplate = templates.first(where: { $0.preview.isEmpty }) ?? templates.first
         let ext = selectedTemplate?.ext ?? legacyRichdocumentsDefaultExtension(for: templateType)
-        return (templates, selectedTemplate, ext)
+        let error: NKError = results.error == .success && selectedTemplate == nil ? .invalidData : results.error
+        return (templates, selectedTemplate, ext, error)
     }
 
     @MainActor
     private func openCreatedFile(serverUrlFileName: String,
+                                 editorId: String,
+                                 editorURL: String,
                                  session: NCSession.Session,
                                  controller: NCMainTabBarController,
                                  viewController: UIViewController) async {
@@ -201,10 +214,13 @@ class NCCreate: NSObject {
             return
         }
 
+        metadata.url = editorURL
+
         if let viewer = await NCViewer().getViewerController(
             metadata: metadata,
             delegate: viewController,
-            viewerTransitionSource: nil
+            viewerTransitionSource: nil,
+            selectedEditor: editorId
         ) {
             viewController.navigationController?.pushViewController(viewer, animated: true)
         }

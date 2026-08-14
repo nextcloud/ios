@@ -145,6 +145,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        if editor == global.editorCollabora {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(grabRichDocumentsFocus),
+                name: NSNotification.Name(rawValue: global.notificationCenterRichdocumentGrabFocus),
+                object: nil
+            )
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -153,16 +161,24 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         Task {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
         }
-
-        NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if isMovingFromParent || navigationController?.isBeingDismissed == true {
+        let isLeavingViewer = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
+        if isLeavingViewer {
             if #available(iOS 26.0, *) {
                 navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+            }
+
+            if editor == global.editorCollabora {
+                webView.evaluateJavaScript("OCA.RichDocuments.documentsMain.onClose()")
+            }
+
+            webView.configuration.userContentController.removeScriptMessageHandler(forName: directEditingMobileInterface)
+            if editor == global.editorCollabora {
+                webView.configuration.userContentController.removeScriptMessageHandler(forName: richDocumentsMobileInterface)
             }
         }
 
@@ -176,13 +192,13 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
         }
 
-        webView.configuration.userContentController.removeScriptMessageHandler(forName: directEditingMobileInterface)
-        if editor == global.editorCollabora {
-            webView.configuration.userContentController.removeScriptMessageHandler(forName: richDocumentsMobileInterface)
-        }
-
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: NSNotification.Name(rawValue: global.notificationCenterRichdocumentGrabFocus),
+            object: nil
+        )
     }
 
     @objc func viewUnload() {
@@ -201,6 +217,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
+    }
+
+    @objc private func grabRichDocumentsFocus() {
+        guard editor == global.editorCollabora else {
+            return
+        }
+
+        webView.evaluateJavaScript("OCA.RichDocuments.documentsMain.postGrabFocus()")
     }
 
     // MARK: -
@@ -414,7 +438,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("didStartProvisionalNavigation")
+        NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
@@ -422,6 +446,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        NCActivityIndicator.shared.stop()
+    }
+
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
+        NCActivityIndicator.shared.stop()
+    }
+
+    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) {
         NCActivityIndicator.shared.stop()
     }
 
