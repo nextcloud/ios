@@ -227,7 +227,8 @@ class NCContextMenuPlus: NSObject {
             let collaboraDocumentTypes: [(templateType: String, titleKey: String, icon: String, color: UIColor)] = [
                 ("document", "_create_new_document_", "doc.richtext", NCBrandColor.shared.documentIconColor),
                 ("spreadsheet", "_create_new_spreadsheet_", "tablecells", NCBrandColor.shared.spreadsheetIconColor),
-                ("presentation", "_create_new_presentation_", "play.rectangle", NCBrandColor.shared.presentationIconColor)
+                ("presentation", "_create_new_presentation_", "play.rectangle", NCBrandColor.shared.presentationIconColor),
+                ("drawing", "_create_new_diagram_", "pencil.and.outline", NCBrandColor.shared.documentIconColor)
             ]
 
             for documentType in collaboraDocumentTypes {
