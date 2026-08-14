@@ -47,7 +47,6 @@ final class NCGlobal: Sendable {
     let editorCollabora: String                     = "richdocuments"
     let editorOnlyOffice: String                    = "onlyoffice"
     let editorWhiteboard: String                    = "whiteboard"
-    var priorityEditors: [String] {[editorText, editorEuroOffice, editorCollabora, editorOnlyOffice, editorWhiteboard]}
 
     // Intro selector
     //

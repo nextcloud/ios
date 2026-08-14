@@ -21,6 +21,16 @@ final class NCDocumentEditorCoordinator {
     private let selectedEditor: String?
     private let delegate: UIViewController?
 
+    private var automaticEditorOrder: [String] {
+        [
+            global.editorText,
+            global.editorEuroOffice,
+            global.editorCollabora,
+            global.editorOnlyOffice,
+            global.editorWhiteboard
+        ]
+    }
+
     init(metadata: tableMetadata, image: UIImage?, selectedEditor: String?, delegate: UIViewController?) {
         self.metadata = metadata
         self.image = image
@@ -62,7 +72,7 @@ final class NCDocumentEditorCoordinator {
             return nil
         }
 
-        for editorId in global.priorityEditors.map({ $0.lowercased() }) {
+        for editorId in automaticEditorOrder.map({ $0.lowercased() }) {
             if directEditingEditors.contains(editorId) {
                 return .directEditing(editorId: editorId)
             }

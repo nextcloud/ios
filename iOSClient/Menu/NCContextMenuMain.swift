@@ -16,6 +16,7 @@ import LucidBanner
 class NCContextMenuMain: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    private let global = NCGlobal.shared
 
     let metadata: tableMetadata
     let viewController: UIViewController
@@ -114,8 +115,8 @@ class NCContextMenuMain: NSObject {
                 account: metadata.account,
                 contentType: metadata.contentType
             ).map { $0.lowercased() }
-            if availableEditors.contains("eurooffice") {
-                menuElements.append(makeOpenWithOffice(metadata: metadata, selectedEditor: "eurooffice"))
+            if availableEditors.contains(global.editorEuroOffice) {
+                menuElements.append(makeOpenWithOffice(metadata: metadata, selectedEditor: global.editorEuroOffice))
             }
         }
 
