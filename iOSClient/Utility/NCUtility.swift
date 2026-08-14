@@ -14,57 +14,50 @@ final class NCUtility: NSObject, Sendable {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
 
-    func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
+    func isFileSupportedByLegacyRichdocuments(_ metadata: tableMetadata) -> Bool {
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
         guard let capabilities = NCNetworking.shared.capabilities[metadata.account],
+              capabilities.richDocumentsEnabled,
               !fileExtension.isEmpty,
               let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier else {
             return false
         }
 
-        /// contentype
-        if !capabilities.richDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
+        // MIME type reported by the server.
+        if !metadata.contentType.isEmpty,
+           capabilities.richDocumentsMimetypes.contains(where: { $0.contains(metadata.contentType) }) {
             return true
         }
 
-        /// mimetype
+        // MIME type inferred from the filename extension.
         if !capabilities.richDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            if !capabilities.richDocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
+            if capabilities.richDocumentsMimetypes.contains(where: { $0.contains(mimeType) }) {
                 return true
             }
         }
         return false
     }
 
-    func editorsEditing(account: String, contentType: String) -> [String] {
-        var identifiers: [String] = []
-        let capabilities = NCNetworking.shared.capabilities[account]
-
-        capabilities?.editorEditors.forEach { editor in
-            editor.mimetypes.forEach { mimetype in
-                if mimetype == contentType {
-                    identifiers.append(editor.identifier)
-                }
-                // HARDCODE
-                // https://github.com/nextcloud/text/issues/913
-                if mimetype == "text/markdown" && contentType == "text/x-markdown" {
-                    identifiers.append(editor.identifier)
-                }
-                if contentType == "text/html" {
-                    identifiers.append(editor.identifier)
-                }
-            }
-
-            editor.optionalMimetypes.forEach { mimetype in
-                if mimetype == contentType {
-                    identifiers.append(editor.identifier)
-                }
-            }
+    func directEditingEditorIdentifiers(account: String, contentType: String) -> [String] {
+        guard let capabilities = NCNetworking.shared.capabilities[account] else {
+            return []
         }
 
-        return Array(Set(identifiers))
+        let identifiers = capabilities.directEditingEditors.compactMap { editor -> String? in
+            let supportsMimetype = editor.mimetypes.contains(contentType)
+            let supportsOptionalMimetype = editor.optionalMimetypes.contains(contentType)
+            // HARDCODE: https://github.com/nextcloud/text/issues/913
+            let supportsMarkdownAlias = contentType == "text/x-markdown" && editor.mimetypes.contains("text/markdown")
+            let supportsHTML = contentType == "text/html" && !editor.mimetypes.isEmpty
+
+            return supportsMimetype || supportsOptionalMimetype || supportsMarkdownAlias || supportsHTML
+                ? editor.identifier
+                : nil
+        }
+
+        return Set(identifiers).sorted()
     }
 
     func getCustomUserAgentNCText() -> String {
