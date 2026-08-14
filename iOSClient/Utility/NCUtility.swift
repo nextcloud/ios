@@ -14,7 +14,7 @@ final class NCUtility: NSObject, Sendable {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
 
-    func isFileSupportedByLegacyRichdocuments(_ metadata: tableMetadata) -> Bool {
+    func isFileSupportedByRichdocuments(_ metadata: tableMetadata) -> Bool {
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
         guard let capabilities = NCNetworking.shared.capabilities[metadata.account],
               capabilities.richDocumentsEnabled,
@@ -79,10 +79,6 @@ final class NCUtility: NSObject, Sendable {
         } else {
             return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
         }
-    }
-
-    func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
-        return true
     }
 
     func ocIdToFileId(ocId: String?) -> String? {

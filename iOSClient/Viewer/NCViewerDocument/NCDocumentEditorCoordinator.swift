@@ -59,7 +59,9 @@ final class NCDocumentEditorCoordinator {
             )
             .map { $0.lowercased() }
         )
-        let supportsLegacyRichdocuments = utility.isFileSupportedByLegacyRichdocuments(metadata)
+        let supportsRichdocuments = utility.isFileSupportedByRichdocuments(metadata)
+        let supportsDirectEditingCollabora = directEditingEditors.contains(global.editorCollabora.lowercased())
+        let supportsLegacyRichdocuments = supportsRichdocuments && !supportsDirectEditingCollabora
 
         if let selectedEditor = selectedEditor?.lowercased() {
             if directEditingEditors.contains(selectedEditor) {

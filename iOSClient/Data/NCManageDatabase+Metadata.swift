@@ -249,19 +249,9 @@ extension tableMetadata {
         }
         let utility = NCUtility()
         let directEditingEditors = utility.directEditingEditorIdentifiers(account: account, contentType: contentType).map { $0.lowercased() }
-        let legacyRichdocumentsEditor = utility.isFileSupportedByLegacyRichdocuments(self)
-        let capabilities = NCNetworking.shared.capabilities[account]
+        let supportsRichdocuments = utility.isFileSupportedByRichdocuments(self)
 
-        if let capabilities,
-           capabilities.richDocumentsEnabled,
-           legacyRichdocumentsEditor,
-           directEditingEditors.isEmpty {
-            // RichDocument: Collabora
-            return true
-        } else if !directEditingEditors.isEmpty {
-            return true
-        }
-        return false
+        return supportsRichdocuments || !directEditingEditors.isEmpty
     }
 
     var isAvailableRichDocumentEditorView: Bool {
@@ -270,7 +260,7 @@ extension tableMetadata {
               capabilities.richDocumentsEnabled,
               NextcloudKit.shared.isNetworkReachable() else { return false }
 
-        if NCUtility().isFileSupportedByLegacyRichdocuments(self) {
+        if NCUtility().isFileSupportedByRichdocuments(self) {
             return true
         }
         return false
