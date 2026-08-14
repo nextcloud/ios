@@ -449,20 +449,22 @@ class NCContextMenuPlus: NSObject {
             var officeMenuElements: [UIMenuElement] = []
 
             if !menuDirectEditingOthersElements.isEmpty {
+                let elements = orderedElementsForMenu(menuDirectEditingOthersElements)
                 let menuDirectEditingOthers = UIMenu(
                     title: "",
                     options: .displayInline,
-                    children: menuDirectEditingOthersElements
+                    children: elements
                 )
                 menuDirectEditingOthers.preferredElementSize = menuDirectEditingOthersElements.count > 3 ? .automatic : .medium
                 officeMenuElements.append(menuDirectEditingOthers)
             }
 
             if officeEditorGroups.count == 1, let editorGroup = officeEditorGroups.first {
+                let actions = orderedElementsForMenu(editorGroup.actions)
                 let editorActions = UIMenu(
                     title: "",
                     options: .displayInline,
-                    children: editorGroup.actions
+                    children: actions
                 )
                 editorActions.preferredElementSize = editorGroup.actions.count > 3 ? .automatic : .medium
                 officeMenuElements.append(editorActions)
@@ -503,6 +505,10 @@ class NCContextMenuPlus: NSObject {
         menuPlusButton.menu = plusMenu
         menuPlusButton.showsMenuAsPrimaryAction = true
         menuPlusButton.alpha = 1
+    }
+
+    private func orderedElementsForMenu(_ elements: [UIMenuElement]) -> [UIMenuElement] {
+        elements.count > 3 ? Array(elements.reversed()) : elements
     }
 
     private func makeCapabilitiesSignature(capabilities: NKCapabilities.Capabilities,
