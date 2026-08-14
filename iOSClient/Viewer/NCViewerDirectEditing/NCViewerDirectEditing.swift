@@ -7,6 +7,9 @@ import NextcloudKit
 @preconcurrency import WebKit
 
 final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
+    private let directEditingMobileInterface = "DirectEditingMobileInterface"
+    private let richDocumentsMobileInterface = "RichDocumentsMobileInterface"
+
     var link: String
     var editor: String
     var userAgent: String
@@ -15,9 +18,17 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
+    var documentController: UIDocumentInteractionController?
     let utility = NCUtility()
+    let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
     let global = NCGlobal.shared
     var items: [UIBarButtonItem] = []
+
+    @MainActor
+    var session: NCSession.Session {
+        NCSession.shared.getSession(account: metadata.account)
+    }
 
     @MainActor
     var controller: NCMainTabBarController? {
@@ -87,7 +98,10 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
-        contentController.add(self, name: "DirectEditingMobileInterface")
+        contentController.add(self, name: directEditingMobileInterface)
+        if editor == global.editorCollabora {
+            contentController.add(self, name: richDocumentsMobileInterface)
+        }
         if editor == global.editorEuroOffice {
             let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
             config.userContentController.addUserScript(dropSharedWorkersScript)
@@ -131,6 +145,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        if editor == global.editorCollabora {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(grabRichDocumentsFocus),
+                name: NSNotification.Name(rawValue: global.notificationCenterRichdocumentGrabFocus),
+                object: nil
+            )
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -139,16 +161,24 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         Task {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
         }
-
-        NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if isMovingFromParent || navigationController?.isBeingDismissed == true {
+        let isLeavingViewer = isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true
+        if isLeavingViewer {
             if #available(iOS 26.0, *) {
                 navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+            }
+
+            if editor == global.editorCollabora {
+                webView.evaluateJavaScript("OCA.RichDocuments.documentsMain.onClose()")
+            }
+
+            webView.configuration.userContentController.removeScriptMessageHandler(forName: directEditingMobileInterface)
+            if editor == global.editorCollabora {
+                webView.configuration.userContentController.removeScriptMessageHandler(forName: richDocumentsMobileInterface)
             }
         }
 
@@ -162,10 +192,13 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
         }
 
-        webView.configuration.userContentController.removeScriptMessageHandler(forName: "DirectEditingMobileInterface")
-
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: NSNotification.Name(rawValue: global.notificationCenterRichdocumentGrabFocus),
+            object: nil
+        )
     }
 
     @objc func viewUnload() {
@@ -186,32 +219,210 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         bottomConstraint?.constant = 0
     }
 
+    @objc private func grabRichDocumentsFocus() {
+        guard editor == global.editorCollabora else {
+            return
+        }
+
+        webView.evaluateJavaScript("OCA.RichDocuments.documentsMain.postGrabFocus()")
+    }
+
     // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if message.name == "DirectEditingMobileInterface" {
-            if message.body as? String == "close" {
-                viewUnload()
-            }
+        let isDirectEditingMessage = message.name == directEditingMobileInterface
+        let isRichDocumentsMessage = editor == global.editorCollabora && message.name == richDocumentsMobileInterface
 
-            if message.body as? String == "share" {
-                NCCreate().createShare(controller: self.controller,
-                                       presentViewController: self.controller,
-                                       metadata: metadata, page: .sharing)
-            }
-
-            if message.body as? String == "loading" {
-                print("loading")
-            }
-
-            if message.body as? String == "loaded" {
-                print("loaded")
-            }
-
-            if message.body as? String == "paste" {
-                self.paste(self)
-            }
+        guard isDirectEditingMessage || isRichDocumentsMessage,
+              let mobileMessage = mobileMessage(from: message.body) else {
+            return
         }
+
+        switch mobileMessage.command {
+        case "close":
+            viewUnload()
+
+        case "share":
+            NCCreate().createShare(
+                controller: controller,
+                presentViewController: controller,
+                metadata: metadata,
+                page: .sharing
+            )
+
+        case "reload":
+            webView.reload()
+
+        case "loading":
+            print("loading")
+
+        case "loaded", "documentLoaded":
+            print(mobileMessage.command)
+
+        case "paste":
+            paste(self)
+
+        case "insertGraphic":
+            presentImageSelector()
+
+        case "downloadAs":
+            guard let values = mobileMessage.values else { return }
+            downloadRichDocument(values: values)
+
+        case "fileRename":
+            guard let values = mobileMessage.values,
+                  let newName = values["NewName"] as? String else {
+                return
+            }
+            metadata.fileName = newName
+            metadata.fileNameView = newName
+
+        case "hyperlink":
+            guard let values = mobileMessage.values,
+                  let urlString = values["Url"] as? String,
+                  let url = URL(string: urlString) else {
+                return
+            }
+            UIApplication.shared.open(url)
+
+        default:
+            break
+        }
+    }
+
+    private func mobileMessage(from body: Any) -> (command: String, values: [AnyHashable: Any]?)? {
+        if let command = body as? String {
+            return (command, nil)
+        }
+
+        guard let parameters = body as? [AnyHashable: Any],
+              let command = parameters["MessageName"] as? String else {
+            return nil
+        }
+
+        return (command, parameters["Values"] as? [AnyHashable: Any])
+    }
+
+    private func presentImageSelector() {
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        guard let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
+              let viewController = navigationController.topViewController as? NCSelect else {
+            return
+        }
+
+        viewController.delegate = self
+        viewController.typeOfCommandView = .select
+        viewController.enableSelectFile = true
+        viewController.includeImages = true
+        viewController.type = ""
+        viewController.session = session
+        viewController.controller = controller
+
+        present(navigationController, animated: true)
+    }
+
+    private func downloadRichDocument(values: [AnyHashable: Any]) {
+        guard let type = values["Type"] as? String,
+              let urlString = values["URL"] as? String,
+              let url = URL(string: urlString) else {
+            return
+        }
+
+        var fileName = (metadata.fileName as NSString).deletingPathExtension
+        let fileNameLocalPath = utilityFileSystem.createServerUrl(
+            serverUrl: utilityFileSystem.directoryUserData,
+            fileName: fileName
+        )
+
+        if type == "slideshow" {
+            guard let browserWebViewController = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb else {
+                return
+            }
+
+            browserWebViewController.urlBase = urlString
+            browserWebViewController.isHiddenButtonExit = false
+            present(browserWebViewController, animated: true)
+            return
+        }
+
+        NCActivityIndicator.shared.start(backgroundView: view)
+        NextcloudKit.shared.download(
+            serverUrlFileName: url,
+            fileNameLocalPath: fileNameLocalPath,
+            account: metadata.account,
+            requestHandler: { _ in },
+            taskHandler: { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: self.metadata.account,
+                        path: url.absoluteString,
+                        name: "download"
+                    )
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
+                    await self.database.setMetadataSessionAsync(
+                        ocId: self.metadata.ocId,
+                        sessionTaskIdentifier: task.taskIdentifier,
+                        status: self.global.metadataStatusDownloading
+                    )
+                }
+            },
+            progressHandler: { _ in },
+            completionHandler: { account, response, error in
+                NCActivityIndicator.shared.stop()
+
+                Task {
+                    let nkCommon = NextcloudKit.shared.nkCommonInstance
+                    let allHeaderFields = response?.response?.allHeaderFields
+                    let etag = nkCommon.normalizedETag(nkCommon.findHeader("oc-etag", allHeaderFields: allHeaderFields))
+
+                    await self.database.setMetadataSessionAsync(
+                        ocId: self.metadata.ocId,
+                        session: "",
+                        sessionTaskIdentifier: 0,
+                        sessionError: "",
+                        status: self.global.metadataStatusNormal,
+                        etag: etag
+                    )
+                }
+
+                guard error == .success, account == self.metadata.account else {
+                    Task {
+                        let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
+                        await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    }
+                    return
+                }
+
+                var item = fileNameLocalPath
+                if let disposition = NextcloudKit.shared.nkCommonInstance.findHeader(
+                    "Content-Disposition",
+                    allHeaderFields: response?.response?.allHeaderFields
+                ), let filenameContentDisposition = self.filenameFromContentDisposition(disposition) {
+                    fileName = filenameContentDisposition
+                    item = self.utilityFileSystem.createServerUrl(
+                        serverUrl: self.utilityFileSystem.directoryUserData,
+                        fileName: fileName
+                    )
+                    _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
+                }
+
+                if type == "print" {
+                    let printController = UIPrintInteractionController.shared
+                    let printInfo = UIPrintInfo.printInfo()
+                    printInfo.outputType = .general
+                    printInfo.orientation = .portrait
+                    printInfo.jobName = "Document"
+                    printController.printInfo = printInfo
+                    printController.printingItem = URL(fileURLWithPath: item)
+                    printController.present(from: .zero, in: self.view, animated: true)
+                } else {
+                    self.documentController = UIDocumentInteractionController()
+                    self.documentController?.url = URL(fileURLWithPath: item)
+                    self.documentController?.presentOptionsMenu(from: .zero, in: self.view, animated: true)
+                }
+            }
+        )
     }
 
     // MARK: -
@@ -227,7 +438,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("didStartProvisionalNavigation")
+        NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
@@ -238,6 +449,14 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         NCActivityIndicator.shared.stop()
     }
 
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
+        NCActivityIndicator.shared.stop()
+    }
+
+    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) {
+        NCActivityIndicator.shared.stop()
+    }
+
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame == nil {
             if let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) {
@@ -245,6 +464,71 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             }
         }
         return nil
+    }
+
+    private func filenameFromContentDisposition(_ disposition: String) -> String? {
+        guard let range = disposition.range(of: "filename=") else {
+            return nil
+        }
+
+        var value = String(disposition[range.upperBound...]).trimmingCharacters(in: .whitespaces)
+        if let semicolonIndex = value.firstIndex(of: ";") {
+            value = String(value[..<semicolonIndex])
+        }
+        value = value.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+
+        return value.isEmpty ? nil : value
+    }
+
+    private func postRichDocumentsAsset(fileName: String, url: String) {
+        guard let fileNameData = try? JSONEncoder().encode(fileName),
+              let urlData = try? JSONEncoder().encode(url),
+              let fileNameLiteral = String(data: fileNameData, encoding: .utf8),
+              let urlLiteral = String(data: urlData, encoding: .utf8) else {
+            return
+        }
+
+        let function = "OCA.RichDocuments.documentsMain.postAsset(\(fileNameLiteral), \(urlLiteral))"
+        webView.evaluateJavaScript(function)
+    }
+}
+
+extension NCViewerDirectEditing: NCSelectDelegate {
+    func dismissSelect(serverUrl: String?,
+                       metadata: tableMetadata?,
+                       type: String,
+                       items: [Any],
+                       overwrite: Bool,
+                       copy: Bool,
+                       move: Bool,
+                       session: NCSession.Session,
+                       controller: NCMainTabBarController?) {
+        guard editor == global.editorCollabora,
+              let serverUrl,
+              let metadata else {
+            return
+        }
+
+        let path = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
+        NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: metadata.account,
+                    path: path,
+                    name: "createRichdocumentsAssetURL"
+                )
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, url, _, error in
+            if error == .success, let url {
+                self.postRichDocumentsAsset(fileName: metadata.fileNameView, url: url)
+            } else {
+                Task {
+                    let windowScene = SceneManager.shared.getWindow(sceneIdentifier: self.sceneIdentifier)?.windowScene
+                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                }
+            }
+        }
     }
 }
 

@@ -295,7 +295,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
               !(topViewController is NCViewerPDF),
-              !(topViewController is NCViewerRichDocument),
+              !(topViewController is NCViewerRichdocuments),
               !(topViewController is NCViewerDirectEditing)
         else {
             return

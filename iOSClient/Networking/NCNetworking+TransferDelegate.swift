@@ -87,7 +87,7 @@ extension NCNetworking: NCTransferDelegate {
                     return
                 }
 
-                if metadata.contentType.contains("opendocument") && !NCUtility().isTypeFileRichDocument(metadata) {
+                if metadata.contentType.contains("opendocument") && !metadata.isDocumentEditorAvailable {
                     await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
                 } else if metadata.classFile == NKTypeClassFile.compress.rawValue || metadata.classFile == NKTypeClassFile.unknow.rawValue {
                     await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)

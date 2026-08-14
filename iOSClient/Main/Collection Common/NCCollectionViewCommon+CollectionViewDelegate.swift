@@ -113,7 +113,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image, delegate: self, viewerTransitionSource: viewerTransitionSource) {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
-            } else if !metadata.isDirectoryE2EE, metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
+            } else if !metadata.isDirectoryE2EE, metadata.isDocumentEditorAvailable || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
                 if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: self, viewerTransitionSource: viewerTransitionSource) {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }

@@ -5,11 +5,11 @@
 import UIKit
 import NextcloudKit
 
-class NCRichWorkspaceCommon: NSObject {
+class NCRichWorkspaceCoordinator: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
 
-    func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
+    func createRichWorkspace(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
@@ -19,39 +19,40 @@ class NCRichWorkspaceCommon: NSObject {
         }
 
         guard let capabilities = NCNetworking.shared.capabilities[session.account],
-              let textCreators = capabilities.editorCreators.filter({ $0.editor == global.editorText }).first else {
+              let textCreator = capabilities.directEditingCreators.first(where: { $0.editor == global.editorText }) else {
             return
         }
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = utilityFileSystem.getRelativeFilePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
-        NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: textCreators.editor, creatorId: textCreators.identifier, templateId: "", account: session.account) { task in
+        NextcloudKit.shared.createFileForDirectEditing(fileNamePath: fileNamePath, editorId: textCreator.editor, creatorId: textCreator.identifier, templateId: "", account: session.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
                                                                                             path: fileNamePath,
-                                                                                            name: "textCreateFile")
+                                                                                            name: "createFileForDirectEditing")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, url, _, error in
             NCActivityIndicator.shared.stop()
-            if error == .success {
-                if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-                    viewerRichWorkspaceWebView.url = url!
-                    viewerRichWorkspaceWebView.controller = controller
-                    viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-                    viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
-                }
-            } else if error != .success {
+            guard error == .success, let url else {
+                let resultError: NKError = error == .success ? .invalidData : error
                 Task {
                     let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                    await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                    await showErrorBanner(windowScene: windowScene, text: resultError.errorDescription, errorCode: resultError.errorCode)
                 }
+                return
+            }
+            if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
+                viewerRichWorkspaceWebView.url = url
+                viewerRichWorkspaceWebView.controller = controller
+                viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
             }
         }
     }
 
-    func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
+    func openRichWorkspace(serverUrl: String, viewController: UIViewController, controller: NCMainTabBarController?, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             Task {
                 let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
@@ -69,28 +70,29 @@ class NCRichWorkspaceCommon: NSObject {
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-                NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: global.editorText, account: metadata.account) { task in
+                NextcloudKit.shared.openFileForDirectEditing(fileNamePath: fileNamePath, fileId: metadata.fileId, editorId: global.editorText, account: metadata.account) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                     path: fileNamePath,
-                                                                                                    name: "textOpenFile")
+                                                                                                    name: "openFileForDirectEditing")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, url, _, error in
                     NCActivityIndicator.shared.stop()
-                    if error == .success {
-                        if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-                            viewerRichWorkspaceWebView.url = url!
-                            viewerRichWorkspaceWebView.controller = controller
-                            viewerRichWorkspaceWebView.metadata = metadata
-                            viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-                            viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
-                        }
-                    } else if error != .success {
+                    guard error == .success, let url else {
+                        let resultError: NKError = error == .success ? .invalidData : error
                         Task {
                             let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
-                            await showErrorBanner(windowScene: windowScene, text: error.errorDescription, errorCode: error.errorCode)
+                            await showErrorBanner(windowScene: windowScene, text: resultError.errorDescription, errorCode: resultError.errorCode)
                         }
+                        return
+                    }
+                    if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
+                        viewerRichWorkspaceWebView.url = url
+                        viewerRichWorkspaceWebView.controller = controller
+                        viewerRichWorkspaceWebView.metadata = metadata
+                        viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
+                        viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                     }
                 }
             } else {
