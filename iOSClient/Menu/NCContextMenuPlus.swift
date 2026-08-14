@@ -454,7 +454,7 @@ class NCContextMenuPlus: NSObject {
                     options: .displayInline,
                     children: menuDirectEditingOthersElements
                 )
-                menuDirectEditingOthers.preferredElementSize = .medium
+                menuDirectEditingOthers.preferredElementSize = menuDirectEditingOthersElements.count > 3 ? .automatic : .medium
                 officeMenuElements.append(menuDirectEditingOthers)
             }
 
@@ -464,7 +464,7 @@ class NCContextMenuPlus: NSObject {
                     options: .displayInline,
                     children: editorGroup.actions
                 )
-                editorActions.preferredElementSize = editorGroup.actions.count > 3 ? .small : .medium
+                editorActions.preferredElementSize = editorGroup.actions.count > 3 ? .automatic : .medium
                 officeMenuElements.append(editorActions)
             } else {
                 officeMenuElements.append(contentsOf: officeEditorGroups.map { editorGroup in
