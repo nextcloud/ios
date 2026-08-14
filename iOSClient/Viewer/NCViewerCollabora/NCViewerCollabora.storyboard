@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Viewer Rich Document-->
+        <!--Viewer Collabora-->
         <scene sceneID="iQa-NL-bSv">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="4S0-zY-MgR" customClass="NCViewerRichDocument" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="4S0-zY-MgR" customClass="NCViewerCollabora" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ka1-ZK-iJj">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
