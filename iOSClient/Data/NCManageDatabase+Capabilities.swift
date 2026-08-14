@@ -37,9 +37,9 @@ extension NCManageDatabase {
 
     /// Stores the raw Direct Editing capabilities JSON in Realm for an account.
     /// - Parameters:
-    ///   - data: The raw JSON data returned from the Direct Editing capabilities endpoint.
+    ///   - data: The raw JSON data returned from the Direct Editing capabilities endpoint, or `nil` to clear it.
     ///   - account: The account identifier.
-    func setDataDirectEditingCapabilities(data: Data, account: String) async {
+    func setDataDirectEditingCapabilities(data: Data?, account: String) async {
         await core.performRealmWriteAsync { realm in
             let object = realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
             let addObject: tableCapabilities
