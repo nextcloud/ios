@@ -63,7 +63,11 @@ class NCContextMenuPlus: NSObject {
                 "\(creator.identifier)|\(creator.editor)|\(creator.ext)|\(creator.mimetype)|\(creator.templates)"
             }
             .joined(separator: ";")
-        let currentCapabilitiesSignature = "\(session.account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)"
+        let directEditingEditorsSignature = capabilities.directEditingEditors
+            .sorted { $0.identifier < $1.identifier }
+            .map { "\($0.identifier)|\($0.name)" }
+            .joined(separator: ";")
+        let currentCapabilitiesSignature = "\(session.account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(directEditingSignature)|\(directEditingEditorsSignature)"
         let capabilitiesChanged = capabilitiesSignature != currentCapabilitiesSignature
         capabilitiesSignature = currentCapabilitiesSignature
 
@@ -71,8 +75,8 @@ class NCContextMenuPlus: NSObject {
         var menuFolderElements: [UIMenuElement] = []
         var menuTextElements: [UIMenuElement] = []
         var menuRichDocumentElements: [UIMenuElement] = []
-        var menuDirectEditingTextElements: [UIMenuElement] = []
         var menuDirectEditingOthersElements: [UIMenuElement] = []
+        var officeEditorGroups: [(title: String, actions: [UIMenuElement])] = []
 
         // ACTION
         //
@@ -212,25 +216,6 @@ class NCContextMenuPlus: NSObject {
                     }
                 })
             }
-            // TEXT
-            if isNetworkReachable,
-               let creator = capabilities.directEditingCreators.first(where: { $0.editor == global.editorText }),
-               !isDirectoryE2EE {
-                menuTextElements.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
-                                                 image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                    Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
-
-                        await NCCreate().createFileForDirectEditing(controller: controller,
-                                                        serverUrl: serverUrl,
-                                                        fileName: fileName,
-                                                        editorId: global.editorText,
-                                                        creatorId: creator.identifier,
-                                                        templateId: "document",
-                                                        session: session)
-                    }
-                })
-            }
         }
 
         // OFFICE - EDITOR
@@ -239,15 +224,15 @@ class NCContextMenuPlus: NSObject {
 
             // COLLABORA: prefer Direct Editing and fall back to legacy Richdocuments.
             let collaboraCreators = creatorsByEditor[global.editorCollabora] ?? []
-            let collaboraDocumentTypes: [(templateType: String, ext: String, titleKey: String, icon: String, color: UIColor)] = [
-                ("document", "odt", "_create_new_document_", "doc.richtext", NCBrandColor.shared.documentIconColor),
-                ("spreadsheet", "ods", "_create_new_spreadsheet_", "tablecells", NCBrandColor.shared.spreadsheetIconColor),
-                ("presentation", "odp", "_create_new_presentation_", "play.rectangle", NCBrandColor.shared.presentationIconColor)
+            let collaboraDocumentTypes: [(templateType: String, titleKey: String, icon: String, color: UIColor)] = [
+                ("document", "_create_new_document_", "doc.richtext", NCBrandColor.shared.documentIconColor),
+                ("spreadsheet", "_create_new_spreadsheet_", "tablecells", NCBrandColor.shared.spreadsheetIconColor),
+                ("presentation", "_create_new_presentation_", "play.rectangle", NCBrandColor.shared.presentationIconColor)
             ]
 
             for documentType in collaboraDocumentTypes {
                 let directEditingCreator = collaboraCreators.first {
-                    $0.ext.lowercased() == documentType.ext
+                    $0.identifier.lowercased() == documentType.templateType
                 }
                 guard directEditingCreator != nil || capabilities.richDocumentsEnabled else {
                     continue
@@ -315,92 +300,52 @@ class NCContextMenuPlus: NSObject {
                 )
             }
 
+            if !menuRichDocumentElements.isEmpty {
+                let collaboraTitle = capabilities.directEditingEditors.first {
+                    $0.identifier.lowercased() == global.editorCollabora
+                }?.name ?? "Collabora"
+                officeEditorGroups.append((collaboraTitle, menuRichDocumentElements))
+            }
+
             // EURO OFFICE - ONLY OFFICE
             //
-            if creatorsByEditor.keys.contains(global.editorEuroOffice) || creatorsByEditor.keys.contains(global.editorOnlyOffice) {
-                for editorId in creatorsByEditor.keys.sorted() {
-                    guard NCDirectEditorAdapter.resolve(from: [editorId]) != nil,
-                          editorId != global.editorText else {
-                        continue
-                    }
-
-                    let sortedCreators = creatorsByEditor[editorId]!
-                        .compactMap { creator -> (NKDirectEditingCreator, CreatorMenuInfo)? in
-                            guard let info = NCContextMenuPlus.menuInfo(for: creator.ext) else { return nil }
-                            return (creator, info)
-                        }
-                        .sorted { $0.1.sortOrder < $1.1.sortOrder }
-
-                    let editorActions: [UIMenuElement] = sortedCreators.map { creator, info in
-                        UIAction(
-                            title: NSLocalizedString(info.titleKey, comment: ""),
-                            image: utility.loadImage(named: info.icon, colors: [info.iconColor])
-                        ) { _ in
-                            Task { @MainActor in
-                                let createDocument = NCCreate()
-                                let fileExt: String
-                                let templateIdentifier: String
-                                if creator.templates {
-                                    let result = await createDocument.getDirectEditingTemplates(
-                                        editorId: editorId,
-                                        creatorId: creator.identifier,
-                                        fallbackExtension: creator.ext,
-                                        account: session.account
-                                    )
-                                    fileExt = result.ext
-                                    templateIdentifier = result.selectedTemplate.identifier
-                                } else {
-                                    fileExt = creator.ext
-                                    templateIdentifier = ""
-                                }
-                                let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + fileExt, account: session.account, serverUrl: serverUrl)
-
-                                await createDocument.createFileForDirectEditing(controller: controller,
-                                                                    serverUrl: serverUrl,
-                                                                    fileName: fileName,
-                                                                    editorId: editorId,
-                                                                    creatorId: creator.identifier,
-                                                                    templateId: templateIdentifier,
-                                                                    session: session)
-                            }
-                        }
-                    }
-
-                    menuDirectEditingTextElements.append(contentsOf: editorActions)
+            for editorId in [global.editorEuroOffice, global.editorOnlyOffice] {
+                guard let editorCreators = creatorsByEditor[editorId],
+                      NCDirectEditorAdapter.resolve(from: [editorId]) != nil else {
+                    continue
                 }
 
-                // OTHERS
-                //
-                let filteredCreatorsByEditor = creatorsByEditor.filter {
-                    $0.key != global.editorEuroOffice &&
-                    $0.key != global.editorText &&
-                    $0.key != global.editorOnlyOffice &&
-                    $0.key != global.editorCollabora
-                }
-                let creators = filteredCreatorsByEditor.values.flatMap { $0 }
-                let sortedCreators = creators.sorted {
-                    $0.name < $1.name
-                }
-
-                for creator in sortedCreators {
-                    let image: UIImage?
-                    switch creator.ext {
-                    case "md":
-                        image = UIImage(systemName: "text.document")
-                    case "whiteboard":
-                        image = UIImage(systemName: "pencil.and.scribble")
-                    default:
-                        image = UIImage(systemName: "doc")
+                let sortedCreators = editorCreators
+                    .compactMap { creator -> (NKDirectEditingCreator, CreatorMenuInfo)? in
+                        guard let info = NCContextMenuPlus.menuInfo(for: creator.ext) else { return nil }
+                        return (creator, info)
                     }
+                    .sorted { $0.1.sortOrder < $1.1.sortOrder }
 
-                    let action = UIAction(
-                        title: creator.name,
-                        image: image
+                let editorActions: [UIMenuElement] = sortedCreators.map { creator, info in
+                    UIAction(
+                        title: NSLocalizedString(info.titleKey, comment: ""),
+                        image: utility.loadImage(named: info.icon, colors: [info.iconColor])
                     ) { _ in
                         Task { @MainActor in
                             let createDocument = NCCreate()
+                            let fileExt: String
+                            let templateIdentifier: String
+                            if creator.templates {
+                                let result = await createDocument.getDirectEditingTemplates(
+                                    editorId: editorId,
+                                    creatorId: creator.identifier,
+                                    fallbackExtension: creator.ext,
+                                    account: session.account
+                                )
+                                fileExt = result.ext
+                                templateIdentifier = result.selectedTemplate.identifier
+                            } else {
+                                fileExt = creator.ext
+                                templateIdentifier = ""
+                            }
                             let fileName = await NCNetworking.shared.createFileName(
-                                fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext,
+                                fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + fileExt,
                                 account: session.account,
                                 serverUrl: serverUrl
                             )
@@ -409,15 +354,72 @@ class NCContextMenuPlus: NSObject {
                                 controller: controller,
                                 serverUrl: serverUrl,
                                 fileName: fileName,
-                                editorId: creator.editor,
+                                editorId: editorId,
                                 creatorId: creator.identifier,
-                                templateId: "",
-                                session: session)
+                                templateId: templateIdentifier,
+                                session: session
+                            )
                         }
                     }
-
-                    menuDirectEditingOthersElements.append(action)
                 }
+
+                guard !editorActions.isEmpty else {
+                    continue
+                }
+                let editorTitle = capabilities.directEditingEditors.first {
+                    $0.identifier.lowercased() == editorId
+                }?.name ?? (editorId == global.editorOnlyOffice ? "ONLYOFFICE" : "EuroOffice")
+                officeEditorGroups.append((editorTitle, editorActions))
+            }
+
+            // OTHERS
+            //
+            let filteredCreatorsByEditor = creatorsByEditor.filter {
+                $0.key != global.editorEuroOffice &&
+                $0.key != global.editorText &&
+                $0.key != global.editorOnlyOffice &&
+                $0.key != global.editorCollabora
+            }
+            let creators = filteredCreatorsByEditor.values.flatMap { $0 }
+            let sortedCreators = creators.sorted {
+                $0.name < $1.name
+            }
+
+            for creator in sortedCreators {
+                let image: UIImage?
+                switch creator.ext {
+                case "md":
+                    image = UIImage(systemName: "text.document")
+                case "whiteboard":
+                    image = UIImage(systemName: "pencil.and.scribble")
+                default:
+                    image = UIImage(systemName: "doc")
+                }
+
+                let action = UIAction(
+                    title: creator.name,
+                    image: image
+                ) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreate()
+                        let fileName = await NCNetworking.shared.createFileName(
+                            fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext,
+                            account: session.account,
+                            serverUrl: serverUrl
+                        )
+
+                        await createDocument.createFileForDirectEditing(
+                            controller: controller,
+                            serverUrl: serverUrl,
+                            fileName: fileName,
+                            editorId: creator.editor,
+                            creatorId: creator.identifier,
+                            templateId: "",
+                            session: session)
+                    }
+                }
+
+                menuDirectEditingOthersElements.append(action)
             }
 
             // NEXTCLOUD TEXT
@@ -457,33 +459,52 @@ class NCContextMenuPlus: NSObject {
             menuFolder.preferredElementSize = .medium
         }
 
-        // EUROOFFICE - ONLYOFFICE
+        // OFFICE EDITORS
         var menuOffice: UIMenu?
-        if menuDirectEditingTextElements.count > 0 || menuDirectEditingOthersElements.count > 0 {
-            // OFFICE
-            let menuDirectEditingOffice = UIMenu(title: "", options: .displayInline, children: menuDirectEditingTextElements)
-            menuDirectEditingOffice.preferredElementSize = .medium
-            // OTHER
-            let menuDirectEditingOthers = UIMenu(title: "", options: .displayInline, children: menuDirectEditingOthersElements)
-            menuDirectEditingOthers.preferredElementSize = .medium
+        if !officeEditorGroups.isEmpty || !menuDirectEditingOthersElements.isEmpty {
+            var officeMenuElements: [UIMenuElement] = []
+
+            if !menuDirectEditingOthersElements.isEmpty {
+                let menuDirectEditingOthers = UIMenu(
+                    title: "",
+                    options: .displayInline,
+                    children: menuDirectEditingOthersElements
+                )
+                menuDirectEditingOthers.preferredElementSize = .medium
+                officeMenuElements.append(menuDirectEditingOthers)
+            }
+
+            if officeEditorGroups.count == 1, let editorGroup = officeEditorGroups.first {
+                let editorActions = UIMenu(
+                    title: "",
+                    options: .displayInline,
+                    children: editorGroup.actions
+                )
+                editorActions.preferredElementSize = .medium
+                officeMenuElements.append(editorActions)
+            } else {
+                officeMenuElements.append(contentsOf: officeEditorGroups.map { editorGroup in
+                    UIMenu(
+                        title: editorGroup.title,
+                        image: UIImage(systemName: "doc.richtext"),
+                        children: editorGroup.actions
+                    )
+                })
+            }
 
             menuOffice = UIMenu(
                 title: "Office",
                 image: UIImage(systemName: "doc.richtext"),
-                children: [menuDirectEditingOthers, menuDirectEditingOffice]
+                children: officeMenuElements
             )
         }
-
-        // COLLABORA
-        let menuRichDocumentOffice = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElements)
-        menuRichDocumentOffice.preferredElementSize = .medium
 
         // MENU PLUS
         var plusMenuElements: [UIMenuElement] = [menuAction, menuText]
         if let menuOffice {
             plusMenuElements.append(menuOffice)
         }
-        plusMenuElements.append(contentsOf: [menuFolder, menuRichDocumentOffice])
+        plusMenuElements.append(menuFolder)
 
         let plusMenu = UIMenu(children: plusMenuElements)
 
