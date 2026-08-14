@@ -6,7 +6,7 @@ import UIKit
 @preconcurrency import WebKit
 import NextcloudKit
 
-class NCViewerCollabora: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
+class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
@@ -425,7 +425,7 @@ class NCViewerCollabora: UIViewController, WKNavigationDelegate, WKScriptMessage
     }
 }
 
-extension NCViewerCollabora: UINavigationControllerDelegate {
+extension NCViewerRichdocuments: UINavigationControllerDelegate {
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 
@@ -439,7 +439,7 @@ extension NCViewerCollabora: UINavigationControllerDelegate {
     }
 }
 
-extension NCViewerCollabora: NCTransferDelegate {
+extension NCViewerRichdocuments: NCTransferDelegate {
     func transferReloadData(serverUrl: String?) { }
 
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }

@@ -4,135 +4,95 @@
 
 import UIKit
 import NextcloudKit
-import QuickLook
-import SwiftUI
 
 @MainActor
-final class NCDocumentEditorCoordinator: NSObject {
-    let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
-    let database = NCManageDatabase.shared
-    let global = NCGlobal.shared
-    private var viewerQuickLook: NCViewerQuickLook?
+final class NCDocumentEditorCoordinator {
+    private enum EditorRoute {
+        case directEditing(editorId: String)
+        case legacyRichdocuments
+    }
 
-    let metadata: tableMetadata
-    let image: UIImage?
-    let selectedEditor: String?
-    let delegate: UIViewController?
+    private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
+    private let global = NCGlobal.shared
+
+    private let metadata: tableMetadata
+    private let image: UIImage?
+    private let selectedEditor: String?
+    private let delegate: UIViewController?
 
     init(metadata: tableMetadata, image: UIImage?, selectedEditor: String?, delegate: UIViewController?) {
         self.metadata = metadata
         self.image = image
         self.selectedEditor = selectedEditor
         self.delegate = delegate
-
-        super.init()
     }
 
     func selectEditor() async -> UIViewController? {
-        let availableEditors = Set(
-            utility.editorsEditing(
+        guard let route = resolveEditorRoute() else {
+            return nil
+        }
+
+        switch route {
+        case .directEditing(let editorId):
+            return await makeDirectEditingViewController(editorId: editorId)
+        case .legacyRichdocuments:
+            return await makeLegacyRichdocumentsViewController()
+        }
+    }
+
+    private func resolveEditorRoute() -> EditorRoute? {
+        let directEditingEditors = Set(
+            utility.directEditingEditorIdentifiers(
                 account: metadata.account,
                 contentType: metadata.contentType
             )
             .map { $0.lowercased() }
         )
+        let supportsLegacyRichdocuments = utility.isFileSupportedByLegacyRichdocuments(metadata)
 
-        guard let selectedEditor = global.priorityEditors
-            .lazy
-            .map({ $0.lowercased() })
-            .first(where: availableEditors.contains) else {
+        if let selectedEditor = selectedEditor?.lowercased() {
+            if directEditingEditors.contains(selectedEditor) {
+                return .directEditing(editorId: selectedEditor)
+            }
+            if selectedEditor == global.editorCollabora,
+               supportsLegacyRichdocuments {
+                return .legacyRichdocuments
+            }
             return nil
         }
 
-        if selectedEditor == global.editorText {
-            return await makeDirectEditingViewController(editor: global.editorText)
-        } else if selectedEditor == global.editorEuroOffice {
-            return await makeDirectEditingViewController(editor: global.editorEuroOffice)
-        } else if selectedEditor == global.editorWhiteboard {
-            return await makeDirectEditingViewController(editor: global.editorWhiteboard)
-        } else if selectedEditor == global.editorCollabora {
-            return await makeCollaboraViewController()
-        } else if selectedEditor == global.editorOnlyOffice {
-            return await makeDirectEditingViewController(editor: global.editorOnlyOffice)
+        for editorId in global.priorityEditors.map({ $0.lowercased() }) {
+            if directEditingEditors.contains(editorId) {
+                return .directEditing(editorId: editorId)
+            }
+            if editorId == global.editorCollabora,
+               supportsLegacyRichdocuments {
+                return .legacyRichdocuments
+            }
         }
 
         return nil
     }
 
-    // MARK: - Text editor
-
-    private func makeDirectEditingViewController(editor: String) async -> UIViewController? {
-        guard let editorAdapter = NCDirectEditorAdapter.resolve(from: [editor]) else {
+    private func makeDirectEditingViewController(editorId: String) async -> UIViewController? {
+        guard let editorAdapter = NCDirectEditorAdapter.resolve(from: [editorId]) else {
             return nil
         }
 
-        let account = metadata.account
-        let editorIdentifier = selectedEditor ?? editorAdapter.apiKey
-        let editorViewController = editorAdapter.viewControllerEditor
         let editorUserAgent = editorAdapter.userAgent(utility)
-        let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
-        let link: String
-
-        if metadata.url.isEmpty {
-            let session = NCSession.shared.getSession(account: account)
-            let fileNamePath = utilityFileSystem.getRelativeFilePath(
-                metadata.fileName,
-                serverUrl: metadata.serverUrl,
-                session: session
-            )
-
-            NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-
-            let results = await NextcloudKit.shared.textOpenFileAsync(
-                fileNamePath: fileNamePath,
-                editor: editorIdentifier,
-                account: account,
-                options: options
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: account,
-                        path: fileNamePath,
-                        name: "textOpenFile"
-                    )
-
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task
-                    )
-                }
-            }
-
-            NCActivityIndicator.shared.stop()
-
-            guard results.error == .success, let generatedURL = results.url else {
-                let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
-                await showErrorBanner(
-                    windowScene: windowScene,
-                    text: results.error.errorDescription,
-                    errorCode: results.error.errorCode
-                )
-
-                return nil
-            }
-
-            link = generatedURL
-        } else {
-            link = metadata.url
+        let options = NKRequestOptions(customUserAgent: editorUserAgent)
+        guard let link = await directEditingURL(editorId: editorAdapter.apiKey, options: options) else {
+            return nil
         }
 
-        let storyboard = UIStoryboard(
-            name: "NCViewerDirectEditing",
-            bundle: nil
-        )
-
+        let storyboard = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil)
         guard let viewController = storyboard.instantiateInitialViewController(
             creator: { coder in
                 NCViewerDirectEditing(
                     coder: coder,
                     link: link,
-                    editor: editorViewController,
+                    editor: editorAdapter.viewControllerEditor,
                     userAgent: editorUserAgent,
                     metadata: self.metadata,
                     imageIcon: self.image
@@ -143,52 +103,61 @@ final class NCDocumentEditorCoordinator: NSObject {
         }
 
         viewController.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
         return viewController
     }
 
-    // MARK: - Collabora
-
-    private func makeCollaboraViewController() async -> UIViewController? {
-        let link: String
-
-        if metadata.url.isEmpty {
-            NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-
-            let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: self.metadata.account,
-                        path: self.metadata.fileId,
-                        name: "createUrlRichdocuments"
-                    )
-
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task
-                    )
-                }
-            }
-
-            NCActivityIndicator.shared.stop()
-
-            guard results.error == .success, let generatedURL = results.url else {
-                let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
-                await showErrorBanner(
-                    windowScene: windowScene,
-                    text: results.error.errorDescription,
-                    errorCode: results.error.errorCode
-                )
-
-                return nil
-            }
-
-            link = generatedURL
-        } else {
-            link = metadata.url
+    private func directEditingURL(editorId: String, options: NKRequestOptions) async -> String? {
+        if !metadata.url.isEmpty {
+            return metadata.url
         }
 
-        guard let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument else {
+        let session = NCSession.shared.getSession(account: metadata.account)
+        let fileNamePath = utilityFileSystem.getRelativeFilePath(
+            metadata.fileName,
+            serverUrl: metadata.serverUrl,
+            session: session
+        )
+        let fileId = metadata.fileId.isEmpty ? nil : metadata.fileId
+
+        NCActivityIndicator.shared.start(backgroundView: delegate?.view)
+        defer { NCActivityIndicator.shared.stop() }
+
+        let results = await NextcloudKit.shared.openFileForDirectEditingAsync(
+            fileNamePath: fileNamePath,
+            fileId: fileId,
+            editorId: editorId,
+            account: metadata.account,
+            options: options
+        ) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: self.metadata.account,
+                    path: fileNamePath,
+                    name: "openFileForDirectEditing"
+                )
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
+
+        guard results.error == .success,
+              let generatedURL = results.url,
+              !generatedURL.isEmpty else {
+            await showEditorError(results.error == .success ? .invalidData : results.error)
+            return nil
+        }
+
+        return generatedURL
+    }
+
+    private func makeLegacyRichdocumentsViewController() async -> UIViewController? {
+        guard let link = await legacyRichdocumentsURL() else {
+            return nil
+        }
+
+        guard let viewController = UIStoryboard(
+            name: "NCViewerRichdocuments",
+            bundle: nil
+        ).instantiateInitialViewController() as? NCViewerRichdocuments else {
             return nil
         }
 
@@ -196,7 +165,54 @@ final class NCDocumentEditorCoordinator: NSObject {
         viewController.link = link
         viewController.imageIcon = image
         viewController.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
         return viewController
+    }
+
+    private func legacyRichdocumentsURL() async -> String? {
+        if !metadata.url.isEmpty {
+            return metadata.url
+        }
+
+        guard !metadata.fileId.isEmpty else {
+            await showEditorError(.invalidData)
+            return nil
+        }
+
+        NCActivityIndicator.shared.start(backgroundView: delegate?.view)
+        defer { NCActivityIndicator.shared.stop() }
+
+        let results = await NextcloudKit.shared.createRichdocumentsEditorURLAsync(
+            fileId: metadata.fileId,
+            account: metadata.account
+        ) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: self.metadata.account,
+                    path: self.metadata.fileId,
+                    name: "createRichdocumentsEditorURL"
+                )
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
+
+        guard results.error == .success,
+              let generatedURL = results.url,
+              !generatedURL.isEmpty else {
+            await showEditorError(results.error == .success ? .invalidData : results.error)
+            return nil
+        }
+
+        return generatedURL
+    }
+
+    private func showEditorError(_ error: NKError) async {
+        let windowScene = SceneManager.shared.getWindowScene(
+            controller: delegate?.tabBarController as? NCMainTabBarController
+        )
+        await showErrorBanner(
+            windowScene: windowScene,
+            text: error.errorDescription,
+            errorCode: error.errorCode
+        )
     }
 }

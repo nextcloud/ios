@@ -110,7 +110,7 @@ class NCContextMenuMain: NSObject {
         }
 
         if metadata.isAvailableDirectEditingEditorView {
-            let availableEditors = utility.editorsEditing(
+            let availableEditors = utility.directEditingEditorIdentifiers(
                 account: metadata.account,
                 contentType: metadata.contentType
             ).map { $0.lowercased() }

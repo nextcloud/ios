@@ -4,9 +4,9 @@
 import Foundation
 
 struct NCDirectEditorAdapter {
-    /// Editor ID passed to the textOpenFile API.
+    /// Editor ID passed to the Direct Editing API.
     let apiKey: String
-    /// Value set on NCViewerNextcloudText.editor — controls user agent and JS behaviour.
+    /// Value passed to `NCViewerDirectEditing` to control editor-specific webview behaviour.
     let viewControllerEditor: String
     /// Resolves the custom user agent string via NCUtility.
     let userAgent: (NCUtility) -> String
@@ -29,6 +29,14 @@ struct NCDirectEditorAdapter {
         }
     }
 
+    private static func collaboraDefaultExt(_ templateId: String) -> String {
+        switch templateId {
+        case "spreadsheet": return "ods"
+        case "presentation": return "odp"
+        default: return "odt"
+        }
+    }
+
     private static let registry: [String: NCDirectEditorAdapter] = [
         NCGlobal.shared.editorText: NCDirectEditorAdapter(
             apiKey: NCGlobal.shared.editorText,
@@ -47,6 +55,12 @@ struct NCDirectEditorAdapter {
             viewControllerEditor: NCGlobal.shared.editorEuroOffice,
             userAgent: { $0.getCustomUserAgentOnlyOffice() },
             defaultExt: officeDefaultExt
+        ),
+        NCGlobal.shared.editorCollabora: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorCollabora,
+            viewControllerEditor: NCGlobal.shared.editorCollabora,
+            userAgent: { _ in NCBrandOptions.shared.getUserAgent() },
+            defaultExt: collaboraDefaultExt
         ),
         NCGlobal.shared.editorWhiteboard: NCDirectEditorAdapter(
             apiKey: NCGlobal.shared.editorWhiteboard,

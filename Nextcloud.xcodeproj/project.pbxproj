@@ -284,7 +284,7 @@
 		F722F0112CFF569500065FB5 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F722F0102CFF569500065FB5 /* MainInterface.storyboard */; };
 		F7236DDE2F7C00E600F9D722 /* HudIndeterminateBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7236DDD2F7C00CE00F9D722 /* HudIndeterminateBannerView.swift */; };
 		F7236DDF2F7C00E600F9D722 /* HudIndeterminateBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7236DDD2F7C00CE00F9D722 /* HudIndeterminateBannerView.swift */; };
-		F723985C253C95CE00257F49 /* NCViewerCollabora.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerCollabora.storyboard */; };
+		F723985C253C95CE00257F49 /* NCViewerRichdocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocuments.storyboard */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72408322B8A27C900F128E2 /* NCMedia+Command.swift */; };
 		F72429362AFE39860040AEF3 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
@@ -683,7 +683,7 @@
 		F78E2D6C29AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
-		F790110E21415BF600D7B136 /* NCViewerCollabora.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerCollabora.swift */; };
+		F790110E21415BF600D7B136 /* NCViewerRichdocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocuments.swift */; };
 		F79377052FBD86AF00DE56DE /* NCMediaViewerFloatingTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */; };
 		F793E59D28B761E7005E4B02 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */; };
@@ -1455,7 +1455,7 @@
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F722F0102CFF569500065FB5 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F7236DDD2F7C00CE00F9D722 /* HudIndeterminateBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HudIndeterminateBannerView.swift; sourceTree = "<group>"; };
-		F723985B253C95CE00257F49 /* NCViewerCollabora.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerCollabora.storyboard; sourceTree = "<group>"; };
+		F723985B253C95CE00257F49 /* NCViewerRichdocuments.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocuments.storyboard; sourceTree = "<group>"; };
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
 		F72408322B8A27C900F128E2 /* NCMedia+Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMedia+Command.swift"; sourceTree = "<group>"; };
 		F724377A2C10B83E00C7C68D /* NCSharePermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSharePermissions.swift; sourceTree = "<group>"; };
@@ -1685,7 +1685,7 @@
 		F78E2D6429AF02DB0024D4F3 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		F78F74332163757000C2ADAD /* NCTrash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCTrash.storyboard; sourceTree = "<group>"; };
 		F78F74352163781100C2ADAD /* NCTrash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrash.swift; sourceTree = "<group>"; };
-		F790110D21415BF600D7B136 /* NCViewerCollabora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerCollabora.swift; sourceTree = "<group>"; };
+		F790110D21415BF600D7B136 /* NCViewerRichdocuments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichdocuments.swift; sourceTree = "<group>"; };
 		F79131C628AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F79131C728AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleView.swift; sourceTree = "<group>"; };
@@ -2474,13 +2474,13 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
-		F7239861253C95D500257F49 /* NCViewerCollabora */ = {
+		F7239861253C95D500257F49 /* NCViewerRichdocuments */ = {
 			isa = PBXGroup;
 			children = (
-				F790110D21415BF600D7B136 /* NCViewerCollabora.swift */,
-				F723985B253C95CE00257F49 /* NCViewerCollabora.storyboard */,
+				F790110D21415BF600D7B136 /* NCViewerRichdocuments.swift */,
+				F723985B253C95CE00257F49 /* NCViewerRichdocuments.storyboard */,
 			);
-			path = NCViewerCollabora;
+			path = NCViewerRichdocuments;
 			sourceTree = "<group>";
 		};
 		F723986A253C9C0E00257F49 /* NCViewerQuickLook */ = {
@@ -3030,7 +3030,7 @@
 				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerDirectEditing */,
-				F7239861253C95D500257F49 /* NCViewerCollabora */,
+				F7239861253C95D500257F49 /* NCViewerRichdocuments */,
 			);
 			path = Viewer;
 			sourceTree = "<group>";
@@ -4283,7 +4283,7 @@
 				F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F702F2F125EE5CDB008F8E80 /* NCLogin.storyboard in Resources */,
-				F723985C253C95CE00257F49 /* NCViewerCollabora.storyboard in Resources */,
+				F723985C253C95CE00257F49 /* NCViewerRichdocuments.storyboard in Resources */,
 				F758B45A212C564000515F55 /* NCScan.storyboard in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F31165022F9674A1009A1E37 /* AppIcon.icon in Resources */,
@@ -4841,7 +4841,7 @@
 				F3374A842D64AC31002A38F9 /* AssistantLabelStyle.swift in Sources */,
 				F74BAE172C7E2F4E0028D4FA /* FileProviderDomain.swift in Sources */,
 				F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */,
-				F790110E21415BF600D7B136 /* NCViewerCollabora.swift in Sources */,
+				F790110E21415BF600D7B136 /* NCViewerRichdocuments.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				F7D890752BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift in Sources */,
 				F7BD0A042C4689E9003A4A6D /* NCMedia+MediaLayout.swift in Sources */,
