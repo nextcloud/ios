@@ -24,6 +24,7 @@ struct NCLivePhotoViewerContentView: View {
     @State private var livePhoto: PHLivePhoto?
     @State private var isPlayingLivePhoto = false
     @State private var loadedTaskIdentifier: String?
+    @State private var zoomState: NCImageZoomView.ZoomState?
 
     init(
         identifier: String,
@@ -45,6 +46,7 @@ struct NCLivePhotoViewerContentView: View {
         self.initialZoomState = initialZoomState
         self.onZoomChanged = onZoomChanged
         self.onZoomStateChanged = onZoomStateChanged
+        self._zoomState = State(initialValue: initialZoomState)
     }
 
     var body: some View {
@@ -55,11 +57,28 @@ struct NCLivePhotoViewerContentView: View {
             stillImageView
 
             if isPlayingLivePhoto, let livePhoto {
-                NCLivePhotoViewRepresentable(
-                    livePhoto: livePhoto,
-                    backgroundStyle: backgroundStyle,
-                    isPlaying: $isPlayingLivePhoto
-                )
+                GeometryReader { proxy in
+                    let layout = NCLivePhotoPlaybackLayout(
+                        containerSize: proxy.size,
+                        photoSize: livePhoto.size,
+                        zoomState: zoomState
+                    )
+
+                    NCLivePhotoViewRepresentable(
+                        livePhoto: livePhoto,
+                        backgroundStyle: backgroundStyle,
+                        isPlaying: $isPlayingLivePhoto
+                    )
+                    .frame(
+                        width: layout.frame.width,
+                        height: layout.frame.height
+                    )
+                    .position(
+                        x: layout.frame.midX,
+                        y: layout.frame.midY
+                    )
+                }
+                .clipped()
                 .id(playbackViewIdentifier)
                 .ignoresSafeArea()
             }
@@ -86,6 +105,7 @@ struct NCLivePhotoViewerContentView: View {
         }
         .onChange(of: identifier) { _, _ in
             stopLivePhotoPlayback()
+            zoomState = initialZoomState
         }
         .onChange(of: taskIdentifier) { _, _ in
             stopLivePhotoPlayback()
@@ -105,9 +125,18 @@ struct NCLivePhotoViewerContentView: View {
             fullURL: fullURL,
             backgroundStyle: backgroundStyle,
             allowsImageAnalysis: false,
-            initialZoomState: initialZoomState,
+            initialZoomState: zoomState,
             onZoomChanged: onZoomChanged,
-            onZoomStateChanged: onZoomStateChanged
+            onZoomStateChanged: { updatedZoomState in
+                Task { @MainActor in
+                    guard zoomState != updatedZoomState else {
+                        return
+                    }
+
+                    zoomState = updatedZoomState
+                    onZoomStateChanged(updatedZoomState)
+                }
+            }
         )
     }
 
@@ -316,6 +345,68 @@ struct NCLivePhotoViewerContentView: View {
                 )
             }
         }
+    }
+}
+
+// MARK: - Live Photo Playback Layout
+
+struct NCLivePhotoPlaybackLayout {
+    let frame: CGRect
+
+    init(
+        containerSize: CGSize,
+        photoSize: CGSize,
+        zoomState: NCImageZoomView.ZoomState?
+    ) {
+        guard containerSize.width > 0,
+              containerSize.height > 0,
+              photoSize.width > 0,
+              photoSize.height > 0 else {
+            self.frame = CGRect(origin: .zero, size: containerSize)
+            return
+        }
+
+        let fitScale = min(
+            containerSize.width / photoSize.width,
+            containerSize.height / photoSize.height
+        )
+        let zoomScale = max(zoomState?.zoomScale ?? 1, 1)
+        let contentSize = CGSize(
+            width: photoSize.width * fitScale * zoomScale,
+            height: photoSize.height * fitScale * zoomScale
+        )
+        let normalizedCenter = zoomState?.normalizedCenter ?? CGPoint(x: 0.5, y: 0.5)
+
+        self.frame = CGRect(
+            origin: CGPoint(
+                x: Self.contentOrigin(
+                    containerLength: containerSize.width,
+                    contentLength: contentSize.width,
+                    normalizedCenter: normalizedCenter.x
+                ),
+                y: Self.contentOrigin(
+                    containerLength: containerSize.height,
+                    contentLength: contentSize.height,
+                    normalizedCenter: normalizedCenter.y
+                )
+            ),
+            size: contentSize
+        )
+    }
+
+    private static func contentOrigin(
+        containerLength: CGFloat,
+        contentLength: CGFloat,
+        normalizedCenter: CGFloat
+    ) -> CGFloat {
+        guard contentLength > containerLength else {
+            return (containerLength - contentLength) * 0.5
+        }
+
+        let clampedCenter = min(max(normalizedCenter, 0), 1)
+        let proposedOrigin = containerLength * 0.5 - contentLength * clampedCenter
+
+        return min(max(proposedOrigin, containerLength - contentLength), 0)
     }
 }
 
