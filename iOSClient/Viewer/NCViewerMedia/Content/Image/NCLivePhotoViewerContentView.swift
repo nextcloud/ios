@@ -20,9 +20,14 @@ struct NCLivePhotoViewerContentView: View {
     let initialZoomState: NCImageZoomView.ZoomState?
     let onZoomChanged: (Bool) -> Void
     let onZoomStateChanged: (NCImageZoomView.ZoomState?) -> Void
+    let requestResources: @MainActor () async -> (imageURL: URL, videoURL: URL)?
+    let cancelResourceDownload: @MainActor () -> Void
 
     @State private var livePhoto: PHLivePhoto?
     @State private var isPlayingLivePhoto = false
+    @State private var isPlaybackRequested = false
+    @State private var isLoadingResources = false
+    @State private var resourceLoadingTask: Task<Void, Never>?
     @State private var loadedTaskIdentifier: String?
     @State private var zoomState: NCImageZoomView.ZoomState?
 
@@ -35,7 +40,9 @@ struct NCLivePhotoViewerContentView: View {
         topOverlayInset: CGFloat = 0,
         initialZoomState: NCImageZoomView.ZoomState? = nil,
         onZoomChanged: @escaping (Bool) -> Void = { _ in },
-        onZoomStateChanged: @escaping (NCImageZoomView.ZoomState?) -> Void = { _ in }
+        onZoomStateChanged: @escaping (NCImageZoomView.ZoomState?) -> Void = { _ in },
+        requestResources: @escaping @MainActor () async -> (imageURL: URL, videoURL: URL)? = { nil },
+        cancelResourceDownload: @escaping @MainActor () -> Void = { }
     ) {
         self.identifier = identifier
         self.previewURL = previewURL
@@ -46,6 +53,8 @@ struct NCLivePhotoViewerContentView: View {
         self.initialZoomState = initialZoomState
         self.onZoomChanged = onZoomChanged
         self.onZoomStateChanged = onZoomStateChanged
+        self.requestResources = requestResources
+        self.cancelResourceDownload = cancelResourceDownload
         self._zoomState = State(initialValue: initialZoomState)
     }
 
@@ -92,11 +101,7 @@ struct NCLivePhotoViewerContentView: View {
         .highPriorityGesture(
             LongPressGesture(minimumDuration: 0.25)
                 .onEnded { _ in
-                    guard livePhoto != nil else {
-                        return
-                    }
-
-                    isPlayingLivePhoto = true
+                    requestLivePhotoPlayback()
                 }
         )
         // Stop Live Photo playback when the media viewer requests a global playback stop.
@@ -104,13 +109,15 @@ struct NCLivePhotoViewerContentView: View {
             stopLivePhotoPlayback()
         }
         .onChange(of: identifier) { _, _ in
+            cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
             zoomState = initialZoomState
         }
         .onChange(of: taskIdentifier) { _, _ in
-            stopLivePhotoPlayback()
+            isPlayingLivePhoto = false
         }
         .onDisappear {
+            cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
         }
     }
@@ -185,9 +192,15 @@ struct NCLivePhotoViewerContentView: View {
             VStack {
                 HStack {
                     HStack(spacing: 5) {
-                        Image(systemName: "livephoto")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(livePhotoBadgeForeground)
+                        if isLoadingResources {
+                            ProgressView()
+                                .controlSize(.small)
+                                .tint(livePhotoBadgeForeground)
+                        } else {
+                            Image(systemName: "livephoto")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(livePhotoBadgeForeground)
+                        }
 
                         Text("LIVE")
                             .font(.system(size: 13, weight: .semibold))
@@ -217,7 +230,10 @@ struct NCLivePhotoViewerContentView: View {
     // MARK: - Identifiers
 
     private var taskIdentifier: String {
-        "\(identifier)|\(fullURL?.absoluteString ?? "")|\(videoURL?.absoluteString ?? "")"
+        resourceIdentifier(
+            imageURL: fullURL,
+            videoURL: videoURL
+        )
     }
 
     private var playbackViewIdentifier: String {
@@ -229,6 +245,10 @@ struct NCLivePhotoViewerContentView: View {
     // Keep the still image visible when Live Photo resources are missing.
     @MainActor
     private func loadLivePhotoIfNeeded() async {
+        guard !isLoadingResources else {
+            return
+        }
+
         if loadedTaskIdentifier != taskIdentifier {
             livePhoto = nil
             isPlayingLivePhoto = false
@@ -244,13 +264,93 @@ struct NCLivePhotoViewerContentView: View {
             return
         }
 
-        guard FileManager.default.fileExists(atPath: fullURL.path),
+        isLoadingResources = true
+        defer {
+            isLoadingResources = false
+        }
+
+        await loadLivePhoto(
+            imageURL: fullURL,
+            videoURL: videoURL
+        )
+    }
+
+    @MainActor
+    private func requestLivePhotoPlayback() {
+        isPlaybackRequested = true
+
+        if livePhoto != nil {
+            isPlaybackRequested = false
+            isPlayingLivePhoto = true
+            return
+        }
+
+        guard !isLoadingResources else {
+            return
+        }
+
+        isLoadingResources = true
+
+        resourceLoadingTask = Task { @MainActor in
+            defer {
+                isLoadingResources = false
+                resourceLoadingTask = nil
+            }
+
+            let resourceURLs: (imageURL: URL, videoURL: URL)?
+
+            if let fullURL,
+               let videoURL {
+                resourceURLs = (fullURL, videoURL)
+            } else {
+                resourceURLs = await requestResources()
+            }
+
+            guard !Task.isCancelled,
+                  let resourceURLs else {
+                isPlaybackRequested = false
+                return
+            }
+
+            await loadLivePhoto(
+                imageURL: resourceURLs.imageURL,
+                videoURL: resourceURLs.videoURL
+            )
+        }
+    }
+
+    @MainActor
+    private func loadLivePhoto(
+        imageURL: URL,
+        videoURL: URL
+    ) async {
+        let expectedIdentifier = resourceIdentifier(
+            imageURL: imageURL,
+            videoURL: videoURL
+        )
+
+        if loadedTaskIdentifier != expectedIdentifier {
+            livePhoto = nil
+            isPlayingLivePhoto = false
+            loadedTaskIdentifier = expectedIdentifier
+        }
+
+        guard livePhoto == nil else {
+            if isPlaybackRequested {
+                isPlaybackRequested = false
+                isPlayingLivePhoto = true
+            }
+            return
+        }
+
+        guard FileManager.default.fileExists(atPath: imageURL.path),
               FileManager.default.fileExists(atPath: videoURL.path) else {
+            isPlaybackRequested = false
             return
         }
 
         let resourceURLs = [
-            fullURL,
+            imageURL,
             videoURL
         ]
 
@@ -260,19 +360,46 @@ struct NCLivePhotoViewerContentView: View {
             return
         }
 
-        guard loadedTaskIdentifier == taskIdentifier else {
+        guard loadedTaskIdentifier == expectedIdentifier else {
             return
         }
 
         guard let loadedLivePhoto else {
+            isPlaybackRequested = false
             return
         }
 
         livePhoto = loadedLivePhoto
+
+        if isPlaybackRequested {
+            isPlaybackRequested = false
+            isPlayingLivePhoto = true
+        }
+    }
+
+    private func resourceIdentifier(
+        imageURL: URL?,
+        videoURL: URL?
+    ) -> String {
+        "\(identifier)|\(imageURL?.absoluteString ?? "")|\(videoURL?.absoluteString ?? "")"
+    }
+
+    @MainActor
+    private func cancelResourceLoadingIfNeeded() {
+        guard let resourceLoadingTask else {
+            return
+        }
+
+        resourceLoadingTask.cancel()
+        self.resourceLoadingTask = nil
+        isLoadingResources = false
+        isPlaybackRequested = false
+        cancelResourceDownload()
     }
 
     @MainActor
     private func stopLivePhotoPlayback() {
+        isPlaybackRequested = false
         isPlayingLivePhoto = false
     }
 

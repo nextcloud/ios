@@ -133,6 +133,7 @@ final class NCMediaViewerModel: ObservableObject {
     // MARK: - Dependencies
 
     private let loader: NCMediaViewerLoading
+    private let loadingPolicy: NCMediaViewerLoadingPolicy
     private let utilityFileSystem = NCUtilityFileSystem()
 
     // MARK: - Source Context
@@ -294,9 +295,11 @@ final class NCMediaViewerModel: ObservableObject {
     init(
         initialModel: NCMediaViewerInitialModel,
         session: NCSession.Session,
-        loader: NCMediaViewerLoading
+        loader: NCMediaViewerLoading,
+        loadingPolicy: NCMediaViewerLoadingPolicy = .standard
     ) {
         self.loader = loader
+        self.loadingPolicy = loadingPolicy
         self.session = session
         self.ocIds = initialModel.normalizedOcIds
         self.selectedIndex = initialModel.currentSelectedIndex
@@ -315,7 +318,8 @@ final class NCMediaViewerModel: ObservableObject {
         currentMetadata: tableMetadata,
         ocIds: [String],
         session: NCSession.Session,
-        loader: NCMediaViewerLoading
+        loader: NCMediaViewerLoading,
+        loadingPolicy: NCMediaViewerLoadingPolicy = .standard
     ) {
         let initialModel = NCMediaViewerInitialModel(
             currentMetadata: currentMetadata,
@@ -325,7 +329,8 @@ final class NCMediaViewerModel: ObservableObject {
         self.init(
             initialModel: initialModel,
             session: session,
-            loader: loader
+            loader: loader,
+            loadingPolicy: loadingPolicy
         )
     }
 
@@ -365,7 +370,7 @@ final class NCMediaViewerModel: ObservableObject {
         }
 
         if let ocId = ocId(at: index),
-           !pageState(for: ocId).needsSelectedPageLoading {
+           !pageNeedsSelectedPageLoading(for: ocId) {
             return
         }
 
@@ -459,7 +464,7 @@ final class NCMediaViewerModel: ObservableObject {
 
         let ocId = ocIds[index]
 
-        guard pageState(for: ocId).needsSelectedPageLoading else {
+        guard pageNeedsSelectedPageLoading(for: ocId) else {
             return
         }
 
@@ -540,6 +545,74 @@ final class NCMediaViewerModel: ObservableObject {
 
     func downloadVideoForPlayback(_ metadata: tableMetadata) async throws -> URL {
         try await loader.downloadMedia(for: metadata)
+    }
+
+    @discardableResult
+    func downloadOriginalImage(for metadata: tableMetadata) async throws -> URL {
+        let localURL = try await loader.downloadMedia(for: metadata)
+
+        guard !Task.isCancelled else {
+            throw CancellationError()
+        }
+
+        let livePhotoURL: URL?
+
+        if metadata.isLivePhoto {
+            livePhotoURL = await loader.localLivePhotoURL(for: metadata)
+        } else {
+            livePhotoURL = nil
+        }
+
+        setState(
+            .image(
+                previewURL: currentPreviewURL(for: metadata.ocId),
+                localURL: localURL,
+                livePhotoURL: livePhotoURL,
+                progress: nil
+            ),
+            for: metadata.ocId
+        )
+
+        return localURL
+    }
+
+    func downloadLivePhotoResources(
+        for metadata: tableMetadata
+    ) async -> (imageURL: URL, videoURL: URL)? {
+        guard metadata.isLivePhoto else {
+            return nil
+        }
+
+        do {
+            let imageURL = try await downloadOriginalImage(for: metadata)
+
+            guard !Task.isCancelled,
+                  let videoURL = await loader.downloadLivePhotoMedia(for: metadata),
+                  !Task.isCancelled else {
+                return nil
+            }
+
+            setState(
+                .image(
+                    previewURL: currentPreviewURL(for: metadata.ocId),
+                    localURL: imageURL,
+                    livePhotoURL: videoURL,
+                    progress: nil
+                ),
+                for: metadata.ocId
+            )
+
+            return (imageURL, videoURL)
+        } catch {
+            return nil
+        }
+    }
+
+    func cancelLivePhotoResourceDownload(for metadata: tableMetadata) {
+        Task {
+            await loader.cancelDownload(for: metadata.ocId)
+            await loader.cancelLivePhotoMediaDownload(for: metadata)
+        }
     }
 
     func cancelVideoDownload(for ocId: String) async {
@@ -839,6 +912,13 @@ final class NCMediaViewerModel: ObservableObject {
                 )
             }
 
+            guard loadingPolicy.shouldDownloadOriginalImage(
+                for: metadata,
+                hasUsablePreview: previewURL != nil
+            ) else {
+                return
+            }
+
         case NKTypeClassFile.audio.rawValue:
             setState(
                 .downloading(
@@ -1092,6 +1172,40 @@ final class NCMediaViewerModel: ObservableObject {
         cachedPagesByOcId[ocId]?.state ?? .idle
     }
 
+    private func pageNeedsSelectedPageLoading(for ocId: String) -> Bool {
+        let state = pageState(for: ocId)
+
+        switch state {
+        case .idle,
+             .downloading:
+            return true
+
+        case .image(let previewURL, nil, _, _):
+            guard let metadata = cachedPagesByOcId[ocId]?.metadata else {
+                return true
+            }
+
+            return loadingPolicy.shouldDownloadOriginalImage(
+                for: metadata,
+                hasUsablePreview: previewURL != nil
+            )
+
+        case .video(nil, nil):
+            return true
+
+        case .image(_, .some, _, _),
+             .audio,
+             .video,
+             .loadingMetadata,
+             .metadataMissing,
+             .checkingLocalFile,
+             .ready,
+             .deleted,
+             .failed:
+            return false
+        }
+    }
+
     private func currentPreviewURL(for ocId: String) -> URL? {
         guard let page = cachedPagesByOcId[ocId] else {
             return nil
@@ -1159,12 +1273,17 @@ final class NCMediaViewerModel: ObservableObject {
         index: Int
     ) async {
         if metadata.classFile == NKTypeClassFile.image.rawValue {
-            let livePhotoURL: URL?
+            var livePhotoURL: URL?
 
             if metadata.isLivePhoto {
-                livePhotoURL = await loader.downloadLivePhotoMedia(
-                    for: metadata
-                )
+                livePhotoURL = await loader.localLivePhotoURL(for: metadata)
+
+                if livePhotoURL == nil,
+                   loadingPolicy.shouldDownloadLivePhotoResources(for: metadata) {
+                    livePhotoURL = await loader.downloadLivePhotoMedia(
+                        for: metadata
+                    )
+                }
             } else {
                 livePhotoURL = nil
             }
@@ -1317,32 +1436,4 @@ private extension NCMediaViewerPageState {
         }
     }
 
-    var needsSelectedPageLoading: Bool {
-        switch self {
-        case .idle:
-            return true
-
-        case .downloading:
-            return true
-
-        case .image(_, nil, _, _):
-            return true
-
-        case .video(nil, nil):
-            return true
-
-        case .audio:
-            return false
-
-        case .image(_, .some, _, _),
-             .video,
-             .loadingMetadata,
-             .metadataMissing,
-             .checkingLocalFile,
-             .ready,
-             .deleted,
-             .failed:
-            return false
-        }
-    }
 }

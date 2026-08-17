@@ -245,6 +245,14 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         await downloadTaskRegistry.cancelTask(for: ocId)
     }
 
+    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async {
+        guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
+            return
+        }
+
+        await downloadTaskRegistry.cancelTask(for: livePhotoMetadata.ocId)
+    }
+
     func cancelAllDownloads() async {
         await downloadTaskRegistry.cancelAllTasks()
     }
@@ -308,6 +316,8 @@ protocol NCMediaViewerLoading: Sendable {
     func downloadLivePhotoMedia(for metadata: tableMetadata) async -> URL?
 
     func cancelDownload(for ocId: String) async
+
+    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async
 
     func cancelAllDownloads() async
 }
