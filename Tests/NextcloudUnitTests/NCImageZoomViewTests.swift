@@ -121,6 +121,39 @@ struct NCImageZoomViewTests {
         #expect(abs(restoredZoomState.normalizedCenter.y - expectedZoomState.normalizedCenter.y) < 0.001)
     }
 
+    @Test("Live Photo playback uses the still image zoom and focal point")
+    func livePhotoPlaybackPreservesZoomState() {
+        let zoomState = NCImageZoomView.ZoomState(
+            zoomScale: 3,
+            normalizedCenter: CGPoint(x: 0.6, y: 0.55)
+        )
+        let layout = NCLivePhotoPlaybackLayout(
+            containerSize: CGSize(width: 320, height: 480),
+            photoSize: CGSize(width: 400, height: 300),
+            zoomState: zoomState
+        )
+
+        #expect(abs(layout.frame.width - 960) < 0.001)
+        #expect(abs(layout.frame.height - 720) < 0.001)
+        #expect(abs(
+            layout.frame.origin.x + layout.frame.width * zoomState.normalizedCenter.x - 160
+        ) < 0.001)
+        #expect(abs(
+            layout.frame.origin.y + layout.frame.height * zoomState.normalizedCenter.y - 240
+        ) < 0.001)
+    }
+
+    @Test("Live Photo playback remains aspect-fit without zoom")
+    func livePhotoPlaybackUsesAspectFitWithoutZoom() {
+        let layout = NCLivePhotoPlaybackLayout(
+            containerSize: CGSize(width: 320, height: 480),
+            photoSize: CGSize(width: 400, height: 300),
+            zoomState: nil
+        )
+
+        #expect(layout.frame == CGRect(x: 0, y: 120, width: 320, height: 240))
+    }
+
     private func makeZoomView(
         imageSize: CGSize,
         initialZoomState: NCImageZoomView.ZoomState? = nil,
