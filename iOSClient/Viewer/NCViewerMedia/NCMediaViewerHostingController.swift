@@ -458,7 +458,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         let downloadsOriginal = selectedMetadata.classFile == NKTypeClassFile.image.rawValue
 
         isShowingDetail = true
-        setMediaDetailLoading(downloadsOriginal)
 
         detailLoadingTask = Task { [weak self] in
             guard let self else {
@@ -470,7 +469,12 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             )
 
             if downloadsOriginal {
-                _ = try? await self.model.downloadOriginalImage(for: metadata)
+                _ = try? await self.model.downloadOriginalImage(
+                    for: metadata,
+                    onDownloadStarted: { [weak self] in
+                        self?.setMediaDetailLoading(true)
+                    }
+                )
             }
 
             guard !Task.isCancelled,

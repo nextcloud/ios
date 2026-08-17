@@ -127,10 +127,15 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    func downloadMedia(for metadata: tableMetadata) async throws -> URL {
+    func downloadMedia(
+        for metadata: tableMetadata,
+        onDownloadStarted: (@Sendable () async -> Void)? = nil
+    ) async throws -> URL {
         if let localURL = await localMediaURL(for: metadata) {
             return localURL
         }
+
+        await onDownloadStarted?()
 
         guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
             ocId: metadata.ocId,
@@ -309,7 +314,10 @@ protocol NCMediaViewerLoading: Sendable {
 
     func previewURL(for metadata: tableMetadata, ext: String) async -> URL?
 
-    func downloadMedia(for metadata: tableMetadata) async throws -> URL
+    func downloadMedia(
+        for metadata: tableMetadata,
+        onDownloadStarted: (@Sendable () async -> Void)?
+    ) async throws -> URL
 
     func localLivePhotoURL(for metadata: tableMetadata) async -> URL?
 

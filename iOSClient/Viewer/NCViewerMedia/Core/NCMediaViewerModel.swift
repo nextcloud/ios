@@ -544,12 +544,23 @@ final class NCMediaViewerModel: ObservableObject {
     }
 
     func downloadVideoForPlayback(_ metadata: tableMetadata) async throws -> URL {
-        try await loader.downloadMedia(for: metadata)
+        try await loader.downloadMedia(
+            for: metadata,
+            onDownloadStarted: nil
+        )
     }
 
     @discardableResult
-    func downloadOriginalImage(for metadata: tableMetadata) async throws -> URL {
-        let localURL = try await loader.downloadMedia(for: metadata)
+    func downloadOriginalImage(
+        for metadata: tableMetadata,
+        onDownloadStarted: (@MainActor @Sendable () -> Void)? = nil
+    ) async throws -> URL {
+        let localURL = try await loader.downloadMedia(
+            for: metadata,
+            onDownloadStarted: {
+                await onDownloadStarted?()
+            }
+        )
 
         guard !Task.isCancelled else {
             throw CancellationError()
@@ -934,7 +945,8 @@ final class NCMediaViewerModel: ObservableObject {
 
         do {
             let downloadedURL = try await loader.downloadMedia(
-                for: metadata
+                for: metadata,
+                onDownloadStarted: nil
             )
 
             guard !Task.isCancelled else {
