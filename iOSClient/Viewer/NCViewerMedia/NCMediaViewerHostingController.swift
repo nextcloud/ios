@@ -455,20 +455,21 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
         let selectedOcId = selectedMetadata.ocId
         let index = model.selectedIndex
+        let downloadsOriginal = selectedMetadata.classFile == NKTypeClassFile.image.rawValue
 
         isShowingDetail = true
-        setMediaDetailLoading(true)
+        setMediaDetailLoading(downloadsOriginal)
 
         detailLoadingTask = Task { [weak self] in
             guard let self else {
                 return
             }
 
-            var metadata = await NCNetworking.shared.updateMetadataPlaceholder(
+            let metadata = await NCNetworking.shared.updateMetadataPlaceholder(
                 selectedMetadata
             )
 
-            if metadata.classFile == NKTypeClassFile.image.rawValue {
+            if downloadsOriginal {
                 _ = try? await self.model.downloadOriginalImage(for: metadata)
             }
 
