@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # The fixed Docker container name for the Nextcloud server.
 CONTAINER_NAME="xcode-test-server"
 
