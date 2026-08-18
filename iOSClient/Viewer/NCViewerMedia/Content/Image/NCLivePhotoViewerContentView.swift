@@ -11,6 +11,14 @@ import NextcloudKit
 // MARK: - Live Photo Viewer Content View
 
 struct NCLivePhotoViewerContentView: View {
+    private final class ZoomStateStore {
+        var value: NCImageZoomView.ZoomState?
+
+        init(_ value: NCImageZoomView.ZoomState?) {
+            self.value = value
+        }
+    }
+
     let identifier: String
     let previewURL: URL?
     let fullURL: URL?
@@ -29,7 +37,8 @@ struct NCLivePhotoViewerContentView: View {
     @State private var isLoadingResources = false
     @State private var resourceLoadingTask: Task<Void, Never>?
     @State private var loadedTaskIdentifier: String?
-    @State private var zoomState: NCImageZoomView.ZoomState?
+    @State private var zoomStateStore: ZoomStateStore
+    @State private var playbackZoomState: NCImageZoomView.ZoomState?
 
     init(
         identifier: String,
@@ -55,7 +64,8 @@ struct NCLivePhotoViewerContentView: View {
         self.onZoomStateChanged = onZoomStateChanged
         self.requestResources = requestResources
         self.cancelResourceDownload = cancelResourceDownload
-        self._zoomState = State(initialValue: initialZoomState)
+        self._zoomStateStore = State(initialValue: ZoomStateStore(initialZoomState))
+        self._playbackZoomState = State(initialValue: initialZoomState)
     }
 
     var body: some View {
@@ -70,7 +80,7 @@ struct NCLivePhotoViewerContentView: View {
                     let layout = NCLivePhotoPlaybackLayout(
                         containerSize: proxy.size,
                         photoSize: livePhoto.size,
-                        zoomState: zoomState
+                        zoomState: playbackZoomState
                     )
 
                     NCLivePhotoViewRepresentable(
@@ -111,7 +121,8 @@ struct NCLivePhotoViewerContentView: View {
         .onChange(of: identifier) { _, _ in
             cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
-            zoomState = initialZoomState
+            zoomStateStore.value = initialZoomState
+            playbackZoomState = initialZoomState
         }
         .onChange(of: taskIdentifier) { _, _ in
             isPlayingLivePhoto = false
@@ -132,17 +143,11 @@ struct NCLivePhotoViewerContentView: View {
             fullURL: fullURL,
             backgroundStyle: backgroundStyle,
             allowsImageAnalysis: false,
-            initialZoomState: zoomState,
+            initialZoomState: zoomStateStore.value,
             onZoomChanged: onZoomChanged,
             onZoomStateChanged: { updatedZoomState in
-                Task { @MainActor in
-                    guard zoomState != updatedZoomState else {
-                        return
-                    }
-
-                    zoomState = updatedZoomState
-                    onZoomStateChanged(updatedZoomState)
-                }
+                zoomStateStore.value = updatedZoomState
+                onZoomStateChanged(updatedZoomState)
             }
         )
     }
@@ -281,7 +286,7 @@ struct NCLivePhotoViewerContentView: View {
 
         if livePhoto != nil {
             isPlaybackRequested = false
-            isPlayingLivePhoto = true
+            startLivePhotoPlayback()
             return
         }
 
@@ -338,7 +343,7 @@ struct NCLivePhotoViewerContentView: View {
         guard livePhoto == nil else {
             if isPlaybackRequested {
                 isPlaybackRequested = false
-                isPlayingLivePhoto = true
+                startLivePhotoPlayback()
             }
             return
         }
@@ -373,7 +378,7 @@ struct NCLivePhotoViewerContentView: View {
 
         if isPlaybackRequested {
             isPlaybackRequested = false
-            isPlayingLivePhoto = true
+            startLivePhotoPlayback()
         }
     }
 
@@ -395,6 +400,12 @@ struct NCLivePhotoViewerContentView: View {
         isLoadingResources = false
         isPlaybackRequested = false
         cancelResourceDownload()
+    }
+
+    @MainActor
+    private func startLivePhotoPlayback() {
+        playbackZoomState = zoomStateStore.value
+        isPlayingLivePhoto = true
     }
 
     @MainActor
@@ -497,7 +508,13 @@ struct NCLivePhotoPlaybackLayout {
             containerSize.width / photoSize.width,
             containerSize.height / photoSize.height
         )
-        let zoomScale = max(zoomState?.zoomScale ?? 1, 1)
+        let zoomScale = min(
+            max(
+                zoomState?.zoomScale ?? NCImageZoomView.supportedZoomScaleRange.lowerBound,
+                NCImageZoomView.supportedZoomScaleRange.lowerBound
+            ),
+            NCImageZoomView.supportedZoomScaleRange.upperBound
+        )
         let contentSize = CGSize(
             width: photoSize.width * fitScale * zoomScale,
             height: photoSize.height * fitScale * zoomScale
