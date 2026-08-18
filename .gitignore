@@ -41,6 +41,8 @@ Carthage/
 ### SwiftPackageManager ###
 .swiftpm
 Package.resolved
+# Except the app's own lockfile — Dependabot reads it to detect SPM updates
+!Nextcloud.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 *.generated.swift
 /.env-vars

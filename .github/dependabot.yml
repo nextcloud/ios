@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Nextcloud GmbH
+# SPDX-FileCopyrightText: 2026 Milen Pivchev
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+version: 2
+updates:
+  # SPM packages declared in Nextcloud.xcodeproj (NextcloudKit, Realm, Firebase, …)
+  - package-ecosystem: "swift"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "fix(deps)"
+
+  # Keep the GitHub Actions used by our workflows up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
