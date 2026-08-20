@@ -477,7 +477,7 @@ extension NCEndToEndMetadata {
                 usersSignatureCodable.append(E2eeV2Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
             }
             signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
-            certificates = users.map { $0.certificate }
+            certificates = users.isEmpty ? [certificate] : users.map { $0.certificate }
         } else {
             signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: nil, version: version)
             certificates = [certificate]

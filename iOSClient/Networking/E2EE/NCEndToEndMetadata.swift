@@ -120,11 +120,16 @@ class NCEndToEndMetadata: NSObject {
         serverUrl: String,
         session: NCSession.Session
     ) async throws -> NCEndToEndKeySetAccess {
-        var rootEncryptedMetadataKey: String?
+        var childRootEncryptedMetadataKey: String?
         if let data = metadata.data(using: .utf8),
            let metadataV2 = try? JSONDecoder().decode(E2eeV2.self, from: data),
-           metadataV2.users == nil {
-            rootEncryptedMetadataKey = try await storedRootEncryptedMetadataKey(
+           metadataV2.users?.isEmpty != false,
+           let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(
+               serverUrl: serverUrl,
+               session: session
+           ),
+           serverUrl != directoryTop.serverUrlFileName {
+            childRootEncryptedMetadataKey = try await storedRootEncryptedMetadataKey(
                 serverUrl: serverUrl,
                 session: session
             )
@@ -134,7 +139,7 @@ class NCEndToEndMetadata: NSObject {
             metadata: metadata,
             account: session.account,
             userId: session.userId,
-            rootEncryptedMetadataKey: rootEncryptedMetadataKey
+            rootEncryptedMetadataKey: childRootEncryptedMetadataKey
         )
     }
 

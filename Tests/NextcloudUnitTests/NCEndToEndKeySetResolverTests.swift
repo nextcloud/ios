@@ -65,6 +65,17 @@ struct NCEndToEndKeySetResolverTests {
         #expect(encryptedMetadataKey == "root-key")
     }
 
+    @Test("A V2 child folder with an empty users array inherits its encrypted root metadata key")
+    func childFolderWithEmptyUsersUsesRootEncryptedMetadataKey() {
+        let encryptedMetadataKey = NCEndToEndKeySetResolver().encryptedMetadataKey(
+            users: [],
+            userId: "user",
+            rootEncryptedMetadataKey: "root-key"
+        )
+
+        #expect(encryptedMetadataKey == "root-key")
+    }
+
     @Test("A V2 root never falls back to a previously saved user key")
     func rootWithoutCurrentUserDoesNotUseSavedKey() {
         let otherUser = NCEndToEndMetadata.E2eeV2.Users(

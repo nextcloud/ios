@@ -79,14 +79,14 @@ struct NCEndToEndKeySetResolver {
         )
     }
 
-    /// Child V2 metadata omits users and therefore reuses the encrypted key
-    /// saved when its encrypted root was decoded.
+    /// Child V2 metadata omits users, or encodes them as an empty array, and
+    /// therefore reuses the encrypted key saved when its encrypted root was decoded.
     func encryptedMetadataKey(
         users: [NCEndToEndMetadata.E2eeV2.Users]?,
         userId: String,
         rootEncryptedMetadataKey: String?
     ) -> String? {
-        if let users {
+        if let users, !users.isEmpty {
             return users
                 .first(where: { $0.userId == userId })?
                 .encryptedMetadataKey
