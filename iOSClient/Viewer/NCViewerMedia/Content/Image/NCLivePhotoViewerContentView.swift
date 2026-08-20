@@ -65,7 +65,7 @@ struct NCLivePhotoViewerContentView: View {
         self.requestResources = requestResources
         self.cancelResourceDownload = cancelResourceDownload
         self._zoomStateStore = State(initialValue: ZoomStateStore(initialZoomState))
-        self._playbackZoomState = State(initialValue: initialZoomState)
+        self._playbackZoomState = State(initialValue: nil)
     }
 
     var body: some View {
@@ -122,10 +122,14 @@ struct NCLivePhotoViewerContentView: View {
             cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
             zoomStateStore.value = initialZoomState
-            playbackZoomState = initialZoomState
         }
         .onChange(of: taskIdentifier) { _, _ in
-            isPlayingLivePhoto = false
+            stopLivePhotoPlayback()
+        }
+        .onChange(of: isPlayingLivePhoto) { _, isPlaying in
+            if !isPlaying {
+                playbackZoomState = nil
+            }
         }
         .onDisappear {
             cancelResourceLoadingIfNeeded()
@@ -412,6 +416,7 @@ struct NCLivePhotoViewerContentView: View {
     private func stopLivePhotoPlayback() {
         isPlaybackRequested = false
         isPlayingLivePhoto = false
+        playbackZoomState = nil
     }
 
     // Photos may call the handler more than once; resume only once.
