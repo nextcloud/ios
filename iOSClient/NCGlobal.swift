@@ -188,6 +188,7 @@ final class NCGlobal: Sendable {
     let errorE2EEKeyDirectoryTop: Int           = -98019
     let errorE2EESendMetadata: Int              = -98020
     let errorE2EEReadOnly: Int                  = -98021
+    let errorE2EEServerKeyChanged: Int          = -98022
 
 
     // Selector

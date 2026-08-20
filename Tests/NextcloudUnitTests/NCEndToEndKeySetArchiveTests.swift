@@ -53,6 +53,17 @@ struct NCEndToEndKeySetArchiveTests {
         #expect(snapshot.passphrase == "passphrase")
     }
 
+    @Test("Explicit local removal also clears stale server-key state")
+    func removalClearsStaleState() {
+        let account = "e2ee-archive-\(UUID().uuidString)"
+        let preferences = NCPreferences()
+
+        preferences.setEndToEndServerKeyStale(account: account, stale: true)
+        preferences.clearAllKeysEndToEnd(account: account)
+
+        #expect(!preferences.isEndToEndServerKeyStale(account: account))
+    }
+
     @Test("Archiving the same credentials does not create duplicates")
     func avoidsDuplicates() throws {
         let account = "e2ee-archive-\(UUID().uuidString)"

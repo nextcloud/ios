@@ -129,8 +129,9 @@ struct NCEndToEndKeySetResolver {
         )
     }
 
-    private func currentKeySet(account: String) -> NCEndToEndKeySet? {
-        guard preferences.isEndToEndEnabled(account: account) else {
+    func currentKeySet(account: String) -> NCEndToEndKeySet? {
+        guard preferences.isEndToEndEnabled(account: account),
+              !preferences.isEndToEndServerKeyStale(account: account) else {
             return nil
         }
 

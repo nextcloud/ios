@@ -493,6 +493,22 @@ final class NCPreferences: NSObject {
         return true
     }
 
+    /// Indicates that the locally active E2EE key set no longer matches the
+    /// key currently published by the server. The key material is retained so
+    /// it can continue to decrypt older storage spaces, but it must not write.
+    func isEndToEndServerKeyStale(account: String) -> Bool {
+        getBoolPreference(
+            key: "EndToEndServerKeyStale",
+            account: account,
+            defaultValue: false
+        )
+    }
+
+    func setEndToEndServerKeyStale(account: String, stale: Bool) {
+        let key = "EndToEndServerKeyStale_\(account)"
+        setUserDefaults(stale, forKey: key)
+    }
+
     /// Archives the current E2EE credentials as an immutable Keychain item.
     ///
     /// Repeated attempts with unchanged credentials reuse the existing
@@ -564,6 +580,7 @@ final class NCPreferences: NSObject {
     /// Clears active and archived E2EE credentials for explicit local removal.
     func clearAllKeysEndToEnd(account: String) {
         clearCurrentKeysEndToEnd(account: account)
+        setEndToEndServerKeyStale(account: account, stale: false)
 
         let snapshotPrefix = archivedEndToEndKeySetPrefix(account: account)
         for key in keychain.allKeys().filter({ $0.hasPrefix(snapshotPrefix) }) {

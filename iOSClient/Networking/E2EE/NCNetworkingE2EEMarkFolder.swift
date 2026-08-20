@@ -26,6 +26,11 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             }
         }
 
+        let serverKeyError = await NCNetworkingE2EE().validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
         // BANNER
         //
 #if !EXTENSION

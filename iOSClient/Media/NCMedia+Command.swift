@@ -285,16 +285,27 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             return
         }
 
-        let resultsDeleteFileOrFolder = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.serverUrlFileName,
-                                                                                            name: "deleteFileOrFolder")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+        let deleteError: NKError
+        if metadata.isDirectoryE2EE {
+            deleteError = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+        } else {
+            let result = await NextcloudKit.shared.deleteFileOrFolderAsync(
+                serverUrlFileName: metadata.serverUrlFileName,
+                account: metadata.account
+            ) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: metadata.account,
+                        path: metadata.serverUrlFileName,
+                        name: "deleteFileOrFolder"
+                    )
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
             }
+            deleteError = result.error
         }
 
-        guard resultsDeleteFileOrFolder.error == .success || resultsDeleteFileOrFolder.error.errorCode == self.global.errorResourceNotFound else {
+        guard deleteError == .success || deleteError.errorCode == self.global.errorResourceNotFound else {
             return
         }
 

@@ -47,7 +47,11 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
                 if let certificate = preference.getEndToEndCertificate(account: session.account) {
                     self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
                 }
-                statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+                if preference.isEndToEndServerKeyStale(account: session.account) {
+                    statusOfService = NSLocalizedString("_e2ee_server_key_changed_", comment: "")
+                } else {
+                    statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+                }
             } else {
                 let options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
                 NextcloudKit.shared.getE2EECertificate(account: session.account, options: options) { _ in

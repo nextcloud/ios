@@ -299,6 +299,25 @@ class NCFiles: NCCollectionViewCommon {
     private func sectionE2ee(ocId: String) async -> NKError {
         var returnError = NKError()
 
+        // Reconcile the account key before classifying this storage space.
+        // Read access remains possible with archived keys if the user cancels
+        // or cannot yet provide the new passphrase.
+        let serverKeyError = await NCNetworkingE2EE().validateCurrentServerKey(
+            account: session.account
+        )
+        if serverKeyError.errorCode == global.errorE2EEServerKeyChanged {
+            do {
+                try await NCEndToEndSetup(controller: controller).updateChangedServerKey()
+            } catch let error as NKError where error.errorCode == NSUserCancelledError {
+                // Continue: the previous key was archived and can still offer
+                // read-only access to storage spaces encrypted with it.
+            } catch let error as NKError {
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription)
+            } catch {
+                await showErrorBanner(windowScene: windowScene, text: error.localizedDescription)
+            }
+        }
+
         // Get Metadata
         let lock = await self.database.getE2ETokenLockAsync(account: session.account, serverUrl: serverUrl)
         var result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)

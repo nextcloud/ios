@@ -59,6 +59,78 @@ class NCNetworkingE2EE: NSObject {
         return NKRequestOptions(version: version)
     }
 
+    /// Verifies that the locally active key set is still the key set published
+    /// by the server. A mismatch is persisted immediately so the old key can
+    /// only be selected through the archived, read-only path.
+    func validateCurrentServerKey(account: String) async -> NKError {
+        let preferences = NCPreferences()
+        guard let localPublicKey = preferences.getEndToEndPublicKey(account: account),
+              !localPublicKey.isEmpty else {
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EENotEnabled,
+                errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+            )
+        }
+
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+        let result = await NextcloudKit.shared.getE2EEPublicKeyAsync(
+            account: account,
+            options: getOptions(account: account, capabilities: capabilities)
+        )
+
+        if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+            return markCurrentServerKeyAsStale(account: account, preferences: preferences)
+        }
+
+        guard result.error == .success else {
+            return result.error
+        }
+
+        guard let serverPublicKey = result.publicKey, !serverPublicKey.isEmpty else {
+            return .invalidData
+        }
+
+        guard publicKeysMatch(localPublicKey, serverPublicKey) else {
+            return markCurrentServerKeyAsStale(account: account, preferences: preferences)
+        }
+
+        preferences.setEndToEndServerKeyStale(account: account, stale: false)
+        return .success
+    }
+
+    /// Compares the PEM payload rather than its formatting. Kept internal so
+    /// normal and changed-key behavior can be covered by unit tests.
+    func publicKeysMatch(_ first: String, _ second: String) -> Bool {
+        func payload(_ key: String) -> String {
+            key.components(separatedBy: .whitespacesAndNewlines)
+                .filter { !$0.isEmpty && !$0.hasPrefix("-----") }
+                .joined()
+        }
+
+        let firstPayload = payload(first)
+        let secondPayload = payload(second)
+        return !firstPayload.isEmpty && firstPayload == secondPayload
+    }
+
+    private func markCurrentServerKeyAsStale(
+        account: String,
+        preferences: NCPreferences
+    ) -> NKError {
+        do {
+            try preferences.archiveCurrentEndToEndKeySet(account: account)
+            preferences.setEndToEndServerKeyStale(account: account, stale: true)
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EEServerKeyChanged,
+                errorDescription: NSLocalizedString("_e2ee_server_key_changed_", comment: "")
+            )
+        } catch {
+            return NKError(
+                errorCode: NCGlobal.shared.errorInternalError,
+                errorDescription: error.localizedDescription
+            )
+        }
+    }
+
     // MARK: -
 
     func getMetadata(fileId: String, e2eToken: String?, account: String) async -> (account: String,
@@ -136,7 +208,12 @@ class NCNetworkingE2EE: NSObject {
                         removeUserId: String? = nil,
                         updateVersionV1V2: Bool = false,
                         account: String) async -> NKError {
-        await uploadMetadata(
+        let serverKeyError = await validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
+        return await uploadMetadata(
             serverUrl: serverUrl,
             addUserId: addUserId,
             removeUserId: removeUserId,
@@ -148,7 +225,12 @@ class NCNetworkingE2EE: NSObject {
 
     @discardableResult
     func createInitialMetadata(serverUrl: String, account: String) async -> NKError {
-        await uploadMetadata(
+        let serverKeyError = await validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
+        return await uploadMetadata(
             serverUrl: serverUrl,
             addUserId: nil,
             removeUserId: nil,
@@ -266,6 +348,11 @@ class NCNetworkingE2EE: NSObject {
     }
 
     func validateWriteAccess(serverUrl: String, account: String) async -> NKError {
+        let serverKeyError = await validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
         let session = NCSession.shared.getSession(account: account)
         let resultsLock = await lock(account: account, serverUrl: serverUrl)
         guard resultsLock.error == .success,
@@ -358,6 +445,11 @@ class NCNetworkingE2EE: NSObject {
                           fileId: String,
                           e2eToken: String,
                           session: NCSession.Session) async -> NKError {
+        let serverKeyError = await validateCurrentServerKey(account: session.account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
         let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
         guard resultsGetE2EEMetadata.error == .success,
               let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
