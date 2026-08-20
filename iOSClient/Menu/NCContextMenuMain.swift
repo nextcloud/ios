@@ -223,6 +223,19 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
+                let accessError = await NCNetworkingE2EE().validateWriteAccess(
+                    serverUrl: metadata.serverUrlFileName,
+                    account: metadata.account
+                )
+                guard accessError == .success else {
+                    await showErrorBanner(
+                        windowScene: self.windowScene,
+                        text: accessError.errorDescription,
+                        errorCode: accessError.errorCode
+                    )
+                    return
+                }
+
                 let results = await NextcloudKit.shared.markE2EEFolderAsync(
                     fileId: metadata.fileId,
                     delete: true,

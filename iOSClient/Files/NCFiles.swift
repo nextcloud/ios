@@ -306,8 +306,26 @@ class NCFiles: NCCollectionViewCommon {
         if result.error != .success {
             // Metadata not found ? Try to resend it
             if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                do {
+                    let storedAccess = try await NCEndToEndMetadata().resolveStoredRootKeySetAccess(
+                        serverUrl: serverUrl,
+                        session: session
+                    )
+                    if storedAccess.keySet != nil {
+                        endToEndKeySetAccess = storedAccess
+                    }
+                } catch {
+                    return NKError(
+                        errorCode: global.errorInternalError,
+                        errorDescription: error.localizedDescription
+                    )
+                }
+
                 guard !endToEndKeySetAccess.isReadOnly else {
-                    return result.error
+                    return NKError(
+                        errorCode: global.errorE2EEReadOnly,
+                        errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
+                    )
                 }
                 nkLog(tag: self.global.logTagE2EE, message: "E2ee metadata not found, resend.")
                 await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)

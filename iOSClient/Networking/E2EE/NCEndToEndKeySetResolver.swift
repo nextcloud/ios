@@ -69,6 +69,16 @@ struct NCEndToEndKeySetResolver {
         return .unavailable
     }
 
+    func resolve(encryptedMetadataKey: String, account: String) throws -> NCEndToEndKeySetAccess {
+        try resolve(
+            currentKeySet: currentKeySet(account: account),
+            account: account,
+            canDecrypt: { keySet in
+                decryptsMetadataKey(encryptedMetadataKey, with: keySet)
+            }
+        )
+    }
+
     /// Child V2 metadata omits users and therefore reuses the encrypted key
     /// saved when its encrypted root was decoded.
     func encryptedMetadataKey(

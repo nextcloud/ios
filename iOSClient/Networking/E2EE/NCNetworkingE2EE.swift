@@ -163,17 +163,29 @@ class NCNetworkingE2EE: NSObject {
             return resultsLock.error
         }
 
-        // METHOD
+        // METHOD + WRITE ACCESS
         //
-        if updateVersionV1V2 {
-            method = "PUT"
-        } else {
-            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
-            if resultsGetE2EEMetadata.error == .success {
-                method = "PUT"
-            } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                return resultsGetE2EEMetadata.error
+        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
+        if resultsGetE2EEMetadata.error == .success,
+           let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata {
+            let accessError = await validateWriteAccess(
+                e2eMetadata: e2eMetadata,
+                serverUrl: serverUrl,
+                session: session
+            )
+            guard accessError == .success else {
+                await unlock(account: session.account, serverUrl: serverUrl)
+                return accessError
             }
+            method = "PUT"
+        } else if resultsGetE2EEMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound,
+                  !updateVersionV1V2 {
+            method = "POST"
+        } else {
+            await unlock(account: session.account, serverUrl: serverUrl)
+            return resultsGetE2EEMetadata.error == .success
+                ? .invalidData
+                : resultsGetE2EEMetadata.error
         }
 
         // UPLOAD METADATA
@@ -198,6 +210,68 @@ class NCNetworkingE2EE: NSObject {
         await unlock(account: session.account, serverUrl: serverUrl)
 
         return NKError()
+    }
+
+    func validateWriteAccess(serverUrl: String, account: String) async -> NKError {
+        let session = NCSession.shared.getSession(account: account)
+        let resultsLock = await lock(account: account, serverUrl: serverUrl)
+        guard resultsLock.error == .success,
+              let e2eToken = resultsLock.e2eToken,
+              let fileId = resultsLock.fileId else {
+            return resultsLock.error
+        }
+
+        let metadataResult = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: account)
+        let error: NKError
+        if metadataResult.error == .success,
+           let e2eMetadata = metadataResult.e2eMetadata {
+            error = await validateWriteAccess(
+                e2eMetadata: e2eMetadata,
+                serverUrl: serverUrl,
+                session: session
+            )
+        } else {
+            error = metadataResult.error == .success
+                ? .invalidData
+                : metadataResult.error
+        }
+
+        await unlock(account: account, serverUrl: serverUrl)
+        return error
+    }
+
+    private func validateWriteAccess(
+        e2eMetadata: String,
+        serverUrl: String,
+        session: NCSession.Session
+    ) async -> NKError {
+        let access: NCEndToEndKeySetAccess
+        do {
+            access = try await NCEndToEndMetadata().resolveKeySetAccess(
+                e2eMetadata,
+                serverUrl: serverUrl,
+                session: session
+            )
+        } catch {
+            return NKError(
+                errorCode: NCGlobal.shared.errorInternalError,
+                errorDescription: error.localizedDescription
+            )
+        }
+
+        if access.canWrite {
+            return .success
+        } else if access.isReadOnly {
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EEReadOnly,
+                errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
+            )
+        } else {
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EENoUserFound,
+                errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+            )
+        }
     }
 
     func uploadMetadata(serverUrl: String,

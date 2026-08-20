@@ -64,26 +64,9 @@ class NCEndToEndMetadata: NSObject {
             )
         }
 
-        var rootEncryptedMetadataKey: String?
-        if let metadataV2,
-           metadataV2.users == nil,
-           let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session),
-           let tableUser = await database.getE2EUserAsync(
-               account: session.account,
-               directoryTopOcId: directoryTop.ocId,
-               userId: session.userId
-           ) {
-            rootEncryptedMetadataKey = tableUser.encryptedMetadataKey
-        }
-
         let access: NCEndToEndKeySetAccess
         do {
-            access = try NCEndToEndKeySetResolver().resolve(
-                metadata: metadata,
-                account: session.account,
-                userId: session.userId,
-                rootEncryptedMetadataKey: rootEncryptedMetadataKey
-            )
+            access = try await resolveKeySetAccess(metadata, serverUrl: serverUrl, session: session)
         } catch {
             return (
                 NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription),
@@ -130,5 +113,64 @@ class NCEndToEndMetadata: NSObject {
         }
 
         return (error, access)
+    }
+
+    func resolveKeySetAccess(
+        _ metadata: String,
+        serverUrl: String,
+        session: NCSession.Session
+    ) async throws -> NCEndToEndKeySetAccess {
+        var rootEncryptedMetadataKey: String?
+        if let data = metadata.data(using: .utf8),
+           let metadataV2 = try? JSONDecoder().decode(E2eeV2.self, from: data),
+           metadataV2.users == nil {
+            rootEncryptedMetadataKey = try await storedRootEncryptedMetadataKey(
+                serverUrl: serverUrl,
+                session: session
+            )
+        }
+
+        return try NCEndToEndKeySetResolver().resolve(
+            metadata: metadata,
+            account: session.account,
+            userId: session.userId,
+            rootEncryptedMetadataKey: rootEncryptedMetadataKey
+        )
+    }
+
+    func resolveStoredRootKeySetAccess(
+        serverUrl: String,
+        session: NCSession.Session
+    ) async throws -> NCEndToEndKeySetAccess {
+        guard let encryptedMetadataKey = try await storedRootEncryptedMetadataKey(
+            serverUrl: serverUrl,
+            session: session
+        ) else {
+            return .unavailable
+        }
+
+        return try NCEndToEndKeySetResolver().resolve(
+            encryptedMetadataKey: encryptedMetadataKey,
+            account: session.account
+        )
+    }
+
+    private func storedRootEncryptedMetadataKey(
+        serverUrl: String,
+        session: NCSession.Session
+    ) async throws -> String? {
+        guard let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(
+            serverUrl: serverUrl,
+            session: session
+        ),
+        let tableUser = await database.getE2EUserAsync(
+            account: session.account,
+            directoryTopOcId: directoryTop.ocId,
+            userId: session.userId
+        ) else {
+            return nil
+        }
+
+        return tableUser.encryptedMetadataKey
     }
 }
