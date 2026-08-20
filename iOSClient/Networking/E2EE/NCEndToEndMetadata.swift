@@ -34,32 +34,87 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Decode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadata(_ metadata: String, signature: String?, serverUrl: String, session: NCSession.Session) async -> NKError {
+    func decodeMetadata(
+        _ metadata: String,
+        signature: String?,
+        serverUrl: String,
+        session: NCSession.Session
+    ) async -> (error: NKError, access: NCEndToEndKeySetAccess) {
         guard let data = metadata.data(using: .utf8), let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
-            return (NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "Unable to decode the metadata file"))
+            return (
+                NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "Unable to decode the metadata file"),
+                .unavailable
+            )
         }
 
         data.printJson()
 
-        if (try? JSONDecoder().decode(E2eeV1.self, from: data)) != nil {
-            return await decodeMetadataV1(metadata,
-                                          serverUrl: serverUrl,
-                                          ocIdServerUrl: directory.ocId,
-                                          session: session)
-        } else if (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil {
-            return await decodeMetadataV12(metadata,
-                                           serverUrl: serverUrl,
-                                           ocIdServerUrl: directory.ocId,
-                                           session: session)
-        } else if (try? JSONDecoder().decode(E2eeV2.self, from: data)) != nil {
-            return await decodeMetadataV2(metadata,
-                                          signature: signature,
-                                          serverUrl: serverUrl,
-                                          ocIdServerUrl: directory.ocId,
-                                          session: session)
-        } else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEVersion,
-                           errorDescription: "Unable to decode the metadata file")
+        let isMetadataV1 = (try? JSONDecoder().decode(E2eeV1.self, from: data)) != nil
+        let isMetadataV12 = (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil
+        let isMetadataV2 = (try? JSONDecoder().decode(E2eeV2.self, from: data)) != nil
+
+        guard isMetadataV1 || isMetadataV12 || isMetadataV2 else {
+            return (
+                NKError(
+                    errorCode: NCGlobal.shared.errorE2EEVersion,
+                    errorDescription: "Unable to decode the metadata file"
+                ),
+                .unavailable
+            )
         }
+
+        let access: NCEndToEndKeySetAccess
+        do {
+            access = try NCEndToEndKeySetResolver().resolve(
+                metadata: metadata,
+                account: session.account,
+                userId: session.userId
+            )
+        } catch {
+            return (
+                NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription),
+                .unavailable
+            )
+        }
+
+        guard let keySet = access.keySet else {
+            return (
+                NKError(
+                    errorCode: NCGlobal.shared.errorE2EENoUserFound,
+                    errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+                ),
+                .unavailable
+            )
+        }
+
+        let error: NKError
+        if isMetadataV1 {
+            error = await decodeMetadataV1(
+                metadata,
+                serverUrl: serverUrl,
+                ocIdServerUrl: directory.ocId,
+                session: session,
+                keySet: keySet
+            )
+        } else if isMetadataV12 {
+            error = await decodeMetadataV12(
+                metadata,
+                serverUrl: serverUrl,
+                ocIdServerUrl: directory.ocId,
+                session: session,
+                keySet: keySet
+            )
+        } else {
+            error = await decodeMetadataV2(
+                metadata,
+                signature: signature,
+                serverUrl: serverUrl,
+                ocIdServerUrl: directory.ocId,
+                session: session,
+                keySet: keySet
+            )
+        }
+
+        return (error, access)
     }
 }

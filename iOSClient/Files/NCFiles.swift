@@ -306,6 +306,9 @@ class NCFiles: NCCollectionViewCommon {
         if result.error != .success {
             // Metadata not found ? Try to resend it
             if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                guard !endToEndKeySetAccess.isReadOnly else {
+                    return result.error
+                }
                 nkLog(tag: self.global.logTagE2EE, message: "E2ee metadata not found, resend.")
                 await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
                 result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)
@@ -322,20 +325,25 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         // Decode metadata
-        returnError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata,
-                                                                signature: result.signature,
-                                                                serverUrl: serverUrl,
-                                                                session: self.session)
+        let decodeResult = await NCEndToEndMetadata().decodeMetadata(
+            e2eMetadata,
+            signature: result.signature,
+            serverUrl: serverUrl,
+            session: self.session
+        )
+        returnError = decodeResult.error
+        endToEndKeySetAccess = decodeResult.access
 
         // Old protocolo V1 ? -> Conversion
-        if returnError == .success {
+        if returnError == .success, decodeResult.access.canWrite {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
             if version == "v1", capabilities.e2EEApiVersion.hasPrefix("2.") {
                 nkLog(tag: self.global.logTagE2EE, message: "E2ee Conversion v1 to v2.")
                 returnError = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: session.account)
             }
         // Checksums error ? (Desktop bug)
-        } else if returnError.errorCode == global.errorE2EEKeyChecksums || returnError.errorCode == global.errorE2EEKeyChecksumsEmpty {
+        } else if decodeResult.access.canWrite,
+                  returnError.errorCode == global.errorE2EEKeyChecksums || returnError.errorCode == global.errorE2EEKeyChecksumsEmpty {
             let shouldContinue = await UIAlertController.showAlert(
                 from: self,
                 title: "_e2ee_checksum_error_title_",

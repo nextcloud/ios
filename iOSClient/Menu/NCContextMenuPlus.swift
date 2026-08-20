@@ -571,8 +571,13 @@ class NCContextMenuPlus: NSObject {
     }
 
     private func isPlusButtonEnabled(for controller: NCMainTabBarController) -> Bool {
-        guard let metadataFolder = (controller.currentViewController() as? NCCollectionViewCommon)?.metadataFolder else {
+        guard let viewController = controller.currentViewController() as? NCCollectionViewCommon,
+              let metadataFolder = viewController.metadataFolder else {
             return true
+        }
+
+        guard !viewController.endToEndKeySetAccess.isReadOnly else {
+            return false
         }
 
         guard metadataFolder.isCreatable else {

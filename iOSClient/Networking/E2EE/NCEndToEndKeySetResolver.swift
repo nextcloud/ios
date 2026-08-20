@@ -1,0 +1,138 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import Foundation
+
+/// Selects the E2EE key set that can decrypt a metadata payload.
+///
+/// Selection only probes the asymmetric metadata key. It does not update the
+/// database, counters, metadata, or files while trying candidate key sets.
+struct NCEndToEndKeySetResolver {
+    private let preferences: NCPreferences
+
+    init(preferences: NCPreferences = NCPreferences()) {
+        self.preferences = preferences
+    }
+
+    func resolve(metadata: String, account: String, userId: String) throws -> NCEndToEndKeySetAccess {
+        guard let data = metadata.data(using: .utf8) else {
+            return .unavailable
+        }
+
+        let currentKeySet = currentKeySet(account: account)
+
+        if let metadataV1 = try? JSONDecoder().decode(NCEndToEndMetadata.E2eeV1.self, from: data) {
+            let encryptedMetadataKeys = Array(metadataV1.metadata.metadataKeys.values)
+            return try resolve(
+                currentKeySet: currentKeySet,
+                account: account,
+                canDecrypt: { keySet in
+                    encryptedMetadataKeys.contains { decryptsLegacyMetadataKey($0, with: keySet) }
+                }
+            )
+        }
+
+        if let metadataV12 = try? JSONDecoder().decode(NCEndToEndMetadata.E2eeV12.self, from: data) {
+            return try resolve(
+                currentKeySet: currentKeySet,
+                account: account,
+                canDecrypt: { keySet in
+                    decryptsLegacyMetadataKey(metadataV12.metadata.metadataKey, with: keySet)
+                }
+            )
+        }
+
+        if let metadataV2 = try? JSONDecoder().decode(NCEndToEndMetadata.E2eeV2.self, from: data) {
+            guard let encryptedMetadataKey = metadataV2.users?
+                .first(where: { $0.userId == userId })?
+                .encryptedMetadataKey else {
+                // Child V2 folders omit users and reuse the metadata key that
+                // was decrypted for their encrypted root. Until the root-to-
+                // snapshot association is persisted, preserve current behavior.
+                return currentKeySet.map(NCEndToEndKeySetAccess.active) ?? .unavailable
+            }
+
+            return try resolve(
+                currentKeySet: currentKeySet,
+                account: account,
+                canDecrypt: { keySet in
+                    decryptsMetadataKey(encryptedMetadataKey, with: keySet)
+                }
+            )
+        }
+
+        return .unavailable
+    }
+
+    /// Kept internal so candidate ordering can be verified independently of
+    /// the platform crypto implementation.
+    func select(
+        currentKeySet: NCEndToEndKeySet?,
+        archivedKeySets: [NCEndToEndKeySet],
+        canDecrypt: (NCEndToEndKeySet) -> Bool
+    ) -> NCEndToEndKeySetAccess {
+        if let currentKeySet, canDecrypt(currentKeySet) {
+            return .active(currentKeySet)
+        }
+
+        for keySet in archivedKeySets.reversed() where canDecrypt(keySet) {
+            return .archived(keySet)
+        }
+
+        return .unavailable
+    }
+
+    private func resolve(
+        currentKeySet: NCEndToEndKeySet?,
+        account: String,
+        canDecrypt: (NCEndToEndKeySet) -> Bool
+    ) throws -> NCEndToEndKeySetAccess {
+        if let currentKeySet, canDecrypt(currentKeySet) {
+            return .active(currentKeySet)
+        }
+
+        return select(
+            currentKeySet: nil,
+            archivedKeySets: try preferences.getArchivedEndToEndKeySets(account: account),
+            canDecrypt: canDecrypt
+        )
+    }
+
+    private func currentKeySet(account: String) -> NCEndToEndKeySet? {
+        guard preferences.isEndToEndEnabled(account: account) else {
+            return nil
+        }
+
+        return NCEndToEndKeySet(
+            certificate: preferences.getEndToEndCertificate(account: account),
+            privateKey: preferences.getEndToEndPrivateKey(account: account),
+            publicKey: preferences.getEndToEndPublicKey(account: account),
+            passphrase: preferences.getEndToEndPassphrase(account: account),
+            identifier: "active:" + account,
+            archivedAt: .distantFuture
+        )
+    }
+
+    private func decryptsLegacyMetadataKey(_ encryptedMetadataKey: String, with keySet: NCEndToEndKeySet) -> Bool {
+        guard let privateKey = keySet.privateKey,
+              let encryptedData = Data(base64Encoded: encryptedMetadataKey),
+              let decryptedData = NCEndToEndEncryption.shared().decryptAsymmetricData(encryptedData, privateKey: privateKey),
+              let decodedData = Data(base64Encoded: decryptedData),
+              let decodedKey = String(data: decodedData, encoding: .utf8) else {
+            return false
+        }
+
+        return !decodedKey.isEmpty
+    }
+
+    private func decryptsMetadataKey(_ encryptedMetadataKey: String, with keySet: NCEndToEndKeySet) -> Bool {
+        guard let privateKey = keySet.privateKey,
+              let encryptedData = Data(base64Encoded: encryptedMetadataKey),
+              let decryptedData = NCEndToEndEncryption.shared().decryptAsymmetricData(encryptedData, privateKey: privateKey) else {
+            return false
+        }
+
+        return !decryptedData.isEmpty
+    }
+}

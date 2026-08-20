@@ -248,11 +248,18 @@ class NCNetworkingE2EE: NSObject {
             return resultsGetE2EEMetadata.error
         }
 
-        let resultsDecodeMetadataError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
-        guard resultsDecodeMetadataError == .success else {
+        let decodeResult = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
+        guard decodeResult.error == .success else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            return resultsDecodeMetadataError
+            return decodeResult.error
+        }
+
+        guard decodeResult.access.canWrite else {
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EEReadOnly,
+                errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
+            )
         }
 
         return NKError()

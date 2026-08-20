@@ -52,6 +52,11 @@
 		A1E2EE010000000000000007 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
 		A1E2EE010000000000000008 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
 		A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */; };
+		A1E2EE020000000000000003 /* NCEndToEndKeySetAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */; };
+		A1E2EE020000000000000004 /* NCEndToEndKeySetAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */; };
+		A1E2EE020000000000000005 /* NCEndToEndKeySetResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */; };
+		A1E2EE020000000000000006 /* NCEndToEndKeySetResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */; };
+		A1E2EE020000000000000008 /* NCEndToEndKeySetResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */; };
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
 		AAFC0D042F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */; };
@@ -1305,6 +1310,9 @@
 		AABBCC0930A8000100F0A001 /* NCMediaViewerModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerModelTests.swift; sourceTree = "<group>"; };
 		A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySet.swift; sourceTree = "<group>"; };
 		A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetArchiveTests.swift; sourceTree = "<group>"; };
+		A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetAccess.swift; sourceTree = "<group>"; };
+		A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetResolver.swift; sourceTree = "<group>"; };
+		A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetResolverTests.swift; sourceTree = "<group>"; };
 		AABD0C862D5F58C400F009E6 /* Server.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Server.sh; sourceTree = "<group>"; };
 		AABD0C892D5F67A200F009E6 /* XCUIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
 		AACCAB522CFE041F00DA1786 /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Intent.strings; sourceTree = "<group>"; };
@@ -2208,6 +2216,7 @@
 			isa = PBXGroup;
 			children = (
 				A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */,
+				A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */,
 				AABBCC0330A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift */,
 				AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */,
 				AABBCC0930A8000100F0A001 /* NCMediaViewerModelTests.swift */,
@@ -3290,6 +3299,8 @@
 			children = (
 				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
 				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
+				A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */,
+				A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F72944F12A84246400246839 /* NCEndToEndMetadataV2.swift */,
 				F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */,
@@ -4505,6 +4516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */,
+				A1E2EE020000000000000008 /* NCEndToEndKeySetResolverTests.swift in Sources */,
 				AABBCC0430A8000100F0A001 /* NCMediaPlaybackOptionsTests.swift in Sources */,
 				AABBCC0830A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift in Sources */,
 				AABBCC0A30A8000100F0A001 /* NCMediaViewerModelTests.swift in Sources */,
@@ -4672,6 +4684,8 @@
 				F7A573692E190387009C9257 /* NCShareExtensionData.swift in Sources */,
 				F7BDC1D4300F440A00C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift in Sources */,
 				F7BD71E62636EAFC00643C34 /* NCNetworkingE2EE.swift in Sources */,
+				A1E2EE020000000000000003 /* NCEndToEndKeySetAccess.swift in Sources */,
+				A1E2EE020000000000000005 /* NCEndToEndKeySetResolver.swift in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7327E3B2B73B8D600A462C7 /* Array+Extension.swift in Sources */,
 				F7D7A76C2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
@@ -5054,6 +5068,8 @@
 				F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
+				A1E2EE020000000000000004 /* NCEndToEndKeySetAccess.swift in Sources */,
+				A1E2EE020000000000000006 /* NCEndToEndKeySetResolver.swift in Sources */,
 				F7A7FDDD2C2DBD6200E9A93A /* NCDeepLinkHandler.swift in Sources */,
 				F778231E2C42C07C001BB94F /* NCCollectionViewCommon+MediaLayout.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,

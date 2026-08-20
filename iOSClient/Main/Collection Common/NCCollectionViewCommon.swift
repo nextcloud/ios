@@ -33,6 +33,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var isEditMode = false
     // whether the displayed folder is E2EE; refreshed on each collection view data-source pass
     internal var isCurrentDirectoryE2EE = false
+    // whether the displayed E2EE folder was decoded with active or archived keys
+    internal var endToEndKeySetAccess: NCEndToEndKeySetAccess = .unavailable
     internal var fileSelect: [String] = []
     internal var metadataFolder: tableMetadata?
     internal var richWorkspaceText: String?
