@@ -154,6 +154,43 @@ struct NCImageZoomViewTests {
         #expect(layout.frame == CGRect(x: 0, y: 120, width: 320, height: 240))
     }
 
+    @Test("Live Photo playback clamps transient elastic zoom")
+    func livePhotoPlaybackClampsElasticZoom() {
+        let layout = NCLivePhotoPlaybackLayout(
+            containerSize: CGSize(width: 320, height: 480),
+            photoSize: CGSize(width: 400, height: 300),
+            zoomState: NCImageZoomView.ZoomState(
+                zoomScale: 20,
+                normalizedCenter: CGPoint(x: 0.5, y: 0.5)
+            )
+        )
+
+        #expect(layout.frame == CGRect(x: -640, y: -360, width: 1_600, height: 1_200))
+    }
+
+    @Test("Persisted zoom state clamps transient elastic zoom")
+    func persistedZoomStateClampsElasticZoom() throws {
+        var persistedZoomState: NCImageZoomView.ZoomState?
+        let (coordinator, scrollView, _) = makeZoomView(
+            imageSize: CGSize(width: 400, height: 300),
+            onZoomStateChanged: { persistedZoomState = $0 }
+        )
+
+        // Allow the test scroll view to reproduce the temporary value that
+        // UIScrollView can report while bouncesZoom is active.
+        scrollView.maximumZoomScale = 20
+        scrollView.setZoomScale(20, animated: false)
+        coordinator.scrollViewDidEndZooming(
+            scrollView,
+            with: nil,
+            atScale: scrollView.zoomScale
+        )
+
+        let zoomState = try #require(persistedZoomState)
+
+        #expect(zoomState.zoomScale == coordinator.maximumZoomScale)
+    }
+
     private func makeZoomView(
         imageSize: CGSize,
         initialZoomState: NCImageZoomView.ZoomState? = nil,
