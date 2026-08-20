@@ -51,7 +51,8 @@ class NCEndToEndMetadata: NSObject {
 
         let isMetadataV1 = (try? JSONDecoder().decode(E2eeV1.self, from: data)) != nil
         let isMetadataV12 = (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil
-        let isMetadataV2 = (try? JSONDecoder().decode(E2eeV2.self, from: data)) != nil
+        let metadataV2 = try? JSONDecoder().decode(E2eeV2.self, from: data)
+        let isMetadataV2 = metadataV2 != nil
 
         guard isMetadataV1 || isMetadataV12 || isMetadataV2 else {
             return (
@@ -63,12 +64,25 @@ class NCEndToEndMetadata: NSObject {
             )
         }
 
+        var rootEncryptedMetadataKey: String?
+        if let metadataV2,
+           metadataV2.users == nil,
+           let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session),
+           let tableUser = await database.getE2EUserAsync(
+               account: session.account,
+               directoryTopOcId: directoryTop.ocId,
+               userId: session.userId
+           ) {
+            rootEncryptedMetadataKey = tableUser.encryptedMetadataKey
+        }
+
         let access: NCEndToEndKeySetAccess
         do {
             access = try NCEndToEndKeySetResolver().resolve(
                 metadata: metadata,
                 account: session.account,
-                userId: session.userId
+                userId: session.userId,
+                rootEncryptedMetadataKey: rootEncryptedMetadataKey
             )
         } catch {
             return (

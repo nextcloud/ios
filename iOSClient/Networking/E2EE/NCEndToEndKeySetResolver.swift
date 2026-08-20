@@ -15,7 +15,12 @@ struct NCEndToEndKeySetResolver {
         self.preferences = preferences
     }
 
-    func resolve(metadata: String, account: String, userId: String) throws -> NCEndToEndKeySetAccess {
+    func resolve(
+        metadata: String,
+        account: String,
+        userId: String,
+        rootEncryptedMetadataKey: String? = nil
+    ) throws -> NCEndToEndKeySetAccess {
         guard let data = metadata.data(using: .utf8) else {
             return .unavailable
         }
@@ -44,13 +49,12 @@ struct NCEndToEndKeySetResolver {
         }
 
         if let metadataV2 = try? JSONDecoder().decode(NCEndToEndMetadata.E2eeV2.self, from: data) {
-            guard let encryptedMetadataKey = metadataV2.users?
-                .first(where: { $0.userId == userId })?
-                .encryptedMetadataKey else {
-                // Child V2 folders omit users and reuse the metadata key that
-                // was decrypted for their encrypted root. Until the root-to-
-                // snapshot association is persisted, preserve current behavior.
-                return currentKeySet.map(NCEndToEndKeySetAccess.active) ?? .unavailable
+            guard let encryptedMetadataKey = encryptedMetadataKey(
+                users: metadataV2.users,
+                userId: userId,
+                rootEncryptedMetadataKey: rootEncryptedMetadataKey
+            ) else {
+                return .unavailable
             }
 
             return try resolve(
@@ -63,6 +67,22 @@ struct NCEndToEndKeySetResolver {
         }
 
         return .unavailable
+    }
+
+    /// Child V2 metadata omits users and therefore reuses the encrypted key
+    /// saved when its encrypted root was decoded.
+    func encryptedMetadataKey(
+        users: [NCEndToEndMetadata.E2eeV2.Users]?,
+        userId: String,
+        rootEncryptedMetadataKey: String?
+    ) -> String? {
+        if let users {
+            return users
+                .first(where: { $0.userId == userId })?
+                .encryptedMetadataKey
+        }
+
+        return rootEncryptedMetadataKey
     }
 
     /// Kept internal so candidate ordering can be verified independently of

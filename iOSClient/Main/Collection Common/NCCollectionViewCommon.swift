@@ -662,6 +662,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             $0.navigationController === navigationController && $0.serverUrl == serverUrlPush
         }) {
             let viewController = existingEntry.viewController
+            viewController.endToEndKeySetAccess = endToEndKeySetAccess
 
             if navigationController.topViewController === viewController {
                 return
@@ -683,6 +684,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         viewController.serverUrl = serverUrlPush
         viewController.titlePreviusFolder = navigationItem.title
         viewController.titleCurrentFolder = metadata.fileNameView
+        viewController.endToEndKeySetAccess = endToEndKeySetAccess
 
         navigationCollectionViewCommon.append(
             NavigationCollectionViewCommon(
