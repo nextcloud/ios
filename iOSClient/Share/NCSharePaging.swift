@@ -39,11 +39,12 @@ class NCSharePaging: UIViewController {
     private var pageVCs: [UIViewController] = []
     private var contentHost: UIHostingController<NCSharePagingContentView>?
 
-    /// Minimum server version that serves the unified sharing UI (plus button + Sharing tab).
-    private static let unifiedSharingMinVersion: NextcloudVersion = .v34
-
     var metadata = tableMetadata()
     var controller: NCMainTabBarController?
+
+    private var internalLink: String {
+        metadata.urlBase + "/index.php/f/" + metadata.fileId
+    }
     var pages: [NCBrandOptions.NCInfoPagingTab] = []
 
     private var initialPage: NCBrandOptions.NCInfoPagingTab = .activity
@@ -95,7 +96,7 @@ class NCSharePaging: UIViewController {
         // The unified share (+) button only applies to servers with the new sharing API.
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
-        if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: Self.unifiedSharingMinVersion) {
+        if capabilities.unifiedSharingEnabled {
             let addShareButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
             addShareButton.accessibilityLabel = NSLocalizedString("_share_", comment: "")
             rightBarButtonItems.insert(addShareButton, at: 0)
@@ -180,10 +181,18 @@ class NCSharePaging: UIViewController {
             let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
             // Newer servers get the unified share list; older ones keep the legacy NCShare UI.
-            if NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: Self.unifiedSharingMinVersion) {
+            if capabilities.unifiedSharingEnabled {
                 let brandColor = Color(NCBrandColor.shared.getElement(account: metadata.account))
-                return UIHostingController(rootView: UnifiedShareListView(fileName: metadata.fileNameView, account: metadata.account, sourceId: metadata.ocId, tint: brandColor)
-                    .tint(brandColor))
+                let listView = UnifiedShareListView(fileName: metadata.fileNameView, account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink, tint: brandColor) { [weak self] error in
+                    guard let self else { return }
+
+                    Task {
+                        let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                        await showErrorBanner(windowScene: windowScene, error: error)
+                    }
+                }
+
+                return UIHostingController(rootView: listView.tint(brandColor))
             }
 
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {
@@ -262,7 +271,7 @@ class NCSharePaging: UIViewController {
 
     @objc private func addShareTapped(_ sender: UIBarButtonItem) {
         let viewController = UIHostingController(rootView: NavigationStack {
-            UnifiedShareEditView(fileName: metadata.fileNameView, account: metadata.account, sourceId: metadata.ocId)
+            UnifiedShareEditView(account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink)
         }
         .tint(Color(NCBrandColor.shared.getElement(account: metadata.account))))
         viewController.modalPresentationStyle = .pageSheet
