@@ -493,11 +493,95 @@ final class NCPreferences: NSObject {
         return true
     }
 
-    func clearAllKeysEndToEnd(account: String) {
+    /// Archives the current E2EE credentials as an immutable Keychain item.
+    ///
+    /// Repeated attempts with unchanged credentials reuse the existing
+    /// snapshot. The archive index is written only after the snapshot itself,
+    /// so callers can safely stop before clearing the active credentials if
+    /// either Keychain operation fails.
+    @discardableResult
+    func archiveCurrentEndToEndKeySet(account: String) throws -> NCEndToEndKeySet? {
+        guard let candidate = NCEndToEndKeySet(
+            certificate: getEndToEndCertificate(account: account),
+            privateKey: getEndToEndPrivateKey(account: account),
+            publicKey: getEndToEndPublicKey(account: account),
+            passphrase: getEndToEndPassphrase(account: account)
+        ) else {
+            return nil
+        }
+
+        let archivedKeySets = try getArchivedEndToEndKeySets(account: account)
+        if let existingKeySet = archivedKeySets.first(where: { $0.containsSameKeyMaterial(as: candidate) }) {
+            return existingKeySet
+        }
+
+        let snapshotKey = archivedEndToEndKeySetKey(account: account, identifier: candidate.identifier)
+        let snapshotData = try JSONEncoder().encode(candidate)
+        try keychain.set(snapshotData, key: snapshotKey)
+
+        do {
+            let identifiers = archivedKeySets.map(\.identifier) + [candidate.identifier]
+            let indexData = try JSONEncoder().encode(identifiers)
+            try keychain.set(indexData, key: archivedEndToEndKeySetIndexKey(account: account))
+        } catch {
+            try? keychain.remove(snapshotKey)
+            throw error
+        }
+
+        return candidate
+    }
+
+    /// Returns E2EE snapshots in archival order without exposing mutation APIs.
+    func getArchivedEndToEndKeySets(account: String) throws -> [NCEndToEndKeySet] {
+        let indexKey = archivedEndToEndKeySetIndexKey(account: account)
+        guard let indexData = try keychain.getData(indexKey) else {
+            return []
+        }
+
+        let identifiers = try JSONDecoder().decode([String].self, from: indexData)
+        return try identifiers.map { identifier in
+            let snapshotKey = archivedEndToEndKeySetKey(account: account, identifier: identifier)
+            guard let snapshotData = try keychain.getData(snapshotKey) else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+
+            let keySet = try JSONDecoder().decode(NCEndToEndKeySet.self, from: snapshotData)
+            guard keySet.identifier == identifier else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+            return keySet
+        }
+    }
+
+    /// Clears only the active credentials, preserving archived key sets.
+    func clearCurrentKeysEndToEnd(account: String) {
         setEndToEndCertificate(account: account, certificate: nil)
         setEndToEndPrivateKey(account: account, privateKey: nil)
         setEndToEndPublicKey(account: account, publicKey: nil)
         setEndToEndPassphrase(account: account, passphrase: nil)
+    }
+
+    /// Clears active and archived E2EE credentials for explicit local removal.
+    func clearAllKeysEndToEnd(account: String) {
+        clearCurrentKeysEndToEnd(account: account)
+
+        let snapshotPrefix = archivedEndToEndKeySetPrefix(account: account)
+        for key in keychain.allKeys().filter({ $0.hasPrefix(snapshotPrefix) }) {
+            try? keychain.remove(key)
+        }
+        try? keychain.remove(archivedEndToEndKeySetIndexKey(account: account))
+    }
+
+    private func archivedEndToEndKeySetIndexKey(account: String) -> String {
+        "EndToEndArchivedKeySetIndex_" + account
+    }
+
+    private func archivedEndToEndKeySetPrefix(account: String) -> String {
+        "EndToEndArchivedKeySet_" + account + "_"
+    }
+
+    private func archivedEndToEndKeySetKey(account: String, identifier: String) -> String {
+        archivedEndToEndKeySetPrefix(account: account) + identifier
     }
 
     // MARK: - PUSH NOTIFICATION

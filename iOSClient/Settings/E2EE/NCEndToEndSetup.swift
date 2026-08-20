@@ -47,14 +47,16 @@ class NCEndToEndSetup {
     /// Starts the E2EE initialization pipeline.
     ///
     /// Flow:
-    /// 1. Clear all keys e2ee in preferences
+    /// 1. Archive the current E2EE key set and clear only the active keys
     /// 2. Ensure a valid certificate exists (fetch or create/sign)
     /// 3. Ensure a valid private key exists (fetch or create)
     ///
     /// - Throws: `NKError` if any step fails (network, crypto, validation, or user cancellation)
     func start() async throws {
-        // Clear all keys
-        preference.clearAllKeysEndToEnd(account: session.account)
+        // Preserve the previous key space before replacing the active keys.
+        // A Keychain failure stops setup before any key material is removed.
+        try preference.archiveCurrentEndToEndKeySet(account: session.account)
+        preference.clearCurrentKeysEndToEnd(account: session.account)
         // get version E2EE
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
@@ -476,6 +478,9 @@ class NCEndToEndSetup {
             )
         }
 
+        // Certificate renewal replaces part of the active key set, so preserve
+        // the previous version before updating it.
+        try preference.archiveCurrentEndToEndKeySet(account: session.account)
         preference.setEndToEndCertificate(account: session.account, certificate: certificate)
 
         return certificate
