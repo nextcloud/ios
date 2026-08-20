@@ -33,6 +33,19 @@ class NCNetworkingE2EEDelete: NSObject {
             return resultsLock.error
         }
 
+        // VERIFY WRITE ACCESS + DOWNLOAD METADATA
+        //
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(
+            serverUrl: metadata.serverUrl,
+            fileId: fileId,
+            e2eToken: e2eToken,
+            session: session
+        )
+        guard errorDownloadMetadata == .success else {
+            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return errorDownloadMetadata
+        }
+
         // DELETE FILE
         //
         let serverUrlFileName = self.utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
@@ -68,14 +81,6 @@ class NCNetworkingE2EEDelete: NSObject {
         } else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return result.error
-        }
-
-        // DOWNLOAD METADATA
-        //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
-        guard errorDownloadMetadata == .success else {
-            await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            return errorDownloadMetadata
         }
 
         // UPDATE DB

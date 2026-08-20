@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import NextcloudKit
 
 /// Describes which local E2EE key set can read an encrypted storage space.
 enum NCEndToEndKeySetAccess: Equatable, Sendable {
@@ -31,5 +32,23 @@ enum NCEndToEndKeySetAccess: Equatable, Sendable {
             return true
         }
         return false
+    }
+
+    /// A write is allowed only when the active key set decrypts the storage space.
+    var writeAccessError: NKError {
+        switch self {
+        case .active:
+            return .success
+        case .archived:
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EEReadOnly,
+                errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
+            )
+        case .unavailable:
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EENoUserFound,
+                errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+            )
+        }
     }
 }

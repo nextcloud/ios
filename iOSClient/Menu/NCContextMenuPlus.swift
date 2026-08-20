@@ -576,16 +576,16 @@ class NCContextMenuPlus: NSObject {
             return true
         }
 
-        guard !viewController.endToEndKeySetAccess.isReadOnly else {
-            return false
-        }
-
         guard metadataFolder.isCreatable else {
             return false
         }
 
         guard metadataFolder.e2eEncrypted else {
             return true
+        }
+
+        guard viewController.endToEndKeySetAccess.canWrite else {
+            return false
         }
 
         return NextcloudKit.shared.isNetworkReachable()

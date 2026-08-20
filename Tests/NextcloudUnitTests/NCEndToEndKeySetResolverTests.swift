@@ -21,6 +21,7 @@ struct NCEndToEndKeySetResolverTests {
 
         #expect(access == .active(active))
         #expect(access.canWrite)
+        #expect(access.writeAccessError == .success)
     }
 
     @Test("The most recently archived matching key set is selected")
@@ -36,6 +37,7 @@ struct NCEndToEndKeySetResolverTests {
 
         #expect(access == .archived(newest))
         #expect(access.isReadOnly)
+        #expect(access.writeAccessError.errorCode == NCGlobal.shared.errorE2EEReadOnly)
     }
 
     @Test("Access is unavailable when no key set can decrypt metadata")
@@ -52,6 +54,7 @@ struct NCEndToEndKeySetResolverTests {
         #expect(access == .unavailable)
         #expect(!access.canWrite)
         #expect(!access.isReadOnly)
+        #expect(access.writeAccessError.errorCode == NCGlobal.shared.errorE2EENoUserFound)
     }
 
     @Test("A V2 child folder inherits its encrypted root metadata key")

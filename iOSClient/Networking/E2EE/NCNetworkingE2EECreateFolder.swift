@@ -140,7 +140,10 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await self.database.createDirectory(metadata: metadata)
 
         // SEND METADATA FOR THE NEW FOLDER
-        await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrlFileName, account: session.account)
+        await NCNetworkingE2EE().createInitialMetadata(
+            serverUrl: serverUrlFileName,
+            account: session.account
+        )
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(networkingStatus: self.global.networkingStatusCreateFolder,

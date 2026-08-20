@@ -311,8 +311,10 @@ class NCFiles: NCCollectionViewCommon {
                         serverUrl: serverUrl,
                         session: session
                     )
-                    if storedAccess.keySet != nil {
-                        endToEndKeySetAccess = storedAccess
+                    endToEndKeySetAccess = storedAccess
+
+                    guard storedAccess.writeAccessError == .success else {
+                        return storedAccess.writeAccessError
                     }
                 } catch {
                     return NKError(
@@ -321,12 +323,6 @@ class NCFiles: NCCollectionViewCommon {
                     )
                 }
 
-                guard !endToEndKeySetAccess.isReadOnly else {
-                    return NKError(
-                        errorCode: global.errorE2EEReadOnly,
-                        errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
-                    )
-                }
                 nkLog(tag: self.global.logTagE2EE, message: "E2ee metadata not found, resend.")
                 await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: session.account)
                 result = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: session.account)

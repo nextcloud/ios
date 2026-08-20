@@ -125,12 +125,45 @@ class NCNetworkingE2EE: NSObject {
 
     // MARK: -
 
+    private enum MetadataUploadMode {
+        case updateOrRecover
+        case initialCreation
+    }
+
     @discardableResult
     func uploadMetadata(serverUrl: String,
                         addUserId: String? = nil,
                         removeUserId: String? = nil,
                         updateVersionV1V2: Bool = false,
                         account: String) async -> NKError {
+        await uploadMetadata(
+            serverUrl: serverUrl,
+            addUserId: addUserId,
+            removeUserId: removeUserId,
+            updateVersionV1V2: updateVersionV1V2,
+            mode: .updateOrRecover,
+            account: account
+        )
+    }
+
+    @discardableResult
+    func createInitialMetadata(serverUrl: String, account: String) async -> NKError {
+        await uploadMetadata(
+            serverUrl: serverUrl,
+            addUserId: nil,
+            removeUserId: nil,
+            updateVersionV1V2: false,
+            mode: .initialCreation,
+            account: account
+        )
+    }
+
+    private func uploadMetadata(serverUrl: String,
+                                addUserId: String?,
+                                removeUserId: String?,
+                                updateVersionV1V2: Bool,
+                                mode: MetadataUploadMode,
+                                account: String) async -> NKError {
         var addCertificate: String?
         var method = "POST"
         let session = NCSession.shared.getSession(account: account)
@@ -180,6 +213,26 @@ class NCNetworkingE2EE: NSObject {
             method = "PUT"
         } else if resultsGetE2EEMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound,
                   !updateVersionV1V2 {
+            if case .updateOrRecover = mode {
+                let storedAccess: NCEndToEndKeySetAccess
+                do {
+                    storedAccess = try await NCEndToEndMetadata().resolveStoredRootKeySetAccess(
+                        serverUrl: serverUrl,
+                        session: session
+                    )
+                } catch {
+                    await unlock(account: session.account, serverUrl: serverUrl)
+                    return NKError(
+                        errorCode: NCGlobal.shared.errorInternalError,
+                        errorDescription: error.localizedDescription
+                    )
+                }
+
+                guard storedAccess.writeAccessError == .success else {
+                    await unlock(account: session.account, serverUrl: serverUrl)
+                    return storedAccess.writeAccessError
+                }
+            }
             method = "POST"
         } else {
             await unlock(account: session.account, serverUrl: serverUrl)
@@ -259,19 +312,7 @@ class NCNetworkingE2EE: NSObject {
             )
         }
 
-        if access.canWrite {
-            return .success
-        } else if access.isReadOnly {
-            return NKError(
-                errorCode: NCGlobal.shared.errorE2EEReadOnly,
-                errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
-            )
-        } else {
-            return NKError(
-                errorCode: NCGlobal.shared.errorE2EENoUserFound,
-                errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
-            )
-        }
+        return access.writeAccessError
     }
 
     func uploadMetadata(serverUrl: String,
@@ -318,7 +359,24 @@ class NCNetworkingE2EE: NSObject {
                           e2eToken: String,
                           session: NCSession.Session) async -> NKError {
         let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
-        guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+        guard resultsGetE2EEMetadata.error == .success,
+              let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+            if resultsGetE2EEMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                do {
+                    let storedAccess = try await NCEndToEndMetadata().resolveStoredRootKeySetAccess(
+                        serverUrl: serverUrl,
+                        session: session
+                    )
+                    guard storedAccess.writeAccessError == .success else {
+                        return storedAccess.writeAccessError
+                    }
+                } catch {
+                    return NKError(
+                        errorCode: NCGlobal.shared.errorInternalError,
+                        errorDescription: error.localizedDescription
+                    )
+                }
+            }
             return resultsGetE2EEMetadata.error
         }
 
@@ -329,14 +387,7 @@ class NCNetworkingE2EE: NSObject {
             return decodeResult.error
         }
 
-        guard decodeResult.access.canWrite else {
-            return NKError(
-                errorCode: NCGlobal.shared.errorE2EEReadOnly,
-                errorDescription: NSLocalizedString("_e2ee_read_only_", comment: "")
-            )
-        }
-
-        return NKError()
+        return decodeResult.access.writeAccessError
     }
 
     // MARK: -
