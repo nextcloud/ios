@@ -8,6 +8,24 @@ import Testing
 
 @Suite("End-to-end key set archive")
 struct NCEndToEndKeySetArchiveTests {
+    @Test("Archiving does not change the active credentials")
+    func preservesNormalActiveCredentials() throws {
+        let account = "e2ee-archive-\(UUID().uuidString)"
+        let preferences = NCPreferences()
+        defer {
+            preferences.clearAllKeysEndToEnd(account: account)
+        }
+
+        setKeySet(on: preferences, account: account)
+        try preferences.archiveCurrentEndToEndKeySet(account: account)
+
+        #expect(preferences.isEndToEndEnabled(account: account))
+        #expect(preferences.getEndToEndCertificate(account: account) == "certificate")
+        #expect(preferences.getEndToEndPrivateKey(account: account) == "private-key")
+        #expect(preferences.getEndToEndPublicKey(account: account) == "public-key")
+        #expect(preferences.getEndToEndPassphrase(account: account) == "passphrase")
+    }
+
     @Test("Archiving preserves active credentials after they are cleared")
     func preservesActiveCredentials() throws {
         let account = "e2ee-archive-\(UUID().uuidString)"
