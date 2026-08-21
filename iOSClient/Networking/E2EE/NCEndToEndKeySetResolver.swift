@@ -33,7 +33,7 @@ struct NCEndToEndKeySetResolver {
                 currentKeySet: currentKeySet,
                 account: account,
                 canDecrypt: { keySet in
-                    encryptedMetadataKeys.contains { decryptsLegacyMetadataKey($0, with: keySet) }
+                    encryptedMetadataKeys.contains { canDecryptLegacyMetadataKey($0, with: keySet) }
                 }
             )
         }
@@ -43,7 +43,7 @@ struct NCEndToEndKeySetResolver {
                 currentKeySet: currentKeySet,
                 account: account,
                 canDecrypt: { keySet in
-                    decryptsLegacyMetadataKey(metadataV12.metadata.metadataKey, with: keySet)
+                    canDecryptLegacyMetadataKey(metadataV12.metadata.metadataKey, with: keySet)
                 }
             )
         }
@@ -61,7 +61,7 @@ struct NCEndToEndKeySetResolver {
                 currentKeySet: currentKeySet,
                 account: account,
                 canDecrypt: { keySet in
-                    decryptsMetadataKey(encryptedMetadataKey, with: keySet)
+                    canDecryptMetadataKey(encryptedMetadataKey, with: keySet)
                 }
             )
         }
@@ -74,7 +74,7 @@ struct NCEndToEndKeySetResolver {
             currentKeySet: currentKeySet(account: account),
             account: account,
             canDecrypt: { keySet in
-                decryptsMetadataKey(encryptedMetadataKey, with: keySet)
+                canDecryptMetadataKey(encryptedMetadataKey, with: keySet)
             }
         )
     }
@@ -145,7 +145,7 @@ struct NCEndToEndKeySetResolver {
         )
     }
 
-    private func decryptsLegacyMetadataKey(_ encryptedMetadataKey: String, with keySet: NCEndToEndKeySet) -> Bool {
+    private func canDecryptLegacyMetadataKey(_ encryptedMetadataKey: String, with keySet: NCEndToEndKeySet) -> Bool {
         guard let privateKey = keySet.privateKey,
               let encryptedData = Data(base64Encoded: encryptedMetadataKey),
               let decryptedData = NCEndToEndEncryption.shared().decryptAsymmetricData(encryptedData, privateKey: privateKey),
@@ -157,7 +157,7 @@ struct NCEndToEndKeySetResolver {
         return !decodedKey.isEmpty
     }
 
-    private func decryptsMetadataKey(_ encryptedMetadataKey: String, with keySet: NCEndToEndKeySet) -> Bool {
+    private func canDecryptMetadataKey(_ encryptedMetadataKey: String, with keySet: NCEndToEndKeySet) -> Bool {
         guard let privateKey = keySet.privateKey,
               let encryptedData = Data(base64Encoded: encryptedMetadataKey),
               let decryptedData = NCEndToEndEncryption.shared().decryptAsymmetricData(encryptedData, privateKey: privateKey) else {
