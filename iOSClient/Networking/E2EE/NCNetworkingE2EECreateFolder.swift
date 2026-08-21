@@ -31,6 +31,11 @@ class NCNetworkingE2EECreateFolder: NSObject {
             }
         }
 
+        error = await networkingE2EE.validateCurrentServerKey(account: session.account)
+        guard error == .success else {
+            return error
+        }
+
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
 

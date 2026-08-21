@@ -12,6 +12,35 @@ class NCNetworkingE2EE: NSObject {
     let e2EEApiVersion1 = "v1"
     let e2EEApiVersion2 = "v2"
 
+    /// Executes at most one server-key request per account while the app
+    /// remains active. Concurrent callers share the same in-flight request.
+    private actor ServerKeyValidationGate {
+        private var validations: [String: Task<NKError, Never>] = [:]
+
+        func beginNewActiveCycle() {
+            validations.removeAll()
+        }
+
+        func validate(
+            account: String,
+            operation: @escaping @Sendable () async -> NKError
+        ) async -> NKError {
+            if let validation = validations[account] {
+                return await validation.value
+            }
+
+            let validation = Task { await operation() }
+            validations[account] = validation
+            return await validation.value
+        }
+
+        func markValidated(account: String) {
+            validations[account] = Task { .success }
+        }
+    }
+
+    private static let serverKeyValidationGate = ServerKeyValidationGate()
+
     public struct X509CertificateValidity {
         let notBefore: Date
         let notAfter: Date
@@ -59,9 +88,22 @@ class NCNetworkingE2EE: NSObject {
         return NKRequestOptions(version: version)
     }
 
-    /// Verifies that the locally active key set is still the key set published
-    /// by the server. A mismatch is persisted immediately so the old key can
-    /// only be selected through the archived, read-only path.
+    /// Invalidates the result of the current foreground period. The first
+    /// subsequent E2EE access will perform one new server validation.
+    static func beginNewServerKeyValidationCycle() async {
+        await serverKeyValidationGate.beginNewActiveCycle()
+    }
+
+    /// Records a key set that was already fetched and cryptographically
+    /// verified by setup, avoiding a redundant request in the same cycle.
+    static func markServerKeyAsValidated(account: String) async {
+        await serverKeyValidationGate.markValidated(account: account)
+    }
+
+    /// Verifies once per active app cycle that the locally active key set is
+    /// still the key set published by the server. A mismatch is persisted
+    /// immediately so the old key can only be selected through the archived,
+    /// read-only path.
     func validateCurrentServerKey(account: String) async -> NKError {
         let preferences = NCPreferences()
         guard let localPublicKey = preferences.getEndToEndPublicKey(account: account),
@@ -72,14 +114,38 @@ class NCNetworkingE2EE: NSObject {
             )
         }
 
+        if preferences.isEndToEndServerKeyStale(account: account) {
+            return Self.serverKeyChangedError
+        }
+
+        return await Self.serverKeyValidationGate.validate(
+            account: account
+        ) {
+            await Self.performServerKeyValidation(
+                account: account,
+                localPublicKey: localPublicKey
+            )
+        }
+    }
+
+    private static func performServerKeyValidation(
+        account: String,
+        localPublicKey: String
+    ) async -> NKError {
+        let networkingE2EE = NCNetworkingE2EE()
+        let preferences = NCPreferences()
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let result = await NextcloudKit.shared.getE2EEPublicKeyAsync(
             account: account,
-            options: getOptions(account: account, capabilities: capabilities)
+            options: networkingE2EE.getOptions(account: account, capabilities: capabilities)
         )
 
         if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-            return markCurrentServerKeyAsStale(account: account, preferences: preferences)
+            return markCurrentServerKeyAsStale(
+                account: account,
+                expectedPublicKey: localPublicKey,
+                preferences: preferences
+            )
         }
 
         guard result.error == .success else {
@@ -90,8 +156,12 @@ class NCNetworkingE2EE: NSObject {
             return .invalidData
         }
 
-        guard publicKeysMatch(localPublicKey, serverPublicKey) else {
-            return markCurrentServerKeyAsStale(account: account, preferences: preferences)
+        guard networkingE2EE.publicKeysMatch(localPublicKey, serverPublicKey) else {
+            return markCurrentServerKeyAsStale(
+                account: account,
+                expectedPublicKey: localPublicKey,
+                preferences: preferences
+            )
         }
 
         preferences.setEndToEndServerKeyStale(account: account, stale: false)
@@ -112,23 +182,34 @@ class NCNetworkingE2EE: NSObject {
         return !firstPayload.isEmpty && firstPayload == secondPayload
     }
 
-    private func markCurrentServerKeyAsStale(
+    private static func markCurrentServerKeyAsStale(
         account: String,
+        expectedPublicKey: String,
         preferences: NCPreferences
     ) -> NKError {
+        // Setup may have replaced the active set while this request was in
+        // flight. An obsolete response must never mark the new set as stale.
+        guard preferences.getEndToEndPublicKey(account: account) == expectedPublicKey else {
+            return .success
+        }
+
         do {
             try preferences.archiveCurrentEndToEndKeySet(account: account)
             preferences.setEndToEndServerKeyStale(account: account, stale: true)
-            return NKError(
-                errorCode: NCGlobal.shared.errorE2EEServerKeyChanged,
-                errorDescription: NSLocalizedString("_e2ee_server_key_changed_", comment: "")
-            )
+            return serverKeyChangedError
         } catch {
             return NKError(
                 errorCode: NCGlobal.shared.errorInternalError,
                 errorDescription: error.localizedDescription
             )
         }
+    }
+
+    private static var serverKeyChangedError: NKError {
+        NKError(
+            errorCode: NCGlobal.shared.errorE2EEServerKeyChanged,
+            errorDescription: NSLocalizedString("_e2ee_server_key_changed_", comment: "")
+        )
     }
 
     // MARK: -
@@ -283,7 +364,7 @@ class NCNetworkingE2EE: NSObject {
         let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
         if resultsGetE2EEMetadata.error == .success,
            let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata {
-            let accessError = await validateWriteAccess(
+            let accessError = await validateMetadataWriteAccess(
                 e2eMetadata: e2eMetadata,
                 serverUrl: serverUrl,
                 session: session
@@ -347,7 +428,7 @@ class NCNetworkingE2EE: NSObject {
         return NKError()
     }
 
-    func validateWriteAccess(serverUrl: String, account: String) async -> NKError {
+    func validateFolderWriteAccess(serverUrl: String, account: String) async -> NKError {
         let serverKeyError = await validateCurrentServerKey(account: account)
         guard serverKeyError == .success else {
             return serverKeyError
@@ -365,7 +446,7 @@ class NCNetworkingE2EE: NSObject {
         let error: NKError
         if metadataResult.error == .success,
            let e2eMetadata = metadataResult.e2eMetadata {
-            error = await validateWriteAccess(
+            error = await validateMetadataWriteAccess(
                 e2eMetadata: e2eMetadata,
                 serverUrl: serverUrl,
                 session: session
@@ -380,7 +461,7 @@ class NCNetworkingE2EE: NSObject {
         return error
     }
 
-    private func validateWriteAccess(
+    private func validateMetadataWriteAccess(
         e2eMetadata: String,
         serverUrl: String,
         session: NCSession.Session
@@ -445,11 +526,6 @@ class NCNetworkingE2EE: NSObject {
                           fileId: String,
                           e2eToken: String,
                           session: NCSession.Session) async -> NKError {
-        let serverKeyError = await validateCurrentServerKey(account: session.account)
-        guard serverKeyError == .success else {
-            return serverKeyError
-        }
-
         let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
         guard resultsGetE2EEMetadata.error == .success,
               let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {

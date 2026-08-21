@@ -68,6 +68,7 @@ class NCEndToEndSetup {
             try await getPublicKey()
             try await getPrivateKey()
             preference.setEndToEndServerKeyStale(account: session.account, stale: false)
+            await NCNetworkingE2EE.markServerKeyAsValidated(account: session.account)
         } catch {
             restoreCurrentKeySet(previousKeySet, serverKeyStale: wasServerKeyStale)
             throw error
@@ -174,6 +175,7 @@ class NCEndToEndSetup {
         preference.setEndToEndPublicKey(account: session.account, publicKey: publicKey)
         preference.setEndToEndPassphrase(account: session.account, passphrase: passphrase)
         preference.setEndToEndServerKeyStale(account: session.account, stale: false)
+        await NCNetworkingE2EE.markServerKeyAsValidated(account: session.account)
         NCManageDatabase.shared.clearTablesE2EE(account: session.account)
     }
 

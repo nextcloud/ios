@@ -223,7 +223,7 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
-                let accessError = await NCNetworkingE2EE().validateWriteAccess(
+                let accessError = await NCNetworkingE2EE().validateFolderWriteAccess(
                     serverUrl: metadata.serverUrlFileName,
                     account: metadata.account
                 )
