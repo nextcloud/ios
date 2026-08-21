@@ -571,7 +571,8 @@ class NCContextMenuPlus: NSObject {
     }
 
     private func isPlusButtonEnabled(for controller: NCMainTabBarController) -> Bool {
-        guard let metadataFolder = (controller.currentViewController() as? NCCollectionViewCommon)?.metadataFolder else {
+        guard let viewController = controller.currentViewController() as? NCCollectionViewCommon,
+              let metadataFolder = viewController.metadataFolder else {
             return true
         }
 
@@ -581,6 +582,10 @@ class NCContextMenuPlus: NSObject {
 
         guard metadataFolder.e2eEncrypted else {
             return true
+        }
+
+        guard viewController.endToEndKeySetAccess.canWrite else {
+            return false
         }
 
         return NextcloudKit.shared.isNetworkReachable()

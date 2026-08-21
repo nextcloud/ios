@@ -47,21 +47,136 @@ class NCEndToEndSetup {
     /// Starts the E2EE initialization pipeline.
     ///
     /// Flow:
-    /// 1. Clear all keys e2ee in preferences
+    /// 1. Archive the current E2EE key set and temporarily clear the active keys
     /// 2. Ensure a valid certificate exists (fetch or create/sign)
     /// 3. Ensure a valid private key exists (fetch or create)
+    /// 4. Restore the previous active state if any step fails
     ///
     /// - Throws: `NKError` if any step fails (network, crypto, validation, or user cancellation)
     func start() async throws {
-        // Clear all keys
-        preference.clearAllKeysEndToEnd(account: session.account)
-        // get version E2EE
+        // Preserve the previous key space before replacing the active keys.
+        // A Keychain failure stops setup before any key material is removed.
+        let previousKeySet = try preference.archiveCurrentEndToEndKeySet(account: session.account)
+        let wasServerKeyStale = preference.isEndToEndServerKeyStale(account: session.account)
+        preference.clearCurrentKeysEndToEnd(account: session.account)
+
+        do {
+            // get version E2EE
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+            options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
+
+            try await getPublicKey()
+            try await getPrivateKey()
+            preference.setEndToEndServerKeyStale(account: session.account, stale: false)
+            await NCNetworkingE2EE.markServerKeyAsValidated(account: session.account)
+        } catch {
+            restoreCurrentKeySet(previousKeySet, serverKeyStale: wasServerKeyStale)
+            throw error
+        }
+    }
+
+    /// Restores the exact local state that existed before setup started.
+    /// The archived snapshot remains available and immutable.
+    private func restoreCurrentKeySet(_ keySet: NCEndToEndKeySet?, serverKeyStale: Bool) {
+        preference.setEndToEndCertificate(account: session.account, certificate: keySet?.certificate)
+        preference.setEndToEndPrivateKey(account: session.account, privateKey: keySet?.privateKey)
+        preference.setEndToEndPublicKey(account: session.account, publicKey: keySet?.publicKey)
+        preference.setEndToEndPassphrase(account: session.account, passphrase: keySet?.passphrase)
+        preference.setEndToEndServerKeyStale(account: session.account, stale: serverKeyStale)
+    }
+
+    /// Replaces a stale local key set with the key set currently published by
+    /// the server. All remote values are fetched and cryptographically checked
+    /// before any active Keychain value is replaced.
+    func updateChangedServerKey() async throws {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
 
-        try await getPublicKey()
-        try await getPrivateKey()
+        let publicKeyResult = await NextcloudKit.shared.getE2EEPublicKeyAsync(
+            account: session.account,
+            options: options
+        )
 
+        if publicKeyResult.error.errorCode == global.errorResourceNotFound {
+            try await start()
+            return
+        }
+
+        guard publicKeyResult.error == .success,
+              let publicKey = publicKeyResult.publicKey,
+              !publicKey.isEmpty else {
+            throw publicKeyResult.error == .success ? NKError.invalidData : publicKeyResult.error
+        }
+
+        let certificateResult = await NextcloudKit.shared.getE2EECertificateAsync(
+            account: session.account,
+            options: options
+        )
+        guard certificateResult.error == .success,
+              let certificate = certificateResult.certificate,
+              !certificate.isEmpty else {
+            throw certificateResult.error == .success ? NKError.invalidData : certificateResult.error
+        }
+
+        let privateKeyResult = await NextcloudKit.shared.getE2EEPrivateKeyAsync(
+            account: session.account,
+            options: options
+        )
+        guard privateKeyResult.error == .success,
+              let privateKeyCipher = privateKeyResult.privateKey,
+              !privateKeyCipher.isEmpty else {
+            throw privateKeyResult.error == .success ? NKError.invalidData : privateKeyResult.error
+        }
+
+        let passphrase = try await requestPassphraseAsync(
+            title: NSLocalizedString("_e2ee_server_key_changed_title_", comment: ""),
+            message: NSLocalizedString("_e2ee_server_key_changed_", comment: "")
+        )
+        guard let privateKeyData = endToEndEncryption?.decryptPrivateKey(
+            privateKeyCipher,
+            passphrase: passphrase
+        ),
+        let decodedPrivateKeyData = Data(base64Encoded: privateKeyData),
+        let privateKey = String(data: decodedPrivateKeyData, encoding: .utf8),
+        !privateKey.isEmpty else {
+            throw NKError(
+                errorCode: global.errorInternalError,
+                errorDescription: NSLocalizedString("_e2ee_setup_passphrase_error_", comment: "")
+            )
+        }
+
+        guard let endToEndEncryption,
+              endToEndEncryption.verifyCertificate(certificate, publicKey: publicKey) else {
+            throw NKError(
+                errorCode: global.errorInternalError,
+                errorDescription: NSLocalizedString("_e2ee_setup_verify_publickey_", comment: "")
+            )
+        }
+
+        let certificateSigningRequest = try networkingE2EE.createCertificateSigningRequest(
+            privateKeyPEM: privateKey,
+            commonName: session.userId
+        )
+        guard let privateKeyPublicKey = endToEndEncryption.extractPublicKey(
+            fromCertificateSigningRequest: certificateSigningRequest
+        ),
+        networkingE2EE.publicKeysMatch(privateKeyPublicKey, publicKey) else {
+            throw NKError(
+                errorCode: global.errorInternalError,
+                errorDescription: NSLocalizedString("_e2ee_setup_verify_publickey_", comment: "")
+            )
+        }
+
+        // The new set is complete and verified. Only now preserve and replace
+        // the previous active values.
+        try preference.archiveCurrentEndToEndKeySet(account: session.account)
+        preference.setEndToEndCertificate(account: session.account, certificate: certificate)
+        preference.setEndToEndPrivateKey(account: session.account, privateKey: privateKey)
+        preference.setEndToEndPublicKey(account: session.account, publicKey: publicKey)
+        preference.setEndToEndPassphrase(account: session.account, passphrase: passphrase)
+        preference.setEndToEndServerKeyStale(account: session.account, stale: false)
+        await NCNetworkingE2EE.markServerKeyAsValidated(account: session.account)
+        NCManageDatabase.shared.clearTablesE2EE(account: session.account)
     }
 
     /// Ensures that a valid user certificate is available.
@@ -318,11 +433,14 @@ class NCEndToEndSetup {
     ///
     /// - Note:
     ///   - Always executed on MainActor due to UIKit usage
-    private func requestPassphraseAsync() async throws -> String {
+    private func requestPassphraseAsync(
+        title: String = NSLocalizedString("_e2e_passphrase_request_title_", comment: ""),
+        message: String = NSLocalizedString("_e2e_passphrase_request_message_", comment: "")
+    ) async throws -> String {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alertController = UIAlertController(
-                title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""),
-                message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""),
+                title: title,
+                message: message,
                 preferredStyle: .alert
             )
 
@@ -476,6 +594,9 @@ class NCEndToEndSetup {
             )
         }
 
+        // Certificate renewal replaces part of the active key set, so preserve
+        // the previous version before updating it.
+        try preference.archiveCurrentEndToEndKeySet(account: session.account)
         preference.setEndToEndCertificate(account: session.account, certificate: certificate)
 
         return certificate

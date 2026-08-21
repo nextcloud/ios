@@ -214,7 +214,8 @@ extension NCEndToEndMetadata {
                           signature: String?,
                           serverUrl: String,
                           ocIdServerUrl: String,
-                          session: NCSession.Session) async -> NKError {
+                          session: NCSession.Session,
+                          keySet: NCEndToEndKeySet) async -> NKError {
         guard let data = json.data(using: .utf8),
               let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop,
@@ -274,7 +275,7 @@ extension NCEndToEndMetadata {
                         var metadataKey: Data?
                         if let encryptedMetadataKey = user.encryptedMetadataKey {
                             let data = Data(base64Encoded: encryptedMetadataKey)
-                            if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCPreferences().getEndToEndPrivateKey(account: session.account)) {
+                            if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: keySet.privateKey) {
                                 metadataKey = decrypted
                             }
                         }
@@ -302,7 +303,7 @@ extension NCEndToEndMetadata {
                     let authenticationTag = filedop.value.authenticationTag
                     for user in filedop.value.users where user.userId == session.userId {
                         let data = Data(base64Encoded: user.encryptedFiledropKey)
-                        if let decryptedFiledropKey = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCPreferences().getEndToEndPrivateKey(account: session.account)) {
+                        if let decryptedFiledropKey = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: keySet.privateKey) {
                             let filedropKey = decryptedFiledropKey.base64EncodedString()
                             guard let decryptedFiledrop = NCEndToEndEncryption.shared().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
                                   decryptedFiledrop.isGzipped else {
@@ -476,7 +477,7 @@ extension NCEndToEndMetadata {
                 usersSignatureCodable.append(E2eeV2Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
             }
             signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
-            certificates = users.map { $0.certificate }
+            certificates = users.isEmpty ? [certificate] : users.map { $0.certificate }
         } else {
             signatureCodable = E2eeV2Signature(metadata: E2eeV2Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: nil, version: version)
             certificates = [certificate]

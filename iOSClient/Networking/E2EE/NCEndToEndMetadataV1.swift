@@ -177,7 +177,13 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
+    func decodeMetadataV12(
+        _ json: String,
+        serverUrl: String,
+        ocIdServerUrl: String,
+        session: NCSession.Session,
+        keySet: NCEndToEndKeySet
+    ) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
@@ -185,7 +191,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCPreferences().getEndToEndPrivateKey(account: session.account)
+        let privateKey = keySet.privateKey
         var metadataVersion: Double = 0
         var metadataKey = ""
 
@@ -333,7 +339,7 @@ extension NCEndToEndMetadata {
             }
 
             // verify checksum
-            let passphrase = NCPreferences().getEndToEndPassphrase(account: session.account)?.replacingOccurrences(of: " ", with: "") ?? ""
+            let passphrase = keySet.passphrase?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
@@ -351,7 +357,13 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
+    func decodeMetadataV1(
+        _ json: String,
+        serverUrl: String,
+        ocIdServerUrl: String,
+        session: NCSession.Session,
+        keySet: NCEndToEndKeySet
+    ) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
@@ -359,7 +371,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCPreferences().getEndToEndPrivateKey(account: session.account)
+        let privateKey = keySet.privateKey
         var metadataVersion: Double = 0
 
         do {

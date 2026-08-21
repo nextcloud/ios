@@ -41,6 +41,11 @@ class NCNetworkingE2EEUpload: NSObject {
                            errorDescription: NSLocalizedString("_e2ee_no_session_", comment: ""))
         }
 
+        finalError = await networkingE2EE.validateCurrentServerKey(account: session.account)
+        guard finalError == .success else {
+            return finalError
+        }
+
         defer {
             if finalError != .success {
                 Task {
