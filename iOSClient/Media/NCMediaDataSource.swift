@@ -231,8 +231,9 @@ extension NCMedia {
 
         var firstDateNew = Date.distantFuture
         var lastDateNew = Date.distantPast
-        var firstDate: Date?
-        var lastDate: Date?
+        var firstVisibleCellDate: Date?
+        var lastVisibleCellDate: Date?
+        var visibleCellCount = 0
         var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
@@ -270,8 +271,9 @@ extension NCMedia {
                 return date1 > date2
             }
 
-            firstDate = visibleCells.first?.date
-            lastDate = visibleCells.last?.date
+            firstVisibleCellDate = visibleCells.first?.date
+            lastVisibleCellDate = visibleCells.last?.date
+            visibleCellCount = visibleCells.count
 
             if !visibleCells.isEmpty, !distant {
                 let firstCellDate = visibleCells.first?.date
@@ -324,17 +326,19 @@ extension NCMedia {
         guard !Task.isCancelled,
               self.isViewActived,
               self.session.account == account,
-              let firstDate,
-              let lastDate else {
+              let firstVisibleCellDate,
+              let lastVisibleCellDate else {
             return
         }
 
         // VERIFY MEDIA
         //
-        await self.verifyNetworkMedia(firstDate: firstDate,
-                                      lastDate: lastDate,
+        let verificationLimit = max(visibleCellCount * 3, 300)
+        await self.verifyNetworkMedia(firstDate: firstVisibleCellDate,
+                                      lastDate: lastVisibleCellDate,
                                       mediaPath: tblAccount.mediaPath,
-                                      account: account) {
+                                      account: account,
+                                      limit: verificationLimit) {
             Task { [weak self] in
                 guard let self else {
                     return
@@ -409,6 +413,7 @@ extension NCMedia {
                                      lastDate: Date,
                                      mediaPath: String,
                                      account: String,
+                                     limit: Int,
                                      update: @escaping () -> Void,
                                      finish: @escaping () -> Void) async {
         await NCMediaNetwork().searchMediaPage(
@@ -417,7 +422,7 @@ extension NCMedia {
             lastDate: lastDate,
             account: account,
             paginate: true,
-            limit: 1000000) { task in
+            limit: limit) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                         account: account,
