@@ -515,7 +515,7 @@ class NCContextMenuPlus: NSObject {
         let children = elements.count > 1 ? elements : Array(elements.reversed())
         let menu = UIMenu(title: "", options: .displayInline, children: children)
         if elements.count > 1 {
-            menu.preferredElementSize = .medium
+            menu.preferredElementSize = .automatic
         }
         return menu
     }
