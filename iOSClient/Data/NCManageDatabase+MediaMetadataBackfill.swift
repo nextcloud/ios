@@ -10,6 +10,7 @@ import NextcloudKit
 class tableMediaMetadataBackfill: Object {
     @Persisted(primaryKey: true) var account = ""
     @Persisted var offset = 0
+    @Persisted var cursorDate: Date?
     @Persisted var lastRunDate: Date?
     @Persisted var lastCompletedCycleDate: Date?
 
@@ -36,15 +37,18 @@ extension NCManageDatabase {
     // MARK: - Realm write
 
     func updateMediaMetadataBackfillAsync(account: String,
-                                          offset: Int) async {
+                                          offset: Int,
+                                          cursorDate: Date) async {
         await core.performRealmWriteAsync { realm in
             if let backfill = realm.object(ofType: tableMediaMetadataBackfill.self,
                                            forPrimaryKey: account) {
                 backfill.offset = offset
+                backfill.cursorDate = cursorDate
                 backfill.lastRunDate = Date()
             } else {
                 let backfill = tableMediaMetadataBackfill(account: account)
                 backfill.offset = offset
+                backfill.cursorDate = cursorDate
                 backfill.lastRunDate = Date()
                 realm.add(backfill)
             }
@@ -55,11 +59,13 @@ extension NCManageDatabase {
         await core.performRealmWriteAsync { realm in
             if let backfill = realm.object(ofType: tableMediaMetadataBackfill.self, forPrimaryKey: account) {
                 backfill.offset = 0
+                backfill.cursorDate = nil
                 backfill.lastRunDate = Date()
                 backfill.lastCompletedCycleDate = Date()
             } else {
                 let backfill = tableMediaMetadataBackfill(account: account)
                 backfill.offset = 0
+                backfill.cursorDate = nil
                 backfill.lastRunDate = Date()
                 backfill.lastCompletedCycleDate = Date()
                 realm.add(backfill)
