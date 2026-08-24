@@ -233,7 +233,6 @@ extension NCMedia {
         var lastDateNew = Date.distantPast
         var firstVisibleCellDate: Date?
         var lastVisibleCellDate: Date?
-        var visibleCellCount = 0
         var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
@@ -273,7 +272,6 @@ extension NCMedia {
 
             firstVisibleCellDate = visibleCells.first?.date
             lastVisibleCellDate = visibleCells.last?.date
-            visibleCellCount = visibleCells.count
 
             if !visibleCells.isEmpty, !distant {
                 let firstCellDate = visibleCells.first?.date
@@ -333,7 +331,8 @@ extension NCMedia {
 
         // VERIFY MEDIA
         //
-        let verificationLimit = max(visibleCellCount * 3, 300)
+        // Nextcloud cannot range-filter displayname, so same-date results are bounded by this cap.
+        let verificationLimit = 1000
         await self.verifyNetworkMedia(firstDate: firstVisibleCellDate,
                                       lastDate: lastVisibleCellDate,
                                       mediaPath: tblAccount.mediaPath,
