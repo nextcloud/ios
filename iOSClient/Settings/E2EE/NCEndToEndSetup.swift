@@ -562,7 +562,7 @@ class NCEndToEndSetup {
             )
         }
 
-        let deleteError = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: session.account, password: password ?? "", options: options).error
+        let deleteError = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: session.account, password: password, options: options).error
         guard deleteError == .success else {
             throw deleteError
         }
