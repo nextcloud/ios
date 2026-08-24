@@ -8,6 +8,8 @@ import VisionKit
 
 // MARK: - Image Zoom View
 struct NCImageZoomView: UIViewRepresentable {
+    static let supportedZoomScaleRange: ClosedRange<CGFloat> = 1...5
+
     struct ZoomState: Equatable {
         let zoomScale: CGFloat
         let normalizedCenter: CGPoint
@@ -20,8 +22,8 @@ struct NCImageZoomView: UIViewRepresentable {
     let onZoomChanged: (Bool) -> Void
     let onZoomStateChanged: (ZoomState?) -> Void
 
-    private let minimumZoomScale: CGFloat = 1
-    private let maximumZoomScale: CGFloat = 5
+    private var minimumZoomScale: CGFloat { Self.supportedZoomScaleRange.lowerBound }
+    private var maximumZoomScale: CGFloat { Self.supportedZoomScaleRange.upperBound }
     private let doubleTapZoomScale: CGFloat = 2.5
 
     init(
@@ -211,6 +213,18 @@ struct NCImageZoomView: UIViewRepresentable {
             recordCurrentZoomState()
         }
 
+        func scrollViewDidEndZooming(
+            _ scrollView: UIScrollView,
+            with _: UIView?,
+            atScale _: CGFloat
+        ) {
+            guard !isRestoringZoomState else {
+                return
+            }
+
+            recordCurrentZoomState()
+        }
+
         // MARK: - Layout
         func resetBoundsTracking() {
             lastBoundsSize = .zero
@@ -225,7 +239,16 @@ struct NCImageZoomView: UIViewRepresentable {
                 return nil
             }
 
-            guard scrollView.zoomScale > minimumZoomScale + 0.01,
+            guard scrollView.zoomScale.isFinite else {
+                return nil
+            }
+
+            let clampedZoomScale = min(
+                max(scrollView.zoomScale, minimumZoomScale),
+                maximumZoomScale
+            )
+
+            guard clampedZoomScale > minimumZoomScale + 0.01,
                   scrollView.contentSize.width > 0,
                   scrollView.contentSize.height > 0 else {
                 return nil
@@ -237,7 +260,7 @@ struct NCImageZoomView: UIViewRepresentable {
             )
 
             return ZoomState(
-                zoomScale: scrollView.zoomScale,
+                zoomScale: clampedZoomScale,
                 normalizedCenter: CGPoint(
                     x: min(max(visibleCenter.x / scrollView.contentSize.width, 0), 1),
                     y: min(max(visibleCenter.y / scrollView.contentSize.height, 0), 1)
