@@ -195,8 +195,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
-        "revision" : "d192518544768f3c86354ef94ce6d699019e9487",
-        "version" : "7.4.3"
+        "branch" : "password-parameter",
+        "revision" : "cfc307e5611a9294713a71640c13b3170be0c606"
       }
     },
     {

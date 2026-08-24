@@ -537,7 +537,7 @@ class NCEndToEndSetup {
     /// - Throws: An error if the private key is missing, CSR creation fails,
     ///   a server request fails, or the returned certificate does not contain
     ///   the expected public key.
-    func renewCertificate() async throws -> String {
+    func renewCertificate(password: String) async throws -> String {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
 
@@ -562,7 +562,7 @@ class NCEndToEndSetup {
             )
         }
 
-        let deleteError = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: session.account, options: options).error
+        let deleteError = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: session.account, password: password, options: options).error
         guard deleteError == .success else {
             throw deleteError
         }

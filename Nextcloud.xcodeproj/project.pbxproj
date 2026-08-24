@@ -13,6 +13,19 @@
 		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		370D26AF248A3D7A00121797 /* NCCellMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellMain.swift */; };
 		A1B2C3D430B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D330B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift */; };
+		A1E2EE010000000000000002 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE010000000000000003 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE010000000000000004 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE010000000000000005 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE010000000000000006 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE010000000000000007 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE010000000000000008 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */; };
+		A1E2EE020000000000000003 /* NCEndToEndKeySetAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */; };
+		A1E2EE020000000000000004 /* NCEndToEndKeySetAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */; };
+		A1E2EE020000000000000005 /* NCEndToEndKeySetResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */; };
+		A1E2EE020000000000000006 /* NCEndToEndKeySetResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */; };
+		A1E2EE020000000000000008 /* NCEndToEndKeySetResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */; };
 		A5A87F9E4B0E4441A6A4BC20 /* NCContextMenuProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7697C94BA14450A0867940 /* NCContextMenuProfile.swift */; };
 		AA3C85E82D36B08C00F74F12 /* UITestBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3C85E72D36B08C00F74F12 /* UITestBackend.swift */; };
 		AA3C85EB2D36BBFB00F74F12 /* OCSResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3C85EA2D36BBF400F74F12 /* OCSResponse.swift */; };
@@ -45,19 +58,6 @@
 		AABBCC0630A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0530A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift */; };
 		AABBCC0830A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */; };
 		AABBCC0A30A8000100F0A001 /* NCMediaViewerModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0930A8000100F0A001 /* NCMediaViewerModelTests.swift */; };
-		A1E2EE010000000000000002 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE010000000000000003 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE010000000000000004 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE010000000000000005 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE010000000000000006 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE010000000000000007 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE010000000000000008 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
-		A1E2EE01000000000000000A /* NCEndToEndKeySetArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */; };
-		A1E2EE020000000000000003 /* NCEndToEndKeySetAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */; };
-		A1E2EE020000000000000004 /* NCEndToEndKeySetAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */; };
-		A1E2EE020000000000000005 /* NCEndToEndKeySetResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */; };
-		A1E2EE020000000000000006 /* NCEndToEndKeySetResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */; };
-		A1E2EE020000000000000008 /* NCEndToEndKeySetResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */; };
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
 		AAFC0D042F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFC0D012F9AA10000F0A001 /* NCFocusedAutoUploadIntroView.swift */; };
@@ -1231,6 +1231,11 @@
 		370D26AE248A3D7A00121797 /* NCCellMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCellMain.swift; sourceTree = "<group>"; };
 		8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuComment.swift; sourceTree = "<group>"; };
 		A1B2C3D330B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoadingPolicy.swift; sourceTree = "<group>"; };
+		A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySet.swift; sourceTree = "<group>"; };
+		A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetArchiveTests.swift; sourceTree = "<group>"; };
+		A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetAccess.swift; sourceTree = "<group>"; };
+		A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetResolver.swift; sourceTree = "<group>"; };
+		A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetResolverTests.swift; sourceTree = "<group>"; };
 		AA3C85E72D36B08C00F74F12 /* UITestBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestBackend.swift; sourceTree = "<group>"; };
 		AA3C85EA2D36BBF400F74F12 /* OCSResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCSResponse.swift; sourceTree = "<group>"; };
 		AA3C85ED2D36BCCB00F74F12 /* SharesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharesResponse.swift; sourceTree = "<group>"; };
@@ -1309,11 +1314,6 @@
 		AABBCC0530A8000100F0A001 /* NCVideoPlaybackPresentationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoPlaybackPresentationContext.swift; sourceTree = "<group>"; };
 		AABBCC0730A8000100F0A001 /* NCVideoPlaybackPresentationContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoPlaybackPresentationContextTests.swift; sourceTree = "<group>"; };
 		AABBCC0930A8000100F0A001 /* NCMediaViewerModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerModelTests.swift; sourceTree = "<group>"; };
-		A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySet.swift; sourceTree = "<group>"; };
-		A1E2EE010000000000000009 /* NCEndToEndKeySetArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetArchiveTests.swift; sourceTree = "<group>"; };
-		A1E2EE020000000000000001 /* NCEndToEndKeySetAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetAccess.swift; sourceTree = "<group>"; };
-		A1E2EE020000000000000002 /* NCEndToEndKeySetResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetResolver.swift; sourceTree = "<group>"; };
-		A1E2EE020000000000000007 /* NCEndToEndKeySetResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySetResolverTests.swift; sourceTree = "<group>"; };
 		AABD0C862D5F58C400F009E6 /* Server.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Server.sh; sourceTree = "<group>"; };
 		AABD0C892D5F67A200F009E6 /* XCUIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
 		AACCAB522CFE041F00DA1786 /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Intent.strings; sourceTree = "<group>"; };
@@ -6720,8 +6720,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				kind = exactVersion;
-				version = 7.4.3;
+				branch = "password-parameter";
+				kind = branch;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {

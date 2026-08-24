@@ -69,10 +69,10 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
     }
 
     @MainActor
-    func renewCertificate() async {
+    func renewCertificate(password: String) async {
         do {
             let e2ee = NCEndToEndSetup(controller: controller)
-            let certificate = try await e2ee.renewCertificate()
+            let certificate = try await e2ee.renewCertificate(password: password)
             self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
             await showInfoBanner(windowScene: windowScene,
                                  text: "_e2e_renew_certificate_success_")
