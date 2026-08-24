@@ -69,7 +69,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
     }
 
     @MainActor
-    func renewCertificate(password: String) async {
+    func renewCertificate(password: String?) async {
         do {
             let e2ee = NCEndToEndSetup(controller: controller)
             let certificate = try await e2ee.renewCertificate(password: password)
