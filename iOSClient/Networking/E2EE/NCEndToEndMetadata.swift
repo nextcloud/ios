@@ -47,8 +47,6 @@ class NCEndToEndMetadata: NSObject {
             )
         }
 
-        data.printJson()
-
         let isMetadataV1 = (try? JSONDecoder().decode(E2eeV1.self, from: data)) != nil
         let isMetadataV12 = (try? JSONDecoder().decode(E2eeV12.self, from: data)) != nil
         let metadataV2 = try? JSONDecoder().decode(E2eeV2.self, from: data)
@@ -68,11 +66,20 @@ class NCEndToEndMetadata: NSObject {
         do {
             access = try await resolveKeySetAccess(metadata, serverUrl: serverUrl, session: session)
         } catch {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Unable to resolve E2EE key-set access."
+            )
             return (
                 NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription),
                 .unavailable
             )
         }
+
+        nkLog(
+            tag: NCGlobal.shared.logTagE2EE,
+            message: "Resolved E2EE key-set access: \(access.diagnosticDescription)."
+        )
 
         guard let keySet = access.keySet else {
             return (

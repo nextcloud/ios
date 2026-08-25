@@ -194,7 +194,6 @@ extension NCEndToEndMetadata {
             let metadataCodable = E2eeV2.Metadata(ciphertext: ciphertextMetadata, nonce: initializationVector, authenticationTag: authenticationTag)
             let e2eeCodable = E2eeV2(metadata: metadataCodable, users: usersCodable, filedrop: nil, version: capabilities.e2EEApiVersion)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
-            e2eeData.printJson()
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
             let signature = createSignature(metadata: metadataCodable, users: usersCodable, version: capabilities.e2EEApiVersion, certificate: certificate, session: session)
@@ -311,9 +310,7 @@ extension NCEndToEndMetadata {
                                                errorDescription: NSLocalizedString("_e2ee_filedrop_ciphertext_", comment: ""))
                             }
                             let data = try decryptedFiledrop.gunzipped()
-                            if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
                             let file = try JSONDecoder().decode(E2eeV2.Metadata.ciphertext.Files.self, from: data)
-                            print(file)
                             await addE2eEncryption(fileNameIdentifier: fileNameIdentifier, fileName: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype)
                         }
                     }
@@ -328,8 +325,6 @@ extension NCEndToEndMetadata {
                             errorDescription: NSLocalizedString("_e2ee_key_ciphertext_", comment: ""))
             }
             let data = try decryptedMetadata.gunzipped()
-            // DEBUG
-            // if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
             let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV2.Metadata.ciphertext.self, from: data)
 
             // SIGNATURE CHECK
@@ -374,9 +369,6 @@ extension NCEndToEndMetadata {
                 }
             }
 
-            print("\n\nCOUNTER ---------------------")
-            print("Counter: \(jsonCiphertextMetadata.counter)")
-
             // COUNTER +1
             //
             if let resultCounter = await self.database.getCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl) {
@@ -406,29 +398,16 @@ extension NCEndToEndMetadata {
                                                     version: version)
 
             if let files = jsonCiphertextMetadata.files {
-                print("\nFILES -----------------------\n")
                 for file in files {
                     await addE2eEncryption(fileNameIdentifier: file.key, fileName: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype)
-
-                    print("filename: \(file.value.filename)")
-                    print("fileNameIdentifier: \(file.key)")
-                    print("mimetype: \(file.value.mimetype)")
-                    print("\n")
                 }
             }
 
             if let folders = jsonCiphertextMetadata.folders, !folders.isEmpty {
-                print("FOLDERS----------------------\n")
                 for folder in folders {
                     await addE2eEncryption(fileNameIdentifier: folder.key, fileName: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
-
-                    print("filename: \(folder.value)")
-                    print("fileNameIdentifier: \(folder.key)")
-                    print("\n")
                 }
             }
-
-            print("DECODE SUCCESS ------------------------\n\n")
 
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
@@ -461,7 +440,7 @@ extension NCEndToEndMetadata {
                 return signatureData.base64EncodedString()
             }
         } catch {
-            print("Error: \(error.localizedDescription)")
+            nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Unable to create the E2EE metadata signature.")
         }
 
         return nil
@@ -497,7 +476,7 @@ extension NCEndToEndMetadata {
             }
 
         } catch {
-            print("Error: \(error.localizedDescription)")
+            nkLog(tag: NCGlobal.shared.logTagE2EE, message: "Unable to verify the E2EE metadata signature.")
         }
 
         return false

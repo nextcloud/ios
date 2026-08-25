@@ -137,7 +137,7 @@ class NCFiles: NCCollectionViewCommon {
             self.richWorkspaceText = tblDirectory.richWorkspace
         }
         if let metadataFolder {
-            nkLog(info: "Inside metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
+            nkLog(info: "Inside metadata folder with permissions: \(metadataFolder.permissions)")
 
             // disable + button if no create permission or E2EE offline
             self.mainNavigationController?.menuPlus?.updatePlusButtonEnabled(session: self.session)

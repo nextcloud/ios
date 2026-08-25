@@ -161,7 +161,6 @@ extension NCEndToEndMetadata {
         let e2ee = E2eeV12(metadata: metadata, files: filesCodable, filedrop: filedropCodable)
         do {
             let data = try encoder.encode(e2ee)
-            data.printJson()
             let jsonString = String(data: data, encoding: .utf8)
             // Updated metadata to 1.2
             if await self.database.getE2eMetadataAsync(account: account, serverUrl: serverUrl) == nil {
@@ -238,7 +237,6 @@ extension NCEndToEndMetadata {
                     if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
-                            decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV12.Encrypted.self, from: decryptedData)
 
                             if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
@@ -297,7 +295,6 @@ extension NCEndToEndMetadata {
                     if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(filedrop.encrypted, key: metadataKeyFiledrop, initializationVector: filedrop.encryptedInitializationVector, authenticationTag: filedrop.encryptedTag),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
-                            decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
                             if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {

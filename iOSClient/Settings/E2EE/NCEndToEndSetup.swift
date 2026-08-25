@@ -59,6 +59,10 @@ class NCEndToEndSetup {
         let previousKeySet = try preference.archiveCurrentEndToEndKeySet(account: session.account)
         let wasServerKeyStale = preference.isEndToEndServerKeyStale(account: session.account)
         preference.clearCurrentKeysEndToEnd(account: session.account)
+        nkLog(
+            tag: global.logTagE2EE,
+            message: "E2EE setup started; previous active key set archived: \(previousKeySet != nil)."
+        )
 
         do {
             // get version E2EE
@@ -69,8 +73,10 @@ class NCEndToEndSetup {
             try await getPrivateKey()
             preference.setEndToEndServerKeyStale(account: session.account, stale: false)
             await NCNetworkingE2EE.markServerKeyAsValidated(account: session.account)
+            nkLog(tag: global.logTagE2EE, message: "E2EE setup completed successfully.")
         } catch {
             restoreCurrentKeySet(previousKeySet, serverKeyStale: wasServerKeyStale)
+            nkLog(tag: global.logTagE2EE, message: "E2EE setup failed; restored the previous active key state.")
             throw error
         }
     }
@@ -89,6 +95,7 @@ class NCEndToEndSetup {
     /// the server. All remote values are fetched and cryptographically checked
     /// before any active Keychain value is replaced.
     func updateChangedServerKey() async throws {
+        nkLog(tag: global.logTagE2EE, message: "Changed server-key reconciliation started.")
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
 
@@ -109,6 +116,7 @@ class NCEndToEndSetup {
         )
 
         if certificateResult.error.errorCode == global.errorResourceNotFound {
+            nkLog(tag: global.logTagE2EE, message: "No server user certificate found; starting E2EE setup.")
             try await start()
             return
         }
@@ -166,6 +174,7 @@ class NCEndToEndSetup {
         preference.setEndToEndServerKeyStale(account: session.account, stale: false)
         await NCNetworkingE2EE.markServerKeyAsValidated(account: session.account)
         NCManageDatabase.shared.clearTablesE2EE(account: session.account)
+        nkLog(tag: global.logTagE2EE, message: "Changed server-key reconciliation completed successfully.")
     }
 
     /// Ensures that a valid user certificate is available.

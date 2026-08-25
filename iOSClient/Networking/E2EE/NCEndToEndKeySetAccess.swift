@@ -34,6 +34,18 @@ enum NCEndToEndKeySetAccess: Equatable, Sendable {
         return false
     }
 
+    /// A non-sensitive value suitable for diagnostics. Never include key material here.
+    var diagnosticDescription: String {
+        switch self {
+        case .active:
+            return "active"
+        case .archived:
+            return "archived"
+        case .unavailable:
+            return "unavailable"
+        }
+    }
+
     /// A write is allowed only when the active key set decrypts the storage space.
     var writeAccessError: NKError {
         switch self {
