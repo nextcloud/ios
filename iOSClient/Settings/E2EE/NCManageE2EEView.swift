@@ -285,7 +285,7 @@ struct NCManageE2EEView: View {
 
             HStack {
                 Label {
-                    Text("Delete Keys from FS")
+                    Text("Delete Keys and files")
                         .cappedFont(.body, maxDynamicType: .accessibility2)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
