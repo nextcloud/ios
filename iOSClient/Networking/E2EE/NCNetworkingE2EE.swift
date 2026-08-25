@@ -12,7 +12,7 @@ class NCNetworkingE2EE: NSObject {
     let e2EEApiVersion1 = "v1"
     let e2EEApiVersion2 = "v2"
 
-    /// Executes at most one server-key request per account while the app
+    /// Executes at most one user-certificate request per account while the app
     /// remains active. Concurrent callers share the same in-flight request.
     private actor ServerKeyValidationGate {
         private var validations: [String: Task<NKError, Never>] = [:]
@@ -100,14 +100,16 @@ class NCNetworkingE2EE: NSObject {
         await serverKeyValidationGate.markValidated(account: account)
     }
 
-    /// Verifies once per active app cycle that the locally active key set is
-    /// still the key set published by the server. A mismatch is persisted
-    /// immediately so the old key can only be selected through the archived,
-    /// read-only path.
+    /// Verifies once per active app cycle that the locally active user key is
+    /// still the key published by the server. The server public key only
+    /// authenticates the remote certificate; the embedded user public keys
+    /// determine whether the user's key pair changed.
     func validateCurrentServerKey(account: String) async -> NKError {
         let preferences = NCPreferences()
-        guard let localPublicKey = preferences.getEndToEndPublicKey(account: account),
-              !localPublicKey.isEmpty else {
+        guard let localCertificate = preferences.getEndToEndCertificate(account: account),
+              !localCertificate.isEmpty,
+              let serverPublicKey = preferences.getEndToEndPublicKey(account: account),
+              !serverPublicKey.isEmpty else {
             return NKError(
                 errorCode: NCGlobal.shared.errorE2EENotEnabled,
                 errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
@@ -123,19 +125,21 @@ class NCNetworkingE2EE: NSObject {
         ) {
             await Self.performServerKeyValidation(
                 account: account,
-                localPublicKey: localPublicKey
+                localCertificate: localCertificate,
+                serverPublicKey: serverPublicKey
             )
         }
     }
 
     private static func performServerKeyValidation(
         account: String,
-        localPublicKey: String
+        localCertificate: String,
+        serverPublicKey: String
     ) async -> NKError {
         let networkingE2EE = NCNetworkingE2EE()
         let preferences = NCPreferences()
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-        let result = await NextcloudKit.shared.getE2EEPublicKeyAsync(
+        let result = await NextcloudKit.shared.getE2EECertificateAsync(
             account: account,
             options: networkingE2EE.getOptions(account: account, capabilities: capabilities)
         )
@@ -143,7 +147,7 @@ class NCNetworkingE2EE: NSObject {
         if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             return markCurrentServerKeyAsStale(
                 account: account,
-                expectedPublicKey: localPublicKey,
+                expectedCertificate: localCertificate,
                 preferences: preferences
             )
         }
@@ -152,14 +156,18 @@ class NCNetworkingE2EE: NSObject {
             return result.error
         }
 
-        guard let serverPublicKey = result.publicKey, !serverPublicKey.isEmpty else {
+        guard let remoteCertificate = result.certificate, !remoteCertificate.isEmpty,
+              let endToEndEncryption = NCEndToEndEncryption.shared(),
+              let localUserPublicKey = endToEndEncryption.extractPublicKey(fromCertificate: localCertificate),
+              let remoteUserPublicKey = endToEndEncryption.extractPublicKey(fromCertificate: remoteCertificate) else {
             return .invalidData
         }
 
-        guard networkingE2EE.publicKeysMatch(localPublicKey, serverPublicKey) else {
+        guard endToEndEncryption.verifyCertificate(remoteCertificate, publicKey: serverPublicKey),
+              networkingE2EE.publicKeysMatch(localUserPublicKey, remoteUserPublicKey) else {
             return markCurrentServerKeyAsStale(
                 account: account,
-                expectedPublicKey: localPublicKey,
+                expectedCertificate: localCertificate,
                 preferences: preferences
             )
         }
@@ -172,7 +180,8 @@ class NCNetworkingE2EE: NSObject {
     /// normal and changed-key behavior can be covered by unit tests.
     func publicKeysMatch(_ first: String, _ second: String) -> Bool {
         func payload(_ key: String) -> String {
-            key.components(separatedBy: .whitespacesAndNewlines)
+            key.components(separatedBy: .newlines)
+                .map { $0.trimmingCharacters(in: .whitespaces) }
                 .filter { !$0.isEmpty && !$0.hasPrefix("-----") }
                 .joined()
         }
@@ -184,12 +193,12 @@ class NCNetworkingE2EE: NSObject {
 
     private static func markCurrentServerKeyAsStale(
         account: String,
-        expectedPublicKey: String,
+        expectedCertificate: String,
         preferences: NCPreferences
     ) -> NKError {
         // Setup may have replaced the active set while this request was in
         // flight. An obsolete response must never mark the new set as stale.
-        guard preferences.getEndToEndPublicKey(account: account) == expectedPublicKey else {
+        guard preferences.getEndToEndCertificate(account: account) == expectedCertificate else {
             return .success
         }
 

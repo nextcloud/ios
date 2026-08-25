@@ -24,13 +24,15 @@ struct NCEndToEndKeySetResolverTests {
         #expect(access.writeAccessError == .success)
     }
 
-    @Test("Equivalent PEM formatting identifies the same server key")
-    func equivalentServerPublicKeysMatch() {
+    @Test("Equivalent PEM formatting identifies the same public key")
+    func equivalentPublicKeysMatch() {
         let compact = "-----BEGIN PUBLIC KEY-----\nYWJjZA==\n-----END PUBLIC KEY-----"
         let wrapped = "-----BEGIN PUBLIC KEY-----\nYWJj\nZA==\n-----END PUBLIC KEY-----\n"
+        let empty = "-----BEGIN PUBLIC KEY-----\n-----END PUBLIC KEY-----"
 
         #expect(NCNetworkingE2EE().publicKeysMatch(compact, wrapped))
         #expect(!NCNetworkingE2EE().publicKeysMatch(compact, "different-key"))
+        #expect(!NCNetworkingE2EE().publicKeysMatch(empty, empty))
     }
 
     @Test("A stale local key is excluded from active write access")
