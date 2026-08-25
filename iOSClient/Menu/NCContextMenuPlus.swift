@@ -17,7 +17,7 @@ class NCContextMenuPlus: NSObject {
 
     let menuPlusButton: UIButton?
     let controller: NCMainTabBarController?
-    private var capabilitiesSignature: String?
+    private var menuSignature: String?
 
     internal var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
@@ -54,16 +54,14 @@ class NCContextMenuPlus: NSObject {
         let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
+        let isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
         let creatorsByEditor = Dictionary(grouping: capabilities.directEditingCreators, by: \.editor)
-        let currentCapabilitiesSignature = makeCapabilitiesSignature(
-            capabilities: capabilities,
-            account: session.account,
-            serverUrl: serverUrl
-        )
-        let capabilitiesChanged = capabilitiesSignature != currentCapabilitiesSignature
-        capabilitiesSignature = currentCapabilitiesSignature
+        let currentMenuSignature = makeMenuSignature(capabilities: capabilities, account: session.account,
+                                                     serverUrl: serverUrl, isEndToEndEnabled: isEndToEndEnabled)
+        let menuChanged = menuSignature != currentMenuSignature
+        menuSignature = currentMenuSignature
 
         var menuUploadElements: [UIMenuElement] = []
         var menuCaptureElements: [UIMenuElement] = []
@@ -139,7 +137,7 @@ class NCContextMenuPlus: NSObject {
         // E2EE
         //
         if serverUrl == utilityFileSystem.getHomeServer(session: session),
-           NCPreferences().isEndToEndEnabled(account: session.account),
+           isEndToEndEnabled,
            isNetworkReachable {
             menuFolderElements.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                                                image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
@@ -502,7 +500,7 @@ class NCContextMenuPlus: NSObject {
         updatePlusButtonEnabled(session: session)
 
         if menuPlusButton.menu != nil,
-           !capabilitiesChanged {
+           !menuChanged {
             return
         }
 
@@ -584,9 +582,10 @@ class NCContextMenuPlus: NSObject {
         }
     }
 
-    private func makeCapabilitiesSignature(capabilities: NKCapabilities.Capabilities,
-                                           account: String,
-                                           serverUrl: String) -> String {
+    private func makeMenuSignature(capabilities: NKCapabilities.Capabilities,
+                                   account: String,
+                                   serverUrl: String,
+                                   isEndToEndEnabled: Bool) -> String {
         let creators = capabilities.directEditingCreators
             .sorted { $0.identifier < $1.identifier }
             .map { "\($0.identifier)|\($0.editor)|\($0.ext)|\($0.mimetype)|\($0.templates)" }
@@ -596,7 +595,7 @@ class NCContextMenuPlus: NSObject {
             .map { "\($0.identifier)|\($0.name)" }
             .joined(separator: ";")
 
-        return "\(account)|\(serverUrl)|\(capabilities.richDocumentsEnabled)|\(creators)|\(editors)"
+        return "\(account)|\(serverUrl)|\(isEndToEndEnabled)|\(capabilities.richDocumentsEnabled)|\(creators)|\(editors)"
     }
 
     private func createLegacyCollaboraFile(templateType: String,
