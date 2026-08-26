@@ -12,6 +12,35 @@ class NCNetworkingE2EE: NSObject {
     let e2EEApiVersion1 = "v1"
     let e2EEApiVersion2 = "v2"
 
+    /// Executes at most one user-certificate request per account while the app
+    /// remains active. Concurrent callers share the same in-flight request.
+    private actor ServerKeyValidationGate {
+        private var validations: [String: Task<NKError, Never>] = [:]
+
+        func beginNewActiveCycle() {
+            validations.removeAll()
+        }
+
+        func validate(
+            account: String,
+            operation: @escaping @Sendable () async -> NKError
+        ) async -> NKError {
+            if let validation = validations[account] {
+                return await validation.value
+            }
+
+            let validation = Task { await operation() }
+            validations[account] = validation
+            return await validation.value
+        }
+
+        func markValidated(account: String) {
+            validations[account] = Task { .success }
+        }
+    }
+
+    private static let serverKeyValidationGate = ServerKeyValidationGate()
+
     public struct X509CertificateValidity {
         let notBefore: Date
         let notAfter: Date
@@ -57,6 +86,202 @@ class NCNetworkingE2EE: NSObject {
             version = e2EEApiVersion2
         }
         return NKRequestOptions(version: version)
+    }
+
+    /// Invalidates the result of the current foreground period. The first
+    /// subsequent E2EE access will perform one new server validation.
+    static func beginNewServerKeyValidationCycle() async {
+        await serverKeyValidationGate.beginNewActiveCycle()
+        nkLog(
+            tag: NCGlobal.shared.logTagE2EE,
+            message: "Started a new server-key validation cycle."
+        )
+    }
+
+    /// Records a key set that was already fetched and cryptographically
+    /// verified by setup, avoiding a redundant request in the same cycle.
+    static func markServerKeyAsValidated(account: String) async {
+        await serverKeyValidationGate.markValidated(account: account)
+        nkLog(
+            tag: NCGlobal.shared.logTagE2EE,
+            message: "Server key marked as validated by E2EE setup."
+        )
+    }
+
+    /// Verifies once per active app cycle that the locally active user key is
+    /// still the key published by the server. The server public key only
+    /// authenticates the remote certificate; the embedded user public keys
+    /// determine whether the user's key pair changed.
+    func validateCurrentServerKey(account: String) async -> NKError {
+        let preferences = NCPreferences()
+        guard let localCertificate = preferences.getEndToEndCertificate(account: account),
+              !localCertificate.isEmpty,
+              let serverPublicKey = preferences.getEndToEndPublicKey(account: account),
+              !serverPublicKey.isEmpty else {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Server-key validation skipped because the active key set is incomplete."
+            )
+            return NKError(
+                errorCode: NCGlobal.shared.errorE2EENotEnabled,
+                errorDescription: NSLocalizedString("_e2ee_no_metadataKey_found_", comment: "")
+            )
+        }
+
+        if preferences.isEndToEndServerKeyStale(account: account) {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Server-key validation blocked because the active key set is stale."
+            )
+            return Self.serverKeyChangedError
+        }
+
+        return await Self.serverKeyValidationGate.validate(
+            account: account
+        ) {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Validating the active user key against the server."
+            )
+            return await Self.performServerKeyValidation(
+                account: account,
+                localCertificate: localCertificate,
+                serverPublicKey: serverPublicKey
+            )
+        }
+    }
+
+    private static func performServerKeyValidation(
+        account: String,
+        localCertificate: String,
+        serverPublicKey: String
+    ) async -> NKError {
+        let networkingE2EE = NCNetworkingE2EE()
+        let preferences = NCPreferences()
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+        let result = await NextcloudKit.shared.getE2EECertificateAsync(
+            account: account,
+            options: networkingE2EE.getOptions(account: account, capabilities: capabilities)
+        )
+
+        if result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "The server user certificate is missing."
+            )
+            return markCurrentServerKeyAsStale(
+                account: account,
+                expectedCertificate: localCertificate,
+                preferences: preferences
+            )
+        }
+
+        guard result.error == .success else {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Server-key validation request failed with error code \(result.error.errorCode)."
+            )
+            return result.error
+        }
+
+        guard let remoteCertificate = result.certificate, !remoteCertificate.isEmpty,
+              let endToEndEncryption = NCEndToEndEncryption.shared(),
+              let localUserPublicKey = endToEndEncryption.extractPublicKey(fromCertificate: localCertificate),
+              let remoteUserPublicKey = endToEndEncryption.extractPublicKey(fromCertificate: remoteCertificate) else {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Server-key validation received invalid certificate data."
+            )
+            return .invalidData
+        }
+
+        guard endToEndEncryption.verifyCertificate(remoteCertificate, publicKey: serverPublicKey) else {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Server-key validation detected an invalid remote certificate."
+            )
+            return markCurrentServerKeyAsStale(
+                account: account,
+                expectedCertificate: localCertificate,
+                preferences: preferences
+            )
+        }
+
+        guard networkingE2EE.publicKeysMatch(localUserPublicKey, remoteUserPublicKey) else {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Server-key validation detected a changed user key."
+            )
+            return markCurrentServerKeyAsStale(
+                account: account,
+                expectedCertificate: localCertificate,
+                preferences: preferences
+            )
+        }
+
+        preferences.setEndToEndServerKeyStale(account: account, stale: false)
+        nkLog(
+            tag: NCGlobal.shared.logTagE2EE,
+            message: "The active user key matches the server."
+        )
+        return .success
+    }
+
+    /// Compares the PEM payload rather than its formatting. Kept internal so
+    /// normal and changed-key behavior can be covered by unit tests.
+    func publicKeysMatch(_ first: String, _ second: String) -> Bool {
+        func payload(_ key: String) -> String {
+            key.components(separatedBy: .newlines)
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty && !$0.hasPrefix("-----") }
+                .joined()
+        }
+
+        let firstPayload = payload(first)
+        let secondPayload = payload(second)
+        return !firstPayload.isEmpty && firstPayload == secondPayload
+    }
+
+    private static func markCurrentServerKeyAsStale(
+        account: String,
+        expectedCertificate: String,
+        preferences: NCPreferences
+    ) -> NKError {
+        // Setup may have replaced the active set while this request was in
+        // flight. An obsolete response must never mark the new set as stale.
+        guard preferences.getEndToEndCertificate(account: account) == expectedCertificate else {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Ignored an obsolete server-key validation response."
+            )
+            return .success
+        }
+
+        do {
+            try preferences.archiveCurrentEndToEndKeySet(account: account)
+            preferences.setEndToEndServerKeyStale(account: account, stale: true)
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Archived the active key set and marked it as stale."
+            )
+            return serverKeyChangedError
+        } catch {
+            nkLog(
+                tag: NCGlobal.shared.logTagE2EE,
+                message: "Unable to archive the active key set after server-key validation."
+            )
+            return NKError(
+                errorCode: NCGlobal.shared.errorInternalError,
+                errorDescription: error.localizedDescription
+            )
+        }
+    }
+
+    private static var serverKeyChangedError: NKError {
+        NKError(
+            errorCode: NCGlobal.shared.errorE2EEServerKeyChanged,
+            errorDescription: NSLocalizedString("_e2ee_server_key_changed_", comment: "")
+        )
     }
 
     // MARK: -
@@ -125,12 +350,55 @@ class NCNetworkingE2EE: NSObject {
 
     // MARK: -
 
+    private enum MetadataUploadMode {
+        case updateOrRecover
+        case initialCreation
+    }
+
     @discardableResult
     func uploadMetadata(serverUrl: String,
                         addUserId: String? = nil,
                         removeUserId: String? = nil,
                         updateVersionV1V2: Bool = false,
                         account: String) async -> NKError {
+        let serverKeyError = await validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
+        return await uploadMetadata(
+            serverUrl: serverUrl,
+            addUserId: addUserId,
+            removeUserId: removeUserId,
+            updateVersionV1V2: updateVersionV1V2,
+            mode: .updateOrRecover,
+            account: account
+        )
+    }
+
+    @discardableResult
+    func createInitialMetadata(serverUrl: String, account: String) async -> NKError {
+        let serverKeyError = await validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
+        return await uploadMetadata(
+            serverUrl: serverUrl,
+            addUserId: nil,
+            removeUserId: nil,
+            updateVersionV1V2: false,
+            mode: .initialCreation,
+            account: account
+        )
+    }
+
+    private func uploadMetadata(serverUrl: String,
+                                addUserId: String?,
+                                removeUserId: String?,
+                                updateVersionV1V2: Bool,
+                                mode: MetadataUploadMode,
+                                account: String) async -> NKError {
         var addCertificate: String?
         var method = "POST"
         let session = NCSession.shared.getSession(account: account)
@@ -163,17 +431,49 @@ class NCNetworkingE2EE: NSObject {
             return resultsLock.error
         }
 
-        // METHOD
+        // METHOD + WRITE ACCESS
         //
-        if updateVersionV1V2 {
-            method = "PUT"
-        } else {
-            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
-            if resultsGetE2EEMetadata.error == .success {
-                method = "PUT"
-            } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                return resultsGetE2EEMetadata.error
+        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
+        if resultsGetE2EEMetadata.error == .success,
+           let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata {
+            let accessError = await validateMetadataWriteAccess(
+                e2eMetadata: e2eMetadata,
+                serverUrl: serverUrl,
+                session: session
+            )
+            guard accessError == .success else {
+                await unlock(account: session.account, serverUrl: serverUrl)
+                return accessError
             }
+            method = "PUT"
+        } else if resultsGetE2EEMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound,
+                  !updateVersionV1V2 {
+            if case .updateOrRecover = mode {
+                let storedAccess: NCEndToEndKeySetAccess
+                do {
+                    storedAccess = try await NCEndToEndMetadata().resolveStoredRootKeySetAccess(
+                        serverUrl: serverUrl,
+                        session: session
+                    )
+                } catch {
+                    await unlock(account: session.account, serverUrl: serverUrl)
+                    return NKError(
+                        errorCode: NCGlobal.shared.errorInternalError,
+                        errorDescription: error.localizedDescription
+                    )
+                }
+
+                guard storedAccess.writeAccessError == .success else {
+                    await unlock(account: session.account, serverUrl: serverUrl)
+                    return storedAccess.writeAccessError
+                }
+            }
+            method = "POST"
+        } else {
+            await unlock(account: session.account, serverUrl: serverUrl)
+            return resultsGetE2EEMetadata.error == .success
+                ? .invalidData
+                : resultsGetE2EEMetadata.error
         }
 
         // UPLOAD METADATA
@@ -198,6 +498,66 @@ class NCNetworkingE2EE: NSObject {
         await unlock(account: session.account, serverUrl: serverUrl)
 
         return NKError()
+    }
+
+    func validateFolderWriteAccess(serverUrl: String, account: String) async -> NKError {
+        let serverKeyError = await validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
+        let session = NCSession.shared.getSession(account: account)
+        let resultsLock = await lock(account: account, serverUrl: serverUrl)
+        guard resultsLock.error == .success,
+              let e2eToken = resultsLock.e2eToken,
+              let fileId = resultsLock.fileId else {
+            return resultsLock.error
+        }
+
+        let metadataResult = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: account)
+        let error: NKError
+        if metadataResult.error == .success,
+           let e2eMetadata = metadataResult.e2eMetadata {
+            error = await validateMetadataWriteAccess(
+                e2eMetadata: e2eMetadata,
+                serverUrl: serverUrl,
+                session: session
+            )
+        } else {
+            error = metadataResult.error == .success
+                ? .invalidData
+                : metadataResult.error
+        }
+
+        await unlock(account: account, serverUrl: serverUrl)
+        return error
+    }
+
+    private func validateMetadataWriteAccess(
+        e2eMetadata: String,
+        serverUrl: String,
+        session: NCSession.Session
+    ) async -> NKError {
+        let access: NCEndToEndKeySetAccess
+        do {
+            access = try await NCEndToEndMetadata().resolveKeySetAccess(
+                e2eMetadata,
+                serverUrl: serverUrl,
+                session: session
+            )
+        } catch {
+            return NKError(
+                errorCode: NCGlobal.shared.errorInternalError,
+                errorDescription: error.localizedDescription
+            )
+        }
+
+        let writeAccessError = access.writeAccessError
+        nkLog(
+            tag: NCGlobal.shared.logTagE2EE,
+            message: "E2EE write access \(writeAccessError == .success ? "granted" : "denied") using the \(access.diagnosticDescription) key set."
+        )
+        return writeAccessError
     }
 
     func uploadMetadata(serverUrl: String,
@@ -244,18 +604,35 @@ class NCNetworkingE2EE: NSObject {
                           e2eToken: String,
                           session: NCSession.Session) async -> NKError {
         let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
-        guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+        guard resultsGetE2EEMetadata.error == .success,
+              let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+            if resultsGetE2EEMetadata.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                do {
+                    let storedAccess = try await NCEndToEndMetadata().resolveStoredRootKeySetAccess(
+                        serverUrl: serverUrl,
+                        session: session
+                    )
+                    guard storedAccess.writeAccessError == .success else {
+                        return storedAccess.writeAccessError
+                    }
+                } catch {
+                    return NKError(
+                        errorCode: NCGlobal.shared.errorInternalError,
+                        errorDescription: error.localizedDescription
+                    )
+                }
+            }
             return resultsGetE2EEMetadata.error
         }
 
-        let resultsDecodeMetadataError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
-        guard resultsDecodeMetadataError == .success else {
+        let decodeResult = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
+        guard decodeResult.error == .success else {
             // Client Diagnostic
             await self.database.addDiagnosticAsync(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-            return resultsDecodeMetadataError
+            return decodeResult.error
         }
 
-        return NKError()
+        return decodeResult.access.writeAccessError
     }
 
     // MARK: -

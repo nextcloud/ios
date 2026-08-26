@@ -29,6 +29,11 @@ class NCNetworkingE2EERename: NSObject {
             }
         }
 
+        error = await networkingE2EE.validateCurrentServerKey(account: metadata.account)
+        guard error == .success else {
+            return error
+        }
+
         // verify if exists the new fileName
         if await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             error = NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_file_already_exists_")
