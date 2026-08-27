@@ -12,6 +12,7 @@ import WidgetKit
 import EasyTipView
 import SwiftUI
 import RealmSwift
+import Photos
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
@@ -112,6 +113,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCPreferences().requestPasscodeAtStart = true
+        }
+
+        if #available(iOS 27, *) {
+            setupBackgroundUploadExtension()
         }
 
         return true
@@ -303,6 +308,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         return false
+    }
+
+    // MARK: -
+
+    @available(iOS 27, *)
+    private func setupBackgroundUploadExtension() {
+        Task {
+            let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+
+            guard status == .authorized else {
+                print("❌ Photo Library Full Access not granted")
+                return
+            }
+
+            do {
+                let library = PHPhotoLibrary.shared()
+
+                try library.setUploadJobExtensionEnabled(true)
+
+                print("✅ Enabled: \(library.uploadJobExtensionEnabled)")
+            } catch {
+                print("❌ Enable failed: \(error)")
+            }
+        }
     }
 }
 
