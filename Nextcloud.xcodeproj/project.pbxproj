@@ -689,6 +689,7 @@
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F78B87E72B62527100C65ADC /* NCMediaDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */; };
 		F78C6FDE296D677300C952C3 /* NCContextMenuMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C6FDD296D677300C952C3 /* NCContextMenuMain.swift */; };
+		F78DB2103040239E00E6FE24 /* BackgroundUploadExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */; };
 		F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
 		F78E2D6629AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
 		F78E2D6729AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
@@ -1711,6 +1712,9 @@
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F541F0B7D47002F9619 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F78DB20B3040239E00E6FE24 /* BackgroundUploadExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BackgroundUploadExtension.entitlements; sourceTree = "<group>"; };
+		F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUploadExtension.swift; sourceTree = "<group>"; };
+		F78DB20D3040239E00E6FE24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F78E2D6429AF02DB0024D4F3 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		F78F74332163757000C2ADAD /* NCTrash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCTrash.storyboard; sourceTree = "<group>"; };
 		F78F74352163781100C2ADAD /* NCTrash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrash.swift; sourceTree = "<group>"; };
@@ -1995,6 +1999,7 @@
 		F7FA7FFF2C0F4F3B0072FC60 /* NCUploadAssetsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssetsView.swift; sourceTree = "<group>"; };
 		F7FAAC212FB773CA00DCA45B /* NCVideoAVPlayerViewControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerViewControls.swift; sourceTree = "<group>"; };
 		F7FAFD3928BFA947000777FE /* NCContextMenuNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContextMenuNotification.swift; sourceTree = "<group>"; };
+		F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = BackgroundUploadExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAccountRequest.storyboard; sourceTree = "<group>"; };
 		F7FDFF522E437E55000D7688 /* NCAccountRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountRequest.swift; sourceTree = "<group>"; };
 		F7FDFF532E437E55000D7688 /* NCShareAccounts.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShareAccounts.storyboard; sourceTree = "<group>"; };
@@ -2159,6 +2164,13 @@
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F33EE6E52BF4C02000CA1A51 /* NIOSSL in Frameworks */,
 				F760DE072AE66EC70027D78A /* KeychainAccess in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7FB187D30401D0D00EB0AE6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3042,6 +3054,16 @@
 			path = "Section Header Footer";
 			sourceTree = "<group>";
 		};
+		F78DB20E3040239E00E6FE24 /* BackgroundUploadExtension */ = {
+			isa = PBXGroup;
+			children = (
+				F78DB20B3040239E00E6FE24 /* BackgroundUploadExtension.entitlements */,
+				F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */,
+				F78DB20D3040239E00E6FE24 /* Info.plist */,
+			);
+			path = BackgroundUploadExtension;
+			sourceTree = "<group>";
+		};
 		F78F74322163753B00C2ADAD /* Trash */ = {
 			isa = PBXGroup;
 			children = (
@@ -3608,6 +3630,7 @@
 				F7346E1428B0EF5B006CE2D2 /* Widget */,
 				F7C9739328F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F7C55CC82FB5CE74004A974F /* Action Assistant */,
+				F78DB20E3040239E00E6FE24 /* BackgroundUploadExtension */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F30A962A2A27A9C800D7BCFE /* Tests */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
@@ -3621,6 +3644,7 @@
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
 				F31165012F9674A1009A1E37 /* AppIcon.icon */,
 				F7C55C7A2FB5AEF7004A974F /* Action Assistant.appex */,
+				F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -4051,6 +4075,25 @@
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		F7FB187F30401D0D00EB0AE6 /* BackgroundUploadExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F7FB188630401D0D00EB0AE6 /* Build configuration list for PBXNativeTarget "BackgroundUploadExtension" */;
+			buildPhases = (
+				F7FB187C30401D0D00EB0AE6 /* Sources */,
+				F7FB187D30401D0D00EB0AE6 /* Frameworks */,
+				F7FB187E30401D0D00EB0AE6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BackgroundUploadExtension;
+			packageProductDependencies = (
+			);
+			productName = BackgroundUploadExtension;
+			productReference = F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4058,7 +4101,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastSwiftUpdateCheck = 2640;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2640;
 				ORGANIZATIONNAME = "Marino Faggiana";
 				TargetAttributes = {
@@ -4117,6 +4160,9 @@
 					};
 					F7C9738F28F17131002C43E2 = {
 						CreatedOnToolsVersion = 14.0;
+					};
+					F7FB187F30401D0D00EB0AE6 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -4208,6 +4254,7 @@
 				F7346E0F28B0EF5B006CE2D2 /* Widget */,
 				F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F71459B41D12E3B700CAFEEC /* Share */,
+				F7FB187F30401D0D00EB0AE6 /* BackgroundUploadExtension */,
 				F7C55C792FB5AEF7004A974F /* Action Assistant */,
 				F771E3CF20E2392D00AFB62D /* File Provider Extension */,
 				F70716E22987F81400E72C1D /* File Provider Extension UI */,
@@ -4400,6 +4447,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7E4022B2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7FB187E30401D0D00EB0AE6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5357,6 +5411,14 @@
 				F77DD6AA2C5CC093009448FB /* NCSession.swift in Sources */,
 				F760A48E2FE95D06001B212E /* NCTransferDelegateDispatcher.swift in Sources */,
 				F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7FB187C30401D0D00EB0AE6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F78DB2103040239E00E6FE24 /* BackgroundUploadExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6490,6 +6552,105 @@
 			};
 			name = Release;
 		};
+		F7FB188730401D0D00EB0AE6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BackgroundUploadExtension/BackgroundUploadExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BackgroundUploadExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Nextcloud. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.BackgroundUploadExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F7FB188830401D0D00EB0AE6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BackgroundUploadExtension/BackgroundUploadExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BackgroundUploadExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Nextcloud. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.BackgroundUploadExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -6597,6 +6758,15 @@
 			buildConfigurations = (
 				F7F67BC91A24D27800EE80DA /* Debug */,
 				F7F67BCA1A24D27800EE80DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F7FB188630401D0D00EB0AE6 /* Build configuration list for PBXNativeTarget "BackgroundUploadExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F7FB188730401D0D00EB0AE6 /* Debug */,
+				F7FB188830401D0D00EB0AE6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
