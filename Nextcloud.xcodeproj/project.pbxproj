@@ -237,6 +237,9 @@
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70C8742301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70C8741301B1E5600170B1F /* NCCollectionViewCommon+CollectionViewDataSourcePrefetching.swift */; };
 		F70CAC7B30408EB200CCCB7F /* NCGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */; };
+		F70CAC7D30408F2600CCCB7F /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F70CAC7C30408F2600CCCB7F /* NextcloudKit */; };
+		F70CAC7F30408F3100CCCB7F /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F70CAC7E30408F3100CCCB7F /* KeychainAccess */; };
+		F70CAC8130408F4D00CCCB7F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F70CAC8030408F4D00CCCB7F /* RealmSwift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */; };
@@ -1107,6 +1110,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F70CAC8330408F4D00CCCB7F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F7160A592BE92CF30034DCB3 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2183,6 +2196,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F70CAC8130408F4D00CCCB7F /* RealmSwift in Frameworks */,
+				F70CAC7F30408F3100CCCB7F /* KeychainAccess in Frameworks */,
+				F70CAC7D30408F2600CCCB7F /* NextcloudKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4095,6 +4111,7 @@
 				F7FB187C30401D0D00EB0AE6 /* Sources */,
 				F7FB187D30401D0D00EB0AE6 /* Frameworks */,
 				F7FB187E30401D0D00EB0AE6 /* Resources */,
+				F70CAC8330408F4D00CCCB7F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -4102,6 +4119,9 @@
 			);
 			name = BackgroundUploadExtension;
 			packageProductDependencies = (
+				F70CAC7C30408F2600CCCB7F /* NextcloudKit */,
+				F70CAC7E30408F3100CCCB7F /* KeychainAccess */,
+				F70CAC8030408F4D00CCCB7F /* RealmSwift */,
 			);
 			productName = BackgroundUploadExtension;
 			productReference = F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */;
@@ -7128,6 +7148,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
+		};
+		F70CAC7C30408F2600CCCB7F /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F70CAC7E30408F3100CCCB7F /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		F70CAC8030408F4D00CCCB7F /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		F710FC7F277B7D2700AA9FBF /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
