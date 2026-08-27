@@ -1,6 +1,7 @@
 import ExtensionFoundation
 import OSLog
 import Photos
+import UniformTypeIdentifiers
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
@@ -14,44 +15,81 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
 
     required init() {
         Self.logger.error("""
-        🔥🔥🔥 BGUPLOAD INIT 🔥🔥🔥
+        BGUPLOAD INIT
         Bundle: \(Bundle.main.bundleIdentifier ?? "nil")
         Time: \(Date().formatted())
         """)
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
-        Self.processCount += 1
 
-        let options = PHFetchOptions()
-        options.sortDescriptors = [
-            NSSortDescriptor(key: "creationDate", ascending: false)
-        ]
-        options.fetchLimit = 1
+        Self.logger.error("BGUPLOAD processJobs()")
 
-        let assets = PHAsset.fetchAssets(with: .image, options: options)
+        let library = PHPhotoLibrary.shared()
 
-        Self.logger.error("""
-        🔥 BGUPLOAD processJobs()
+        let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(
+            action: .acknowledge,
+            options: nil
+        )
 
-        Invocation : \(Self.processCount)
-        Images     : \(assets.count)
-        """)
+        Self.logger.error(
+            "BGUPLOAD acknowledge jobs=\(acknowledgeJobs.count)"
+        )
 
-        if let asset = assets.firstObject {
-            Self.logger.error("""
-            Latest asset:
-            id   : \(asset.localIdentifier, privacy: .public)
-            date : \(String(describing: asset.creationDate), privacy: .public)
-            """)
+        if acknowledgeJobs.count > 0 {
+            do {
+                for index in 0..<acknowledgeJobs.count {
+                    let job = acknowledgeJobs.object(at: index)
+
+                    try library.performChangesAndWait {
+                        guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
+                            return
+                        }
+
+                        request.acknowledge()
+                    }
+
+                    let filename = job.resource.filename ?? "<nil>"
+
+                    Self.logger.error(
+                        "BGUPLOAD acknowledged \(filename, privacy: .public)"
+                    )
+                }
+
+                return .completed
+            } catch {
+                Self.logger.error(
+                    "BGUPLOAD acknowledge failed: \(error.localizedDescription, privacy: .public)"
+                )
+
+                return .failure
+            }
         }
+
+        let retryJobs = PHAssetResourceUploadJob.fetchJobs(
+            action: .retry,
+            options: nil
+        )
+
+        Self.logger.error(
+            "BGUPLOAD retry jobs=\(retryJobs.count)"
+        )
+
+        // PER ORA non facciamo retry.
+        // Non creiamo neppure nuovi job.
+        if retryJobs.count > 0 {
+            Self.logger.error("BGUPLOAD retry job pending - no new job created")
+            return .completed
+        }
+
+        Self.logger.error("BGUPLOAD no pending jobs")
 
         return .completed
     }
 
     func willTerminate() async {
         Self.logger.error("""
-        🔥🔥🔥 BGUPLOAD willTerminate() 🔥🔥🔥
+        BGUPLOAD willTerminate()
         Time: \(Date().formatted())
         """)
     }

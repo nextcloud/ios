@@ -128,6 +128,7 @@ class tableMetadata: Object {
     @objc dynamic var nativeFormat: Bool = false
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
+    @objc dynamic var backgroundUploadJobIdentifier = ""
 
     // =========================
     // UI / transient properties
