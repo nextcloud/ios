@@ -295,6 +295,7 @@
 		F71F6D0D2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */; };
 		F71FA7992F3508C600E86192 /* NCNetworking+WebDAV.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */; };
 		F721C50A2FB6F9AA00207DA9 /* NCCollectionViewCommon+TransitionSourceBlink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F721C5092FB6F9AA00207DA9 /* NCCollectionViewCommon+TransitionSourceBlink.swift */; };
+		F721C7FF3040346F00DD9D36 /* BackgroundUploadExtension.appex in CopyFiles */ = {isa = PBXBuildFile; fileRef = F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F722133B2D40EF9D002F7438 /* NCFilesNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F722133A2D40EF8C002F7438 /* NCFilesNavigationController.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722F0112CFF569500065FB5 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F722F0102CFF569500065FB5 /* MainInterface.storyboard */; };
@@ -1193,6 +1194,16 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F721C7FE3040345700DD9D36 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				F721C7FF3040346F00DD9D36 /* BackgroundUploadExtension.appex in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F76DA934277B75710082465B /* Embed Frameworks */ = {
@@ -3987,6 +3998,7 @@
 				AFBFD01327551A54002244BC /* ShellScript */,
 				F76DA934277B75710082465B /* Embed Frameworks */,
 				F76995F02F99EF6C00291FA7 /* Crashlytics dSYM Upload */,
+				F721C7FE3040345700DD9D36 /* CopyFiles */,
 			);
 			buildRules = (
 			);

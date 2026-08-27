@@ -4,22 +4,23 @@ import Photos
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
-    private let logger = Logger(
-        subsystem: "it.twsweb.Nextcloud",
-        category: "BackgroundUpload"
+
+    private static let logger = Logger(
+        subsystem: "it.twsweb.Nextcloud.BackgroundUploadExtension",
+        category: "TEST"
     )
 
     required init() {
-        logger.info("Initialized")
+        Self.logger.error("🔥🔥🔥 BGUPLOAD INIT 🔥🔥🔥")
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
-        logger.info("processJobs() called")
+        Self.logger.error("🔥🔥🔥 BGUPLOAD processJobs() 🔥🔥🔥")
 
         return .completed
     }
 
     func willTerminate() async {
-        logger.info("willTerminate() called")
+        Self.logger.error("🔥🔥🔥 BGUPLOAD willTerminate() 🔥🔥🔥")
     }
 }
