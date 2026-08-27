@@ -18,6 +18,10 @@ class NCAutoUpload: NSObject {
     private var endForAssetToUpload: Bool = false
 
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
+        if #available(iOS 27, *) {
+                return 0
+        }
+
         guard self.networking.isOnline else {
             return 0
         }
@@ -289,6 +293,10 @@ class NCAutoUpload: NSObject {
     //
     // The flow cooperates with Swift task cancellation triggered by BGTask expiration.
     func autoUploadBackgroundSync() async {
+        if #available(iOS 27, *) {
+            return
+        }
+
         guard !Task.isCancelled else { return }
 
         // Discover new items for Auto Upload.
