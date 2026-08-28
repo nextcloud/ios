@@ -19,7 +19,13 @@ class NCAutoUpload: NSObject {
 
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
         if #available(iOS 27, *) {
+            let extensionEnabled = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+
+            if extensionEnabled {
+                nkLog(tag: global.logTagBackgroundUpload, message: "Auto upload delegated to Photos extension")
+
                 return 0
+            }
         }
 
         guard self.networking.isOnline else {

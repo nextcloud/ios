@@ -1,5 +1,4 @@
 import ExtensionFoundation
-import OSLog
 import Photos
 import UniformTypeIdentifiers
 import NextcloudKit
@@ -11,26 +10,14 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     internal let utilityFileSystem = NCUtilityFileSystem()
     internal let nkComm = NextcloudKit.shared.nkCommonInstance
 
-    private static let logger = Logger(
-        subsystem: "it.twsweb.Nextcloud.BackgroundUploadExtension",
-        category: "TEST"
-    )
-
     private static var processCount = 0
 
     required init() {
-        Self.logger.error("""
-        BGUPLOAD INIT
-        Bundle: \(Bundle.main.bundleIdentifier ?? "nil")
-        Time: \(Date().formatted())
-        """)
+
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
-        nkLog(
-            tag: global.logTagBackgroundUpload,
-            message: "processJobs begin"
-        )
+        nkLog(tag: global.logTagBackgroundUpload, message: "processJobs begin")
 
         do {
             var madeProgress = false
@@ -61,28 +48,19 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             where error.domain == PHPhotosErrorDomain &&
                   error.code == PHPhotosError.limitExceeded.rawValue {
 
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "Job limit reached"
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "Job limit reached")
 
             return .processing
 
         } catch {
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "processJobs error: \(error)"
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "processJobs error: \(error)")
 
             return .failure
         }
     }
 
     func willTerminate() async {
-        Self.logger.error("""
-        BGUPLOAD willTerminate()
-        Time: \(Date().formatted())
-        """)
+
     }
 
     private func buildDestination(
@@ -608,5 +586,90 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
 
         return true
+    }
+
+    private func createPendingMetadata(
+        asset: PHAsset,
+        resource: PHAssetResource,
+        account: tableAccount
+    ) async -> tableMetadata? {
+        guard let fileName = resource.filename,
+              !fileName.isEmpty else {
+            nkLog(
+                tag: global.logTagBackgroundUpload,
+                message: "Resource without filename: \(asset.localIdentifier)"
+            )
+            return nil
+        }
+
+        let session = NCSession.shared.getSession(
+            account: account.account
+        )
+
+        let autoUploadServerUrlBase =
+            await database.getAccountAutoUploadServerUrlBaseAsync(
+                account: account.account,
+                urlBase: account.urlBase,
+                userId: account.userId
+            )
+
+        let serverUrl: String
+
+        if account.autoUploadCreateSubfolder {
+            serverUrl = utilityFileSystem.createGranularityPath(
+                asset: asset,
+                serverUrlBase: autoUploadServerUrlBase
+            )
+        } else {
+            serverUrl = autoUploadServerUrlBase
+        }
+
+        let metadata =
+            await NCManageDatabaseCreateMetadata().createMetadataAsync(
+                fileName: fileName,
+                ocId: UUID().uuidString,
+                serverUrl: serverUrl,
+                session: session,
+                sceneIdentifier: nil
+            )
+
+        metadata.assetLocalIdentifier = asset.localIdentifier
+        metadata.autoUploadServerUrlBase = autoUploadServerUrlBase
+
+        // Il job PhotoKit carica la risorsa originale.
+        metadata.nativeFormat = true
+        metadata.contentType =
+            resource.contentType.preferredMIMEType ??
+            "application/octet-stream"
+        metadata.typeIdentifier = resource.contentType.identifier
+
+        if let creationDate = asset.creationDate {
+            metadata.creationDate = creationDate as NSDate
+        }
+
+        if let modificationDate = asset.modificationDate {
+            metadata.date = modificationDate as NSDate
+        }
+
+        metadata.session = ""
+        metadata.sessionSelector = global.selectorUploadAutoUpload
+        metadata.sessionDate = Date()
+        metadata.status = global.metadataStatusWaitUpload
+
+        // Prenota il metadata per questa estensione.
+        metadata.backgroundUploadJobIdentifier = "pending"
+
+        await database.addMetadataAsync(metadata)
+
+        nkLog(
+            tag: global.logTagBackgroundUpload,
+            message: """
+            Created pending metadata for \(fileName), \
+            asset: \(asset.localIdentifier), \
+            ocId: \(metadata.ocId)
+            """
+        )
+
+        return metadata
     }
 }

@@ -729,6 +729,8 @@
 		F793E7B1304161BD00F011FE /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
 		F793E7B2304162FC00F011FE /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F793E7C1304170F200F011FE /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F793E7C330417C7300F011FE /* NCBackgroundUploadExtensionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */; };
+		F793E7C430417D1300F011FE /* NCBackgroundUploadExtensionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */; };
 		F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */; };
 		F7948DE92FBAEC5400253D1C /* NCVideoAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */; };
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
@@ -1767,6 +1769,7 @@
 		F79131C728AFB86E00577277 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F79377042FBD86AE00DE56DE /* NCMediaViewerFloatingTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerFloatingTitleView.swift; sourceTree = "<group>"; };
 		F793E7AA3041611600F011FE /* NCManageDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
+		F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBackgroundUploadExtensionManager.swift; sourceTree = "<group>"; };
 		F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerPresenter.swift; sourceTree = "<group>"; };
 		F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerViewController.swift; sourceTree = "<group>"; };
 		F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
@@ -3106,6 +3109,7 @@
 			isa = PBXGroup;
 			children = (
 				F793E7AA3041611600F011FE /* NCManageDatabase.swift */,
+				F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */,
 				F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */,
 			);
 			path = BackgroundUploadExtension;
@@ -5320,6 +5324,7 @@
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
 				F721C50A2FB6F9AA00207DA9 /* NCCollectionViewCommon+TransitionSourceBlink.swift in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
+				F793E7C430417D1300F011FE /* NCBackgroundUploadExtensionManager.swift in Sources */,
 				F7865FF12F39D32F00D09AE4 /* NCCollectionViewCommon+Search.swift in Sources */,
 				F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F76687072B7D067400779E3F /* NCAudioRecorderViewController.swift in Sources */,
@@ -5488,6 +5493,7 @@
 				F793E7A030415A8B00F011FE /* NCManageDatabase+Directory.swift in Sources */,
 				F793E7A530415C8C00F011FE /* NCManageDatabase+CreateMetadata.swift in Sources */,
 				F78DB2103040239E00E6FE24 /* BackgroundUploadExtension.swift in Sources */,
+				F793E7C330417C7300F011FE /* NCBackgroundUploadExtensionManager.swift in Sources */,
 				F793E7B0304161B100F011FE /* AwakeMode.swift in Sources */,
 				F793E79F30415A6500F011FE /* Database.swift in Sources */,
 				F793E7A93041601800F011FE /* ThreadSafeArray.swift in Sources */,
