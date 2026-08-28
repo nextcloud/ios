@@ -16,20 +16,11 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     required init() {
         database.openRealm()
 
-        NextcloudKit.configureLogger(
-            logLevel: NCBrandOptions.shared.disable_log
-                ? .disabled
-                : NCPreferences().log
-        )
+        NextcloudKit.configureLogger(logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log)
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        NextcloudKit.shared.setup(
-            groupIdentifier:
-                NCBrandOptions.shared.capabilitiesGroup
-        )
-
-        nkLog(
-            tag: global.logTagBackgroundUpload,
-            message: """
+        nkLog(tag: global.logTagBackgroundUpload, message:
+            """
             BackgroundUploadExtension initialized, \
             bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")
             """
@@ -62,19 +53,14 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
-            let result: PHBackgroundResourceUploadProcessingResult =
-                madeProgress ? .processing : .completed
+            let result: PHBackgroundResourceUploadProcessingResult = madeProgress ? .processing : .completed
 
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "processJobs end, madeProgress: \(madeProgress)"
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "processJobs end, madeProgress: \(madeProgress)")
 
             return result
 
         } catch let error as NSError
-            where error.domain == PHPhotosErrorDomain &&
-                  error.code == PHPhotosError.limitExceeded.rawValue {
+            where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
 
             nkLog(tag: global.logTagBackgroundUpload, message: "Job limit reached")
 

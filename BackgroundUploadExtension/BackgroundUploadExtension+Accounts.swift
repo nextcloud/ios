@@ -7,7 +7,6 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
-
     func setupAccounts() async -> [tableAccount] {
         let accounts = await database.getAllTableAccountAsync()
 
@@ -43,9 +42,7 @@ extension BackgroundUploadExtension {
     }
 
     private func autoUploadCollections(for account: tableAccount) -> [PHAssetCollection] {
-        let albumIds = NCPreferences().getAutoUploadAlbumIds(
-            account: account.account
-        )
+        let albumIds = NCPreferences().getAutoUploadAlbumIds(account: account.account)
 
         if !albumIds.isEmpty {
             let result = PHAssetCollection.fetchAssetCollections(withLocalIdentifiers: Array(albumIds), options: nil)
@@ -69,8 +66,7 @@ extension BackgroundUploadExtension {
         return [cameraRoll]
     }
 
-    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, account: tableAccount
-    ) async -> tableMetadata? {
+    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, account: tableAccount) async -> tableMetadata? {
         guard let fileName = resource.filename,
               !fileName.isEmpty else {
             nkLog(
@@ -83,7 +79,6 @@ extension BackgroundUploadExtension {
             return nil
         }
 
-        // Non usiamo NCSession.shared: nell’estensione è vuoto.
         let session = NCSession.Session(
             account: account.account,
             urlBase: account.urlBase,
@@ -91,33 +86,27 @@ extension BackgroundUploadExtension {
             userId: account.userId
         )
 
-        let autoUploadServerUrlBase =
-            await database.getAccountAutoUploadServerUrlBaseAsync(
-                    account: account.account,
-                    urlBase: account.urlBase,
-                    userId: account.userId
-                )
+        let autoUploadServerUrlBase = await database.getAccountAutoUploadServerUrlBaseAsync(
+            account: account.account,
+            urlBase: account.urlBase,
+            userId: account.userId
+        )
 
         let serverUrl: String
 
         if account.autoUploadCreateSubfolder {
-            serverUrl = utilityFileSystem.createGranularityPath(
-                asset: asset,
-                serverUrlBase: autoUploadServerUrlBase
-            )
+            serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase)
         } else {
             serverUrl = autoUploadServerUrlBase
         }
 
-        let metadata =
-            await NCManageDatabaseCreateMetadata()
-                .createMetadataAsync(
-                    fileName: fileName,
-                    ocId: UUID().uuidString,
-                    serverUrl: serverUrl,
-                    session: session,
-                    sceneIdentifier: nil
-                )
+        let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
+            fileName: fileName,
+            ocId: UUID().uuidString,
+            serverUrl: serverUrl,
+            session: session,
+            sceneIdentifier: nil
+        )
 
         metadata.assetLocalIdentifier = asset.localIdentifier
         metadata.autoUploadServerUrlBase = autoUploadServerUrlBase

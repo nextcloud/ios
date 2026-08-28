@@ -19,10 +19,7 @@ extension BackgroundUploadExtension {
         )
 
         let jobsInUse = processingJobs.count + acknowledgeJobs.count
-        let availableJobs = max(
-            0,
-            PHAssetResourceUploadJob.jobLimit - jobsInUse
-        )
+        let availableJobs = max(0, PHAssetResourceUploadJob.jobLimit - jobsInUse)
 
         guard availableJobs > 0 else {
             nkLog(
@@ -55,10 +52,7 @@ extension BackgroundUploadExtension {
         var madeProgress = false
 
         for metadata in metadatas {
-            let assets = PHAsset.fetchAssets(
-                withLocalIdentifiers: [metadata.assetLocalIdentifier],
-                options: nil
-            )
+            let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
                 nkLog(
@@ -71,10 +65,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            guard let resource = uploadResource(
-                for: asset,
-                metadata: metadata
-            ) else {
+            guard let resource = uploadResource(for: asset, metadata: metadata) else {
                 nkLog(
                     tag: global.logTagBackgroundUpload,
                     message: """
@@ -85,10 +76,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            guard let destination = buildDestination(
-                metadata: metadata,
-                asset: asset
-            ) else {
+            guard let destination = buildDestination(metadata: metadata, asset: asset) else {
                 continue
             }
 
@@ -102,10 +90,7 @@ extension BackgroundUploadExtension {
                             resource: resource
                         )
 
-                jobIdentifier =
-                    request
-                        .placeholderForCreatedAssetResourceUploadJob?
-                        .localIdentifier
+                jobIdentifier = request.placeholderForCreatedAssetResourceUploadJob?.localIdentifier
             }
 
             guard let jobIdentifier, !jobIdentifier.isEmpty else {
@@ -122,10 +107,7 @@ extension BackgroundUploadExtension {
             metadata.sessionError = ""
             metadata.errorCode = 0
 
-            await database.replaceMetadataAsync(
-                ocId: metadata.ocId,
-                metadata: metadata
-            )
+            await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
             madeProgress = true
 
@@ -143,10 +125,7 @@ extension BackgroundUploadExtension {
     }
 
     func retryUploadJobs() async throws -> Bool {
-        let jobs = PHAssetResourceUploadJob.fetchJobs(
-            action: .retry,
-            options: nil
-        )
+        let jobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
 
         guard jobs.count > 0 else {
             return false
@@ -172,10 +151,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            let assets = PHAsset.fetchAssets(
-                withLocalIdentifiers: [metadata.assetLocalIdentifier],
-                options: nil
-            )
+            let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
                 nkLog(
@@ -188,10 +164,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            guard let destination = buildDestination(
-                metadata: metadata,
-                asset: asset
-            ) else {
+            guard let destination = buildDestination(metadata: metadata, asset: asset) else {
                 nkLog(
                     tag: global.logTagBackgroundUpload,
                     message: "Unable to rebuild destination for job \(jobIdentifier)"
@@ -225,11 +198,7 @@ extension BackgroundUploadExtension {
             metadata.errorCode = 0
             metadata.status = global.metadataStatusUploading
 
-            // Manteniamo lo stesso job identifier.
-            await database.replaceMetadataAsync(
-                ocId: metadata.ocId,
-                metadata: metadata
-            )
+            await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
             madeProgress = true
 
@@ -246,11 +215,7 @@ extension BackgroundUploadExtension {
     }
 
     func acknowledgeUploadJobs() async throws -> Bool {
-        let jobs = PHAssetResourceUploadJob.fetchJobs(
-            action: .acknowledge,
-            options: nil
-        )
-
+        let jobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
         guard jobs.count > 0 else {
             return false
         }
@@ -273,37 +238,25 @@ extension BackgroundUploadExtension {
                     message: "Metadata not found for job \(jobIdentifier)"
                 )
 
-                // Non facciamo acknowledge: il risultato rimane recuperabile.
                 continue
             }
 
             switch job.state {
             case .succeeded:
-                guard await processUploadSuccess(
-                    metadata: metadata,
-                    job: job
-                ) else {
+                guard await processUploadSuccess(metadata: metadata, job: job) else {
                     continue
                 }
 
             case .failed:
-                await updateMetadataForUploadFailure(
-                    metadata: metadata,
-                    job: job
-                )
+                await updateMetadataForUploadFailure(metadata: metadata, job: job)
 
             default:
-                nkLog(
-                    tag: global.logTagBackgroundUpload,
-                    message: "Unexpected state \(job.state.rawValue) for job \(jobIdentifier)"
-                )
+                nkLog(tag: global.logTagBackgroundUpload, message: "Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
                 continue
             }
 
             try library.performChangesAndWait {
-                guard let request = PHAssetResourceUploadJobChangeRequest(
-                    for: job
-                ) else {
+                guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
                     return
                 }
 
@@ -312,30 +265,21 @@ extension BackgroundUploadExtension {
 
             madeProgress = true
 
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)"
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
         }
 
         return madeProgress
     }
 
-    func uploadResource(
-        for asset: PHAsset,
-        metadata: tableMetadata
-    ) -> PHAssetResource? {
+    private func uploadResource(for asset: PHAsset, metadata: tableMetadata) -> PHAssetResource? {
         let resources = PHAssetResource.assetResources(for: asset)
 
-        // Prima prova a trovare la risorsa con lo stesso nome.
         if let resource = resources.first(where: {
-            $0.filename?.caseInsensitiveCompare(metadata.fileName) ==
-                .orderedSame
+            $0.filename?.caseInsensitiveCompare(metadata.fileName) == .orderedSame
         }) {
             return resource
         }
 
-        // Altrimenti seleziona la risorsa principale.
         switch asset.mediaType {
         case .image:
             return resources.first(where: {
@@ -355,5 +299,4 @@ extension BackgroundUploadExtension {
             return nil
         }
     }
-
 }
