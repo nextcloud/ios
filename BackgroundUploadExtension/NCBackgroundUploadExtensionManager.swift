@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import Foundation
 import Photos
 import NextcloudKit
@@ -12,8 +16,7 @@ final class NCBackgroundUploadExtensionManager {
     private init() {}
 
     func shouldUseExtension() async -> Bool {
-        guard PHPhotoLibrary.authorizationStatus(for: .readWrite)
-                == .authorized else {
+        guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else {
             return false
         }
 
@@ -21,11 +24,7 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
 
-        let accounts = await database.getTableAccountsAsync(
-            predicate: NSPredicate(
-                format: "autoUploadStart == true"
-            )
-        )
+        let accounts = await database.getTableAccountsAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
 
         return !accounts.isEmpty
     }
@@ -43,7 +42,6 @@ final class NCBackgroundUploadExtensionManager {
 
         let options = PHAssetResourceUploadJobOptions()
 
-        // Decisione prudenziale iniziale: solo rete non costosa.
         options.preventsExpensiveNetworkAccess = true
 
         do {

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import ExtensionFoundation
 import Photos
 import UniformTypeIdentifiers
@@ -5,19 +9,38 @@ import NextcloudKit
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
-    internal let global = NCGlobal.shared
-    internal let database = NCManageDatabase.shared
-    internal let utilityFileSystem = NCUtilityFileSystem()
-    internal let nkComm = NextcloudKit.shared.nkCommonInstance
-
-    private static var processCount = 0
+    let global = NCGlobal.shared
+    let database = NCManageDatabase.shared
+    let utilityFileSystem = NCUtilityFileSystem()
+    let nkComm = NextcloudKit.shared.nkCommonInstance
 
     required init() {
+        database.openRealm()
+        
+        NextcloudKit.configureLogger(
+            logLevel: NCBrandOptions.shared.disable_log
+                ? .disabled
+                : NCPreferences().log
+        )
 
+        NextcloudKit.shared.setup(
+            groupIdentifier:
+                NCBrandOptions.shared.capabilitiesGroup
+        )
+
+        nkLog(
+            tag: global.logTagBackgroundUpload,
+            message: """
+            BackgroundUploadExtension initialized, \
+            bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")
+            """
+        )
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
         nkLog(tag: global.logTagBackgroundUpload, message: "processJobs begin")
+
+        let accounts = await setupAccounts()
 
         do {
             var madeProgress = false
@@ -27,6 +50,12 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             }
 
             if try await acknowledgeUploadJobs() {
+                madeProgress = true
+            }
+
+            if await createPendingMetadatas(
+                accounts: accounts
+            ) {
                 madeProgress = true
             }
 
@@ -586,90 +615,5 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
 
         return true
-    }
-
-    private func createPendingMetadata(
-        asset: PHAsset,
-        resource: PHAssetResource,
-        account: tableAccount
-    ) async -> tableMetadata? {
-        guard let fileName = resource.filename,
-              !fileName.isEmpty else {
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "Resource without filename: \(asset.localIdentifier)"
-            )
-            return nil
-        }
-
-        let session = NCSession.shared.getSession(
-            account: account.account
-        )
-
-        let autoUploadServerUrlBase =
-            await database.getAccountAutoUploadServerUrlBaseAsync(
-                account: account.account,
-                urlBase: account.urlBase,
-                userId: account.userId
-            )
-
-        let serverUrl: String
-
-        if account.autoUploadCreateSubfolder {
-            serverUrl = utilityFileSystem.createGranularityPath(
-                asset: asset,
-                serverUrlBase: autoUploadServerUrlBase
-            )
-        } else {
-            serverUrl = autoUploadServerUrlBase
-        }
-
-        let metadata =
-            await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
-                ocId: UUID().uuidString,
-                serverUrl: serverUrl,
-                session: session,
-                sceneIdentifier: nil
-            )
-
-        metadata.assetLocalIdentifier = asset.localIdentifier
-        metadata.autoUploadServerUrlBase = autoUploadServerUrlBase
-
-        // Il job PhotoKit carica la risorsa originale.
-        metadata.nativeFormat = true
-        metadata.contentType =
-            resource.contentType.preferredMIMEType ??
-            "application/octet-stream"
-        metadata.typeIdentifier = resource.contentType.identifier
-
-        if let creationDate = asset.creationDate {
-            metadata.creationDate = creationDate as NSDate
-        }
-
-        if let modificationDate = asset.modificationDate {
-            metadata.date = modificationDate as NSDate
-        }
-
-        metadata.session = ""
-        metadata.sessionSelector = global.selectorUploadAutoUpload
-        metadata.sessionDate = Date()
-        metadata.status = global.metadataStatusWaitUpload
-
-        // Prenota il metadata per questa estensione.
-        metadata.backgroundUploadJobIdentifier = "pending"
-
-        await database.addMetadataAsync(metadata)
-
-        nkLog(
-            tag: global.logTagBackgroundUpload,
-            message: """
-            Created pending metadata for \(fileName), \
-            asset: \(asset.localIdentifier), \
-            ocId: \(metadata.ocId)
-            """
-        )
-
-        return metadata
     }
 }
