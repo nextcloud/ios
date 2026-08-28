@@ -734,6 +734,7 @@
 		F793E7C83041802600F011FE /* BackgroundUploadExtension+Jobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */; };
 		F793E7CA3041803C00F011FE /* BackgroundUploadExtension+Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */; };
 		F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */; };
+		F793E7CD30418A4E00F011FE /* NCManageDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */; };
 		F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */; };
 		F7948DE92FBAEC5400253D1C /* NCVideoAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */; };
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
@@ -5506,6 +5507,7 @@
 				F793E7A230415B4E00F011FE /* NCUtilityFileSystem.swift in Sources */,
 				F793E7A730415FCB00F011FE /* NCSession.swift in Sources */,
 				F793E7A030415A8B00F011FE /* NCManageDatabase+Directory.swift in Sources */,
+				F793E7CD30418A4E00F011FE /* NCManageDatabase+AutoUpload.swift in Sources */,
 				F793E7A530415C8C00F011FE /* NCManageDatabase+CreateMetadata.swift in Sources */,
 				F78DB2103040239E00E6FE24 /* BackgroundUploadExtension.swift in Sources */,
 				F793E7B0304161B100F011FE /* AwakeMode.swift in Sources */,

@@ -55,7 +55,6 @@ extension BackgroundUploadExtension {
         let ownerId = headers["x-nc-ownerid"]
         let permissions = headers["x-nc-permissions"]
 
-        metadata.backgroundUploadJobIdentifier = ""
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
         metadata.ocId = ocId
@@ -83,7 +82,21 @@ extension BackgroundUploadExtension {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 
-        await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
+        if metadata.sessionSelector == global.selectorUploadAutoUpload,
+           let serverUrlBase = metadata.autoUploadServerUrlBase {
+            await database.addAutoUploadTransferAsync(
+                account: metadata.account,
+                serverUrlBase: serverUrlBase,
+                fileName: metadata.fileNameView,
+                assetLocalIdentifier: metadata.assetLocalIdentifier,
+                date: metadata.creationDate as Date
+            )
+        }
+
+        await database.replaceMetadataAsync(
+            ocId: metadata.ocIdTransfer,
+            metadata: metadata
+        )
 
         return true
     }

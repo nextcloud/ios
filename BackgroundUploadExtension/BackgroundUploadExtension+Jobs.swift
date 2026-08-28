@@ -255,12 +255,25 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            var acknowledged = false
+
             try library.performChangesAndWait {
                 guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
                     return
                 }
 
                 request.acknowledge()
+                acknowledged = true
+            }
+
+            guard acknowledged else {
+                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge job \(jobIdentifier)")
+                continue
+            }
+
+            if job.state == .succeeded {
+                metadata.backgroundUploadJobIdentifier = ""
+                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
             }
 
             madeProgress = true
