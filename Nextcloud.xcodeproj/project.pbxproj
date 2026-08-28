@@ -728,6 +728,7 @@
 		F793E7B0304161B100F011FE /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F793E7B1304161BD00F011FE /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
 		F793E7B2304162FC00F011FE /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F793E7C1304170F200F011FE /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */; };
 		F7948DE92FBAEC5400253D1C /* NCVideoAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */; };
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
@@ -5470,6 +5471,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F793E7AC3041614D00F011FE /* NCBrand.swift in Sources */,
+				F793E7C1304170F200F011FE /* NCUtility.swift in Sources */,
 				F793E7AF3041619800F011FE /* UIColor+Extension.swift in Sources */,
 				F793E7A630415CB300F011FE /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F793E7A430415B6800F011FE /* NCManageDatabase+LocalFile.swift in Sources */,

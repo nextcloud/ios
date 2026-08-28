@@ -416,26 +416,36 @@ actor NCNetworkingProcess {
             return
         }
 
-        // UPLOAD IN ERROR (check > 5 minute ago)
+        // UPLOAD IN ERROR (check > 5 minute ago) (NO backgroundUploadJobIdentifier)
         //
-        for metadata in metadatas where metadata.status == self.global.metadataStatusUploadError && (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-300) {
-            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                  session: self.networking.sessionUploadBackground,
-                                                                  sessionError: "",
-                                                                  status: global.metadataStatusWaitUpload)
+        for metadata in metadatas where
+            metadata.status == global.metadataStatusUploadError &&
+            metadata.backgroundUploadJobIdentifier.isEmpty &&
+            (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-300) {
+
+            await NCManageDatabase.shared.setMetadataSessionAsync(
+                ocId: metadata.ocId,
+                session: networking.sessionUploadBackground,
+                sessionError: "",
+                status: global.metadataStatusWaitUpload
+            )
         }
 
-        // UPLOAD
+        // UPLOAD (NO backgroundUploadJobIdentifier)
         //
-        let metadatasWaitUpload = Array(metadatas
-            .filter {
-                sessionForUpload.contains($0.session) &&
-                $0.status == NCGlobal.shared.metadataStatusWaitUpload
-            }
-            .sorted { // Earlier dates first; nils go to the end
-                ($0.sessionDate ?? .distantFuture) < ($1.sessionDate ?? .distantFuture)
-            }
-            .prefix(availableProcess))
+        let metadatasWaitUpload = Array(
+            metadatas
+                .filter {
+                    $0.backgroundUploadJobIdentifier.isEmpty &&
+                    sessionForUpload.contains($0.session) &&
+                    $0.status == global.metadataStatusWaitUpload
+                }
+                .sorted {
+                    ($0.sessionDate ?? .distantFuture) <
+                    ($1.sessionDate ?? .distantFuture)
+                }
+                .prefix(availableProcess)
+        )
 
         for metadata in metadatasWaitUpload {
             guard availableProcess > 0, timer != nil else { return }
