@@ -43,9 +43,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
-            if await createPendingMetadatas(
-                accounts: accounts
-            ) {
+            if await createPendingMetadatas(accounts: accounts) {
                 madeProgress = true
             }
 

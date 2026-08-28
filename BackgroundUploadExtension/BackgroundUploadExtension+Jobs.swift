@@ -227,12 +227,7 @@ extension BackgroundUploadExtension {
             let job = jobs.object(at: index)
             let jobIdentifier = job.localIdentifier
 
-            guard let metadata = await database.getMetadataAsync(
-                predicate: NSPredicate(
-                    format: "backgroundUploadJobIdentifier == %@",
-                    jobIdentifier
-                )
-            ) else {
+            guard let metadata = await database.getMetadataAsync(predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@", jobIdentifier)) else {
                 guard try acknowledge(job: job, library: library) else {
                     nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan job \(jobIdentifier)")
                     continue
