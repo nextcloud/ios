@@ -1757,9 +1757,7 @@
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F541F0B7D47002F9619 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F78DB20B3040239E00E6FE24 /* BackgroundUploadExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BackgroundUploadExtension.entitlements; sourceTree = "<group>"; };
 		F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUploadExtension.swift; sourceTree = "<group>"; };
-		F78DB20D3040239E00E6FE24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F78E2D6429AF02DB0024D4F3 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		F78F74332163757000C2ADAD /* NCTrash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCTrash.storyboard; sourceTree = "<group>"; };
 		F78F74352163781100C2ADAD /* NCTrash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrash.swift; sourceTree = "<group>"; };
@@ -3106,10 +3104,8 @@
 		F78DB20E3040239E00E6FE24 /* BackgroundUploadExtension */ = {
 			isa = PBXGroup;
 			children = (
-				F78DB20B3040239E00E6FE24 /* BackgroundUploadExtension.entitlements */,
 				F793E7AA3041611600F011FE /* NCManageDatabase.swift */,
 				F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */,
-				F78DB20D3040239E00E6FE24 /* Info.plist */,
 			);
 			path = BackgroundUploadExtension;
 			sourceTree = "<group>";
@@ -6643,9 +6639,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = BackgroundUploadExtension/BackgroundUploadExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand//BackgroundUploadExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -6659,9 +6654,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include";
-				INFOPLIST_FILE = BackgroundUploadExtension/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Brand//BackgroundUploadExtension.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6696,9 +6690,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = BackgroundUploadExtension/BackgroundUploadExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand//BackgroundUploadExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6712,9 +6705,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include";
-				INFOPLIST_FILE = BackgroundUploadExtension/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Brand//BackgroundUploadExtension.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
