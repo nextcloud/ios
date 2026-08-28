@@ -735,6 +735,7 @@
 		F793E7CA3041803C00F011FE /* BackgroundUploadExtension+Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */; };
 		F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */; };
 		F793E7CD30418A4E00F011FE /* NCManageDatabase+AutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */; };
+		F793E7CF304190AD00F011FE /* BackgroundUploadExtension+Discovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */; };
 		F7948DE72FBAE53000253D1C /* NCVideoAVPlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */; };
 		F7948DE92FBAEC5400253D1C /* NCVideoAVPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */; };
 		F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */; };
@@ -1778,6 +1779,7 @@
 		F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Jobs.swift"; sourceTree = "<group>"; };
 		F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Destination.swift"; sourceTree = "<group>"; };
 		F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Results.swift"; sourceTree = "<group>"; };
+		F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundUploadExtension+Discovery.swift"; sourceTree = "<group>"; };
 		F7948DE62FBAE52F00253D1C /* NCVideoAVPlayerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerPresenter.swift; sourceTree = "<group>"; };
 		F7948DE82FBAEC5300253D1C /* NCVideoAVPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCVideoAVPlayerViewController.swift; sourceTree = "<group>"; };
 		F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
@@ -3119,6 +3121,7 @@
 				F78DB20C3040239E00E6FE24 /* BackgroundUploadExtension.swift */,
 				F793E7C53041801300F011FE /* BackgroundUploadExtension+Accounts.swift */,
 				F793E7C93041803B00F011FE /* BackgroundUploadExtension+Destination.swift */,
+				F793E7CE304190AC00F011FE /* BackgroundUploadExtension+Discovery.swift */,
 				F793E7C73041802400F011FE /* BackgroundUploadExtension+Jobs.swift */,
 				F793E7CB3041804B00F011FE /* BackgroundUploadExtension+Results.swift */,
 				F793E7C230417C7100F011FE /* NCBackgroundUploadExtensionManager.swift */,
@@ -5491,6 +5494,7 @@
 				F793E7C1304170F200F011FE /* NCUtility.swift in Sources */,
 				F793E7CC3041804C00F011FE /* BackgroundUploadExtension+Results.swift in Sources */,
 				F793E7AF3041619800F011FE /* UIColor+Extension.swift in Sources */,
+				F793E7CF304190AD00F011FE /* BackgroundUploadExtension+Discovery.swift in Sources */,
 				F793E7CA3041803C00F011FE /* BackgroundUploadExtension+Destination.swift in Sources */,
 				F793E7A630415CB300F011FE /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F793E7A430415B6800F011FE /* NCManageDatabase+LocalFile.swift in Sources */,
