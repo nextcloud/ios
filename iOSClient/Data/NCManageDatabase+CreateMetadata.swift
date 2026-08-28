@@ -22,7 +22,7 @@ final class NCManageDatabaseCreateMetadata {
                 account: file.account)
         }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
         // E2EE find the fileName for fileNameView
         if e2eEncryptedDirectory || file.e2eEncrypted {
             if let tableE2eEncryption = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
@@ -47,7 +47,7 @@ final class NCManageDatabaseCreateMetadata {
 
     func convertFileToMetadata(_ file: NKFile, capabilities: NKCapabilities.Capabilities?, isDirectoryE2EE: Bool? = nil, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
         let e2eEncryptedDirectory: Bool = isDirectoryE2EE ?? NCUtilityFileSystem().isDirectoryE2EE(
             serverUrl: file.serverUrl,
             urlBase: file.urlBase,
@@ -83,7 +83,7 @@ final class NCManageDatabaseCreateMetadata {
         var metadatas: [tableMetadata] = []
 
         for file in files {
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
                 if let key = listServerUrl[file.serverUrl] {
                     isDirectoryE2EE = key
                 } else {
@@ -105,7 +105,7 @@ final class NCManageDatabaseCreateMetadata {
         return (metadataFolder.detachedCopy(), metadatas)
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     func convertFilesToMetadatas(_ files: [NKFile], capabilities: NKCapabilities.Capabilities?, serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]) -> Void) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
@@ -395,7 +395,7 @@ final class NCManageDatabaseCreateMetadata {
         return metadata
     }
 
-    #if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     private func createMetadatasFolder(assets: [PHAsset],
                                        useSubFolder: Bool,
                                        metadatasFolder: [tableMetadata],
@@ -509,5 +509,5 @@ final class NCManageDatabaseCreateMetadata {
                                                    session: session)
         return metadatas
     }
-    #endif
+#endif
 }

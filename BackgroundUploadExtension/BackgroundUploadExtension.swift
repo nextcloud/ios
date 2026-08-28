@@ -3,6 +3,7 @@ import OSLog
 import Photos
 import UniformTypeIdentifiers
 import NextcloudKit
+import RealmSwift
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
@@ -96,7 +97,6 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         """)
     }
 
-    /*
     private func buildDestination(
         metadata: tableMetadata,
         asset: PHAsset
@@ -178,5 +178,4 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
 
         return request
     }
-    */
 }

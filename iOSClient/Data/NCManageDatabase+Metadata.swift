@@ -184,7 +184,7 @@ extension tableMetadata {
         !directory
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     @objc var isDirectoryE2EE: Bool {
         return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
     }
@@ -1355,7 +1355,7 @@ extension NCManageDatabase {
         } ?? []
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
     func getMetadatasAsync(predicate: NSPredicate,
                            withLayout layoutForView: NCDBLayoutForView?,

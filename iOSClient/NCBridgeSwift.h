@@ -30,6 +30,6 @@
 #import "WidgetDashboardIntentHandler-Swift.h"
 #endif
 
-#if defined(EXTENSION_BACKGROUNDUPLOADEXTENSION)
+#if defined(EXTENSION_BACKGROUNDUPLOAD)
 #import "BackgroundUploadExtension-Swift.h"
 #endif

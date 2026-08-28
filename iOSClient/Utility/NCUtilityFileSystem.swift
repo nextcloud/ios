@@ -228,7 +228,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
             let fileNameViewAttribute = try fileManager.attributesOfItem(atPath: fileNameViewPath)
             let fileNameViewSize: UInt64 = fileNameViewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-#if EXTENSION_FILE_PROVIDER_EXTENSION
+#if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_BACKGROUNDUPLOAD
             return (fileNameViewSize == metadata.size) && metadata.size > 0
 #else
             if metadata.isDirectoryE2EE == true {
