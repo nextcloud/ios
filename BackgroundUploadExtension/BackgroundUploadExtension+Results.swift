@@ -32,15 +32,18 @@ extension BackgroundUploadExtension {
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
         let headers = job.responseHeaderFields ?? [:]
 
-        guard let ocId = headers["oc-fileid"],
-              !ocId.isEmpty else {
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: """
-                Successful job without oc-fileid: \
-                \(job.localIdentifier)
-                """
-            )
+        guard let ocId = headers["oc-fileid"], !ocId.isEmpty else {
+            metadata.session = ""
+            metadata.sessionTaskIdentifier = 0
+            metadata.sessionDate = Date()
+            metadata.sessionError = "Upload response missing oc-fileid"
+            metadata.errorCode = NSURLErrorBadServerResponse
+            metadata.status = global.metadataStatusUploadError
+
+            await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+
+            nkLog(tag: global.logTagBackgroundUpload, message: "Successful job without oc-fileid: \(job.localIdentifier)")
+
             return false
         }
 

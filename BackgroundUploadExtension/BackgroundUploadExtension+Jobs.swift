@@ -233,51 +233,42 @@ extension BackgroundUploadExtension {
                     jobIdentifier
                 )
             ) else {
-                nkLog(
-                    tag: global.logTagBackgroundUpload,
-                    message: "Metadata not found for job \(jobIdentifier)"
-                )
-
-                continue
-            }
-
-            switch job.state {
-            case .succeeded:
-                guard await processUploadSuccess(metadata: metadata, job: job) else {
+                guard try acknowledge(job: job, library: library) else {
+                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan job \(jobIdentifier)")
                     continue
                 }
 
+                madeProgress = true
+                nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan job \(jobIdentifier)")
+                continue
+            }
+
+            let shouldClearJobIdentifier: Bool
+
+            switch job.state {
+            case .succeeded:
+                shouldClearJobIdentifier = await processUploadSuccess(metadata: metadata, job: job)
+
             case .failed:
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
+                shouldClearJobIdentifier = false
 
             default:
                 nkLog(tag: global.logTagBackgroundUpload, message: "Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
                 continue
             }
 
-            var acknowledged = false
-
-            try library.performChangesAndWait {
-                guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
-                    return
-                }
-
-                request.acknowledge()
-                acknowledged = true
-            }
-
-            guard acknowledged else {
+            guard try acknowledge(job: job, library: library) else {
                 nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge job \(jobIdentifier)")
                 continue
             }
 
-            if job.state == .succeeded {
+            if shouldClearJobIdentifier {
                 metadata.backgroundUploadJobIdentifier = ""
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
             }
 
             madeProgress = true
-
             nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
         }
 
@@ -311,5 +302,20 @@ extension BackgroundUploadExtension {
         default:
             return nil
         }
+    }
+
+    private func acknowledge(job: PHAssetResourceUploadJob, library: PHPhotoLibrary) throws -> Bool {
+        var acknowledged = false
+
+        try library.performChangesAndWait {
+            guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
+                return
+            }
+
+            request.acknowledge()
+            acknowledged = true
+        }
+
+        return acknowledged
     }
 }
