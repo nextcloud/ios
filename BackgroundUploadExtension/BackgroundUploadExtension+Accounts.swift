@@ -17,26 +17,16 @@ extension BackgroundUploadExtension {
                 urlBase: account.urlBase,
                 user: account.user,
                 userId: account.userId,
-                password: NCPreferences().getPassword(
-                    account: account.account
-                ),
+                password: NCPreferences().getPassword(account: account.account),
                 userAgent: userAgent,
-                httpMaximumConnectionsPerHost:
-                    NCBrandOptions.shared
-                        .httpMaximumConnectionsPerHost,
-                httpMaximumConnectionsPerHostInDownload:
-                    NCBrandOptions.shared
-                        .httpMaximumConnectionsPerHostInDownload,
-                httpMaximumConnectionsPerHostInUpload:
-                    NCBrandOptions.shared
-                        .httpMaximumConnectionsPerHostInUpload,
-                groupIdentifier:
-                    NCBrandOptions.shared.capabilitiesGroup
+                httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
+                groupIdentifier:NCBrandOptions.shared.capabilitiesGroup
             )
         }
 
-        guard PHPhotoLibrary.authorizationStatus(for: .readWrite)
-                == .authorized else {
+        guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else {
             return []
         }
 
@@ -47,27 +37,18 @@ extension BackgroundUploadExtension {
         return accounts.filter(\.autoUploadStart)
     }
 
-    func createPendingMetadatas(
-        accounts: [tableAccount]
-    ) async -> Bool {
+    func createPendingMetadatas(accounts: [tableAccount]) async -> Bool {
         // Lo implementiamo nel prossimo passaggio.
         return false
     }
 
-    private func autoUploadCollections(
-        for account: tableAccount
-    ) -> [PHAssetCollection] {
+    private func autoUploadCollections(for account: tableAccount) -> [PHAssetCollection] {
         let albumIds = NCPreferences().getAutoUploadAlbumIds(
             account: account.account
         )
 
         if !albumIds.isEmpty {
-            let result =
-                PHAssetCollection.fetchAssetCollections(
-                    withLocalIdentifiers: Array(albumIds),
-                    options: nil
-                )
-
+            let result = PHAssetCollection.fetchAssetCollections(withLocalIdentifiers: Array(albumIds), options: nil)
             var collections: [PHAssetCollection] = []
 
             result.enumerateObjects { collection, _, _ in
@@ -79,12 +60,7 @@ extension BackgroundUploadExtension {
             }
         }
 
-        let result =
-            PHAssetCollection.fetchAssetCollections(
-                with: .smartAlbum,
-                subtype: .smartAlbumUserLibrary,
-                options: nil
-            )
+        let result = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
 
         guard let cameraRoll = result.firstObject else {
             return []
@@ -93,10 +69,7 @@ extension BackgroundUploadExtension {
         return [cameraRoll]
     }
 
-    private func createPendingMetadata(
-        asset: PHAsset,
-        resource: PHAssetResource,
-        account: tableAccount
+    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, account: tableAccount
     ) async -> tableMetadata? {
         guard let fileName = resource.filename,
               !fileName.isEmpty else {
@@ -119,8 +92,7 @@ extension BackgroundUploadExtension {
         )
 
         let autoUploadServerUrlBase =
-            await database
-                .getAccountAutoUploadServerUrlBaseAsync(
+            await database.getAccountAutoUploadServerUrlBaseAsync(
                     account: account.account,
                     urlBase: account.urlBase,
                     userId: account.userId
@@ -148,15 +120,10 @@ extension BackgroundUploadExtension {
                 )
 
         metadata.assetLocalIdentifier = asset.localIdentifier
-        metadata.autoUploadServerUrlBase =
-            autoUploadServerUrlBase
-
+        metadata.autoUploadServerUrlBase = autoUploadServerUrlBase
         metadata.nativeFormat = true
-        metadata.contentType =
-            resource.contentType.preferredMIMEType ??
-            "application/octet-stream"
-        metadata.typeIdentifier =
-            resource.contentType.identifier
+        metadata.contentType = resource.contentType.preferredMIMEType ?? "application/octet-stream"
+        metadata.typeIdentifier = resource.contentType.identifier
 
         if let creationDate = asset.creationDate {
             metadata.creationDate = creationDate as NSDate
@@ -167,11 +134,9 @@ extension BackgroundUploadExtension {
         }
 
         metadata.session = ""
-        metadata.sessionSelector =
-            global.selectorUploadAutoUpload
+        metadata.sessionSelector = global.selectorUploadAutoUpload
         metadata.sessionDate = Date()
-        metadata.status =
-            global.metadataStatusWaitUpload
+        metadata.status = global.metadataStatusWaitUpload
         metadata.backgroundUploadJobIdentifier = "pending"
 
         await database.addMetadataAsync(metadata)
