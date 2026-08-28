@@ -22,7 +22,7 @@ extension BackgroundUploadExtension {
                 httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                 httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                 httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
-                groupIdentifier:NCBrandOptions.shared.capabilitiesGroup
+                groupIdentifier: NCBrandOptions.shared.capabilitiesGroup
             )
         }
 
