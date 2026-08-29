@@ -26,7 +26,22 @@ final class NCBackgroundUploadExtensionManager {
 
         let accounts = await database.getTableAccountsAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
 
-        return !accounts.isEmpty
+        guard !accounts.isEmpty else {
+            return false
+        }
+
+        for account in accounts {
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: account.account)
+            guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33) else {
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Background upload extension unavailable for account \(account.account): server version is lower than 33"
+                )
+                return false
+            }
+        }
+
+        return true
     }
 
     func ensureEnabled() async -> Bool {
@@ -35,36 +50,21 @@ final class NCBackgroundUploadExtensionManager {
         }
 
         let library = PHPhotoLibrary.shared()
-
-        if library.uploadJobExtensionEnabled {
-            return true
-        }
-
         let options = PHAssetResourceUploadJobOptions()
-
-        options.preventsExpensiveNetworkAccess = true
+        options.preventsExpensiveNetworkAccess = false
 
         do {
-            try library.enableUploadJobExtension(with: options)
+            if library.uploadJobExtensionEnabled {
+                try library.setUploadJobExtensionOptions(options)
+            } else {
+                try library.enableUploadJobExtension(with: options)
+            }
 
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: """
-                Background upload extension enabled: \
-                \(library.uploadJobExtensionEnabled)
-                """
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enabled: \(library.uploadJobExtensionEnabled)")
 
             return library.uploadJobExtensionEnabled
-
         } catch {
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: """
-                Background upload extension enable failed: \
-                \(error)
-                """
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enable failed: \(error)")
 
             return false
         }

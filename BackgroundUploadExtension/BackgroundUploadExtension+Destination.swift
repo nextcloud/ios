@@ -30,7 +30,9 @@ extension BackgroundUploadExtension {
             return nil
         }
 
+        let wifiOnly = metadata.session == nkComm.identifierSessionUploadBackgroundWWan
         let loginString = "\(nkSession.user):\(nkSession.password)"
+        var request = URLRequest(url: url)
 
         guard let loginData = loginString.data(using: .utf8) else {
             nkLog(
@@ -43,15 +45,12 @@ extension BackgroundUploadExtension {
             return nil
         }
 
-        var request = URLRequest(url: url)
         request.httpMethod = "PUT"
-
+        request.allowsCellularAccess = !wifiOnly
+        request.allowsExpensiveNetworkAccess = true
         request.setValue(nkSession.userAgent, forHTTPHeaderField: "User-Agent")
-
         request.setValue("Basic \(loginData.base64EncodedString())", forHTTPHeaderField: "Authorization")
-
         request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
-
         request.setValue("1", forHTTPHeaderField: "X-NC-WebDAV-Auto-Mkcol")
 
         if let creationDate = asset.creationDate,

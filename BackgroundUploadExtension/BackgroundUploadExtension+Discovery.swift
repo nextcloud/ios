@@ -119,6 +119,7 @@ extension BackgroundUploadExtension {
         )
 
         let serverUrl: String
+        let wifiOnly = asset.mediaType == .image ? account.autoUploadWWAnPhoto : account.autoUploadWWAnVideo
 
         if account.autoUploadCreateSubfolder {
             serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase)
@@ -148,7 +149,7 @@ extension BackgroundUploadExtension {
             metadata.date = modificationDate as NSDate
         }
 
-        metadata.session = ""
+        metadata.session = wifiOnly ? nkComm.identifierSessionUploadBackgroundWWan : nkComm.identifierSessionUploadBackground
         metadata.sessionSelector = global.selectorUploadAutoUpload
         metadata.sessionDate = Date()
         metadata.status = global.metadataStatusWaitUpload
