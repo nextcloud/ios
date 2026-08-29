@@ -529,18 +529,26 @@ extension NCManageDatabase {
         return folderPhotos
     }
 
-    func getAccountAutoUploadSubfolderGranularity() -> Int {
+    func getAccountAutoUploadSubfolderGranularity(account: String? = nil) -> Int {
         core.performRealmRead { realm in
-            realm.objects(tableAccount.self)
+            if let account {
+                return realm.object(ofType: tableAccount.self, forPrimaryKey: account)?.autoUploadSubfolderGranularity
+            }
+
+            return realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
                 .autoUploadSubfolderGranularity
         } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func getAccountAutoUploadSubfolderGranularityAsync() async -> Int {
+    func getAccountAutoUploadSubfolderGranularityAsync(account: String? = nil) async -> Int {
         await core.performRealmReadAsync { realm in
-            realm.objects(tableAccount.self)
+            if let account {
+                return realm.object(ofType: tableAccount.self, forPrimaryKey: account)?.autoUploadSubfolderGranularity
+            }
+
+            return realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
                 .autoUploadSubfolderGranularity

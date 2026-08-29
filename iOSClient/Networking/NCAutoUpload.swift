@@ -126,7 +126,9 @@ class NCAutoUpload: NSObject {
 
             let mediaType = asset.mediaType
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
-            let serverUrl = tblAccount.autoUploadCreateSubfolder ? fileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase) : autoUploadServerUrlBase
+            let serverUrl = tblAccount.autoUploadCreateSubfolder
+                ? fileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase, granularity: tblAccount.autoUploadSubfolderGranularity)
+                : autoUploadServerUrlBase
             let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
             let uploadSession = onWWAN ? self.networking.sessionUploadBackgroundWWan : self.networking.sessionUploadBackground
 

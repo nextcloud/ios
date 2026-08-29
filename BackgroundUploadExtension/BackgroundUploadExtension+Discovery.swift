@@ -81,8 +81,7 @@ extension BackgroundUploadExtension {
                 let creationDate = asset.creationDate ?? Date()
                 let fileName = utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
 
-                guard !skipFileNames.contains(fileName),
-                      !skipFileNames.contains(originalFileName) else {
+                guard !skipFileNames.contains(fileName) else {
                     continue
                 }
 
@@ -91,7 +90,6 @@ extension BackgroundUploadExtension {
                 }
 
                 skipFileNames.insert(fileName)
-                skipFileNames.insert(originalFileName)
                 lastQueuedDate = creationDate
                 madeProgress = true
             }
@@ -122,7 +120,7 @@ extension BackgroundUploadExtension {
         let wifiOnly = asset.mediaType == .image ? account.autoUploadWWAnPhoto : account.autoUploadWWAnVideo
 
         if account.autoUploadCreateSubfolder {
-            serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase)
+            serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase, granularity: account.autoUploadSubfolderGranularity)
         } else {
             serverUrl = autoUploadServerUrlBase
         }

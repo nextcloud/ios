@@ -441,9 +441,9 @@ final class NCManageDatabaseCreateMetadata {
 
         // Create Auto Upload SubDirectory - Granularity
         if useSubFolder {
-            let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
-            let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
-            let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
+            let folders = Set(assets.map {
+                utilityFileSystem.createGranularityPath(asset: $0, granularity: autoUploadSubfolderGranularity)
+            }).sorted()
 
             for folder in folders {
                 let componentsDate = folder.split(separator: "/")
@@ -481,7 +481,7 @@ final class NCManageDatabaseCreateMetadata {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, autoUploadDirectory)
         let metadatasFolder = NCManageDatabase.shared.getMetadatas(predicate: predicate)
         let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
-        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
+        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity(account: session.account)
         let metadatas = self.createMetadatasFolder(assets: assets,
                                                    useSubFolder: useSubFolder,
                                                    metadatasFolder: metadatasFolder,
@@ -499,7 +499,7 @@ final class NCManageDatabaseCreateMetadata {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, autoUploadDirectory)
         let metadatasFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate)
         let autoUploadServerUrlBase = await NCManageDatabase.shared.getAccountAutoUploadServerUrlBaseAsync(session: session)
-        let autoUploadSubfolderGranularity = await NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularityAsync()
+        let autoUploadSubfolderGranularity = await NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularityAsync(account: session.account)
         let metadatas = self.createMetadatasFolder(assets: assets,
                                                    useSubFolder: useSubFolder,
                                                    metadatasFolder: metadatasFolder,
