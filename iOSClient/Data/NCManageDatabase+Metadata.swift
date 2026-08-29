@@ -129,6 +129,9 @@ class tableMetadata: Object {
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
     @objc dynamic var backgroundUploadJobIdentifier = ""
+    @objc dynamic var backgroundUploadRetryCount: Int = 0
+    @objc dynamic var backgroundUploadNextRetryDate: Date?
+    @objc dynamic var backgroundUploadCancellationRequested = false
 
     // =========================
     // UI / transient properties
