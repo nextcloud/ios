@@ -138,6 +138,9 @@ extension BackgroundUploadExtension {
         metadata.nativeFormat = true
         metadata.contentType = resource.contentType.preferredMIMEType ?? "application/octet-stream"
         metadata.typeIdentifier = resource.contentType.identifier
+        metadata.size = Int64(resource.dataSize ?? 0)
+        metadata.width = asset.pixelWidth
+        metadata.height = asset.pixelHeight
 
         if let creationDate = asset.creationDate {
             metadata.creationDate = creationDate as NSDate

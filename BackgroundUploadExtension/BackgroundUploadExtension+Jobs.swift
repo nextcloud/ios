@@ -7,7 +7,12 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
-    func createUploadJobs() async throws -> Bool {
+    func createUploadJobs(accounts: [tableAccount]) async throws -> Bool {
+        let accountIdentifiers = accounts.map(\.account)
+        guard !accountIdentifiers.isEmpty else {
+            return false
+        }
+
         let processingJobs = PHAssetResourceUploadJob.fetchJobs(
             action: .process,
             options: nil
@@ -32,10 +37,12 @@ extension BackgroundUploadExtension {
         let predicate = NSPredicate(
             format: """
             status == %d AND \
-            backgroundUploadJobIdentifier == %@
+            backgroundUploadJobIdentifier == %@ AND \
+            account IN %@
             """,
             global.metadataStatusWaitUpload,
-            "pending"
+            "pending",
+            accountIdentifiers
         )
 
         guard let metadatas = await database.getMetadatasAsync(
@@ -138,16 +145,16 @@ extension BackgroundUploadExtension {
             let job = jobs.object(at: index)
             let jobIdentifier = job.localIdentifier
 
-            guard let metadata = await database.getMetadataAsync(
-                predicate: NSPredicate(
-                    format: "backgroundUploadJobIdentifier == %@",
-                    jobIdentifier
-                )
-            ) else {
-                nkLog(
-                    tag: global.logTagBackgroundUpload,
-                    message: "Retry metadata not found for job \(jobIdentifier)"
-                )
+            guard let metadata = await database.getMetadataAsync(predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@", jobIdentifier)) else {
+                guard try acknowledge(job: job, library: library) else {
+                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan retry job \(jobIdentifier)")
+                    continue
+                }
+
+                madeProgress = true
+
+                nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan retry job \(jobIdentifier)")
+
                 continue
             }
 

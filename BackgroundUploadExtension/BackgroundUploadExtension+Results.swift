@@ -48,7 +48,7 @@ extension BackgroundUploadExtension {
         }
 
         let etag = nkComm.normalizedETag(
-            headers["oc-etag"]
+            headers["oc-etag"] ?? headers["etag"]
         )
 
         let date = headers["date"]?.parsedDate(

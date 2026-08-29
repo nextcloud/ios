@@ -47,7 +47,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
-            if try await createUploadJobs() {
+            if try await createUploadJobs(accounts: accounts) {
                 madeProgress = true
             }
 
