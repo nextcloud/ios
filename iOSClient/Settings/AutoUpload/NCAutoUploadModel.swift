@@ -147,6 +147,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
         Task {
             await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: autoUploadSinceDate, account: session.account)
+
+            if #available(iOS 27, *) {
+                _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+            }
         }
     }
 
