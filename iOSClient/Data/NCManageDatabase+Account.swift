@@ -363,6 +363,24 @@ extension NCManageDatabase {
             }
         }
     }
+
+    func setAutoUploadStartAsync(_ enabled: Bool, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            let accounts = realm.objects(tableAccount.self)
+
+            if enabled {
+                for result in accounts {
+                    result.autoUploadStart = result.account == account
+                }
+            } else {
+                accounts
+                    .filter("account == %@", account)
+                    .first?
+                    .autoUploadStart = false
+            }
+        }
+    }
+
     // MARK: - Realm Read
 
     func getTableAccount(predicate: NSPredicate) -> tableAccount? {

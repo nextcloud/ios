@@ -153,22 +153,43 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         Task {
-            if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)),
-               tblAccount.autoUploadStart == newValue {
+            guard let account = await database.getTableAccountAsync(
+                predicate: NSPredicate(format: "account == %@", session.account)
+            ) else {
                 return
             }
 
-            await database.updateAccountPropertyAsync(\.autoUploadStart, value: newValue, account: session.account)
-
             if newValue {
-                _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(controller: self.controller,
-                                                                             model: self,
-                                                                             assetCollections: assetCollections,
-                                                                             account: session.account)
+                await database.setAutoUploadStartAsync(true, account: session.account)
+
+                guard !account.autoUploadStart else {
+                    return
+                }
+
+                _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(
+                    controller: controller,
+                    model: self,
+                    assetCollections: assetCollections,
+                    account: session.account
+                )
             } else {
+                guard account.autoUploadStart else {
+                    return
+                }
+
+                await database.setAutoUploadStartAsync(false, account: session.account)
                 await database.clearMetadatasUploadAsync(account: session.account)
             }
         }
+    }
+
+    func getOtherAutoUploadAccount() async -> tableAccount? {
+        await database.getTableAccountAsync(
+            predicate: NSPredicate(
+                format: "autoUploadStart == true AND account != %@",
+                session.account
+            )
+        )
     }
 
     /// Updates the auto-upload create subfolder setting.
