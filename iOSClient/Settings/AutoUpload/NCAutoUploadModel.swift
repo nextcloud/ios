@@ -152,34 +152,66 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
+        let accountIdentifier = session.account
+
         Task {
             guard let account = await database.getTableAccountAsync(
-                predicate: NSPredicate(format: "account == %@", session.account)
-            ) else {
+                predicate: NSPredicate(format: "account == %@", accountIdentifier)
+            ),
+            account.autoUploadStart != newValue else {
                 return
             }
 
             if newValue {
-                await database.setAutoUploadStartAsync(true, account: session.account)
+                let previousAccounts = await database.getTableAccountsAsync(
+                    predicate: NSPredicate(
+                        format: "autoUploadStart == true AND account != %@",
+                        accountIdentifier
+                    )
+                )
 
-                guard !account.autoUploadStart else {
-                    return
+                for previousAccount in previousAccounts {
+                    await database.setAutoUploadStartAsync(
+                        false,
+                        account: previousAccount.account
+                    )
+
+                    await cancelAutoUploadTransfers(
+                        account: previousAccount.account
+                    )
                 }
+
+                await database.setAutoUploadStartAsync(true, account: accountIdentifier)
 
                 _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(
                     controller: controller,
                     model: self,
                     assetCollections: assetCollections,
-                    account: session.account
+                    account: accountIdentifier
                 )
             } else {
-                guard account.autoUploadStart else {
-                    return
-                }
-
-                await database.setAutoUploadStartAsync(false, account: session.account)
-                await database.clearMetadatasUploadAsync(account: session.account)
+                await database.setAutoUploadStartAsync(false, account: accountIdentifier)
+                await cancelAutoUploadTransfers(account: accountIdentifier)
             }
+        }
+    }
+
+    private func cancelAutoUploadTransfers(account: String) async {
+        await database.requestBackgroundAutoUploadCancellationAsync(account: account)
+
+        let predicate = NSPredicate(
+            format: "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier == '' AND status != %d",
+            account,
+            NCGlobal.shared.selectorUploadAutoUpload,
+            NCGlobal.shared.metadataStatusNormal
+        )
+
+        let metadatas: [tableMetadata] = await database.getMetadatasAsync(
+            predicate: predicate
+        )
+
+        for metadata in metadatas {
+            await NCNetworking.shared.cancelTask(metadata: metadata)
         }
     }
 

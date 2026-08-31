@@ -24,21 +24,18 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
 
-        let accounts = await database.getTableAccountsAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
-
-        guard !accounts.isEmpty else {
+        guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
             return false
         }
 
-        for account in accounts {
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: account.account)
-            guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33) else {
-                nkLog(
-                    tag: global.logTagBackgroundUpload,
-                    message: "Background upload extension unavailable for account \(account.account): server version is lower than 33"
-                )
-                return false
-            }
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account.account)
+
+        guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33) else {
+            nkLog(
+                tag: global.logTagBackgroundUpload,
+                message: "Background upload extension unavailable for account \(account.account): server version is lower than 33"
+            )
+            return false
         }
 
         return true

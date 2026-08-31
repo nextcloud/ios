@@ -30,10 +30,14 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
         nkLog(tag: global.logTagBackgroundUpload, message: "processJobs begin")
 
-        let accounts = await setupAccounts()
+        let account = await setupAccount()
 
         do {
             var madeProgress = false
+
+            if try await cancelRequestedUploadJobs() {
+                madeProgress = true
+            }
 
             if try await retryUploadJobs() {
                 madeProgress = true
@@ -43,18 +47,20 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
-            if try await createUploadJobs(accounts: accounts) {
-                madeProgress = true
-            }
-
-            let availableJobs = availableUploadJobSlots()
-
-            if availableJobs > 0,
-               await createPendingMetadatas(accounts: accounts, limit: availableJobs) {
-                madeProgress = true
-
-                if try await createUploadJobs(accounts: accounts) {
+            if let account {
+                if try await createUploadJobs(account: account) {
                     madeProgress = true
+                }
+
+                let availableJobs = availableUploadJobSlots()
+
+                if availableJobs > 0,
+                   await createPendingMetadatas(account: account, limit: availableJobs) {
+                    madeProgress = true
+
+                    if try await createUploadJobs(account: account) {
+                        madeProgress = true
+                    }
                 }
             }
 
@@ -63,14 +69,10 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             nkLog(tag: global.logTagBackgroundUpload, message: "processJobs end, madeProgress: \(madeProgress)")
 
             return result
-
-        } catch let error as NSError
-            where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
-
+        } catch let error as NSError where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
             nkLog(tag: global.logTagBackgroundUpload, message: "Job limit reached")
 
             return .processing
-
         } catch {
             nkLog(tag: global.logTagBackgroundUpload, message: "processJobs error: \(error)")
 

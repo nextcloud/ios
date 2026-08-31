@@ -831,11 +831,27 @@ extension NCManageDatabase {
         }
     }
 
-    func clearMetadatasUploadAsync(account: String) async {
+    func requestBackgroundAutoUploadCancellationAsync(account: String) async {
         await core.performRealmWriteAsync { realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
-            realm.delete(results)
+            let pendingMetadatas = realm.objects(tableMetadata.self).filter(
+                "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier == %@",
+                account,
+                NCGlobal.shared.selectorUploadAutoUpload,
+                "pending"
+            )
+
+            realm.delete(pendingMetadatas)
+
+            let jobMetadatas = realm.objects(tableMetadata.self).filter(
+                "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier != %@ AND backgroundUploadJobIdentifier != ''",
+                account,
+                NCGlobal.shared.selectorUploadAutoUpload,
+                "pending"
+            )
+
+            for metadata in jobMetadatas {
+                metadata.backgroundUploadCancellationRequested = true
+            }
         }
     }
 

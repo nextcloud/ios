@@ -7,128 +7,106 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
-    func createPendingMetadatas(accounts: [tableAccount], limit: Int) async -> Bool {
-        guard limit > 0 else {
+    func createPendingMetadatas(account: tableAccount, limit: Int) async -> Bool {
+        guard limit > 0,
+              account.autoUploadImage || account.autoUploadVideo else {
             return false
         }
 
-        var madeProgress = false
-        var remaining = limit
+        let autoUploadServerUrlBase = await database.getAccountAutoUploadServerUrlBaseAsync(
+            account: account.account,
+            urlBase: account.urlBase,
+            userId: account.userId
+        )
 
-        for account in accounts {
+        var skipFileNames = await database.fetchSkipFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+
+        var skipAssetLocalIdentifiers = await database.fetchSkipAssetLocalIdentifiersAsync(
+            account: account.account,
+            autoUploadServerUrlBase: autoUploadServerUrlBase
+        )
+
+        let fetchOptions = PHFetchOptions()
+        var mediaPredicates: [NSPredicate] = []
+
+        if account.autoUploadImage {
+            mediaPredicates.append(NSPredicate(format: "mediaType == %d", PHAssetMediaType.image.rawValue))
+        }
+
+        if account.autoUploadVideo {
+            mediaPredicates.append(NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue))
+        }
+
+        var predicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)]
+
+        if let sinceDate = account.autoUploadSinceDate {
+            predicates.append(NSPredicate(format: "creationDate >= %@", sinceDate as NSDate))
+        } else if let lastDate = await database.fetchLastAutoUploadedDateAsync(
+            account: account.account,
+            autoUploadServerUrlBase: autoUploadServerUrlBase
+        ) {
+            predicates.append(NSPredicate(format: "creationDate >= %@", lastDate as NSDate))
+        }
+
+        fetchOptions.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+
+        var assetsByIdentifier: [String: PHAsset] = [:]
+
+        for collection in autoUploadCollections(for: account) {
+            let assets = PHAsset.fetchAssets(in: collection, options: fetchOptions)
+
+            assets.enumerateObjects { asset, _, _ in
+                assetsByIdentifier[asset.localIdentifier] = asset
+            }
+        }
+
+        let assets = assetsByIdentifier.values.sorted {
+            ($0.creationDate ?? .distantPast) <
+            ($1.creationDate ?? .distantPast)
+        }
+
+        var remaining = limit
+        var madeProgress = false
+        var lastQueuedDate: Date?
+
+        for asset in assets {
             guard remaining > 0 else {
                 break
             }
 
-            guard account.autoUploadImage || account.autoUploadVideo else {
+            guard !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
                 continue
             }
 
-            let autoUploadServerUrlBase = await database.getAccountAutoUploadServerUrlBaseAsync(
-                account: account.account,
-                urlBase: account.urlBase,
-                userId: account.userId
-            )
-
-            var skipFileNames = await database.fetchSkipFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
-            var skipAssetLocalIdentifiers = await database.fetchSkipAssetLocalIdentifiersAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
-            let fetchOptions = PHFetchOptions()
-            var mediaPredicates: [NSPredicate] = []
-
-            if account.autoUploadImage {
-                mediaPredicates.append(NSPredicate(format: "mediaType == %d", PHAssetMediaType.image.rawValue))
+            guard let resource = primaryUploadResource(for: asset),
+                  let originalFileName = resource.filename,
+                  !originalFileName.isEmpty else {
+                nkLog(tag: global.logTagBackgroundUpload, message: "Upload resource not found for asset \(asset.localIdentifier)")
+                continue
             }
 
-            if account.autoUploadVideo {
-                mediaPredicates.append(NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue))
+            let creationDate = asset.creationDate ?? Date()
+            let fileName = utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
+
+            guard !skipFileNames.contains(fileName) else {
+                continue
             }
 
-            var predicates: [NSPredicate] = [
-                NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)
-            ]
-
-            if let sinceDate = account.autoUploadSinceDate {
-                predicates.append(NSPredicate(format: "creationDate >= %@", sinceDate as NSDate))
-            } else if let lastDate = await database.fetchLastAutoUploadedDateAsync(
-                account: account.account,
-                autoUploadServerUrlBase: autoUploadServerUrlBase
-            ) {
-                predicates.append(NSPredicate(format: "creationDate >= %@", lastDate as NSDate))
+            guard await createPendingMetadata(asset: asset, resource: resource, fileName: fileName, account: account) != nil else {
+                continue
             }
 
-            fetchOptions.predicate = NSCompoundPredicate(
-                andPredicateWithSubpredicates: predicates
-            )
-            fetchOptions.sortDescriptors = [
-                NSSortDescriptor(key: "creationDate", ascending: true)
-            ]
+            skipFileNames.insert(fileName)
+            skipAssetLocalIdentifiers.insert(asset.localIdentifier)
+            lastQueuedDate = creationDate
+            remaining -= 1
+            madeProgress = true
+        }
 
-            var assetsByIdentifier: [String: PHAsset] = [:]
-
-            for collection in autoUploadCollections(for: account) {
-                let assets = PHAsset.fetchAssets(in: collection, options: fetchOptions)
-
-                assets.enumerateObjects { asset, _, _ in
-                    assetsByIdentifier[asset.localIdentifier] = asset
-                }
-            }
-
-            let assets = assetsByIdentifier.values.sorted {
-                ($0.creationDate ?? .distantPast) <
-                ($1.creationDate ?? .distantPast)
-            }
-
-            var lastQueuedDate: Date?
-
-            for asset in assets {
-                guard remaining > 0 else {
-                    break
-                }
-
-                guard !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
-                    continue
-                }
-
-                guard let resource = primaryUploadResource(for: asset),
-                      let originalFileName = resource.filename,
-                      !originalFileName.isEmpty else {
-                    nkLog(
-                        tag: global.logTagBackgroundUpload,
-                        message: "Upload resource not found for asset \(asset.localIdentifier)"
-                    )
-                    continue
-                }
-
-                let creationDate = asset.creationDate ?? Date()
-                let fileName = utilityFileSystem.createFileName(
-                    originalFileName,
-                    fileDate: creationDate,
-                    fileType: asset.mediaType
-                )
-
-                guard !skipFileNames.contains(fileName) else {
-                    continue
-                }
-
-                guard await createPendingMetadata(
-                    asset: asset,
-                    resource: resource,
-                    fileName: fileName,
-                    account: account
-                ) != nil else {
-                    continue
-                }
-
-                skipFileNames.insert(fileName)
-                skipAssetLocalIdentifiers.insert(asset.localIdentifier)
-                lastQueuedDate = creationDate
-                remaining -= 1
-                madeProgress = true
-            }
-
-            if let lastQueuedDate {
-                await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: lastQueuedDate, account: account.account)
-            }
+        if let lastQueuedDate {
+            await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: lastQueuedDate, account: account.account)
         }
 
         return madeProgress

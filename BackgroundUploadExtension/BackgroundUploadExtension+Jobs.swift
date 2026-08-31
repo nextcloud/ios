@@ -7,11 +7,7 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
-    func createUploadJobs(accounts: [tableAccount]) async throws -> Bool {
-        let accountIdentifiers = accounts.map(\.account)
-        guard !accountIdentifiers.isEmpty else {
-            return false
-        }
+    func createUploadJobs(account: tableAccount) async throws -> Bool {
         let availableJobs = availableUploadJobSlots()
 
         guard availableJobs > 0 else {
@@ -26,11 +22,11 @@ extension BackgroundUploadExtension {
             format: """
             status == %d AND \
             backgroundUploadJobIdentifier == %@ AND \
-            account IN %@
+            account == %@
             """,
             global.metadataStatusWaitUpload,
             "pending",
-            accountIdentifiers
+            account.account
         )
 
         guard let metadatas = await database.getMetadatasAsync(
@@ -119,6 +115,74 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
+    func cancelRequestedUploadJobs() async throws -> Bool {
+        let library = PHPhotoLibrary.shared()
+        var madeProgress = false
+
+        let cancellableJobs = PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil)
+
+        for index in 0..<cancellableJobs.count {
+            let job = cancellableJobs.object(at: index)
+            let jobIdentifier = job.localIdentifier
+
+            guard let metadata = await database.getMetadataAsync(
+                predicate: NSPredicate(
+                    format: "backgroundUploadJobIdentifier == %@ AND backgroundUploadCancellationRequested == true",
+                    jobIdentifier
+                )
+            ) else {
+                continue
+            }
+
+            guard try cancel(job: job, library: library) else {
+                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to cancel job \(jobIdentifier)")
+                continue
+            }
+
+            await database.deleteMetadataAsync(id: metadata.ocId)
+            madeProgress = true
+
+            nkLog(
+                tag: global.logTagBackgroundUpload,
+                message: "Cancelled background upload job \(jobIdentifier), file: \(metadata.fileName)"
+            )
+        }
+
+        let retryJobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
+        let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
+
+        for jobs in [retryJobs, acknowledgeJobs] {
+            for index in 0..<jobs.count {
+                let job = jobs.object(at: index)
+                let jobIdentifier = job.localIdentifier
+
+                guard let metadata = await database.getMetadataAsync(
+                    predicate: NSPredicate(
+                        format: "backgroundUploadJobIdentifier == %@ AND backgroundUploadCancellationRequested == true",
+                        jobIdentifier
+                    )
+                ) else {
+                    continue
+                }
+
+                guard try acknowledge(job: job, library: library) else {
+                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge cancelled job \(jobIdentifier)")
+                    continue
+                }
+
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                madeProgress = true
+
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)"
+                )
+            }
+        }
+
+        return madeProgress
+    }
+
     func retryUploadJobs() async throws -> Bool {
         let jobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
 
@@ -143,6 +207,14 @@ extension BackgroundUploadExtension {
 
                 nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan retry job \(jobIdentifier)")
 
+                continue
+            }
+
+            guard !metadata.backgroundUploadCancellationRequested else {
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Skipping retry for cancellation-requested job \(jobIdentifier)"
+                )
                 continue
             }
 
@@ -233,6 +305,11 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            guard !metadata.backgroundUploadCancellationRequested else {
+                nkLog(tag: global.logTagBackgroundUpload, message: "Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
+                continue
+            }
+
             let shouldClearJobIdentifier: Bool
 
             switch job.state {
@@ -307,6 +384,21 @@ extension BackgroundUploadExtension {
         }
 
         return acknowledged
+    }
+
+    private func cancel(job: PHAssetResourceUploadJob, library: PHPhotoLibrary) throws -> Bool {
+        var cancelled = false
+
+        try library.performChangesAndWait {
+            guard let request = PHAssetResourceUploadJobChangeRequest(for: job) else {
+                return
+            }
+
+            request.cancel()
+            cancelled = true
+        }
+
+        return cancelled
     }
 
     func availableUploadJobSlots() -> Int {
