@@ -33,7 +33,7 @@ extension BackgroundUploadExtension {
             groupIdentifier: NCBrandOptions.shared.capabilitiesGroup
         )
 
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: account.account)
+        let capabilities = await database.getCapabilities(account: account.account) ?? NKCapabilities.Capabilities()
 
         guard NCBrandOptions.shared.isServerVersion(
             capabilities,

@@ -31,7 +31,7 @@ final class NCManageDatabase {
                 schemaVersion: databaseSchemaVersion,
                 objectTypes: [
                     NCKeyValue.self, tableMetadata.self, tableLocalFile.self, tableMetadataTag.self,
-                    tableDirectory.self, tableAccount.self, tableAutoUploadTransfer.self
+                    tableDirectory.self, tableAccount.self, tableAutoUploadTransfer.self, tableCapabilities.self
                 ]
             )
             Realm.Configuration.defaultConfiguration = configuration
