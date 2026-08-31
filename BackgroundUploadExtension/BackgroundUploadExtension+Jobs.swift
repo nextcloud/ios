@@ -260,6 +260,11 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            if metadata.backgroundUploadRetryCount < Int.max {
+                metadata.backgroundUploadRetryCount += 1
+            }
+
+            metadata.backgroundUploadNextRetryDate = nil
             metadata.sessionDate = Date()
             metadata.sessionError = ""
             metadata.errorCode = 0
@@ -283,6 +288,7 @@ extension BackgroundUploadExtension {
 
     func acknowledgeUploadJobs() async throws -> Bool {
         let jobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
+
         guard jobs.count > 0 else {
             return false
         }
@@ -294,49 +300,110 @@ extension BackgroundUploadExtension {
             let job = jobs.object(at: index)
             let jobIdentifier = job.localIdentifier
 
-            guard let metadata = await database.getMetadataAsync(predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@", jobIdentifier)) else {
+            guard let metadata = await database.getMetadataAsync(
+                predicate: NSPredicate(
+                    format: "backgroundUploadJobIdentifier == %@",
+                    jobIdentifier
+                )
+            ) else {
                 guard try acknowledge(job: job, library: library) else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan job \(jobIdentifier)")
+                    nkLog(
+                        tag: global.logTagBackgroundUpload,
+                        message: "Unable to acknowledge orphan job \(jobIdentifier)"
+                    )
                     continue
                 }
 
                 madeProgress = true
-                nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan job \(jobIdentifier)")
+
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Acknowledged orphan job \(jobIdentifier)"
+                )
+
                 continue
             }
 
             guard !metadata.backgroundUploadCancellationRequested else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)"
+                )
                 continue
             }
 
-            let shouldClearJobIdentifier: Bool
+            let uploadSucceeded: Bool
+            let createNewJob: Bool
 
             switch job.state {
             case .succeeded:
-                shouldClearJobIdentifier = await processUploadSuccess(metadata: metadata, job: job)
+                uploadSucceeded = await processUploadSuccess(
+                    metadata: metadata,
+                    job: job
+                )
+                createNewJob = false
 
             case .failed:
-                await updateMetadataForUploadFailure(metadata: metadata, job: job)
-                shouldClearJobIdentifier = false
+                await updateMetadataForUploadFailure(
+                    metadata: metadata,
+                    job: job
+                )
+                uploadSucceeded = false
+                createNewJob = true
 
             default:
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Unexpected state \(job.state.rawValue) for job \(jobIdentifier)"
+                )
                 continue
             }
 
             guard try acknowledge(job: job, library: library) else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge job \(jobIdentifier)")
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Unable to acknowledge job \(jobIdentifier)"
+                )
                 continue
             }
 
-            if shouldClearJobIdentifier {
+            if uploadSucceeded {
                 metadata.backgroundUploadJobIdentifier = ""
-                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+                metadata.backgroundUploadRetryCount = 0
+                metadata.backgroundUploadNextRetryDate = nil
+
+                await database.replaceMetadataAsync(
+                    ocId: metadata.ocId,
+                    metadata: metadata
+                )
+            } else if createNewJob {
+                if metadata.backgroundUploadRetryCount < Int.max {
+                    metadata.backgroundUploadRetryCount += 1
+                }
+
+                metadata.backgroundUploadJobIdentifier = "pending"
+                metadata.backgroundUploadNextRetryDate = nil
+                metadata.sessionTaskIdentifier = 0
+                metadata.sessionDate = Date()
+                metadata.status = global.metadataStatusWaitUpload
+
+                await database.replaceMetadataAsync(
+                    ocId: metadata.ocId,
+                    metadata: metadata
+                )
+
+                nkLog(
+                    tag: global.logTagBackgroundUpload,
+                    message: "Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)"
+                )
             }
 
             madeProgress = true
-            nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
+
+            nkLog(
+                tag: global.logTagBackgroundUpload,
+                message: "Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)"
+            )
         }
 
         return madeProgress

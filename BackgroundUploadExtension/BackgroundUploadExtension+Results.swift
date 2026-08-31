@@ -10,7 +10,6 @@ extension BackgroundUploadExtension {
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {
         let error = job.error.map { $0 as NSError }
 
-        metadata.session = ""
         metadata.sessionTaskIdentifier = 0
         metadata.sessionDate = Date()
         metadata.sessionError = error?.localizedDescription ?? "Background upload failed"
