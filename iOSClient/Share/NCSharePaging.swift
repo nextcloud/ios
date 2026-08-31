@@ -97,7 +97,7 @@ class NCSharePaging: UIViewController {
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         if capabilities.unifiedSharingEnabled {
-            let addShareButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
+            let addShareButton = UIBarButtonItem(image: UIImage(systemName: "person.badge.plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
             addShareButton.accessibilityLabel = NSLocalizedString("_share_", comment: "")
             rightBarButtonItems.insert(addShareButton, at: 0)
         }
@@ -183,7 +183,7 @@ class NCSharePaging: UIViewController {
             // Newer servers get the unified share list; older ones keep the legacy NCShare UI.
             if capabilities.unifiedSharingEnabled {
                 let brandColor = Color(NCBrandColor.shared.getElement(account: metadata.account))
-                let listView = UnifiedShareListView(fileName: metadata.fileNameView, account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink, tint: brandColor) { [weak self] error in
+                let listView = UnifiedShareListView(account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink, isDirectory: metadata.directory, tint: brandColor) { [weak self] error in
                     guard let self else { return }
 
                     Task {
