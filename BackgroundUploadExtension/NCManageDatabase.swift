@@ -38,10 +38,10 @@ final class NCManageDatabase {
 
             let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
         } catch let error {
-            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .error, message: "Realm error: \(error)")
             isSuspendingDatabaseOperation = true
         }
     }

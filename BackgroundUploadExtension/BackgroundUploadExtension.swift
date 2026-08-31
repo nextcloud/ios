@@ -19,12 +19,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         NextcloudKit.configureLogger(logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log)
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        nkLog(tag: global.logTagBackgroundUpload, message:
-            """
-            BackgroundUploadExtension initialized, \
-            bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")
-            """
-        )
+        nkLog(tag: global.logTagBackgroundUpload, message: "BackgroundUploadExtension initialized, bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")")
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
@@ -67,15 +62,12 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             let result: PHBackgroundResourceUploadProcessingResult = madeProgress ? .processing : .completed
 
             nkLog(tag: global.logTagBackgroundUpload, message: "processJobs end, madeProgress: \(madeProgress)")
-
             return result
         } catch let error as NSError where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
             nkLog(tag: global.logTagBackgroundUpload, message: "Job limit reached")
-
             return .processing
         } catch {
             nkLog(tag: global.logTagBackgroundUpload, message: "processJobs error: \(error)")
-
             return .failure
         }
     }

@@ -49,7 +49,6 @@ extension BackgroundUploadExtension {
         }
 
         fetchOptions.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
 
         var assetsByIdentifier: [String: PHAsset] = [:]
@@ -168,14 +167,7 @@ extension BackgroundUploadExtension {
 
         await database.addMetadataAsync(metadata)
 
-        nkLog(
-            tag: global.logTagBackgroundUpload,
-            message: """
-        Created pending metadata for \(fileName), \
-        account: \(account.account), \
-        asset: \(asset.localIdentifier)
-        """
-        )
+        nkLog(tag: global.logTagBackgroundUpload, message: "Created pending metadata for \(fileName), account: \(account.account), asset: \(asset.localIdentifier)")
 
         return metadata
     }

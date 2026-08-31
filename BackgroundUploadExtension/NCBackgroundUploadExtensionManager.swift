@@ -31,10 +31,7 @@ final class NCBackgroundUploadExtensionManager {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account.account)
 
         guard NCBrandOptions.shared.isServerVersion(capabilities, greaterOrEqualTo: .v33) else {
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "Background upload extension unavailable for account \(account.account): server version is lower than 33"
-            )
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension unavailable for account \(account.account): server version is lower than 33")
             return false
         }
 
@@ -58,11 +55,9 @@ final class NCBackgroundUploadExtensionManager {
             }
 
             nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enabled: \(library.uploadJobExtensionEnabled)")
-
             return library.uploadJobExtensionEnabled
         } catch {
             nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension enable failed: \(error)")
-
             return false
         }
     }
