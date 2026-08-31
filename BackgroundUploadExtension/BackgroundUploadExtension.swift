@@ -43,12 +43,19 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
-            if await createPendingMetadatas(accounts: accounts) {
+            if try await createUploadJobs(accounts: accounts) {
                 madeProgress = true
             }
 
-            if try await createUploadJobs(accounts: accounts) {
+            let availableJobs = availableUploadJobSlots()
+
+            if availableJobs > 0,
+               await createPendingMetadatas(accounts: accounts, limit: availableJobs) {
                 madeProgress = true
+
+                if try await createUploadJobs(accounts: accounts) {
+                    madeProgress = true
+                }
             }
 
             let result: PHBackgroundResourceUploadProcessingResult = madeProgress ? .processing : .completed

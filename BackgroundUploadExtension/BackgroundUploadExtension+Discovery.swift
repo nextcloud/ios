@@ -7,10 +7,19 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
-    func createPendingMetadatas(accounts: [tableAccount]) async -> Bool {
+    func createPendingMetadatas(accounts: [tableAccount], limit: Int) async -> Bool {
+        guard limit > 0 else {
+            return false
+        }
+
         var madeProgress = false
+        var remaining = limit
 
         for account in accounts {
+            guard remaining > 0 else {
+                break
+            }
+
             guard account.autoUploadImage || account.autoUploadVideo else {
                 continue
             }
@@ -22,6 +31,7 @@ extension BackgroundUploadExtension {
             )
 
             var skipFileNames = await database.fetchSkipFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+            var skipAssetLocalIdentifiers = await database.fetchSkipAssetLocalIdentifiersAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
             let fetchOptions = PHFetchOptions()
             var mediaPredicates: [NSPredicate] = []
 
@@ -38,12 +48,12 @@ extension BackgroundUploadExtension {
             ]
 
             if let sinceDate = account.autoUploadSinceDate {
-                predicates.append(NSPredicate(format: "creationDate > %@", sinceDate as NSDate))
+                predicates.append(NSPredicate(format: "creationDate >= %@", sinceDate as NSDate))
             } else if let lastDate = await database.fetchLastAutoUploadedDateAsync(
                 account: account.account,
                 autoUploadServerUrlBase: autoUploadServerUrlBase
             ) {
-                predicates.append(NSPredicate(format: "creationDate > %@", lastDate as NSDate))
+                predicates.append(NSPredicate(format: "creationDate >= %@", lastDate as NSDate))
             }
 
             fetchOptions.predicate = NSCompoundPredicate(
@@ -71,26 +81,48 @@ extension BackgroundUploadExtension {
             var lastQueuedDate: Date?
 
             for asset in assets {
+                guard remaining > 0 else {
+                    break
+                }
+
+                guard !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
+                    continue
+                }
+
                 guard let resource = primaryUploadResource(for: asset),
                       let originalFileName = resource.filename,
                       !originalFileName.isEmpty else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Upload resource not found for asset \(asset.localIdentifier)")
+                    nkLog(
+                        tag: global.logTagBackgroundUpload,
+                        message: "Upload resource not found for asset \(asset.localIdentifier)"
+                    )
                     continue
                 }
 
                 let creationDate = asset.creationDate ?? Date()
-                let fileName = utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
+                let fileName = utilityFileSystem.createFileName(
+                    originalFileName,
+                    fileDate: creationDate,
+                    fileType: asset.mediaType
+                )
 
                 guard !skipFileNames.contains(fileName) else {
                     continue
                 }
 
-                guard await createPendingMetadata(asset: asset, resource: resource, fileName: fileName, account: account) != nil else {
+                guard await createPendingMetadata(
+                    asset: asset,
+                    resource: resource,
+                    fileName: fileName,
+                    account: account
+                ) != nil else {
                     continue
                 }
 
                 skipFileNames.insert(fileName)
+                skipAssetLocalIdentifiers.insert(asset.localIdentifier)
                 lastQueuedDate = creationDate
+                remaining -= 1
                 madeProgress = true
             }
 

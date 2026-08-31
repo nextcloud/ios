@@ -12,19 +12,7 @@ extension BackgroundUploadExtension {
         guard !accountIdentifiers.isEmpty else {
             return false
         }
-
-        let processingJobs = PHAssetResourceUploadJob.fetchJobs(
-            action: .process,
-            options: nil
-        )
-
-        let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(
-            action: .acknowledge,
-            options: nil
-        )
-
-        let jobsInUse = processingJobs.count + acknowledgeJobs.count
-        let availableJobs = max(0, PHAssetResourceUploadJob.jobLimit - jobsInUse)
+        let availableJobs = availableUploadJobSlots()
 
         guard availableJobs > 0 else {
             nkLog(
@@ -319,5 +307,13 @@ extension BackgroundUploadExtension {
         }
 
         return acknowledged
+    }
+
+    func availableUploadJobSlots() -> Int {
+        let processingJobs = PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil)
+        let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
+        let jobsInUse = processingJobs.count + acknowledgeJobs.count
+
+        return max(0, PHAssetResourceUploadJob.jobLimit - jobsInUse)
     }
 }
