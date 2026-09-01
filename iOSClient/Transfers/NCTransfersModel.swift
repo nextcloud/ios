@@ -112,10 +112,22 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
     }
 
     func cancel(item: tableMetadata) async {
-        guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(item.ocIdTransfer) else {
+        guard let metadata = await database.getMetadataFromOcIdAndocIdTransferAsync(item.ocIdTransfer) else {
             return
         }
-        await NCNetworking.shared.cancelTask(metadata: metadata)
+
+        guard !metadata.backgroundUploadJobIdentifier.isEmpty else {
+            await networking.cancelTask(metadata: metadata)
+            return
+        }
+
+        if metadata.backgroundUploadJobIdentifier == "pending" {
+            await database.deleteMetadataAsync(id: metadata.ocId)
+            return
+        }
+
+        metadata.backgroundUploadCancellationRequested = true
+        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
     }
 
     func progress(for item: tableMetadata) -> Float {
