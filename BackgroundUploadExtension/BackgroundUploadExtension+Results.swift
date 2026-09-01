@@ -9,11 +9,12 @@ import NextcloudKit
 extension BackgroundUploadExtension {
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {
         let error = job.error.map { $0 as NSError }
+        let authenticationRequired = job.responseHeaderFields?["www-authenticate"] != nil
 
         metadata.sessionTaskIdentifier = 0
         metadata.sessionDate = Date()
-        metadata.sessionError = error?.localizedDescription ?? "Background upload failed"
-        metadata.errorCode = error?.code ?? NSURLErrorUnknown
+        metadata.sessionError = authenticationRequired ? "Authentication required" : error?.localizedDescription ?? "Background upload failed"
+        metadata.errorCode = authenticationRequired ? NSURLErrorUserAuthenticationRequired : error?.code ?? NSURLErrorUnknown
         metadata.status = global.metadataStatusUploadError
 
         await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)

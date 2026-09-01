@@ -59,9 +59,10 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 }
             }
 
-            let result: PHBackgroundResourceUploadProcessingResult = madeProgress ? .processing : .completed
+            let hasActiveJobs = hasActiveUploadJobs()
+            let result: PHBackgroundResourceUploadProcessingResult = madeProgress || hasActiveJobs ? .processing : .completed
 
-            nkLog(tag: global.logTagBackgroundUpload, message: "processJobs end, madeProgress: \(madeProgress)")
+            nkLog(tag: global.logTagBackgroundUpload, message: "processJobs end, madeProgress: \(madeProgress), hasActiveJobs: \(hasActiveJobs)")
             return result
         } catch let error as NSError where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
             nkLog(tag: global.logTagBackgroundUpload, message: "Job limit reached")

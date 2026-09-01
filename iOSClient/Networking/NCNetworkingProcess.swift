@@ -420,6 +420,7 @@ actor NCNetworkingProcess {
         //
         for metadata in metadatas where
             metadata.status == global.metadataStatusUploadError &&
+            metadata.errorCode != NSURLErrorUserAuthenticationRequired &&
             metadata.backgroundUploadJobIdentifier.isEmpty &&
             (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-300) {
 

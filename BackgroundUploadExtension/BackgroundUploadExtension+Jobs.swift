@@ -87,16 +87,25 @@ extension BackgroundUploadExtension {
     func cancelRequestedUploadJobs() async throws -> Bool {
         let library = PHPhotoLibrary.shared()
         var madeProgress = false
-
         let cancellableJobs = PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil)
 
         for index in 0..<cancellableJobs.count {
             let job = cancellableJobs.object(at: index)
             let jobIdentifier = job.localIdentifier
+            let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier)
 
-            guard let metadata = await database.getMetadataAsync(
-                predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@ AND backgroundUploadCancellationRequested == true", jobIdentifier)
-            ) else {
+            guard let metadata else {
+                guard try cancel(job: job, library: library) else {
+                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to cancel orphan background upload job \(jobIdentifier)")
+                    continue
+                }
+
+                madeProgress = true
+                nkLog(tag: global.logTagBackgroundUpload, message: "Cancelled orphan background upload job \(jobIdentifier)")
+                continue
+            }
+
+            guard metadata.backgroundUploadCancellationRequested else {
                 continue
             }
 
@@ -107,7 +116,6 @@ extension BackgroundUploadExtension {
 
             await database.deleteMetadataAsync(id: metadata.ocId)
             madeProgress = true
-
             nkLog(tag: global.logTagBackgroundUpload, message: "Cancelled background upload job \(jobIdentifier), file: \(metadata.fileName)")
         }
 
@@ -118,10 +126,20 @@ extension BackgroundUploadExtension {
             for index in 0..<jobs.count {
                 let job = jobs.object(at: index)
                 let jobIdentifier = job.localIdentifier
+                let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier)
 
-                guard let metadata = await database.getMetadataAsync(
-                    predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@ AND backgroundUploadCancellationRequested == true", jobIdentifier)
-                ) else {
+                guard let metadata else {
+                    guard try acknowledge(job: job, library: library) else {
+                        nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan background upload job \(jobIdentifier)")
+                        continue
+                    }
+
+                    madeProgress = true
+                    nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan background upload job \(jobIdentifier)")
+                    continue
+                }
+
+                guard metadata.backgroundUploadCancellationRequested else {
                     continue
                 }
 
@@ -132,7 +150,6 @@ extension BackgroundUploadExtension {
 
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 madeProgress = true
-
                 nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)")
             }
         }
@@ -154,7 +171,7 @@ extension BackgroundUploadExtension {
             let job = jobs.object(at: index)
             let jobIdentifier = job.localIdentifier
 
-            guard let metadata = await database.getMetadataAsync(predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@", jobIdentifier)) else {
+            guard let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier) else {
                 guard try acknowledge(job: job, library: library) else {
                     nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan retry job \(jobIdentifier)")
                     continue
@@ -168,6 +185,26 @@ extension BackgroundUploadExtension {
 
             guard !metadata.backgroundUploadCancellationRequested else {
                 nkLog(tag: global.logTagBackgroundUpload, message: "Skipping retry for cancellation-requested job \(jobIdentifier)")
+                continue
+            }
+
+            let error = job.error.map { $0 as NSError }
+            let authenticationRequired = job.responseHeaderFields?["www-authenticate"] != nil || (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
+
+            if authenticationRequired {
+                await updateMetadataForUploadFailure(metadata: metadata, job: job)
+
+                guard try acknowledge(job: job, library: library) else {
+                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge authentication-failed job \(jobIdentifier)")
+                    continue
+                }
+
+                metadata.backgroundUploadJobIdentifier = ""
+                metadata.backgroundUploadNextRetryDate = nil
+                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+
+                madeProgress = true
+                nkLog(tag: global.logTagBackgroundUpload, message: "Stopped background upload after authentication failure for \(metadata.fileName), job: \(jobIdentifier)")
                 continue
             }
 
@@ -233,7 +270,7 @@ extension BackgroundUploadExtension {
             let job = jobs.object(at: index)
             let jobIdentifier = job.localIdentifier
 
-            guard let metadata = await database.getMetadataAsync(predicate: NSPredicate(format: "backgroundUploadJobIdentifier == %@", jobIdentifier)) else {
+            guard let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier) else {
                 guard try acknowledge(job: job, library: library) else {
                     nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan job \(jobIdentifier)")
                     continue
@@ -363,11 +400,24 @@ extension BackgroundUploadExtension {
     }
 
     func availableUploadJobSlots() -> Int {
-        let processingJobs = PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil)
-        let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
-        let jobsInUse = processingJobs.count + acknowledgeJobs.count
-        let jobLimit = min(PHAssetResourceUploadJob.jobLimit, 20)
+        let actions: [PHAssetResourceUploadJob.Action] = [.process, .retry, .acknowledge]
+        var jobIdentifiers = Set<String>()
 
-        return max(0, jobLimit - jobsInUse)
+        for action in actions {
+            let jobs = PHAssetResourceUploadJob.fetchJobs(action: action, options: nil)
+
+            for index in 0..<jobs.count {
+                jobIdentifiers.insert(jobs.object(at: index).localIdentifier)
+            }
+        }
+
+        let jobLimit = min(PHAssetResourceUploadJob.jobLimit, 20)
+        return max(0, jobLimit - jobIdentifiers.count)
+    }
+
+    func hasActiveUploadJobs() -> Bool {
+        PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil).count > 0 ||
+        PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil).count > 0 ||
+        PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil).count > 0
     }
 }

@@ -986,6 +986,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadataAsync(backgroundUploadJobIdentifier: String) async -> tableMetadata? {
+        await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter("backgroundUploadJobIdentifier == %@", backgroundUploadJobIdentifier)
+                .first?
+                .detachedCopy()
+        }
+    }
+
     func getResultsMetadatasAsync(predicate: NSPredicate) async -> Results<tableMetadata>? {
         await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self)
