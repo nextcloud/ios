@@ -41,6 +41,7 @@ class NCSharePaging: UIViewController {
 
     var metadata = tableMetadata()
     var controller: NCMainTabBarController?
+    private let shareCreateTrigger = CreateUnifiedShareTrigger()
 
     private var internalLink: String {
         metadata.urlBase + "/index.php/f/" + metadata.fileId
@@ -183,7 +184,7 @@ class NCSharePaging: UIViewController {
             // Newer servers get the unified share list; older ones keep the legacy NCShare UI.
             if capabilities.unifiedSharingEnabled {
                 let brandColor = Color(NCBrandColor.shared.getElement(account: metadata.account))
-                let listView = UnifiedShareListView(account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink, isDirectory: metadata.directory, tint: brandColor) { [weak self] error in
+                let listView = UnifiedShareListView(account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink, isDirectory: metadata.directory, tint: brandColor, createTrigger: shareCreateTrigger) { [weak self] error in
                     guard let self else { return }
 
                     Task {
@@ -270,19 +271,8 @@ class NCSharePaging: UIViewController {
     }
 
     @objc private func addShareTapped(_ sender: UIBarButtonItem) {
-        let viewController = UIHostingController(rootView: NavigationStack {
-            UnifiedShareEditView(account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink)
-        }
-        .tint(Color(NCBrandColor.shared.getElement(account: metadata.account))))
-        viewController.modalPresentationStyle = .pageSheet
-        // Not swipe-dismissable — the sheet must be closed via its X button.
-        viewController.isModalInPresentation = true
-
-        if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.large()]
-        }
-
-        present(viewController, animated: true)
+        page = .sharing
+        shareCreateTrigger.isPresenting = true
     }
 
     @objc func editTagsTapped(_ sender: Any?) {
