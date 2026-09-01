@@ -13,6 +13,7 @@ enum NCVideoVLCPresenter {
     private static weak var currentViewController: NCVideoVLCViewController?
     private static var currentURL: URL?
     private static var isPresenting = false
+    private static var pendingDismissCompletions: [() -> Void]?
 
     // MARK: - Public API
     // Presents or updates the single VLC fullscreen controller.
@@ -21,15 +22,25 @@ enum NCVideoVLCPresenter {
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
         contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions,
         canGoPrevious: Bool = false,
         canGoNext: Bool = false,
         onPrevious: (() -> Void)? = nil,
         onNext: (() -> Void)? = nil,
-        onClose: ((_ ocId: String?) -> Void)? = nil
-    ) {
+        onPlaybackEnded: NCMediaPlaybackAdvanceRequest? = nil,
+        onClose: ((_ ocId: String?) -> Void)? = nil,
+        onPlaybackError: (() -> Void)? = nil
+    ) -> Bool {
         let url = preparedPlayback.url
+
+        guard pendingDismissCompletions == nil else {
+            logPresentationRejected("dismissal in progress")
+            return false
+        }
+
         if currentURL == url,
            let currentViewController {
             currentViewController.update(
@@ -37,19 +48,24 @@ enum NCVideoVLCPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+                playbackStartReason: playbackStartReason,
                 isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController
+                contextMenuController: contextMenuController,
+                playbackOptions: playbackOptions
             )
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
+            currentViewController.onPlaybackEnded = onPlaybackEnded
             currentViewController.onClose = onClose
+            currentViewController.onPlaybackError = onPlaybackError
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
-            return
+            return true
         }
 
         if isPresenting {
-            return
+            logPresentationRejected("presentation in progress")
+            return false
         }
 
         if let currentViewController {
@@ -58,17 +74,21 @@ enum NCVideoVLCPresenter {
                 preparedPlayback: preparedPlayback,
                 userAgent: userAgent,
                 shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+                playbackStartReason: playbackStartReason,
                 isChromeHidden: isChromeHidden,
-                contextMenuController: contextMenuController
+                contextMenuController: contextMenuController,
+                playbackOptions: playbackOptions
             )
             currentViewController.onPrevious = onPrevious
             currentViewController.onNext = onNext
+            currentViewController.onPlaybackEnded = onPlaybackEnded
             currentViewController.onClose = onClose
+            currentViewController.onPlaybackError = onPlaybackError
             currentViewController.canGoPrevious = canGoPrevious
             currentViewController.canGoNext = canGoNext
 
             currentURL = url
-            return
+            return true
         }
 
         guard let presenter = topViewController() else {
@@ -78,16 +98,18 @@ enum NCVideoVLCPresenter {
                 message: "VIDEO VLC presenter failed: no top view controller",
                 consoleOnly: true
             )
-            return
+            return false
         }
 
         if presenter is NCVideoVLCViewController {
-            return
+            logPresentationRejected("VLC view controller already visible")
+            return false
         }
 
         if presenter is UINavigationController,
            (presenter as? UINavigationController)?.topViewController is NCVideoVLCViewController {
-            return
+            logPresentationRejected("VLC navigation controller already visible")
+            return false
         }
 
         isPresenting = true
@@ -97,12 +119,16 @@ enum NCVideoVLCPresenter {
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: shouldAutoPlayOnStart,
+            playbackStartReason: playbackStartReason,
             isChromeHidden: isChromeHidden,
-            contextMenuController: contextMenuController
+            contextMenuController: contextMenuController,
+            playbackOptions: playbackOptions
         )
         viewController.onPrevious = onPrevious
         viewController.onNext = onNext
+        viewController.onPlaybackEnded = onPlaybackEnded
         viewController.onClose = onClose
+        viewController.onPlaybackError = onPlaybackError
         viewController.canGoPrevious = canGoPrevious
         viewController.canGoNext = canGoNext
 
@@ -121,12 +147,28 @@ enum NCVideoVLCPresenter {
             .foregroundColor: UIColor.white
         ]
 
+        if !playbackStartReason.shouldShowControlsOnStart {
+            navigationController.setNavigationBarHidden(
+                true,
+                animated: false
+            )
+        }
+
         presenter.present(
             navigationController,
             animated: false
         ) {
             isPresenting = false
         }
+
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .start,
+            message: "VIDEO VLC presentation accepted",
+            consoleOnly: false
+        )
+
+        return true
     }
 
     static func clearCurrent(
@@ -141,21 +183,64 @@ enum NCVideoVLCPresenter {
         isPresenting = false
     }
 
-    static func dismissCurrent() {
-        guard let currentViewController else {
+    static func dismissCurrent(completion: (() -> Void)? = nil) {
+        if pendingDismissCompletions != nil {
+            if let completion {
+                pendingDismissCompletions?.append(completion)
+            }
             return
         }
 
-        currentViewController.dismiss(animated: false) {
-            clearCurrent(currentViewController)
+        pendingDismissCompletions = completion.map { [$0] } ?? []
+
+        guard let viewController = currentViewController else {
+            finishDismissal(for: nil)
+            return
+        }
+
+        viewController.stopForDismissal()
+
+        let controllerToDismiss =
+            viewController.navigationController ?? viewController
+
+        // Page navigation must not depend on MobileVLCKit's asynchronous
+        // `.stopped` callback. Dismissal owns the UI transition while the
+        // controller continues its internal player cleanup independently.
+        controllerToDismiss.dismiss(animated: false) {
+            finishDismissal(for: viewController)
         }
     }
 
-    static func dismiss() {
-        dismissCurrent()
+    static func dismiss(completion: (() -> Void)? = nil) {
+        dismissCurrent(completion: completion)
+    }
+
+    private static func finishDismissal(
+        for viewController: NCVideoVLCViewController?
+    ) {
+        if let viewController {
+            clearCurrent(viewController)
+        } else {
+            currentViewController = nil
+            currentURL = nil
+            isPresenting = false
+        }
+
+        let completions = pendingDismissCompletions ?? []
+        pendingDismissCompletions = nil
+        completions.forEach { $0() }
     }
 
     // MARK: - Private
+    private static func logPresentationRejected(_ reason: String) {
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .info,
+            message: "VIDEO VLC presentation rejected: \(reason)",
+            consoleOnly: false
+        )
+    }
+
     private static func topViewController() -> UIViewController? {
         let windowScene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }

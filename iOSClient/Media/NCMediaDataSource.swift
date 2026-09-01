@@ -7,8 +7,20 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia {
-    func loadDataSource() async {
+    func loadDataSource(forced: Bool = false) async {
+        defer {
+            datasourceMediaInProgress = false
+        }
+        datasourceMediaInProgress = true
+        if self.dataSource.isEmpty() {
+            collectionViewReloadData()
+        }
+
         let account = self.session.account
+
+        guard !Task.isCancelled else {
+            return
+        }
 
         guard let tblAccount = await self.database.getTableAccountAsync(
             predicate: NSPredicate(format: "account == %@", account)
@@ -16,57 +28,89 @@ extension NCMedia {
             return
         }
 
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
 
-        let mediaPredicate = self.imageCache.getMediaPredicate(
+        let mediaPredicate = NCMedia.getMediaPredicate(
             session: self.session,
             mediaPath: tblAccount.mediaPath,
             showOnlyImages: self.showOnlyImages,
-            showOnlyVideos: self.showOnlyVideos)
+            showOnlyVideos: self.showOnlyVideos
+        )
 
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
 
-        if let metadatas = await self.database.getMetadatasAsync(
+        let compactMetadatas = await self.database.getMediaCompactMetadatasAsync(
             predicate: mediaPredicate,
             sortedByKeyPath: "date",
             ascending: false
-        ) {
-            guard self.session.account == account else {
+        )
+
+        guard !Task.isCancelled,
+              self.session.account == account else {
+            return
+        }
+
+        self.buildDataSourceTask?.cancel()
+
+        self.buildDataSourceTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else {
                 return
             }
 
-            self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
-                Task { @MainActor in
-                    guard self.isViewActived,
-                          self.session.account == account else {
-                        return
-                    }
-
-                    self.dataSource = NCMediaDataSource(metadatas: metadatas)
-                    self.collectionViewReloadDataKeepingPosition()
-                }
+            let shouldContinue = await MainActor.run {
+                forced || (
+                    self.isViewActived &&
+                    self.session.account == account &&
+                    self.view.window != nil &&
+                    self.tabBarController?.selectedViewController === self.navigationController
+                )
             }
-        } else {
+
+            guard shouldContinue,
+                  !Task.isCancelled else {
+                return
+            }
+
+            let dataSource = NCMediaDataSource(
+                compactMetadatas: compactMetadatas
+            )
+
+            guard !Task.isCancelled else {
+                return
+            }
+
             await MainActor.run {
-                guard self.isViewActived,
-                      self.session.account == account else {
+                guard !Task.isCancelled,
+                      forced || (
+                          self.isViewActived &&
+                          self.session.account == account &&
+                          self.view.window != nil &&
+                          self.tabBarController?.selectedViewController === self.navigationController
+                      ) else {
                     return
                 }
 
-                self.dataSource.clearCompactMetadatas()
+                guard !self.dataSource.hasSameContent(as: dataSource) else {
+                    return
+                }
+
+                self.dataSource = dataSource
                 self.collectionViewReloadData()
             }
         }
+
+        await self.buildDataSourceTask?.value
     }
 
     @MainActor
     func collectionViewReloadData() {
         collectionView.reloadData()
-        setElements()
     }
 
     // MARK: - Keeping position
@@ -147,58 +191,48 @@ extension NCMedia {
         )
     }
 
-    @MainActor
-    func collectionViewReloadDataKeepingPosition() {
-        let anchor = captureScrollAnchor()
-
-        collectionView.reloadData()
-        collectionView.layoutIfNeeded()
-
-        DispatchQueue.main.async {
-            guard self.isViewActived else {
-                return
-            }
-
-            self.collectionView.layoutIfNeeded()
-            self.restoreScrollAnchor(anchor)
-            self.setElements()
-        }
-    }
-
     // MARK: - Search media
 
     func searchMediaUI(_ distant: Bool = false) async {
         let shouldContinue = await MainActor.run { () -> Bool in
             guard self.isViewActived,
-                    !self.searchMediaInProgress,
-                    !self.isPinchGestureActive,
-                    !self.showOnlyImages,
-                    !self.showOnlyVideos,
-                    !self.isEditMode else {
+                  !self.searchMediaInProgress,
+                  !self.isPinchGestureActive,
+                  !self.showOnlyImages,
+                  !self.showOnlyVideos,
+                  !self.isEditMode else {
                 return false
             }
+
             self.searchMediaInProgress = true
-            self.activityIndicator.startAnimating()
             return true
         }
 
         guard shouldContinue else {
             return
         }
-        let account = self.session.account
 
+        await searchMediaUIInternal(distant)
+
+        await MainActor.run {
+            self.searchMediaInProgress = false
+        }
+    }
+
+    private func searchMediaUIInternal(_ distant: Bool) async {
+        guard !Task.isCancelled else {
+            return
+        }
+
+        let account = self.session.account
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
-            await MainActor.run {
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
             return
         }
 
         var firstDateNew = Date.distantFuture
         var lastDateNew = Date.distantPast
-        var firstDate: Date?
-        var lastDate: Date?
+        var firstVisibleCellDate: Date?
+        var lastVisibleCellDate: Date?
         var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
@@ -236,8 +270,8 @@ extension NCMedia {
                 return date1 > date2
             }
 
-            firstDate = visibleCells.first?.date
-            lastDate = visibleCells.last?.date
+            firstVisibleCellDate = visibleCells.first?.date
+            lastVisibleCellDate = visibleCells.last?.date
 
             if !visibleCells.isEmpty, !distant {
                 let firstCellDate = visibleCells.first?.date
@@ -257,11 +291,9 @@ extension NCMedia {
             }
         }
 
-        guard self.session.account == account else {
-            await MainActor.run {
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
+        guard !Task.isCancelled,
+              self.isViewActived,
+              self.session.account == account else {
             return
         }
 
@@ -272,54 +304,55 @@ extension NCMedia {
                                              lastDate: lastDateNew,
                                              mediaPath: tblAccount.mediaPath,
                                              account: account) {
-                Task {
-                    guard self.session.account == account else {
+                Task { [weak self] in
+                    guard let self else {
                         return
                     }
-                    await self.loadDataSource()
+
+                    await self.debouncerLoadDataSource.call {
+                        guard self.isViewActived,
+                              self.session.account == account else {
+                            return
+                        }
+
+                        await self.loadDataSource()
+                    }
                 }
             }
         }
-        guard self.session.account == account else {
-            await MainActor.run {
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
-            return
-        }
 
-        guard let firstDate, let lastDate else {
-            Task { @MainActor in
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
+        guard !Task.isCancelled,
+              self.isViewActived,
+              self.session.account == account,
+              let firstVisibleCellDate,
+              let lastVisibleCellDate else {
             return
         }
 
         // VERIFY MEDIA
         //
-        await self.verifyNetworkMedia(firstDate: firstDate,
-                                      lastDate: lastDate,
+        // Nextcloud cannot range-filter displayname, so same-date results are bounded by this cap.
+        let verificationLimit = 1000
+        await self.verifyNetworkMedia(firstDate: firstVisibleCellDate,
+                                      lastDate: lastVisibleCellDate,
                                       mediaPath: tblAccount.mediaPath,
-                                      account: account) {
-            Task {
-                guard self.session.account == account else {
+                                      account: account,
+                                      limit: verificationLimit) {
+            Task { [weak self] in
+                guard let self else {
                     return
                 }
 
                 await self.debouncerLoadDataSource.call {
-                    guard self.session.account == account else {
+                    guard self.isViewActived,
+                          self.session.account == account else {
                         return
                     }
+
                     await self.loadDataSource()
                 }
             }
-        } finish: {
-            Task { @MainActor in
-                self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
-            }
-        }
+        } finish: { }
     }
 
     /// Searches the server for new media within the given date range,
@@ -349,17 +382,23 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                guard self.session.account == account else {
+                guard !Task.isCancelled,
+                      self.session.account == account else {
                     return
                 }
-                await self.updateMediaMetadatas(files: files,
-                                                firstDate: firstDate as NSDate,
-                                                lastDate: lastDate as NSDate,
-                                                mediaPath: mediaPath,
-                                                account: account) {
-                    guard self.session.account == account else {
+
+                await self.updateMediaMetadatas(
+                    files: files,
+                    firstDate: firstDate as NSDate,
+                    lastDate: lastDate as NSDate,
+                    mediaPath: mediaPath,
+                    account: account
+                ) {
+                    guard !Task.isCancelled,
+                          self.session.account == account else {
                         return
                     }
+
                     if self.isViewActived {
                         update()
                     }
@@ -373,6 +412,7 @@ extension NCMedia {
                                      lastDate: Date,
                                      mediaPath: String,
                                      account: String,
+                                     limit: Int,
                                      update: @escaping () -> Void,
                                      finish: @escaping () -> Void) async {
         await NCMediaNetwork().searchMediaPage(
@@ -381,8 +421,8 @@ extension NCMedia {
             lastDate: lastDate,
             account: account,
             paginate: true,
-            limit: 1000000) { task in
-                Task.detached {
+            limit: limit) { task in
+                Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                         account: account,
                         name: "verifyNetworkMedia"
@@ -392,20 +432,26 @@ extension NCMedia {
                         task: task)
                 }
             } update: { files in
-                guard self.session.account == account else {
+                guard !Task.isCancelled,
+                      self.session.account == account else {
                     return
                 }
+
                 let pageFirstDate = (files.first?.date as? NSDate) ?? firstDate as NSDate
                 let pageLastDate = (files.last?.date as? NSDate) ?? lastDate as NSDate
 
-                await self.updateMediaMetadatas(files: files,
-                                                firstDate: pageFirstDate,
-                                                lastDate: pageLastDate,
-                                                mediaPath: mediaPath,
-                                                account: account) {
-                    guard self.session.account == account else {
+                await self.updateMediaMetadatas(
+                    files: files,
+                    firstDate: pageFirstDate,
+                    lastDate: pageLastDate,
+                    mediaPath: mediaPath,
+                    account: account
+                ) {
+                    guard !Task.isCancelled,
+                          self.session.account == account else {
                         return
                     }
+
                     if self.isViewActived {
                         update()
                     }
@@ -421,11 +467,12 @@ extension NCMedia {
                                       mediaPath: String,
                                       account: String,
                                       update: @escaping () -> Void) async {
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
         // DB
-        let mediaPredicate = self.imageCache.getMediaPredicate(
+        let mediaPredicate = NCMedia.getMediaPredicate(
             session: self.session,
             mediaPath: mediaPath,
             showOnlyImages: self.showOnlyImages,
@@ -437,12 +484,14 @@ extension NCMedia {
             predicate: predicate,
             sortedByKeyPath: "date",
             ascending: false) ?? []
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
         let results = await self.database.syncPlaceholderMetadatasAsync(files: files,
                                                                         metadatas: metadatas)
-        guard self.session.account == account else {
+        guard !Task.isCancelled,
+              self.session.account == account else {
             return
         }
         // DELETE
@@ -459,22 +508,41 @@ extension NCMedia {
         }
 
         for batchStart in stride(from: 0, to: deletedMetadatas.count, by: maximumConcurrentChecks) {
+            guard !Task.isCancelled,
+                  self.session.account == account else {
+                return
+            }
+
             let batchEnd = min(batchStart + maximumConcurrentChecks, deletedMetadatas.count)
             let batch = deletedMetadatas[batchStart..<batchEnd]
 
             let ocIdsToDelete = await withTaskGroup(of: String?.self, returning: Set<String>.self) { group in
                 for metadata in batch {
                     group.addTask {
+                        guard !Task.isCancelled else {
+                            return nil
+                        }
+
                         let existsResult = await self.networking.fileExists(
                             serverUrlFileName: metadata.serverUrlFileName,
                             account: metadata.account
                         )
+
+                        guard !Task.isCancelled else {
+                            return nil
+                        }
+
                         return existsResult.errorCode == 404 ? metadata.ocId : nil
                     }
                 }
 
                 var ocIds = Set<String>()
                 for await ocId in group {
+                    guard !Task.isCancelled else {
+                        group.cancelAll()
+                        return ocIds
+                    }
+
                     if let ocId {
                         ocIds.insert(ocId)
                     }
@@ -482,13 +550,15 @@ extension NCMedia {
                 return ocIds
             }
 
+            guard !Task.isCancelled,
+                  self.session.account == account else {
+                return
+            }
+
             guard !ocIdsToDelete.isEmpty else {
                 continue
             }
 
-            guard self.session.account == account else {
-                return
-            }
             await self.database.deleteMetadatasAsync(ocIds: Array(ocIdsToDelete))
             if self.isViewActived,
                self.session.account == account {
@@ -496,11 +566,66 @@ extension NCMedia {
             }
         }
     }
+
+    // MARK: - MEDIA PREDICATE -
+
+    nonisolated static func getMediaPredicate(session: NCSession.Session,
+                                              mediaPath: String,
+                                              showOnlyImages: Bool,
+                                              showOnlyVideos: Bool) -> NSPredicate {
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + mediaPath
+        let global = NCGlobal()
+
+        let showBothPredicate = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)'
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateImage = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        hasPreview == true AND
+        (
+        classFile == '\(NKTypeClassFile.image.rawValue)' OR (classFile == '\(NKTypeClassFile.video.rawValue)' AND livePhotoFile != '')
+        ) AND
+        NOT (status IN %@)
+        """
+
+        let showOnlyPredicateVideo = """
+        account == %@ AND
+        serverUrl BEGINSWITH %@ AND
+        hasPreview == true AND
+        classFile == 'video' AND
+        NOT (status IN %@)
+        """
+
+        if showOnlyImages {
+            return NSPredicate(format: showOnlyPredicateImage,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
+        } else if showOnlyVideos {
+            return NSPredicate(format: showOnlyPredicateVideo,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
+        } else {
+            return NSPredicate(format: showBothPredicate,
+                               session.account,
+                               startServerUrl,
+                               global.metadataStatusHideInView)
+        }
+    }
+
 }
 
 // MARK: -
 
-@MainActor
 public class NCMediaDataSource: NSObject {
     public class NCCompactMetadata: NSObject {
         let date: Date
@@ -511,13 +636,13 @@ public class NCMediaDataSource: NSObject {
         let isVideo: Bool
         let ocId: String
 
-        init(date: Date,
-             etag: String,
-             imageSize: CGSize,
-             isImage: Bool,
-             isLivePhoto: Bool,
-             isVideo: Bool,
-             ocId: String) {
+        public init(date: Date,
+                    etag: String,
+                    imageSize: CGSize,
+                    isImage: Bool,
+                    isLivePhoto: Bool,
+                    isVideo: Bool,
+                    ocId: String) {
             self.date = date
             self.etag = etag
             self.imageSize = imageSize
@@ -528,71 +653,272 @@ public class NCMediaDataSource: NSObject {
         }
     }
 
+    public struct NCMediaSection {
+        let yearMonth: NCYearMonth
+        var compactMetadatas: [NCCompactMetadata]
+    }
+
+    var imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem] = []
+
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private(set) var compactMetadatas: [NCCompactMetadata] = []
+    private(set) var sections: [NCMediaSection] = []
+
+    var availableYearMonths: [NCYearMonth] {
+        sections.map(\.yearMonth)
+    }
 
     override init() { super.init() }
 
-    init(metadatas: [tableMetadata]) {
+    init(compactMetadatas: [NCCompactMetadata]) {
         super.init()
 
-        self.compactMetadatas = metadatas.map {
-            getCompactMetadataFromMetadata($0)
-        }
+        let result = makeDataSource(from: compactMetadatas)
+
+        self.compactMetadatas = result.compactMetadatas
+        self.sections = result.sections
+        self.imageCacheWindowItems = result.imageCacheWindowItems
     }
 
-    private func getCompactMetadataFromMetadata(_ metadata: tableMetadata) -> NCCompactMetadata {
-        let date = metadata.date as Date
-        return NCCompactMetadata(date: date,
-                                 etag: metadata.etag,
-                                 imageSize: CGSize(width: metadata.width, height: metadata.height),
-                                 isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
-                                 isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                                 isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
-                                 ocId: metadata.ocId)
+    private func makeDataSource(
+        from compactMetadatas: [NCCompactMetadata]
+    ) -> (
+        compactMetadatas: [NCCompactMetadata],
+        sections: [NCMediaSection],
+        imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem]
+    ) {
+        guard !compactMetadatas.isEmpty else {
+            return ([], [], [])
+        }
+
+        var sections: [NCMediaSection] = []
+        sections.reserveCapacity(24)
+
+        var currentYearMonth: NCYearMonth?
+        var currentSectionMetadatas: [NCCompactMetadata] = []
+
+        var imageCacheWindowItems: [NCImageCache.ImageCacheWindowItem] = []
+
+        for compactMetadata in compactMetadatas {
+            imageCacheWindowItems.append(
+                NCImageCache.ImageCacheWindowItem(
+                    ocId: compactMetadata.ocId,
+                    etag: compactMetadata.etag
+                )
+            )
+
+            guard let yearMonth = NCYearMonth(date: compactMetadata.date) else {
+                continue
+            }
+
+            if currentYearMonth == yearMonth {
+                currentSectionMetadatas.append(compactMetadata)
+            } else {
+                if let currentYearMonth,
+                   !currentSectionMetadatas.isEmpty {
+                    sections.append(
+                        NCMediaSection(
+                            yearMonth: currentYearMonth,
+                            compactMetadatas: currentSectionMetadatas
+                        )
+                    )
+                }
+
+                currentYearMonth = yearMonth
+                currentSectionMetadatas = [compactMetadata]
+            }
+        }
+
+        if let currentYearMonth,
+           !currentSectionMetadatas.isEmpty {
+            sections.append(
+                NCMediaSection(
+                    yearMonth: currentYearMonth,
+                    compactMetadatas: currentSectionMetadatas
+                )
+            )
+        }
+
+        return (
+            compactMetadatas,
+            sections,
+            imageCacheWindowItems
+        )
     }
 
     // MARK: -
 
+    func hasSameContent(as otherDataSource: NCMediaDataSource) -> Bool {
+        guard compactMetadatas.count == otherDataSource.compactMetadatas.count else {
+            return false
+        }
+
+        for (currentMetadata, otherMetadata) in zip(
+            compactMetadatas,
+            otherDataSource.compactMetadatas
+        ) {
+            guard currentMetadata.ocId == otherMetadata.ocId,
+                  currentMetadata.etag == otherMetadata.etag,
+                  currentMetadata.date == otherMetadata.date,
+                  currentMetadata.isLivePhoto == otherMetadata.isLivePhoto else {
+                return false
+            }
+        }
+
+        return true
+    }
+
     func clearCompactMetadatas() {
-        self.compactMetadatas.removeAll()
+        compactMetadatas.removeAll()
+        sections.removeAll()
     }
 
     func isEmpty() -> Bool {
         return self.compactMetadatas.isEmpty
     }
 
-    func indexPath(forOcId ocId: String) -> IndexPath? {
-        guard let index = self.compactMetadatas.firstIndex(where: { $0.ocId == ocId }) else {
+    var numberOfSections: Int {
+        sections.count
+    }
+
+    func numberOfItems(in section: Int) -> Int {
+        guard sections.indices.contains(section) else {
+            return 0
+        }
+
+        return sections[section].compactMetadatas.count
+    }
+
+    func yearMonth(for section: Int) -> NCYearMonth? {
+        guard sections.indices.contains(section) else {
             return nil
         }
 
-        return IndexPath(item: index, section: 0)
+        return sections[section].yearMonth
     }
 
-    func getCompactMetadata(indexPath: IndexPath) -> NCCompactMetadata? {
-        if indexPath.row < self.compactMetadatas.count {
-            return self.compactMetadatas[indexPath.row]
+    var allOcIds: [String] {
+        compactMetadatas.map(\.ocId)
+    }
+
+    func indexPath(forOcId ocId: String) -> IndexPath? {
+        for (sectionIndex, section) in sections.enumerated() {
+            guard let itemIndex = section.compactMetadatas.firstIndex(where: {
+                $0.ocId == ocId
+            }) else {
+                continue
+            }
+
+            return IndexPath(
+                item: itemIndex,
+                section: sectionIndex
+            )
         }
 
         return nil
     }
 
-    func getCompactMetadatas(indexPaths: [IndexPath]) -> [NCCompactMetadata] {
-        var metadatas: [NCCompactMetadata] = []
-        for indexPath in indexPaths {
-            if indexPath.row < self.compactMetadatas.count {
-                metadatas.append(self.compactMetadatas[indexPath.row])
-            }
+    func globalIndex(for indexPath: IndexPath) -> Int? {
+        guard sections.indices.contains(indexPath.section) else {
+            return nil
         }
 
-        return metadatas
+        let sectionMetadatas = sections[indexPath.section].compactMetadatas
+
+        guard sectionMetadatas.indices.contains(indexPath.item) else {
+            return nil
+        }
+
+        let previousItemsCount = sections[..<indexPath.section].reduce(0) {
+            $0 + $1.compactMetadatas.count
+        }
+
+        return previousItemsCount + indexPath.item
     }
 
-    func removeCompactMetadata(_ ocId: [String]) {
-        self.compactMetadatas.removeAll { item in
-            ocId.contains(item.ocId)
+    func getCompactMetadata(indexPath: IndexPath) -> NCCompactMetadata? {
+        guard sections.indices.contains(indexPath.section) else {
+            return nil
         }
+
+        let metadatas = sections[indexPath.section].compactMetadatas
+
+        guard metadatas.indices.contains(indexPath.item) else {
+            return nil
+        }
+
+        return metadatas[indexPath.item]
+    }
+
+    func getCompactMetadatas(indexPaths: [IndexPath]) -> [NCCompactMetadata] {
+        indexPaths.compactMap {
+            getCompactMetadata(indexPath: $0)
+        }
+    }
+
+    func removeCompactMetadata(_ ocIds: [String]) {
+        guard !ocIds.isEmpty else {
+            return
+        }
+
+        let ocIds = Set(ocIds)
+
+        compactMetadatas.removeAll { metadata in
+            ocIds.contains(metadata.ocId)
+        }
+
+        sections = sections.compactMap { section in
+            var section = section
+
+            section.compactMetadatas.removeAll { metadata in
+                ocIds.contains(metadata.ocId)
+            }
+
+            return section.compactMetadatas.isEmpty ? nil : section
+        }
+    }
+
+    func firstIndexPath(year: Int, month: Int) -> IndexPath? {
+        let yearMonth = NCYearMonth(
+            year: year,
+            month: month
+        )
+
+        guard let sectionIndex = sections.firstIndex(where: {
+            $0.yearMonth == yearMonth
+        }) else {
+            return nil
+        }
+
+        guard !sections[sectionIndex].compactMetadatas.isEmpty else {
+            return nil
+        }
+
+        return IndexPath(
+            item: 0,
+            section: sectionIndex
+        )
+    }
+}
+
+public struct NCYearMonth: Hashable {
+    public let year: Int
+    public let month: Int
+
+    public init(year: Int, month: Int) {
+        self.year = year
+        self.month = month
+    }
+
+    init?(date: Date, calendar: Calendar = .current) {
+        let components = calendar.dateComponents([.year, .month], from: date)
+
+        guard let year = components.year,
+              let month = components.month else {
+            return nil
+        }
+
+        self.init(year: year, month: month)
     }
 }

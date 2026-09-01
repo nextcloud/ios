@@ -63,6 +63,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     var includeDirectoryE2EEncryption = false
     var includeImages = false
     var enableSelectFile = false
+    var allowedFileExtensions: Set<String>?
     var type = ""
     var items: [tableMetadata] = []
 
@@ -316,12 +317,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             viewController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
             viewController.includeImages = includeImages
             viewController.enableSelectFile = enableSelectFile
+            viewController.allowedFileExtensions = allowedFileExtensions
             viewController.type = type
             viewController.overwrite = overwrite
             viewController.items = items
             viewController.titleCurrentFolder = metadata.fileNameView
             viewController.serverUrl = serverUrlPush
             viewController.session = session
+            viewController.controller = controller
 
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account, capabilities: capabilities) {
                 let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
@@ -520,9 +523,18 @@ extension NCSelect {
             }
         }
 
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+        var metadatas = await self.database.getMetadatasAsync(predicate: predicate,
                                                               withLayout: NCDBLayoutForView(),
                                                               withAccount: session.account)
+
+        if let allowedFileExtensions {
+            metadatas = metadatas.filter { metadata in
+                metadata.directory || allowedFileExtensions.contains(
+                    (metadata.fileNameView as NSString).pathExtension.lowercased()
+                )
+            }
+        }
+
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      account: session.account)
         self.collectionView.reloadData()

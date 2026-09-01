@@ -4,10 +4,8 @@
 
 import AVFoundation
 import UIKit
-import SwiftUI
 import MobileVLCKit
 import NextcloudKit
-import UniformTypeIdentifiers
 
 // MARK: - VLC View Controller
 
@@ -22,12 +20,17 @@ final class NCVideoVLCViewController: UIViewController {
     private var shouldAutoPlayOnStart: Bool
     private var isChromeHidden: Bool
     private weak var contextMenuController: NCMainTabBarController?
+    internal var playbackOptions: NCMediaPlaybackOptions
+    private var isReplayFromBeginningRequested = false
+    internal var playbackPresentationContext: NCVideoPlaybackPresentationContext
 
     // MARK: - Paging Callbacks
 
     var onPrevious: (() -> Void)?
     var onNext: (() -> Void)?
+    var onPlaybackEnded: NCMediaPlaybackAdvanceRequest?
     var onClose: ((_ ocId: String?) -> Void)?
+    var onPlaybackError: (() -> Void)?
     var canGoPrevious = false
     var canGoNext = false
 
@@ -50,11 +53,15 @@ final class NCVideoVLCViewController: UIViewController {
 
     internal let mediaPlayer = VLCMediaPlayer()
     private var externalSubtitleURL: URL?
+    private var isStopInFlight = false
+    private var hasEnteredPlaybackPipeline = false
+    private var hasReportedPlaybackError = false
+    private var playbackStartupTimeoutTask: Task<Void, Never>?
+    private var stopCompletions: [() -> Void] = []
 
     internal var progressTimer: Timer?
     internal var controlsHideTimer: Timer?
     internal var controlsVisible = false
-    internal var isScrubbing = false
     internal var isPlaybackRequested = false
     private weak var closePanGesture: UIPanGestureRecognizer?
 
@@ -72,30 +79,6 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    // MARK: - Navigation Items
-
-    private lazy var moreNavigationItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(
-            image: NCImageCache.shared.getImageButtonMore(),
-            primaryAction: nil,
-            menu: nil
-        )
-
-        item.menu = makeMoreMenu(sender: item)
-
-        return item
-    }()
-
-    private lazy var mediaDetailNavigationItem = UIBarButtonItem(
-        image: NCUtility().loadImage(
-            named: "info.circle",
-            colors: [NCBrandColor.shared.iconImageColor]
-        ),
-        style: .plain,
-        target: self,
-        action: #selector(mediaDetailButtonTapped)
-    )
-
     // MARK: - Init
 
     init(
@@ -103,8 +86,10 @@ final class NCVideoVLCViewController: UIViewController {
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
-        contextMenuController: NCMainTabBarController?
+        contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions
     ) {
         self.metadata = metadata
         self.preparedPlayback = preparedPlayback
@@ -113,6 +98,10 @@ final class NCVideoVLCViewController: UIViewController {
         self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
         self.isChromeHidden = isChromeHidden
         self.contextMenuController = contextMenuController
+        self.playbackOptions = playbackOptions
+        self.playbackPresentationContext = NCVideoPlaybackPresentationContext(
+            startReason: playbackStartReason
+        )
 
         super.init(
             nibName: nil,
@@ -127,9 +116,10 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     deinit {
+        playbackStartupTimeoutTask?.cancel()
         stopControlsHideTimer()
+        stopProgressTimer()
         mediaPlayer.delegate = nil
-        stop()
     }
 
     // MARK: - Lifecycle
@@ -149,6 +139,7 @@ final class NCVideoVLCViewController: UIViewController {
 
         controlsView.delegate = self
         controlsView.setTopActionsMode(.vlcTracks)
+        updatePlaybackOptionsControls()
         controlsView.alpha = 0
         controlsView.isHidden = true
         controlsView.translatesAutoresizingMaskIntoConstraints = false
@@ -170,6 +161,11 @@ final class NCVideoVLCViewController: UIViewController {
 
         controlsView.setTopActionsNavigationBar(navigationController?.navigationBar)
 
+        if !playbackPresentationContext.shouldShowControlsOnStart {
+            controlsView.alpha = 0
+            controlsView.isHidden = true
+        }
+
         view = rootView
     }
 
@@ -190,8 +186,6 @@ final class NCVideoVLCViewController: UIViewController {
         super.viewDidAppear(animated)
 
         start()
-        showControls(animated: false)
-        stopControlsHideTimer()
     }
 
     override func viewDidLayoutSubviews() {
@@ -199,7 +193,6 @@ final class NCVideoVLCViewController: UIViewController {
 
         attachDrawable()
         updateControlsNavigationBar()
-        configureFloatingTitleViewIfNeeded()
     }
 
     override func viewWillTransition(
@@ -216,7 +209,6 @@ final class NCVideoVLCViewController: UIViewController {
         }, completion: { [weak self] _ in
             self?.attachDrawable()
             self?.updateControlsNavigationBar()
-            self?.configureFloatingTitleViewIfNeeded()
         })
     }
 
@@ -227,33 +219,42 @@ final class NCVideoVLCViewController: UIViewController {
         preparedPlayback: NCVideoVLCPreparedPlayback,
         userAgent: String?,
         shouldAutoPlayOnStart: Bool = true,
+        playbackStartReason: NCVideoPlaybackPresentationContext.StartReason = .userInitiated,
         isChromeHidden: Bool = false,
-        contextMenuController: NCMainTabBarController?
+        contextMenuController: NCMainTabBarController?,
+        playbackOptions: NCMediaPlaybackOptions
     ) {
         let urlChanged = self.url != preparedPlayback.url
+        let applyConfiguration = { [weak self] in
+            guard let self else { return }
 
-        if urlChanged {
-            stop()
+            self.metadata = metadata
+            self.userAgent = userAgent
+            self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
+            self.playbackPresentationContext.updateStartReason(playbackStartReason)
+            self.isChromeHidden = isChromeHidden
+            self.contextMenuController = contextMenuController
+            self.playbackOptions = playbackOptions
+            self.updateViewerBackgroundIfNeeded()
+            self.updateTitleLabel(metadata: metadata)
+            self.refreshVLCTrackMenuItemsWhenPlayerIsActive()
+            self.updatePlayPauseButton()
+            self.updatePlaybackOptionsControls()
+        }
+
+        guard urlChanged else {
+            applyConfiguration()
+            return
+        }
+
+        stop { [weak self] in
+            guard let self else { return }
+
             self.preparedPlayback = preparedPlayback
             self.url = preparedPlayback.url
+            applyConfiguration()
+            self.start()
         }
-
-        self.metadata = metadata
-        self.userAgent = userAgent
-        self.shouldAutoPlayOnStart = shouldAutoPlayOnStart
-        self.isChromeHidden = isChromeHidden
-        self.contextMenuController = contextMenuController
-        updateViewerBackgroundIfNeeded()
-        updateTitleLabel(metadata: metadata)
-        refreshVLCTrackMenuItemsWhenPlayerIsActive()
-
-        refreshMoreMenu()
-
-        if urlChanged {
-            start()
-        }
-
-        updatePlayPauseButton()
     }
 
     private var viewerBackgroundColor: UIColor {
@@ -280,7 +281,7 @@ final class NCVideoVLCViewController: UIViewController {
     private func configureNavigationItem() {
         title = nil
         navigationItem.title = nil
-        navigationItem.titleView = nil
+        navigationItem.titleView = floatingTitleView
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.backward"),
@@ -288,19 +289,6 @@ final class NCVideoVLCViewController: UIViewController {
             target: self,
             action: #selector(closeTapped)
         )
-
-        navigationItem.rightBarButtonItems = [
-            moreNavigationItem,
-            mediaDetailNavigationItem
-        ]
-    }
-
-    private func configureFloatingTitleViewIfNeeded() {
-        guard let navigationBar = navigationController?.navigationBar else {
-            return
-        }
-
-        floatingTitleView.attach(to: navigationBar)
     }
 
     private func updateTitleLabel(metadata: tableMetadata) {
@@ -314,99 +302,25 @@ final class NCVideoVLCViewController: UIViewController {
         )
     }
 
-    private func refreshMoreMenu() {
-        moreNavigationItem.menu = makeMoreMenu(sender: moreNavigationItem)
-    }
-
-    // Use the real menu anchor as sender so popovers are presented from the correct source.
-    private func makeMoreMenu(sender: Any?) -> UIMenu {
-        UIMenu(title: "", children: [
-            UIDeferredMenuElement.uncached { [weak self] completion in
-                guard let self else {
-                    completion([])
-                    return
-                }
-
-                if let menu = NCContextMenuViewer(
-                    metadata: self.metadata,
-                    controller: self.contextMenuController,
-                    viewController: self,
-                    webView: false,
-                    sender: sender
-                ).viewMenu() {
-                    completion(menu.children)
-                } else {
-                    completion([])
-                }
-            }
-        ])
-    }
-
     @objc
     private func closeTapped() {
         close()
     }
 
-    @objc
-    private func mediaDetailButtonTapped() {
-        presentDetailView(animated: true)
-    }
-
-    private func presentDetailView(animated: Bool) {
-        let detailView = NCMediaViewerDetailView(
-            metadata: metadata,
-            exif: ExifData()
-        )
-
-        let hostingController = UIHostingController(rootView: detailView)
-        hostingController.modalPresentationStyle = .pageSheet
-
-        if let sheetPresentationController = hostingController.sheetPresentationController {
-            sheetPresentationController.detents = [.medium(), .large()]
-            sheetPresentationController.prefersGrabberVisible = true
-            sheetPresentationController.preferredCornerRadius = 24
-            sheetPresentationController.prefersEdgeAttachedInCompactHeight = true
-            sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = false
-        }
-
-        present(
-            hostingController,
-            animated: animated
-        )
-    }
-
     func close() {
         let closeCallback = onClose
         let closingOcId = metadata.ocId
-        let controllerToDismiss = navigationController ?? self
 
-        NCVideoVLCPresenter.clearCurrent(self)
-
-        controllerToDismiss.dismiss(animated: false) { [weak self] in
-            self?.stopControlsHideTimer()
-            self?.stopProgressTimer()
-            self?.stop()
-
-            DispatchQueue.main.async {
-                closeCallback?(closingOcId)
-            }
+        NCVideoVLCPresenter.dismiss {
+            closeCallback?(closingOcId)
         }
     }
 
     func closeImmediately() {
         let closeCallback = onClose
-        let controllerToDismiss = navigationController ?? self
 
-        NCVideoVLCPresenter.clearCurrent(self)
-
-        controllerToDismiss.dismiss(animated: false) { [weak self] in
-            self?.stopControlsHideTimer()
-            self?.stopProgressTimer()
-            self?.stop()
-
-            DispatchQueue.main.async {
-                closeCallback?(nil)
-            }
+        NCVideoVLCPresenter.dismiss {
+            closeCallback?(nil)
         }
     }
 
@@ -527,35 +441,123 @@ final class NCVideoVLCViewController: UIViewController {
     // MARK: - Playback
 
     private func start() {
+        hasEnteredPlaybackPipeline = false
+        hasReportedPlaybackError = false
         isPlaybackRequested = shouldAutoPlayOnStart
+        playbackPresentationContext.prepareForPlaybackStart()
+        applyControlsVisibilityOnStart()
+
+        if mediaPlayer.state == .playing {
+            playbackPresentationContext.finishPlaybackTransition()
+        }
+
+        cancelPlaybackStartupTimeout()
         attachDrawable()
 
         mediaPlayer.media = preparedPlayback.media
         updatePlayPauseButton()
 
         if shouldAutoPlayOnStart {
+            logPlaybackRequest()
             mediaPlayer.play()
+            startPlaybackStartupTimeout()
         }
 
         updatePlayPauseButton()
         updateProgressControls()
         clearVLCTrackMenuItems()
         startProgressTimer()
-        showControls(animated: false)
-        stopControlsHideTimer()
     }
 
-    private func stop() {
-        isPlaybackRequested = false
+    private func applyControlsVisibilityOnStart() {
+        if playbackPresentationContext.shouldShowControlsOnStart {
+            showControls(animated: false)
+            stopControlsHideTimer()
+        } else {
+            hideControls(animated: false)
+        }
+    }
 
+    func stop(completion: (() -> Void)? = nil) {
+        if let completion {
+            stopCompletions.append(completion)
+        }
+
+        guard !isStopInFlight else { return }
+
+        let hadPendingPlaybackRequest = isPlaybackRequested
+        stopControlsHideTimer()
+        stopProgressTimer()
+        cancelPlaybackStartupTimeout()
+        isPlaybackRequested = false
+        isReplayFromBeginningRequested = false
+        playbackPresentationContext.reset()
+
+        if mediaPlayer.media == nil ||
+            (mediaPlayer.state == .stopped && !hadPendingPlaybackRequest) {
+            finishStop()
+            return
+        }
+
+        isStopInFlight = true
         mediaPlayer.stop()
+    }
+
+    func stopForDismissal() {
+        // A queued URL replacement no longer applies once this controller is
+        // leaving the screen and must not restart playback after dismissal.
+        stopCompletions.removeAll()
+        stop()
+    }
+
+    private func finishStop() {
+        isStopInFlight = false
         mediaPlayer.media = nil
         mediaPlayer.drawable = nil
         externalSubtitleURL = nil
-        stopProgressTimer()
         updatePlayPauseButton()
         updateProgressControls()
         clearVLCTrackMenuItems()
+
+        let completions = stopCompletions
+        stopCompletions.removeAll()
+        completions.forEach { $0() }
+    }
+
+    func restartPlaybackFromBeginning() {
+        isReplayFromBeginningRequested = true
+        isPlaybackRequested = true
+        updatePlayPauseButton()
+
+        if mediaPlayer.state == .stopped {
+            startReplayAfterStop()
+        } else {
+            mediaPlayer.stop()
+        }
+    }
+
+    private func startReplayAfterStop() {
+        guard isReplayFromBeginningRequested else {
+            return
+        }
+
+        isReplayFromBeginningRequested = false
+        hasEnteredPlaybackPipeline = false
+
+        let media = VLCMedia(url: url)
+
+        if let userAgent,
+           !userAgent.isEmpty,
+           !url.isFileURL {
+            media.addOption(":http-user-agent=\(userAgent)")
+        }
+
+        mediaPlayer.media = media
+        mediaPlayer.play()
+        startPlaybackStartupTimeout()
+
+        startProgressTimer()
+        scheduleControlsHide()
     }
 
     private func attachDrawable() {
@@ -572,15 +574,189 @@ final class NCVideoVLCViewController: UIViewController {
         mediaPlayer.drawable = drawableView
     }
 
+    private func logPlaybackRequest() {
+        let scheme = url.scheme ?? "unknown"
+        let host = url.host ?? (url.isFileURL ? "local" : "unknown")
+
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: .start,
+            message: "VIDEO VLC play requested scheme: \(scheme), host: \(host)",
+            consoleOnly: false
+        )
+    }
+
+    private func startPlaybackStartupTimeout() {
+        cancelPlaybackStartupTimeout()
+
+        guard isPlaybackRequested,
+              !mediaPlayer.isPlaying,
+              mediaPlayer.state != .playing else {
+            return
+        }
+
+        playbackStartupTimeoutTask = Task { @MainActor [weak self] in
+            do {
+                try await Task.sleep(for: .seconds(15))
+            } catch {
+                return
+            }
+
+            guard let self,
+                  self.isPlaybackRequested,
+                  !self.mediaPlayer.isPlaying,
+                  self.mediaPlayer.state != .playing else {
+                return
+            }
+
+            nkLog(
+                tag: NCGlobal.shared.logTagViewer,
+                emoji: .error,
+                message: "VIDEO VLC playback startup timed out",
+                consoleOnly: false
+            )
+
+            self.reportPlaybackErrorIfNeeded()
+        }
+    }
+
+    private func cancelPlaybackStartupTimeout() {
+        playbackStartupTimeoutTask?.cancel()
+        playbackStartupTimeoutTask = nil
+    }
+
+    private func reportPlaybackErrorIfNeeded() {
+        guard !hasReportedPlaybackError else {
+            return
+        }
+
+        hasReportedPlaybackError = true
+        playbackPresentationContext.reset()
+        isPlaybackRequested = false
+        cancelPlaybackStartupTimeout()
+        onPlaybackError?()
+    }
+
     private func handleMediaPlayerStateChange() {
+        let stateDescription: String
+
+        switch mediaPlayer.state {
+        case .stopped:
+            stateDescription = "stopped"
+        case .opening:
+            stateDescription = "opening"
+        case .buffering:
+            stateDescription = "buffering"
+        case .ended:
+            stateDescription = "ended"
+        case .error:
+            stateDescription = "error"
+        case .playing:
+            stateDescription = "playing"
+        case .paused:
+            stateDescription = "paused"
+        default:
+            stateDescription = "unknown"
+        }
+
+        nkLog(
+            tag: NCGlobal.shared.logTagViewer,
+            emoji: mediaPlayer.state == .error ? .error : .debug,
+            message: "VIDEO VLC state: \(stateDescription)",
+            consoleOnly: false
+        )
+
+        if isStopInFlight {
+            if mediaPlayer.state == .stopped {
+                finishStop()
+            }
+            return
+        }
+
+        if mediaPlayer.state == .error {
+            reportPlaybackErrorIfNeeded()
+            return
+        }
+
+        switch mediaPlayer.state {
+        case .opening,
+             .buffering,
+             .playing:
+            hasEnteredPlaybackPipeline = true
+
+        default:
+            break
+        }
+
         switch mediaPlayer.state {
         case .playing:
             isPlaybackRequested = true
+            playbackPresentationContext.finishPlaybackTransition()
+            cancelPlaybackStartupTimeout()
 
-        case .paused,
-             .stopped,
-             .ended,
-             .error:
+        case .ended:
+            isPlaybackRequested = false
+            stopProgressTimer()
+
+            switch playbackOptions.completionAction {
+            case .repeatCurrentItem:
+                playbackPresentationContext.beginRepeatRestart()
+                restartPlaybackFromBeginning()
+                return
+
+            case .playNextItem:
+                updatePlayPauseButton()
+                updateProgressLabels(position: 1)
+
+                guard let onPlaybackEnded else {
+                    finishPlaybackWithoutAdvance()
+                    return
+                }
+
+                onPlaybackEnded { [weak self] didAdvance in
+                    guard !didAdvance else {
+                        return
+                    }
+
+                    self?.finishPlaybackWithoutAdvance()
+                }
+                return
+
+            case .stop:
+                break
+            }
+
+            finishPlaybackWithoutAdvance()
+            return
+
+        case .stopped:
+            if isReplayFromBeginningRequested {
+                startReplayAfterStop()
+                return
+            }
+
+            if isPlaybackRequested,
+               hasEnteredPlaybackPipeline {
+                nkLog(
+                    tag: NCGlobal.shared.logTagViewer,
+                    emoji: .error,
+                    message: "VIDEO VLC playback stopped before reaching playing",
+                    consoleOnly: false
+                )
+                reportPlaybackErrorIfNeeded()
+                return
+            }
+
+            isPlaybackRequested = false
+            cancelPlaybackStartupTimeout()
+
+        case .paused:
+            if !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation {
+                isPlaybackRequested = false
+            }
+
+        case .error:
+            playbackPresentationContext.reset()
             isPlaybackRequested = false
 
         default:
@@ -592,6 +768,10 @@ final class NCVideoVLCViewController: UIViewController {
         refreshVLCTrackMenuItemsWhenPlayerIsActive()
 
         guard mediaPlayer.state == .playing else {
+            guard !playbackPresentationContext.shouldSuppressAutomaticControlsPresentation else {
+                return
+            }
+
             if !isPlaybackRequested {
                 showControls(animated: false)
                 stopControlsHideTimer()
@@ -619,6 +799,13 @@ final class NCVideoVLCViewController: UIViewController {
         scheduleControlsHide()
     }
 
+    internal func updatePlaybackOptionsControls() {
+        controlsView.updatePlaybackOptions(
+            isRepeatEnabled: playbackOptions.isRepeatEnabled,
+            isAutoAdvanceEnabled: playbackOptions.isAutoAdvanceEnabled
+        )
+    }
+
     // MARK: - VLC Track Menus
 
     func refreshVLCTrackMenuItems() {
@@ -638,6 +825,13 @@ final class NCVideoVLCViewController: UIViewController {
         default:
             clearVLCTrackMenuItems()
         }
+    }
+
+    private func finishPlaybackWithoutAdvance() {
+        updatePlayPauseButton()
+        updateProgressLabels(position: 1)
+        showControls(animated: true)
+        stopControlsHideTimer()
     }
 
     func selectSubtitleTrack(index: Int32) {
@@ -669,25 +863,100 @@ final class NCVideoVLCViewController: UIViewController {
     }
 
     func presentExternalSubtitlePicker() {
-        let picker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [.item],
-            asCopy: true
-        )
-        picker.delegate = self
-        picker.allowsMultipleSelection = false
-        present(picker, animated: true)
+        guard presentedViewController == nil,
+              let navigationController = makeExternalSubtitlePicker() else {
+            return
+        }
+
+        navigationController.modalPresentationStyle = .formSheet
+        present(navigationController, animated: true)
+    }
+
+    private func makeExternalSubtitlePicker() -> UINavigationController? {
+        let session = NCSession.shared.getSession(account: metadata.account)
+
+        guard !session.account.isEmpty,
+              let navigationController = UIStoryboard(
+                  name: "NCSelect",
+                  bundle: nil
+              ).instantiateInitialViewController() as? UINavigationController,
+              let rootViewController = navigationController.topViewController as? NCSelect else {
+            return nil
+        }
+
+        let utilityFileSystem = NCUtilityFileSystem()
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
+        var serverUrl = metadata.serverUrl
+        var viewControllers: [NCSelect] = []
+
+        while true {
+            let viewController: NCSelect?
+
+            if serverUrl == homeServerUrl {
+                viewController = rootViewController
+            } else {
+                viewController = UIStoryboard(
+                    name: "NCSelect",
+                    bundle: nil
+                ).instantiateViewController(
+                    withIdentifier: "NCSelect.storyboard"
+                ) as? NCSelect
+            }
+
+            guard let viewController else {
+                return nil
+            }
+
+            configureExternalSubtitlePicker(
+                viewController,
+                serverUrl: serverUrl,
+                homeServerUrl: homeServerUrl,
+                session: session
+            )
+            viewControllers.insert(viewController, at: 0)
+
+            guard serverUrl != homeServerUrl,
+                  let parentServerUrl = utilityFileSystem.serverDirectoryUp(
+                      serverUrl: serverUrl,
+                      home: homeServerUrl
+                  ) else {
+                break
+            }
+
+            serverUrl = parentServerUrl
+        }
+
+        navigationController.setViewControllers(viewControllers, animated: false)
+        return navigationController
+    }
+
+    private func configureExternalSubtitlePicker(
+        _ viewController: NCSelect,
+        serverUrl: String,
+        homeServerUrl: String,
+        session: NCSession.Session
+    ) {
+        let folderName = (serverUrl as NSString).lastPathComponent.removingPercentEncoding
+
+        viewController.delegate = self
+        viewController.typeOfCommandView = .nothing
+        viewController.enableSelectFile = true
+        viewController.allowedFileExtensions = supportedExternalSubtitleExtensions
+        viewController.titleCurrentFolder = serverUrl == homeServerUrl
+            ? NCBrandOptions.shared.brand
+            : folderName ?? (serverUrl as NSString).lastPathComponent
+        viewController.serverUrl = serverUrl
+        viewController.session = session
+        viewController.controller = contextMenuController
+        viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
+    }
+
+    private var supportedExternalSubtitleExtensions: Set<String> {
+        ["srt", "vtt", "ass", "ssa", "sub"]
     }
 
     private func isSupportedExternalSubtitleURL(_ url: URL) -> Bool {
-        let supportedExtensions: Set<String> = [
-            "srt",
-            "vtt",
-            "ass",
-            "ssa",
-            "sub"
-        ]
-
-        return supportedExtensions.contains(url.pathExtension.lowercased())
+        supportedExternalSubtitleExtensions.contains(url.pathExtension.lowercased())
     }
 
     private func loadExternalSubtitle(url: URL) {
@@ -898,7 +1167,7 @@ extension NCVideoVLCViewController: VLCMediaPlayerDelegate {
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
         Task { @MainActor in
-            guard !isScrubbing else {
+            guard !playbackPresentationContext.isSeeking else {
                 return
             }
 
@@ -959,19 +1228,56 @@ extension NCVideoVLCViewController: UIGestureRecognizerDelegate {
     }
 }
 
-// MARK: - Document Picker Delegate
+// MARK: - Nextcloud Subtitle Picker Delegate
 
-extension NCVideoVLCViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else {
+extension NCVideoVLCViewController: NCSelectDelegate {
+    func dismissSelect(
+        serverUrl: String?,
+        metadata: tableMetadata?,
+        type: String,
+        items: [Any],
+        overwrite: Bool,
+        copy: Bool,
+        move: Bool,
+        session: NCSession.Session,
+        controller: NCMainTabBarController?
+    ) {
+        guard let metadata else {
+            showControls(animated: true)
             return
         }
 
-        loadExternalSubtitle(url: url)
-        showControls(animated: true)
-    }
+        Task { @MainActor [weak self] in
+            guard let self else {
+                return
+            }
 
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        showControls(animated: true)
+            let utilityFileSystem = NCUtilityFileSystem()
+
+            if !utilityFileSystem.fileProviderStorageExists(metadata) {
+                let result = await NCNetworking.shared.downloadFile(metadata: metadata)
+
+                guard result.nkError == .success else {
+                    nkLog(
+                        tag: NCGlobal.shared.logTagViewer,
+                        emoji: .error,
+                        message: "VIDEO VLC subtitle download error: \(result.nkError.errorDescription)",
+                        consoleOnly: true
+                    )
+                    showControls(animated: true)
+                    return
+                }
+            }
+
+            let localPath = utilityFileSystem.getDirectoryProviderStorageOcId(
+                metadata.ocId,
+                fileName: metadata.fileName,
+                userId: metadata.userId,
+                urlBase: metadata.urlBase
+            )
+
+            loadExternalSubtitle(url: URL(fileURLWithPath: localPath))
+            showControls(animated: true)
+        }
     }
 }

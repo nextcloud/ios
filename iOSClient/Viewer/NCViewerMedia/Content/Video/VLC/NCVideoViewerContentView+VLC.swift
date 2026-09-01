@@ -6,59 +6,74 @@ import Foundation
 
 extension NCVideoViewerContentView {
     @MainActor
-    func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) {
+    @discardableResult
+    func requestVLCPresentation(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
         hasRequestedPlayback = true
-        presentVLCIfSelected(preparedPlayback: preparedPlayback)
+        return presentVLCIfSelected(preparedPlayback: preparedPlayback)
     }
 
     @MainActor
-    func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) {
+    @discardableResult
+    func presentVLCIfSelected(preparedPlayback: NCVideoVLCPreparedPlayback) -> Bool {
         guard isSelected else {
-            return
+            return false
         }
 
         guard presentedVLCURL != preparedPlayback.url else {
-            return
+            consumePendingAutoPlayIfNeeded()
+            return true
         }
 
-        presentedVLCURL = preparedPlayback.url
-
-        NCVideoVLCPresenter.present(
+        let didPresent = NCVideoVLCPresenter.present(
             metadata: metadata,
             preparedPlayback: preparedPlayback,
             userAgent: userAgent,
             shouldAutoPlayOnStart: true,
+            playbackStartReason: shouldAutoPlay ? .automaticAdvance : .userInitiated,
             isChromeHidden: isChromeHidden,
             contextMenuController: contextMenuController,
+            playbackOptions: playbackOptions,
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             onPrevious: goToPreviousPageFromVLC,
             onNext: goToNextPageFromVLC,
-            onClose: closeFromFullscreenVideo
+            onPlaybackEnded: onPlayNextMedia,
+            onClose: closeFromFullscreenVideo,
+            onPlaybackError: handleVLCPlaybackError
         )
+
+        guard didPresent else {
+            presentedVLCURL = nil
+            hasRequestedPlayback = false
+            isLaunchingPlayback = false
+            return false
+        }
+
+        presentedVLCURL = preparedPlayback.url
+        consumePendingAutoPlayIfNeeded()
+        return true
+    }
+
+    @MainActor
+    func handleVLCPlaybackError() {
+        NCVideoVLCPresenter.dismiss {
+            showPlaybackError()
+        }
     }
 
     @MainActor
     func goToPreviousPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onPreviousPage?()
-            }
-        )
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onPreviousPage?()
+        }
     }
 
     @MainActor
     func goToNextPageFromVLC() {
-        performFullscreenPageTransition(
-            dismissPlayer: {
-                NCVideoVLCPresenter.dismiss()
-            },
-            changePage: {
-                onNextPage?()
-            }
-        )
+        NCVideoVLCPresenter.dismiss {
+            resetPlaybackPresentationState()
+            onNextPage?()
+        }
     }
 }

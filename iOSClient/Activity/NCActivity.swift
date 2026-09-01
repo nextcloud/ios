@@ -15,6 +15,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var height: CGFloat = 0
     var metadata: tableMetadata?
     var showComments: Bool = false
+    var usesGroupedBackground: Bool = false
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -55,13 +56,13 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewDidLoad()
 
         navigationController?.setNavigationBarAppearance()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
 
         if showComments {
             setupComments()
@@ -161,25 +162,25 @@ extension NCActivity: UITableViewDelegate {
         label.text = utility.getTitleFromDate(sectionDates[section])
         label.textAlignment = .center
 
-        let blur = UIBlurEffect(style: .systemMaterial)
-        let blurredEffectView = UIVisualEffectView(effect: blur)
-        blurredEffectView.layer.cornerRadius = 11
-        blurredEffectView.layer.masksToBounds = true
+        let pill = UIView()
+        pill.backgroundColor = .systemGray5
+        pill.layer.cornerRadius = 11
+        pill.layer.masksToBounds = true
 
-        view.addSubview(blurredEffectView)
+        view.addSubview(pill)
         view.addSubview(label)
 
-        blurredEffectView.translatesAutoresizingMaskIntoConstraints = false
+        pill.translatesAutoresizingMaskIntoConstraints = false
         label.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            blurredEffectView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurredEffectView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            blurredEffectView.widthAnchor.constraint(equalToConstant: label.intrinsicContentSize.width + 30),
-            blurredEffectView.heightAnchor.constraint(equalToConstant: 22),
+            pill.topAnchor.constraint(equalTo: view.topAnchor),
+            pill.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pill.widthAnchor.constraint(equalToConstant: label.intrinsicContentSize.width + 30),
+            pill.heightAnchor.constraint(equalToConstant: 22),
             label.topAnchor.constraint(equalTo: view.topAnchor),
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: blurredEffectView.centerYAnchor)
+            label.centerYAnchor.constraint(equalTo: pill.centerYAnchor)
         ])
 
         return view
@@ -301,45 +302,38 @@ extension NCActivity: UITableViewDataSource {
             cell.configureAvatarMenu()
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            if let image = NCImageCache.shared.getImageCache(key: fileName) {
+            let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar?.image = image
-            } else {
-                let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                    cell.avatar?.image = image
-                    NCImageCache.shared.addImageCache(image: image, key: fileName)
-                }
+            }
+            let user = activity.user
+            let idActivity = activity.idActivity
+            let account = session.account
 
-                let user = activity.user
-                let idActivity = activity.idActivity
-                let account = session.account
+            Task {
+                let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
+                await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                         priority: .userInitiated) {
+                let results = await NextcloudKit.shared.downloadAvatarAsync(
+                    user: user,
+                    fileNameLocalPath: fileNameLocalPath,
+                    sizeImage: NCGlobal.shared.avatarSize,
+                    avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                    etagResource: etagResource,
+                    account: account)
 
-                Task {
-                    let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
-                    await NCTransferCoordinator.shared.start(identifier: fileName,
-                                                             priority: .userInitiated) {
-                    let results = await NextcloudKit.shared.downloadAvatarAsync(
-                        user: user,
-                        fileNameLocalPath: fileNameLocalPath,
-                        sizeImage: NCGlobal.shared.avatarSize,
-                        avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                        etagResource: etagResource,
-                        account: account)
-
-                        if results.error == .success,
-                           let image = results.imageAvatar,
-                           let etag = results.etag,
-                           etag != etagResource {
-                            NCImageCache.shared.addImageCache(image: image, key: fileName)
-                            await self.database.addAvatarAsync(fileName: fileName, etag: etag)
-                            await MainActor.run {
-                                guard
-                                    let cell = self.tableView.cellForRow(at: indexPath) as? NCActivityTableViewCell,
-                                    cell.idActivity == idActivity else {
-                                    return
-                                }
-                                cell.avatar?.image = image
+                    if results.error == .success,
+                       let image = results.imageAvatar,
+                       let etag = results.etag,
+                       etag != etagResource {
+                        await self.database.addAvatarAsync(fileName: fileName, etag: etag)
+                        await MainActor.run {
+                            guard
+                                let cell = self.tableView.cellForRow(at: indexPath) as? NCActivityTableViewCell,
+                                cell.idActivity == idActivity else {
+                                return
                             }
+                            cell.avatar?.image = image
                         }
                     }
                 }

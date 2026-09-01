@@ -179,7 +179,7 @@ private final class PasscodeContainerViewController: UIViewController {
     }
 
     @objc private func presentFailedPasscodeIfNeeded() {
-        guard NCPreferences().passcodeCounterFail >= 3 else { return }
+        guard presentedViewController == nil, NCPreferences().passcodeCounterFail >= 3 else { return }
 
         UIAlertController.failedPasscode(presenter: self)
     }

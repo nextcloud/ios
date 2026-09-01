@@ -11,46 +11,100 @@ extension NCMedia {
             let originalColumns = numberOfColumns
             transitionColumns = true
 
+            guard let anchorIndexPath = collectionView.indexPathsForVisibleItems.min(),
+                  let anchorAttributes = collectionView.layoutAttributesForItem(
+                    at: anchorIndexPath
+                  ) else {
+                transitionColumns = false
+                return
+            }
+
+            // Preserve the vertical position of the first visible item.
+            let anchorOffset = anchorAttributes.frame.minY
+                - collectionView.contentOffset.y
+
             if currentScale < 1 && numberOfColumns < maxColumns {
                 numberOfColumns += 1
             } else if currentScale > 1 && numberOfColumns > 1 {
                 numberOfColumns -= 1
             }
 
-            if originalColumns != numberOfColumns {
-
-                self.collectionView.transform = .identity
-                self.currentScale = 1.0
-
-                UIView.transition(with: self.collectionView, duration: 0.20, options: .transitionCrossDissolve) {
-
-                    self.collectionView.reloadData()
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-
-                } completion: { _ in
-
-                    self.database.updatePhotoLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") { layout in
-                        layout.columnPhoto = self.numberOfColumns
-                    }
-
-                }
+            guard originalColumns != numberOfColumns else {
+                transitionColumns = false
+                return
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                self.transitionColumns = false
+
+            collectionView.transform = .identity
+            currentScale = 1.0
+
+            buildMediaPhotoVideo(columnCount: numberOfColumns)
+
+            UIView.transition(
+                with: collectionView,
+                duration: 0.20,
+                options: .transitionCrossDissolve
+            ) {
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionViewReloadData()
+                self.collectionView.layoutIfNeeded()
+
+                guard let updatedAttributes = self.collectionView
+                    .layoutAttributesForItem(at: anchorIndexPath) else {
+                    return
+                }
+
+                let minimumOffsetY = -self.collectionView.adjustedContentInset.top
+                let maximumOffsetY = max(
+                    minimumOffsetY,
+                    self.collectionView.contentSize.height
+                        - self.collectionView.bounds.height
+                        + self.collectionView.adjustedContentInset.bottom
+                )
+
+                let targetOffsetY = updatedAttributes.frame.minY - anchorOffset
+                let clampedOffsetY = min(
+                    max(targetOffsetY, minimumOffsetY),
+                    maximumOffsetY
+                )
+
+                self.collectionView.setContentOffset(
+                    CGPoint(
+                        x: self.collectionView.contentOffset.x,
+                        y: clampedOffsetY
+                    ),
+                    animated: false
+                )
+                self.collectionView.layoutIfNeeded()
+                self.setTitleDate()
+            } completion: { _ in
+                self.database.updatePhotoLayoutForView(
+                    account: self.session.account,
+                    key: self.global.layoutViewMedia,
+                    serverUrl: ""
+                ) { layout in
+                    layout.columnPhoto = self.numberOfColumns
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    self.transitionColumns = false
+                }
             }
         }
 
         switch gestureRecognizer.state {
         case .began:
             Task {
-                await self.networkRemoveAll()
+                await networkRemoveAll()
             }
+
             lastScale = gestureRecognizer.scale
             lastNumberOfColumns = numberOfColumns
+
         case .changed:
             guard !transitionColumns else {
                 return
             }
+
             let scale = gestureRecognizer.scale
             let scaleChange = scale / lastScale
 
@@ -60,16 +114,20 @@ extension NCMedia {
             updateNumberOfColumns()
 
             if numberOfColumns > 1 && numberOfColumns < maxColumns {
-                collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+                collectionView.transform = CGAffineTransform(
+                    scaleX: currentScale,
+                    y: currentScale
+                )
             }
 
             lastScale = scale
-        case .ended:
+
+        case .ended, .cancelled, .failed:
             UIView.animate(withDuration: 0.30) {
                 self.currentScale = 1.0
                 self.collectionView.transform = .identity
-                self.setTitleDate()
             }
+
         default:
             break
         }

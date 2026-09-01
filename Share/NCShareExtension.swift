@@ -151,18 +151,7 @@ class NCShareExtension: UIViewController {
             return
         }
 
-        // Keep the Share extension visually hidden until we know whether this is
-        // an Assistant text handoff or a normal file upload flow. This avoids the
-        // visible open-and-close flash when the extension only needs to redirect text.
-        view.alpha = 0
-
         Task { @MainActor in
-            if await handleAssistantSharedTextIfNeeded(inputItems: inputItems) {
-                return
-            }
-
-            self.view.alpha = 1
-
             NCFilesExtensionHandler(items: inputItems) { fileNames in
                 self.filesName = fileNames
                 DispatchQueue.main.async {
@@ -392,6 +381,10 @@ extension NCShareExtension {
 
     @MainActor
     func uploadAndExit() async {
+        // A Share extension process can be reused by the system. Treat each
+        // explicit share operation as a new server-key validation cycle.
+        await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
+
         var error: NKError?
         guard let window = self.view.window else {
             return

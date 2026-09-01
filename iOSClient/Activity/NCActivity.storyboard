@@ -59,6 +59,7 @@
                                                 <constraint firstItem="fcO-YL-MuT" firstAttribute="top" secondItem="i35-U4-bEk" secondAttribute="top" constant="3" id="faC-by-km5"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <outlet property="avatar" destination="LQ8-cO-794" id="2PE-uD-pug"/>
                                             <outlet property="icon" destination="xNG-sf-PnA" id="hxb-Vr-oQX"/>

@@ -11,17 +11,34 @@ import NextcloudKit
 // MARK: - Live Photo Viewer Content View
 
 struct NCLivePhotoViewerContentView: View {
+    private final class ZoomStateStore {
+        var value: NCImageZoomView.ZoomState?
+
+        init(_ value: NCImageZoomView.ZoomState?) {
+            self.value = value
+        }
+    }
+
     let identifier: String
     let previewURL: URL?
     let fullURL: URL?
     let videoURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle
     let topOverlayInset: CGFloat
+    let initialZoomState: NCImageZoomView.ZoomState?
     let onZoomChanged: (Bool) -> Void
+    let onZoomStateChanged: (NCImageZoomView.ZoomState?) -> Void
+    let requestResources: @MainActor () async -> (imageURL: URL, videoURL: URL)?
+    let cancelResourceDownload: @MainActor () -> Void
 
     @State private var livePhoto: PHLivePhoto?
     @State private var isPlayingLivePhoto = false
+    @State private var isPlaybackRequested = false
+    @State private var isLoadingResources = false
+    @State private var resourceLoadingTask: Task<Void, Never>?
     @State private var loadedTaskIdentifier: String?
+    @State private var zoomStateStore: ZoomStateStore
+    @State private var playbackZoomState: NCImageZoomView.ZoomState?
 
     init(
         identifier: String,
@@ -30,7 +47,11 @@ struct NCLivePhotoViewerContentView: View {
         videoURL: URL?,
         backgroundStyle: NCViewerBackgroundStyle = .system,
         topOverlayInset: CGFloat = 0,
-        onZoomChanged: @escaping (Bool) -> Void = { _ in }
+        initialZoomState: NCImageZoomView.ZoomState? = nil,
+        onZoomChanged: @escaping (Bool) -> Void = { _ in },
+        onZoomStateChanged: @escaping (NCImageZoomView.ZoomState?) -> Void = { _ in },
+        requestResources: @escaping @MainActor () async -> (imageURL: URL, videoURL: URL)? = { nil },
+        cancelResourceDownload: @escaping @MainActor () -> Void = { }
     ) {
         self.identifier = identifier
         self.previewURL = previewURL
@@ -38,7 +59,13 @@ struct NCLivePhotoViewerContentView: View {
         self.videoURL = videoURL
         self.backgroundStyle = backgroundStyle
         self.topOverlayInset = topOverlayInset
+        self.initialZoomState = initialZoomState
         self.onZoomChanged = onZoomChanged
+        self.onZoomStateChanged = onZoomStateChanged
+        self.requestResources = requestResources
+        self.cancelResourceDownload = cancelResourceDownload
+        self._zoomStateStore = State(initialValue: ZoomStateStore(initialZoomState))
+        self._playbackZoomState = State(initialValue: nil)
     }
 
     var body: some View {
@@ -49,11 +76,28 @@ struct NCLivePhotoViewerContentView: View {
             stillImageView
 
             if isPlayingLivePhoto, let livePhoto {
-                NCLivePhotoViewRepresentable(
-                    livePhoto: livePhoto,
-                    backgroundStyle: backgroundStyle,
-                    isPlaying: $isPlayingLivePhoto
-                )
+                GeometryReader { proxy in
+                    let layout = NCLivePhotoPlaybackLayout(
+                        containerSize: proxy.size,
+                        photoSize: livePhoto.size,
+                        zoomState: playbackZoomState
+                    )
+
+                    NCLivePhotoViewRepresentable(
+                        livePhoto: livePhoto,
+                        backgroundStyle: backgroundStyle,
+                        isPlaying: $isPlayingLivePhoto
+                    )
+                    .frame(
+                        width: layout.frame.width,
+                        height: layout.frame.height
+                    )
+                    .position(
+                        x: layout.frame.midX,
+                        y: layout.frame.midY
+                    )
+                }
+                .clipped()
                 .id(playbackViewIdentifier)
                 .ignoresSafeArea()
             }
@@ -67,11 +111,7 @@ struct NCLivePhotoViewerContentView: View {
         .highPriorityGesture(
             LongPressGesture(minimumDuration: 0.25)
                 .onEnded { _ in
-                    guard livePhoto != nil else {
-                        return
-                    }
-
-                    isPlayingLivePhoto = true
+                    requestLivePhotoPlayback()
                 }
         )
         // Stop Live Photo playback when the media viewer requests a global playback stop.
@@ -79,12 +119,20 @@ struct NCLivePhotoViewerContentView: View {
             stopLivePhotoPlayback()
         }
         .onChange(of: identifier) { _, _ in
+            cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
+            zoomStateStore.value = initialZoomState
         }
         .onChange(of: taskIdentifier) { _, _ in
             stopLivePhotoPlayback()
         }
+        .onChange(of: isPlayingLivePhoto) { _, isPlaying in
+            if !isPlaying {
+                playbackZoomState = nil
+            }
+        }
         .onDisappear {
+            cancelResourceLoadingIfNeeded()
             stopLivePhotoPlayback()
         }
     }
@@ -99,7 +147,12 @@ struct NCLivePhotoViewerContentView: View {
             fullURL: fullURL,
             backgroundStyle: backgroundStyle,
             allowsImageAnalysis: false,
-            onZoomChanged: onZoomChanged
+            initialZoomState: zoomStateStore.value,
+            onZoomChanged: onZoomChanged,
+            onZoomStateChanged: { updatedZoomState in
+                zoomStateStore.value = updatedZoomState
+                onZoomStateChanged(updatedZoomState)
+            }
         )
     }
 
@@ -148,9 +201,15 @@ struct NCLivePhotoViewerContentView: View {
             VStack {
                 HStack {
                     HStack(spacing: 5) {
-                        Image(systemName: "livephoto")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(livePhotoBadgeForeground)
+                        if isLoadingResources {
+                            ProgressView()
+                                .controlSize(.small)
+                                .tint(livePhotoBadgeForeground)
+                        } else {
+                            Image(systemName: "livephoto")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(livePhotoBadgeForeground)
+                        }
 
                         Text("LIVE")
                             .font(.system(size: 13, weight: .semibold))
@@ -180,7 +239,10 @@ struct NCLivePhotoViewerContentView: View {
     // MARK: - Identifiers
 
     private var taskIdentifier: String {
-        "\(identifier)|\(fullURL?.absoluteString ?? "")|\(videoURL?.absoluteString ?? "")"
+        resourceIdentifier(
+            imageURL: fullURL,
+            videoURL: videoURL
+        )
     }
 
     private var playbackViewIdentifier: String {
@@ -192,6 +254,10 @@ struct NCLivePhotoViewerContentView: View {
     // Keep the still image visible when Live Photo resources are missing.
     @MainActor
     private func loadLivePhotoIfNeeded() async {
+        guard !isLoadingResources else {
+            return
+        }
+
         if loadedTaskIdentifier != taskIdentifier {
             livePhoto = nil
             isPlayingLivePhoto = false
@@ -207,13 +273,93 @@ struct NCLivePhotoViewerContentView: View {
             return
         }
 
-        guard FileManager.default.fileExists(atPath: fullURL.path),
+        isLoadingResources = true
+        defer {
+            isLoadingResources = false
+        }
+
+        await loadLivePhoto(
+            imageURL: fullURL,
+            videoURL: videoURL
+        )
+    }
+
+    @MainActor
+    private func requestLivePhotoPlayback() {
+        isPlaybackRequested = true
+
+        if livePhoto != nil {
+            isPlaybackRequested = false
+            startLivePhotoPlayback()
+            return
+        }
+
+        guard !isLoadingResources else {
+            return
+        }
+
+        isLoadingResources = true
+
+        resourceLoadingTask = Task { @MainActor in
+            defer {
+                isLoadingResources = false
+                resourceLoadingTask = nil
+            }
+
+            let resourceURLs: (imageURL: URL, videoURL: URL)?
+
+            if let fullURL,
+               let videoURL {
+                resourceURLs = (fullURL, videoURL)
+            } else {
+                resourceURLs = await requestResources()
+            }
+
+            guard !Task.isCancelled,
+                  let resourceURLs else {
+                isPlaybackRequested = false
+                return
+            }
+
+            await loadLivePhoto(
+                imageURL: resourceURLs.imageURL,
+                videoURL: resourceURLs.videoURL
+            )
+        }
+    }
+
+    @MainActor
+    private func loadLivePhoto(
+        imageURL: URL,
+        videoURL: URL
+    ) async {
+        let expectedIdentifier = resourceIdentifier(
+            imageURL: imageURL,
+            videoURL: videoURL
+        )
+
+        if loadedTaskIdentifier != expectedIdentifier {
+            livePhoto = nil
+            isPlayingLivePhoto = false
+            loadedTaskIdentifier = expectedIdentifier
+        }
+
+        guard livePhoto == nil else {
+            if isPlaybackRequested {
+                isPlaybackRequested = false
+                startLivePhotoPlayback()
+            }
+            return
+        }
+
+        guard FileManager.default.fileExists(atPath: imageURL.path),
               FileManager.default.fileExists(atPath: videoURL.path) else {
+            isPlaybackRequested = false
             return
         }
 
         let resourceURLs = [
-            fullURL,
+            imageURL,
             videoURL
         ]
 
@@ -223,20 +369,54 @@ struct NCLivePhotoViewerContentView: View {
             return
         }
 
-        guard loadedTaskIdentifier == taskIdentifier else {
+        guard loadedTaskIdentifier == expectedIdentifier else {
             return
         }
 
         guard let loadedLivePhoto else {
+            isPlaybackRequested = false
             return
         }
 
         livePhoto = loadedLivePhoto
+
+        if isPlaybackRequested {
+            isPlaybackRequested = false
+            startLivePhotoPlayback()
+        }
+    }
+
+    private func resourceIdentifier(
+        imageURL: URL?,
+        videoURL: URL?
+    ) -> String {
+        "\(identifier)|\(imageURL?.absoluteString ?? "")|\(videoURL?.absoluteString ?? "")"
+    }
+
+    @MainActor
+    private func cancelResourceLoadingIfNeeded() {
+        guard let resourceLoadingTask else {
+            return
+        }
+
+        resourceLoadingTask.cancel()
+        self.resourceLoadingTask = nil
+        isLoadingResources = false
+        isPlaybackRequested = false
+        cancelResourceDownload()
+    }
+
+    @MainActor
+    private func startLivePhotoPlayback() {
+        playbackZoomState = zoomStateStore.value
+        isPlayingLivePhoto = true
     }
 
     @MainActor
     private func stopLivePhotoPlayback() {
+        isPlaybackRequested = false
         isPlayingLivePhoto = false
+        playbackZoomState = nil
     }
 
     // Photos may call the handler more than once; resume only once.
@@ -308,6 +488,74 @@ struct NCLivePhotoViewerContentView: View {
                 )
             }
         }
+    }
+}
+
+// MARK: - Live Photo Playback Layout
+
+struct NCLivePhotoPlaybackLayout {
+    let frame: CGRect
+
+    init(
+        containerSize: CGSize,
+        photoSize: CGSize,
+        zoomState: NCImageZoomView.ZoomState?
+    ) {
+        guard containerSize.width > 0,
+              containerSize.height > 0,
+              photoSize.width > 0,
+              photoSize.height > 0 else {
+            self.frame = CGRect(origin: .zero, size: containerSize)
+            return
+        }
+
+        let fitScale = min(
+            containerSize.width / photoSize.width,
+            containerSize.height / photoSize.height
+        )
+        let zoomScale = min(
+            max(
+                zoomState?.zoomScale ?? NCImageZoomView.supportedZoomScaleRange.lowerBound,
+                NCImageZoomView.supportedZoomScaleRange.lowerBound
+            ),
+            NCImageZoomView.supportedZoomScaleRange.upperBound
+        )
+        let contentSize = CGSize(
+            width: photoSize.width * fitScale * zoomScale,
+            height: photoSize.height * fitScale * zoomScale
+        )
+        let normalizedCenter = zoomState?.normalizedCenter ?? CGPoint(x: 0.5, y: 0.5)
+
+        self.frame = CGRect(
+            origin: CGPoint(
+                x: Self.contentOrigin(
+                    containerLength: containerSize.width,
+                    contentLength: contentSize.width,
+                    normalizedCenter: normalizedCenter.x
+                ),
+                y: Self.contentOrigin(
+                    containerLength: containerSize.height,
+                    contentLength: contentSize.height,
+                    normalizedCenter: normalizedCenter.y
+                )
+            ),
+            size: contentSize
+        )
+    }
+
+    private static func contentOrigin(
+        containerLength: CGFloat,
+        contentLength: CGFloat,
+        normalizedCenter: CGFloat
+    ) -> CGFloat {
+        guard contentLength > containerLength else {
+            return (containerLength - contentLength) * 0.5
+        }
+
+        let clampedCenter = min(max(normalizedCenter, 0), 1)
+        let proposedOrigin = containerLength * 0.5 - contentLength * clampedCenter
+
+        return min(max(proposedOrigin, containerLength - contentLength), 0)
     }
 }
 

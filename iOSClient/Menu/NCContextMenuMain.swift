@@ -16,6 +16,7 @@ import LucidBanner
 class NCContextMenuMain: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    private let global = NCGlobal.shared
 
     let metadata: tableMetadata
     let viewController: UIViewController
@@ -109,13 +110,13 @@ class NCContextMenuMain: NSObject {
             )
         }
 
-        if metadata.isAvailableDirectEditingEditorView {
-            let availableEditors = utility.editorsDirectEditing(
+        if metadata.isDirectEditingEditorAvailable {
+            let availableEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(
                 account: metadata.account,
                 contentType: metadata.contentType
             ).map { $0.lowercased() }
-            if availableEditors.contains("eurooffice") {
-                menuElements.append(makeOpenWithOffice(metadata: metadata, selectedEditor: "eurooffice"))
+            if availableEditors.contains(global.editorEuroOffice) {
+                menuElements.append(makeOpenWithOffice(metadata: metadata, selectedEditor: global.editorEuroOffice))
             }
         }
 
@@ -222,6 +223,19 @@ class NCContextMenuMain: NSObject {
             image: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor])
         ) { _ in
             Task {
+                let accessError = await NCNetworkingE2EE().validateFolderWriteAccess(
+                    serverUrl: metadata.serverUrlFileName,
+                    account: metadata.account
+                )
+                guard accessError == .success else {
+                    await showErrorBanner(
+                        windowScene: self.windowScene,
+                        text: accessError.errorDescription,
+                        errorCode: accessError.errorCode
+                    )
+                    return
+                }
+
                 let results = await NextcloudKit.shared.markE2EEFolderAsync(
                     fileId: metadata.fileId,
                     delete: true,

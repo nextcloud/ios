@@ -33,6 +33,8 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var isEditMode = false
     // whether the displayed folder is E2EE; refreshed on each collection view data-source pass
     internal var isCurrentDirectoryE2EE = false
+    // whether the displayed E2EE folder was decoded with active or archived keys
+    internal var endToEndKeySetAccess: NCEndToEndKeySetAccess = .unavailable
     internal var fileSelect: [String] = []
     internal var metadataFolder: tableMetadata?
     internal var richWorkspaceText: String?
@@ -92,7 +94,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal var currentScale: CGFloat = 1.0
     internal var maxColumns: Int {
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 44)
+        let column = Int(screenWidth / 55)
 
         return column
     }
@@ -375,8 +377,6 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
-
-        removeImageCache(metadatas: self.dataSource.getMetadatas())
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -662,6 +662,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
             $0.navigationController === navigationController && $0.serverUrl == serverUrlPush
         }) {
             let viewController = existingEntry.viewController
+            viewController.endToEndKeySetAccess = endToEndKeySetAccess
 
             if navigationController.topViewController === viewController {
                 return
@@ -683,6 +684,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         viewController.serverUrl = serverUrlPush
         viewController.titlePreviusFolder = navigationItem.title
         viewController.titleCurrentFolder = metadata.fileNameView
+        viewController.endToEndKeySetAccess = endToEndKeySetAccess
 
         navigationCollectionViewCommon.append(
             NavigationCollectionViewCommon(

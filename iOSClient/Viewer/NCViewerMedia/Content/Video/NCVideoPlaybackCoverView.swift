@@ -8,7 +8,10 @@ struct NCVideoPlaybackCoverView: View {
     let previewURL: URL?
     let backgroundStyle: NCViewerBackgroundStyle = .system
     let isPlayEnabled: Bool
+    let isLoading: Bool
     let isLaunchingPlayback: Bool
+    let statusMessage: String?
+    let onCancel: (() -> Void)?
     let onToggleChrome: (() -> Void)?
     let onPlay: () -> Void
 
@@ -43,25 +46,62 @@ struct NCVideoPlaybackCoverView: View {
                     onToggleChrome?()
                 }
 
-            Button {
-                guard isPlayEnabled else {
-                    return
-                }
+            VStack(spacing: 12) {
+                Button {
+                    guard isPlayEnabled else {
+                        return
+                    }
 
-                onPlay()
-            } label: {
-                Image(systemName: "play.fill")
-                    .font(.system(size: 36, weight: .regular))
-                    .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
-                    .videoControlIconShadow()
+                    onPlay()
+                } label: {
+                    ZStack {
+                        if isLoading || isLaunchingPlayback {
+                            ProgressView()
+                                .controlSize(.large)
+                                .tint(.white)
+                                .transition(.opacity)
+                        } else {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 36, weight: .regular))
+                                .foregroundStyle(isPlayEnabled ? .white : .black.opacity(0.35))
+                                .videoControlIconShadow()
+                                .transition(.opacity)
+                        }
+                    }
                     .frame(width: 62, height: 62)
                     .coverPlayButtonBackground(isEnabled: isPlayEnabled)
+                }
+                .disabled(!isPlayEnabled || isLoading || isLaunchingPlayback)
+                .scaleEffect(isLaunchingPlayback ? 1.06 : 1)
+                .animation(.easeInOut(duration: 0.18), value: isLoading)
+                .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
+                .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
+
+                if let statusMessage {
+                    VStack(spacing: 10) {
+                        Text(statusMessage)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+
+                        if let onCancel {
+                            Button(NSLocalizedString("_cancel_", comment: "")) {
+                                onCancel()
+                            }
+                            .font(.subheadline.weight(.semibold))
+                            .buttonStyle(.borderedProminent)
+                            .tint(.white)
+                            .foregroundStyle(.black)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(
+                        .black.opacity(0.46),
+                        in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    )
+                }
             }
-            .disabled(!isPlayEnabled || isLaunchingPlayback)
-            .opacity(isLaunchingPlayback ? 0 : 1)
-            .scaleEffect(isLaunchingPlayback ? 1.12 : 1)
-            .animation(.easeInOut(duration: 0.14), value: isLaunchingPlayback)
-            .accessibilityLabel(Text(NSLocalizedString("_play_", comment: "")))
         }
     }
 }
@@ -111,17 +151,23 @@ private extension View {
     NCVideoPlaybackCoverView(
         previewURL: NCVideoPlaybackCoverPreviewImage.url,
         isPlayEnabled: true,
+        isLoading: false,
         isLaunchingPlayback: false,
+        statusMessage: nil,
+        onCancel: nil,
         onToggleChrome: {},
         onPlay: {}
     )
 }
 
-#Preview("Video Playback Cover - Disabled") {
+#Preview("Video Playback Cover - Loading") {
     NCVideoPlaybackCoverView(
         previewURL: NCVideoPlaybackCoverPreviewImage.url,
         isPlayEnabled: false,
+        isLoading: true,
         isLaunchingPlayback: false,
+        statusMessage: NSLocalizedString("_download_in_progress_", comment: ""),
+        onCancel: {},
         onToggleChrome: {},
         onPlay: {}
     )

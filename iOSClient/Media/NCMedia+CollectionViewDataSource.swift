@@ -9,29 +9,112 @@ import RealmSwift
 extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == mediaSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
-            header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.getElement(account: session.account)])
-            if self.searchMediaInProgress {
-                header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
-            } else {
-                header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
-            }
-            header.emptyDescription.text = ""
-            return header
-        } else {
-            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let images = dataSource.compactMetadatas.filter({ $0.isImage }).count
-            let video = dataSource.compactMetadatas.count - images
+            if dataSource.isEmpty() {
+                guard let header = collectionView.dequeueReusableSupplementaryView(
+                    ofKind: kind,
+                    withReuseIdentifier: "sectionFirstHeaderEmptyData",
+                    for: indexPath
+                ) as? NCSectionFirstHeaderEmptyData else {
+                    return NCSectionFirstHeaderEmptyData()
+                }
+                header.emptyImage.isHidden = false
+                header.emptyDescription.isHidden = false
+                header.isUserInteractionEnabled = false
 
-            footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
+                header.emptyImage.image = utility.loadImage(
+                    named: "photo",
+                    colors: [
+                        NCBrandColor.shared.getElement(
+                            account: session.account
+                        )
+                    ]
+                )
+
+                if searchMediaInProgress || datasourceMediaInProgress {
+                    header.emptyTitle.text = NSLocalizedString(
+                        "_search_in_progress_",
+                        comment: ""
+                    )
+                } else {
+                    header.emptyTitle.text = NSLocalizedString(
+                        "_tutorial_photo_view_",
+                        comment: ""
+                    )
+                }
+
+                header.emptyDescription.text = ""
+
+                return header
+            }
+
+            guard let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: "sectionHeader",
+                for: indexPath
+            ) as? NCMediaSectionHeader else {
+                return NCMediaSectionHeader()
+            }
+            header.isUserInteractionEnabled = false
+
+            guard let yearMonth = dataSource.yearMonth(for: indexPath.section) else {
+                header.titleLabel.text = nil
+                return header
+            }
+
+            var components = DateComponents()
+            components.year = yearMonth.year
+            components.month = yearMonth.month
+            components.day = 1
+
+            if let date = Calendar.current.date(from: components) {
+                header.titleLabel.text = date.formatted(
+                    .dateTime
+                        .month(.wide)
+                        .year()
+                )
+            } else {
+                header.titleLabel.text = "\(yearMonth.month)/\(yearMonth.year)"
+            }
+
+            return header
+        }
+
+        guard let footer = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: "sectionFooter",
+            for: indexPath
+        ) as? NCSectionFooter else {
+            return NCSectionFooter()
+        }
+
+        guard indexPath.section == dataSource.numberOfSections - 1 else {
+            footer.setTitleLabel("")
             return footer
         }
+
+        let images = dataSource.compactMetadatas.filter(\.isImage).count
+        let videos = dataSource.compactMetadatas.count - images
+
+        footer.setTitleLabel(
+            "\(images) "
+            + NSLocalizedString("_images_", comment: "")
+            + " • "
+            + "\(videos) "
+            + NSLocalizedString("_video_", comment: "")
+        )
+
+        return footer
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.compactMetadatas.count
-        self.numberOfColumns = getColumnCount()
-        return numberOfItemsInSection
+        guard !dataSource.isEmpty() else {
+            return 0
+        }
+        return dataSource.numberOfItems(in: section)
+    }
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        dataSource.isEmpty() ? 1 : dataSource.numberOfSections
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -65,27 +148,33 @@ extension NCMedia: UICollectionViewDataSource {
                 identifier: ocId,
                 priority: .visible
             ) {
-                guard let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
+                guard var metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(ocId) else {
                     return
                 }
-                let iconName = metadata.iconName
-                let account = metadata.account
 
-                // Retrieves and stores complete metadata when the media record is a placeholder.
                 if metadata.placeholder {
-                    let result = await self.networking.readFileAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                    let result = await self.networking.readFileAsync(
+                        serverUrlFileName: metadata.serverUrlFileName,
+                        account: metadata.account
+                    )
+
                     guard !Task.isCancelled,
                           result.error == .success,
-                          let metadata = result.metadata else {
+                          let hydratedMetadata = result.metadata else {
                         return
                     }
-                    await self.database.addMetadataAsync(metadata)
+
+                    await self.database.addMetadataAsync(hydratedMetadata)
+                    metadata = hydratedMetadata
                 }
+
+                let iconName = metadata.iconName
+                let account = metadata.account
 
                 let result = await NextcloudKit.shared.downloadPreviewAsync(
                     fileId: metadata.fileId,
                     etag: metadata.etag,
-                    account: account
+                    account: metadata.account
                 )
 
                 guard !Task.isCancelled,
@@ -131,17 +220,25 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "mediaCell",
+            for: indexPath
+        ) as? NCMediaCell else {
             fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
-        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return cell }
 
-        let ext = global.getSizeExtension(column: self.numberOfColumns)
-        let imageCache = imageCache.getImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext)
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else {
+            return cell
+        }
 
-        cell.image.image = imageCache
+        let ocId = compactMetadata.ocId
+        let etag = compactMetadata.etag
+        let ext = global.getSizeExtension(column: numberOfColumns)
+        let cacheKey = "\(ocId)-\(etag)-\(ext)"
+
+        cell.image.image = imageCache.getImageCache(ocId: ocId, etag: etag, ext: ext)
         cell.date = compactMetadata.date
-        cell.identifier = compactMetadata.ocId
+        cell.identifier = ocId
         cell.imageStatus.image = nil
 
         if cell.image.frame.width > 60 {
@@ -152,27 +249,62 @@ extension NCMedia: UICollectionViewDataSource {
             }
         }
 
-        if isEditMode, fileSelect.contains(compactMetadata.ocId) {
-            cell.selected(true, color: NCBrandColor.shared.getElement(account: session.account))
-        } else {
-            cell.selected(false, color: NCBrandColor.shared.getElement(account: session.account))
+        let selectionColor = NCBrandColor.shared.getElement(
+            account: session.account
+        )
+
+        cell.selected(isEditMode && fileSelect.contains(ocId), color: selectionColor)
+
+        guard cell.image.image == nil,
+              imageLoadingTasks[cacheKey] == nil else {
+            return cell
         }
 
-        if cell.image.image == nil {
-            if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.image.image = utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
-            } else {
-                let session = self.session
-                DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.utility.getImage(ocId: compactMetadata.ocId, etag: compactMetadata.etag, ext: ext, userId: session.userId, urlBase: session.urlBase)
-                    DispatchQueue.main.async {
-                        if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                           currentCell.identifier == compactMetadata.ocId, let image {
-                            self.imageCache.addImageCache(ocId: compactMetadata.ocId, etag: compactMetadata.etag, image: image, ext: ext)
-                            currentCell.image.image = image
-                        }
-                    }
+        let userId = session.userId
+        let urlBase = session.urlBase
+
+        imageLoadingTasks[cacheKey] = Task(priority: .utility) { [weak self, weak collectionView] in
+            guard let self else {
+                return
+            }
+
+            let image = await Task.detached(priority: .utility) {
+                self.utility.getImage(
+                    ocId: ocId,
+                    etag: etag,
+                    ext: ext,
+                    userId: userId,
+                    urlBase: urlBase
+                )
+            }.value
+
+            guard !Task.isCancelled else {
+                await MainActor.run {
+                    self.imageLoadingTasks[cacheKey] = nil
                 }
+                return
+            }
+
+            await MainActor.run {
+                defer {
+                    self.imageLoadingTasks[cacheKey] = nil
+                }
+
+                guard let image else {
+                    return
+                }
+
+                self.imageCache.addImageCache(ocId: ocId, etag: etag, image: image, ext: ext)
+
+                guard let collectionView,
+                      let currentCell = collectionView.cellForItem(
+                        at: indexPath
+                      ) as? NCMediaCell,
+                      currentCell.identifier == ocId else {
+                    return
+                }
+
+                currentCell.image.image = image
             }
         }
 

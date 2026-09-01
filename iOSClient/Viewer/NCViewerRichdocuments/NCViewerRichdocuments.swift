@@ -6,7 +6,7 @@ import UIKit
 @preconcurrency import WebKit
 import NextcloudKit
 
-class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
+class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
@@ -340,11 +340,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if let serverUrl, let metadata {
             let path = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
 
-            NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
+            NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                 path: path,
-                                                                                                name: "createAssetRichdocuments")
+                                                                                                name: "createRichdocumentsAssetURL")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, url, _, error in
@@ -364,11 +364,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         let path = utilityFileSystem.getRelativeFilePath(metadata!.fileName, serverUrl: serverUrl!, session: session)
 
-        NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
+        NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                             path: path,
-                                                                                            name: "createAssetRichdocuments")
+                                                                                            name: "createRichdocumentsAssetURL")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, url, _, error in
@@ -425,7 +425,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 }
 
-extension NCViewerRichDocument: UINavigationControllerDelegate {
+extension NCViewerRichdocuments: UINavigationControllerDelegate {
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 
@@ -439,7 +439,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
     }
 }
 
-extension NCViewerRichDocument: NCTransferDelegate {
+extension NCViewerRichdocuments: NCTransferDelegate {
     func transferReloadData(serverUrl: String?) { }
 
     func transferReloadDataSource(serverUrl: String?, requestData: Bool, status: Int?) { }

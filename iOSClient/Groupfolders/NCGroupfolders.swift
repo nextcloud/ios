@@ -83,8 +83,6 @@ class NCGroupfolders: NCCollectionViewCommon {
                                                      layoutForView: layoutForView,
                                                      account: session.account)
         await super.reloadDataSource()
-
-        cachingAsync(metadatas: metadatas)
     }
 
     override func getServerData(forced: Bool = false) async {

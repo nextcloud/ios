@@ -23,10 +23,10 @@
 //
 
 import UIKit
-import SwiftUI
 import NextcloudKit
 import NextcloudKitUI
 import TagListView
+import SwiftUI
 
 protocol NCSharePagingContent {
     var textField: UIView? { get }
@@ -74,7 +74,7 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         title = NSLocalizedString("_details_", comment: "")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -120,7 +120,7 @@ class NCSharePaging: UIViewController {
     private func setupHeader() {
         guard let headerView = Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader else { return }
         self.headerView = headerView
-        headerView.backgroundColor = .systemBackground
+        headerView.backgroundColor = .systemGroupedBackground
         headerView.setupUI(with: metadata)
 
         view.addSubview(headerView)
@@ -143,7 +143,7 @@ class NCSharePaging: UIViewController {
             }
         )
         let host = UIHostingController(rootView: content)
-        host.view.backgroundColor = .systemBackground
+        host.view.backgroundColor = .systemGroupedBackground
 
         addChild(host)
         view.addSubview(host.view)
@@ -177,6 +177,7 @@ class NCSharePaging: UIViewController {
             viewController.metadata = metadata
             viewController.objectType = "files"
             viewController.account = metadata.account
+            viewController.usesGroupedBackground = true
             return viewController
         case .sharing:
             let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
@@ -203,6 +204,8 @@ class NCSharePaging: UIViewController {
             viewController.height = height
             viewController.controller = controller
             return viewController
+        case .details:
+            return NCShareDetailsViewController(metadata: metadata)
         }
     }
 
@@ -210,6 +213,7 @@ class NCSharePaging: UIViewController {
         switch tab {
         case .activity: return NSLocalizedString("_activity_", comment: "")
         case .sharing: return NSLocalizedString("_sharing_", comment: "")
+        case .details: return NSLocalizedString("_details_", comment: "")
         }
     }
 
@@ -312,6 +316,7 @@ struct NCSharePagingContentView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .accessibilityLabel(NSLocalizedString("_sections_", comment: ""))
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .tint(tint)
@@ -334,5 +339,10 @@ private struct NCViewControllerRepresentable: UIViewControllerRepresentable {
     let viewController: UIViewController
 
     func makeUIViewController(context: Context) -> UIViewController { viewController }
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+
+        // TabView(.page) does not propagate appearance trait changes to represented VCs (as of iOS 18.4), seems a SwiftUI bug...
+        uiViewController.view.overrideUserInterfaceStyle = context.environment.colorScheme == .dark ? .dark : .light
+    }
 }

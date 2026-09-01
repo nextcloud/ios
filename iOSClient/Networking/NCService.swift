@@ -49,6 +49,15 @@ class NCService: NSObject {
     private func requestServerStatus(account: String, controller: NCMainTabBarController?) async -> Bool {
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
         let userId = NCSession.shared.getSession(account: account).userId
+
+        if serverUrl.isInsecureHTTPURL {
+            let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
+            await showWarningBanner(windowScene: windowScene,
+                                    subtitle: "_http_account_insecure_",
+                                    systemImage: "lock.slash.fill",
+                                    imageAnimation: .none)
+        }
+
         let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
             Task {
                 let identifier = serverUrl + "_getServerStatus"
@@ -169,18 +178,18 @@ class NCService: NSObject {
 
         await self.database.setDataCapabilities(data: data, account: account)
 
-        // Text direct editor (Nextcloud Text, Office, Collabora)
-        let resultsTextEditor = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account) { task in
+        // Direct Editing capabilities
+        let resultsDirectEditingCapabilities = await NextcloudKit.shared.getDirectEditingCapabilitiesAsync(account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "textObtainEditorDetails")
+                                                                                            name: "getDirectEditingCapabilities")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
-        if resultsTextEditor.error == .success,
-           let data = resultsTextEditor.responseData?.data {
-            await self.database.setDataCapabilitiesEditors(data: data, account: account)
-        }
+        let directEditingData = resultsDirectEditingCapabilities.error == .success
+            ? resultsDirectEditingCapabilities.responseData?.data
+            : nil
+        await self.database.setDataDirectEditingCapabilities(data: directEditingData, account: account)
 
         guard let capabilities = await self.database.getCapabilities(account: account) else {
             return

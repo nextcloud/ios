@@ -35,12 +35,11 @@ extension NCManageDatabase {
         }
     }
 
-    /// Stores the raw JSON editors data in Realm associated with an account.
+    /// Stores the raw Direct Editing capabilities JSON in Realm for an account.
     /// - Parameters:
-    ///   - data: The raw JSON data returned from the text editors endpoint.
+    ///   - data: The raw JSON data returned from the Direct Editing capabilities endpoint, or `nil` to clear it.
     ///   - account: The account identifier.
-    /// - Throws: Rethrows any error encountered during the Realm write operation.
-    func setDataCapabilitiesEditors(data: Data, account: String) async {
+    func setDataDirectEditingCapabilities(data: Data?, account: String) async {
         await core.performRealmWriteAsync { realm in
             let object = realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
             let addObject: tableCapabilities
@@ -59,17 +58,10 @@ extension NCManageDatabase {
         }
     }
 
-    /// Applies cached capabilities and editors from Realm for a given account.
+    /// Applies cached server and Direct Editing capabilities for an account.
     ///
-    /// This function reads the cached `capabilities` and `editors` JSON `Data`
-    /// from the local Realm `tableCapabilities` object associated with the specified account.
-    ///
-    /// - If `capabilities` is found, it is applied using `NextcloudKit.shared.setCapabilitiesAsync`.
-    /// - If `editors` is found, the data is decoded via `NKEditorDetailsConverter` into
-    ///   `[NKEditorDetailsEditor]` and `[NKEditorDetailsCreator]`, then injected into the shared `NKCapabilities` object.
-    ///
-    /// The combined updated capabilities are then re-appended via `appendCapabilitiesAsync`.
-    /// Errors during decoding or async storage are caught and logged.
+    /// The standard capabilities response includes Richdocuments legacy capabilities. The separately
+    /// cached Direct Editing response provides `directEditingEditors` and `directEditingCreators`.
     ///
     /// - Parameter account: The identifier of the account whose cached capabilities should be applied.
     @discardableResult
@@ -84,8 +76,9 @@ extension NCManageDatabase {
             if let data = results?.capabilities {
                 capabilities = try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
             }
-            if let data = results?.editors {
-                let (editors, creators) = try NKEditorDetailsConverter.from(data: data)
+            // `editors` is the legacy Realm field name used to persist Direct Editing capabilities.
+            if let directEditingData = results?.editors {
+                let (editors, creators) = try NKDirectEditingCapabilitiesConverter.from(data: directEditingData)
 
                 if capabilities == nil {
                     capabilities = await NKCapabilities.shared.getCapabilities(for: account)

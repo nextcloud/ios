@@ -103,8 +103,12 @@ class NCAutoUpload: NSObject {
         for (index, asset) in assets.enumerated() {
             let fileName = fileNames[index]
 
-            // Convert HEIC if compatibility mode is on
-            let fileNameCompatible = formatCompatibility && (fileName as NSString).pathExtension.lowercased() == "heic" ? (fileName as NSString).deletingPathExtension + ".jpg" : fileName
+            let sourceFileExtension = (fileName as NSString).pathExtension.lowercased()
+            let fileNameCompatible = NCCameraRoll.outputFileName(
+                for: fileName,
+                sourceFileExtension: sourceFileExtension,
+                nativeFormat: !formatCompatibility
+            )
 
             if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
                 continue
@@ -117,7 +121,7 @@ class NCAutoUpload: NSObject {
             let uploadSession = onWWAN ? self.networking.sessionUploadBackgroundWWan : self.networking.sessionUploadBackground
 
             let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
+                fileName: fileNameCompatible,
                 ocId: UUID().uuidString,
                 serverUrl: serverUrl,
                 session: session,

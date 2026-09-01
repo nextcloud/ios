@@ -161,6 +161,8 @@
 "_remove_local_account_"    = "Remove local account";
 "_want_delete_account_"     = "Do you want to remove local account?";
 "_prevent_http_redirection_"= "The redirection in HTTP is not permitted.";
+"_http_account_insecure_"   = "This account uses an insecure HTTP server address. Data is transmitted unencrypted.";
+"_https_failed_try_http_"   = "A secure connection could not be established. Do you want to try insecure HTTP instead? Your data will be transmitted unencrypted.";
 "_single_file_conflict_title_" = "File conflict";
 "_multi_file_conflict_title_" = "%@ File conflicts";
 "_replace_action_title_" = "Replace";
@@ -173,7 +175,7 @@
 "_keep_active_for_upload_" = "Keep application active until upload is completed …";
 "_keep_active_for_transfers_" = "Keep application active until the transfers are completed …";
 "_wait_file_encryption_"  = "Please wait, encrypting file…";
-"_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
+"_passcode_counter_fail_" = "Too many failed attempts. Please wait before trying again.";
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
 "_lock_cannot_disable_mdm_" = "Disabling the passcode lock is not permitted by your configuration profile.";
@@ -294,7 +296,7 @@
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
-"_log_file_clear_alert_"        = "Log file cleared \n successfully!";
+"_log_file_clear_alert_"        = "Log file cleared!";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
 "_connection_error_"            = "Connection error";
@@ -509,6 +511,8 @@
 "_create_new_document_"             = "Document";
 "_create_new_spreadsheet_"          = "Spreadsheet";
 "_create_new_presentation_"         = "Presentation";
+"_create_new_diagram_"              = "Diagram";
+"_more_documents_"                  = "More Documents";
 "_go_online_"                       = "Go online to see the document";
 "_intro_1_title_"                   = "Keep your data secure and under your control";
 "_intro_2_title_"                   = "Secure collaboration & file exchange";
@@ -617,7 +621,7 @@
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log.";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
-"_reset_wrong_passcode_"    = "Reset application";
+"_reset_wrong_passcode_"    = "Resetting application...";
 "_reset_wrong_passcode_option_" = "Reset application after 10 failed attempts";
 "_reset_wrong_passcode_desc_" = "Enabling this will remove all accounts and local data after %d failed passcode entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";
@@ -699,6 +703,8 @@
 "_no_subtitles_available_" = "No subtitles available";
 "_no_audio_tracks_available_" = "No audio tracks available";
 "_add_external_subtitle_" = "Add external subtitle";
+"_repeat_current_media_" = "Repeat current item";
+"_play_next_media_automatically_" = "Play next item automatically";
 "_image_load_failed_" = "Image load failed";
 "_image_load_failed_" = "Image load failed";
 "_gif_file_could_not_be_decoded_" = "GIF file could not be decoded";
@@ -707,6 +713,9 @@
 "_media_not_available_" = "Media not available";
 "_no_assistant_installed_"  = "Assistant is not installed on this server. Ask your administrator to install the Assistant app";
 "_open_in_office_" = "Open in Office";
+"_select_date_" = "Select date";
+"_always_play_with_vlc_" = "Always play with VLC";
+"_account_not_available_" = "Account not available";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
@@ -817,6 +826,9 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_no_certificate_" = "End-to-end encryption error, cannot get certificate";
 "_e2ee_no_generate_key_" = "End-to-end encryption error, cannot generate key";
 "_e2ee_no_metadataKey_found_" = "End-to-end encryption error, cannot decrypt metadata key";
+"_e2ee_read_only_" = "This encrypted folder uses an archived key set and is available as read-only.";
+"_e2ee_server_key_changed_" = "The end-to-end encryption keys for this account changed on another device. Enter the new passphrase to update this device. Storage spaces associated with previous keys will remain available as read-only.";
+"_e2ee_server_key_changed_title_" = "Encryption keys changed";
 "_e2ee_no_user_found_" = "End-to-end encryption error, user not found";
 "_e2ee_no_signature_found_" = "End-to-end encryption error, no signature found";
 "_e2ee_counter_check_" = "End-to-end encryption error, the counter is lower than the previous one";
@@ -850,8 +862,17 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_e2ee_setup_verify_publickey_" = "Public key does not match the certificate";
 "_e2ee_setup_generate_passphrase_" = "Unable to generate a passphrase";
 "_e2ee_setup_privatekey_missing_" = "The End-to-end encryption private key could not be found.";
-"_e2e_renew_certificate_success_" = "Your end-to-end encryption certificate has been renewed successfully.";
+"_e2e_renew_certificate_success_" = "Your end-to-end encryption certificate has been renewed.";
 "_certificate_valid_from_" = "Valid from";
 "_certificate_valid_until_" = "Valid until";
 "_certificate_" = "Certificate";
 "_certificate_renew_" = "Renew certificate";
+
+// Share details — Governance
+"_governance_"                      = "Governance";
+"_sensitivity_label_"               = "Sensitivity label";
+"_file_retention_"                  = "File retention";
+"_legal_hold_"                      = "Legal hold";
+"_none_"                            = "None";
+"_sections_"                        = "Sections";
+"_governance_labels_load_error_"    = "Governance labels could not be loaded.";

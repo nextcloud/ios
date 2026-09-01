@@ -189,7 +189,7 @@ extension tableMetadata {
     }
 
     var isCopyableMovable: Bool {
-        !isDirectoryE2EE && !e2eEncrypted
+        !isDirectoryE2EE && !e2eEncrypted && NCMetadataPermissions.canMoveAndDelete(self)
     }
 
     var isModifiableWithQuickLook: Bool {
@@ -217,7 +217,7 @@ extension tableMetadata {
     }
 
     var isDeletable: Bool {
-        if (!isDirectoryE2EE && e2eEncrypted) || !NCMetadataPermissions.canDelete(self) {
+        if (!isDirectoryE2EE && e2eEncrypted) || !NCMetadataPermissions.canDelete(self) || !NCMetadataPermissions.canMoveAndDelete(self) {
             return false
         }
         return true
@@ -241,46 +241,40 @@ extension tableMetadata {
         !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase)
     }
 
-    var isAvailableEditorView: Bool {
+    var isDocumentEditorAvailable: Bool {
         guard !isPDF,
               classFile == NKTypeClassFile.document.rawValue,
               NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let utility = NCUtility()
-        let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType).map { $0.lowercased() }
-        let richDocumentEditor = utility.isTypeFileRichDocument(self)
-        let capabilities = NCNetworking.shared.capabilities[account]
+        let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType)
+        let supportsRichdocuments = NCDocumentEditorSupport.isFileSupportedByRichdocuments(self)
 
-        if let capabilities,
-           capabilities.richDocumentsEnabled,
-           richDocumentEditor,
-           directEditingEditors.isEmpty {
-            // RichDocument: Collabora
-            return true
-        } else if !directEditingEditors.isEmpty {
-            return true
-        }
-        return false
+        return supportsRichdocuments || !directEditingEditors.isEmpty
     }
 
-    var isAvailableRichDocumentEditorView: Bool {
-        guard let capabilities = NCNetworking.shared.capabilities[account],
+    var isLegacyRichdocumentsEditorAvailable: Bool {
+        guard !isPDF,
               classFile == NKTypeClassFile.document.rawValue,
-              capabilities.richDocumentsEnabled,
-              NextcloudKit.shared.isNetworkReachable() else { return false }
-
-        if NCUtility().isTypeFileRichDocument(self) {
-            return true
+              NextcloudKit.shared.isNetworkReachable(),
+              NCDocumentEditorSupport.isFileSupportedByRichdocuments(self) else {
+            return false
         }
-        return false
+
+        let directEditingEditors = NCDocumentEditorSupport.directEditingEditorIdentifiers(
+            account: account,
+            contentType: contentType
+        )
+        return !directEditingEditors.contains {
+            $0.caseInsensitiveCompare(NCGlobal.shared.editorCollabora) == .orderedSame
+        }
     }
 
-    var isAvailableDirectEditingEditorView: Bool {
+    var isDirectEditingEditorAvailable: Bool {
         guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else {
             return false
         }
-        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
+        let editors = NCDocumentEditorSupport.directEditingEditorIdentifiers(account: account, contentType: contentType)
         return !editors.isEmpty
     }
 
@@ -1574,6 +1568,63 @@ extension NCManageDatabase {
             }
         } ?? []
     }
+
+#if !EXTENSION
+    func getMediaCompactMetadatasAsync(
+        predicate: NSPredicate,
+        sortedByKeyPath: String,
+        ascending: Bool = false
+    ) async -> [NCMediaDataSource.NCCompactMetadata] {
+        await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .sorted(
+                    byKeyPath: sortedByKeyPath,
+                    ascending: ascending
+                )
+
+            let allFileIds = Set(results.map(\.fileId))
+
+            var compactMetadatas: [NCMediaDataSource.NCCompactMetadata] = []
+            compactMetadatas.reserveCapacity(results.count)
+
+            for metadata in results {
+                let linkedFileId = metadata.livePhotoFile
+                let hasLivePhotoLink = !linkedFileId.isEmpty
+                let linkedTargetExists = allFileIds.contains(linkedFileId)
+
+                let isImage = metadata.classFile == NKTypeClassFile.image.rawValue
+                let isVideo = metadata.classFile == NKTypeClassFile.video.rawValue
+
+                if isVideo && hasLivePhotoLink {
+                    // Remove Live Photo videos, including orphaned ones.
+                    continue
+                }
+
+                let isLivePhoto = isImage &&
+                    hasLivePhotoLink &&
+                    linkedTargetExists
+
+                compactMetadatas.append(
+                    NCMediaDataSource.NCCompactMetadata(
+                        date: metadata.date as Date,
+                        etag: metadata.etag,
+                        imageSize: CGSize(
+                            width: metadata.width,
+                            height: metadata.height
+                        ),
+                        isImage: isImage,
+                        isLivePhoto: isLivePhoto,
+                        isVideo: isVideo,
+                        ocId: metadata.ocId
+                    )
+                )
+            }
+
+            return compactMetadatas
+        } ?? []
+    }
+#endif
 
     // MARK: - helpers
 

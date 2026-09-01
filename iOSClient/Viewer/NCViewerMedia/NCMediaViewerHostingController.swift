@@ -18,6 +18,7 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     private weak var contextMenuController: NCMainTabBarController?
 
     private var detailHostingController: UIHostingController<NCMediaViewerDetailView>?
+    private var detailLoadingTask: Task<Void, Never>?
     private var isShowingDetail = false
     private var cancellables = Set<AnyCancellable>()
     private var transferDelegate: NCMediaViewerTransferDelegate?
@@ -39,27 +40,38 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
             menu: nil
         )
 
-        item.menu = UIMenu(title: "", children: [
-            UIDeferredMenuElement.uncached { [weak self, weak item] completion in
-                guard let self,
-                      let metadata = self.model.selectedMetadata else {
-                    completion([])
-                    return
-                }
+        item.menu = UIMenu(
+            title: "",
+            children: [
+                UIDeferredMenuElement.uncached { [weak self, weak item] completion in
+                    guard let self,
+                          let metadata = self.model.selectedMetadata else {
+                        completion([])
+                        return
+                    }
 
-                if let menu = NCContextMenuViewer(
-                    metadata: metadata,
-                    controller: self.contextMenuController,
-                    viewController: self,
-                    webView: false,
-                    sender: item
-                ).viewMenu() {
-                    completion(menu.children)
-                } else {
-                    completion([])
+                    var menuChildren: [UIMenuElement] = []
+
+                    if let viewerMenu = NCContextMenuViewer(
+                        metadata: metadata,
+                        controller: self.contextMenuController,
+                        viewController: self,
+                        webView: false,
+                        sender: item
+                    ).viewMenu() {
+                        menuChildren.append(contentsOf: viewerMenu.children)
+                    }
+
+                    if let videoPlayerMenu = self.makeVideoPlayerMenu(
+                        metadata: metadata
+                    ) {
+                        menuChildren.append(videoPlayerMenu)
+                    }
+
+                    completion(menuChildren)
                 }
-            }
-        ])
+            ]
+        )
 
         return item
     }()
@@ -73,6 +85,84 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         target: self,
         action: #selector(mediaDetailButtonTapped)
     )
+
+    private lazy var mediaDetailActivityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.color = NCBrandColor.shared.iconImageColor
+        return indicator
+    }()
+
+    // MARK: - Video Player Menu
+
+    private func makeVideoPlayerMenu(metadata: tableMetadata) -> UIMenu? {
+        guard metadata.classFile == NKTypeClassFile.video.rawValue else {
+            return nil
+        }
+
+        let playback = NCVideoPlaybackController.shared
+
+        guard playback.isCurrentVideo(
+            ocId: metadata.ocId,
+            etag: metadata.etag
+        ) else {
+            return nil
+        }
+
+        let alwaysUseVLC = NCPreferences().alwaysUseVLCForVideo(
+            account: metadata.account,
+            ocId: metadata.ocId
+        )
+
+        let alwaysUseVLCAction: UIAction
+
+        switch playback.engine {
+        case .avFoundation:
+            alwaysUseVLCAction = UIAction(
+                title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
+                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
+                state: .off
+            ) { _ in
+                NCPreferences().setAlwaysUseVLCForVideo(
+                    true,
+                    account: metadata.account,
+                    ocId: metadata.ocId
+                )
+
+                NCVideoPlaybackController.shared.switchToVLC()
+            }
+
+        case .vlc:
+            guard alwaysUseVLC else {
+                return nil
+            }
+
+            alwaysUseVLCAction = UIAction(
+                title: NSLocalizedString("_always_play_with_vlc_", comment: ""),
+                image: UIImage(named: "Vlc-Logo")?.withRenderingMode(.alwaysTemplate),
+                state: .on
+            ) { _ in
+                NCPreferences().setAlwaysUseVLCForVideo(
+                    false,
+                    account: metadata.account,
+                    ocId: metadata.ocId
+                )
+
+                NCVideoPlaybackController.shared.retryAVFoundation()
+            }
+
+        case .loading,
+             .failed:
+            return nil
+        }
+
+        return UIMenu(
+            title: "",
+            options: .displayInline,
+            children: [
+                alwaysUseVLCAction
+            ]
+        )
+    }
 
     /// Creates a media viewer hosting controller.
     init(
@@ -168,7 +258,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
         super.viewDidLayoutSubviews()
 
         updateRootViewNavigationBarIfNeeded()
-        configureFloatingTitleViewIfNeeded()
     }
 
     private func updateRootViewNavigationBarIfNeeded() {
@@ -205,6 +294,10 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Stops media playback before the viewer is closed.
     private func stop() {
+        detailLoadingTask?.cancel()
+        detailLoadingTask = nil
+        setMediaDetailLoading(false)
+
         // Stop any remaining media playback before releasing the viewer hierarchy.
         // This notification is intentionally global and should only be used for
         // viewer-wide teardown, not for normal page-to-page navigation.
@@ -226,10 +319,11 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
     // MARK: - Navigation
 
     /// Configures the navigation item used by the viewer.
+    /// Configures the navigation item used by the viewer.
     private func configureNavigationItem() {
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.title = nil
-        navigationItem.titleView = nil
+        navigationItem.titleView = floatingTitleView
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
@@ -252,15 +346,6 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                 self?.setChromeHidden(isHidden, animated: true)
             }
             .store(in: &cancellables)
-    }
-
-    /// Configures the floating title view inside the navigation bar chrome.
-    private func configureFloatingTitleViewIfNeeded() {
-        guard let navigationBar = navigationController?.navigationBar else {
-            return
-        }
-
-        floatingTitleView.attach(to: navigationBar)
     }
 
     /// Updates the floating title using the current media metadata.
@@ -358,22 +443,57 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Opens or closes the media detail panel.
     private func openDetail(animated: Bool = true) {
-        Task {
-            guard !isShowingDetail else {
-                closeDetail(animated: animated)
+        guard !isShowingDetail else {
+            closeDetail(animated: animated)
+            return
+        }
+
+        guard detailLoadingTask == nil,
+              let selectedMetadata = model.selectedMetadata else {
+            return
+        }
+
+        let selectedOcId = selectedMetadata.ocId
+        let index = model.selectedIndex
+        let downloadsOriginal = selectedMetadata.classFile == NKTypeClassFile.image.rawValue
+
+        isShowingDetail = true
+
+        detailLoadingTask = Task { [weak self] in
+            guard let self else {
                 return
             }
 
-            guard var metadata = model.selectedMetadata else {
+            let metadata = await NCNetworking.shared.updateMetadataPlaceholder(
+                selectedMetadata
+            )
+
+            if downloadsOriginal {
+                _ = try? await self.model.downloadOriginalImage(
+                    for: metadata,
+                    onDownloadStarted: { [weak self] in
+                        self?.setMediaDetailLoading(true)
+                    }
+                )
+            }
+
+            guard !Task.isCancelled,
+                  self.model.selectedMetadata?.ocId == selectedOcId else {
+                self.finishDetailLoadingWithoutPresentation()
                 return
             }
-            metadata = await NCNetworking.shared.updateMetadataPlaceholder(metadata)
 
-            let index = model.selectedIndex
-            isShowingDetail = true
+            self.detailLoadingTask = nil
+            self.setMediaDetailLoading(false)
 
             NCUtility().getExif(metadata: metadata) { exif in
                 Task { @MainActor in
+                    guard self.isShowingDetail,
+                          self.detailHostingController == nil,
+                          self.model.selectedMetadata?.ocId == selectedOcId else {
+                        return
+                    }
+
                     self.presentDetailView(
                         metadata: metadata,
                         index: index,
@@ -382,6 +502,24 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
                     )
                 }
             }
+        }
+    }
+
+    private func finishDetailLoadingWithoutPresentation() {
+        detailLoadingTask = nil
+        isShowingDetail = false
+        setMediaDetailLoading(false)
+    }
+
+    private func setMediaDetailLoading(_ isLoading: Bool) {
+        if isLoading {
+            mediaDetailActivityIndicator.startAnimating()
+            mediaDetailNavigationItem.customView = mediaDetailActivityIndicator
+            mediaDetailNavigationItem.isEnabled = false
+        } else {
+            mediaDetailActivityIndicator.stopAnimating()
+            mediaDetailNavigationItem.customView = nil
+            mediaDetailNavigationItem.isEnabled = true
         }
     }
 
@@ -416,6 +554,10 @@ final class NCMediaViewerHostingController: UIHostingController<NCMediaViewerVie
 
     /// Closes the media detail panel.
     private func closeDetail(animated: Bool = true) {
+        detailLoadingTask?.cancel()
+        detailLoadingTask = nil
+        setMediaDetailLoading(false)
+
         guard let detailHostingController else {
             isShowingDetail = false
             return

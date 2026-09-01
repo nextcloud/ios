@@ -24,19 +24,21 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
-        var height: Double = 0
-        if dataSource.compactMetadatas.count == 0 {
-            height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
-        }
-        return Float(height)
+        if dataSource.isEmpty() {
+            return section == 0
+            ? Float(utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20))
+            : .zero
+          }
+
+          return 80.0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        if dataSource.compactMetadatas.count == 0 {
+        guard !dataSource.isEmpty() else {
             return .zero
-        } else {
-            return 100.0
         }
+
+        return section == dataSource.numberOfSections - 1 ? 100.0 : .zero
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
@@ -56,16 +58,20 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        if typeLayout == global.mediaLayoutSquare {
-            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        } else {
-            guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath) else { return .zero }
+        let defaultSize = CGSize(
+            width: collectionView.bounds.width / CGFloat(columnCount),
+            height: collectionView.bounds.width / CGFloat(columnCount)
+        )
 
-            if compactMetadata.imageSize != CGSize.zero {
-                return compactMetadata.imageSize
-            } else {
-                return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-            }
+        guard typeLayout != global.mediaLayoutSquare else {
+            return defaultSize
         }
+
+        guard let compactMetadata = dataSource.getCompactMetadata(indexPath: indexPath),
+              compactMetadata.imageSize != .zero else {
+            return defaultSize
+        }
+
+        return compactMetadata.imageSize
     }
 }

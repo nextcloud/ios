@@ -15,9 +15,12 @@ struct NCMediaViewerPageView: View {
 
     let canGoPrevious: Bool
     let canGoNext: Bool
-    let shouldAutoPlay: Bool
     let onPreviousPage: (_ shouldAutoPlay: Bool) -> Void
     let onNextPage: (_ shouldAutoPlay: Bool) -> Void
+    let onNextMediaOfSameType: (
+        _ classFile: String,
+        _ completion: @escaping NCMediaPlaybackAdvanceCompletion
+    ) -> Void
     let onClose: (_ ocId: String?) -> Void
     let onAutoPlayConsumed: () -> Void
     let onZoomChanged: (Bool) -> Void
@@ -26,7 +29,7 @@ struct NCMediaViewerPageView: View {
     let navigationBar: UINavigationBar?
 
     private var isSelected: Bool {
-        model.selectedIndex == page.index
+        model.activePageIndex == page.index
     }
 
     // MARK: - Body
@@ -103,7 +106,7 @@ struct NCMediaViewerPageView: View {
 
     // Neighbor pages must not consume auto-play.
     private var effectiveShouldAutoPlay: Bool {
-        isSelected && shouldAutoPlay
+        isSelected && model.autoPlayTargetIndex == page.index
     }
 
     private func goToPreviousPage(_ requestedAutoPlay: Bool) {
@@ -203,16 +206,33 @@ struct NCMediaViewerPageView: View {
                 metadata: metadata,
                 localURL: localURL,
                 previewURL: previewURL,
+                userAgent: userAgent,
                 isSelected: isSelected,
                 isChromeHidden: model.isChromeHidden,
                 contextMenuController: contextMenuController,
                 navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
+                shouldAutoPlay: effectiveShouldAutoPlay,
+                isAutomaticAdvanceTarget: model.autoPlayTargetIndex == page.index,
+                playbackOptions: model.playbackOptions,
                 onPreviousPage: goToPreviousPageFromVideo,
                 onNextPage: goToNextPageFromVideo,
+                onPlayNextMedia: { [onNextMediaOfSameType] completion in
+                    onNextMediaOfSameType(
+                        NKTypeClassFile.video.rawValue,
+                        completion
+                    )
+                },
+                onAutoPlayConsumed: consumeAutoPlayIfNeeded,
                 onToggleChrome: onToggleChrome,
-                onClose: onClose
+                onClose: onClose,
+                downloadVideo: {
+                    try await model.downloadVideoForPlayback(metadata)
+                },
+                cancelVideoDownload: {
+                    await model.cancelVideoDownload(for: metadata.ocId)
+                }
             )
             .id("\(page.ocId)-remote")
             .background(Color.ncViewerBackground(backgroundStyle))
@@ -232,11 +252,20 @@ struct NCMediaViewerPageView: View {
                 localURL: localURL,
                 previewURL: previewURL,
                 backgroundStyle: backgroundStyle,
+                navigationBar: navigationBar,
                 canGoPrevious: canGoPrevious,
                 canGoNext: canGoNext,
+                isSelected: isSelected,
                 shouldAutoPlay: effectiveShouldAutoPlay,
+                playbackOptions: model.playbackOptions,
                 onPrevious: goToPreviousPage,
                 onNext: goToNextPage,
+                onPlayNextMedia: { [onNextMediaOfSameType] completion in
+                    onNextMediaOfSameType(
+                        NKTypeClassFile.audio.rawValue,
+                        completion
+                    )
+                },
                 onAutoPlayConsumed: consumeAutoPlayIfNeeded,
                 onToggleChrome: onToggleChrome
             )
@@ -332,7 +361,10 @@ struct NCMediaViewerPageView: View {
             NCVideoPlaybackCoverView(
                 previewURL: nil,
                 isPlayEnabled: false,
+                isLoading: false,
                 isLaunchingPlayback: false,
+                statusMessage: nil,
+                onCancel: nil,
                 onToggleChrome: onToggleChrome,
                 onPlay: { }
             )
@@ -392,7 +424,25 @@ struct NCMediaViewerPageView: View {
                 videoURL: livePhotoURL,
                 backgroundStyle: backgroundStyle,
                 topOverlayInset: livePhotoTopOverlayInset,
-                onZoomChanged: onZoomChanged
+                initialZoomState: page.imageZoomState,
+                onZoomChanged: onZoomChanged,
+                onZoomStateChanged: { page.imageZoomState = $0 },
+                requestResources: {
+                    guard let metadata = page.metadata else {
+                        return nil
+                    }
+
+                    return await model.downloadLivePhotoResources(
+                        for: metadata
+                    )
+                },
+                cancelResourceDownload: {
+                    guard let metadata = page.metadata else {
+                        return
+                    }
+
+                    model.cancelLivePhotoResourceDownload(for: metadata)
+                }
             )
             .background(Color.ncViewerBackground(backgroundStyle))
             .contentShape(Rectangle())
@@ -403,7 +453,9 @@ struct NCMediaViewerPageView: View {
                 previewURL: previewURL,
                 fullURL: localURL,
                 backgroundStyle: backgroundStyle,
-                onZoomChanged: onZoomChanged
+                initialZoomState: page.imageZoomState,
+                onZoomChanged: onZoomChanged,
+                onZoomStateChanged: { page.imageZoomState = $0 }
             )
             .contentShape(Rectangle())
             .gesture(chromeToggleGesture())
@@ -417,7 +469,9 @@ struct NCMediaViewerPageView: View {
             previewURL: previewURL,
             fullURL: nil,
             backgroundStyle: backgroundStyle,
-            onZoomChanged: onZoomChanged
+            initialZoomState: page.imageZoomState,
+            onZoomChanged: onZoomChanged,
+            onZoomStateChanged: { page.imageZoomState = $0 }
         )
         .contentShape(Rectangle())
         .gesture(chromeToggleGesture())

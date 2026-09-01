@@ -240,11 +240,10 @@ class NCGridLayout: UICollectionViewFlowLayout {
 }
 
 extension NCCollectionViewCommon {
-    func gridCell(cell: NCGridCell, indexPath: IndexPath, metadata: tableMetadata) -> NCGridCell {
+    func gridCell(cell: NCGridCell, indexPath: IndexPath, metadata: tableMetadata, existsImagePreview: Bool) -> NCGridCell {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
-        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // CONTENT MODE
         cell.previewImg?.layer.borderWidth = 0

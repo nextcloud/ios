@@ -4,15 +4,19 @@
 
 import Foundation
 import NextcloudKit
+import os
 
 /// Incrementally scans the remote media archive and creates missing local metadata placeholders.
 ///
-/// The current offset is persisted so interrupted executions can resume later.
+/// The oldest date processed in a bounded result batch is persisted so later executions can resume.
 /// Once the archive has been fully processed, subsequent executions are skipped.
 final class NCMediaMetadataBackfillProcessor {
+    private let pagesPerBatch = 4
+
     /// Represents the result of a media metadata backfill execution.
     enum BackfillStatus {
         case skippedAlreadyCompleted(account: String)
+        case batchCompleted(account: String, processed: Int, inserted: Int, updated: Int, cursorDate: Date)
         case completed(account: String, processed: Int, inserted: Int, updated: Int)
         case failed(account: String, processed: Int, inserted: Int, updated: Int, errorCode: Int, errorDescription: String)
         case cancelled(account: String, processed: Int, inserted: Int, updated: Int)
@@ -20,7 +24,7 @@ final class NCMediaMetadataBackfillProcessor {
         /// Returns whether the backfill completed successfully or was already completed.
         var isSuccessful: Bool {
             switch self {
-            case .skippedAlreadyCompleted, .completed:
+            case .skippedAlreadyCompleted, .batchCompleted, .completed:
                 return true
             case .failed, .cancelled:
                 return false
@@ -32,6 +36,9 @@ final class NCMediaMetadataBackfillProcessor {
             switch self {
             case .skippedAlreadyCompleted(let account):
                 return "Media metadata backfill skipped for account \(account): cycle already completed"
+
+            case .batchCompleted(let account, let processed, let inserted, let updated, let cursorDate):
+                return "Media metadata backfill batch completed for account \(account): processed \(processed) - inserted \(inserted) - updated \(updated) - cursor date \(cursorDate)"
 
             case .completed(let account, let processed, let inserted, let updated):
                 return "Media metadata backfill completed for account \(account): processed \(processed) - inserted \(inserted) - updated \(updated)"
@@ -45,7 +52,12 @@ final class NCMediaMetadataBackfillProcessor {
         }
     }
 
-    /// Processes the remote media archive page by page and creates missing metadata placeholders.
+    /// Processes one bounded batch of the remote media archive and creates missing metadata placeholders.
+    ///
+    /// Each completed page checkpoints its oldest date after placeholder synchronization.
+    /// An interrupted page is safely retried because placeholder synchronization is idempotent.
+    /// A full batch persists its oldest date so the next execution can continue from that boundary.
+    /// A completed cycle starts again after the configured interval.
     func runBackfill(
         account: tableAccount,
         limit: Int,
@@ -53,24 +65,50 @@ final class NCMediaMetadataBackfillProcessor {
     ) async -> BackfillStatus {
         let database = NCManageDatabase.shared
         let state = await database.getMediaMetadataBackfillAsync(account: account.account)
-
-        guard state?.lastCompletedCycleDate == nil else {
-            return .skippedAlreadyCompleted(account: account.account)
-        }
-
-        var offset = state?.offset ?? 0
+        let cycleInterval: TimeInterval = 7 * 24 * 60 * 60 // week
+        let previousCursorDate = state?.cursorDate
+        let firstDate = previousCursorDate ?? .distantFuture
+        let previouslyProcessed = previousCursorDate == nil ? 0 : state?.offset ?? 0
+        var pageOffset = 0
         var token: String?
         var processed = 0
         var inserted = 0
         var updated = 0
+        var oldestProcessedDate: Date?
 
-        while !Task.isCancelled {
+        guard limit > 0 else {
+            return .failed(
+                account: account.account,
+                processed: 0,
+                inserted: 0,
+                updated: 0,
+                errorCode: NCGlobal.shared.errorPreconditionFailed,
+                errorDescription: "Invalid media metadata backfill page size: \(limit)"
+            )
+        }
+
+        let searchResultLimit = limit * pagesPerBatch
+
+        if state?.offset == 0,
+           state?.cursorDate == nil,
+           let lastCompletedCycleDate = state?.lastCompletedCycleDate,
+           Date().timeIntervalSince(lastCompletedCycleDate) < cycleInterval {
+            return .skippedAlreadyCompleted(account: account.account)
+        }
+
+        for _ in 0..<pagesPerBatch {
+            guard !Task.isCancelled else {
+                return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
+            }
+
             let result = await runSearch(
                 mediaPath: account.mediaPath,
                 account: account.account,
-                offset: offset,
+                firstDate: firstDate,
+                offset: pageOffset,
                 token: token,
-                count: limit
+                count: limit,
+                searchResultLimit: searchResultLimit
             )
 
             guard !Task.isCancelled else {
@@ -96,31 +134,49 @@ final class NCMediaMetadataBackfillProcessor {
                 return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
-            let ocIds = files.compactMap(\.ocId)
+            // Keep hidden files in the raw page count and cursor calculation because
+            // Nextcloud applies pagination before NextcloudKit filters them locally.
+            let visibleFiles = files.filter { !isHiddenFile($0) }
+            let ocIds = visibleFiles.map(\.ocId)
             let metadatas = await database.getMetadatasFromOcIdsAsync(ocIds)
 
             let resultPlaceholders = await database.syncPlaceholderMetadatasAsync(
-                files: files,
+                files: visibleFiles,
                 metadatas: metadatas
             )
 
             processed += files.count
             inserted += resultPlaceholders.inserted
             updated += resultPlaceholders.updated
-            offset += files.count
+            pageOffset += files.count
 
-            await update(offset, resultPlaceholders.inserted, resultPlaceholders.updated)
+            if let pageOldestDate = files.map(\.date).min() {
+                oldestProcessedDate = min(oldestProcessedDate ?? pageOldestDate, pageOldestDate)
+            }
+
+            if let checkpointDate = oldestProcessedDate,
+               previousCursorDate.map({ checkpointDate < $0 }) ?? true {
+                await database.updateMediaMetadataBackfillAsync(
+                    account: account.account,
+                    offset: previouslyProcessed + processed,
+                    cursorDate: checkpointDate
+                )
+            }
+
+            await update(previouslyProcessed + processed,
+                         resultPlaceholders.inserted,
+                         resultPlaceholders.updated)
 
             guard !Task.isCancelled else {
                 return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
 
-            await database.updateMediaMetadataBackfillAsync(
-                account: account.account,
-                offset: offset
-            )
+            if pageOffset >= searchResultLimit {
+                break
+            }
 
-            guard files.count == limit else {
+            if pageOffset < searchResultLimit,
+               (!result.paginate || files.count < limit) {
                 await database.completeMediaMetadataBackfillAsync(account: account.account)
                 return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
             }
@@ -128,20 +184,59 @@ final class NCMediaMetadataBackfillProcessor {
             token = result.token
         }
 
-        return .cancelled(account: account.account, processed: processed, inserted: inserted, updated: updated)
+        guard let cursorDate = oldestProcessedDate else {
+            await database.completeMediaMetadataBackfillAsync(account: account.account)
+            return .completed(account: account.account, processed: processed, inserted: inserted, updated: updated)
+        }
+
+        if let previousCursorDate,
+           cursorDate >= previousCursorDate {
+            return .failed(
+                account: account.account,
+                processed: processed,
+                inserted: inserted,
+                updated: updated,
+                errorCode: NCGlobal.shared.errorPreconditionFailed,
+                errorDescription: "Media metadata backfill cursor did not advance beyond \(previousCursorDate)"
+            )
+        }
+
+        await database.updateMediaMetadataBackfillAsync(
+            account: account.account,
+            offset: previouslyProcessed + processed,
+            cursorDate: cursorDate
+        )
+
+        return .batchCompleted(
+            account: account.account,
+            processed: processed,
+            inserted: inserted,
+            updated: updated,
+            cursorDate: cursorDate
+        )
+    }
+
+    /// Mirrors NextcloudKit's hidden-path filtering without changing the raw paginated result count.
+    private func isHiddenFile(_ file: NKFile) -> Bool {
+        let pathComponents = (file.path as NSString).pathComponents + [file.fileName]
+        return pathComponents.contains { $0.hasPrefix(".") }
     }
 
     /// Executes a single paginated media search and handles task cancellation.
     private func runSearch(mediaPath: String,
                            account: String,
+                           firstDate: Date,
                            offset: Int,
                            token: String? = nil,
-                           count: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError?) {
+                           count: Int,
+                           searchResultLimit: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError?) {
         let result = await fetchMediaPage(path: mediaPath,
                                           account: account,
+                                          firstDate: firstDate,
                                           offset: offset,
                                           token: token,
-                                          count: count)
+                                          count: count,
+                                          searchResultLimit: searchResultLimit)
 
         guard !Task.isCancelled else {
             return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorTaskCancelled, errorDescription: "Task cancelled for account: \(account)"))
@@ -153,9 +248,11 @@ final class NCMediaMetadataBackfillProcessor {
     /// Fetches a page of media files from the server using offset and token pagination.
     private func fetchMediaPage(path: String,
                                 account: String,
+                                firstDate: Date,
                                 offset: Int,
                                 token: String? = nil,
-                                count: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError) {
+                                count: Int,
+                                searchResultLimit: Int) async -> (files: [NKFile]?, token: String?, paginate: Bool, error: NKError) {
         guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
             return (nil, nil, false, NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: "Session not found for account: \(account)"))
         }
@@ -163,14 +260,14 @@ final class NCMediaMetadataBackfillProcessor {
         let href = "/files/" + nkSession.userId + path
 
         let elementDate = "d:" + NCGlobal.shared.mediaPropOrder
-        let lessDateString = Date.distantFuture.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        let lessDateString = firstDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let greaterDateString = Date.distantPast.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let httpBodyString = String(format: NCMediaNetwork().getRequestBodySearchMedia(
             href: href,
             elementDate: elementDate,
             lessDate: lessDateString,
             greaterDate: greaterDateString,
-            limit: String(1000000))
+            limit: String(searchResultLimit))
         )
 
         guard let httpBody = httpBodyString.data(using: .utf8) else {
@@ -184,7 +281,39 @@ final class NCMediaMetadataBackfillProcessor {
                                        paginateOffset: offset,
                                        paginateCount: count)
 
-        let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options)
+        let requestState = OSAllocatedUnfairLock(
+            initialState: (task: Optional<URLSessionTask>.none, isCancelled: false)
+        )
+        let results = await withTaskCancellationHandler {
+            await NextcloudKit.shared.searchAsync(
+                serverUrl: nkSession.urlBase,
+                httpBody: httpBody,
+                showHiddenFiles: true,
+                includeHiddenFiles: [],
+                account: account,
+                options: options
+            ) { task in
+                let shouldCancel = requestState.withLock { state in
+                    if state.isCancelled {
+                        return true
+                    }
+
+                    state.task = task
+                    return false
+                }
+
+                if shouldCancel {
+                    task.cancel()
+                }
+            }
+        } onCancel: {
+            let task = requestState.withLock { state in
+                state.isCancelled = true
+                return state.task
+            }
+            task?.cancel()
+        }
+
         if results.error == .success, let files = results.files {
             let allHeaderFields = results.responseData?.response?.allHeaderFields
             var token: String?

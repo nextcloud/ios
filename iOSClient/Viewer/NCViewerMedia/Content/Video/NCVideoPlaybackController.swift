@@ -42,12 +42,13 @@ final class NCVideoPlaybackController: ObservableObject {
 
     private var avProbePlayer: AVPlayer?
     private var avProbeItem: AVPlayerItem?
-    private var statusObservation: NSKeyValueObservation?
+    private var avProbeTask: Task<Void, Never>?
+    private var avProbeTimeoutTask: Task<Void, Never>?
 
     private var currentOcId: String?
     private var currentEtag: String?
     private var currentURL: URL?
-    private var currentFileName: String?
+    private var currentUserAgent: String?
     private var loadToken = UUID()
 
     private init() { }
@@ -94,7 +95,7 @@ final class NCVideoPlaybackController: ObservableObject {
         currentOcId = metadata.ocId
         currentEtag = metadata.etag
         currentURL = url
-        currentFileName = fileName
+        currentUserAgent = userAgent
         engine = .loading
 
         if url.isFileURL,
@@ -104,6 +105,15 @@ final class NCVideoPlaybackController: ObservableObject {
         }
 
         configureAudioSession()
+
+        if NCPreferences().alwaysUseVLCForVideo(account: metadata.account, ocId: metadata.ocId) {
+            resolveWithVLC(
+                url: url,
+                userAgent: userAgent,
+                token: token
+            )
+            return
+        }
 
         if shouldUseVLCWithoutAVFoundation(
             url: url,
@@ -118,10 +128,54 @@ final class NCVideoPlaybackController: ObservableObject {
         }
 
         prepareAVFoundation(
-            metadata: metadata,
             url: url,
             userAgent: userAgent,
             httpHeaders: url.isFileURL ? [:] : httpHeaders,
+            token: token
+        )
+    }
+
+    // Changes only the prepared engine. Playback still starts from the cover.
+    func switchToVLC() {
+        guard let currentURL else {
+            return
+        }
+
+        resolveWithVLC(
+            url: currentURL,
+            userAgent: currentUserAgent,
+            token: loadToken
+        )
+    }
+
+    func retryAVFoundation() {
+        guard let currentURL else {
+            return
+        }
+
+        let token = UUID()
+        loadToken = token
+
+        cancelAVProbeTasks()
+
+        avProbePlayer?.pause()
+        avProbePlayer = nil
+        avProbeItem = nil
+
+        engine = .loading
+
+        var httpHeaders: [String: String] = [:]
+
+        if let currentUserAgent,
+           !currentUserAgent.isEmpty,
+           !currentURL.isFileURL {
+            httpHeaders["User-Agent"] = currentUserAgent
+        }
+
+        prepareAVFoundation(
+            url: currentURL,
+            userAgent: currentUserAgent,
+            httpHeaders: httpHeaders,
             token: token
         )
     }
@@ -133,12 +187,12 @@ final class NCVideoPlaybackController: ObservableObject {
 
         stop()
     }
+
     // Releases the current prepared playback state and pending AVFoundation probes.
     func stop() {
         loadToken = UUID()
 
-        statusObservation?.invalidate()
-        statusObservation = nil
+        cancelAVProbeTasks()
 
         avProbePlayer?.pause()
         avProbePlayer = nil
@@ -147,20 +201,20 @@ final class NCVideoPlaybackController: ObservableObject {
         currentOcId = nil
         currentEtag = nil
         currentURL = nil
-        currentFileName = nil
-
+        currentUserAgent = nil
         engine = .loading
     }
 
     // MARK: - AVFoundation
 
     private func prepareAVFoundation(
-        metadata: tableMetadata,
         url: URL,
         userAgent: String?,
         httpHeaders: [String: String],
         token: UUID
     ) {
+        cancelAVProbeTasks()
+
         let assetOptions: [String: Any]? = httpHeaders.isEmpty
             ? nil
             : [
@@ -180,49 +234,72 @@ final class NCVideoPlaybackController: ObservableObject {
         avProbeItem = item
         avProbePlayer = player
 
-        statusObservation = item.observe(
-            \.status,
-            options: [.initial, .new]
-        ) { [weak self] item, _ in
-            Task { @MainActor in
-                guard let self else {
+        avProbeTask = Task { [weak self] in
+            do {
+                let isPlayable = try await asset.load(.isPlayable)
+
+                guard !Task.isCancelled,
+                      let self,
+                      self.isCurrentLoad(
+                        url: url,
+                        token: token
+                      ) else {
                     return
                 }
 
-                guard self.isCurrentLoad(
-                    url: url,
-                    token: token
-                ) else {
-                    return
-                }
-
-                switch item.status {
-                case .readyToPlay:
+                if isPlayable {
                     self.resolveWithAVFoundation(
                         url: url,
                         player: player,
                         item: item,
                         token: token
                     )
-
-                case .failed:
-                    self.resolveWithVLC(
-                        url: url,
-                        userAgent: userAgent,
-                        token: token
-                    )
-
-                case .unknown:
-                    break
-
-                @unknown default:
+                } else {
                     self.resolveWithVLC(
                         url: url,
                         userAgent: userAgent,
                         token: token
                     )
                 }
+            } catch {
+                guard !Task.isCancelled,
+                      let self,
+                      self.isCurrentLoad(
+                        url: url,
+                        token: token
+                      ) else {
+                    return
+                }
+
+                self.resolveWithVLC(
+                    url: url,
+                    userAgent: userAgent,
+                    token: token
+                )
             }
+        }
+
+        avProbeTimeoutTask = Task { [weak self] in
+            do {
+                try await Task.sleep(for: .seconds(8))
+            } catch {
+                return
+            }
+
+            guard !Task.isCancelled,
+                  let self,
+                  self.isCurrentLoad(
+                    url: url,
+                    token: token
+                  ) else {
+                return
+            }
+
+            self.resolveWithVLC(
+                url: url,
+                userAgent: userAgent,
+                token: token
+            )
         }
     }
 
@@ -238,8 +315,7 @@ final class NCVideoPlaybackController: ObservableObject {
             return
         }
 
-        statusObservation?.invalidate()
-        statusObservation = nil
+        cancelAVProbeTasks()
 
         let preparedPlayback = NCVideoAVPreparedPlayback(
             url: url,
@@ -264,8 +340,7 @@ final class NCVideoPlaybackController: ObservableObject {
             return
         }
 
-        statusObservation?.invalidate()
-        statusObservation = nil
+        cancelAVProbeTasks()
 
         avProbePlayer?.pause()
         avProbePlayer = nil
@@ -288,6 +363,14 @@ final class NCVideoPlaybackController: ObservableObject {
     }
 
     // MARK: - State Helpers
+
+    private func cancelAVProbeTasks() {
+        avProbeTask?.cancel()
+        avProbeTask = nil
+
+        avProbeTimeoutTask?.cancel()
+        avProbeTimeoutTask = nil
+    }
 
     private func isSameLoadedVideo(
         metadata: tableMetadata,

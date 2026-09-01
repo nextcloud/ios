@@ -40,6 +40,14 @@ final class NCGlobal: Sendable {
     let twoFactorNotificatioName                    = "twofactor_nextcloud_notification"
     let termsOfServiceName                          = "terms_of_service"
 
+    // OFFICE
+    //
+    let editorText: String                          = "text"
+    let editorEuroOffice: String                    = "eurooffice"
+    let editorCollabora: String                     = "richdocuments"
+    let editorOnlyOffice: String                    = "onlyoffice"
+    let editorWhiteboard: String                    = "whiteboard"
+
     // Intro selector
     //
     let introLogin: Int                             = 0
@@ -84,11 +92,6 @@ final class NCGlobal: Sendable {
     // CHUNK
     let chunkSizeMBCellular                         = 10000000
     let chunkSizeMBEthernetOrWiFi                   = 100000000
-
-    // Video
-    //
-    let maxHTTPCache: Int64                         = 10000000000   // 10 GB
-    let fileNameVideoEncoded: String                = "video_encoded.mp4"
 
     // NCViewerProviderContextMenu
     //
@@ -184,12 +187,12 @@ final class NCGlobal: Sendable {
     let errorE2EEUploadInProgress: Int          = -98018
     let errorE2EEKeyDirectoryTop: Int           = -98019
     let errorE2EESendMetadata: Int              = -98020
+    let errorE2EEReadOnly: Int                  = -98021
+    let errorE2EEServerKeyChanged: Int          = -98022
 
 
     // Selector
     //
-    let selectorReadFile                        = "readFile"
-    let selectorListingFavorite                 = "listingFavorite"
     let selectorLoadFileView                    = "loadFileView"
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
@@ -198,7 +201,6 @@ final class NCGlobal: Sendable {
 
     let selectorUploadAutoUpload                = "uploadAutoUpload"
     let selectorUploadFile                      = "uploadFile"
-    let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"
 
     let selectorSaveAlbum                       = "saveAlbum"
@@ -255,7 +257,6 @@ final class NCGlobal: Sendable {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterClearCache                            = "clearCache"
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
     let notificationCenterServerDidUpdate                       = "serverDidUpdate"                 // userInfo: account
     let notificationCenterNetworkReachability                   = "networkReachability"

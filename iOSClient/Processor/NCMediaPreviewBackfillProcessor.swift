@@ -80,7 +80,7 @@ final class NCMediaPreviewBackfillProcessor {
         let utilityFileSystem = NCUtilityFileSystem()
         let maximumConcurrentRequests = min(8, NCBrandOptions.shared.httpMaximumConnectionsPerHost)
         let session = NCSession.Session(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
-        let mediaPredicate = NCImageCache.shared.getMediaPredicate(
+        let mediaPredicate = NCMedia.getMediaPredicate(
             session: session,
             mediaPath: account.mediaPath,
             showOnlyImages: false,
