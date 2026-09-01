@@ -61,4 +61,35 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
     }
+
+    func disableIfIdle() async -> Bool {
+        let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
+
+        guard account == nil else {
+            return false
+        }
+
+        let predicate = NSPredicate(format: "sessionSelector == %@ AND backgroundUploadJobIdentifier != ''", global.selectorUploadAutoUpload)
+        let metadatas: [tableMetadata] = await database.getMetadatasAsync(predicate: predicate)
+
+        guard metadatas.isEmpty else {
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disable deferred: \(metadatas.count) jobs still active")
+            return false
+        }
+
+        let library = PHPhotoLibrary.shared()
+
+        guard library.uploadJobExtensionEnabled else {
+            return true
+        }
+
+        do {
+            try library.disableUploadJobExtension()
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disabled")
+            return !library.uploadJobExtensionEnabled
+        } catch {
+            nkLog(tag: global.logTagBackgroundUpload, message: "Background upload extension disable failed: \(error)")
+            return false
+        }
+    }
 }

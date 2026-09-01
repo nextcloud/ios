@@ -366,7 +366,8 @@ extension BackgroundUploadExtension {
         let processingJobs = PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil)
         let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
         let jobsInUse = processingJobs.count + acknowledgeJobs.count
+        let jobLimit = min(PHAssetResourceUploadJob.jobLimit, 20)
 
-        return max(0, PHAssetResourceUploadJob.jobLimit - jobsInUse)
+        return max(0, jobLimit - jobsInUse)
     }
 }

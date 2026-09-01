@@ -196,6 +196,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             } else {
                 await database.setAutoUploadStartAsync(false, account: accountIdentifier)
                 await cancelAutoUploadTransfers(account: accountIdentifier)
+
+                if #available(iOS 27, *) {
+                    _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
+                }
             }
         }
     }
