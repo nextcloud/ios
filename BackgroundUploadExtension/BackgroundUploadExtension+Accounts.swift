@@ -9,14 +9,17 @@ import NextcloudKit
 extension BackgroundUploadExtension {
     func setupAccount() async -> tableAccount? {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else {
+            logDebug("Background upload account setup skipped: Photos authorization is not granted")
             return nil
         }
 
         guard !NCPreferences().formatCompatibility else {
+            logDebug("Background upload account setup skipped: compatibility format is enabled")
             return nil
         }
 
         guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
+            logDebug("Background upload account setup skipped: no Auto Upload account")
             return nil
         }
 
@@ -34,6 +37,7 @@ extension BackgroundUploadExtension {
         )
 
         guard let capabilities = await database.getCapabilities(account: account.account) else {
+            logError("Background upload account setup failed: capabilities not found for \(account.account)")
             return nil
         }
 
@@ -41,10 +45,7 @@ extension BackgroundUploadExtension {
             capabilities,
             greaterOrEqualTo: .v33
         ) else {
-            nkLog(
-                tag: global.logTagBackgroundUpload,
-                message: "Background upload extension stopped because account \(account.account) uses a server lower than version 33"
-            )
+            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 33", persist: true)
             return nil
         }
 

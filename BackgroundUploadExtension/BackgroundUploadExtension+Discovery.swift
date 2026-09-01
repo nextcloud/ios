@@ -82,7 +82,7 @@ extension BackgroundUploadExtension {
             guard let resource = primaryUploadResource(for: asset),
                   let originalFileName = resource.filename,
                   !originalFileName.isEmpty else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Upload resource not found for asset \(asset.localIdentifier)")
+                logError("Upload resource not found for asset \(asset.localIdentifier)")
                 continue
             }
 
@@ -167,7 +167,7 @@ extension BackgroundUploadExtension {
 
         await database.addMetadataAsync(metadata)
 
-        nkLog(tag: global.logTagBackgroundUpload, message: "Created pending metadata for \(fileName), account: \(account.account), asset: \(asset.localIdentifier)")
+        logDebug("Created pending metadata for \(fileName), account: \(account.account), asset: \(asset.localIdentifier)")
 
         return metadata
     }

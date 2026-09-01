@@ -5,6 +5,7 @@
 import ExtensionFoundation
 import Photos
 import NextcloudKit
+import OSLog
 
 @main
 final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
@@ -12,6 +13,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     let database = NCManageDatabase.shared
     let utilityFileSystem = NCUtilityFileSystem()
     let nkComm = NextcloudKit.shared.nkCommonInstance
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
 
     required init() {
         database.openRealm()
@@ -19,11 +21,11 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         NextcloudKit.configureLogger(logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log)
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        nkLog(tag: global.logTagBackgroundUpload, message: "BackgroundUploadExtension initialized, bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")")
+        logInfo("BackgroundUploadExtension initialized, bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")")
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
-        nkLog(tag: global.logTagBackgroundUpload, message: "processJobs begin")
+        logDebug("processJobs begin")
 
         let account = await setupAccount()
 
@@ -62,18 +64,35 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             let hasActiveJobs = hasActiveUploadJobs()
             let result: PHBackgroundResourceUploadProcessingResult = madeProgress || hasActiveJobs ? .processing : .completed
 
-            nkLog(tag: global.logTagBackgroundUpload, message: "processJobs end, madeProgress: \(madeProgress), hasActiveJobs: \(hasActiveJobs)")
+            logDebug("processJobs end, madeProgress: \(madeProgress), hasActiveJobs: \(hasActiveJobs)")
             return result
         } catch let error as NSError where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Job limit reached")
+            logInfo("Job limit reached")
             return .processing
         } catch {
-            nkLog(tag: global.logTagBackgroundUpload, message: "processJobs error: \(error)")
+            logError("processJobs error: \(error)")
             return .failure
         }
     }
 
     func willTerminate() async {
+        logDebug("BackgroundUploadExtension will terminate")
+    }
 
+    func logDebug(_ message: String) {
+        logger.debug("\(message, privacy: .public)")
+    }
+
+    func logInfo(_ message: String, persist: Bool = false) {
+        logger.info("\(message, privacy: .public)")
+
+        if persist {
+            nkLog(tag: global.logTagBackgroundUpload, emoji: .info, message: message)
+        }
+    }
+
+    func logError(_ message: String) {
+        logger.error("\(message, privacy: .public)")
+        nkLog(tag: global.logTagBackgroundUpload, emoji: .error, message: message)
     }
 }

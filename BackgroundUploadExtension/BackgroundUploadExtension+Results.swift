@@ -19,7 +19,7 @@ extension BackgroundUploadExtension {
 
         await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
-        nkLog(tag: global.logTagBackgroundUpload, message: "Background upload failed for \(metadata.fileName), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
+        logError("Background upload failed for \(metadata.fileName), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
     }
 
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
@@ -35,7 +35,7 @@ extension BackgroundUploadExtension {
 
             await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
-            nkLog(tag: global.logTagBackgroundUpload, message: "Successful job without oc-fileid: \(job.localIdentifier)")
+            logError("Successful job without oc-fileid: \(job.localIdentifier)")
 
             return false
         }
@@ -90,6 +90,8 @@ extension BackgroundUploadExtension {
         }
 
         await database.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
+
+        logInfo("Completed background upload for \(metadata.fileName), job: \(job.localIdentifier), ocId: \(ocId)")
 
         return true
     }

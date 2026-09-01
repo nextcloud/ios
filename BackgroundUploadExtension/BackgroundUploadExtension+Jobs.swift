@@ -11,7 +11,7 @@ extension BackgroundUploadExtension {
         let availableJobs = availableUploadJobSlots()
 
         guard availableJobs > 0 else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "No available background upload job slots")
+            logDebug("No available background upload job slots")
             return false
         }
 
@@ -43,12 +43,12 @@ extension BackgroundUploadExtension {
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Asset not found: \(metadata.assetLocalIdentifier), file: \(metadata.fileName)")
+                logError("Asset not found: \(metadata.assetLocalIdentifier), file: \(metadata.fileName)")
                 continue
             }
 
             guard let resource = uploadResource(for: asset, metadata: metadata) else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Upload resource not found for asset \(metadata.assetLocalIdentifier)")
+                logError("Upload resource not found for asset \(metadata.assetLocalIdentifier)")
                 continue
             }
 
@@ -64,7 +64,7 @@ extension BackgroundUploadExtension {
             }
 
             guard let jobIdentifier, !jobIdentifier.isEmpty else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Created job has no local identifier")
+                logError("Created job has no local identifier")
                 continue
             }
 
@@ -78,7 +78,7 @@ extension BackgroundUploadExtension {
 
             madeProgress = true
 
-            nkLog(tag: global.logTagBackgroundUpload, message: "Created background upload job \(jobIdentifier), file: \(metadata.fileName), resource: \(resource.filename ?? "<unknown>")")
+            logInfo("Created background upload job \(jobIdentifier), file: \(metadata.fileName), resource: \(resource.filename ?? "<unknown>")")
         }
 
         return madeProgress
@@ -96,12 +96,12 @@ extension BackgroundUploadExtension {
 
             guard let metadata else {
                 guard try cancel(job: job, library: library) else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to cancel orphan background upload job \(jobIdentifier)")
+                    logError("Unable to cancel orphan background upload job \(jobIdentifier)")
                     continue
                 }
 
                 madeProgress = true
-                nkLog(tag: global.logTagBackgroundUpload, message: "Cancelled orphan background upload job \(jobIdentifier)")
+                logInfo("Cancelled orphan background upload job \(jobIdentifier)", persist: true)
                 continue
             }
 
@@ -110,13 +110,13 @@ extension BackgroundUploadExtension {
             }
 
             guard try cancel(job: job, library: library) else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to cancel job \(jobIdentifier)")
+                logError("Unable to cancel job \(jobIdentifier)")
                 continue
             }
 
             await database.deleteMetadataAsync(id: metadata.ocId)
             madeProgress = true
-            nkLog(tag: global.logTagBackgroundUpload, message: "Cancelled background upload job \(jobIdentifier), file: \(metadata.fileName)")
+            logInfo("Cancelled background upload job \(jobIdentifier), file: \(metadata.fileName)", persist: true)
         }
 
         let retryJobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
@@ -130,12 +130,12 @@ extension BackgroundUploadExtension {
 
                 guard let metadata else {
                     guard try acknowledge(job: job, library: library) else {
-                        nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan background upload job \(jobIdentifier)")
+                        logError("Unable to acknowledge orphan background upload job \(jobIdentifier)")
                         continue
                     }
 
                     madeProgress = true
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan background upload job \(jobIdentifier)")
+                    logInfo("Acknowledged orphan background upload job \(jobIdentifier)", persist: true)
                     continue
                 }
 
@@ -144,13 +144,13 @@ extension BackgroundUploadExtension {
                 }
 
                 guard try acknowledge(job: job, library: library) else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge cancelled job \(jobIdentifier)")
+                    logError("Unable to acknowledge cancelled job \(jobIdentifier)")
                     continue
                 }
 
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 madeProgress = true
-                nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)")
+                logInfo("Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)", persist: true)
             }
         }
 
@@ -173,29 +173,32 @@ extension BackgroundUploadExtension {
 
             guard let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier) else {
                 guard try acknowledge(job: job, library: library) else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan retry job \(jobIdentifier)")
+                    logError("Unable to acknowledge orphan retry job \(jobIdentifier)")
                     continue
                 }
 
                 madeProgress = true
 
-                nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan retry job \(jobIdentifier)")
+                logInfo("Acknowledged orphan retry job \(jobIdentifier)", persist: true)
                 continue
             }
 
             guard !metadata.backgroundUploadCancellationRequested else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Skipping retry for cancellation-requested job \(jobIdentifier)")
+                logDebug("Skipping retry for cancellation-requested job \(jobIdentifier)")
                 continue
             }
 
             let error = job.error.map { $0 as NSError }
+
+            logInfo("Retryable job \(jobIdentifier), error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0), description: \(error?.localizedDescription ?? "<nil>"), headers: \(job.responseHeaderFields ?? [:])")
+
             let authenticationRequired = job.responseHeaderFields?["www-authenticate"] != nil || (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
 
             if authenticationRequired {
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
 
                 guard try acknowledge(job: job, library: library) else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge authentication-failed job \(jobIdentifier)")
+                    logError("Unable to acknowledge authentication-failed job \(jobIdentifier)")
                     continue
                 }
 
@@ -204,19 +207,19 @@ extension BackgroundUploadExtension {
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
                 madeProgress = true
-                nkLog(tag: global.logTagBackgroundUpload, message: "Stopped background upload after authentication failure for \(metadata.fileName), job: \(jobIdentifier)")
+                logError("Stopped background upload after authentication failure for \(metadata.fileName), job: \(jobIdentifier)")
                 continue
             }
 
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Retry asset not found for job \(jobIdentifier), asset: \(metadata.assetLocalIdentifier)")
+                logError("Retry asset not found for job \(jobIdentifier), asset: \(metadata.assetLocalIdentifier)")
                 continue
             }
 
             guard let destination = buildDestination(metadata: metadata, asset: asset) else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to rebuild destination for job \(jobIdentifier)")
+                logError("Unable to rebuild destination for job \(jobIdentifier)")
                 continue
             }
 
@@ -232,7 +235,7 @@ extension BackgroundUploadExtension {
             }
 
             guard retryRequested else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to create retry request for job \(jobIdentifier)")
+                logError("Unable to create retry request for job \(jobIdentifier)")
                 continue
             }
 
@@ -250,7 +253,7 @@ extension BackgroundUploadExtension {
 
             madeProgress = true
 
-            nkLog(tag: global.logTagBackgroundUpload, message: "Retry requested for \(metadata.fileName), job: \(jobIdentifier)")
+            logInfo("Retry requested for \(metadata.fileName), job: \(jobIdentifier)")
         }
 
         return madeProgress
@@ -272,18 +275,18 @@ extension BackgroundUploadExtension {
 
             guard let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier) else {
                 guard try acknowledge(job: job, library: library) else {
-                    nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge orphan job \(jobIdentifier)")
+                    logError("Unable to acknowledge orphan job \(jobIdentifier)")
                     continue
                 }
 
                 madeProgress = true
 
-                nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged orphan job \(jobIdentifier)")
+                logInfo("Acknowledged orphan job \(jobIdentifier)", persist: true)
                 continue
             }
 
             guard !metadata.backgroundUploadCancellationRequested else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
+                logDebug("Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
                 continue
             }
 
@@ -301,12 +304,12 @@ extension BackgroundUploadExtension {
                 createNewJob = true
 
             default:
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
+                logError("Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
                 continue
             }
 
             guard try acknowledge(job: job, library: library) else {
-                nkLog(tag: global.logTagBackgroundUpload, message: "Unable to acknowledge job \(jobIdentifier)")
+                logError("Unable to acknowledge job \(jobIdentifier)")
                 continue
             }
 
@@ -329,12 +332,12 @@ extension BackgroundUploadExtension {
 
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
-                nkLog(tag: global.logTagBackgroundUpload, message: "Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
+                logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
             }
 
             madeProgress = true
 
-            nkLog(tag: global.logTagBackgroundUpload, message: "Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
+            logDebug("Acknowledged job \(jobIdentifier), state: \(job.state.rawValue)")
         }
 
         return madeProgress

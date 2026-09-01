@@ -9,12 +9,12 @@ import NextcloudKit
 extension BackgroundUploadExtension {
     func buildDestination(metadata: tableMetadata, asset: PHAsset) -> URLRequest? {
         guard let url = metadata.serverUrlFileName.encodedToUrl as? URL else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Invalid destination URL: \(metadata.serverUrlFileName)")
+            logError("Invalid destination URL: \(metadata.serverUrlFileName)")
             return nil
         }
 
         guard let nkSession = nkComm.nksessions.session(forAccount: metadata.account) else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Session not found for account: \(metadata.account)")
+            logError("Session not found for account: \(metadata.account)")
             return nil
         }
 
@@ -23,7 +23,7 @@ extension BackgroundUploadExtension {
         var request = URLRequest(url: url)
 
         guard let loginData = loginString.data(using: .utf8) else {
-            nkLog(tag: global.logTagBackgroundUpload, message: "Unable to encode credentials for account: \(metadata.account)")
+            logError("Unable to encode credentials for account: \(metadata.account)")
             return nil
         }
 
@@ -45,7 +45,7 @@ extension BackgroundUploadExtension {
             request.setValue("\(modificationDate.timeIntervalSince1970)", forHTTPHeaderField: "X-OC-MTime")
         }
 
-        nkLog(tag: global.logTagBackgroundUpload, message: "Destination created for \(metadata.fileName) -> \(metadata.serverUrlFileName)")
+        logDebug("Destination created for \(metadata.fileName) -> \(metadata.serverUrlFileName)")
 
         return request
     }

@@ -5,12 +5,14 @@
 import Foundation
 import NextcloudKit
 import RealmSwift
+import OSLog
 
 final class NCManageDatabase {
     static let shared = NCManageDatabase()
 
     internal let core: NCManageDatabaseCore
     internal let databaseURL: URL?
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
 
     private init() {
         self.core = NCManageDatabaseCore()
@@ -38,9 +40,10 @@ final class NCManageDatabase {
 
             let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
-                nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
+                logger.debug("Realm is located at: \(url.path, privacy: .public)")
             }
         } catch let error {
+            logger.error("Realm error: \(error.localizedDescription, privacy: .public)")
             nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .error, message: "Realm error: \(error)")
             isSuspendingDatabaseOperation = true
         }
