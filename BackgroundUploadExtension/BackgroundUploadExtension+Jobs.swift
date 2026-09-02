@@ -333,6 +333,12 @@ extension BackgroundUploadExtension {
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
                 logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
+            } else {
+                metadata.backgroundUploadJobIdentifier = "pending"
+                metadata.backgroundUploadNextRetryDate = nil
+                await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+
+                logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
             }
 
             madeProgress = true
