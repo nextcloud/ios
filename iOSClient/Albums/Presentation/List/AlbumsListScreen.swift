@@ -8,6 +8,10 @@
 
 import SwiftUI
 
+extension Notification.Name {
+    static let albumsPopToRootRequested = Notification.Name("NCAlbumsPopToRootRequested")
+}
+
 struct AlbumsListScreen: View {
     
     @Environment(\.localAccount) var localAccount: String
@@ -18,6 +22,7 @@ struct AlbumsListScreen: View {
     }
     
     @StateObject private var viewModel: AlbumsListViewModel
+    @State private var popToRootTrigger: Int = 0
     
     init(viewModel: AlbumsListViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
@@ -47,6 +52,7 @@ struct AlbumsListScreen: View {
                 .tint(Color(NCBrandColor.shared.iconImageColor))
             }
         }
+        .overlay(setupNavigation.hidden())
         .sheet(
             isPresented: $viewModel.isPhotoSelectionSheetVisible,
             onDismiss: {
@@ -68,6 +74,21 @@ struct AlbumsListScreen: View {
                 viewModel.onNewAlbumPopupCancel()
             }
         )
+        .onReceive(NotificationCenter.default.publisher(for: .albumsPopToRootRequested)) { _ in
+            // Clear any programmatic navigation and force root content
+            viewModel.navigationDestination = nil
+            popToRootTrigger += 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NCMediaNavigationController.showAlbumDetailsNotification)) { output in
+            guard let album = output.object as? Album else { return }
+            // Reset to root first
+            viewModel.navigationDestination = nil
+            popToRootTrigger += 1
+            // Navigate to the requested album
+            DispatchQueue.main.async {
+                viewModel.navigationDestination = .albumDetails(album: album)
+            }
+        }
     }
     
     @ViewBuilder
@@ -148,5 +169,7 @@ struct AlbumsListScreen: View {
 //    }
 //}
 //#endif
+
+
 
 
