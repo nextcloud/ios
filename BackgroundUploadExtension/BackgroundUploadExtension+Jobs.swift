@@ -202,7 +202,7 @@ extension BackgroundUploadExtension {
                     continue
                 }
 
-                metadata.backgroundUploadJobIdentifier = ""
+                metadata.backgroundUploadJobIdentifier = "pending"
                 metadata.backgroundUploadNextRetryDate = nil
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 

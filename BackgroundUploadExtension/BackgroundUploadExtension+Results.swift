@@ -13,13 +13,15 @@ extension BackgroundUploadExtension {
 
         metadata.sessionTaskIdentifier = 0
         metadata.sessionDate = Date()
-        metadata.sessionError = authenticationRequired ? "Authentication required" : error?.localizedDescription ?? "Background upload failed"
+        metadata.sessionError = authenticationRequired
+            ? "Authentication required for account \(metadata.user)"
+            : error?.localizedDescription ?? "Background upload failed"
         metadata.errorCode = authenticationRequired ? NSURLErrorUserAuthenticationRequired : error?.code ?? NSURLErrorUnknown
         metadata.status = global.metadataStatusUploadError
 
         await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
-        logError("Background upload failed for \(metadata.fileName), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
+        logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
     }
 
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {

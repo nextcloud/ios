@@ -130,6 +130,45 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
         await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
     }
 
+    func canRetry(item: tableMetadata) -> Bool {
+        item.status == global.metadataStatusUploadError &&
+        item.backgroundUploadJobIdentifier == "pending" &&
+        !item.backgroundUploadCancellationRequested
+    }
+
+    func retry(item: tableMetadata) async {
+        guard #available(iOS 27, *) else {
+            return
+        }
+
+        guard let metadata = await database.getMetadataFromOcIdAndocIdTransferAsync(item.ocIdTransfer),
+              canRetry(item: metadata) else {
+            return
+        }
+
+        guard await database.getTableAccountAsync(
+            predicate: NSPredicate(format: "account == %@ AND autoUploadStart == true", metadata.account)
+        ) != nil else {
+            return
+        }
+
+        guard await NCBackgroundUploadExtensionManager.shared.ensureEnabled() else {
+            return
+        }
+
+        metadata.backgroundUploadCancellationRequested = false
+        metadata.backgroundUploadRetryCount = 0
+        metadata.backgroundUploadNextRetryDate = nil
+        metadata.sessionError = ""
+        metadata.errorCode = 0
+        metadata.sessionDate = Date()
+        metadata.status = global.metadataStatusWaitUpload
+
+        await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
+
+        _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+    }
+
     func progress(for item: tableMetadata) -> Float {
         let serverUrl = item.serverUrl
         let fileName = item.fileName
@@ -170,14 +209,14 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
             let symbol = "exclamationmark.circle"
             var status = NSLocalizedString("_status_upload_error_", comment: "")
-            if let sessionDate = item.sessionDate {
+            if !canRetry(item: item), let sessionDate = item.sessionDate {
                 let elapsed = Date().timeIntervalSince(sessionDate)
                 let remaining = max(0, 300 - elapsed)
 
                 if remaining > 0 {
                     let minutesLeft = Int(remaining / 60)
                     let secondsLeft = Int(remaining.truncatingRemainder(dividingBy: 60))
-                    // Formattiamo solo se meno di 10 min
+                    // Format the remaining retry time.
                     if minutesLeft > 0 {
                         status += " – \(minutesLeft) " + NSLocalizedString("_retry_minutes_", comment: "")
                     } else {
@@ -193,6 +232,10 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
         default:
             return ("exclamationmark.circle", "", "")
         }
+    }
+
+    func isAutoUpload(item: tableMetadata) -> Bool {
+        item.sessionSelector == global.selectorUploadAutoUpload
     }
 
     func wwanWaitInfoIfNeeded(for item: tableMetadata) -> String? {
