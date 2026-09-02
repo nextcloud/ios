@@ -24,16 +24,55 @@
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d élément restant</string>
+			<key>many</key>
+			<string>%d éléments restants</string>
+			<key>other</key>
+			<string>%d éléments restants</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Vous avez %d élément à sauvegarder</string>
+			<key>many</key>
+			<string>Vous avez %d éléments à sauvegarder</string>
+			<key>other</key>
+			<string>Vous avez %d éléments à sauvegarder</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d a échoué</string>
+			<key>many</key>
+			<string>%d ont échoué</string>
+			<key>other</key>
+			<string>%d ont échoué</string>
+		</dict>
 	</dict>
 </dict>
 </plist>

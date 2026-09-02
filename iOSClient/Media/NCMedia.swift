@@ -75,12 +75,11 @@ class NCMedia: UIViewController {
     var currentScale: CGFloat = 1.0
     var maxColumns: Int {
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let column = Int(screenWidth / 44)
+        let column = Int(screenWidth / 55)
 
         return column
     }
     var transitionColumns = false
-    var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
     var loadingTask: Task<Void, any Error>?
     var mediaCommandView: NCMediaCommandView?
@@ -90,9 +89,67 @@ class NCMedia: UIViewController {
     var hiddenCellMetadats: ThreadSafeArray<String> = ThreadSafeArray()
 
     var isInGeneralPhotosSelectionContext: Bool = false
+    var numberOfColumns: Int = 0 {
+        didSet {
+            guard oldValue > 0,
+                  numberOfColumns != oldValue else {
+                return
+            }
 
-    let debouncerLoadDataSource = NCDebouncer(maxEventCount: 10)
-    let debouncerSearch = NCDebouncer(maxEventCount: 10)
+            let oldExtension = global.getSizeExtension(column: oldValue)
+            let newExtension = global.getSizeExtension(column: numberOfColumns)
+
+            guard oldExtension != newExtension else {
+                return
+            }
+
+            imageCache.removeAll()
+        }
+    }
+    var imageLoadingTasks: [String: Task<Void, Never>] = [:]
+    let debouncerLoadDataSource = NCDebouncer(delay: .seconds(3), maxEventCount: 10)
+    let debouncerSearch = NCDebouncer(delay: .seconds(2), maxEventCount: 10)
+
+    struct CollectionViewScrollAnchor {
+        let ocId: String
+        let deltaX: CGFloat
+        let deltaY: CGFloat
+    }
+
+    var searchMediaTask: Task<Void, Never>?
+    var buildDataSourceTask: Task<Void, Never>?
+
+    var datasourceMediaInProgress: Bool = false
+    var searchMediaInProgress: Bool = false {
+        didSet {
+            guard oldValue != searchMediaInProgress else {
+                return
+            }
+
+            updateLeftBarButtonItems(
+                date: navigationItem.leftBarButtonItems?.first === buttonDateBarItem ? buttonDateBarItem : nil,
+                activity: searchMediaInProgress
+            )
+        }
+    }
+
+    internal lazy var buttonDateBarItem = UIBarButtonItem(
+        title: nil,
+        style: .plain,
+        target: self,
+        action: #selector(presentMediaDatePicker)
+    )
+    internal var lastVisibleDateRange: (first: IndexPath, last: IndexPath)?
+
+    internal lazy var searchActivityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
+
+    internal lazy var searchActivityBarButtonItem: UIBarButtonItem = {
+        UIBarButtonItem(customView: searchActivityIndicator)
+    }()
 
     @MainActor
     var session: NCSession.Session {
@@ -149,20 +206,20 @@ class NCMedia: UIViewController {
         navigationController?.setNavigationBarAppearance()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCMediaSectionHeader", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionHeader")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         collectionView.contentInset = isInGeneralPhotosSelectionContext ? UIEdgeInsets(top: 10, left: 0, bottom: 50, right: 0) : UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
-        collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
         collectionView.accessibilityIdentifier = "NCMedia"
-        // collectionView.contentInsetAdjustmentBehavior = .never
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+        layout.overlaysSectionHeader = true
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
@@ -218,11 +275,20 @@ class NCMedia: UIViewController {
         titleDate.text = ""
         titleDate?.textColor = .white
         activityIndicator.color = .white
+        navigationItem.leftItemsSupplementBackButton = true
+        navigationItem.leftBarButtonItem = nil
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        Task {
+            await loadDataSource()
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { [weak self] notification in
+            guard let self else {
+                return
+            }
             Task { @MainActor in
                 guard let userInfo = notification.userInfo,
                    let account = userInfo["account"] as? String else {
@@ -230,19 +296,20 @@ class NCMedia: UIViewController {
                 }
 
                 self.layoutType = self.database.getLayoutForView(account: account, key: self.global.layoutViewMedia, serverUrl: "").layout
+
                 self.imageCache.removeAll()
-                await self.loadDataSource()
+                self.dataSource.clearCompactMetadatas()
+                self.setTitleDate()
+
+                await self.loadDataSource(forced: true)
                 await self.searchMediaUI(true)
             }
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { _ in
-            Task {
-                await self.dataSource.clearMetadatas()
-                self.imageCache.removeAll()
-                await self.searchMediaUI(true)
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
+            guard let self else {
+                return
             }
-        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFileExists), object: nil)
 
@@ -261,21 +328,48 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         if tabBarSelect == nil {
-            tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
+            tabBarSelect = NCMediaSelectTabBar(
+                controller: self.tabBarController,
+                viewController: self,
+                delegate: self
+            )
         }
 //        navigationController?.setMediaAppreance()
 
-        Task {
-            await (self.navigationController as? NCMediaNavigationController)?.setNavigationRightItems()
+        Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await (self.navigationController as? NCMediaNavigationController)?
+                .setNavigationRightItems()
+
             if #unavailable(iOS 26.0) {
-                (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
+                (self.navigationController as? NCMediaNavigationController)?
+                    .updateRightBarButtonsTint(to: .white)
             }
         }
 
-        if dataSource.metadatas.isEmpty {
-            Task {
-                await loadDataSource()
+        Task { [weak self] in
+            guard let self else {
+                return
             }
+
+            await self.networking.transferDispatcher.addDelegate(self)
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            self.searchNewMedia()
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            self.collectionView.layoutIfNeeded()
+            self.updateImageCacheWindow()
+            self.setTitleDate()
         }
         Task {
             if !self.didCompleteInitialPreload {
@@ -310,9 +404,24 @@ class NCMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        Task {
-            await networking.transferDispatcher.removeDelegate(self)
-            await networkRemoveAll()
+        searchMediaTask?.cancel()
+        searchMediaTask = nil
+
+        buildDataSourceTask?.cancel()
+        buildDataSourceTask = nil
+
+        imageCache.removeAll()
+
+        Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            await self.debouncerSearch.cancel()
+            await self.debouncerLoadDataSource.cancel()
+
+            await self.networking.transferDispatcher.removeDelegate(self)
+            await self.networkRemoveAll()
         }
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
@@ -320,13 +429,14 @@ class NCMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
 
 //        if let frame = tabBarController?.tabBar.frame {
 //            tabBarSelect.hostingController?.view.frame = frame
 //        }
         gradientLayer.frame = gradientView.bounds
+        setTitleDate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -341,9 +451,16 @@ class NCMedia: UIViewController {
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()
+
         timerSearchNewMedia = Timer.scheduledTimer(withTimeInterval: timeIntervalSearchNewMedia, repeats: false) { [weak self] _ in
-            Task { [weak self] in
-                guard let self else { return }
+            guard let self else {
+                return
+            }
+            self.searchMediaTask?.cancel()
+            self.searchMediaTask = Task { [weak self] in
+                guard let self else {
+                    return
+                }
                 await self.searchMediaUI()
             }
         }
@@ -455,7 +572,6 @@ class NCMedia: UIViewController {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
         case 4...5: pointSize = 25
-        case 6...Int(maxColumns): pointSize = 20
         default: pointSize = 20
         }
         if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
@@ -466,6 +582,37 @@ class NCMedia: UIViewController {
         }
     }
 
+     @MainActor
+    func updateImageCacheWindow(force: Bool = false) {
+        guard !dataSource.compactMetadatas.isEmpty else {
+            return
+        }
+
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
+
+        let centerIndex: Int
+
+        if !visibleIndexPaths.isEmpty {
+            let centerIndexPath = visibleIndexPaths[visibleIndexPaths.count / 2]
+
+            guard let visibleCenterIndex = dataSource.globalIndex(for: centerIndexPath) else {
+                return
+            }
+
+            centerIndex = visibleCenterIndex
+        } else {
+            centerIndex = 0
+        }
+
+        imageCache.updateImageCacheWindow(
+            imageCacheWindowItems: dataSource.imageCacheWindowItems,
+            centerIndex: centerIndex,
+            numberOfColumns: numberOfColumns,
+            session: session,
+            force: force
+        )
+    }
+      
     // MARK: - Command
 
     func setupMediaCommandView() {
@@ -522,7 +669,7 @@ extension NCMedia: UIScrollViewDelegate {
             }
             setNeedsStatusBarAppearanceUpdate()
         }
-        setElements()
+      setElements()
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -546,6 +693,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
 }
 
+
 // MARK: -
 
 extension NCMedia: NCSelectDelegate {
@@ -557,7 +705,6 @@ extension NCMedia: NCSelectDelegate {
             let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
 
             await database.setAccountMediaPathAsync(mediaPath, account: session.account)
-
             imageCache.removeAll()
             await loadDataSource()
             searchNewMedia()

@@ -4,7 +4,6 @@
 
 import UIKit
 import NextcloudKit
-import Queuer
 
 extension NCNetworking {
     @discardableResult

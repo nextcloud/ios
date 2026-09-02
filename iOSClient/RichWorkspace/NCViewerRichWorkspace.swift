@@ -10,7 +10,7 @@ import MarkdownKit
 
     @IBOutlet weak var textView: UITextView!
 
-    private let richWorkspaceCommon = NCRichWorkspaceCommon()
+    private let coordinator = NCRichWorkspaceCoordinator()
     private var markdownParser = MarkdownParser()
     private var textViewColor: UIColor?
 
@@ -73,9 +73,9 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl,
-                                                    viewController: self,
-                                                    controller: delegate?.tabBarController as? NCMainTabBarController,
-                                                    session: session)
+        coordinator.openRichWorkspace(serverUrl: serverUrl,
+                                      viewController: self,
+                                      controller: delegate?.tabBarController as? NCMainTabBarController,
+                                      session: session)
     }
 }

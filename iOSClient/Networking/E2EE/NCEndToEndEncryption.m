@@ -14,7 +14,7 @@
 #import <openssl/evp.h>
 #import <openssl/err.h>
 
-#define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
+#define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0);
 
 #define IV_DELIMITER_ENCODED_OLD    @"fA=="
 #define IV_DELIMITER_ENCODED        @"|"
@@ -119,21 +119,18 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
 
     // Common Name = UserID.
     addName("CN", cUserId);
-    
-    // The organizational unit for the cert. Usually this is a department.
-    addName("OU", "Certificate Authority");
-    
+
     // The organization of the cert.
     addName("O",  "Nextcloud");
     
     // The city of the organization.
-    addName("L",  "Vicenza");
+    addName("L",  "Stuttgart");
     
     // The state/province of the organization.
-    addName("S",  "Italy");
-    
+    addName("ST",  "Baden-Wuerttemberg");
+
     // The country (ISO 3166) of the organization
-    addName("C",  "IT");
+    addName("C",  "DE");
     
     X509_set_issuer_name(x509, name);
     
@@ -161,8 +158,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         return NO;
     }
     
-    X509_print_fp(stdout, x509);
-    
     // Extract CSR, publicKey, privateKey
     int len;
     char *keyBytes;
@@ -177,7 +172,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     
     BIO_read(csrBIO, keyBytes, len);
     _csrData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"[INFO] \n%@", [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding]);
 
     // PublicKey
     BIO *publicKeyBIO = BIO_new(BIO_s_mem());
@@ -189,7 +183,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     BIO_read(publicKeyBIO, keyBytes, len);
     _publicKeyData = [NSData dataWithBytes:keyBytes length:len];
     self.generatedPublicKey = [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding];
-    NSLog(@"[INFO] \n%@", self.generatedPublicKey);
 
     // PrivateKey
     BIO *privateKeyBIO = BIO_new(BIO_s_mem());
@@ -201,7 +194,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     BIO_read(privateKeyBIO, keyBytes, len);
     _privateKeyData = [NSData dataWithBytes:keyBytes length:len];
     self.generatedPrivateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
-    NSLog(@"[INFO] \n%@", self.generatedPrivateKey);
 
     if(keyBytes)
         free(keyBytes);
@@ -235,7 +227,49 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     BIO_free(certBio);
     X509_free(certX509);
     
-    NSLog(@"[INFO] \n%@", publicKey);
+    return publicKey;
+}
+
+- (NSString *)extractPublicKeyFromCertificateSigningRequest:(NSString *)pemCSR
+{
+    const char *ptrCSR = [pemCSR cStringUsingEncoding:NSUTF8StringEncoding];
+
+    BIO *csrBio = BIO_new_mem_buf(
+        ptrCSR,
+        (int)strlen(ptrCSR)
+    );
+
+    if (!csrBio) {
+        return nil;
+    }
+
+    X509_REQ *csr = PEM_read_bio_X509_REQ(
+        csrBio,
+        NULL,
+        NULL,
+        NULL
+    );
+
+    if (!csr) {
+        fprintf(stderr, "unable to parse CSR in memory\n");
+        BIO_free(csrBio);
+        return nil;
+    }
+
+    EVP_PKEY *pkey = X509_REQ_get_pubkey(csr);
+
+    if (!pkey) {
+        X509_REQ_free(csr);
+        BIO_free(csrBio);
+        return nil;
+    }
+
+    NSString *publicKey = [self pubKeyToString:pkey];
+
+    EVP_PKEY_free(pkey);
+    X509_REQ_free(csr);
+    BIO_free(csrBio);
+
     return publicKey;
 }
 
@@ -251,7 +285,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         fclose(f);
         return NO;
     }
-    NSLog(@"[INFO] Saved cert to %@", certificatePath);
     fclose(f);
     
     // PublicKey
@@ -262,7 +295,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         fclose(f);
         return NO;
     }
-    NSLog(@"[INFO] Saved publicKey to %@", publicKeyPath);
     fclose(f);
     
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
@@ -277,7 +309,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         fclose(f);
         return NO;
     }
-    NSLog(@"[INFO] Saved privatekey to %@", privatekeyPath);
     fclose(f);
     
     // CSR Request sha256
@@ -289,7 +320,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         fclose(f);
         return NO;
     }
-    NSLog(@"[INFO] Saved csr to %@", csrPath);
     fclose(f);
     
     return YES;
@@ -308,7 +338,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         fclose(f);
         return NO;
     }
-    NSLog(@"[INFO] Saved p12 to %@", path);
     fclose(f);
     
     return YES;
@@ -498,12 +527,6 @@ cleanup:
         NSLog(@"PBKDF2 key derivation failed: %d", derivation);
         return nil;
     }
-
-    NSLog(@"🔐 Decrypting private key:");
-    NSLog(@"• Cipher (len=%lu): %@", (unsigned long)cipher.length, cipher);
-    NSLog(@"• Tag (len=%lu): %@", (unsigned long)authenticationTag.length, authenticationTag);
-    NSLog(@"• IV (len=%lu): %@", (unsigned long)initializationVector.length, initializationVector);
-    NSLog(@"• Salt (len=%lu): %@", (unsigned long)salt.length, salt);
 
     // AES-GCM decryption
     BOOL success = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];

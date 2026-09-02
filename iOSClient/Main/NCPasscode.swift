@@ -11,7 +11,6 @@ public protocol NCPasscodeDelegate: AnyObject {
     func requestedAccount(controller: UIViewController?)
 }
 
-// optional func
 public extension NCPasscodeDelegate {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {}
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {}
@@ -37,6 +36,15 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
     var delegate: NCPasscodeDelegate?
     var viewController: UIViewController?
 
+    override init() {
+        super.init()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
+    }
+
     func presentPasscode(viewController: UIViewController, delegate: NCPasscodeDelegate?, completion: @escaping () -> Void) {
         if viewController.presentedViewController is TOPasscodeViewController { return }
 
@@ -60,7 +68,10 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         }
         viewController.presentedViewController?.dismiss(animated: false)
         viewController.present(passcodeViewController, animated: true, completion: {
-            self.openAlert(passcodeViewController: self.passcodeViewController)
+            // `present` always runs on main thread so this assumption is correct.
+            MainActor.assumeIsolated {
+                self.presentTooManyFailedAttemptsAlertIfNeeded(passcodeViewController: self.passcodeViewController)
+            }
             completion()
         })
     }
@@ -91,7 +102,11 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                             case LAError.userFallback.rawValue, LAError.authenticationFailed.rawValue:
                                 NCPreferences().passcodeCounterFail += 1
                                 NCPreferences().passcodeCounterFailReset += 1
-                                self.openAlert(passcodeViewController: passcodeViewController)
+
+                                // The biometry reply arrives off the main thread.
+                                DispatchQueue.main.async {
+                                    self.presentTooManyFailedAttemptsAlertIfNeeded(passcodeViewController: passcodeViewController)
+                                }
                             case LAError.biometryLockout.rawValue:
                                 LAContext().evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: NSLocalizedString("_deviceOwnerAuthentication_", comment: ""), reply: { success, _ in
                                     if success {
@@ -129,7 +144,12 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         } else {
             NCPreferences().passcodeCounterFail += 1
             NCPreferences().passcodeCounterFailReset += 1
-            openAlert(passcodeViewController: passcodeViewController)
+
+            // Keypad taps are delivered on the main thread.
+            MainActor.assumeIsolated {
+                presentTooManyFailedAttemptsAlertIfNeeded(passcodeViewController: passcodeViewController)
+            }
+
             self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: false)
             return false
         }
@@ -139,25 +159,38 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
         enableTouchFaceID()
     }
 
-    func openAlert(passcodeViewController: TOPasscodeViewController) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if self.isPasscodeReset {
+    @MainActor
+    private func presentTooManyFailedAttemptsAlertIfNeeded(passcodeViewController: TOPasscodeViewController) {
+        guard passcodeViewController.presentedViewController == nil else { return }
 
-                passcodeViewController.setContentHidden(true, animated: true)
+        // A lockout can elapse while the app is closed; clear it before deciding whether to cover the keypad.
+        if let lockoutEnd = NCPreferences().passcodeLockoutEnd, lockoutEnd <= Date() {
+            NCPreferences().clearPasscodeFailures()
+        }
 
-                let alertController = UIAlertController(title: NSLocalizedString("_reset_wrong_passcode_", comment: ""), message: nil, preferredStyle: .alert)
-                passcodeViewController.present(alertController, animated: true, completion: { })
-                self.delegate?.passcodeReset(passcodeViewController)
+        if isPasscodeReset {
+            passcodeViewController.setContentHidden(true, animated: true)
 
-            } else if self.isPasscodeCounterFail {
+            let alertController = UIAlertController(title: NSLocalizedString("_reset_wrong_passcode_", comment: ""), message: nil, preferredStyle: .alert)
+            passcodeViewController.present(alertController, animated: true)
 
-                passcodeViewController.setContentHidden(true, animated: true)
+            delegate?.passcodeReset(passcodeViewController)
+        } else if isPasscodeCounterFail {
+            passcodeViewController.setContentHidden(true, animated: true)
 
-                UIAlertController.failedPasscode(presenter: passcodeViewController) {
-                    passcodeViewController.setContentHidden(false, animated: true)
-                    self.enableTouchFaceID()
-                }
+            UIAlertController.failedPasscode(presenter: passcodeViewController) {
+                passcodeViewController.setContentHidden(false, animated: true)
+                self.enableTouchFaceID()
             }
         }
+    }
+
+    @MainActor
+    @objc private func applicationDidBecomeActive() {
+        guard let passcodeViewController,
+              passcodeViewController.view.window != nil
+        else { return }
+
+        presentTooManyFailedAttemptsAlertIfNeeded(passcodeViewController: passcodeViewController)
     }
 }

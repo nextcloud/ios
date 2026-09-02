@@ -5,6 +5,7 @@
 import UIKit
 import NextcloudKit
 import QuickLook
+import SwiftUI
 
 class NCViewer: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -13,7 +14,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
 
     @MainActor
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, viewerTransitionSource: NCMediaViewerTransitionSource?, selectedEditor: String? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
         await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
@@ -41,18 +42,25 @@ class NCViewer: NSObject {
 
         // IMAGE AUDIO VIDEO
         else if metadata.isImage || metadata.isAudioOrVideo {
-            let viewerMediaPageContainer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage
+            let mediaOcIds = ocIds ?? [metadata.ocId]
+            let model = NCMediaViewerModel(currentMetadata: metadata, ocIds: mediaOcIds, session: session, loader: NCMediaViewerLoader())
 
-            viewerMediaPageContainer?.delegateViewController = delegate
-            if let ocIds {
-                viewerMediaPageContainer?.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
-                viewerMediaPageContainer?.ocIds = ocIds
-            } else {
-                viewerMediaPageContainer?.currentIndex = 0
-                viewerMediaPageContainer?.ocIds = [metadata.ocId]
-            }
-
-            return viewerMediaPageContainer
+            NCMediaViewerPresenter.shared.show(
+                model: model,
+                viewerTransitionSource: viewerTransitionSource,
+                from: delegate?.view,
+                contextMenuController: delegate?.tabBarController as? NCMainTabBarController,
+                closingTransitionSourceProvider: { ocId in
+                    if let provider = delegate as? NCCollectionViewCommon {
+                        return provider.viewerTransitionSource(for: ocId)
+                    } else if let provider = delegate as? NCMedia {
+                        return provider.viewerTransitionSource(for: ocId)
+                    } else {
+                        return nil
+                    }
+                }
+            )
+            return nil
         }
 
         // DOCUMENTS
@@ -60,7 +68,7 @@ class NCViewer: NSObject {
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
 
             // PDF
-            if metadata.isPDF {
+            if metadata.isPDF, selectedEditor == nil {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
 
                 vc?.metadata = metadata
@@ -70,98 +78,15 @@ class NCViewer: NSObject {
                 return vc
             }
 
-            // DirectEditing
-            if metadata.isAvailableDirectEditingEditorView {
-                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
-                guard let editorAdapter = NCDirectEditorAdapter.resolve(from: editors) else {
-                    self.QLPreview(metadata: metadata, delegate: delegate)
-                    return nil
-                }
-                let editor = editorAdapter.apiKey
-                let editorViewController = editorAdapter.viewControllerEditor
-                let options = NKRequestOptions(customUserAgent: editorAdapter.userAgent(utility))
-                if metadata.url.isEmpty {
-                    let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-
-                    NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                        path: fileNamePath,
-                                                                                                        name: "textOpenFile")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    NCActivityIndicator.shared.stop()
-
-                    guard results.error == .success, let url = results.url else {
-                        let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
-                        await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                        return nil
-                    }
-
-                    let vc = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil).instantiateInitialViewController() as? NCViewerDirectEditing
-
-                    vc?.metadata = metadata
-                    vc?.editor = editorViewController
-                    vc?.link = url
-                    vc?.imageIcon = image
-                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
-                    return vc
-                } else {
-                    let vc = UIStoryboard(name: "NCViewerDirectEditing", bundle: nil).instantiateInitialViewController() as? NCViewerDirectEditing
-
-                    vc?.metadata = metadata
-                    vc?.editor = editorViewController
-                    vc?.link = metadata.url
-                    vc?.imageIcon = image
-                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
-                    return vc
-                }
+            // TEXT - OFFICE
+            let documentEditorCoordinator = NCDocumentEditorCoordinator(metadata: metadata, image: image, selectedEditor: selectedEditor, delegate: delegate)
+            if let viewController = await documentEditorCoordinator.selectEditor() {
+                return viewController
             }
 
-            // RichDocument: Collabora
-            if metadata.isAvailableRichDocumentEditorView {
-                if metadata.url.isEmpty {
-                    NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                        path: metadata.fileId,
-                                                                                                        name: "createUrlRichdocuments")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    NCActivityIndicator.shared.stop()
+            self.QLPreview(metadata: metadata, delegate: delegate)
 
-                    guard results.error == .success, let url = results.url else {
-                        let windowScene = SceneManager.shared.getWindowScene(controller: delegate?.tabBarController as? NCMainTabBarController)
-                        await showErrorBanner(windowScene: windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
-                        return nil
-                    }
-
-                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
-
-                    vc?.metadata = metadata
-                    vc?.link = url
-                    vc?.imageIcon = image
-                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
-                    return vc
-
-                } else {
-                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
-
-                    vc?.metadata = metadata
-                    vc?.link = metadata.url
-                    vc?.imageIcon = image
-                    vc?.navigationItem.setBidiSafeTitle(metadata.fileNameView)
-
-                    return vc
-                }
-            }
+            return nil
         }
 
         // iOS QL-Preview
@@ -170,7 +95,7 @@ class NCViewer: NSObject {
         return nil
     }
 
-    func QLPreview(metadata: tableMetadata, delegate: UIViewController? = nil) {
+    private func QLPreview(metadata: tableMetadata, delegate: UIViewController? = nil) {
         let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                           fileName: metadata.fileNameView,
                                                                                           userId: metadata.userId,
@@ -187,7 +112,7 @@ class NCViewer: NSObject {
             // Document Interaction Controller
             if let controller = delegate?.tabBarController as? NCMainTabBarController {
                 Task {
-                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                    await NCCreate().createActivityViewController(selectedMetadata: [metadata], controller: controller, presentViewController: controller, sender: nil)
                 }
             }
         }

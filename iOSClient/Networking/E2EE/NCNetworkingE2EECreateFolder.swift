@@ -31,6 +31,11 @@ class NCNetworkingE2EECreateFolder: NSObject {
             }
         }
 
+        error = await networkingE2EE.validateCurrentServerKey(account: session.account)
+        guard error == .success else {
+            return error
+        }
+
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
 
@@ -140,10 +145,13 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await self.database.createDirectory(metadata: metadata)
 
         // SEND METADATA FOR THE NEW FOLDER
-        await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrlFileName, account: session.account)
+        await NCNetworkingE2EE().createInitialMetadata(
+            serverUrl: serverUrlFileName,
+            account: session.account
+        )
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+            delegate.transferChange(networkingStatus: self.global.networkingStatusCreateFolder,
                                     account: metadata.account,
                                     fileName: metadata.fileName,
                                     serverUrl: metadata.serverUrl,

@@ -6,21 +6,73 @@
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@downloads@</string>
+		<key>downloads</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d download rimanente consentito</string>
+			<key>many</key>
+			<string>%d download rimanenti consentiti</string>
+			<key>other</key>
+			<string>%d download rimanenti consentiti</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_items_left_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d elemento rimasto</string>
+			<key>many</key>
+			<string>%d elementi rimasti</string>
+			<key>other</key>
+			<string>%d elementi rimasti</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Hai %d elemento da salvare</string>
+			<key>many</key>
+			<string>Hai %d elementi da salvare</string>
+			<key>other</key>
+			<string>Hai %d elementi da salvare</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d fallito</string>
+			<key>many</key>
+			<string>%d falliti</string>
+			<key>other</key>
+			<string>%d falliti</string>
+		</dict>
 	</dict>
 </dict>
 </plist>

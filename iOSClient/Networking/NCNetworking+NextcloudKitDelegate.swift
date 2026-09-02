@@ -54,6 +54,13 @@ extension NCNetworking {
                 return
             }
             if error == .success {
+                if isInBackground() {
+                    await downloadSuccess(withMetadata: metadata, etag: etag)
+                } else {
+#if !EXTENSION
+                    await NCNetworking.shared.metadataDownloadTranfersSuccess.append(metadata: metadata, etag: etag)
+#endif
+                }
                 await downloadSuccess(withMetadata: metadata, etag: etag)
             } else {
                 await downloadError(withMetadata: metadata, error: error)
@@ -149,12 +156,12 @@ extension NCNetworking {
                     } else {
 #if !EXTENSION
                         await NCManageDatabase.shared.deleteMetadataAsync(ocId: metadata.ocId)
-                        await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
-                                                                                 ocId: ocId,
-                                                                                 date: date,
-                                                                                 etag: etag,
-                                                                                 ownerId: ownerId,
-                                                                                 permissions: permissions)
+                        await NCNetworking.shared.metadataUploadTranfersSuccess.append(metadata: metadata,
+                                                                                       ocId: ocId,
+                                                                                       date: date,
+                                                                                       etag: etag,
+                                                                                       ownerId: ownerId,
+                                                                                       permissions: permissions)
 #endif
                     }
                 } else {

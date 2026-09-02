@@ -285,7 +285,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String,
+    func transferChange(networkingStatus: String,
                         account: String,
                         fileName: String,
                         serverUrl: String,
@@ -301,7 +301,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
         }
 
         Task {@MainActor in
-            switch status {
+            switch networkingStatus {
             // DOWNLOAD
             case self.global.networkingStatusDownloading:
                 if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {

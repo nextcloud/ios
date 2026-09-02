@@ -24,7 +24,6 @@
 //
 
 import UIKit
-import Parchment
 import DropDown
 import NextcloudKit
 import ContactsUI
@@ -75,7 +74,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
 
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 0
@@ -86,7 +85,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
 
         tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
@@ -107,6 +106,8 @@ class NCShare: UIViewController, NCSharePagingContent {
             } else {
                 checkSharedWithYou()
             }
+
+            self.metadata = await NCNetworking.shared.updateMetadataPlaceholder(metadata)
 
             reloadData()
 
@@ -162,34 +163,35 @@ class NCShare: UIViewController, NCSharePagingContent {
         avatarButton.menu = NCContextMenuProfile(userId: metadata.ownerId, session: session, viewController: self).viewMenu()
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
-        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+        let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+            self.sharedWithYouByImage.image = image
+        }
+        let user = metadata.ownerId
+        let account = metadata.account
 
-        if results.image == nil {
-            let etag = self.database.getTableAvatar(fileName: fileName)?.etag
-            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+        Task {
+            let etagResource = await database.getTableAvatarAsync(fileName: fileName)?.etag
+            await NCTransferCoordinator.shared.start(identifier: fileName,
+                                                     priority: .userInitiated) {
+                let results = await NextcloudKit.shared.downloadAvatarAsync(
+                    user: user,
+                    fileNameLocalPath: fileNameLocalPath,
+                    sizeImage: NCGlobal.shared.avatarSize,
+                    avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                    etagResource: etagResource,
+                    account: account)
 
-            NextcloudKit.shared.downloadAvatar(
-                user: metadata.ownerId,
-                fileNameLocalPath: fileNameLocalPath,
-                sizeImage: NCGlobal.shared.avatarSize,
-                avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etagResource: etag,
-                account: metadata.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
-                                                                                                    path: self.metadata.ownerId,
-                                                                                                    name: "downloadAvatar")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                } completion: { _, imageAvatar, _, etag, _, error in
-                    if error == .success, let etag = etag, let imageAvatar = imageAvatar {
-                        self.database.addAvatar(fileName: fileName, etag: etag)
-                        self.sharedWithYouByImage.image = imageAvatar
-                        self.reloadData()
-                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = self.database.setAvatarLoaded(fileName: fileName) {
-                        self.sharedWithYouByImage.image = imageAvatar
+                if results.error == .success,
+                   let image = results.imageAvatar,
+                   let etag = results.etag,
+                   etag != etagResource {
+                    await self.database.addAvatarAsync(fileName: fileName, etag: etag)
+                    await MainActor.run {
+                        self.sharedWithYouByImage.image = image
                     }
                 }
+            }
         }
 
         reloadData()

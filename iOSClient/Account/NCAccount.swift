@@ -194,7 +194,7 @@ class NCAccount: NSObject {
             return
         }
         let windowScene = SceneManager.shared.getWindowScene(controller: controller)
-        await showErrorBanner(windowScene: windowScene, text: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), errorCode: NCGlobal.shared.errorUnauthorized401)
+        await showErrorBanner(windowScene: windowScene, text: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), errorCode: NCGlobal.shared.errorUnauthorized)
 
         let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tblAccount.urlBase, token: token, account: account) { task in
             Task {
@@ -219,10 +219,16 @@ class NCAccount: NSObject {
             nkLog(debug: "Set Remote Wipe Completition error code: \(resultsSetWipe.error.errorCode)")
         }
 
+        if account.count > 0 {
+            await switchToFirstAvailableAccount(controller: controller)
+        }
+    }
+
+    /// Presents the login (or intro) screen if no account remains.
+    func switchToFirstAvailableAccount(controller: NCMainTabBarController?) async {
         let accounts = await NCManageDatabase.shared.getAccountsAsync()
 
         if let accounts,
-           account.count > 0,
            let account = accounts.first {
                 await changeAccount(account, userProfile: nil, controller: controller)
         } else {

@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-FileCopyrightText: 2026 Rasmus Wøldike
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
@@ -47,9 +48,9 @@ class NCAskAuthorization: NSObject {
     func askAuthorizationPhotoLibrary(controller: UIViewController?, completion: @escaping (_ hasPermission: Bool) -> Void) {
         DispatchQueue.main.async {
             switch PHPhotoLibrary.authorizationStatus() {
-            case PHAuthorizationStatus.authorized:
+            case PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited:
                 completion(true)
-            case PHAuthorizationStatus.denied, PHAuthorizationStatus.limited, PHAuthorizationStatus.restricted:
+            case PHAuthorizationStatus.denied, PHAuthorizationStatus.restricted:
                 let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_photolibrary_", comment: ""), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
 #if !EXTENSION

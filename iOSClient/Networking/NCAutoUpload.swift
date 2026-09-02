@@ -103,8 +103,12 @@ class NCAutoUpload: NSObject {
         for (index, asset) in assets.enumerated() {
             let fileName = fileNames[index]
 
-            // Convert HEIC if compatibility mode is on
-            let fileNameCompatible = formatCompatibility && (fileName as NSString).pathExtension.lowercased() == "heic" ? (fileName as NSString).deletingPathExtension + ".jpg" : fileName
+            let sourceFileExtension = (fileName as NSString).pathExtension.lowercased()
+            let fileNameCompatible = NCCameraRoll.outputFileName(
+                for: fileName,
+                sourceFileExtension: sourceFileExtension,
+                nativeFormat: !formatCompatibility
+            )
 
             if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
                 continue
@@ -117,7 +121,7 @@ class NCAutoUpload: NSObject {
             let uploadSession = onWWAN ? self.networking.sessionUploadBackgroundWWan : self.networking.sessionUploadBackground
 
             let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
-                fileName: fileName,
+                fileName: fileNameCompatible,
                 ocId: UUID().uuidString,
                 serverUrl: serverUrl,
                 session: session,
@@ -167,29 +171,33 @@ class NCAutoUpload: NSObject {
             await self.database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: date, account: session.account)
         }
 
-        if !metadatas.isEmpty {
-            let metadatasToAdd: [tableMetadata]
-            if filterExistingQueue {
-                metadatasToAdd = await self.database.filterAutoUploadMetadatasNotAlreadyQueuedAsync(metadatas)
-            } else {
-                metadatasToAdd = metadatas
-            }
-            guard !metadatasToAdd.isEmpty else {
-                return 0
-            }
-
-            if autoMkcol {
-                await self.database.addMetadatasAsync(metadatas)
-            } else {
-                let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
-                    assets: assets,
-                    useSubFolder: tblAccount.autoUploadCreateSubfolder,
-                    session: session)
-                await self.database.addMetadatasAsync(metadatasFolder + metadatas)
-            }
+        guard !metadatas.isEmpty else {
+            return 0
         }
 
-        return metadatas.count
+        let metadatasToAdd: [tableMetadata]
+
+        if filterExistingQueue {
+            metadatasToAdd = await self.database.filterAutoUploadMetadatasNotAlreadyQueuedAsync(metadatas)
+        } else {
+            metadatasToAdd = metadatas
+        }
+
+        guard !metadatasToAdd.isEmpty else {
+            return 0
+        }
+
+        if autoMkcol {
+            await self.database.addMetadatasAsync(metadatasToAdd)
+        } else {
+            let metadatasFolder = await NCManageDatabaseCreateMetadata().createMetadatasFolderAsync(
+                assets: assets,
+                useSubFolder: tblAccount.autoUploadCreateSubfolder,
+                session: session)
+            await self.database.addMetadatasAsync(metadatasFolder + metadatasToAdd)
+        }
+
+        return metadatasToAdd.count
     }
 
     // MARK: -

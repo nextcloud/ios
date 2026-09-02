@@ -9,6 +9,10 @@ struct NCManageE2EEView: View {
     @ObservedObject var model: NCManageE2EE
     @Environment(\.presentationMode) var presentationMode
 
+    @State private var showPasswordPrompt = false
+    @State private var password = ""
+    @State private var passwordCompletion: (@MainActor (String?) async -> Void)?
+
     var body: some View {
         VStack {
             if model.isEndToEndEnabled {
@@ -80,6 +84,66 @@ struct NCManageE2EEView: View {
                         }
                     }
 #if DEBUG
+                    if let certificateValidity = model.certificateValidity {
+                        Section {
+                            LabeledContent(
+                                NSLocalizedString("_certificate_valid_from_", comment: ""),
+                                value: certificateValidity.notBefore.formatted(
+                                    date: .long,
+                                    time: .standard
+                                )
+                            )
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
+
+                            LabeledContent {
+                                Text(
+                                    certificateValidity.notAfter.formatted(
+                                        date: .long,
+                                        time: .standard
+                                    )
+                                )
+                                .foregroundStyle(
+                                    certificateExpirationColor(certificateValidity.notAfter)
+                                )
+                                .fontWeight(
+                                    Date() >= (Calendar.current.date(
+                                        byAdding: .month,
+                                        value: -1,
+                                        to: certificateValidity.notAfter
+                                    ) ?? certificateValidity.notAfter) ? .semibold : .regular
+                                )
+                            } label: {
+                                Text(NSLocalizedString("_certificate_valid_until_", comment: ""))
+                            }
+                            .cappedFont(.body, maxDynamicType: .accessibility2)
+
+                            HStack {
+                                Label {
+                                    Text(NSLocalizedString("_certificate_renew_", comment: ""))
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                                } icon: {
+                                    Image(systemName: "arrow.clockwise")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                                        .fontWeight(.light)
+                                        .frame(width: 25, height: 25)
+                                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                                }
+                                Spacer()
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                requestPassword { password in
+                                    await model.renewCertificate(password: password)
+                                }
+                            }
+                        } header: {
+                            Text(NSLocalizedString("_certificate_", comment: ""))
+                                .font(.headline)
+                        }
+                    }
+
                     deleteCerificateSection
 #endif
                 }
@@ -128,15 +192,36 @@ struct NCManageE2EEView: View {
                 presentationMode.wrappedValue.dismiss()
             }
         }
+        .alert(NSLocalizedString("_password_", comment: ""), isPresented: $showPasswordPrompt) {
+            SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+
+            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {
+                password = ""
+                passwordCompletion = nil
+            }
+
+            Button(NSLocalizedString("_confirm_", comment: "")) {
+                guard let completion = passwordCompletion else { return }
+                let submittedPassword = password.isEmpty ? nil : password
+
+                password = ""
+                passwordCompletion = nil
+
+                Task {
+                    await completion(submittedPassword)
+                }
+            }
+        }
     }
 
     @ViewBuilder
     var deleteCerificateSection: some View {
         Section(header: Text("Delete Server keys").font(.headline),
                 footer: Text("Available only in debug mode").font(.footnote)) {
+
             HStack {
                 Label {
-                    Text("Delete Certificate")
+                    Text("Delete PublicKey")
                         .cappedFont(.body, maxDynamicType: .accessibility2)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
@@ -151,25 +236,21 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EECertificate(account: model.session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: model.session.account,
-                                                                                                    name: "deleteE2EECertificate")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                } completion: { _, _, error in
-                    Task {
-                        if error == .success {
-                            await showInfoBanner(windowScene: model.windowScene,
-                                                 text: "E2E delete certificate")
-                        } else {
-                            await showErrorBanner(windowScene: model.windowScene,
-                                                  text: error.errorDescription,
-                                                  errorCode: error.errorCode)
-                        }
+                requestPassword { password in
+                    let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
+                    let results = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: model.session.account, password: password, options: options)
+
+                    if results.error == .success {
+                        await showInfoBanner(windowScene: model.windowScene,
+                                             text: "E2E delete publicKey")
+                    } else {
+                        await showErrorBanner(windowScene: model.windowScene,
+                                              text: results.error.errorDescription,
+                                              errorCode: results.error.errorCode)
                     }
                 }
             }
+
             HStack {
                 Label {
                     Text("Delete PrivateKey")
@@ -187,26 +268,68 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EEPrivateKey(account: model.session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: model.session.account,
-                                                                                                    name: "deleteE2EEPrivateKey")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                requestPassword { password in
+                    let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
+                    let results = await NextcloudKit.shared.deleteE2EEPrivateKeyAsync(account: model.session.account, password: password ?? "", options: options)
+
+                    if results.error == .success {
+                        await showInfoBanner(windowScene: model.windowScene,
+                                             text: "E2E delete privateKey")
+                    } else {
+                        await showErrorBanner(windowScene: model.windowScene,
+                                              text: results.error.errorDescription,
+                                              errorCode: results.error.errorCode)
                     }
-                } completion: { _, _, error in
-                    Task {
-                        if error == .success {
-                            await showInfoBanner(windowScene: model.windowScene,
-                                                 text: "E2E delete privateKey")
-                        } else {
-                            await showErrorBanner(windowScene: model.windowScene,
-                                                  text: error.errorDescription,
-                                                  errorCode: error.errorCode)
-                        }
+                }
+            }
+
+            HStack {
+                Label {
+                    Text("Delete Keys and files")
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle")
+                        .resizable()
+                        .scaledToFit()
+                        .cappedFont(.body, maxDynamicType: .accessibility2)
+                        .fontWeight(.light)
+                        .frame(width: 25, height: 25)
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
+                }
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                requestPassword { password in
+                    let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
+                    let results = await NextcloudKit.shared.deleteE2EEKeysAsync(account: model.session.account, password: password ?? "", options: options)
+                    if results.error == .success {
+                        await showInfoBanner(windowScene: model.windowScene,
+                                             text: "E2E delete Keys from FS")
+                    } else {
+                        await showErrorBanner(windowScene: model.windowScene,
+                                              text: results.error.errorDescription,
+                                              errorCode: results.error.errorCode)
                     }
                 }
             }
         }
+    }
+
+    private func certificateExpirationColor(_ expirationDate: Date) -> Color {
+        let warningDate = Calendar.current.date(
+            byAdding: .month,
+            value: -1,
+            to: expirationDate
+        ) ?? expirationDate
+
+        return Date() >= warningDate ? .orange : .primary
+    }
+
+    private func requestPassword(action: @escaping @MainActor (String?) async -> Void) {
+        password = ""
+        passwordCompletion = action
+        showPasswordPrompt = true
     }
 }
 

@@ -39,6 +39,12 @@ final class NCAppStateManager {
             nkLog(debug: "Application did become active")
         }
 
+        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main) { _ in
+            Task {
+                await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
+            }
+        }
+
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
 

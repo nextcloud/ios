@@ -2,16 +2,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import UIKit
 
 struct NCDirectEditorAdapter {
-    /// Editor ID passed to the textOpenFile API.
+    /// Editor ID passed to the Direct Editing API.
     let apiKey: String
-    /// Value set on NCViewerNextcloudText.editor — controls user agent and JS behaviour.
+    /// Value passed to `NCViewerDirectEditing` to control editor-specific webview behaviour.
     let viewControllerEditor: String
-    /// Resolves the custom user agent string via NCUtility.
-    let userAgent: (NCUtility) -> String
-    /// Returns the fallback file extension for a given templateId when the template API returns no templates.
-    let defaultExt: (_ templateId: String) -> String
+    /// Resolves the editor-specific custom user agent.
+    let userAgent: () -> String
 
     /// Lookup an adapter for the first matching editor ID in the provided list.
     /// The list should already be lowercased.
@@ -21,38 +20,52 @@ struct NCDirectEditorAdapter {
 
     // MARK: - Registry
 
-    private static func officeDefaultExt(_ templateId: String) -> String {
-        switch templateId {
-        case "spreadsheet": return "xlsx"
-        case "presentation": return "pptx"
-        default: return "docx"
-        }
-    }
-
     private static let registry: [String: NCDirectEditorAdapter] = [
-        "text": NCDirectEditorAdapter(
-            apiKey: "text",
-            viewControllerEditor: "nextcloud text",
-            userAgent: { $0.getCustomUserAgentNCText() },
-            defaultExt: { _ in "md" }
+        NCGlobal.shared.editorText: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorText,
+            viewControllerEditor: NCGlobal.shared.editorText,
+            userAgent: nextcloudTextUserAgent
         ),
-        "onlyoffice": NCDirectEditorAdapter(
-            apiKey: "onlyoffice",
-            viewControllerEditor: "onlyoffice",
-            userAgent: { $0.getCustomUserAgentOnlyOffice() },
-            defaultExt: officeDefaultExt
+        NCGlobal.shared.editorOnlyOffice: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorOnlyOffice,
+            viewControllerEditor: NCGlobal.shared.editorOnlyOffice,
+            userAgent: mobileWebEditorUserAgent
         ),
-        "eurooffice": NCDirectEditorAdapter(
-            apiKey: "eurooffice",
-            viewControllerEditor: "onlyoffice",
-            userAgent: { $0.getCustomUserAgentOnlyOffice() },
-            defaultExt: officeDefaultExt
+        NCGlobal.shared.editorEuroOffice: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorEuroOffice,
+            viewControllerEditor: NCGlobal.shared.editorEuroOffice,
+            userAgent: mobileWebEditorUserAgent
         ),
-        "whiteboard": NCDirectEditorAdapter(
-            apiKey: "whiteboard",
-            viewControllerEditor: "onlyoffice",
-            userAgent: { $0.getCustomUserAgentOnlyOffice() },
-            defaultExt: { _ in "whiteboard" }
+        NCGlobal.shared.editorCollabora: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorCollabora,
+            viewControllerEditor: NCGlobal.shared.editorCollabora,
+            userAgent: { NCBrandOptions.shared.getUserAgent() }
+        ),
+        NCGlobal.shared.editorWhiteboard: NCDirectEditorAdapter(
+            apiKey: NCGlobal.shared.editorWhiteboard,
+            viewControllerEditor: NCGlobal.shared.editorWhiteboard,
+            userAgent: mobileWebEditorUserAgent
         )
     ]
+
+    private static func nextcloudTextUserAgent() -> String {
+        let baseUserAgent = NCBrandOptions.shared.getUserAgent()
+        guard UIDevice.current.userInterfaceIdiom == .phone else {
+            return baseUserAgent
+        }
+
+        // NOTE: Hardcoded (May 2022)
+        // Tested for iPhone SE (1st), iOS 12 iPhone Pro Max, iOS 15.4
+        // 605.1.15 = WebKit build version
+        // 15E148 = frozen iOS build number according to: https://chromestatus.com/feature/4558585463832576
+        return baseUserAgent + " AppleWebKit/605.1.15 Mobile/15E148"
+    }
+
+    private static func mobileWebEditorUserAgent() -> String {
+        let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
+        }
+        return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
+    }
 }

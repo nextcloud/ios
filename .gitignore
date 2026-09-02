@@ -35,12 +35,8 @@ DerivedData
 *.hmap
 *.xccheckout
 
-## Package
-Carthage/
-
 ### SwiftPackageManager ###
 .swiftpm
-Package.resolved
 
-*.generated.swift
-/.env-vars
+## Claude Code
+.claude/
