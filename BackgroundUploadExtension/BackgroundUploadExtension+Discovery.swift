@@ -26,6 +26,7 @@ extension BackgroundUploadExtension {
             autoUploadServerUrlBase: autoUploadServerUrlBase
         )
 
+        let livePhotoEnabled = NCPreferences().livePhoto
         let fetchOptions = PHFetchOptions()
         var mediaPredicates: [NSPredicate] = []
 
@@ -75,33 +76,69 @@ extension BackgroundUploadExtension {
                 break
             }
 
-            guard !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
+            let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && livePhotoEnabled
+
+            guard isLivePhoto || !skipAssetLocalIdentifiers.contains(asset.localIdentifier) else {
                 continue
             }
 
-            guard let resource = primaryUploadResource(for: asset),
-                  let originalFileName = resource.filename,
+            guard let primaryResource = primaryUploadResource(for: asset),
+                  let originalFileName = primaryResource.filename,
                   !originalFileName.isEmpty else {
                 logError("Upload resource not found for asset \(asset.localIdentifier)")
                 continue
             }
 
             let creationDate = asset.creationDate ?? Date()
-            let fileName = utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
+            let primaryFileName = utilityFileSystem.createFileName(originalFileName, fileDate: creationDate, fileType: asset.mediaType)
+            let primaryClassFile = asset.mediaType == .video ? NKTypeClassFile.video.rawValue : NKTypeClassFile.image.rawValue
 
-            guard !skipFileNames.contains(fileName) else {
-                continue
+            var uploadResources: [(resource: PHAssetResource, fileName: String, classFile: String, livePhotoFile: String)]
+
+            if isLivePhoto {
+                guard let pairedVideoResource = pairedVideoResource(for: asset) else {
+                    logError("Paired video resource not found for Live Photo asset \(asset.localIdentifier)")
+                    continue
+                }
+
+                let videoFileName = (primaryFileName as NSString).deletingPathExtension + ".mov"
+
+                uploadResources = [
+                    (primaryResource, primaryFileName, NKTypeClassFile.image.rawValue, videoFileName),
+                    (pairedVideoResource, videoFileName, NKTypeClassFile.video.rawValue, primaryFileName)
+                ]
+            } else {
+                uploadResources = [
+                    (primaryResource, primaryFileName, primaryClassFile, "")
+                ]
             }
 
-            guard await createPendingMetadata(asset: asset, resource: resource, fileName: fileName, account: account) != nil else {
-                continue
+            let resourcesToUpload = uploadResources.filter {
+                !skipFileNames.contains($0.fileName)
             }
 
-            skipFileNames.insert(fileName)
-            skipAssetLocalIdentifiers.insert(asset.localIdentifier)
-            lastQueuedDate = creationDate
-            remaining -= 1
-            madeProgress = true
+            guard resourcesToUpload.count <= remaining else {
+                break
+            }
+
+            for uploadResource in resourcesToUpload {
+                guard await createPendingMetadata(
+                    asset: asset,
+                    resource: uploadResource.resource,
+                    fileName: uploadResource.fileName,
+                    classFile: uploadResource.classFile,
+                    livePhotoFile: uploadResource.livePhotoFile,
+                    account: account
+                ) != nil else {
+                    continue
+                }
+
+                skipFileNames.insert(uploadResource.fileName)
+                skipAssetLocalIdentifiers.insert(asset.localIdentifier)
+                lastQueuedDate = creationDate
+                remaining -= 1
+                madeProgress = true
+            }
         }
 
         if let lastQueuedDate {
@@ -111,7 +148,7 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
-    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, fileName: String, account: tableAccount) async -> tableMetadata? {
+    private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, fileName: String, classFile: String, livePhotoFile: String, account: tableAccount) async -> tableMetadata? {
         let session = NCSession.Session(
             account: account.account,
             urlBase: account.urlBase,
@@ -147,6 +184,8 @@ extension BackgroundUploadExtension {
         metadata.nativeFormat = true
         metadata.contentType = resource.contentType.preferredMIMEType ?? "application/octet-stream"
         metadata.typeIdentifier = resource.contentType.identifier
+        metadata.classFile = classFile
+        metadata.livePhotoFile = livePhotoFile
         metadata.size = Int64(resource.dataSize ?? 0)
         metadata.width = asset.pixelWidth
         metadata.height = asset.pixelHeight
@@ -192,6 +231,16 @@ extension BackgroundUploadExtension {
 
         default:
             return nil
+        }
+    }
+
+    private func pairedVideoResource(for asset: PHAsset) -> PHAssetResource? {
+        let resources = PHAssetResource.assetResources(for: asset)
+
+        return resources.first {
+            $0.type == .fullSizePairedVideo
+        } ?? resources.first {
+            $0.type == .pairedVideo
         }
     }
 

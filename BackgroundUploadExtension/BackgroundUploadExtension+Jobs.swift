@@ -352,6 +352,22 @@ extension BackgroundUploadExtension {
     private func uploadResource(for asset: PHAsset, metadata: tableMetadata) -> PHAssetResource? {
         let resources = PHAssetResource.assetResources(for: asset)
 
+        if metadata.isLivePhotoVideo {
+            return resources.first {
+                $0.type == .fullSizePairedVideo
+            } ?? resources.first {
+                $0.type == .pairedVideo
+            }
+        }
+
+        if metadata.isLivePhotoImage {
+            return resources.first {
+                $0.type == .fullSizePhoto
+            } ?? resources.first {
+                $0.type == .photo
+            }
+        }
+
         if let resource = resources.first(where: {
             $0.filename?.caseInsensitiveCompare(metadata.fileName) == .orderedSame
         }) {
@@ -360,18 +376,18 @@ extension BackgroundUploadExtension {
 
         switch asset.mediaType {
         case .image:
-            return resources.first(where: {
+            return resources.first {
                 $0.type == .fullSizePhoto
-            }) ?? resources.first(where: {
+            } ?? resources.first {
                 $0.type == .photo
-            })
+            }
 
         case .video:
-            return resources.first(where: {
+            return resources.first {
                 $0.type == .fullSizeVideo
-            }) ?? resources.first(where: {
+            } ?? resources.first {
                 $0.type == .video
-            })
+            }
 
         default:
             return nil

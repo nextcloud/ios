@@ -93,6 +93,17 @@ extension BackgroundUploadExtension {
 
         await database.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
 
+        if metadata.isLivePhoto,
+           let capabilities = await database.getCapabilities(account: metadata.account),
+           capabilities.isLivePhotoServerAvailable {
+            await database.setLivePhotoVideo(
+                account: metadata.account,
+                serverUrlFileName: metadata.serverUrlFileName,
+                fileId: metadata.fileId,
+                classFile: metadata.classFile
+            )
+        }
+
         logInfo("Completed background upload for \(metadata.fileName), job: \(job.localIdentifier), ocId: \(ocId)")
 
         return true
