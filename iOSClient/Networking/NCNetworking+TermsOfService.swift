@@ -12,7 +12,7 @@ extension NCNetworking {
     func termsOfService(account: String) async {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.termsOfService,
-              let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier),
+              let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }),
               controller.presentedViewController as? UIHostingController<NCTermOfServiceModelView> == nil
         else {
@@ -45,7 +45,7 @@ extension NCNetworking {
     func signTermsOfService(account: String, termId: Int) async -> NKError? {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.termsOfService,
-              let groupDefaults = UserDefaults(suiteName: nkComm.groupIdentifier)
+              let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
         else {
             return nil
         }

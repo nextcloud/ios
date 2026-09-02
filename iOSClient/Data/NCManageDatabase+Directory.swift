@@ -84,6 +84,72 @@ extension NCManageDatabase {
         }
     }
 
+    /// Creates or updates multiple directory records and their associated metadata in a single Realm write transaction.
+    ///
+    /// This method is the batched equivalent of `createDirectory(metadata:withEtag:)` and avoids opening
+    /// one write transaction per directory.
+    ///
+    /// - Parameters:
+    ///   - metadatas: The directory metadata items to create or update.
+    ///   - withEtag: A Boolean value indicating whether the directory `etag` should be updated. Defaults to `true`.
+    func createDirectoriesAsync(metadatas: [tableMetadata], withEtag: Bool = true) async {
+        if metadatas.isEmpty {
+            return
+        }
+        let detachedMetadatas = metadatas.map { $0.detachedCopy() }
+
+        await core.performRealmWriteAsync { realm in
+            let utilityFileSystem = NCUtilityFileSystem()
+
+            for metadata in detachedMetadatas {
+                var directoryServerUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+
+                if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                    directoryServerUrl = metadata.serverUrl
+                }
+
+                if let tableDirectory = realm.object(ofType: tableDirectory.self, forPrimaryKey: metadata.ocId) {
+                    if withEtag {
+                        tableDirectory.etag = metadata.etag
+                    }
+
+                    tableDirectory.favorite = metadata.favorite
+                    tableDirectory.permissions = metadata.permissions
+                    tableDirectory.richWorkspace = metadata.richWorkspace
+                    tableDirectory.lastSyncDate = NSDate()
+                } else {
+                    let directory = tableDirectory()
+                    directory.account = metadata.account
+
+                    if withEtag {
+                        directory.etag = metadata.etag
+                    }
+
+                    directory.favorite = metadata.favorite
+                    directory.fileId = metadata.fileId
+                    directory.ocId = metadata.ocId
+                    directory.permissions = metadata.permissions
+                    directory.richWorkspace = metadata.richWorkspace
+                    directory.serverUrl = directoryServerUrl
+                    directory.lastSyncDate = NSDate()
+
+                    realm.add(directory, update: .all)
+                }
+
+                let results = realm.objects(tableMetadata.self)
+                    .filter(
+                        "account == %@ AND fileName == %@ AND serverUrl == %@",
+                        metadata.account,
+                        metadata.fileName,
+                        metadata.serverUrl
+                    )
+
+                realm.delete(results)
+                realm.add(metadata, update: .all)
+            }
+        }
+    }
+
     /// Asynchronously deletes a directory and all its subdirectories, along with their associated metadata and local files.
     ///
     /// This function performs the following steps inside a Realm write transaction:

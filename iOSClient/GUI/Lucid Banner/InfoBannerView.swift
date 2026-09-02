@@ -14,7 +14,7 @@ func showInfoBanner(windowScene: UIWindowScene?,
                     footnote: String? = nil,
                     errorCode: Int? = nil) async {
     guard let windowScene,
-          let window = windowScene.windows.first(where: \.isKeyWindow) else {
+          let window = windowScene.resolvedWindow else {
         return
     }
 

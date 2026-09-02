@@ -109,9 +109,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "NCTrash")
         }
-
-        // Cancel Queue & Retrieves Properties
-        NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
     }
 
     // MARK: TAP EVENT

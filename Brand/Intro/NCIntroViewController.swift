@@ -54,7 +54,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
             let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(actionCancel(_:)))
             navigationItemCancel.tintColor = textColor
-            navigationItem.leftBarButtonItem = navigationItemCancel
+            navigationItem.rightBarButtonItem = navigationItemCancel
         }
 
         pageControl.currentPageIndicatorTintColor = textColor

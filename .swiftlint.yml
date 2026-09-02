@@ -47,5 +47,6 @@ excluded:
   - iOSClient/NCGlobal.swift
   - iOSClient/Utility/NCLivePhoto.swift
   - DerivedData
+  - .claude
   
 reporter: "xcode"

@@ -34,7 +34,6 @@ public extension NCViewCertificateDetailsDelegate {
 }
 
 class NCViewCertificateDetails: UIViewController {
-
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
@@ -55,7 +54,9 @@ class NCViewCertificateDetails: UIViewController {
 
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = certificateTitle
-        buttonCancel.title = NSLocalizedString("_close_", comment: "")
+        buttonCancel.image = UIImage(systemName: "xmark")
+        buttonCancel.accessibilityLabel = NSLocalizedString("_close_", comment: "")
+        buttonCancel.title = nil
 
         if privateKeyString.isEmpty {
             self.privateKey.text = ""

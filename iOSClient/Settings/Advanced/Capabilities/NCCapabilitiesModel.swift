@@ -34,6 +34,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     }
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let global = NCGlobal.shared
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -42,9 +43,12 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        var textEditor = false
-        var onlyofficeEditors = false
         let cap = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+        let directEditingEditorIdentifiers = Set(cap.directEditingEditors.map { $0.identifier.lowercased() })
+        let textEditor = directEditingEditorIdentifiers.contains(global.editorText)
+        let onlyofficeEditor = directEditingEditorIdentifiers.contains(global.editorOnlyOffice)
+        let euroOfficeEditor = directEditingEditorIdentifiers.contains(global.editorEuroOffice)
+        let collaboraDirectEditing = directEditingEditorIdentifiers.contains(global.editorCollabora)
         capabililies.removeAll()
 
         var image = utility.loadImage(named: "person.fill.badge.plus")
@@ -68,20 +72,15 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
         image = utility.loadImage(named: "trash")
         capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: cap.filesUndelete))
 
-        let editors = cap.directEditingCreators
-        for editor in editors {
-            if editor.editor == "text" {
-                textEditor = true
-            } else if editor.editor == "onlyoffice" {
-                onlyofficeEditors = true
-            }
-        }
-
         capabililies.append(Capability(text: "Text", image: utility.loadImage(named: "doc.text"), resize: false, available: textEditor))
 
-        capabililies.append(Capability(text: "ONLYOFFICE", image: utility.loadImage(named: "onlyoffice"), resize: true, available: onlyofficeEditors))
+        capabililies.append(Capability(text: "Euro-Office", image: utility.loadImage(named: "eurooffice"), resize: true, available: euroOfficeEditor))
 
-        capabililies.append(Capability(text: "Collabora", image: utility.loadImage(named: "collabora"), resize: true, available: cap.richDocumentsEnabled))
+        capabililies.append(Capability(text: "OnlyOffice", image: utility.loadImage(named: "onlyoffice"), resize: true, available: onlyofficeEditor))
+
+        capabililies.append(Capability(text: "Collabora (Direct Editing)", image: utility.loadImage(named: "collabora"), resize: true, available: collaboraDirectEditing))
+
+        capabililies.append(Capability(text: "Collabora (Richdocuments legacy)", image: utility.loadImage(named: "collabora"), resize: true, available: cap.richDocumentsEnabled))
 
         capabililies.append(Capability(text: "User Status", image: utility.loadImage(named: "moon"), resize: false, available: cap.userStatusEnabled))
 

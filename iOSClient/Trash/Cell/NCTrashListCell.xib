@@ -15,7 +15,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="620" height="161"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="ImageItem">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="Image">
                         <rect key="frame" x="45" y="60.5" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="Dpd-Xj-z4U"/>
@@ -138,7 +138,7 @@
             <connections>
                 <outlet property="buttonMore" destination="yhy-xd-w5C" id="agm-M9-xtq"/>
                 <outlet property="buttonRestore" destination="3mk-e2-iDg" id="rGX-0C-OHo"/>
-                <outlet property="imageItem" destination="w2m-Vw-hpd" id="iY5-ed-crD"/>
+                <outlet property="image" destination="w2m-Vw-hpd" id="Oip-qN-pvs"/>
                 <outlet property="imageItemLeftConstraint" destination="mBb-ff-7HD" id="fsR-5N-1NC"/>
                 <outlet property="imageMore" destination="dgL-g5-Nkc" id="r7x-Ib-4nz"/>
                 <outlet property="imageRestore" destination="nwZ-pi-Igj" id="d9Y-zK-8dx"/>

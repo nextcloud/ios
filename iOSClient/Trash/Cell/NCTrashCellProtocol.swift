@@ -5,11 +5,11 @@
 import UIKit
 
 protocol NCTrashCellProtocol {
-    var objectId: String { get set }
+    var identifier: String { get set }
     var labelTitle: UILabel! { get set }
     var labelExtension: UILabel! { get set }
     var labelInfo: UILabel! { get set }
-    var imageItem: UIImageView! { get set }
+    var image: UIImageView! { get set }
     var statusImg: UIImageView? { get set }
 
     func selected(_ status: Bool, isEditMode: Bool, color: UIColor)
@@ -17,7 +17,7 @@ protocol NCTrashCellProtocol {
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
-        self.objectId = tableTrash.fileId
+        self.identifier = tableTrash.fileId
 
         setBidiSafeFilename(tableTrash.trashbinFileName, isDirectory: tableTrash.directory, titleLabel: labelTitle, extensionLabel: labelExtension)
 
@@ -36,9 +36,9 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.labelInfo?.text = dateFormatter.string(from: tableTrash.trashbinDeletionTime as Date)
         }
         if tableTrash.directory {
-            self.imageItem.image = NCImageCache.shared.getFolder(account: tableTrash.account)
+            self.image.image = NCImageCache.shared.getFolder(account: tableTrash.account)
         } else {
-            self.imageItem.image = image
+            self.image.image = image
             self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)
         }
 

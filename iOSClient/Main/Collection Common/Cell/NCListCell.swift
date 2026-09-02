@@ -412,7 +412,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 
 #if !EXTENSION
 extension NCCollectionViewCommon {
-    func listCell(cell: NCListCell, indexPath: IndexPath, metadata: tableMetadata) -> NCListCell {
+    func listCell(cell: NCListCell, indexPath: IndexPath, metadata: tableMetadata, existsImagePreview: Bool) -> NCListCell {
         defer {
             let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
             if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
@@ -422,7 +422,6 @@ extension NCCollectionViewCommon {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
-        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
 
         // CONTENT MODE
         cell.previewImg?.layer.borderWidth = 0
@@ -431,10 +430,6 @@ extension NCCollectionViewCommon {
             cell.previewImg?.contentMode = .scaleAspectFill
         } else {
             cell.previewImg?.contentMode = .scaleAspectFit
-        }
-
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
-            return cell
         }
 
         if let metadataFolder {
@@ -501,22 +496,15 @@ extension NCCollectionViewCommon {
         // AVATAR
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
+
             if let image = NCImageCache.shared.getImageCache(key: fileName) {
                 cell.setSharedAvatarImage(image)
             } else {
-                self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                    if let image {
-                        cell.setSharedAvatarImage(image)
-                        NCImageCache.shared.addImageCache(image: image, key: fileName)
-                    } else {
-                        let image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
-                        cell.setSharedAvatarImage(image)
-                    }
+                let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
-                    if !(tblAvatar?.loaded ?? false),
-                       self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                        self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: self.collectionView))
-                    }
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.setSharedAvatarImage(image)
+                    imageCache.addImageCache(image: image, key: fileName)
                 }
             }
         }

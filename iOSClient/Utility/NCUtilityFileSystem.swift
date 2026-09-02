@@ -119,6 +119,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
+    @discardableResult
     func cleanDirectoryProviderStorageOcId(_ ocId: String, userId: String, urlBase: String) -> String {
         let path = getDocumentStorage(userId: userId, urlBase: urlBase) + "/" + ocId
 
@@ -244,6 +245,17 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return false
     }
 
+    /// Returns the file size for a path if the file exists and can be read.
+    func fileSizeIfExists(_ metadata: tableMetadata) -> Bool {
+        let path = getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: path)
+            return attributes[.size] as? UInt64 ?? 0 > 0
+        } catch {
+            return false
+        }
+    }
+
     func fileProviderStorageSize(_ ocId: String, fileName: String, userId: String, urlBase: String) -> UInt64 {
         let fileNamePath = getDirectoryProviderStorageOcId(ocId, fileName: fileName, userId: userId, urlBase: urlBase)
         do {
@@ -254,18 +266,25 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return 0
     }
 
-    func fileProviderStorageImageExists(_ ocId: String, etag: String, ext: String, userId: String, urlBase: String) -> Bool {
-        let fileNamePath = getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext, userId: userId, urlBase: urlBase)
-        do {
-            let fileNamePathAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
-            let fileSize: UInt64 = fileNamePathAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            if fileSize > 0 {
-                return true
-            } else {
-                return false
-            }
-        } catch { }
-        return false
+    func fileProviderStorageImageExists(_ ocId: String,
+                                        etag: String,
+                                        ext: String,
+                                        userId: String,
+                                        urlBase: String) -> Bool {
+        let fileNamePath = getDirectoryProviderStorageImageOcId(
+            ocId,
+            etag: etag,
+            ext: ext,
+            userId: userId,
+            urlBase: urlBase
+        )
+
+        guard let attributes = try? fileManager.attributesOfItem(atPath: fileNamePath) else {
+            return false
+        }
+
+        let fileSize = attributes[.size] as? UInt64 ?? 0
+        return fileSize > 0
     }
 
     func fileProviderStorageImageExists(_ ocId: String, etag: String, userId: String, urlBase: String) -> Bool {
@@ -774,54 +793,113 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     func cleanUpAsync() async {
         let days = TimeInterval(NCPreferences().cleanUpDay)
-        if days == 0 {
+        guard days > 0 else {
             return
         }
+
         let database = NCManageDatabase.shared
         let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
-        let url = URL(fileURLWithPath: getDirectoryProviderStorage())
-        var offlineDir: [String] = []
+        let storageURL = URL(fileURLWithPath: getDirectoryProviderStorage())
         let manager = FileManager.default
+        var protectedOcIds = Set<String>()
 
-        let tblDirectories = await database.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
-        for tblDirectory in tblDirectories {
-            if let tblMetadata = await database.getMetadataFromOcIdAsync(tblDirectory.ocId) {
-                offlineDir.append(self.getDirectoryProviderStorageOcId(tblMetadata.ocId, userId: tblMetadata.userId, urlBase: tblMetadata.urlBase))
-            }
+        let directories = await database.getTablesDirectoryAsync(
+            predicate: NSPredicate(format: "offline == true"),
+            sorted: "serverUrl",
+            ascending: true
+        )
+
+        for directory in directories {
+            let serverUrl = directory.serverUrl.hasSuffix("/")
+                ? String(directory.serverUrl.dropLast())
+                : directory.serverUrl
+            let metadatas: [tableMetadata] = await database.getMetadatasAsync(
+                predicate: NSPredicate(
+                    format: "account == %@ AND directory == false AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)",
+                    directory.account,
+                    serverUrl,
+                    serverUrl + "/"
+                )
+            )
+
+            protectedOcIds.insert(directory.ocId)
+            protectedOcIds.formUnion(metadatas.map(\.ocId))
         }
 
-        let tblLocalFiles = await NCManageDatabase.shared.getTableLocalFilesAsync(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+        let localFiles = await database.getTableLocalFilesAsync(
+            predicate: NSPredicate(format: "offline == false"),
+            sorted: "lastOpeningDate",
+            ascending: true
+        )
 
-        let fileURLs = await enumerateFilesAsync(at: url, includingPropertiesForKeys: [.isRegularFileKey])
+        let localFilesByOcId = Dictionary(
+            uniqueKeysWithValues: localFiles.map { ($0.ocId, $0) }
+        )
+
+        let fileURLs = await enumerateFilesAsync(
+            at: storageURL,
+            includingPropertiesForKeys: [.isRegularFileKey]
+        )
+
+        var processedOcIds = Set<String>()
+
         for fileURL in fileURLs {
-            if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
-                if attributes[.size] as? Double == 0 { continue }
-                if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
-                // check directory offline
-                let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
-                if !filter.isEmpty {
+            guard let attributes = try? manager.attributesOfItem(atPath: fileURL.path),
+                  attributes[.type] as? FileAttributeType != .typeDirectory,
+                  ((attributes[.size] as? NSNumber)?.uint64Value ?? 0) > 0 else {
+                continue
+            }
+            let directoryURL = fileURL.deletingLastPathComponent()
+            let ocId = directoryURL.lastPathComponent
+
+            if protectedOcIds.contains(ocId) {
+                continue
+            }
+
+            if let modificationDate = attributes[.modificationDate] as? Date,
+               modificationDate < minimumDate {
+                let fileName = fileURL.lastPathComponent
+
+                if fileName.hasSuffix(NCGlobal.shared.previewExt256) ||
+                    fileName.hasSuffix(NCGlobal.shared.previewExt512) ||
+                    fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
+                    try? manager.removeItem(at: fileURL)
                     continue
                 }
-                // -----------------------
-                if let modificationDate = attributes[.modificationDate] as? Date,
-                   modificationDate < minimumDate {
-                    let fileName = fileURL.lastPathComponent
-                    if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
-                        try? manager.removeItem(atPath: fileURL.path)
-                    }
-                }
-                // -----------------------
-                let folderURL = fileURL.deletingLastPathComponent()
-                let ocId = folderURL.lastPathComponent
-                if let tblLocalFile = tblLocalFiles.filter({ $0.ocId == ocId }).first,
-                    (tblLocalFile.lastOpeningDate as Date) < minimumDate {
-                    do {
-                        try manager.removeItem(atPath: fileURL.path)
-                    } catch { }
-                    manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                    await NCManageDatabase.shared.deleteLocalFileAsync(id: ocId)
-                }
             }
+
+            guard !processedOcIds.contains(ocId),
+                  let localFile = localFilesByOcId[ocId],
+                  (localFile.lastOpeningDate as Date) < minimumDate else {
+                continue
+            }
+
+            processedOcIds.insert(ocId)
+
+            guard let directoryContents = try? manager.contentsOfDirectory(
+                at: directoryURL,
+                includingPropertiesForKeys: [.isRegularFileKey],
+                options: []
+            ) else {
+                continue
+            }
+
+            for itemURL in directoryContents {
+                guard let itemAttributes = try? manager.attributesOfItem(atPath: itemURL.path),
+                      itemAttributes[.type] as? FileAttributeType != .typeDirectory,
+                      ((itemAttributes[.size] as? NSNumber)?.uint64Value ?? 0) > 0 else {
+                    continue
+                }
+
+                try? manager.removeItem(at: itemURL)
+                manager.createFile(
+                    atPath: itemURL.path,
+                    contents: nil,
+                    attributes: nil
+                )
+            }
+
+            await database.deleteLocalFileAsync(id: ocId)
         }
     }
 
@@ -863,5 +941,21 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         let id = url.lastPathComponent
         let parent = url.deletingLastPathComponent().lastPathComponent
         return parent == "f" ? id : nil
+    }
+
+    /// Extracts the numeric fileId prefix from a Nextcloud ocId.
+    ///
+    /// - Parameter ocId: Nextcloud ocId, usually composed by a numeric fileId prefix and an instance suffix.
+    /// - Returns: Numeric fileId string if available.
+    func extractFileId(from ocId: String) -> String? {
+        let prefix = ocId.prefix { character in
+            character.isNumber
+        }
+
+        guard !prefix.isEmpty else {
+            return nil
+        }
+
+        return String(Int(prefix) ?? 0)
     }
 }

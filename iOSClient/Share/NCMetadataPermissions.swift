@@ -26,8 +26,14 @@ enum NCMetadataPermissions {
         return metadata.permissions.contains(permissionCanCreateFolder)
     }
 
+    /** Note: If a folder is shared it will be unshared instead of deleted */
     static func canDelete(_ metadata: tableMetadata) -> Bool {
         return metadata.permissions.contains(permissionCanDeleteOrUnshare)
+    }
+
+    /// This includes deleting as deleting a file is moving it to the trash
+    static func canMoveAndDelete(_ metadata: tableMetadata) -> Bool {
+        return metadata.permissions.contains(permissionCanMove)
     }
 
     static func canRename(_ metadata: tableMetadata) -> Bool {

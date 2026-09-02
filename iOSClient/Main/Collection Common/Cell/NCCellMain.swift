@@ -7,7 +7,7 @@ import UIKit
 import NextcloudKit
 import RealmSwift
 
-protocol NCCellMainProtocol {
+protocol NCCellMainProtocol: AnyObject {
     var metadata: tableMetadata? {get set }
     var previewImg: UIImageView? { get set }
     var localImg: UIImageView? { get set }
@@ -15,6 +15,7 @@ protocol NCCellMainProtocol {
     var infoLbl: UILabel? { get set }
 
     func selected(_ status: Bool, isEditMode: Bool, color: UIColor)
+    func viewerTransitionSource() -> NCMediaViewerTransitionSource?
 }
 
 extension NCCellMainProtocol {
@@ -37,6 +38,17 @@ extension NCCellMainProtocol {
     var infoLbl: UILabel? {
         get { return nil }
         set {}
+    }
+
+    func viewerTransitionSource() -> NCMediaViewerTransitionSource? {
+        guard let imageView = previewImg,
+              let image = imageView.image,
+              let window = imageView.window else {
+            return nil
+        }
+        let sourceFrame = imageView.convert(imageView.bounds, to: window)
+
+        return NCMediaViewerTransitionSource(image: image, sourceFrame: sourceFrame, cornerRadius: imageView.layer.cornerRadius)
     }
 }
 
@@ -128,15 +140,14 @@ extension NCCollectionViewCommon {
 
         if metadata.name == global.appName {
             let ext = global.getSizeExtension(column: self.numberOfColumns)
-            if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                 cell.previewImg?.image = image
             } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase) {
+                imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
                 cell.previewImg?.image = image
-            }
-
-            if cell.previewImg?.image == nil {
+            } else if cell.previewImg?.image == nil {
                 if metadata.iconName.isEmpty {
-                    cell.previewImg?.image = NCImageCache.shared.getImageFile()
+                    cell.previewImg?.image = imageCache.getImageFile()
                 } else {
                     cell.previewImg?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 }
@@ -164,23 +175,16 @@ extension NCCollectionViewCommon {
                 cell.previewImg?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
             }
             if !metadata.iconUrl.isEmpty {
-                if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
-                    let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
+                if let user = getAvatarFromIconUrl(metadata: metadata) {
+                    let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: user)
+
                     if let image = NCImageCache.shared.getImageCache(key: fileName) {
                         cell.previewImg?.image = image
                     } else {
-                        self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                            if let image {
-                                cell.previewImg?.image = image
-                                NCImageCache.shared.addImageCache(image: image, key: fileName)
-                            } else {
-                                cell.previewImg?.image = self.utility.loadUserImage(for: ownerId, displayName: nil, urlBase: metadata.urlBase)
-                            }
-
-                            if !(tblAvatar?.loaded ?? false),
-                               self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                                self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: self.collectionView, isPreviewImage: true))
-                            }
+                        let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
+                        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                            cell.previewImg?.image = image
+                            imageCache.addImageCache(image: image, key: fileName)
                         }
                     }
                 }

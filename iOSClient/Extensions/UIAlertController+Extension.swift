@@ -360,22 +360,94 @@ extension UIAlertController {
 
     @MainActor
     static func failedPasscode(presenter: UIViewController, completion: (() -> Void)? = nil) {
-        let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
-        presenter.present(alertController, animated: true, completion: { })
+        let preferences = NCPreferences()
+        let deadline: Date
 
-        var seconds = NCBrandOptions.shared.passcodeSecondsFail
-        alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
+        if let pending = preferences.passcodeLockoutEnd {
+            guard pending > Date() else {
+                endPasscodeLockout(completion: completion)
+                return
+            }
+
+            deadline = pending
+        } else {
+            deadline = Date().addingTimeInterval(TimeInterval(NCBrandOptions.shared.passcodeSecondsFail))
+            preferences.passcodeLockoutEnd = deadline
+        }
+
+        let alertController = UIAlertController(title: NSLocalizedString("_passcode_counter_fail_", comment: ""), message: nil, preferredStyle: .alert)
+        presenter.present(alertController, animated: true)
+
+        alertController.message = "\(Int(deadline.timeIntervalSinceNow.rounded(.up))) " + NSLocalizedString("_seconds_", comment: "")
 
         _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
-            seconds -= 1
-            if seconds < 0 {
+            let seconds = Int(deadline.timeIntervalSinceNow.rounded(.up))
+
+            if seconds > 0 {
+                alertController.message = "\(seconds) " + NSLocalizedString("_seconds_", comment: "")
+            } else {
                 timer.invalidate()
                 alertController.dismiss(animated: true)
-                NCPreferences().passcodeCounterFail = 0
-                NCPreferences().passcodeCounterFailReset = 0
-                completion?()
+                endPasscodeLockout(completion: completion)
             }
+        }
+    }
+
+    private static func endPasscodeLockout(completion: (() -> Void)?) {
+        NCPreferences().clearPasscodeFailures()
+
+        completion?()
+    }
+
+    /// Presents a localized confirmation alert and asynchronously returns the user's choice.
+    ///
+    /// - Parameters:
+    ///   - viewController: The view controller used to present the alert.
+    ///   - title: The localization key for the alert title.
+    ///   - message: The localization key for the alert message.
+    ///   - cancelAction: The localization key for the cancel action title.
+    ///   - continueAction: The localization key for the destructive confirmation action title.
+    /// - Returns: `true` if the user confirms the action; otherwise, `false`.
+    @MainActor
+    static func showAlert(
+        from viewController: UIViewController?,
+        title: String,
+        message: String,
+        cancelAction: String,
+        cancelStyle: UIAlertAction.Style,
+        continueAction: String,
+        continueStyle: UIAlertAction.Style
+    ) async -> Bool {
+        guard let viewController else {
+            return false
+        }
+
+        return await withCheckedContinuation { continuation in
+            let alertController = UIAlertController(
+                title: NSLocalizedString(title, comment: ""),
+                message: NSLocalizedString(message, comment: ""),
+                preferredStyle: .alert
+            )
+
+            alertController.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString(cancelAction, comment: ""),
+                    style: cancelStyle
+                ) { _ in
+                    continuation.resume(returning: false)
+                }
+            )
+
+            alertController.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString(continueAction, comment: ""),
+                    style: continueStyle
+                ) { _ in
+                    continuation.resume(returning: true)
+                }
+            )
+
+            viewController.present(alertController, animated: true)
         }
     }
 }

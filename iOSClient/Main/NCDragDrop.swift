@@ -157,7 +157,7 @@ class NCDragDrop: NSObject {
             let error = await NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
             if error == .success {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                    delegate.transferChange(networkingStatus: self.global.networkingStatusCopyMove,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,
@@ -178,7 +178,7 @@ class NCDragDrop: NSObject {
             let error = await NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
             if error == .success {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCopyMove,
+                    delegate.transferChange(networkingStatus: self.global.networkingStatusCopyMove,
                                             account: metadata.account,
                                             fileName: metadata.fileName,
                                             serverUrl: metadata.serverUrl,

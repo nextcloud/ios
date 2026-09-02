@@ -9,7 +9,6 @@ import NextcloudKit
 import LocalAuthentication
 import Firebase
 import WidgetKit
-import Queuer
 import EasyTipView
 import SwiftUI
 import RealmSwift

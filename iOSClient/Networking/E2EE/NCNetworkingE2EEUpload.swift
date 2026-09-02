@@ -41,6 +41,11 @@ class NCNetworkingE2EEUpload: NSObject {
                            errorDescription: NSLocalizedString("_e2ee_no_session_", comment: ""))
         }
 
+        finalError = await networkingE2EE.validateCurrentServerKey(account: session.account)
+        guard finalError == .success else {
+            return finalError
+        }
+
         defer {
             if finalError != .success {
                 Task {
@@ -222,7 +227,7 @@ class NCNetworkingE2EEUpload: NSObject {
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusUploaded,
+                delegate.transferChange(networkingStatus: self.global.networkingStatusUploaded,
                                         account: metadata.account,
                                         fileName: metadata.fileName,
                                         serverUrl: metadata.serverUrl,

@@ -4,7 +4,6 @@
 
 import UIKit
 import NextcloudKit
-import Queuer
 import RealmSwift
 
 extension NCTrash {
@@ -93,48 +92,6 @@ extension NCTrash {
             }
             await self.database.deleteTrashAsync(fileId: fileId, account: session.account)
             await self.reloadDataSource()
-        }
-    }
-}
-
-class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendable {
-    var fileId: String
-    var fileName: String
-    var collectionView: UICollectionView
-    var session: NCSession.Session
-
-    init(fileId: String, fileName: String, session: NCSession.Session, collectionView: UICollectionView) {
-        self.fileId = fileId
-        self.fileName = fileName
-        self.session = session
-        self.collectionView = collectionView
-    }
-
-    override func start() {
-        guard !isCancelled else { return self.finish() }
-
-        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                            path: self.fileId,
-                                                                                            name: "DownloadPreview")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { _, _, _, responseData, error in
-            if error == .success, let data = responseData?.data {
-                NCUtility().createImageFileFrom(data: data, ocId: self.fileId, etag: self.fileName, userId: self.session.userId, urlBase: self.session.urlBase)
-
-                for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {
-                    cell.imageItem?.contentMode = .scaleAspectFill
-
-                    UIView.transition(with: cell.imageItem,
-                                      duration: 0.75,
-                                      options: .transitionCrossDissolve,
-                                      animations: { cell.imageItem.image = UIImage(data: data) },
-                                      completion: nil)
-                }
-            }
-            self.finish()
         }
     }
 }

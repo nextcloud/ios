@@ -20,16 +20,43 @@
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@items@</string>
+		<key>items</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>剩餘 %d 個項目</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>您有 %d 個項目需要備份</string>
+		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@failed@</string>
+		<key>failed</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%d 次失敗</string>
+		</dict>
 	</dict>
 </dict>
 </plist>
