@@ -326,8 +326,16 @@ actor NCNetworkingProcess {
                 // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
 
-                // Set Live Photo
-                await NCNetworking.shared.setLivePhoto(account: currentAccount)
+                // Set Live Photos on the server
+                let livePhotoAccounts = await NCManageDatabase.shared.getLivePhotoAccounts()
+
+                for account in livePhotoAccounts {
+                    await NCNetworking.shared.setLivePhoto(account: account)
+
+                    if isAppInBackground {
+                        return
+                    }
+                }
 
                 await updateTimerIntervalIfNeeded(hasPendingTransfers: false)
             }
