@@ -283,6 +283,21 @@ extension NCCollectionViewCommon {
 
         default:
             for entry in searchResult.entries {
+                if let fileId = entry.fileId,
+                   let metadata = database.getMetadataFromFileId(String(fileId)) {
+                    metadata.section = provider.name
+                    metadatas.append(metadata)
+                    continue
+                }
+
+                if let filePath = entry.filePath,
+                   let metadata = await loadMetadata(session: session,
+                                                     provider: provider,
+                                                     filePath: filePath) {
+                    metadatas.append(metadata)
+                    continue
+                }
+
                 let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
                     fileName: entry.title,
                     ocId: NSUUID().uuidString,
