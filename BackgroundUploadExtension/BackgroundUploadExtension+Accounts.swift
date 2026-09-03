@@ -18,6 +18,11 @@ extension BackgroundUploadExtension {
             return nil
         }
 
+        guard NCBrandOptions.shared.enable_background_upload_extension else {
+            logDebug("Background upload account setup skipped: feature is disabled")
+            return nil
+        }
+
         guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
             logDebug("Background upload account setup skipped: no Auto Upload account")
             return nil

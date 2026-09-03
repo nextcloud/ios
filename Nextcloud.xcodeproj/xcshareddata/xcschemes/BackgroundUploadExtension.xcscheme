@@ -17,6 +17,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F7FB187F30401D0D00EB0AE6"
                BuildableName = "BackgroundUploadExtension.appex"
+               BlueprintName = "BackgroundUploadExtension"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -61,6 +62,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F7FB187F30401D0D00EB0AE6"
             BuildableName = "BackgroundUploadExtension.appex"
+            BlueprintName = "BackgroundUploadExtension"
             ReferencedContainer = "container:Nextcloud.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

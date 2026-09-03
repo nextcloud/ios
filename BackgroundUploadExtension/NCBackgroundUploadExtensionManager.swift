@@ -24,6 +24,10 @@ final class NCBackgroundUploadExtensionManager {
             return false
         }
 
+        guard NCBrandOptions.shared.enable_background_upload_extension else {
+            return false
+        }
+
         guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
             return false
         }
@@ -39,6 +43,11 @@ final class NCBackgroundUploadExtensionManager {
     }
 
     func ensureEnabled() async -> Bool {
+        guard NCBrandOptions.shared.enable_background_upload_extension else {
+            _ = await disableIfIdle()
+            return false
+        }
+
         guard await shouldUseExtension() else {
             return false
         }
@@ -63,9 +72,10 @@ final class NCBackgroundUploadExtensionManager {
     }
 
     func disableIfIdle() async -> Bool {
+        let featureEnabled = NCBrandOptions.shared.enable_background_upload_extension
         let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
 
-        guard account == nil else {
+        guard !featureEnabled || account == nil else {
             return false
         }
 
