@@ -128,6 +128,10 @@ class tableMetadata: Object {
     @objc dynamic var nativeFormat: Bool = false
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
+    @objc dynamic var backgroundUploadJobIdentifier = ""
+    @objc dynamic var backgroundUploadRetryCount: Int = 0
+    @objc dynamic var backgroundUploadNextRetryDate: Date?
+    @objc dynamic var backgroundUploadCancellationRequested = false
 
     // =========================
     // UI / transient properties
@@ -183,7 +187,7 @@ extension tableMetadata {
         !directory
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     @objc var isDirectoryE2EE: Bool {
         return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
     }
@@ -827,11 +831,27 @@ extension NCManageDatabase {
         }
     }
 
-    func clearMetadatasUploadAsync(account: String) async {
+    func requestBackgroundAutoUploadCancellationAsync(account: String) async {
         await core.performRealmWriteAsync { realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
-            realm.delete(results)
+            let pendingMetadatas = realm.objects(tableMetadata.self).filter(
+                "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier == %@",
+                account,
+                NCGlobal.shared.selectorUploadAutoUpload,
+                "pending"
+            )
+
+            realm.delete(pendingMetadatas)
+
+            let jobMetadatas = realm.objects(tableMetadata.self).filter(
+                "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier != %@ AND backgroundUploadJobIdentifier != ''",
+                account,
+                NCGlobal.shared.selectorUploadAutoUpload,
+                "pending"
+            )
+
+            for metadata in jobMetadatas {
+                metadata.backgroundUploadCancellationRequested = true
+            }
         }
     }
 
@@ -963,6 +983,15 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .first
                 .map { $0.detachedCopy() }
+        }
+    }
+
+    func getMetadataAsync(backgroundUploadJobIdentifier: String) async -> tableMetadata? {
+        await core.performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter("backgroundUploadJobIdentifier == %@", backgroundUploadJobIdentifier)
+                .first?
+                .detachedCopy()
         }
     }
 
@@ -1354,7 +1383,7 @@ extension NCManageDatabase {
         } ?? []
     }
 
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
     func getMetadatasAsync(predicate: NSPredicate,
                            withLayout layoutForView: NCDBLayoutForView?,

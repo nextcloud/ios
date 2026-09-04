@@ -228,7 +228,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             let fileNameSize: UInt64 = fileNameAttribute[FileAttributeKey.size] as? UInt64 ?? 0
             let fileNameViewAttribute = try fileManager.attributesOfItem(atPath: fileNameViewPath)
             let fileNameViewSize: UInt64 = fileNameViewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-#if EXTENSION_FILE_PROVIDER_EXTENSION
+#if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_BACKGROUNDUPLOAD
             return (fileNameViewSize == metadata.size) && metadata.size > 0
 #else
             if metadata.isDirectoryE2EE == true {
@@ -903,31 +903,34 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    func createGranularityPath(asset: PHAsset? = nil, serverUrlBase: String? = nil) -> String {
-        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
+    func createGranularityPath(asset: PHAsset? = nil, serverUrlBase: String? = nil, granularity: Int? = nil) -> String {
+        let selectedGranularity = granularity ?? NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
         let dateFormatter = DateFormatter()
         let date = asset?.creationDate ?? Date()
         var path = ""
 
         dateFormatter.dateFormat = "yyyy"
         let year = dateFormatter.string(from: date)
+
         dateFormatter.dateFormat = "MM"
         let month = dateFormatter.string(from: date)
+
         dateFormatter.dateFormat = "dd"
         let day = dateFormatter.string(from: date)
-        if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-            path = "\(year)"
-        } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
+
+        if selectedGranularity == NCGlobal.shared.subfolderGranularityYearly {
+            path = year
+        } else if selectedGranularity == NCGlobal.shared.subfolderGranularityDaily {
             path = "\(year)/\(month)/\(day)"
-        } else {  // Month Granularity is default
+        } else {
             path = "\(year)/\(month)"
         }
 
         if let serverUrlBase {
             return serverUrlBase + "/" + path
-        } else {
-            return path
         }
+
+        return path
     }
 
     func extractFileIdFromFPath(from urlString: String?) -> String? {

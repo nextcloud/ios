@@ -716,6 +716,8 @@
 "_select_date_" = "Select date";
 "_always_play_with_vlc_" = "Always play with VLC";
 "_account_not_available_" = "Account not available";
+"_change_autoupload_account_title_" = "Change auto upload account?";
+"_change_autoupload_account_message_" = "Auto upload is already enabled for “%@”. Continuing will disable it for that account and cancel its pending uploads.";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
