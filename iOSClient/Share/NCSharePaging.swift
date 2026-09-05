@@ -24,6 +24,7 @@
 
 import UIKit
 import NextcloudKit
+import NextcloudKitUI
 import TagListView
 import SwiftUI
 
@@ -40,6 +41,11 @@ class NCSharePaging: UIViewController {
 
     var metadata = tableMetadata()
     var controller: NCMainTabBarController?
+    private let shareCreateTrigger = CreateUnifiedShareTrigger()
+
+    private var internalLink: String {
+        metadata.urlBase + "/index.php/f/" + metadata.fileId
+    }
     var pages: [NCBrandOptions.NCInfoPagingTab] = []
 
     private var initialPage: NCBrandOptions.NCInfoPagingTab = .activity
@@ -85,7 +91,19 @@ class NCSharePaging: UIViewController {
 
         let moreButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: nil, action: nil)
         moreButton.menu = UIMenu(children: [manageTagsAction])
-        navigationItem.rightBarButtonItem = moreButton
+
+        var rightBarButtonItems = [moreButton]
+
+        // The unified share (+) button only applies to servers with the new sharing API.
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+
+        if capabilities.unifiedSharingEnabled {
+            let addShareButton = UIBarButtonItem(image: UIImage(systemName: "person.badge.plus"), style: .plain, target: self, action: #selector(addShareTapped(_:)))
+            addShareButton.accessibilityLabel = NSLocalizedString("_share_", comment: "")
+            rightBarButtonItems.insert(addShareButton, at: 0)
+        }
+
+        navigationItem.rightBarButtonItems = rightBarButtonItems
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -162,6 +180,23 @@ class NCSharePaging: UIViewController {
             viewController.usesGroupedBackground = true
             return viewController
         case .sharing:
+            let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+
+            // Newer servers get the unified share list; older ones keep the legacy NCShare UI.
+            if capabilities.unifiedSharingEnabled {
+                let brandColor = Color(NCBrandColor.shared.getElement(account: metadata.account))
+                let listView = UnifiedShareListView(account: metadata.account, sourceId: metadata.ocId, internalLink: internalLink, isDirectory: metadata.directory, tint: brandColor, createTrigger: shareCreateTrigger) { [weak self] error in
+                    guard let self else { return }
+
+                    Task {
+                        let windowScene = SceneManager.shared.getWindowScene(controller: self.controller)
+                        await showErrorBanner(windowScene: windowScene, error: error)
+                    }
+                }
+
+                return UIHostingController(rootView: listView.tint(brandColor))
+            }
+
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {
                 return UIViewController()
             }
@@ -237,6 +272,11 @@ class NCSharePaging: UIViewController {
 
     @objc func exitTapped(_ sender: Any?) {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    @objc private func addShareTapped(_ sender: UIBarButtonItem) {
+        page = .sharing
+        shareCreateTrigger.isPresenting = true
     }
 
     @objc func editTagsTapped(_ sender: Any?) {
