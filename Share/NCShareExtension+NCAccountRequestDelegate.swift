@@ -53,6 +53,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
                 cancel(with: NCShareExtensionError.noAccount)
                 return
             }
+            showAccountView()
 
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
             NextcloudKit.shared.appendSession(account: tblAccount.account,
