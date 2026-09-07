@@ -225,8 +225,15 @@ struct AlbumRow: View {
                 }
             }
             if resultsPreview.error == .success, let data = resultsPreview.responseData?.data {
-                NCUtility().createImageFileFrom(data: data, ocId: photoId, etag: "")
-                if let image = NCUtility().getImage(ocId: photoId, etag: "", ext: NCGlobal().previewExt512) {
+                let session = NCSession.shared.getSession(account: localAccount)
+                if let image = NCUtility().createImageFileFrom(
+                    data: data,
+                    ocId: photoId,
+                    etag: "",
+                    ext: NCGlobal.shared.previewExt512,
+                    userId: session.userId,
+                    urlBase: session.urlBase
+                ) {
                     Task { @MainActor in
                         await MainActor.run { imageState = .thumbnail(image) }
                     }

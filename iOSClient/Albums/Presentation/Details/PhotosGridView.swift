@@ -35,7 +35,7 @@ struct PhotosGridView: View {
                 ForEach(sortedPhotos, id: \.self) { photo in
                     let metadata = photos[photo] ?? nil
                     Button {
-                        openPhotoViewer(photo: photo, metadata: metadata)
+                        openPhotoViewer(photo: photo)
                     } label: {
                         PhotoGridItemView(
                             album: album,
@@ -50,80 +50,41 @@ struct PhotosGridView: View {
         }
     }
     
-    private func openPhotoViewer(photo: AlbumPhoto, metadata: tableMetadata?) {
-        // Build a complete, ordered metadata list matching the grid order
-        // 1) Establish a single, consistent order identical to the grid
-        let orderedPhotos = photos.keys.sorted { lhs, rhs in
-            lhs.fileName.localizedCaseInsensitiveCompare(rhs.fileName) == .orderedAscending
+    @MainActor
+    private func openPhotoViewer(photo: AlbumPhoto) {
+        let orderedPhotos = photos.keys.sorted {
+            $0.fileName.localizedCaseInsensitiveCompare($1.fileName) == .orderedAscending
         }
-
-        // 2) Build full metadatas list, creating/saving stubs where needed
-        var metadatas: [tableMetadata] = []
-        metadatas.reserveCapacity(orderedPhotos.count)
-
-        for p in orderedPhotos {
-            // Prefer provided dictionary value; if nil, try DB; otherwise create a stub and save it
-            if let existing = photos[p] ?? NCManageDatabase.shared.getMetadataFromOcId(p.id) {
-                metadatas.append(existing)
-            } else {
-                let stub = tableMetadata()
-                stub.ocId = p.id
-                stub.fileId = p.id
-                stub.fileName = p.fileName
-                stub.account = self.localAccount
-                stub.path = "\(album.href)\(p.fileName)"
-                // Save the stub so it is available for the viewer and later lookups
-                NCManageDatabase.shared.addMetadata(stub)
-                metadatas.append(stub)
+        let resolvedPhotos = orderedPhotos.compactMap { albumPhoto -> (photo: AlbumPhoto, metadata: tableMetadata)? in
+            guard let metadata = (photos[albumPhoto] ?? nil)
+                ?? NCManageDatabase.shared.getMetadataFromFileId(albumPhoto.id),
+                  metadata.account == localAccount else {
+                return nil
             }
+            return (albumPhoto, metadata.detachedCopy())
         }
-
-        // 3) Compute ocIds and currentIndex
-        let ocIds = metadatas.map { $0.ocId }
-        // Try to find the current index by ocId; fall back to orderedPhotos position if needed
-        var resolvedCurrentIndex: Int? = metadatas.firstIndex(where: { $0.ocId == photo.id })
-        if resolvedCurrentIndex == nil {
-            // Fallback: try by fileId match
-            resolvedCurrentIndex = metadatas.firstIndex(where: { $0.fileId == photo.id })
-        }
-        if resolvedCurrentIndex == nil {
-            // As a last resort, align with the orderedPhotos position
-            if let fallbackIdx = orderedPhotos.firstIndex(where: { $0.id == photo.id }) {
-                resolvedCurrentIndex = fallbackIdx
+        let controller = SceneManager.shared.getController(account: localAccount)
+        guard let selected = resolvedPhotos.first(where: { $0.photo.id == photo.id }) else {
+            Task { @MainActor in
+                await showErrorBanner(
+                    windowScene: SceneManager.shared.getWindowScene(controller: controller),
+                    text: "_albums_photos_error_msg_"
+                )
             }
-        }
-        guard let currentIndex = resolvedCurrentIndex else {
-            print("[PhotosGridView] Could not resolve currentIndex for photo id: \(photo.id)")
             return
         }
 
-        // 4) Navigation and Viewer Setup
-        guard let navController = (UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive })?
-            .windows
-            .first(where: { $0.isKeyWindow })?.rootViewController as? NCMainTabBarController)?
-            .selectedViewController as? UINavigationController else {
-                print("[PhotosGridView] Could not find active UINavigationController to present viewer")
-                return
-            }
-
-        guard let viewer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil)
-            .instantiateInitialViewController() as? NCViewerMediaPage else {
-                print("[PhotosGridView] Failed to instantiate NCViewerMediaPage from storyboard")
-                return
-            }
-
-        viewer.hidesBottomBarWhenPushed = true
-
-        // 5) Populate viewer with the complete, ordered arrays
-        viewer.ocIds = ocIds
-        viewer.metadatas = metadatas
-        viewer.currentIndex = currentIndex
-        viewer.albumName = album.name
-        viewer.albumServerUrl = album.href
-        viewer.albumPhoto = photo
-
-        navController.pushViewController(viewer, animated: true)
+        let model = NCMediaViewerModel(
+            currentMetadata: selected.metadata,
+            ocIds: resolvedPhotos.map { $0.metadata.ocId },
+            session: NCSession.shared.getSession(account: localAccount),
+            loader: NCMediaViewerLoader()
+        )
+        NCMediaViewerPresenter.shared.show(
+            model: model,
+            viewerTransitionSource: nil,
+            from: controller?.view,
+            contextMenuController: nil
+        )
     }
 }

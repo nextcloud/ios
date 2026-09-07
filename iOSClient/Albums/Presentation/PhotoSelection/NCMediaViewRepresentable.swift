@@ -87,6 +87,7 @@ struct NCMediaViewRepresentable: UIViewControllerRepresentable {
                 guard !Task.isCancelled else { return }
                 // The normal search API requires an attached view outside edit mode.
                 await self.searchMediaTask?.value
+                guard !Task.isCancelled else { return }
                 await self.searchMediaUI(true)
                 guard !Task.isCancelled else { return }
                 self.isEditMode = true

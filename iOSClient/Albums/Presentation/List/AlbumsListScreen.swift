@@ -79,16 +79,6 @@ struct AlbumsListScreen: View {
             viewModel.navigationDestination = nil
             popToRootTrigger += 1
         }
-        .onReceive(NotificationCenter.default.publisher(for: NCMediaNavigationController.showAlbumDetailsNotification)) { output in
-            guard let album = output.object as? Album else { return }
-            // Reset to root first
-            viewModel.navigationDestination = nil
-            popToRootTrigger += 1
-            // Navigate to the requested album
-            DispatchQueue.main.async {
-                viewModel.navigationDestination = .albumDetails(album: album)
-            }
-        }
     }
     
     @ViewBuilder
