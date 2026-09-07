@@ -193,6 +193,53 @@ final class NCMediaNetwork {
         """
         return request
     }
+    
+    func searchMediaAsync(path: String = "",
+                          lessDate: Date,
+                          greaterDate: Date,
+                          limit: Int,
+                          account: String,
+                          options: NKRequestOptions = NKRequestOptions(),
+                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }
+    ) async -> (account: String, files: [NKFile]?, error: NKError) {
+        guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account) else {
+            return (account, nil, .urlError)
+        }
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+        let files: [NKFile] = []
+        let href = "/files/" + nkSession.userId + path
+
+        let elementDate: String
+        var lessDateString: String
+        var greaterDateString: String
+
+        if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersionFuture {
+            elementDate = "nc:metadata-photos-original_date_time"
+            lessDateString = String(lessDate.timeIntervalSince1970)
+            greaterDateString = String(greaterDate.timeIntervalSince1970)
+        } else {
+            elementDate = "d:getlastmodified"
+            lessDateString = lessDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+            greaterDateString = greaterDate.formatted(using: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+        }
+
+        let httpBodyString = String(format: getRequestBodySearchMedia(
+            href: href,
+            elementDate: elementDate,
+            lessDate: lessDateString,
+            greaterDate: greaterDateString,
+            limit: String(limit))
+        )
+
+        guard let httpBody = httpBodyString.data(using: .utf8) else {
+            return (account, files, .invalidData)
+
+        }
+
+        let results = await NextcloudKit.shared.searchAsync(serverUrl: nkSession.urlBase, httpBody: httpBody, showHiddenFiles: false, includeHiddenFiles: [], account: account, options: options, taskHandler: taskHandler)
+
+        return(results.account, results.files, results.error)
+    }
 }
 
 extension Date {

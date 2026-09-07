@@ -37,4 +37,38 @@ extension UINavigationController {
         navigationBar.tintColor = textColor
         navigationBar.prefersLargeTitles = false
     }
+    
+    func setMediaAppreance() {
+        setNavigationBarHidden(true, animated: false)
+    }
+    
+    func popupFromNavigationStack(context: String) {
+        guard let nav = currentNavigationController() else {
+            return
+        }
+        nav.popViewController(animated: true)
+    }
+
+    func currentNavigationController() -> UINavigationController? {
+        // Try to find the key window's root and traverse to the visible navigation controller
+        let keyWindow = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+
+        guard let root = keyWindow?.rootViewController else { return nil }
+        return findNavigationController(from: root)
+    }
+
+    func findNavigationController(from vc: UIViewController) -> UINavigationController? {
+        if let nav = vc as? UINavigationController { return nav }
+        if let tab = vc as? UITabBarController {
+            if let selected = tab.selectedViewController, let nav = findNavigationController(from: selected) { return nav }
+        }
+        if let presented = vc.presentedViewController, let nav = findNavigationController(from: presented) { return nav }
+        for child in vc.children {
+            if let nav = findNavigationController(from: child) { return nav }
+        }
+        return vc.navigationController
+    }
 }

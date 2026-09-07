@@ -286,7 +286,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     @MainActor
-    private func collectionViewCommonTrailingItemGroups() async {
+    func collectionViewCommonTrailingItemGroups() async {
         guard let topViewController else {
             return
         }
@@ -294,6 +294,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
+//              !(topViewController is NCViewerMediaPage),
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichdocuments),
               !(topViewController is NCViewerDirectEditing)

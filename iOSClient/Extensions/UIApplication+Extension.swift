@@ -59,4 +59,11 @@ extension UIApplication {
             .compactMap { $0 as? UIWindowScene }
             .filter { $0.activationState == .foregroundActive }
     }
+    
+    var firstWindow: UIWindow? {
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let firstActiveScene = windowScenes.first
+        let keyWindow = firstActiveScene?.keyWindow
+        return keyWindow
+    }
 }

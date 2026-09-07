@@ -48,6 +48,29 @@ final class NCGlobal: Sendable {
     let editorOnlyOffice: String                    = "onlyoffice"
     let editorWhiteboard: String                    = "whiteboard"
 
+    // Nextcloud version
+    //
+    let nextcloudVersion18: Int                     = 18
+    let nextcloudVersion20: Int                     = 20
+    let nextcloudVersion23: Int                     = 23
+    let nextcloudVersion24: Int                     = 24
+    let nextcloudVersion25: Int                     = 25
+    let nextcloudVersion26: Int                     = 26
+    let nextcloudVersion27: Int                     = 27
+    let nextcloudVersion28: Int                     = 28
+    let nextcloudVersion30: Int                     = 30
+    let nextcloudVersion31: Int                     = 31
+    let nextcloudVersion32: Int                     = 32
+    let nextcloudVersion33: Int                     = 33
+    let nextcloudVersionFuture: Int                 = 99999
+
+
+    // Nextcloud unsupported
+    //
+    let nextcloud_unsupported_version: Int          = 20
+
+//    let nextcloud_unsupported_version: Int = 17
+    
     // Intro selector
     //
     let introLogin: Int                             = 0
@@ -131,6 +154,7 @@ final class NCGlobal: Sendable {
 
     // Error
     //
+    let errorRequestExplicityCancelled: Int     = 15
     let errorNotModified: Int                   = 304
     let errorBadRequest: Int                    = 400
     let errorUnauthorized: Int                  = 401
@@ -432,6 +456,10 @@ final class NCGlobal: Sendable {
     //
     let udMigrationMultiDomains             = "migrationMultiDomains"
     let udLastVersion                       = "lastVersion"
+    
+    // Album
+    //
+    let selectedTabIndexAlbum: Int                             = 3
 }
 
 /**

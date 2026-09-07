@@ -104,6 +104,73 @@ final class NCManageDatabaseCreateMetadata {
         }
         return (metadataFolder.detachedCopy(), metadatas)
     }
+    
+    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+        var counter: Int = 0
+        var isDirectoryE2EE: Bool = false
+        var listServerUrl: [String: Bool] = [:]
+        var metadataFolder = tableMetadata()
+        var metadatas: [tableMetadata] = []
+
+        for file in files {
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+                if let key = listServerUrl[file.serverUrl] {
+                    isDirectoryE2EE = key
+                } else {
+                    isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: file.account)
+                    listServerUrl[file.serverUrl] = isDirectoryE2EE
+                }
+#endif
+
+            let metadata = await convertFileToMetadataAsync(file, mediaSearch: mediaSearch, isDirectoryE2EE: isDirectoryE2EE)
+
+            if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                metadataFolder = metadata
+            } else {
+                metadatas.append(metadata)
+            }
+
+            counter += 1
+        }
+        return (metadataFolder.detachedCopy(), metadatas)
+    }
+    
+    func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false, isDirectoryE2EE: Bool? = nil) async -> tableMetadata {
+        let metadata = self.createMetadata(file)
+        let e2eEncryptedDirectory: Bool
+        if let value = isDirectoryE2EE {
+            e2eEncryptedDirectory = value
+        } else {
+            e2eEncryptedDirectory = await NCUtilityFileSystem().isDirectoryE2EEAsync(
+                serverUrl: file.serverUrl,
+                urlBase: file.urlBase,
+                userId: file.userId,
+                account: file.account)
+        }
+
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+        // E2EE find the fileName for fileNameView
+        if e2eEncryptedDirectory || file.e2eEncrypted {
+            if let tableE2eEncryption = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
+                metadata.fileNameView = tableE2eEncryption.fileName
+            } else if e2eEncryptedDirectory {
+                metadata.fileNameView = NSLocalizedString("_e2e_file_encrypted_", comment: "")
+            }
+        }
+#endif
+
+        if !metadata.directory {
+            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
+
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.classFile = results.classFile
+            metadata.typeIdentifier = results.typeIdentifier
+            metadata.mediaSearch = mediaSearch
+        }
+
+        return metadata.detachedCopy()
+    }
 
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
     func convertFilesToMetadatas(_ files: [NKFile], capabilities: NKCapabilities.Capabilities?, serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]) -> Void) {

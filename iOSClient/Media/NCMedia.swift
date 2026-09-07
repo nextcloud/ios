@@ -106,15 +106,7 @@ class NCMedia: UIViewController {
             imageCache.removeAll()
         }
     }
-    var loadingTask: Task<Void, any Error>?
-    var mediaCommandView: NCMediaCommandView?
-    var activeAccount = tableAccount()
-    var lastContentOffsetY: CGFloat = 0
-    let maxImageGrid: CGFloat = 7
-    var hiddenCellMetadats: ThreadSafeArray<String> = ThreadSafeArray()
-
-    var isInGeneralPhotosSelectionContext: Bool = false
-
+    
     var imageLoadingTasks: [String: Task<Void, Never>] = [:]
     let debouncerLoadDataSource = NCDebouncer(delay: .seconds(3), maxEventCount: 10)
     let debouncerSearch = NCDebouncer(delay: .seconds(2), maxEventCount: 10)
@@ -181,29 +173,9 @@ class NCMedia: UIViewController {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
-//    var isInGeneralPhotosSelectionContext: Bool = false
-
-    // MARK: - Programmatic Preload API
-    /// Preloads the media data (data source and initial search) so that the controller is ready when presented.
-    /// Safe to call while the media tab hasn't been opened yet. Idempotent across multiple calls.
     @MainActor
-    func preloadIfNeeded() {
-        // Avoid re-running if already completed
-        if didCompleteInitialPreload { return }
-        // Cancel any previous explicit preload
-        explicitPreloadTask?.cancel()
-        explicitPreloadTask = Task { [weak self] in
-            guard let self else { return }
-            // Ensure view is loaded to set up collectionView/layout safely
-            _ = self.view
-            // Run the same loading sequence used in view lifecycle, but explicitly
-            await self.loadDataSource()
-            await self.searchMediaUI(true)
-            self.didCompleteInitialPreload = true
-            await MainActor.run {
-                self.onInitialLoadCompleted?()
-            }
-        }
+    internal var windowScene: UIWindowScene? {
+       SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
     }
     
 //    var isInGeneralPhotosSelectionContext: Bool = false
@@ -455,14 +427,14 @@ class NCMedia: UIViewController {
                 await self.searchMediaUI(true)
             }
         }
-        AnalyticsHelper.shared.trackEvent(eventName: .SCREEN_EVENT__MEDIA)
+//        AnalyticsHelper.shared.trackEvent(eventName: .SCREEN_EVENT__MEDIA)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         // Re-evaluate in-app messages after viewDidAppear
-        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
+//        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
 
         Task {
             await networking.transferDispatcher.addDelegate(self)
@@ -520,16 +492,6 @@ class NCMedia: UIViewController {
 //        }
         gradientLayer.frame = gradientView.bounds
 
-    }
-
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .lightContent
-        } else if isTop {
-            return .darkContent
-        } else {
-            return .lightContent
-        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

@@ -110,6 +110,7 @@ extension NCMedia {
 
     @MainActor
     func collectionViewReloadData() {
+        guard isViewLoaded, let _ = collectionView else { return }
         collectionView.reloadData()
     }
 
@@ -563,6 +564,112 @@ extension NCMedia {
             if self.isViewActived,
                self.session.account == account {
                 update()
+            }
+        }
+    }
+    
+    /// Album-only search that is safe to call from SwiftUI sheets.
+    /// This relaxes some guard conditions and avoids dependence on visible cells.
+    func searchMediaForAlbumUI() async {
+        // More permissive initial checks for album context: allow running even if not yet visible
+        let shouldContinue = await MainActor.run { () -> Bool in
+            guard !self.searchMediaInProgress,
+                  !self.isPinchGestureActive else {
+                return false
+            }
+            // For album loads, do not block on isViewActived, edit mode, filters, or thumbnail queue.
+            self.searchMediaInProgress = true
+            if self.isViewLoaded, self.view.window != nil {
+                self.activityIndicator.startAnimating()
+            }
+            return true
+        }
+
+        guard shouldContinue,
+              let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            await MainActor.run {
+                if self.isViewLoaded, self.view.window != nil {
+                    self.activityIndicator.stopAnimating()
+                }
+                self.searchMediaInProgress = false
+            }
+            return
+        }
+
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        // For album context, fetch a reasonable window without relying on visible cells
+        let lessDate = Date.distantFuture
+        let greaterDate = Date.distantPast
+
+        // Use a stable default limit for album sheets
+        let limit = 500
+
+        let options = NKRequestOptions(timeout: 180,
+                                       taskDescription: self.global.taskDescriptionRetrievesProperties,
+                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        let result = await NCMediaNetwork().searchMediaAsync(path: tblAccount.mediaPath,
+                                            lessDate: lessDate,
+                                            greaterDate: greaterDate,
+                                            limit: limit,
+                                            account: self.session.account,
+                                            options: options) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "searchMediaAlbum")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
+
+        guard result.error == .success, let files = result.files else {
+            nkLog(error: "Album media search failed: \(result.error.errorDescription)")
+            await MainActor.run {
+                self.searchMediaInProgress = false
+                self.collectionViewReloadData()
+                self.activityIndicator.stopAnimating()
+            }
+            return
+        }
+
+        if files.isEmpty {
+            await MainActor.run {
+                self.dataSource.clearCompactMetadatas()
+                self.collectionViewReloadData()
+            }
+        }
+
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let (_, remoteMetadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files, mediaSearch: true)
+            let mediaPredicate = NCMedia.getMediaPredicate(session: session,
+                                                                         mediaPath: tblAccount.mediaPath,
+                                                                         showOnlyImages: self.showOnlyImages,
+                                                                         showOnlyVideos: self.showOnlyVideos)
+
+            var predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                NSPredicate(format: "date >= %@ AND date <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
+                mediaPredicate
+            ])
+
+            if capabilities.serverVersionMajor >= self.global.nextcloudVersionFuture {
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
+                    mediaPredicate
+                ])
+            }
+
+            let localMetadatas = await self.database.getMetadatasAsync(predicate: predicate)
+
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+
+            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
+                await loadDataSource()
+            } else if await self.dataSource.isEmpty() {
+                await self.collectionViewReloadData()
             }
         }
     }
