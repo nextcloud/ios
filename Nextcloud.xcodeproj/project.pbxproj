@@ -231,6 +231,36 @@
 		F70821D829E59E6D001CA2D7 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F70821D729E59E6D001CA2D7 /* TagListView */; };
 		F70898672EDDB39B00EF85BD /* NCNetworking+TransferDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70898662EDDB39300EF85BD /* NCNetworking+TransferDelegate.swift */; };
 		F70898692EDDB51700EF85BD /* NCSelectOpen+SelectDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70898682EDDB51200EF85BD /* NCSelectOpen+SelectDelegate.swift */; };
+		F708B436304EC5F9009D013A /* NCAlbums.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F708B434304EC5F9009D013A /* NCAlbums.storyboard */; };
+		F708B437304EC5F9009D013A /* AlbumsNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42A304EC5F9009D013A /* AlbumsNavigator.swift */; };
+		F708B438304EC5F9009D013A /* AlbumDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41D304EC5F9009D013A /* AlbumDetailsViewModel.swift */; };
+		F708B439304EC5F9009D013A /* AlbumsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B427304EC5F9009D013A /* AlbumsListViewModel.swift */; };
+		F708B43A304EC5F9009D013A /* AlbumDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41C304EC5F9009D013A /* AlbumDetailsScreen.swift */; };
+		F708B43B304EC5F9009D013A /* AlbumsListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B426304EC5F9009D013A /* AlbumsListScreen.swift */; };
+		F708B43C304EC5F9009D013A /* PhotoGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B420304EC5F9009D013A /* PhotoGridItemView.swift */; };
+		F708B43D304EC5F9009D013A /* PhotosGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B421304EC5F9009D013A /* PhotosGridView.swift */; };
+		F708B43E304EC5F9009D013A /* NCLoadingAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41A304EC5F9009D013A /* NCLoadingAlert.swift */; };
+		F708B43F304EC5F9009D013A /* LoadableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B410304EC5F9009D013A /* LoadableState.swift */; };
+		F708B440304EC5F9009D013A /* AlbumMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B412304EC5F9009D013A /* AlbumMapper.swift */; };
+		F708B441304EC5F9009D013A /* AlbumPhotoMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B413304EC5F9009D013A /* AlbumPhotoMapper.swift */; };
+		F708B442304EC5F9009D013A /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B415304EC5F9009D013A /* Album.swift */; };
+		F708B443304EC5F9009D013A /* PhotoSelectionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42E304EC5F9009D013A /* PhotoSelectionSheet.swift */; };
+		F708B444304EC5F9009D013A /* NoPhotosEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41F304EC5F9009D013A /* NoPhotosEmptyView.swift */; };
+		F708B445304EC5F9009D013A /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B433304EC5F9009D013A /* AlbumsViewController.swift */; };
+		F708B446304EC5F9009D013A /* AlbumPhotoDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B40B304EC5F9009D013A /* AlbumPhotoDTO.swift */; };
+		F708B447304EC5F9009D013A /* MediaSelectionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41E304EC5F9009D013A /* MediaSelectionSheet.swift */; };
+		F708B448304EC5F9009D013A /* Albums+WebDAV.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B40D304EC5F9009D013A /* Albums+WebDAV.swift */; };
+		F708B449304EC5F9009D013A /* NoAlbumsEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B428304EC5F9009D013A /* NoAlbumsEmptyView.swift */; };
+		F708B44A304EC5F9009D013A /* AlbumsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B40F304EC5F9009D013A /* AlbumsManager.swift */; };
+		F708B44B304EC5F9009D013A /* AlbumGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B424304EC5F9009D013A /* AlbumGridItemView.swift */; };
+		F708B44C304EC5F9009D013A /* AlbumsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B425304EC5F9009D013A /* AlbumsGridView.swift */; };
+		F708B44D304EC5F9009D013A /* AlbumPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B416304EC5F9009D013A /* AlbumPhoto.swift */; };
+		F708B44E304EC5F9009D013A /* AlbumDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B40A304EC5F9009D013A /* AlbumDTO.swift */; };
+		F708B44F304EC5F9009D013A /* AlbumsRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B430304EC5F9009D013A /* AlbumsRootView.swift */; };
+		F708B450304EC5F9009D013A /* AddToAlbumsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B423304EC5F9009D013A /* AddToAlbumsListView.swift */; };
+		F708B451304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B419304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift */; };
+		F708B452304EC5F9009D013A /* AlbumsRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42B304EC5F9009D013A /* AlbumsRoutes.swift */; };
+		F708B453304EC5F9009D013A /* NCMediaViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B42D304EC5F9009D013A /* NCMediaViewRepresentable.swift */; };
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -1437,6 +1467,36 @@
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
 		F70898662EDDB39300EF85BD /* NCNetworking+TransferDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+TransferDelegate.swift"; sourceTree = "<group>"; };
 		F70898682EDDB51200EF85BD /* NCSelectOpen+SelectDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCSelectOpen+SelectDelegate.swift"; sourceTree = "<group>"; };
+		F708B40A304EC5F9009D013A /* AlbumDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDTO.swift; sourceTree = "<group>"; };
+		F708B40B304EC5F9009D013A /* AlbumPhotoDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumPhotoDTO.swift; sourceTree = "<group>"; };
+		F708B40D304EC5F9009D013A /* Albums+WebDAV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Albums+WebDAV.swift"; sourceTree = "<group>"; };
+		F708B40F304EC5F9009D013A /* AlbumsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsManager.swift; sourceTree = "<group>"; };
+		F708B410304EC5F9009D013A /* LoadableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableState.swift; sourceTree = "<group>"; };
+		F708B412304EC5F9009D013A /* AlbumMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumMapper.swift; sourceTree = "<group>"; };
+		F708B413304EC5F9009D013A /* AlbumPhotoMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumPhotoMapper.swift; sourceTree = "<group>"; };
+		F708B415304EC5F9009D013A /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
+		F708B416304EC5F9009D013A /* AlbumPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumPhoto.swift; sourceTree = "<group>"; };
+		F708B419304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCInputAlbumNameAlertModifier.swift; sourceTree = "<group>"; };
+		F708B41A304EC5F9009D013A /* NCLoadingAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoadingAlert.swift; sourceTree = "<group>"; };
+		F708B41C304EC5F9009D013A /* AlbumDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailsScreen.swift; sourceTree = "<group>"; };
+		F708B41D304EC5F9009D013A /* AlbumDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailsViewModel.swift; sourceTree = "<group>"; };
+		F708B41E304EC5F9009D013A /* MediaSelectionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSelectionSheet.swift; sourceTree = "<group>"; };
+		F708B41F304EC5F9009D013A /* NoPhotosEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoPhotosEmptyView.swift; sourceTree = "<group>"; };
+		F708B420304EC5F9009D013A /* PhotoGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGridItemView.swift; sourceTree = "<group>"; };
+		F708B421304EC5F9009D013A /* PhotosGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosGridView.swift; sourceTree = "<group>"; };
+		F708B423304EC5F9009D013A /* AddToAlbumsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToAlbumsListView.swift; sourceTree = "<group>"; };
+		F708B424304EC5F9009D013A /* AlbumGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumGridItemView.swift; sourceTree = "<group>"; };
+		F708B425304EC5F9009D013A /* AlbumsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsGridView.swift; sourceTree = "<group>"; };
+		F708B426304EC5F9009D013A /* AlbumsListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsListScreen.swift; sourceTree = "<group>"; };
+		F708B427304EC5F9009D013A /* AlbumsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsListViewModel.swift; sourceTree = "<group>"; };
+		F708B428304EC5F9009D013A /* NoAlbumsEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoAlbumsEmptyView.swift; sourceTree = "<group>"; };
+		F708B42A304EC5F9009D013A /* AlbumsNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsNavigator.swift; sourceTree = "<group>"; };
+		F708B42B304EC5F9009D013A /* AlbumsRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsRoutes.swift; sourceTree = "<group>"; };
+		F708B42D304EC5F9009D013A /* NCMediaViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewRepresentable.swift; sourceTree = "<group>"; };
+		F708B42E304EC5F9009D013A /* PhotoSelectionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionSheet.swift; sourceTree = "<group>"; };
+		F708B430304EC5F9009D013A /* AlbumsRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsRootView.swift; sourceTree = "<group>"; };
+		F708B433304EC5F9009D013A /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
+		F708B434304EC5F9009D013A /* NCAlbums.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAlbums.storyboard; sourceTree = "<group>"; };
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
@@ -2450,6 +2510,147 @@
 				F722F0102CFF569500065FB5 /* MainInterface.storyboard */,
 			);
 			path = "File Provider Extension UI";
+			sourceTree = "<group>";
+		};
+		F708B40C304EC5F9009D013A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F708B40A304EC5F9009D013A /* AlbumDTO.swift */,
+				F708B40B304EC5F9009D013A /* AlbumPhotoDTO.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F708B40E304EC5F9009D013A /* API */ = {
+			isa = PBXGroup;
+			children = (
+				F708B40C304EC5F9009D013A /* Models */,
+				F708B40D304EC5F9009D013A /* Albums+WebDAV.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		F708B411304EC5F9009D013A /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				F708B40F304EC5F9009D013A /* AlbumsManager.swift */,
+				F708B410304EC5F9009D013A /* LoadableState.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		F708B414304EC5F9009D013A /* Mappers */ = {
+			isa = PBXGroup;
+			children = (
+				F708B412304EC5F9009D013A /* AlbumMapper.swift */,
+				F708B413304EC5F9009D013A /* AlbumPhotoMapper.swift */,
+			);
+			path = Mappers;
+			sourceTree = "<group>";
+		};
+		F708B417304EC5F9009D013A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F708B415304EC5F9009D013A /* Album.swift */,
+				F708B416304EC5F9009D013A /* AlbumPhoto.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F708B418304EC5F9009D013A /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				F708B414304EC5F9009D013A /* Mappers */,
+				F708B417304EC5F9009D013A /* Models */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		F708B41B304EC5F9009D013A /* Alerts */ = {
+			isa = PBXGroup;
+			children = (
+				F708B419304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift */,
+				F708B41A304EC5F9009D013A /* NCLoadingAlert.swift */,
+			);
+			path = Alerts;
+			sourceTree = "<group>";
+		};
+		F708B422304EC5F9009D013A /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				F708B41C304EC5F9009D013A /* AlbumDetailsScreen.swift */,
+				F708B41D304EC5F9009D013A /* AlbumDetailsViewModel.swift */,
+				F708B41E304EC5F9009D013A /* MediaSelectionSheet.swift */,
+				F708B41F304EC5F9009D013A /* NoPhotosEmptyView.swift */,
+				F708B420304EC5F9009D013A /* PhotoGridItemView.swift */,
+				F708B421304EC5F9009D013A /* PhotosGridView.swift */,
+			);
+			path = Details;
+			sourceTree = "<group>";
+		};
+		F708B429304EC5F9009D013A /* List */ = {
+			isa = PBXGroup;
+			children = (
+				F708B423304EC5F9009D013A /* AddToAlbumsListView.swift */,
+				F708B424304EC5F9009D013A /* AlbumGridItemView.swift */,
+				F708B425304EC5F9009D013A /* AlbumsGridView.swift */,
+				F708B426304EC5F9009D013A /* AlbumsListScreen.swift */,
+				F708B427304EC5F9009D013A /* AlbumsListViewModel.swift */,
+				F708B428304EC5F9009D013A /* NoAlbumsEmptyView.swift */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
+		F708B42C304EC5F9009D013A /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				F708B42A304EC5F9009D013A /* AlbumsNavigator.swift */,
+				F708B42B304EC5F9009D013A /* AlbumsRoutes.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		F708B42F304EC5F9009D013A /* PhotoSelection */ = {
+			isa = PBXGroup;
+			children = (
+				F708B42D304EC5F9009D013A /* NCMediaViewRepresentable.swift */,
+				F708B42E304EC5F9009D013A /* PhotoSelectionSheet.swift */,
+			);
+			path = PhotoSelection;
+			sourceTree = "<group>";
+		};
+		F708B431304EC5F9009D013A /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				F708B430304EC5F9009D013A /* AlbumsRootView.swift */,
+			);
+			path = Root;
+			sourceTree = "<group>";
+		};
+		F708B432304EC5F9009D013A /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				F708B41B304EC5F9009D013A /* Alerts */,
+				F708B422304EC5F9009D013A /* Details */,
+				F708B429304EC5F9009D013A /* List */,
+				F708B42C304EC5F9009D013A /* Navigation */,
+				F708B42F304EC5F9009D013A /* PhotoSelection */,
+				F708B431304EC5F9009D013A /* Root */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		F708B435304EC5F9009D013A /* Albums */ = {
+			isa = PBXGroup;
+			children = (
+				F708B40E304EC5F9009D013A /* API */,
+				F708B411304EC5F9009D013A /* Data */,
+				F708B418304EC5F9009D013A /* Domain */,
+				F708B432304EC5F9009D013A /* Presentation */,
+				F708B433304EC5F9009D013A /* AlbumsViewController.swift */,
+				F708B434304EC5F9009D013A /* NCAlbums.storyboard */,
+			);
+			path = Albums;
 			sourceTree = "<group>";
 		};
 		F70B866A2642A21300ED5349 /* Color */ = {
@@ -3646,6 +3847,7 @@
 				F317C82C2E844C3C00761AEA /* Client Integration */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7FDFF5A2E437E55000D7688 /* Account */,
+				F708B435304EC5F9009D013A /* Albums */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F76687042B7D067400779E3F /* AudioRecorder */,
 				F3A0478E2BD2668800658E7B /* Assistant */,
@@ -4368,6 +4570,7 @@
 				F751247E2C42919C00E63DB8 /* NCPhotoCell.xib in Resources */,
 				F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */,
 				F7EDE509262DA9D600414FE6 /* NCSelectCommandViewSelect.xib in Resources */,
+				F708B436304EC5F9009D013A /* NCAlbums.storyboard in Resources */,
 				F73D11FA253C5F4800DF9BEC /* NCViewerDirectEditing.storyboard in Resources */,
 				F7EDE51B262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib in Resources */,
 				F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */,
@@ -5217,6 +5420,35 @@
 				F7865FF12F39D32F00D09AE4 /* NCCollectionViewCommon+Search.swift in Sources */,
 				F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F76687072B7D067400779E3F /* NCAudioRecorderViewController.swift in Sources */,
+				F708B437304EC5F9009D013A /* AlbumsNavigator.swift in Sources */,
+				F708B438304EC5F9009D013A /* AlbumDetailsViewModel.swift in Sources */,
+				F708B439304EC5F9009D013A /* AlbumsListViewModel.swift in Sources */,
+				F708B43A304EC5F9009D013A /* AlbumDetailsScreen.swift in Sources */,
+				F708B43B304EC5F9009D013A /* AlbumsListScreen.swift in Sources */,
+				F708B43C304EC5F9009D013A /* PhotoGridItemView.swift in Sources */,
+				F708B43D304EC5F9009D013A /* PhotosGridView.swift in Sources */,
+				F708B43E304EC5F9009D013A /* NCLoadingAlert.swift in Sources */,
+				F708B43F304EC5F9009D013A /* LoadableState.swift in Sources */,
+				F708B440304EC5F9009D013A /* AlbumMapper.swift in Sources */,
+				F708B441304EC5F9009D013A /* AlbumPhotoMapper.swift in Sources */,
+				F708B442304EC5F9009D013A /* Album.swift in Sources */,
+				F708B443304EC5F9009D013A /* PhotoSelectionSheet.swift in Sources */,
+				F708B444304EC5F9009D013A /* NoPhotosEmptyView.swift in Sources */,
+				F708B445304EC5F9009D013A /* AlbumsViewController.swift in Sources */,
+				F708B446304EC5F9009D013A /* AlbumPhotoDTO.swift in Sources */,
+				F708B447304EC5F9009D013A /* MediaSelectionSheet.swift in Sources */,
+				F708B448304EC5F9009D013A /* Albums+WebDAV.swift in Sources */,
+				F708B449304EC5F9009D013A /* NoAlbumsEmptyView.swift in Sources */,
+				F708B44A304EC5F9009D013A /* AlbumsManager.swift in Sources */,
+				F708B44B304EC5F9009D013A /* AlbumGridItemView.swift in Sources */,
+				F708B44C304EC5F9009D013A /* AlbumsGridView.swift in Sources */,
+				F708B44D304EC5F9009D013A /* AlbumPhoto.swift in Sources */,
+				F708B44E304EC5F9009D013A /* AlbumDTO.swift in Sources */,
+				F708B44F304EC5F9009D013A /* AlbumsRootView.swift in Sources */,
+				F708B450304EC5F9009D013A /* AddToAlbumsListView.swift in Sources */,
+				F708B451304EC5F9009D013A /* NCInputAlbumNameAlertModifier.swift in Sources */,
+				F708B452304EC5F9009D013A /* AlbumsRoutes.swift in Sources */,
+				F708B453304EC5F9009D013A /* NCMediaViewRepresentable.swift in Sources */,
 				F77B0F893008ABDC00EE4AE1 /* NCBlurEffectsTestView.swift in Sources */,
 				F7BDC1D8300F4E8E00C5D9FA /* NCMediaMetadataBackfillProcessor.swift in Sources */,
 				AA8E03DA2D2ED83300E7E89C /* TransientShare.swift in Sources */,
