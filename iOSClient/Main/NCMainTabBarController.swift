@@ -146,7 +146,7 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidAppear(animated)
         
         // Re-evaluate in-app messages after viewDidAppear
-//        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
+        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
 
         previousIndex = selectedIndex
 
@@ -176,7 +176,7 @@ class NCMainTabBarController: UITabBarController {
 
             // Update right bar button item
             if let navigationController = self.selectedViewController as? NCMainNavigationController {
-//                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
+                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
             }
             // Update Activity tab bar
 //            if let item = self.tabBar.items?[3] {

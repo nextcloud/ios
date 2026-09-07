@@ -53,6 +53,7 @@ class NCMedia: UIViewController {
     var filesExists: ThreadSafeArray<String> = ThreadSafeArray()
     var ocIdDoNotExists: ThreadSafeArray<String> = ThreadSafeArray()
 //    var searchMediaInProgress: Bool = false
+
     // Tracks whether we have completed an explicit preload before presentation
     private var didCompleteInitialPreload = false
     private var explicitPreloadTask: Task<Void, Never>?
@@ -81,6 +82,14 @@ class NCMedia: UIViewController {
     }
     var transitionColumns = false
     var lastNumberOfColumns: Int = 0
+    var loadingTask: Task<Void, any Error>?
+    var mediaCommandView: NCMediaCommandView?
+    var activeAccount = tableAccount()
+    var lastContentOffsetY: CGFloat = 0
+    let maxImageGrid: CGFloat = 7
+    var hiddenCellMetadats: ThreadSafeArray<String> = ThreadSafeArray()
+
+    var isInGeneralPhotosSelectionContext: Bool = false
     var numberOfColumns: Int = 0 {
         didSet {
             guard oldValue > 0,
@@ -172,9 +181,29 @@ class NCMedia: UIViewController {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
+//    var isInGeneralPhotosSelectionContext: Bool = false
+
+    // MARK: - Programmatic Preload API
+    /// Preloads the media data (data source and initial search) so that the controller is ready when presented.
+    /// Safe to call while the media tab hasn't been opened yet. Idempotent across multiple calls.
     @MainActor
-    internal var windowScene: UIWindowScene? {
-       SceneManager.shared.getWindowScene(controller: self.tabBarController as? NCMainTabBarController)
+    func preloadIfNeeded() {
+        // Avoid re-running if already completed
+        if didCompleteInitialPreload { return }
+        // Cancel any previous explicit preload
+        explicitPreloadTask?.cancel()
+        explicitPreloadTask = Task { [weak self] in
+            guard let self else { return }
+            // Ensure view is loaded to set up collectionView/layout safely
+            _ = self.view
+            // Run the same loading sequence used in view lifecycle, but explicitly
+            await self.loadDataSource()
+            await self.searchMediaUI(true)
+            self.didCompleteInitialPreload = true
+            await MainActor.run {
+                self.onInitialLoadCompleted?()
+            }
+        }
     }
     
 //    var isInGeneralPhotosSelectionContext: Bool = false
@@ -229,7 +258,7 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
 //        layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layoutType: global.mediaLayoutRatio).layout
-
+        
 //        tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
 
         titleDate.text = ""
@@ -252,6 +281,36 @@ class NCMedia: UIViewController {
             UIColor.clear.cgColor
         ]
 
+        gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
+        gradientView.layer.insertSublayer(gradientLayer, at: 0)
+
+        activeAccount = NCManageDatabase.shared.getActiveTableAccount() ?? tableAccount()
+
+        collectionView.refreshControl = refreshControl
+        refreshControl.action(for: .valueChanged) { _ in
+            DispatchQueue.global().async {
+                Task {
+                    await self.loadDataSource()
+                    await self.searchMediaUI(true)
+                }
+            }
+            self.refreshControl.endRefreshing()
+        }
+
+        // Title + Activity indicator
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            titleConstraint.constant = 0
+        } else {
+            if #available(iOS 26.0, *) {
+                titleConstraint.constant = -44
+            } else {
+                titleConstraint.constant = -34
+            }
+        }
+
+        titleDate.text = ""
+        titleDate?.textColor = .white
+        activityIndicator.color = .white
         navigationItem.leftItemsSupplementBackButton = true
         navigationItem.leftBarButtonItem = nil
         gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
@@ -322,6 +381,12 @@ class NCMedia: UIViewController {
             }
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFileExists), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
+            
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { _ in
             Task {
                 await self.dataSource.clearCompactMetadatas()
@@ -390,14 +455,14 @@ class NCMedia: UIViewController {
                 await self.searchMediaUI(true)
             }
         }
-//        AnalyticsHelper.shared.trackEvent(eventName: .SCREEN_EVENT__MEDIA)
+        AnalyticsHelper.shared.trackEvent(eventName: .SCREEN_EVENT__MEDIA)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         // Re-evaluate in-app messages after viewDidAppear
-//        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
+        MoEngageAnalytics.shared.displayInAppNotificationSafely(reason: "viewDidAppear")
 
         Task {
             await networking.transferDispatcher.addDelegate(self)
@@ -445,12 +510,26 @@ class NCMedia: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+//        if let frame = tabBarController?.tabBar.frame {
+//            tabBarSelect.hostingController?.view.frame = frame
+//        }
+        gradientLayer.frame = gradientView.bounds
         setTitleDate()
 //        if let frame = tabBarController?.tabBar.frame {
 //            tabBarSelect.hostingController?.view.frame = frame
 //        }
         gradientLayer.frame = gradientView.bounds
 
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        if self.traitCollection.userInterfaceStyle == .dark {
+            return .lightContent
+        } else if isTop {
+            return .darkContent
+        } else {
+            return .lightContent
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -598,7 +677,7 @@ class NCMedia: UIViewController {
         }
     }
 
-    @MainActor
+     @MainActor
     func updateImageCacheWindow(force: Bool = false) {
         guard !dataSource.compactMetadatas.isEmpty else {
             return
