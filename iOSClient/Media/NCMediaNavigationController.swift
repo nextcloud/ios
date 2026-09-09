@@ -226,7 +226,7 @@ class NCMediaNavigationController: NCMainNavigationController {
 
             UIAction(
                 title: NSLocalizedString("_albums_list_new_album_popup_title_", comment: ""),
-                image: utility.loadImage(named: "album", colors: [NCBrandColor.shared.iconImageColor], size: 24).withTintColor(NCBrandColor.shared.iconImageColor),
+                image: utility.loadImage(named: "photo.badge.plus"),
                 handler: { _ in
                     guard let controller = self.controller else { return }
                     NCMediaNavigationController.presentInputAlbumNameAlert(on: controller) { albumName in
