@@ -92,7 +92,6 @@ class NCMediaNavigationController: NCMainNavigationController {
             Task {
                 await media.loadDataSource()
                 await media.networkRemoveAll()
-//                await self.updateMenuOption()
             }
         }
         
@@ -133,7 +132,6 @@ class NCMediaNavigationController: NCMainNavigationController {
                         self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
                         media.layoutType = self.global.mediaLayoutRatio
                     }
-//                    await self.updateMenuOption()
                     media.collectionViewReloadData()
                 }
             }
@@ -200,19 +198,23 @@ class NCMediaNavigationController: NCMainNavigationController {
         let selectAll = UIMenu(title: "", options: .displayInline, children: [
             UIAction(
                 title: NSLocalizedString("_select_all_", comment: ""),
-                image: utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.iconImageColor], size: 24).withTintColor(NCBrandColor.shared.iconImageColor),//, colors: [NCBrandColor.shared.iconImageColor]),
+                image: utility.loadImage(named: "checkmark.circle.fill"),
                 handler: { _ in
+                    // Ensure edit mode is enabled so selection is visible
+                    if !media.isEditMode {
+                        media.setEditMode(true)
+                    }
+
+                    // Toggle select all / clear selection
                     if !media.fileSelect.isEmpty, media.dataSource.compactMetadatas.count == media.fileSelect.count {
                         media.fileSelect = []
                     } else {
-                        media.fileSelect = media.dataSource.compactMetadatas.compactMap({ $0.ocId })
+                        media.fileSelect = media.dataSource.compactMetadatas.compactMap { $0.ocId }
                     }
+
+                    // Update selection count and refresh UI without reloading data source
                     media.tabBarSelect.selectCount = media.fileSelect.count
-                    Task {
-                        await media.loadDataSource()
-                        await media.networkRemoveAll()
-//                        await self.updateMenuOption()
-                    }
+                    media.collectionViewReloadData()
                 }
             )
         ])
@@ -247,9 +249,7 @@ class NCMediaNavigationController: NCMainNavigationController {
             options: .displayInline,
             children: actionsInEditMode
         )
-        return UIMenu(title: "", children: !media.isEditMode ? [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL] : [cancel, selectAll, editModeMenu])//, playFile, playURL])
-
-//        return UIMenu(title: "", children: [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
+        return UIMenu(title: "", children: !media.isEditMode ? [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL] : [cancel, selectAll, editModeMenu])
     }
     
     // MARK: - Album related handling

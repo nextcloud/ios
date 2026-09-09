@@ -83,13 +83,18 @@ struct NCMediaViewRepresentable: UIViewControllerRepresentable {
             prepareTask = Task { @MainActor [weak self] in
                 guard let self else { return }
                 defer { self.prepareTask = nil }
-                await self.loadDataSource()
+                // This controller is presented in a sheet, not as the selected Media tab.
+                await self.loadDataSource(forced: true)
                 guard !Task.isCancelled else { return }
                 // The normal search API requires an attached view outside edit mode.
                 await self.searchMediaTask?.value
                 guard !Task.isCancelled else { return }
                 await self.searchMediaUI(true)
                 guard !Task.isCancelled else { return }
+                // Search updates the database; its normal reload also requires the Media tab.
+                await self.loadDataSource(forced: true)
+                guard !Task.isCancelled else { return }
+                self.collectionViewReloadData()
                 self.isEditMode = true
                 self.selectionReady = true
                 self.collectionView.isUserInteractionEnabled = true
