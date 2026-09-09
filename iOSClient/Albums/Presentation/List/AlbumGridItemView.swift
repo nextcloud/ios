@@ -51,10 +51,6 @@ struct AlbumGridItemView: View {
                             alignment: .top
                         )
                         .clipped()
-//                case .thumbnail(let img):
-//                    Image(uiImage: img)
-//                        .resizable()
-//                        .scaledToFill()
                 case .thumbnail(let img):
                     Image(uiImage: img)
                         .resizable()
