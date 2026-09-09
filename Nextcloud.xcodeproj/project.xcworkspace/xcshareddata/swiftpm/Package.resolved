@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire",
       "state" : {
-        "revision" : "7595cbcf59809f9977c5f6378500de2ad73b7ddb",
-        "version" : "5.12.0"
+        "revision" : "3494b7c1d4e08be98bbb2244fd55ca5a029ff4a2",
+        "version" : "5.12.1"
       }
     },
     {
@@ -196,7 +196,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "unified-sharing",
-        "revision" : "f35df1c6a2cfa70070ac3a6e4fc31604b1408622"
+        "revision" : "f771605683e1de1e94f7e63feca3dbb314d1cc34"
       }
     },
     {
