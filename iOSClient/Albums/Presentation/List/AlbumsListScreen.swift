@@ -159,5 +159,3 @@ struct AlbumsListScreen: View {
 //    }
 //}
 //#endif
-
-
