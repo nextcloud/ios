@@ -147,3 +147,4 @@ struct AlbumDetailsScreen: View {
         showMedia = true
     }
 }
+

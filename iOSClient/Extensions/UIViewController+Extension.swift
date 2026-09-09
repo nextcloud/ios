@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import MessageUI
 import LucidBanner
+import SwiftUI
 
 extension UIViewController {
     // https://stackoverflow.com/questions/6131205/how-to-find-topmost-view-controller-on-ios
@@ -43,6 +44,33 @@ extension UIViewController {
         } else {
             return false
         }
+    }
+    
+    private struct Holder {
+        static var loader: UIHostingController<NCLoadingAlert>?
+    }
+    
+    func showLoader() {
+        guard Holder.loader == nil else { return }
+        
+        let loader = UIHostingController(rootView: NCLoadingAlert())
+        loader.view.frame = view.bounds
+        loader.view.backgroundColor = .clear
+        loader.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        addChild(loader)
+        view.addSubview(loader.view)
+        loader.didMove(toParent: self)
+        
+        Holder.loader = loader
+    }
+    
+    func hideLoader() {
+        guard let loader = Holder.loader else { return }
+        loader.willMove(toParent: nil)
+        loader.view.removeFromSuperview()
+        loader.removeFromParent()
+        Holder.loader = nil
     }
 }
 

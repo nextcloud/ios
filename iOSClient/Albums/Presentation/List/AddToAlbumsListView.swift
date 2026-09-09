@@ -244,23 +244,3 @@ struct AlbumRow: View {
         }
     }
 }
-
-//#if DEBUG
-//#Preview {
-//    NavigationView {
-//        AddToAlbumsListView(viewModel: .init(account: "123"), localAccount: "", onFinish: { selectedAlbum in
-//            print("Album:\(selectedAlbum)")
-//        }, onDismiss: {
-//           
-//        }) {
-//            
-//        }
-//    }.onAppear {
-//        UIView
-//            .appearance(
-//                whenContainedInInstancesOf: [UIAlertController.self]
-//            ).tintColor = NCBrandColor.shared.customer
-//    }
-//}
-//#endif
-

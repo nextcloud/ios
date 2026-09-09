@@ -49,13 +49,3 @@ struct NoAlbumsEmptyView: View {
         }
     }
 }
-
-//#if DEBUG
-//#Preview {
-//    NavigationView {
-//        NoAlbumsEmptyView(onNewAlbumCreationIntent: {})
-//            .navigationTitle("Album")
-//            .navigationBarTitleDisplayMode(.inline)
-//    }
-//}
-//#endif
