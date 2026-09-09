@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct AlbumsRootView: View {
+    var initialAlbum: Album? = nil
+    @State private var didApplyInitialRoute = false
     
     @Environment(\.localAccount) var localAccount: String
     
@@ -34,6 +36,15 @@ struct AlbumsRootView: View {
                         AlbumDetailsScreen(account: localAccount, album: album)
                     }
                 }
+        }
+        .onAppear {
+            guard !didApplyInitialRoute else { return }
+            didApplyInitialRoute = true
+            if let initialAlbum {
+                navigator.push(.albumDetails(album: initialAlbum))
+            } else {
+                navigator.pop()
+            }
         }
     }
 }

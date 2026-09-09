@@ -10,6 +10,7 @@ import UIKit
 import SwiftUI
 
 class AlbumsViewController: UIViewController {
+    var initialAlbum: Album?
     
     @Environment(\.localAccount) var localAccount: String
     
@@ -21,7 +22,7 @@ class AlbumsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
                 
-        let albumsRootView = AlbumsRootView()
+        let albumsRootView = AlbumsRootView(initialAlbum: initialAlbum)
             .environment(\.localAccount, session.account)
         
         let hostingController = UIHostingController(rootView: albumsRootView)

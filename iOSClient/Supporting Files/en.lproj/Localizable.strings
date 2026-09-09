@@ -878,10 +878,10 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_governance_labels_load_error_"    = "Governance labels could not be loaded.";
 
 // MARK: Albums
-"_albums_loading_popup_desc_"                       = "Wait a moment...";
+"_albums_loading_popup_desc_"                       = "Wait a moment …";
 "_albums_list_nav_title_"                           = "Albums";
 "_albums_list_new_album_btn_"                       = "New";
-"_albums_list_loading_msg_"                         = "Loading...";
+"_albums_list_loading_msg_"                         = "Loading …";
 "_albums_list_error_msg_"                           = "Unable to load albums. Please try again later!";
 "_albums_list_album_name_validation_nonempty_"      = "Album name cannot be empty.";
 "_albums_list_album_name_validation_min_length_"    = "Album name must be at least 3 characters.";
@@ -905,7 +905,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_albums_photo_selection_sheet_title_"              = "Select items";
 "_albums_photo_selection_sheet_back_btn_"           = "Back";
 "_albums_photo_selection_sheet_done_btn_"           = "Done";
-"_albums_photos_loading_msg_"                       = "Loading photos...";
+"_albums_photos_loading_msg_"                       = "Loading photos …";
 "_albums_photos_error_msg_"                         = "Unable to load photos. Please try again later!";
 "_albums_photos_empty_heading_"                     = "All that's\nmissing are\nyour photos";
 "_albums_photos_empty_subheading_"                  = "You can add as many photos as you like. A photo can also belong to more than one album.";
