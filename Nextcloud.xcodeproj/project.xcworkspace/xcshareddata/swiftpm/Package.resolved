@@ -196,7 +196,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "unified-sharing",
-        "revision" : "f771605683e1de1e94f7e63feca3dbb314d1cc34"
+        "revision" : "f74add5c999df1b4fa66bab1510d056651a93ae9"
       }
     },
     {
