@@ -14,7 +14,7 @@ struct NoPhotosEmptyView: View {
                 VStack(spacing: 0) {
                     Spacer(minLength: 0)
 
-                    Image(systemName: "photo.stack")
+                    Image(systemName: "photo.stack.fill")
                         .resizable()
                         .scaledToFit()
                     // NCBrandColor.shared.getElement(account: session.account)]

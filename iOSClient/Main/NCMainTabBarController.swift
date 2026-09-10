@@ -152,7 +152,7 @@ class NCMainTabBarController: UITabBarController {
         configureTabBarItem(
             at: 3,
             title: "_albums_",
-            imageName: "photo.stack",
+            imageName: "photo.stack.fill",
             tag: 103
         )
     }

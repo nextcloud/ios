@@ -39,7 +39,7 @@ struct AlbumGridItemView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .gray))
                         )
                 case .empty:
-                    Image(systemName: "photo.stack")
+                    Image(systemName: "photo.stack.fill")
                         .resizable()
                         .scaledToFit()
                         .foregroundStyle(.secondary)

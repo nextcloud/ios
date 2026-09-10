@@ -186,7 +186,7 @@ struct AlbumRow: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.gray.opacity(0.1))
         case .empty:
-            Image(systemName: "photo.stack")
+            Image(systemName: "photo.stack.fill")
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(.secondary)
