@@ -246,24 +246,7 @@ class NCCreate: NSObject {
 
         NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, file, error in
             Task { @MainActor in
-                if let metadata = metadata, let file = file, error == .success {
-                    // Remove all known download limits from shares related to the given file.
-                    // This avoids obsolete download limit objects to stay around.
-                    // Afterwards create new download limits, should any such be returned for the known shares.
-                    let shares = await NCManageDatabase.shared.getTableSharesAsync(account: metadata.account,
-                                                                                   serverUrl: metadata.serverUrl,
-                                                                                   fileName: metadata.fileName)
-                    for share in shares {
-                        await NCManageDatabase.shared.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
-
-                        if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                            await NCManageDatabase.shared.createDownloadLimitAsync(account: metadata.account,
-                                                                                   count: receivedDownloadLimit.count,
-                                                                                   limit: receivedDownloadLimit.limit,
-                                                                                   token: receivedDownloadLimit.token)
-                        }
-                    }
-
+                if let metadata, let file, error == .success {
                     var pages: [NCBrandOptions.NCInfoPagingTab] = []
                     let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                     let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
@@ -279,6 +262,27 @@ class NCCreate: NSObject {
                     }
                     if !capabilities.governanceEnabled, let idx = pages.firstIndex(of: .details) {
                         pages.remove(at: idx)
+                    }
+
+                    if capabilities.unifiedSharingEnabled {
+                        // Unified Sharing NC 35
+                    } else {
+                        // Remove all known download limits from shares related to the given file.
+                        // This avoids obsolete download limit objects to stay around.
+                        // Afterwards create new download limits, should any such be returned for the known shares.
+                        let shares = await NCManageDatabase.shared.getTableSharesAsync(account: metadata.account,
+                                                                                       serverUrl: metadata.serverUrl,
+                                                                                       fileName: metadata.fileName)
+                        for share in shares {
+                            await NCManageDatabase.shared.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
+
+                            if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                                await NCManageDatabase.shared.createDownloadLimitAsync(account: metadata.account,
+                                                                                       count: receivedDownloadLimit.count,
+                                                                                       limit: receivedDownloadLimit.limit,
+                                                                                       token: receivedDownloadLimit.token)
+                            }
+                        }
                     }
 
                     shareViewController?.pages = pages

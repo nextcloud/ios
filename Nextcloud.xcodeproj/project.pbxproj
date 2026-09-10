@@ -764,6 +764,7 @@
 		F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F7A1050D29E587AF00FFD92B /* TagListView */; };
+		F7A27B2D3053007C00EF02C7 /* NextcloudKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7A27B2C3053007C00EF02C7 /* NextcloudKitUI */; };
 		F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
 		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
 		F7A509252C26BD5D00326106 /* NCCreate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A509242C26BD5D00326106 /* NCCreate.swift */; };
@@ -2188,6 +2189,7 @@
 				F3A0479E2BD268B500658E7B /* PopupView in Frameworks */,
 				F3374AF82D78B01B002A38F9 /* HeapModule in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
+				F7A27B2D3053007C00EF02C7 /* NextcloudKitUI in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
 				F70557B72ED44E2700135623 /* LucidBanner in Frameworks */,
 				F3374AF42D78B01B002A38F9 /* DequeModule in Frameworks */,
@@ -4204,6 +4206,7 @@
 				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
 				F3374AF72D78B01B002A38F9 /* HeapModule */,
 				F70557B62ED44E2700135623 /* LucidBanner */,
+				F7A27B2C3053007C00EF02C7 /* NextcloudKitUI */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -6615,7 +6618,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6683,7 +6686,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6952,8 +6955,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				kind = exactVersion;
-				version = 7.5.0;
+				branch = "unified-sharing";
+				kind = branch;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
@@ -7331,6 +7334,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */;
 			productName = TagListView;
+		};
+		F7A27B2C3053007C00EF02C7 /* NextcloudKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKitUI;
 		};
 		F7A8D72328F1771B008BBE1C /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
