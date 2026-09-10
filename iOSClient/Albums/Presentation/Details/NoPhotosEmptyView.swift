@@ -7,6 +7,7 @@ import SwiftUI
 
 struct NoPhotosEmptyView: View {
     let onAddPhotosIntent: () -> Void
+    @Environment(\.localAccount) var localAccount: String
 
     var body: some View {
         GeometryReader { geometry in
@@ -14,11 +15,12 @@ struct NoPhotosEmptyView: View {
                 VStack(spacing: 0) {
                     Spacer(minLength: 0)
 
-                    Image(systemName: "photo.stack.fill")
+                    Image(systemName: "photo.on.rectangle.angled.fill")
                         .resizable()
                         .scaledToFit()
-                    // NCBrandColor.shared.getElement(account: session.account)]
-                        .foregroundStyle(Color(NCBrandColor.shared.customer))
+                        .foregroundStyle(
+                            Color(NCBrandColor.shared.getElement(account: localAccount))
+                        )
                         .frame(maxWidth: .infinity, maxHeight: 75)
                         .padding(.bottom, 30)
 

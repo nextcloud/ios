@@ -7,10 +7,8 @@ import SwiftUI
 import NextcloudKit
 
 struct AlbumGridItemView: View {
-
     let album: Album
     let iconSize: CGFloat // Receive the calculated size
-
     @Environment(\.localAccount) var localAccount: String
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
@@ -39,10 +37,12 @@ struct AlbumGridItemView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .gray))
                         )
                 case .empty:
-                    Image(systemName: "photo.stack.fill")
+                    Image(systemName: "photo.on.rectangle.angled.fill")
                         .resizable()
                         .scaledToFit()
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(
+                            Color(NCBrandColor.shared.getElement(account: localAccount))
+                        )
                         .frame(
                             width: geo.size.width,
                             height: dynamicHeight,

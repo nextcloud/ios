@@ -189,7 +189,9 @@ struct AlbumRow: View {
             Image(systemName: "photo.stack.fill")
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(.secondary)
+                .foregroundStyle(
+                    Color(NCBrandColor.shared.getElement(account: localAccount))
+                )
                 .frame(maxWidth: .infinity, maxHeight: 180)
         case .thumbnail(let uiImage):
             Image(uiImage: uiImage)
