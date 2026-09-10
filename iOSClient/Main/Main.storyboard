@@ -117,11 +117,11 @@
             </objects>
             <point key="canvasLocation" x="7070" y="943"/>
         </scene>
-        <!--Activity-->
+        <!--Album-->
         <scene sceneID="ZMV-5S-PnW">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="cJk-3t-NeM" customClass="NCActivityNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Activity" id="tc3-kx-Dca" userLabel="Activity"/>
+                    <tabBarItem key="tabBarItem" title="Album" id="tc3-kx-Dca" userLabel="Activity"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="Qkh-XJ-mse">
                         <rect key="frame" x="0.0" y="96" width="414" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -134,10 +134,10 @@
             </objects>
             <point key="canvasLocation" x="7748" y="327"/>
         </scene>
-        <!--NCActivity.storyboard-->
+        <!--NCAlbums.storyboard-->
         <scene sceneID="qVw-FD-Xlf">
             <objects>
-                <viewControllerPlaceholder storyboardName="NCActivity" referencedIdentifier="NCActivity.storyboard" id="JYK-Wc-E2H" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="NCAlbums" referencedIdentifier="NCAlbums.storyboard" id="JYK-Wc-E2H" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="K08-lC-hxS"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kzs-im-JZu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -262,10 +262,10 @@ final class NCMoreModel: ObservableObject {
 
         functionItems.append(
             Item(
-                titleKey: "_albums_",
-                image: "photo.stack",
+                titleKey: "_activity_",
+                image: "bolt.fill",
                 destination: .storyboard(
-                    name: "NCAlbums",
+                    name: "NCActivity",
                     presentation: .push
                 )
             )
