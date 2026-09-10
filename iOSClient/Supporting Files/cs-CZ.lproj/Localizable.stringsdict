@@ -65,9 +65,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d failed</string>
+			<string>%d nezdařilé</string>
+			<key>few</key>
+			<string>%d nezdařilé</string>
+			<key>many</key>
+			<string>%d nezdařilých</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>%d nezdařilé</string>
 		</dict>
 	</dict>
 </dict>
