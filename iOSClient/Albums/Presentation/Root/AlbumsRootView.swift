@@ -1,0 +1,44 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+
+struct AlbumsRootView: View {
+    var initialAlbum: Album?
+    @State private var didApplyInitialRoute = false
+    @Environment(\.localAccount) var localAccount: String
+    @StateObject private var navigator = AlbumsNavigator.shared
+
+    var body: some View {
+        NavigationStack(path: Binding(
+            get: {
+                // If navigator.current is not nil, treat it as a 1-item stack path
+                navigator.current.map { [$0] } ?? []
+            },
+            set: { path in
+                // If the stack path is emptied (e.g., back button), clear navigator
+                if path.isEmpty { navigator.pop() }
+            }
+        )) {
+            AlbumsListScreen(viewModel: .init(account: localAccount))
+                // Explicitly use 'AlbumsRoutes.self' here to solve the inference error
+                .navigationDestination(for: AlbumsRoutes.self) { route in
+                    switch route {
+                    case .albumDetails(let album):
+                        AlbumDetailsScreen(account: localAccount, album: album)
+                    }
+                }
+        }
+        .onAppear {
+            guard !didApplyInitialRoute else { return }
+            didApplyInitialRoute = true
+            if let initialAlbum {
+                navigator.push(.albumDetails(album: initialAlbum))
+            } else {
+                navigator.pop()
+            }
+        }
+    }
+}

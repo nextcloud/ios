@@ -286,7 +286,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     @MainActor
-    private func collectionViewCommonTrailingItemGroups() async {
+    func collectionViewCommonTrailingItemGroups() async {
         guard let topViewController else {
             return
         }

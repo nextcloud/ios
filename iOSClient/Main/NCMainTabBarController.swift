@@ -151,8 +151,8 @@ class NCMainTabBarController: UITabBarController {
 
         configureTabBarItem(
             at: 3,
-            title: "_activity_",
-            imageName: "bolt.fill",
+            title: "_albums_",
+            imageName: "photo.stack.fill",
             tag: 103
         )
     }
