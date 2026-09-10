@@ -183,6 +183,17 @@ final class NCMoreModel: ObservableObject {
 
         functionItems.append(
             Item(
+                titleKey: "_activity_",
+                image: "bolt.fill",
+                destination: .storyboard(
+                    name: "NCActivity",
+                    presentation: .push
+                )
+            )
+        )
+
+        functionItems.append(
+            Item(
                 titleKey: "_recent_",
                 image: "clock.arrow.circlepath",
                 destination: .storyboard(
@@ -259,17 +270,6 @@ final class NCMoreModel: ObservableObject {
                 )
             )
         }
-
-        functionItems.append(
-            Item(
-                titleKey: "_activity_",
-                image: "bolt.fill",
-                destination: .storyboard(
-                    name: "NCActivity",
-                    presentation: .push
-                )
-            )
-        )
 
         functionItems.append(
             Item(

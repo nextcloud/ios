@@ -7,38 +7,54 @@ import SwiftUI
 
 struct NoPhotosEmptyView: View {
     let onAddPhotosIntent: () -> Void
-    private let contentPadding: CGFloat = 32.0
 
     var body: some View {
-        ScrollView(.vertical) {
-            VStack {
-                // Background image
-                Image(systemName: "photo.stack")
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, maxHeight: 180)
-                .padding(.bottom, 20)
+        GeometryReader { geometry in
+            ScrollView(.vertical) {
+                VStack(spacing: 0) {
+                    Spacer(minLength: 0)
 
-                // Foreground content
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(NSLocalizedString("_albums_photos_empty_heading_", comment: ""))
-                        .font(.system(size: 48, weight: .bold))
+                    Image(systemName: "photo.stack")
+                        .resizable()
+                        .scaledToFit()
+                    // NCBrandColor.shared.getElement(account: session.account)]
+                        .foregroundStyle(Color(NCBrandColor.shared.customer))
+                        .frame(maxWidth: .infinity, maxHeight: 75)
+                        .padding(.bottom, 30)
 
-                    Text(NSLocalizedString("_albums_photos_empty_subheading_", comment: ""))
-                        .font(.system(size: 15, weight: .regular))
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .center, spacing: 16) {
+                        Text(NSLocalizedString("_albums_photos_empty_heading_", comment: ""))
+                            .cappedFont(.headline, maxDynamicType: .accessibility2)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
 
-                    Button(action: onAddPhotosIntent) {
-                        Label(NSLocalizedString("_albums_photos_empty_add_photos_btn_", comment: ""), systemImage: "plus")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(Color(NCBrandColor.shared.customer))
+                        Text(NSLocalizedString("_albums_photos_empty_subheading_", comment: ""))
+                            .cappedFont(.subheadline, maxDynamicType: .accessibility1)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+
+                        Button(action: onAddPhotosIntent) {
+                            Label(
+                                NSLocalizedString(
+                                    "_albums_photos_empty_add_photos_btn_",
+                                    comment: ""
+                                ),
+                                systemImage: "plus"
+                            )
+                            .cappedFont(.subheadline, maxDynamicType: .accessibility1)
+                            .foregroundStyle(Color(NCBrandColor.shared.customer))
+                            .multilineTextAlignment(.center)
+                        }
                     }
-                    Spacer(minLength: 40)
+                    .padding(.horizontal, 32)
+
+                    Spacer(minLength: 0)
                 }
-                .padding(.horizontal, contentPadding)
-                .frame(maxHeight: .infinity, alignment: .top)
-                .padding(.top, -40)
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: geometry.size.height
+                )
             }
         }
     }
