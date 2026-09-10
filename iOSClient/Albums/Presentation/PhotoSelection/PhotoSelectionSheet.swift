@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct PhotoSelectionSheet: View {
-    
+
     let onPhotosSelected: ([String]) -> Void
-    
+
     @State private var mediaVC: NCMedia?
 
     var body: some View {

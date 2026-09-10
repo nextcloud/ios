@@ -11,16 +11,16 @@ import NextcloudKit
 
 struct PhotoGridItemView: View {
     @Environment(\.localAccount) var localAccount: String
-    
+
     let album: Album
-    let photo: AlbumPhoto      
+    let photo: AlbumPhoto
     let isVideo: Bool
     let metadata: tableMetadata?
     let iconSize: CGFloat
-    
+
     @State private var thumbnail: UIImage?
     @State private var isLoading = false
-    
+
     var body: some View {
         ZStack {
             if let thumbnail = thumbnail {
@@ -58,7 +58,7 @@ struct PhotoGridItemView: View {
             await loadThumbnailFromPhoto()
         }
     }
-    
+
     private func loadThumbnailFromPhoto() async {
         // 1. Validate: Only load if it has a preview and a valid ID
         guard photo.hasPreview, !photo.id.isEmpty else {
@@ -104,10 +104,10 @@ struct PhotoGridItemView: View {
                let data = results.responseData?.data,
                let image = UIImage(data: data) {
                 self.thumbnail = image
-                
+
                 // 6. Save to cache (optional but recommended)
                 Task.detached(priority: .background) {
-                    await NCUtility().createImageFileFrom(
+                    NCUtility().createImageFileFrom(
                         data: data, ocId: fileId, etag: etag, userId: userId, urlBase: urlBase
                     )
                 }
@@ -116,4 +116,3 @@ struct PhotoGridItemView: View {
         }
     }
 }
-

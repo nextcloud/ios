@@ -9,13 +9,11 @@
 import SwiftUI
 
 struct AlbumsRootView: View {
-    var initialAlbum: Album? = nil
+    var initialAlbum: Album?
     @State private var didApplyInitialRoute = false
-    
     @Environment(\.localAccount) var localAccount: String
-    
     @StateObject private var navigator = AlbumsNavigator.shared
-    
+
     var body: some View {
 
         NavigationStack(path: Binding(

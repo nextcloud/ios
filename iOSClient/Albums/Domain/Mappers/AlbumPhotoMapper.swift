@@ -7,7 +7,7 @@
 //
 
 extension AlbumPhotoDTO {
-    
+
     func toAlbumPhoto() -> AlbumPhoto {
         return AlbumPhoto(
             id: self.fileId,
@@ -27,6 +27,6 @@ extension AlbumPhotoDTO {
 }
 
 extension Sequence where Element == AlbumPhotoDTO {
-    
+
     func toAlbumPhotos() -> [AlbumPhoto] { map { $0.toAlbumPhoto() } }
 }

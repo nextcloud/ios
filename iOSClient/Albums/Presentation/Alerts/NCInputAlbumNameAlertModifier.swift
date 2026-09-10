@@ -9,7 +9,7 @@
 import SwiftUI
 
 extension View {
-    
+
     func inputAlbumNameAlert(
         isPresented: Binding<Bool>,
         albumName: Binding<String>,
@@ -32,22 +32,22 @@ extension View {
 }
 
 private struct NCInputAlbumNameAlertModifier: ViewModifier {
-    
+
     @Binding var isPresented: Bool
     @Binding var albumName: String
-    
+
     let isForRenamingAlbum: Bool
-    
+
     var error: String?
     let onCreate: () -> Void
     let onCancel: () -> Void
-    
+
     private let title: String
     private let description: String
     private let textFieldHint: String
     private let positiveButtonText: String
     private let negativeButtonText: String
-    
+
     init(
         isPresented: Binding<Bool>,
         albumName: Binding<String>,
@@ -62,7 +62,7 @@ private struct NCInputAlbumNameAlertModifier: ViewModifier {
         self.error = error
         self.onCreate = onCreate
         self.onCancel = onCancel
-        
+
         if isForRenamingAlbum {
             title = NSLocalizedString("_albums_list_rename_album_popup_title_", comment: "")
             description = NSLocalizedString("_albums_list_rename_album_popup_desc_", comment: "")
@@ -77,16 +77,16 @@ private struct NCInputAlbumNameAlertModifier: ViewModifier {
             negativeButtonText = NSLocalizedString("_albums_list_new_album_popup_negative_btn_", comment: "")
         }
     }
-    
+
     func body(content: Content) -> some View {
         content
             .alert(title, isPresented: $isPresented) {
                 TextField(textFieldHint, text: $albumName)
-                
+
                 Button(negativeButtonText, role: .cancel) {
                     onCancel()
                 }
-                
+
                 Button(positiveButtonText) {
                     onCreate()
                 }

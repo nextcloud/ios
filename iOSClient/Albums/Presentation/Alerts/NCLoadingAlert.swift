@@ -10,13 +10,13 @@ import SwiftUI
 import UIKit
 
 struct NCLoadingAlert: View {
-    
+
     var body: some View {
-        
+
         ZStack {
             Color.black.opacity(0.4)
                 .ignoresSafeArea()
-            
+
             ProgressView(NSLocalizedString("_albums_loading_popup_desc_", comment: ""))
                 .padding()
                 .background(.ultraThinMaterial)
@@ -25,11 +25,11 @@ struct NCLoadingAlert: View {
     }
 }
 
-//#if DEBUG
-//#Preview {
+// #if DEBUG
+// #Preview {
 //    NCLoadingAlert()
-//}
-//#endif
+// }
+// #endif
 
 // UIKit presentation stays scoped to Albums; each operation owns its loader.
 extension NCLoadingAlert {

@@ -11,13 +11,13 @@ import Foundation
 import UIKit
 
 struct AlbumsGridView: View {
-    
+
     @Environment(\.localAccount) var localAccount: String
-    
+
     let albums: [Album]
-    
+
     let onAlbumClicked: (Album) -> Void
-    
+
 //    private let columns = [
 //        GridItem(.flexible(), spacing: 16),
 //        GridItem(.flexible(), spacing: 16)
@@ -41,21 +41,21 @@ struct AlbumsGridView: View {
     }
 
     var body: some View {
-        
+
         ScrollView {
-            
+
             VStack(alignment: .leading, spacing: 16) {
-                
+
                 Text(NSLocalizedString("_albums_list_own_albums_heading_", comment: ""))
                     .font(.system(size: 21, weight: .bold))
-                
+
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(albums, id: \.id) { album in
                         Button {
                             onAlbumClicked(album)
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
-                                
+
 //                                AlbumGridItemView(album: album)
                                 AlbumGridItemView(album: album, iconSize: iconPointSize)
 
@@ -63,7 +63,7 @@ struct AlbumsGridView: View {
                                     .font(.system(size: 15, weight: .medium))
                                     .foregroundColor(.primary)
                                     .lineLimit(1)
-                                
+
                                 if let subtitle = makeSubtitle(for: album), !subtitle.isEmpty {
                                     Text(subtitle)
                                         .font(.system(size: 13))
@@ -78,7 +78,7 @@ struct AlbumsGridView: View {
             .padding()
         }
     }
-    
+
     private func makeSubtitle(for album: Album) -> String? {
         guard let count = album.itemCount else { return nil }
         var parts: [String] = ["\(count) \(NSLocalizedString("_albums_list_entities_", comment: ""))"]
@@ -94,8 +94,8 @@ struct AlbumsGridView: View {
     }
 }
 
-//#if DEBUG
-//#Preview {
+// #if DEBUG
+// #Preview {
 //    AlbumsGridView(
 //        albums: [
 //            Album(
@@ -125,6 +125,5 @@ struct AlbumsGridView: View {
 //        ],
 //        onAlbumClicked: { _ in}
 //    )
-//}
-//#endif
-
+// }
+// #endif

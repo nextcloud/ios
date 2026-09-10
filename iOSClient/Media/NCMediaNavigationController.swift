@@ -301,12 +301,12 @@ class NCMediaNavigationController: NCMainNavigationController {
 
          // Use the provided account to avoid mismatches between UI and networking
          // (Do not rely on AppDelegate.account here)
-         
+
          let loader = NCLoadingAlert.show(on: controller)
          NextcloudKit.shared.createNewAlbum(for: account, albumName: name) { result in
              NCLoadingAlert.hide(loader)
              switch result {
-             case .success(_):
+             case .success:
                  AlbumsManager.shared.syncAlbums { resultAlbums in
                      if let newAlbum = resultAlbums.first(where: { $0.name == name }) {
                          if selectedPhotos.isEmpty {
@@ -343,8 +343,8 @@ class NCMediaNavigationController: NCMainNavigationController {
              }
          }
      }
-    
-    static func presentExistingAlbums(presentingController: NCMainTabBarController,selectedPhotos: [String], account: String) {
+
+    static func presentExistingAlbums(presentingController: NCMainTabBarController, selectedPhotos: [String], account: String) {
         let viewModel = AlbumsListViewModel(account: account)
         let albumListView = AddToAlbumsListView(viewModel: viewModel, localAccount: account, onFinish: { selectedAlbum in
             presentingController.dismiss(animated: true) {
@@ -403,18 +403,18 @@ class NCMediaNavigationController: NCMainNavigationController {
                 showAlbumAndNotify(album, controller: controller, account: account)
             }
         }
-        
+
         for photo in selectedPhotos {
-            
+
             let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
-            
+
             NextcloudKit.shared.copyPhotoToAlbum(
                 account: account,
                 sourcePath: metadata?.serverUrlFileName ?? photo,
                 albumName: album.name,
                 fileName: metadata?.fileName ?? photo
             ) { result in
-                
+
                 switch result {
                 case .success:
                     finishIfDone()

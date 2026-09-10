@@ -10,14 +10,13 @@ import SwiftUI
 import NextcloudKit
 
 struct AddToAlbumsListView: View {
-    
     @StateObject private var viewModel: AlbumsListViewModel
-    @State private var selectedAlbum: Album? = nil
+    @State private var selectedAlbum: Album?
     var localAccount: String
     var onFinish: (Album) -> Void
     var onDismiss: () -> Void
     var onCreateAlbum: () -> Void
-    
+
     init(viewModel: AlbumsListViewModel, localAccount: String, onFinish: @escaping (Album) -> Void, onDismiss: @escaping () -> Void, onCreateAlbum: @escaping () -> Void) {
         self._viewModel = StateObject(wrappedValue: viewModel)
         self.localAccount = localAccount
@@ -25,7 +24,7 @@ struct AddToAlbumsListView: View {
         self.onDismiss = onDismiss
         self.onCreateAlbum = onCreateAlbum
     }
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -53,7 +52,7 @@ struct AddToAlbumsListView: View {
                         .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                         .listRowSeparator(.hidden)
                     }
-                    
+
                     Section(header: Text(NSLocalizedString("_albums_list_own_albums_heading_", comment: ""))
                         .listRowInsets(EdgeInsets())
                         .font(.system(size: 17, weight: .bold))
@@ -90,7 +89,7 @@ struct AddToAlbumsListView: View {
                         }
                         .foregroundColor(.pink)
                     }
-                    
+
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")) {
                             if let selected = selectedAlbum {
@@ -110,7 +109,7 @@ struct AddToAlbumsListView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func content() -> some View {
         if viewModel.isLoading {
@@ -140,19 +139,19 @@ struct AlbumRow: View {
     private enum ImageState { case loading, empty, thumbnail(UIImage) }
     @State private var imageState: ImageState = .loading
     var localAccount: String
-    
+
     var body: some View {
         HStack {
             thumbnailView()
                 .frame(width: 80, height: 60)
                 .cornerRadius(6)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(album.name)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.primary)
                     .lineLimit(1)
-                
+
                 if let subtitle = makeSubtitle(for: album), !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.system(size: 13))
@@ -166,7 +165,7 @@ struct AlbumRow: View {
             await loadThumbnail()
         }
     }
-    
+
     private func makeSubtitle(for album: Album) -> String? {
         guard let count = album.itemCount else { return nil }
         var parts: [String] = ["\(count) \(NSLocalizedString("_albums_list_entities_", comment: ""))"]
@@ -180,7 +179,7 @@ struct AlbumRow: View {
         }
         return parts.joined(separator: " - ")
     }
-    
+
     /// Renders the thumbnail image based on the current state
     @ViewBuilder
     private func thumbnailView() -> some View {
@@ -203,7 +202,7 @@ struct AlbumRow: View {
                 .clipped()
         }
     }
-    
+
     private func loadThumbnail() async {
         if album.lastPhotoId == "-1" || (album.itemCount ?? 0) == 0 {
             imageState = .empty
@@ -213,7 +212,7 @@ struct AlbumRow: View {
             imageState = .empty
             return
         }
-        
+
         Task {
 
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: photoId, etag: "", account: localAccount) { task in

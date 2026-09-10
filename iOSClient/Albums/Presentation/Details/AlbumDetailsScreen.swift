@@ -9,23 +9,23 @@
 import SwiftUI
 
 struct AlbumDetailsScreen: View {
-    
+
     private let album: Album
     @StateObject private var viewModel: AlbumDetailsViewModel
     @State private var showMedia = false
-    
+
     init(account: String, album: Album) {
         self.album = album
         _viewModel = StateObject(
             wrappedValue: AlbumDetailsViewModel(account: account, album: album)
         )
     }
-    
+
     var body: some View {
-        
+
         ZStack {
             content()
-            
+
             if viewModel.isLoadingPopupVisible {
                 NCLoadingAlert()
             }
@@ -112,7 +112,7 @@ struct AlbumDetailsScreen: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func content() -> some View {
         if viewModel.isLoading {
@@ -141,10 +141,9 @@ struct AlbumDetailsScreen: View {
             }
         }
     }
-    
+
     private func handleAddPhotosIntent() {
         viewModel.onAddPhotosIntent()
         showMedia = true
     }
 }
-

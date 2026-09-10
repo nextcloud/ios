@@ -11,41 +11,41 @@ import Combine
 import NextcloudKit
 
 class AlbumsListViewModel: ObservableObject {
-    
+
     private var account: String
-    
+
     @Published private(set) var albums: [Album] = []
     @Published private(set) var isLoading: Bool = false
-    @Published private(set) var errorMessage: String? = nil
-    
+    @Published private(set) var errorMessage: String?
+
     private var thumbnailsTask: Task<Void, Never>?
     @Published private(set) var albumThumbnails: [String: UIImage] = [:]
-    
+
     @Published var isLoadingPopupVisible: Bool = false
-    
+
     @Published var isNewAlbumCreationPopupVisible: Bool = false
     @Published var newAlbumName: String = ""
-    @Published private(set) var newAlbumNameError: String? = nil
-    
+    @Published private(set) var newAlbumNameError: String?
+
     @Published var isPhotoSelectionSheetVisible: Bool = false
-    @Published var newlyCreatedAlbum: Album? = nil
-    
-    @Published var navigationDestination: AlbumsListScreen.NavigationDestination? = nil
-    
+    @Published var newlyCreatedAlbum: Album?
+
+    @Published var navigationDestination: AlbumsListScreen.NavigationDestination?
+
     @MainActor
     private var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: SceneManager.shared.getController(account: account))
     }
-    
+
     private var cancellables: Set<AnyCancellable> = []
     private var isNavigatingToDetails: Bool = false
-    
+
     init(account: String) {
         self.account = account
         observeAlbums()
         registerPublishers()
     }
-    
+
     // MARK: - Subscriptions
     private func observeAlbums() {
         AlbumsManager.shared.albumsPublisher
@@ -67,7 +67,7 @@ class AlbumsListViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     // MARK: - Album name validation
     private func registerPublishers() {
         $newAlbumName
@@ -78,11 +78,11 @@ class AlbumsListViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func validateAlbumName(_ name: String) -> [String] {
-        
+
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         if trimmed.isEmpty {
             return [NSLocalizedString("_albums_list_album_name_validation_nonempty_", comment: "")]
         } else if trimmed.count < 3 {
@@ -92,10 +92,10 @@ class AlbumsListViewModel: ObservableObject {
         } else if trimmed.contains("/") || trimmed.contains("\\") {
             return [NSLocalizedString("_albums_list_album_name_validation_specials_", comment: "")]
         }
-        
+
         return []
     }
-    
+
     // MARK: - Events
     func onAlbumClicked(_ album: Album) {
         guard !isNavigatingToDetails else { return }
@@ -105,21 +105,21 @@ class AlbumsListViewModel: ObservableObject {
             self?.isNavigatingToDetails = false
         }
     }
-    
+
     // MARK: - Album name popup
     func onNewAlbumClick() {
         // Reset any previous error and open the popup with a clean state
         newAlbumNameError = nil
         isNewAlbumCreationPopupVisible = true
     }
-    
+
     func onNewAlbumPopupCancel() {
         // Clear input and error when cancelling
         newAlbumName = ""
         newAlbumNameError = nil
         isNewAlbumCreationPopupVisible = false
     }
-    
+
     func onNewAlbumPopupCreate() {
         // Prevent double submission while a request is in-flight
         guard !isLoadingPopupVisible else { return }
@@ -143,32 +143,31 @@ class AlbumsListViewModel: ObservableObject {
         // Kick off creation with a clean state
         createNewAlbum(for: nameToCreate)
     }
-    
+
     // MARK: - APIs
     func onPulledToRefresh() {
         AlbumsManager.shared.syncAlbums()
     }
-    
+
     private func createNewAlbum(for name: String) {
-        
+
         guard !isLoadingPopupVisible else { return }
-        
+
         isLoadingPopupVisible = true
-        
+
         NextcloudKit.shared.createNewAlbum(for: account, albumName: name) { [weak self] result in
-            
+
             self?.isLoadingPopupVisible = false
-            
+
             switch result {
-            case .success(_):
-                
+            case .success:
                 AlbumsManager.shared.syncAlbums { [weak self] resultAlbums in
                     if let newAlbum = resultAlbums.first(where: { $0.name == name }) {
                         self?.newlyCreatedAlbum = newAlbum
                         self?.isPhotoSelectionSheetVisible = true
                     }
                 }
-                
+
             case .failure(let error):
                 let nkError = NKError(error: error)
                 // Prefer friendly info alert for duplicate album names (409)
@@ -194,12 +193,12 @@ class AlbumsListViewModel: ObservableObject {
             }
         }
     }
-    
+
     func onPhotosSelected(selectedPhotos: [String]) {
         isPhotoSelectionSheetVisible = false
-        
+
         guard let album = newlyCreatedAlbum else { return }
-        
+
         if selectedPhotos.isEmpty {
             guard !isNavigatingToDetails else { return }
             isNavigatingToDetails = true
@@ -209,15 +208,15 @@ class AlbumsListViewModel: ObservableObject {
             }
             return
         }
-        
+
         // Batch copy operations and navigate only once after a final sync to avoid iOS 17 navigation race conditions
         let group = DispatchGroup()
         var hadAnySuccess = false
-        
+
         for photo in selectedPhotos {
             group.enter()
             let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
-            
+
             NextcloudKit.shared.copyPhotoToAlbum(
                 account: account,
                 sourcePath: metadata?.serverUrlFileName ?? photo,
@@ -229,7 +228,7 @@ class AlbumsListViewModel: ObservableObject {
                     hadAnySuccess = true
                 case .failure(let error):
                     let nkError = NKError(error: error)
-                    
+
                     // Check nested conflict first (409), then top-level, otherwise show error
                     if let innerError = nkError.error as? NKError,
                        innerError.errorCode == NCGlobal.shared.errorConflict {
@@ -251,7 +250,7 @@ class AlbumsListViewModel: ObservableObject {
                 group.leave()
             }
         }
-        
+
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             if hadAnySuccess {
@@ -276,4 +275,3 @@ class AlbumsListViewModel: ObservableObject {
         }
     }
 }
-

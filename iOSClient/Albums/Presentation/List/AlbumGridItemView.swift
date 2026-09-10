@@ -10,15 +10,15 @@ import SwiftUI
 import NextcloudKit
 
 struct AlbumGridItemView: View {
-    
+
     let album: Album
     let iconSize: CGFloat // Receive the calculated size
-    
+
     @Environment(\.localAccount) var localAccount: String
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     private let fixedThumbnailHeight: CGFloat = 160
-        
+
     private var dynamicHeight: CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return 260
@@ -29,7 +29,7 @@ struct AlbumGridItemView: View {
     }
     private enum ImageState { case loading, empty, thumbnail(UIImage) }
     @State private var imageState: ImageState = .loading
-    
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -70,7 +70,7 @@ struct AlbumGridItemView: View {
             await loadThumbnail()
         }
     }
-    
+
     private func loadThumbnail() async {
         if album.lastPhotoId == "-1" || (album.itemCount ?? 0) == 0 {
             imageState = .empty
@@ -80,7 +80,7 @@ struct AlbumGridItemView: View {
             imageState = .empty
             return
         }
-        
+
         Task {
 
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: photoId, etag: "", account: localAccount) { task in
@@ -110,7 +110,7 @@ struct AlbumGridItemView: View {
             }
         }
     }
-    
+
     private var frame: some View {
         RoundedRectangle(
             cornerRadius: 8
@@ -121,4 +121,3 @@ struct AlbumGridItemView: View {
         )
     }
 }
-

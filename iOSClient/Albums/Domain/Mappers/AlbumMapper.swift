@@ -7,7 +7,7 @@
 //
 
 extension AlbumDTO {
-    
+
     func toAlbum() -> Album {
         return Album(
             href: self.href,
@@ -21,6 +21,6 @@ extension AlbumDTO {
 }
 
 extension Sequence where Element == AlbumDTO {
-    
+
     func toAlbums() -> [Album] { map { $0.toAlbum() } }
 }

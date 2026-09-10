@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct PhotosGridView: View {
-    let localAccount: String // Add this
-    let photos: [AlbumPhoto : tableMetadata?]
+    let localAccount: String
+    let photos: [AlbumPhoto: tableMetadata?]
     let onAddPhotosIntent: () -> Void
     let album: Album
 
@@ -21,15 +21,15 @@ struct PhotosGridView: View {
             return [GridItem(.adaptive(minimum: 100, maximum: 300), spacing: 1)]
         }
     }
-    
+
     private let calculatedIconSize: CGFloat = 30
-    
+
     var body: some View {
         // Sort by filename or date to ensure stability
         let sortedPhotos = photos.keys.sorted { lhs, rhs in
             lhs.fileName.localizedCaseInsensitiveCompare(rhs.fileName) == .orderedAscending
         }
-            
+
         ScrollView {
             LazyVGrid(columns: columns, spacing: 1) {
                 ForEach(sortedPhotos, id: \.self) { photo in
@@ -49,7 +49,7 @@ struct PhotosGridView: View {
             }
         }
     }
-    
+
     @MainActor
     private func openPhotoViewer(photo: AlbumPhoto) {
         let orderedPhotos = photos.keys.sorted {

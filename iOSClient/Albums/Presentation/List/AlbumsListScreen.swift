@@ -13,26 +13,26 @@ extension Notification.Name {
 }
 
 struct AlbumsListScreen: View {
-    
+
     @Environment(\.localAccount) var localAccount: String
 //    let metadata: tableMetadata?
 
     enum NavigationDestination: Hashable {
         case albumDetails(album: Album)
     }
-    
+
     @StateObject private var viewModel: AlbumsListViewModel
     @State private var popToRootTrigger: Int = 0
-    
+
     init(viewModel: AlbumsListViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
-        
+
         ZStack {
             content()
-            
+
             if viewModel.isLoadingPopupVisible {
                 NCLoadingAlert()
             }
@@ -80,7 +80,7 @@ struct AlbumsListScreen: View {
             popToRootTrigger += 1
         }
     }
-    
+
     @ViewBuilder
     private func content() -> some View {
         if viewModel.isLoading {
@@ -115,21 +115,21 @@ struct AlbumsListScreen: View {
             }
         }
     }
-    
+
     private var setupNavigation: some View {
-        
+
         let binding = Binding<Bool> { [weak viewModel] in
             viewModel?.navigationDestination != nil
         } set: { [weak viewModel] value in
             guard !value else { return }
             viewModel?.navigationDestination = nil
         }
-        
+
         return NavigationLink(isActive: binding) {
             switch viewModel.navigationDestination {
             case .some(let value):
                 navigationDestination(value)
-                
+
             case .none:
                 EmptyView()
             }
@@ -137,7 +137,7 @@ struct AlbumsListScreen: View {
             EmptyView()
         }
     }
-    
+
     @ViewBuilder
     private func navigationDestination(_ destination: NavigationDestination) -> some View {
         switch destination {
@@ -147,8 +147,8 @@ struct AlbumsListScreen: View {
     }
 }
 
-//#if DEBUG
-//#Preview {
+// #if DEBUG
+// #Preview {
 //    NavigationView {
 //        AlbumsListScreen(viewModel: .init(account: "123"))
 //    }.onAppear {
@@ -157,5 +157,5 @@ struct AlbumsListScreen: View {
 //                whenContainedInInstancesOf: [UIAlertController.self]
 //            ).tintColor = NCBrandColor.shared.customer
 //    }
-//}
-//#endif
+// }
+// #endif
