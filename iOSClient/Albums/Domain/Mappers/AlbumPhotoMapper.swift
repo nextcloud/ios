@@ -1,13 +1,9 @@
-//
-//  AlbumPhotoMapper.swift
-//  Nextcloud
-//
-//  Created by Dhanesh on 28/08/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 extension AlbumPhotoDTO {
-
     func toAlbumPhoto() -> AlbumPhoto {
         return AlbumPhoto(
             id: self.fileId,
@@ -27,6 +23,5 @@ extension AlbumPhotoDTO {
 }
 
 extension Sequence where Element == AlbumPhotoDTO {
-
     func toAlbumPhotos() -> [AlbumPhoto] { map { $0.toAlbumPhoto() } }
 }

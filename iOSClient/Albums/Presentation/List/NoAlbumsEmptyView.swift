@@ -1,10 +1,7 @@
-//
-//  NoAlbumsEmptyView.swift
-//  Nextcloud
-//
-//  Created by Dhanesh on 24/07/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 
@@ -19,12 +16,10 @@ struct NoAlbumsEmptyView: View {
         ScrollView(.vertical) {
 
             VStack {
-
-                // Background image
-                Image("noAlbum")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "photo.on.rectangle.angled")
+                    .font(.system(size: 96, weight: .light))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, minHeight: 220)
 
                 VStack(alignment: .leading, spacing: 16) {
 

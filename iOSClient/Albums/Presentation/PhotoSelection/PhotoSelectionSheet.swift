@@ -1,17 +1,12 @@
-//
-//  PhotoSelectionSheet.swift
-//  Nextcloud
-//
-//  Created by Dhanesh on 04/09/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 
 struct PhotoSelectionSheet: View {
-
     let onPhotosSelected: ([String]) -> Void
-
     @State private var mediaVC: NCMedia?
 
     var body: some View {

@@ -1,10 +1,7 @@
-//
-//  AddToAlbumsListView.swift
-//  Nextcloud
-//
-//  Created by Mangesh Murhe on 25/09/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
@@ -189,12 +186,11 @@ struct AlbumRow: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.gray.opacity(0.1))
         case .empty:
-            Image("EmptyAlbum")
+            Image(systemName: "photo.stack")
                 .resizable()
-                .scaledToFill()
-                .clipped()
-                .foregroundColor(.gray)
-                .background(Color.gray.opacity(0.1))
+                .scaledToFit()
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, maxHeight: 180)
         case .thumbnail(let uiImage):
             Image(uiImage: uiImage)
                 .resizable()

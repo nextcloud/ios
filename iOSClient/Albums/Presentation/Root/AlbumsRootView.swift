@@ -1,10 +1,7 @@
-//
-//  AlbumsRootView.swift
-//  Nextcloud
-//
-//  Created by Dhanesh on 24/07/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 
@@ -15,7 +12,6 @@ struct AlbumsRootView: View {
     @StateObject private var navigator = AlbumsNavigator.shared
 
     var body: some View {
-
         NavigationStack(path: Binding(
             get: {
                 // If navigator.current is not nil, treat it as a 1-item stack path

@@ -1,10 +1,7 @@
-//
-//  AlbumGridItemView.swift
-//  Nextcloud
-//
-//  Created by Dhanesh on 05/09/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
@@ -42,15 +39,16 @@ struct AlbumGridItemView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .gray))
                         )
                 case .empty:
-                    Image("EmptyAlbum")
+                    Image(systemName: "photo.stack")
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .scaledToFit()
+                        .foregroundStyle(.secondary)
                         .frame(
                             width: geo.size.width,
                             height: dynamicHeight,
-                            alignment: .top
+                            alignment: .center
                         )
-                        .clipped()
+                        .padding()
                 case .thumbnail(let img):
                     Image(uiImage: img)
                         .resizable()

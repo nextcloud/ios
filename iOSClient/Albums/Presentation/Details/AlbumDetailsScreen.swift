@@ -1,10 +1,7 @@
-//
-//  AlbumDetailsScreen.swift
-//  Nextcloud
-//
-//  Created by Dhanesh on 01/08/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Dhanesh
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 
@@ -22,7 +19,6 @@ struct AlbumDetailsScreen: View {
     }
 
     var body: some View {
-
         ZStack {
             content()
 
