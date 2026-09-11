@@ -17,6 +17,16 @@ class NCAutoUpload: NSObject {
     private let networking = NCNetworking.shared
     private var endForAssetToUpload: Bool = false
 
+    // Guards autoUploadBackgroundSync() against running concurrently with itself.
+    // BGAppRefreshTask and BGProcessingTask are registered independently
+    // (AppDelegate+AppRefresh.swift, AppDelegate+AppProcessing.swift) and both
+    // call this method; iOS is free to fire them at essentially the same time; a
+    // field log showed exactly that. NCAutoUpload is a plain class, not an actor,
+    // so this needs an explicit lock rather than relying on isolation the way
+    // NCNetworkingProcess's single-flight `currentTask` check can.
+    private let backgroundSyncLock = NSLock()
+    private var isBackgroundSyncing = false
+
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
         guard self.networking.isOnline else {
             return 0
@@ -288,7 +298,39 @@ class NCAutoUpload: NSObject {
     // - queues uploads sequentially.
     //
     // The flow cooperates with Swift task cancellation triggered by BGTask expiration.
+    /// Runs the background auto-upload discovery+queue+send pass, refusing to
+    /// run a second time in parallel with itself. Two concurrent passes
+    /// independently discovered and queued the same "new" assets, dispatching
+    /// duplicate uploads to the same destination path that then collided at the
+    /// server (WebDAV 423 Locked) — and in the worst case, uploadComplete's
+    /// fallback lookup (NCNetworking+NextcloudKitDelegate.swift), unable to find
+    /// the exact metadata row for one duplicate's completing task, fell back to
+    /// deleting *any* row matching that file/serverUrl, silently wiping out the
+    /// "uploaded successfully" record for a different duplicate that had already
+    /// completed. A second caller here simply backs off instead of waiting: like
+    /// NCNetworkingProcess's own timer, there will be another opportunity soon
+    /// (the next BGTask run, or the next foreground activation), so there's
+    /// nothing to gain from queueing up a redundant pass behind this one.
     func autoUploadBackgroundSync() async {
+        backgroundSyncLock.lock()
+        if isBackgroundSyncing {
+            backgroundSyncLock.unlock()
+            nkLog(tag: self.global.logTagBgSync, emoji: .info, message: "Auto upload background sync already running, skipping")
+            return
+        }
+        isBackgroundSyncing = true
+        backgroundSyncLock.unlock()
+
+        defer {
+            backgroundSyncLock.lock()
+            isBackgroundSyncing = false
+            backgroundSyncLock.unlock()
+        }
+
+        await runAutoUploadBackgroundSync()
+    }
+
+    private func runAutoUploadBackgroundSync() async {
         guard !Task.isCancelled else { return }
 
         // Discover new items for Auto Upload.

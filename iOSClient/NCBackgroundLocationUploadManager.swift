@@ -26,6 +26,12 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     func start() {
         // let status = locationManager.authorizationStatus
         locationManager.startMonitoringSignificantLocationChanges()
+        // Diagnostic only: confirms this was actually reached (and thus that
+        // sceneDidEnterBackground's gating conditions held) — there was
+        // previously no way to tell "monitoring never armed" apart from
+        // "armed, but the OS never delivered/relaunched for an event" from
+        // the log alone.
+        nkLog(debug: "Location monitoring started")
     }
 
     /// Requests `.authorizedAlways` location permission asynchronously.
