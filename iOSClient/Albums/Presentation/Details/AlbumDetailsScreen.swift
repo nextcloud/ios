@@ -130,7 +130,12 @@ struct AlbumDetailsScreen: View {
                 localAccount: viewModel.account,
                 photos: viewModel.photos,
                 onAddPhotosIntent: handleAddPhotosIntent,
-                album: album
+                album: album,
+                onRemovePhoto: { photo in
+                    Task { @MainActor in
+                        await viewModel.removePhoto(photo)
+                    }
+                }
             )
             .refreshable {
                 viewModel.onPulledToRefresh()

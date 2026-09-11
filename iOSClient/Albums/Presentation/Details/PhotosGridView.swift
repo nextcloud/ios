@@ -10,6 +10,9 @@ struct PhotosGridView: View {
     let photos: [AlbumPhoto: tableMetadata?]
     let onAddPhotosIntent: () -> Void
     let album: Album
+    let onRemovePhoto: (AlbumPhoto) -> Void
+
+    @State private var photoToRemove: AlbumPhoto?
 
     private var columns: [GridItem] {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -42,8 +45,30 @@ struct PhotosGridView: View {
                             iconSize: calculatedIconSize
                         )
                     }
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            photoToRemove = photo
+                        } label: {
+                            Label(NSLocalizedString("_remove_from_album_", comment: ""), systemImage: "minus.circle")
+                        }
+                    }
                 }
             }
+        }
+        .alert(
+            NSLocalizedString("_remove_from_album_", comment: ""),
+            isPresented: Binding(
+                get: { photoToRemove != nil },
+                set: { if !$0 { photoToRemove = nil } }
+            ),
+            presenting: photoToRemove
+        ) { photo in
+            Button(NSLocalizedString("_remove_from_album_", comment: ""), role: .destructive) {
+                onRemovePhoto(photo)
+            }
+            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {}
+        } message: { _ in
+            Text(NSLocalizedString("_want_remove_from_album_", comment: ""))
         }
     }
 
