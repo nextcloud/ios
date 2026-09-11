@@ -79,19 +79,16 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             optionButtonItem.menu = await createOptionMenu()
         }
 
-        assistantButtonItem.image = UIImage(systemName: "sparkles")
-        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
-        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         assistantButtonItem.primaryAction = UIAction(handler: { _ in
             let inputModel = NCAssistantInputModel()
             let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: self.controller, inputModel: inputModel), chatModel: NCAssistantChatModel(controller: self.controller, inputModel: inputModel), conversationsModel: NCAssistantChatConversationsModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             self.present(hostingController, animated: true, completion: nil)
         })
+        assistantButtonItem.image = UIImage(systemName: "sparkles")
+        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
+        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
-        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
-        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
-        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         notificationsButtonItem.primaryAction = UIAction(handler: { _ in
             if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCNotification {
@@ -100,10 +97,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 self.present(navigationController, animated: true, completion: nil)
             }
         })
+        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
+        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
+        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
-        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
-        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
-        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         transfersButtonItem.primaryAction = UIAction(handler: { _ in
             let rootView = TransfersView(session: self.session, onClose: { [weak self = self] in
                 self?.dismiss(animated: true)
@@ -113,6 +110,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             self.present(hosting, animated: true)
         })
+        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
+        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
+        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
         // PLUS BUTTON MENU
         let buttonSize: CGFloat = 44
