@@ -363,6 +363,24 @@ extension NCManageDatabase {
             }
         }
     }
+
+    func setAutoUploadStartAsync(_ enabled: Bool, account: String) async {
+        await core.performRealmWriteAsync { realm in
+            let accounts = realm.objects(tableAccount.self)
+
+            if enabled {
+                for result in accounts {
+                    result.autoUploadStart = result.account == account
+                }
+            } else {
+                accounts
+                    .filter("account == %@", account)
+                    .first?
+                    .autoUploadStart = false
+            }
+        }
+    }
+
     // MARK: - Realm Read
 
     func getTableAccount(predicate: NSPredicate) -> tableAccount? {
@@ -529,18 +547,26 @@ extension NCManageDatabase {
         return folderPhotos
     }
 
-    func getAccountAutoUploadSubfolderGranularity() -> Int {
+    func getAccountAutoUploadSubfolderGranularity(account: String? = nil) -> Int {
         core.performRealmRead { realm in
-            realm.objects(tableAccount.self)
+            if let account {
+                return realm.object(ofType: tableAccount.self, forPrimaryKey: account)?.autoUploadSubfolderGranularity
+            }
+
+            return realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
                 .autoUploadSubfolderGranularity
         } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func getAccountAutoUploadSubfolderGranularityAsync() async -> Int {
+    func getAccountAutoUploadSubfolderGranularityAsync(account: String? = nil) async -> Int {
         await core.performRealmReadAsync { realm in
-            realm.objects(tableAccount.self)
+            if let account {
+                return realm.object(ofType: tableAccount.self, forPrimaryKey: account)?.autoUploadSubfolderGranularity
+            }
+
+            return realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
                 .autoUploadSubfolderGranularity

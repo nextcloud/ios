@@ -147,28 +147,89 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
         Task {
             await database.updateAccountPropertyAsync(\.autoUploadSinceDate, value: autoUploadSinceDate, account: session.account)
+
+            if #available(iOS 27, *) {
+                _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+            }
         }
     }
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
+        let accountIdentifier = session.account
+
         Task {
-            if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)),
-               tblAccount.autoUploadStart == newValue {
+            guard let account = await database.getTableAccountAsync(
+                predicate: NSPredicate(format: "account == %@", accountIdentifier)
+            ),
+            account.autoUploadStart != newValue else {
                 return
             }
 
-            await database.updateAccountPropertyAsync(\.autoUploadStart, value: newValue, account: session.account)
-
             if newValue {
-                _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(controller: self.controller,
-                                                                             model: self,
-                                                                             assetCollections: assetCollections,
-                                                                             account: session.account)
+                let previousAccounts = await database.getTableAccountsAsync(
+                    predicate: NSPredicate(
+                        format: "autoUploadStart == true AND account != %@",
+                        accountIdentifier
+                    )
+                )
+
+                for previousAccount in previousAccounts {
+                    await database.setAutoUploadStartAsync(
+                        false,
+                        account: previousAccount.account
+                    )
+
+                    await cancelAutoUploadTransfers(
+                        account: previousAccount.account
+                    )
+                }
+
+                await database.setAutoUploadStartAsync(true, account: accountIdentifier)
+
+                _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(
+                    controller: controller,
+                    model: self,
+                    assetCollections: assetCollections,
+                    account: accountIdentifier
+                )
             } else {
-                await database.clearMetadatasUploadAsync(account: session.account)
+                await database.setAutoUploadStartAsync(false, account: accountIdentifier)
+                await cancelAutoUploadTransfers(account: accountIdentifier)
+
+                if #available(iOS 27, *) {
+                    _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
+                }
             }
         }
+    }
+
+    private func cancelAutoUploadTransfers(account: String) async {
+        await database.requestBackgroundAutoUploadCancellationAsync(account: account)
+
+        let predicate = NSPredicate(
+            format: "account == %@ AND sessionSelector == %@ AND backgroundUploadJobIdentifier == '' AND status != %d",
+            account,
+            NCGlobal.shared.selectorUploadAutoUpload,
+            NCGlobal.shared.metadataStatusNormal
+        )
+
+        let metadatas: [tableMetadata] = await database.getMetadatasAsync(
+            predicate: predicate
+        )
+
+        for metadata in metadatas {
+            await NCNetworking.shared.cancelTask(metadata: metadata)
+        }
+    }
+
+    func getOtherAutoUploadAccount() async -> tableAccount? {
+        await database.getTableAccountAsync(
+            predicate: NSPredicate(
+                format: "autoUploadStart == true AND account != %@",
+                session.account
+            )
+        )
     }
 
     /// Updates the auto-upload create subfolder setting.

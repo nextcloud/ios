@@ -1,0 +1,51 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import Foundation
+import NextcloudKit
+import RealmSwift
+import OSLog
+
+final class NCManageDatabase {
+    static let shared = NCManageDatabase()
+
+    internal let core: NCManageDatabaseCore
+    internal let databaseURL: URL?
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
+
+    private init() {
+        self.core = NCManageDatabaseCore()
+
+        if let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) {
+            self.databaseURL = dirGroup
+                .appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
+                .appendingPathComponent(databaseName)
+        } else {
+            self.databaseURL = nil
+        }
+    }
+
+    func openRealm() {
+        do {
+            let configuration = Realm.Configuration(
+                fileURL: databaseURL,
+                schemaVersion: databaseSchemaVersion,
+                objectTypes: [
+                    NCKeyValue.self, tableMetadata.self, tableLocalFile.self, tableMetadataTag.self, tableLivePhoto.self,
+                    tableDirectory.self, tableAccount.self, tableAutoUploadTransfer.self, tableCapabilities.self
+                ]
+            )
+            Realm.Configuration.defaultConfiguration = configuration
+
+            let realm = try Realm(configuration: configuration)
+            if let url = realm.configuration.fileURL {
+                logger.debug("Realm is located at: \(url.path, privacy: .public)")
+            }
+        } catch let error {
+            logger.error("Realm error: \(error.localizedDescription, privacy: .public)")
+            nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .error, message: "Realm error: \(error)")
+            isSuspendingDatabaseOperation = true
+        }
+    }
+}

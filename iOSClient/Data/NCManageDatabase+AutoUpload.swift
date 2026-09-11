@@ -91,6 +91,25 @@ extension NCManageDatabase {
         return result ?? []
     }
 
+    func fetchSkipAssetLocalIdentifiersAsync(account: String,
+                                             autoUploadServerUrlBase: String) async -> Set<String> {
+        let result: Set<String>? = await core.performRealmReadAsync { realm in
+            let metadataIdentifiers = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND assetLocalIdentifier != ''",
+                        account, autoUploadServerUrlBase)
+                .map(\.assetLocalIdentifier)
+
+            let transferIdentifiers = realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND serverUrlBase == %@ AND assetLocalIdentifier != ''",
+                        account, autoUploadServerUrlBase)
+                .map(\.assetLocalIdentifier)
+
+            return Set(metadataIdentifiers).union(transferIdentifiers)
+        }
+
+        return result ?? []
+    }
+
     /// Asynchronously fetches the most recent auto-uploaded date for the given account and server base URL.
     /// - Parameters:
     ///   - account: The account identifier.

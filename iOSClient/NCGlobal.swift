@@ -395,6 +395,7 @@ final class NCGlobal: Sendable {
     let logTagMediaBackfill                 = "MEDIA BACKFILL"
     let logTagMediaPlaceholder              = "MEDIA PLACEHOLDER"
     let logTagMediaPreview                  = "MEDIA PREVIEW"
+    let logTagBackgroundUpload              = "BACKGROUND UPLOAD"
 
     // USER DEFAULTS
     //

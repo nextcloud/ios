@@ -103,6 +103,20 @@ extension NCManageDatabase {
         }
     }
 
+    func getLivePhotoAccounts() async -> [String] {
+        await core.performRealmReadAsync { realm in
+            let results = realm.objects(tableLivePhoto.self)
+                .where {
+                    $0.serverUrlFileNameImage != "" &&
+                    $0.serverUrlFileNameVideo != "" &&
+                    $0.fileIdImage != "" &&
+                    $0.fileIdVideo != ""
+                }
+
+            return Array(Set(results.map(\.account)))
+        } ?? []
+    }
+
     /// Returns true if at least one valid Live Photo record exists for the given account.
     func hasLivePhotos() async -> Bool {
         await core.performRealmReadAsync { realm in

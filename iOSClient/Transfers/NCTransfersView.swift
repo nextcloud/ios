@@ -129,9 +129,16 @@ struct TransfersView: View {
                     }
                 ).font(.headline)) {
                     ForEach(model.metadatas, id: \.ocId) { item in
-                        TransferRowView(model: model, item: item) {
-                            await model.cancel(item: item)
-                        }
+                        TransferRowView(
+                            model: model,
+                            item: item,
+                            onRetry: {
+                                await model.retry(item: item)
+                            },
+                            onCancel: {
+                                await model.cancel(item: item)
+                            }
+                        )
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                     }
@@ -266,6 +273,7 @@ struct TransferRowView: View {
     @ObservedObject var model: TransfersViewModel
 
     let item: tableMetadata
+    let onRetry: () async -> Void
     let onCancel: () async -> Void
 
     var body: some View {
@@ -273,8 +281,20 @@ struct TransferRowView: View {
             HStack(alignment: .top, spacing: 12) {
                 let status = model.status(for: item)
 
-                Image(systemName: status.symbol)
-                    .font(.icon(30))
+                ZStack(alignment: .bottomTrailing) {
+                    Image(systemName: status.symbol)
+                        .font(.icon(30))
+
+                    if model.isAutoUpload(item: item) {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(Color(NCBrandColor.shared.customer))
+                            .padding(3)
+                            .background(.background, in: Circle())
+                            .offset(x: 4, y: 4)
+                    }
+                }
+                .frame(width: 36, height: 36)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName)
@@ -301,6 +321,26 @@ struct TransferRowView: View {
                 }
 
                 Spacer(minLength: 8)
+
+                if model.canRetry(item: item) {
+                    Button {
+                        Task {
+                            await onRetry()
+                        }
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 2)
+                                .frame(width: 36, height: 36)
+
+                            Image(systemName: "arrow.clockwise")
+                                .font(.icon(14, weight: .bold))
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(NSLocalizedString("_retry_", comment: ""))
+                }
 
                 Button {
                     Task {

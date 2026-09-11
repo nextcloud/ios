@@ -96,7 +96,9 @@ extension NCManageDatabase {
         }
 
         // use Networking
+#if !EXTENSION_BACKGROUNDUPLOAD
         NCNetworking.shared.capabilities[account] = capabilities
+#endif
 
         return capabilities
     }

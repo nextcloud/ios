@@ -12,6 +12,7 @@ import WidgetKit
 import EasyTipView
 import SwiftUI
 import RealmSwift
+import Photos
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
