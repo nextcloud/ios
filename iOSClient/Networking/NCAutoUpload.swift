@@ -220,6 +220,13 @@ class NCAutoUpload: NSObject {
                 continuation.resume(returning: granted)
             }
         }
+        // Diagnostic only: background-triggered discovery has been observed
+        // finding 0 new items for hours while genuinely-new assets sat in the
+        // library, with a foreground activation immediately finding all of
+        // them via this exact same function — narrow down where that diverges
+        // (permission, bookmark date, collection lookup, or the fetch itself).
+        nkLog(tag: self.global.logTagBgSync,
+              message: "getCameraRollAssets: authStatus=\(PHPhotoLibrary.authorizationStatus().rawValue), hasPermission=\(hasPermission), autoUploadSinceDate=\(String(describing: tblAccount.autoUploadSinceDate))")
         guard hasPermission else {
             return (nil, nil)
         }
@@ -269,13 +276,21 @@ class NCAutoUpload: NSObject {
         }()
 
         guard !collections.isEmpty else {
-             return (nil, nil)
+            nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "getCameraRollAssets: no matching PHAssetCollection found")
+            return (nil, nil)
         }
 
         let allAssets = collections.flatMap { collection in
             let result = PHAsset.fetchAssets(in: collection, options: fetchOptions)
             return result.objects(at: IndexSet(0..<result.count))
         }
+        // Diagnostic only: an unfiltered count (same collections, no date/media
+        // predicate) alongside the filtered one distinguishes "the collection
+        // itself is empty/stale in this execution context" from "the predicate
+        // is excluding assets that are genuinely there".
+        let unfilteredCount = collections.reduce(0) { $0 + PHAsset.fetchAssets(in: $1, options: nil).count }
+        nkLog(tag: self.global.logTagBgSync,
+              message: "getCameraRollAssets: collections=\(collections.count), filteredCount=\(allAssets.count), unfilteredLibraryCount=\(unfilteredCount)")
         let newAssets = OrderedSet(allAssets)
         let fileNames = newAssets.compactMap { asset -> String? in
             let date = asset.creationDate ?? Date()

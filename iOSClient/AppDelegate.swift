@@ -36,6 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 await NCAccount().deleteAllAccounts()
             }
         }
+
+        // Register as a live PHPhotoLibraryChangeObserver for the app's whole
+        // lifetime, including background execution — see NCPhotoLibraryObserver
+        // for why: without one, background-triggered auto-upload discovery can
+        // see a stale snapshot of the photo library.
+        NCPhotoLibraryObserver.shared.start()
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
 
