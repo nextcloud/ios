@@ -204,7 +204,7 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, metadatas: [tableMetadata], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func alertDeleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, metadatas: [tableMetadata], controller: UITabBarController?, completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
             title: titleString,
             message: message,
@@ -212,20 +212,30 @@ extension UIAlertController {
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
-                    await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
+                    if controller?.selectedIndex == NCGlobal.shared.selectedTabIndexAlbum {
+                        NotificationCenter.default.post(name: NSNotification.Name("deletePhotosFromAlbum"), object: nil, userInfo: ["metadatas": metadatas])
+
+                    } else {
+                        await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
+
+                    }
+//                    await NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas)
                 }
                 completion(false)
             })
         }
 
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-            Task {
-                for metadata in metadatas {
-                    await NCNetworking.shared.deleteCache(metadata)
+        if controller?.selectedIndex != NCGlobal.shared.selectedTabIndexAlbum {
+
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+                Task {
+                    for metadata in metadatas {
+                        await NCNetworking.shared.deleteCache(metadata)
+                    }
                 }
-            }
-            completion(false)
-        })
+                completion(false)
+            })
+        }
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
             completion(true)

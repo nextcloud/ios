@@ -84,7 +84,7 @@ struct PhotosGridView: View {
             model: model,
             viewerTransitionSource: nil,
             from: controller?.view,
-            contextMenuController: nil
+            contextMenuController: controller
         )
     }
 }

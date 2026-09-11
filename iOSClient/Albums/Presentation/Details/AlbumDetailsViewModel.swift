@@ -201,6 +201,7 @@ class AlbumDetailsViewModel: ObservableObject {
                 await MainActor.run {
                     self.loadAlbumPhotos()
                     AlbumsManager.shared.syncAlbums()
+                    UINavigationController().popupFromNavigationStack(context: "after-pop-deletePhotos")
                 }
             }
         }

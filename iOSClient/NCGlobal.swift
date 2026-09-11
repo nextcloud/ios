@@ -400,6 +400,10 @@ final class NCGlobal: Sendable {
     //
     let udMigrationMultiDomains             = "migrationMultiDomains"
     let udLastVersion                       = "lastVersion"
+
+    // Album
+    //
+    let selectedTabIndexAlbum: Int                             = 3
 }
 
 /**

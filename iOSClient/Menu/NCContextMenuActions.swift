@@ -99,16 +99,28 @@ enum NCContextMenuActions {
         controller: NCMainTabBarController?,
         completion: (() -> Void)? = nil
     ) -> UIAction {
-        UIAction(
-            title: NSLocalizedString("_delete_", comment: ""),
+        var titleDelete = NSLocalizedString("_delete_", comment: "")
+        var msgDelete = NSLocalizedString("_want_delete_", comment: "")
+        if controller?.getSelectedTabIndex() == NCGlobal.shared.selectedTabIndexAlbum {
+            titleDelete = NSLocalizedString("_remove_from_album_", comment: "")
+            msgDelete = NSLocalizedString("_want_remove_from_album_", comment: "")
+        } else if ((metadatas.first?.directory) != nil) {
+            titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+        } else {
+            titleDelete = NSLocalizedString("_delete_file_", comment: "")
+        }
+
+        return UIAction(
+            title: titleDelete,
             image: NCUtility().loadImage(named: "trash"),
             attributes: [.destructive]
         ) { _ in
             let alert = UIAlertController.alertDeleteFileOrFolder(
-                titleString: NSLocalizedString("_delete_", comment: "") + "?",
-                message: NSLocalizedString("_want_delete_", comment: ""),
+                titleString: titleDelete + "?",
+                message: NSLocalizedString(msgDelete, comment: ""),
                 canDeleteServer: true,
-                metadatas: metadatas
+                metadatas: metadatas,
+                controller: controller
             ) { _ in
                 completion?()
             }
