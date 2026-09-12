@@ -467,10 +467,11 @@ public extension NextcloudKit {
 
     // MARK: - Delete Photo from Album
 
-    /// Asynchronously deletes a Photo FromAlbum from the Nextcloud server.
+    /// Asynchronously removes a photo from an album without deleting the original file.
     ///
     /// - Parameters:
-    ///   - serverUrlFileName: The full URL string of the file or folder to delete.
+    ///   - albumName: The name of the album containing the photo.
+    ///   - fileName: The album entry name returned by WebDAV, including its file ID prefix.
     ///   - account: The Nextcloud account identifier.
     ///   - options: Optional request options including headers, timeout, and queue.
     ///   - taskHandler: Callback triggered with the underlying `URLSessionTask`.
@@ -481,7 +482,6 @@ public extension NextcloudKit {
     ///   - error: The `NKError` result indicating success or failure.
     func deletePhotoFromAlbumAsync(albumName: String,
                                    fileName: String,
-                                   serverUrlFileName: String,
                                    account: String,
                                    options: NKRequestOptions = NKRequestOptions(),
                                    taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }
@@ -493,7 +493,6 @@ public extension NextcloudKit {
         await withCheckedContinuation { continuation in
             deletePhotoFromAlbum(albumName: albumName,
                                fileName: fileName,
-                               serverUrlFileName: serverUrlFileName,
                                account: account,
                                options: options,
                                taskHandler: taskHandler) { account, responseData, error in
@@ -506,10 +505,11 @@ public extension NextcloudKit {
         }
     }
 
-    /// Deletes a Photo From Album from the Nextcloud server at the specified URL.
+    /// Removes a photo from an album without deleting the original file.
     ///
     /// - Parameters:
-    ///   - serverUrlFileName: The full URL string of the file or folder to delete.
+    ///   - albumName: The name of the album containing the photo.
+    ///   - fileName: The album entry name returned by WebDAV, including its file ID prefix.
     ///   - account: The Nextcloud account identifier.
     ///   - options: Optional request options including headers, timeout, and queue.
     ///   - taskHandler: Callback triggered with the underlying `URLSessionTask`.
@@ -519,7 +519,6 @@ public extension NextcloudKit {
     ///     - error: The `NKError` result indicating success or failure.
     func deletePhotoFromAlbum(albumName: String,
                               fileName: String,
-                              serverUrlFileName: String,
                               account: String,
                               options: NKRequestOptions = NKRequestOptions(),
                               taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },

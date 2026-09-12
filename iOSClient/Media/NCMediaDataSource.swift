@@ -68,7 +68,7 @@ extension NCMedia {
                     self.isViewActived &&
                     self.session.account == account &&
                     self.view.window != nil &&
-                    self.tabBarController?.selectedViewController === self.navigationController
+                    self.isMediaPresentationActive
                 )
             }
 
@@ -91,7 +91,7 @@ extension NCMedia {
                           self.isViewActived &&
                           self.session.account == account &&
                           self.view.window != nil &&
-                          self.tabBarController?.selectedViewController === self.navigationController
+                          self.isMediaPresentationActive
                       ) else {
                     return
                 }
@@ -200,7 +200,7 @@ extension NCMedia {
                   !self.isPinchGestureActive,
                   !self.showOnlyImages,
                   !self.showOnlyVideos,
-                  !self.isEditMode else {
+                  (!self.isEditMode || self.allowsSearchWhileSelecting) else {
                 return false
             }
 

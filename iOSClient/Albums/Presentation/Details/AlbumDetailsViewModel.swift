@@ -174,6 +174,29 @@ class AlbumDetailsViewModel: ObservableObject {
         }
     }
 
+    @MainActor
+    func removePhoto(_ photo: AlbumPhoto) async {
+        guard !isLoadingPopupVisible, photos.keys.contains(photo) else { return }
+
+        isLoadingPopupVisible = true
+        defer { isLoadingPopupVisible = false }
+
+        // Remove the album entry, including when the original file has no local metadata.
+        let result = await NextcloudKit.shared.deletePhotoFromAlbumAsync(
+            albumName: album.name,
+            fileName: photo.fileName,
+            account: account
+        )
+
+        guard result.error == .success else {
+            await showErrorBanner(windowScene: windowScene, error: result.error)
+            return
+        }
+
+        photos.removeValue(forKey: photo)
+        AlbumsManager.shared.syncAlbums()
+    }
+
     @MainActor func deletePhotos(with metadatas: [tableMetadata]) async {
         for metadata in metadatas {
             if let photo = photos.first(where: { $0.value?.ocId == metadata.ocId })?.key {
@@ -209,7 +232,7 @@ class AlbumDetailsViewModel: ObservableObject {
         let fileName: String = photo.fileName
         print("DEBUG: Attempting to remove: \(fileName)")
 
-        let results = await NextcloudKit.shared.deletePhotoFromAlbumAsync(albumName: album.name, fileName: fileName, serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
+        let results = await NextcloudKit.shared.deletePhotoFromAlbumAsync(albumName: album.name, fileName: fileName, account: metadata.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                             path: metadata.serverUrlFileName,
