@@ -59,12 +59,16 @@ struct NCMediaViewRepresentable: UIViewControllerRepresentable {
             viewIfLoaded?.window?.windowScene
         }
 
+        override var allowsSearchWhileSelecting: Bool { true }
+
+        override var isMediaPresentationActive: Bool { isViewActived }
+
         override func viewDidLoad() {
             super.viewDidLoad()
             // Keep Media's selection bookkeeping without its share/move/delete toolbar.
             tabBarSelect = NCMediaSelectTabBar(viewController: self)
             collectionView.dragInteractionEnabled = false
-            collectionView.isUserInteractionEnabled = false
+            isEditMode = true
         }
 
         override func viewWillAppear(_ animated: Bool) {
@@ -80,22 +84,15 @@ struct NCMediaViewRepresentable: UIViewControllerRepresentable {
             prepareTask = Task { @MainActor [weak self] in
                 guard let self else { return }
                 defer { self.prepareTask = nil }
+
                 // This controller is presented in a sheet, not as the selected Media tab.
                 await self.loadDataSource(forced: true)
                 guard !Task.isCancelled else { return }
-                // The normal search API requires an attached view outside edit mode.
-                await self.searchMediaTask?.value
-                guard !Task.isCancelled else { return }
-                await self.searchMediaUI(true)
-                guard !Task.isCancelled else { return }
-                // Search updates the database; its normal reload also requires the Media tab.
-                await self.loadDataSource(forced: true)
-                guard !Task.isCancelled else { return }
-                self.collectionViewReloadData()
-                self.isEditMode = true
                 self.selectionReady = true
                 self.collectionView.isUserInteractionEnabled = true
                 self.onReady?()
+
+                self.searchNewMedia()
             }
         }
 
