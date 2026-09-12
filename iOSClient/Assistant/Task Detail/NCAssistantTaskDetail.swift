@@ -1,10 +1,6 @@
-//
-//  NCAssistantTaskDetail.swift
-//  Nextcloud
-//
-//  Created by Milen on 10.04.24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
