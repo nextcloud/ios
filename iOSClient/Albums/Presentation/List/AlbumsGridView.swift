@@ -8,11 +8,8 @@ import Foundation
 import UIKit
 
 struct AlbumsGridView: View {
-
     @Environment(\.localAccount) var localAccount: String
-
     let albums: [Album]
-
     let onAlbumClicked: (Album) -> Void
 
 //    private let columns = [
@@ -38,11 +35,8 @@ struct AlbumsGridView: View {
     }
 
     var body: some View {
-
         ScrollView {
-
             VStack(alignment: .leading, spacing: 16) {
-
                 Text(NSLocalizedString("_albums_list_own_albums_heading_", comment: ""))
                     .font(.system(size: 21, weight: .bold))
 
@@ -52,8 +46,6 @@ struct AlbumsGridView: View {
                             onAlbumClicked(album)
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
-
-//                                AlbumGridItemView(album: album)
                                 AlbumGridItemView(album: album, iconSize: iconPointSize)
 
                                 Text(album.name)

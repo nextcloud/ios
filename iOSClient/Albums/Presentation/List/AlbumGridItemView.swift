@@ -83,9 +83,10 @@ struct AlbumGridItemView: View {
 
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: photoId, etag: "", account: localAccount) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: localAccount,
-                                                                                                path: photoId,
-                                                                                                name: "DownloadPreview")
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: localAccount,
+                        path: photoId,
+                        name: "DownloadPreview")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

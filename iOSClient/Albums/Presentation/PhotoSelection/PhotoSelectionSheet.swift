@@ -6,6 +6,7 @@
 import SwiftUI
 
 struct PhotoSelectionSheet: View {
+    @Environment(\.localAccount) var localAccount: String
     let onPhotosSelected: ([String]) -> Void
     @State private var mediaVC: NCMedia?
 
@@ -22,13 +23,13 @@ struct PhotoSelectionSheet: View {
                     Button(NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: "")) {
                         onPhotosSelected([])
                     }
-                    .foregroundColor(Color(NCBrandColor.shared.customer))
+                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")) {
                         onPhotosSelected(mediaVC?.fileSelect ?? [])
                     }
-                    .foregroundColor(Color(NCBrandColor.shared.customer))
+                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
                     .disabled(mediaVC == nil)
                 }
 

@@ -10,14 +10,10 @@ extension Notification.Name {
 }
 
 struct AlbumsListScreen: View {
-
     @Environment(\.localAccount) var localAccount: String
-//    let metadata: tableMetadata?
-
     enum NavigationDestination: Hashable {
         case albumDetails(album: Album)
     }
-
     @StateObject private var viewModel: AlbumsListViewModel
     @State private var popToRootTrigger: Int = 0
 
@@ -26,7 +22,6 @@ struct AlbumsListScreen: View {
     }
 
     var body: some View {
-
         ZStack {
             content()
 
@@ -114,7 +109,6 @@ struct AlbumsListScreen: View {
     }
 
     private var setupNavigation: some View {
-
         let binding = Binding<Bool> { [weak viewModel] in
             viewModel?.navigationDestination != nil
         } set: { [weak viewModel] value in

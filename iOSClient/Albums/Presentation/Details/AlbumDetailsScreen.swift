@@ -6,7 +6,6 @@
 import SwiftUI
 
 struct AlbumDetailsScreen: View {
-
     private let album: Album
     @StateObject private var viewModel: AlbumDetailsViewModel
     @State private var showMedia = false
@@ -39,15 +38,24 @@ struct AlbumDetailsScreen: View {
                     .tint(Color(NCBrandColor.shared.iconImageColor))
 
                     Menu {
-                        Button(NSLocalizedString("_albums_photos_rename_album_btn_", comment: "")) {
+                        Button {
                             viewModel.onRenameAlbumIntent()
+                        } label: {
+                            Label(
+                                NSLocalizedString("_albums_photos_rename_album_btn_", comment: ""),
+                                systemImage: "pencil"
+                            )
                         }
-                        Button(
-                            NSLocalizedString("_albums_photos_delete_album_btn_", comment: ""),
-                            role: .destructive
-                        ) {
+
+                        Button(role: .destructive) {
                             viewModel.onDeleteAlbumIntent()
+                        } label: {
+                            Label(
+                                NSLocalizedString("_albums_photos_delete_album_btn_", comment: ""),
+                                systemImage: "trash"
+                            )
                         }
+                        .tint(.red)
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .imageScale(.large)

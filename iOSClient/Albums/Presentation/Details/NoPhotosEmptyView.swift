@@ -45,7 +45,7 @@ struct NoPhotosEmptyView: View {
                                 systemImage: "plus"
                             )
                             .cappedFont(.subheadline, maxDynamicType: .accessibility1)
-                            .foregroundStyle(Color(NCBrandColor.shared.customer))
+                            .foregroundStyle(Color(NCBrandColor.shared.getElement(account: localAccount)))
                             .multilineTextAlignment(.center)
                         }
                     }
