@@ -32,10 +32,10 @@ struct AddToAlbumsListView: View {
                         }) {
                             HStack(spacing: 8) {
                                 Image(systemName: "plus.circle.fill")
-                                    .foregroundColor(Color(NCBrandColor.shared.customer))
+                                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
                                 Text(NSLocalizedString("_albums_list_new_album_popup_title_", comment: "Create new album"))
                                     .font(.system(size: 16, weight: .semibold))
-                                    .foregroundColor(Color(NCBrandColor.shared.customer))
+                                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 10)
@@ -82,7 +82,7 @@ struct AddToAlbumsListView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
                                 Text(NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: ""))
-                            }.foregroundColor(Color(NCBrandColor.shared.customer))
+                            }.foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
                         }
                         .foregroundColor(.pink)
                     }
@@ -93,7 +93,7 @@ struct AddToAlbumsListView: View {
                                 onFinish(selected)
                             }
                         }
-                        .foregroundColor(Color(NCBrandColor.shared.customer))
+                        .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
                         .opacity(selectedAlbum == nil ? 0.4 : 1.0)
                         .disabled(selectedAlbum == nil)
                     }
@@ -212,12 +212,12 @@ struct AlbumRow: View {
         }
 
         Task {
-
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: photoId, etag: "", account: localAccount) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: localAccount,
-                                                                                                path: photoId,
-                                                                                                name: "DownloadPreview")
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                        account: localAccount,
+                        path: photoId,
+                        name: "DownloadPreview")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

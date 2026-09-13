@@ -8,7 +8,6 @@ import Combine
 import NextcloudKit
 
 class AlbumsListViewModel: ObservableObject {
-
     private var account: String
 
     @Published private(set) var albums: [Album] = []

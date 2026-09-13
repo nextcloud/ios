@@ -26,11 +26,11 @@ class AlbumsViewController: UIViewController {
         // UI changes
         UIView.appearance(
             whenContainedInInstancesOf: [UIAlertController.self]
-        ).tintColor = NCBrandColor.shared.customer
+        ).tintColor = NCBrandColor.shared.getElement(account: session.account)
 
         UIBarButtonItem.appearance(
             whenContainedInInstancesOf: [UINavigationBar.self]
-        ).tintColor = NCBrandColor.shared.customer
+        ).tintColor = NCBrandColor.shared.getElement(account: session.account)
     }
 
     override func viewWillAppear(_ animated: Bool) {
