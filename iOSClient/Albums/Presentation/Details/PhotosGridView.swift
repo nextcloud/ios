@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
+import NextcloudKit
 
 struct PhotosGridView: View {
     let localAccount: String
@@ -13,6 +14,7 @@ struct PhotosGridView: View {
     let onRemovePhoto: (AlbumPhoto) -> Void
 
     @State private var photoToRemove: AlbumPhoto?
+    @State private var openingPhoto: AlbumPhoto?
 
     private var columns: [GridItem] {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -35,7 +37,7 @@ struct PhotosGridView: View {
                 ForEach(sortedPhotos, id: \.self) { photo in
                     let metadata = photos[photo] ?? nil
                     Button {
-                        openPhotoViewer(photo: photo)
+                        openingPhoto = photo
                     } label: {
                         PhotoGridItemView(
                             album: album,
@@ -45,6 +47,7 @@ struct PhotosGridView: View {
                             iconSize: calculatedIconSize
                         )
                     }
+                    .disabled(openingPhoto != nil)
                     .contextMenu {
                         Button(role: .destructive) {
                             photoToRemove = photo
@@ -54,6 +57,17 @@ struct PhotosGridView: View {
                     }
                 }
             }
+        }
+        .overlay {
+            if openingPhoto != nil {
+                ProgressView()
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
+        .task(id: openingPhoto?.id) {
+            guard let photo = openingPhoto else { return }
+            await openPhotoViewer(photo: photo)
         }
         .alert(
             NSLocalizedString("_remove_from_album_", comment: ""),
@@ -73,32 +87,50 @@ struct PhotosGridView: View {
     }
 
     @MainActor
-    private func openPhotoViewer(photo: AlbumPhoto) {
-        let orderedPhotos = photos.keys.sorted {
-            $0.fileName.localizedCaseInsensitiveCompare($1.fileName) == .orderedAscending
-        }
-        let resolvedPhotos = orderedPhotos.compactMap { albumPhoto -> (photo: AlbumPhoto, metadata: tableMetadata)? in
-            guard let metadata = (photos[albumPhoto] ?? nil)
-                ?? NCManageDatabase.shared.getMetadataFromFileId(albumPhoto.id),
-                  metadata.account == localAccount else {
-                return nil
-            }
-            return (albumPhoto, metadata.detachedCopy())
-        }
+    private func openPhotoViewer(photo: AlbumPhoto) async {
+        defer { openingPhoto = nil }
         let controller = SceneManager.shared.getController(account: localAccount)
-        guard let selected = resolvedPhotos.first(where: { $0.photo.id == photo.id }) else {
-            Task { @MainActor in
-                await showErrorBanner(
-                    windowScene: SceneManager.shared.getWindowScene(controller: controller),
-                    text: "_albums_photos_error_msg_"
-                )
+        let database = NCManageDatabase.shared
+        var selected = await database.getMetadataAsync(
+            predicate: NSPredicate(format: "account == %@ AND fileId == %@", localAccount, photo.id)
+        )
+        guard !Task.isCancelled else { return }
+
+        if selected == nil {
+            let result = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: photo.id, account: localAccount)
+            guard !Task.isCancelled else { return }
+            if result.error == .success, let file = result.file {
+                let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
+                if metadata.account == localAccount {
+                    await database.addMetadataAsync(metadata)
+                    selected = metadata
+                }
             }
+        }
+
+        guard !Task.isCancelled else { return }
+        guard let selected,
+              let instanceId = NCUtility().splitOcId(selected.ocId).instanceId else {
+            await showErrorBanner(
+                windowScene: SceneManager.shared.getWindowScene(controller: controller),
+                text: "_albums_photos_error_msg_"
+            )
             return
         }
 
+        // Album entries provide numeric file IDs. The selected file supplies the server's
+        // instance suffix so the viewer can resolve every other file lazily by its ocId.
+        let utility = NCUtility()
+        let ocIds = photos.keys.sorted {
+            $0.fileName.localizedCaseInsensitiveCompare($1.fileName) == .orderedAscending
+        }.map { albumPhoto in
+            albumPhoto.id == photo.id
+                ? selected.ocId
+                : utility.paddedFileId(albumPhoto.id) + instanceId
+        }
         let model = NCMediaViewerModel(
-            currentMetadata: selected.metadata,
-            ocIds: resolvedPhotos.map { $0.metadata.ocId },
+            currentMetadata: selected,
+            ocIds: ocIds,
             session: NCSession.shared.getSession(account: localAccount),
             loader: NCMediaViewerLoader()
         )
