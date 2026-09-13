@@ -444,6 +444,36 @@ class NCAutoUpload: NSObject {
             for extractedMetadata in extractedMetadatas {
                 guard !Task.isCancelled else { return }
 
+                // Extraction only learns the real file size (and therefore
+                // whether this upload needs chunking) after the fact —
+                // metadatasToUpload's chunk == 0 filter above only screens out
+                // items that were *already* known to need chunking before
+                // extraction. A large enough asset (typically a longer video)
+                // can still come back from extractCameraRoll with chunk > 0,
+                // at which point NCManageDatabaseCreateMetadata also reassigns
+                // its session to NCNetworking.shared.sessionUpload — the plain
+                // foreground identifier, not one of the three background
+                // session identifiers uploadFileInBackground expects.
+                // Calling uploadFileInBackground with it anyway doesn't error
+                // out cleanly: NKBackground.upload fails to resolve a session
+                // for the mismatched identifier, so its upload task is nil,
+                // yet it still returns .success (errorCode 0) — logged
+                // upstream as the cryptic "task: nil, error: 0". Chunked
+                // uploads need a live foreground Alamofire session regardless
+                // (see NCNetworkingProcess.uploadChunk) and can't run from a
+                // background execution context at all, so there's nothing to
+                // attempt here — leave it queued (status stays waitUpload) for
+                // NCNetworkingProcess's foreground pipeline, which already
+                // branches correctly on chunk > 0, to pick up once the app is
+                // next foregrounded.
+                guard extractedMetadata.chunk == 0 && !extractedMetadata.e2eEncrypted else {
+                    nkLog(
+                        tag: self.global.logTagBgSync,
+                        message: "Deferring \(extractedMetadata.fileName) -> \(extractedMetadata.serverUrl): needs chunked upload, which requires the app in the foreground"
+                    )
+                    continue
+                }
+
                 let err = await NCNetworking.shared.uploadFileInBackground(
                     metadata: extractedMetadata.detachedCopy()
                 )
