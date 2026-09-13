@@ -49,7 +49,6 @@ struct PhotoGridItemView: View {
             },
             alignment: .bottomLeading
         )
-        .cornerRadius(8)
         // Use photo.id to trigger the task
         .task(id: photo.id) {
             await loadThumbnailFromPhoto()
