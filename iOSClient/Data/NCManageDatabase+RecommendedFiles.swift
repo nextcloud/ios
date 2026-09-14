@@ -89,7 +89,7 @@ extension NCManageDatabase {
 
             return results.compactMap { result in
                 let metadata = realm.objects(tableMetadata.self)
-                    .filter("fileId == %@", result.id)
+                    .filter("fileId == %@ AND account == %@", result.id, account)
                     .first
 
                 guard let metadata, metadata.status != NCGlobal.shared.metadataStatusWaitDelete else {
