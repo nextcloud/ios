@@ -118,6 +118,26 @@ extension NCNetworking {
     // MARK: - Upload NextcloudKitDelegate
 
     func uploadComplete(fileName: String, serverUrl: String, allHeaderFields: [AnyHashable: Any]?, task: URLSessionTask, error: NKError) {
+        // Dispatching a background-session upload only creates the task; the
+        // transfer itself is scheduled by the system and can land minutes or
+        // hours later, possibly only once the app is foregrounded again. Logging
+        // the completion — with the app state at that moment — is what makes
+        // "it uploaded while backgrounded" distinguishable from "it sat queued
+        // until the app was reopened" when reading a log afterwards.
+        // isAppInBackground lives in the main app target only; this file is also
+        // compiled into the extensions, which have no app state of their own.
+#if !EXTENSION
+        let hostState = isAppInBackground ? "backgrounded" : "foregrounded"
+#else
+        let hostState = "extension"
+#endif
+        nkLog(tag: self.global.logTagNetworkingTasks,
+              emoji: error == .success ? .success : .error,
+              message: "Upload completed \(fileName) " +
+                       "taskIdentifier \(task.taskIdentifier) " +
+                       "while app \(hostState)" +
+                       (error == .success ? "" : ", error: \(error.errorCode) \(error.errorDescription)"))
+
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
 

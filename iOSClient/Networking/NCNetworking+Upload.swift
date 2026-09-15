@@ -292,7 +292,14 @@ extension NCNetworking {
             return error
         }
 
-        nkLog(debug: "Uploading file \(metadata.fileNameView) " + "with taskIdentifier \(task.taskIdentifier)")
+        // The session identifier matters when reading a log after the fact: the
+        // Wi-Fi-only session (sessionUploadBackgroundWWan) is configured with
+        // allowsCellularAccess = false, so its tasks legitimately sit idle until
+        // Wi-Fi appears, which is otherwise indistinguishable from iOS simply
+        // deferring a transfer on the ordinary background session.
+        nkLog(debug: "Uploading file \(metadata.fileNameView) " +
+                     "with taskIdentifier \(task.taskIdentifier) " +
+                     "on session \(metadata.session)")
 
         await NCManageDatabase.shared.setMetadataSessionAsync(
             ocId: metadata.ocId,
