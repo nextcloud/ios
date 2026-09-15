@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 opt_in_rules: # some rules are turned off by default, so you need to opt-in
  - empty_collection_literal
  - empty_string

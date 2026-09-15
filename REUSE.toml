@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+version = 1
+SPDX-PackageName = "Nextcloud iOS App"
+SPDX-PackageSupplier = "Nextcloud GmbH <https://nextcloud.com/impressum/>"
+SPDX-PackageDownloadLocation = "https://github.com/nextcloud/ios/"
+
+[[annotations]]
+path = [".gitattributes", ".gitignore", "iOSClient/.tx/config", "iOSClient/PrivacyInfo.xcprivacy", "iOSClient/Settings/Acknowledgements.rtf"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2024 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["**/*.storyboard", "**/*.xib"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["Nextcloud.xcodeproj/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["Brand/**", "Widget/Intent/*.lproj/*.intentdefinition"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["iOSClient/Images.xcassets/**", "Widget/Assets.xcassets/**", "Action Assistant/Images.xcassets/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["Animation.gif", "Nextcloud Hub.png", "Reasons to use Nextcloud.pdf", "widget.png"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2017-2023 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# Translations are managed on Transifex; headers here would be overwritten on sync.
+[[annotations]]
+path = ["iOSClient/Supporting Files/*.lproj/*.strings", "iOSClient/Supporting Files/*.lproj/*.stringsdict", "Widget/Intent/*.lproj/*.strings"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2017-2025 Nextcloud translators"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# The Nextcloud name and logo are trademarks; see LICENSES/LicenseRef-NextcloudTrademarks.txt
+[[annotations]]
+path = ["AppIcon.icon/**", "Brand/Custom.xcassets/AppIcon.appiconset/**", "Brand/Custom.xcassets/logo.imageset/**", "Action Assistant/Images.xcassets/AppIcon.appiconset/**", "Widget/Assets.xcassets/AppIcon.imageset/**", "iOSClient/Images.xcassets/logo.imageset/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Nextcloud GmbH"
+SPDX-License-Identifier = "LicenseRef-NextcloudTrademarks"
+
+[[annotations]]
+path = ["iOSClient/Font/Inconsolata/*.ttf"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2006-2012 The Inconsolata Project Authors"
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = ["iOSClient/Utility/TOPasscodeViewController/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2017 Timothy Oliver"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["iOSClient/Utility/NYMnemonic/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2014 Nybex, Inc. <https://nybex.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["Widget/Assets.xcassets/widget.imageset/icons8-*.png"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Icons8 LLC <https://icons8.com>"
+SPDX-License-Identifier = "LicenseRef-Icons8"

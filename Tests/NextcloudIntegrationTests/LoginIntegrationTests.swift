@@ -1,10 +1,6 @@
-//
-//  NextcloudIntegrationTests.swift
-//  NextcloudIntegrationTests
-//
-//  Created by Milen Pivchev on 5/19/23.
-//  Copyright © 2023 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import XCTest
 import NextcloudKit

@@ -54,7 +54,7 @@ SPDX-FileCopyrightText: <YEAR> <Author Name>
 SPDX-License-Identifier: GPL-3.0-or-later
 ```
 
-Some older files still carry legacy “Created by … All rights reserved” Xcode headers — do not copy that style into new files. There is no automated SPDX check in CI, so header correctness is on you.
+Some older files still carry legacy “Created by … All rights reserved” Xcode headers — do not copy that style into new files. The `REUSE Compliance Check` workflow enforces this on every pull request; files that cannot carry a comment (assets, translations, project files) are covered by `REUSE.toml` instead.
 
 Avoid creating source files that implement multiple types; instead, place each type in its own dedicated source file.
 
