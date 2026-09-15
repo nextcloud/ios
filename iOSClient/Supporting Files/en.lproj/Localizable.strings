@@ -590,7 +590,6 @@
 "_title_lockscreenwidget_"  = "Status";
 "_description_lockscreenwidget_"    = "Keep an eye on available space and recent activity";
 
-"_keep_running_"            = "Keep the app running for a better user experience.";
 "_apps_nextcloud_detect_"   = "Detected %@ apps";
 "_add_existing_account_"    = "Other %@ Apps has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";

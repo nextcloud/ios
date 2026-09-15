@@ -19,7 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
-    var notificationSettings: UNNotificationSettings?
 
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
@@ -86,9 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         nkLog(start: "Start session with level \(NCPreferences().log) " + versionNextcloudiOS)
 
         // Push Notification & display notification
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            self.notificationSettings = settings
-        }
         application.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
@@ -160,15 +156,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        if self.notificationSettings?.authorizationStatus != .denied && UIApplication.shared.backgroundRefreshStatus == .available {
-            let content = UNMutableNotificationContent()
-            content.title = NCBrandOptions.shared.brand
-            content.body = NSLocalizedString("_keep_running_", comment: "")
-            let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-            let notificationCenter = UNUserNotificationCenter.current()
-            notificationCenter.add(req)
-        }
-
         nkLog(debug: "App is terminating")
     }
 
