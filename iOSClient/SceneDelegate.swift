@@ -290,10 +290,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
                     nkLog(info: "Update in background: \(isBackgroundRefreshStatus)")
                     // LOCATION MANAGER
-                    if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
-                        NCBackgroundLocationUploadManager.shared.start()
-                    } else {
-                        NCBackgroundLocationUploadManager.shared.stop()
+                    //
+                    // Must run on the main thread. This closure executes on a
+                    // Swift cooperative-pool thread, and the manager's lazy
+                    // `shared` initialiser — which creates the CLLocationManager
+                    // and sets its delegate — runs on whichever thread first
+                    // touches it. Core Location delivers delegate events on the
+                    // thread the manager was created on, and that thread must
+                    // have an active run loop; a cooperative-pool thread has
+                    // none, so a manager created here arms monitoring without
+                    // error and then never receives a single callback.
+                    let shouldMonitorLocation = CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart
+                    await MainActor.run {
+                        if shouldMonitorLocation {
+                            NCBackgroundLocationUploadManager.shared.start()
+                        } else {
+                            NCBackgroundLocationUploadManager.shared.stop()
+                        }
                     }
                     // UPDATE SHARE GROUP ACCOUNTS
                     if let error = await NCAccount().updateAppsShareAccounts() {

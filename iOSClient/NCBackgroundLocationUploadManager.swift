@@ -18,6 +18,15 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     private override init() {
         super.init()
 
+        // Core Location delivers delegate events on the thread this object is
+        // created on, and that thread must have an active run loop — in
+        // practice, the main thread. Creating it anywhere else (a Task on the
+        // cooperative pool, say) silently produces a manager that can arm
+        // monitoring but never receive a callback. Every entry point that can
+        // trigger this lazy initialiser must therefore already be on main;
+        // catch a regression here rather than as weeks of "it never fires".
+        assert(Thread.isMainThread, "NCBackgroundLocationUploadManager must be created on the main thread")
+
         locationManager.delegate = self
         // .other is CoreLocation's own default (no assumption baked in)
         // and doesn't carry .automotiveNavigation's much higher power/accuracy
