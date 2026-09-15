@@ -116,6 +116,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         scheduleAppProcessing()
 
+        // A launch caused by a significant location change carries the
+        // `.location` key. Apple's contract for such a relaunch is that the app
+        // must create a CLLocationManager, set its delegate and start monitoring
+        // again from here — the pending update is then delivered to that
+        // delegate. Nothing else in this app does that early enough: the
+        // manager is only ever instantiated from sceneDidEnterBackground (which
+        // never runs for a launch that begins in the background) or from the
+        // settings screen. Without this, every location relaunch produced a
+        // process with no manager and no delegate, iOS had nowhere to hand the
+        // event, and the app went back to sleep having done nothing — which is
+        // why monitoring was armed and iOS was demonstrably relaunching for
+        // it, yet didUpdateLocations was never called.
+        if launchOptions?[.location] != nil {
+            nkLog(tag: global.logTagLocation, emoji: .start, message: "Launched for a location event")
+            NCBackgroundLocationUploadManager.shared.start()
+        }
+
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCPreferences().requestPasscodeAtStart = true
         }
