@@ -120,7 +120,7 @@ final class NCBrandOptions: @unchecked Sendable {
     let passcodeSecondsFail: Int = 60
 
     // Enables the PhotoKit background resource upload extension on iOS 27 and later.
-    var enable_background_upload_extension: Bool = true
+    var enable_background_upload_extension: Bool = false
 
     // Info Paging
     enum NCInfoPagingTab: Int, CaseIterable {
