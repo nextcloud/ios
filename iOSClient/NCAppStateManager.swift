@@ -11,6 +11,13 @@ var hasBecomeActiveOnce: Bool = false
 // Global flag indicating whether the app is currently in background mode.
 var isAppInBackground: Bool = true
 
+// Global timestamp of the last transition to background. Lets a long-running
+// foreground operation tell "the app was sent to the background while I was
+// waiting" apart from "the app stayed in the foreground throughout", even if
+// it has already come back to the foreground by the time the operation
+// completes — see NCNetworkingProcess.removeUploadedAssetsIfNeeded.
+var lastDidEnterBackgroundDate: Date = .distantPast
+
 // Global flag indicating whether the app is in maintenanceMode.
 var maintenanceMode: Bool = false
 
@@ -43,6 +50,7 @@ final class NCAppStateManager {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
             isAppInBackground = true
+            lastDidEnterBackgroundDate = Date()
 
             //
             // Cancel here the task, if is in execution mode

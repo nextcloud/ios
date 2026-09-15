@@ -33,6 +33,16 @@ actor NCNetworkingProcess {
     private let verifyZombieInterval: TimeInterval = 12
     private var lastAssetRemovalDate: Date = .distantPast
     private let removeUploadedAssetsInterval: TimeInterval = 300
+    private var lastAssetRemovalFailed = false
+    // When the current, still-unanswered batch of removal candidates first
+    // appeared. The wait before prompting is measured from here rather than from
+    // the previous attempt: "last attempt" is ancient whenever the app has been
+    // running a while, which made the interval trivially satisfied and popped the
+    // sheet for whichever single asset happened to finish uploading first, with
+    // the rest arriving in a second prompt. Anchoring on the batch gives the rule
+    // "prompt once the queue drains, or after the interval if it never does".
+    // Cleared whenever no candidates remain.
+    private var candidatesPendingSince: Date?
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -361,30 +371,112 @@ actor NCNetworkingProcess {
     /// never causes an eligible asset to be skipped. Once the queue is empty there
     /// is nothing left to batch with, so the wait is skipped and cleanup runs
     /// immediately instead of leaving the last batch stranded until the interval
-    /// happens to elapse.
+    /// happens to elapse — unless the previous attempt failed (see below), in
+    /// which case this fast path is suppressed so an idle queue can't turn into
+    /// a retry on every timer tick.
+    ///
+    /// A failed attempt is never treated as done: the identifiers stay tracked
+    /// so a later pass retries them — except a deliberate refusal, which retires
+    /// exactly the set that was proposed (those identifiers are cleared, so they
+    /// are never offered again) while leaving the feature itself on, so assets
+    /// uploaded later are still proposed normally.
+    ///
+    /// Detecting that refusal takes more than the error code:
+    /// `PHPhotosError.userCancelled` is reported both for a real Cancel tap and
+    /// for the sheet being torn down because the app left the foreground, so it
+    /// is combined with the app-state check described inline below. Everything
+    /// else (interruptions, access revoked, …) is assumed transient and keeps
+    /// retrying every `removeUploadedAssetsInterval`.
     private func removeUploadedAssetsIfNeeded(queueIsEmpty: Bool) async {
         guard NCPreferences().removePhotoCameraRoll else {
             return
         }
-        guard queueIsEmpty || Date().timeIntervalSince(lastAssetRemovalDate) >= removeUploadedAssetsInterval else {
-            return
-        }
         guard let localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync(),
               !localIdentifiers.isEmpty else {
+            candidatesPendingSince = nil
             return
+        }
+
+        let pendingSince = candidatesPendingSince ?? Date()
+        candidatesPendingSince = pendingSince
+
+        if lastAssetRemovalFailed {
+            // The previous attempt failed or was interrupted: wait out the
+            // interval before asking again, whatever the queue is doing —
+            // otherwise an idle queue would re-trigger the confirmation sheet
+            // on every timer tick (every ~2.5-3.5s).
+            guard Date().timeIntervalSince(lastAssetRemovalDate) >= removeUploadedAssetsInterval else {
+                return
+            }
+        } else {
+            // Prompt as soon as there is nothing left to batch with, or once
+            // the batch has waited long enough that a never-draining queue
+            // would otherwise starve it.
+            guard queueIsEmpty || Date().timeIntervalSince(pendingSince) >= removeUploadedAssetsInterval else {
+                return
+            }
         }
 
         lastAssetRemovalDate = Date()
 
-         _ = await withCheckedContinuation { continuation in
+        let attemptStartedAt = Date()
+
+        let (completed, error): (Bool, Error?) = await withCheckedContinuation { continuation in
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.deleteAssets(
                     PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration
                 )
-            }, completionHandler: { completed, _ in
-                continuation.resume(returning: completed)
+            }, completionHandler: { completed, error in
+                continuation.resume(returning: (completed, error))
             })
         }
+
+        // performChanges reports failure (and, for this specific change, user
+        // cancellation of the native confirmation sheet) via `completed == false`
+        // — previously discarded here, which meant a declined or failed deletion
+        // still cleared these identifiers from tracking below, permanently
+        // forgetting to ever retry them. Only clear on actual success.
+        guard completed else {
+            lastAssetRemovalFailed = true
+
+            let nsError = error as NSError?
+            let wasCancelled = nsError?.domain == PHPhotosErrorDomain
+                && nsError?.code == PHPhotosError.userCancelled.rawValue
+
+            // `userCancelled` is reported both when the user actually taps
+            // Cancel and when the sheet is torn down because the app left the
+            // foreground (screen lock, app switch) — same domain, same code, so
+            // the error alone can't tell a refusal from an interruption. The
+            // app state can: the sheet itself only makes the app *resign
+            // active*, it never backgrounds it, so a `didEnterBackground` at
+            // any point while the sheet was up means something interrupted it
+            // rather than the user answering it. Only an untouched-foreground
+            // cancellation counts as a deliberate refusal.
+            let wasInterrupted = isAppInBackground || lastDidEnterBackgroundDate >= attemptStartedAt
+
+            if wasCancelled && !wasInterrupted {
+                // A refusal applies to the set that was actually put to the
+                // user, not to the feature as a whole: these assets are retired
+                // from tracking so they are never proposed again, while anything
+                // uploaded later still becomes a candidate normally. Clearing the
+                // identifier is how "no longer a deletion candidate" is expressed
+                // (same as the success path) — for a row that has already reached
+                // status Normal, nothing else reads the field.
+                lastAssetRemovalFailed = false
+                candidatesPendingSince = nil
+                await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
+                nkLog(tag: self.global.logTagNetworkingTasks, emoji: .info, message: "Remove \(localIdentifiers.count) uploaded asset(s) from camera roll declined by user, won't propose these again")
+            } else if wasCancelled {
+                nkLog(tag: self.global.logTagNetworkingTasks, emoji: .info, message: "Remove \(localIdentifiers.count) uploaded asset(s) from camera roll interrupted (app left the foreground before the prompt was answered), will retry")
+            } else {
+                nkLog(tag: self.global.logTagNetworkingTasks, emoji: .error, message: "Remove \(localIdentifiers.count) uploaded asset(s) from camera roll failed: \(error?.localizedDescription ?? "unknown")")
+            }
+            return
+        }
+
+        lastAssetRemovalFailed = false
+        candidatesPendingSince = nil
+        nkLog(tag: self.global.logTagNetworkingTasks, emoji: .success, message: "Removed \(localIdentifiers.count) uploaded asset(s) from camera roll")
 
         await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
