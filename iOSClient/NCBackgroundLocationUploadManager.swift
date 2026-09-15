@@ -19,7 +19,18 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         super.init()
 
         locationManager.delegate = self
-        locationManager.activityType = .fitness
+        // .other is CoreLocation's own default (no assumption baked in)
+        // and doesn't carry .automotiveNavigation's much higher power/accuracy
+        // profile, which is meant for actual turn-by-turn navigation, not an occasional
+        // background wake-up trigger, while .fitness only refers to sports
+        // activities.
+        // FM says:
+        //  "Use this activity type to describe positioning in activities
+        //  that aren’t covered by one of the other activity types.
+        //  This includes activities without a specific user intention, for
+        //  example, positioning while a user sits on a bench interacting with
+        //  a device."
+        locationManager.activityType = .other
         locationManager.allowsBackgroundLocationUpdates = true
     }
 
