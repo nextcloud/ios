@@ -446,11 +446,37 @@ extension NCManageDatabase {
         }
     }
 
+    /// `realm.add(_:update: .all)` overwrites *every* property of an existing row with the
+    /// same primary key, including ones the incoming object has no way of knowing about.
+    /// `assetLocalIdentifier` is exactly that kind of property: it is set locally when
+    /// auto-upload queues a camera-roll asset, and is the only link back to the asset that
+    /// "remove after upload" cleanup has (`getAssetLocalIdentifiersUploadedAsync` filters on
+    /// `assetLocalIdentifier != ''`). Metadata rebuilt from a server response — any PROPFIND
+    /// of the folder a photo was just uploaded to — goes through `convertFileToMetadata`,
+    /// which never populates that field, so writing it back blindly silently erases the link
+    /// and leaves the asset permanently un-deletable from the camera roll, with no error.
+    ///
+    /// Nothing legitimately clears the field through this path: the one place that *should*
+    /// clear it (`clearAssetLocalIdentifiersAsync`, after a confirmed deletion) writes it
+    /// directly rather than going through here. So an empty incoming value is always the
+    /// "this writer simply doesn't know about it" case, and the stored value wins.
+    private func preservingAssetLocalIdentifier(_ metadata: tableMetadata, in realm: Realm) -> tableMetadata {
+        guard metadata.assetLocalIdentifier.isEmpty,
+              let existing = realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId),
+              !existing.assetLocalIdentifier.isEmpty
+        else {
+            return metadata
+        }
+
+        metadata.assetLocalIdentifier = existing.assetLocalIdentifier
+        return metadata
+    }
+
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
         let detached = metadata.detachedCopy()
 
         core.performRealmWrite(sync: sync) { realm in
-            realm.add(detached, update: .all)
+            realm.add(self.preservingAssetLocalIdentifier(detached, in: realm), update: .all)
         }
     }
 
@@ -458,7 +484,7 @@ extension NCManageDatabase {
         let detached = metadata.detachedCopy()
 
         await core.performRealmWriteAsync { realm in
-            realm.add(detached, update: .all)
+            realm.add(self.preservingAssetLocalIdentifier(detached, in: realm), update: .all)
         }
     }
 
@@ -466,7 +492,7 @@ extension NCManageDatabase {
         let detached = metadatas.map { $0.detachedCopy() }
 
         core.performRealmWrite(sync: sync) { realm in
-            realm.add(detached, update: .all)
+            realm.add(detached.map { self.preservingAssetLocalIdentifier($0, in: realm) }, update: .all)
         }
     }
 
@@ -477,7 +503,7 @@ extension NCManageDatabase {
         let detached = metadatas.map { $0.detachedCopy() }
 
         await core.performRealmWriteAsync { realm in
-            realm.add(detached, update: .all)
+            realm.add(detached.map { self.preservingAssetLocalIdentifier($0, in: realm) }, update: .all)
         }
     }
 
