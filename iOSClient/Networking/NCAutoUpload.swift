@@ -28,7 +28,17 @@ class NCAutoUpload: NSObject {
     private var isBackgroundSyncing = false
 
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
-        guard self.networking.isOnline else {
+        // Only bail out when the network is *known* to be unreachable. Reachability
+        // is nil until Alamofire's observer has fired for the first time, and a
+        // location-triggered sync runs before that: the initial fix is delivered
+        // synchronously inside startMonitoringSignificantLocationChanges() during
+        // didFinishLaunchingWithOptions. Treating "unknown" as "offline" made every
+        // such sync return here without ever looking at the camera roll — a field
+        // log showed two genuine location relaunches mid-walk each reporting
+        // "0 new items" with photos waiting. Discovery and queueing need no network
+        // anyway, and the background session copes with connectivity on its own.
+        if let reachability = self.networking.networkReachability, reachability == .notReachable {
+            nkLog(tag: self.global.logTagBgSync, emoji: .stop, message: "Auto upload skipped: network not reachable")
             return 0
         }
         var counter = 0
