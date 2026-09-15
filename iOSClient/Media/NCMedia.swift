@@ -122,6 +122,13 @@ class NCMedia: UIViewController {
         return self.isViewLoaded && self.view.window != nil
     }
 
+    // Album selection presents Media in a sheet and keeps searching while selecting.
+    var allowsSearchWhileSelecting: Bool { false }
+
+    var isMediaPresentationActive: Bool {
+        isViewActived && tabBarController?.selectedViewController === navigationController
+    }
+
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }

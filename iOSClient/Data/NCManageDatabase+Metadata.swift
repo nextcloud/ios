@@ -1337,14 +1337,15 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+    func getMetadataFromFileId(_ fileId: String?, account: String? = nil) -> tableMetadata? {
         guard let fileId else {
             return nil
         }
 
         return core.performRealmRead { realm in
             realm.objects(tableMetadata.self)
-                .filter("fileId == %@", fileId)
+                .filter(account.map { NSPredicate(format: "fileId == %@ AND account == %@", fileId, $0) }
+                    ?? NSPredicate(format: "fileId == %@", fileId))
                 .first
                 .map { $0.detachedCopy() }
         }
@@ -1353,23 +1354,24 @@ extension NCManageDatabase {
     /// Asynchronously retrieves a `tableMetadata` object matching the given `fileId`, if available.
     /// - Parameter fileId: The file identifier used to query the Realm database.
     /// - Returns: A detached copy of the `tableMetadata` object, or `nil` if not found.
-    func getMetadataFromFileIdAsync(_ fileId: String?) async -> tableMetadata? {
+    func getMetadataFromFileIdAsync(_ fileId: String?, account: String? = nil) async -> tableMetadata? {
         guard let fileId else {
             return nil
         }
 
         return await core.performRealmReadAsync { realm in
             let object = realm.objects(tableMetadata.self)
-                .filter("fileId == %@", fileId)
+                .filter(account.map { NSPredicate(format: "fileId == %@ AND account == %@", fileId, $0) }
+                    ?? NSPredicate(format: "fileId == %@", fileId))
                 .first
             return object?.detachedCopy()
         }
     }
 
-    /// Returns detached (unmanaged) copies of `tableMetadata` objects matching the provided ocIds.
+    /// Returns detached (unmanaged) copies of `tableMetadata` objects matching the provided file IDs and account.
     /// - Parameter fileIds: Array of fileId strings used to fetch corresponding metadata.
     /// - Returns: An array of detached `tableMetadata` objects. Empty if no matches are found.
-    func getMetadatasFromFileIdsAsync(_ fileIds: [String]) async -> [tableMetadata] {
+    func getMetadatasFromFileIdsAsync(_ fileIds: [String], account: String) async -> [tableMetadata] {
         guard !fileIds.isEmpty else {
             return []
         }
@@ -1377,7 +1379,7 @@ extension NCManageDatabase {
         return await core.performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .where {
-                    $0.fileId.in(fileIds)
+                    $0.fileId.in(fileIds) && $0.account == account
                 }
                 .map { $0.detachedCopy() }
         } ?? []

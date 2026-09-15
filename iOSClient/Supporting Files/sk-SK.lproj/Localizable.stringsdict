@@ -33,9 +33,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d item left</string>
+			<string>Zostáva %d položka</string>
+			<key>few</key>
+			<string>Zostávajú %d položky</string>
+			<key>many</key>
+			<string>Zostáva %d položiek</string>
 			<key>other</key>
-			<string>%d items left</string>
+			<string>Zostáva %d položiek</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_photos_to_back_up_</key>
@@ -49,9 +53,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have %d item to back up</string>
+			<string>Máte %d položku na zálohovanie</string>
+			<key>few</key>
+			<string>Máte %d položky na zálohovanie</string>
+			<key>many</key>
+			<string>Máte %d položiek na zálohovanie</string>
 			<key>other</key>
-			<string>You have %d items to back up</string>
+			<string>Máte %d položiek na zálohovanie</string>
 		</dict>
 	</dict>
 	<key>_focused_auto_upload_failed_</key>
@@ -65,9 +73,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d failed</string>
+			<string>%d zlyhanie</string>
+			<key>few</key>
+			<string>%d zlyhania</string>
+			<key>many</key>
+			<string>%d zlyhaní</string>
 			<key>other</key>
-			<string>%d failed</string>
+			<string>%d zlyhaní</string>
 		</dict>
 	</dict>
 </dict>
