@@ -37,6 +37,12 @@ final class NCAppStateManager {
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
             nkLog(debug: "Application did become active")
+
+            if #available(iOS 27, *) {
+                Task {
+                    _ = await NCBackgroundUploadExtensionManager.shared.disableIfIdle()
+                }
+            }
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main) { _ in

@@ -138,7 +138,7 @@ final class NCUtility: NSObject, Sendable {
         return isEqual
     }
 
-    #if !EXTENSION_FILE_PROVIDER_EXTENSION
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_BACKGROUNDUPLOAD
     func getLocation(latitude: Double, longitude: Double, completion: @escaping (String?) -> Void) {
         let geocoder = CLGeocoder()
         let llocation = CLLocation(latitude: latitude, longitude: longitude)
@@ -159,7 +159,7 @@ final class NCUtility: NSObject, Sendable {
             }
         }
     }
-    #endif
+#endif
 
     // https://stackoverflow.com/questions/5887248/ios-app-maximum-memory-budget/19692719#19692719
     // https://stackoverflow.com/questions/27556807/swift-pointer-problems-with-mach-task-basic-info/27559770#27559770

@@ -331,9 +331,6 @@ extension NCNetworking {
         let results = await helperMetadataSuccess(metadata: metadata)
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocId: metadata.ocIdTransfer, metadata: metadata)
-        if let localFile = results.localFile {
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
-        }
         if let tblAutoUpload = results.autoUpload {
             await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
         }
@@ -552,10 +549,7 @@ extension NCNetworking {
 
     // MARK: - Helper
 
-    func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?,
-                                                                  livePhoto: tableMetadata?,
-                                                                  autoUpload: tableAutoUploadTransfer?) {
-        var localFile: tableMetadata?
+    func helperMetadataSuccess(metadata: tableMetadata) async -> (livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         var livePhoto: tableMetadata?
         var autoUpload: tableAutoUploadTransfer?
 
@@ -582,6 +576,6 @@ extension NCNetworking {
                                                  date: metadata.creationDate as Date)
         }
 
-        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
+        return (livePhoto: livePhoto, autoUpload: autoUpload)
     }
 }

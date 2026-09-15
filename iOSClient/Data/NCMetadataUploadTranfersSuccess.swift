@@ -107,9 +107,6 @@ actor NCMetadataUploadTranfersSuccess {
 
         for metadata in metadatas {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
-            if let localFile = results.localFile {
-                metadatasLocalFiles.append(localFile)
-            }
             if let livePhoto = results.livePhoto {
                 metadatasLivePhoto.append(livePhoto)
             }

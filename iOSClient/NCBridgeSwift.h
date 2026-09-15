@@ -29,3 +29,7 @@
 #if defined(EXTENSION_WIDGETDASHBOARDINTENTHANDLER)
 #import "WidgetDashboardIntentHandler-Swift.h"
 #endif
+
+#if defined(EXTENSION_BACKGROUNDUPLOAD)
+#import "BackgroundUploadExtension-Swift.h"
+#endif
