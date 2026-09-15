@@ -71,8 +71,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
-        // App not in background
-        isAppInBackground = false
+        // A scene also connects when the system launches the app straight into
+        // the background — a BGTask run, or a relaunch for a significant
+        // location change — so this state has to be read, not assumed. Assuming
+        // "foreground" here left `isAppInBackground` false for the whole of such
+        // a launch, since nothing corrects it afterwards: `didEnterBackground`
+        // cannot fire for an app that never entered the background. Everything
+        // gated on the flag then behaved as though the user were looking at the
+        // app, including `didUpdateLocations`, which returns early (and before
+        // its own log line) when it believes it is running in the foreground.
+        isAppInBackground = UIApplication.shared.applicationState == .background
         // Open Realm
         NCManageDatabase.shared.openRealm()
         // Table account
