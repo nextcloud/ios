@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import CoreLocation
 import BackgroundTasks
 import NextcloudKit
 import LocalAuthentication
@@ -116,20 +117,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         scheduleAppProcessing()
 
-        // A launch caused by a significant location change carries the
-        // `.location` key. Apple's contract for such a relaunch is that the app
-        // must create a CLLocationManager, set its delegate and start monitoring
-        // again from here — the pending update is then delivered to that
-        // delegate. Nothing else in this app does that early enough: the
-        // manager is only ever instantiated from sceneDidEnterBackground (which
-        // never runs for a launch that begins in the background) or from the
-        // settings screen. Without this, every location relaunch produced a
-        // process with no manager and no delegate, iOS had nowhere to hand the
-        // event, and the app went back to sleep having done nothing — which is
-        // why monitoring was armed and iOS was demonstrably relaunching for
-        // it, yet didUpdateLocations was never called.
-        if launchOptions?[.location] != nil {
-            nkLog(tag: global.logTagLocation, emoji: .start, message: "Launched for a location event")
+        // Re-arm significant-location-change monitoring on *every* launch, not
+        // only on a `.location` one. Monitoring is per process: once this process
+        // is gone, whichever process replaces it needs its own CLLocationManager
+        // with a delegate, or there is nothing for iOS to hand a location event
+        // to. Two launch shapes need this:
+        //
+        // - A launch *for* a location event (`.location` key). Apple's contract is
+        //   that the app must create a manager and call
+        //   startMonitoringSignificantLocationChanges() again from here; the
+        //   pending update is then delivered to that delegate.
+        // - Any other background launch — a BGTask run, a PhotoKit relaunch, a
+        //   background-URLSession wake. Such a process used to have no manager at
+        //   all, because the only other place one is created is
+        //   sceneDidEnterBackground, which never runs for a launch that begins in
+        //   the background. A location event arriving while that process was
+        //   alive was then delivered to an app with no listener — dropped, and
+        //   with no relaunch either, since the app was already running. A field
+        //   log showed exactly this: two unrelated relaunches mid-drive, and no
+        //   movement-triggered delivery afterwards.
+        //
+        // Gated the same way sceneDidEnterBackground gates it, minus the
+        // per-account auto-upload check (the database is not open yet here; the
+        // sync the delegate kicks off honours that setting itself, and the next
+        // backgrounding stops monitoring if it should be off). A `.location`
+        // launch skips the gate: the system would not have relaunched us
+        // otherwise.
+        let launchedForLocation = launchOptions?[.location] != nil
+        let shouldMonitorLocation = CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location
+        if launchedForLocation || shouldMonitorLocation {
+            nkLog(tag: global.logTagLocation,
+                  emoji: .start,
+                  message: launchedForLocation ? "Launched for a location event" : "Re-arming location monitoring at launch")
             NCBackgroundLocationUploadManager.shared.start()
         }
 
