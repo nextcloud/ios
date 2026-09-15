@@ -51,7 +51,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         // previously no way to tell "monitoring never armed" apart from
         // "armed, but the OS never delivered/relaunched for an event" from
         // the log alone.
-        nkLog(debug: "Location monitoring started")
+        nkLog(debug: "Location monitoring started", minimumLogLevel: .verbose)
     }
 
     /// Requests `.authorizedAlways` location permission asynchronously.
@@ -132,14 +132,16 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
 
         // Logged before any of the guards below, deliberately: every early
         // return here is silent, so an absent "Triggered by location change"
-        // used to mean either "the OS never delivered an update" or "it was
-        // delivered and then discarded" — with no way to tell which. Since
-        // monitoring has never been observed to fire in the field, that
-        // distinction is the whole question, and it can only be answered if
-        // delivery itself is recorded first.
+        // would otherwise mean either "the OS never delivered an update" or
+        // "it was delivered and then discarded" — with no way to tell which.
+        // Verbose only: it is diagnostic scaffolding, and one line per
+        // delivery is noise in an ordinary log. Coordinates are deliberately
+        // not written: the log file is something users attach to bug reports,
+        // and a trail of timestamped positions is a way to track a person.
         nkLog(tag: self.global.logTagLocation,
               emoji: .info,
-              message: "Location update delivered: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
+              message: "Location update delivered",
+              minimumLogLevel: .verbose)
 
         // Must work only in background
         guard isAppInBackground else {
@@ -153,7 +155,8 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             return
         }
 
-        nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
+        // No coordinates here either — see the delivery log above.
+        nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change")
 
         Task.detached {
             await NCAutoUpload.shared.autoUploadBackgroundSync()

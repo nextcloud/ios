@@ -33,9 +33,10 @@ final class NCPhotoLibraryObserver: NSObject, PHPhotoLibraryChangeObserver {
 
     func photoLibraryDidChange(_ changeInstance: PHChange) {
         // No action needed — this observer exists only to keep PhotoKit's view
-        // of the library live for this process. Logged at debug level so a
-        // future field test can directly confirm this fires during background
-        // execution, rather than only inferring it from discovery counts.
-        nkLog(debug: "Photo library change observed")
+        // of the library live for this process. Logged (verbose only: it fires
+        // several times per photo) so a field test can directly confirm this
+        // runs during background execution, rather than only inferring it from
+        // discovery counts.
+        nkLog(debug: "Photo library change observed", minimumLogLevel: .verbose)
     }
 }

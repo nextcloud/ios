@@ -236,7 +236,8 @@ class NCAutoUpload: NSObject {
         // them via this exact same function — narrow down where that diverges
         // (permission, bookmark date, collection lookup, or the fetch itself).
         nkLog(tag: self.global.logTagBgSync,
-              message: "getCameraRollAssets: authStatus=\(PHPhotoLibrary.authorizationStatus().rawValue), hasPermission=\(hasPermission), autoUploadSinceDate=\(String(describing: tblAccount.autoUploadSinceDate))")
+              message: "getCameraRollAssets: authStatus=\(PHPhotoLibrary.authorizationStatus().rawValue), hasPermission=\(hasPermission), autoUploadSinceDate=\(String(describing: tblAccount.autoUploadSinceDate))",
+              minimumLogLevel: .verbose)
         guard hasPermission else {
             return (nil, nil)
         }
@@ -294,13 +295,18 @@ class NCAutoUpload: NSObject {
             let result = PHAsset.fetchAssets(in: collection, options: fetchOptions)
             return result.objects(at: IndexSet(0..<result.count))
         }
-        // Diagnostic only: an unfiltered count (same collections, no date/media
-        // predicate) alongside the filtered one distinguishes "the collection
-        // itself is empty/stale in this execution context" from "the predicate
-        // is excluding assets that are genuinely there".
-        let unfilteredCount = collections.reduce(0) { $0 + PHAsset.fetchAssets(in: $1, options: nil).count }
-        nkLog(tag: self.global.logTagBgSync,
-              message: "getCameraRollAssets: collections=\(collections.count), filteredCount=\(allAssets.count), unfilteredLibraryCount=\(unfilteredCount)")
+        // Diagnostic only, verbose level: an unfiltered count (same collections,
+        // no date/media predicate) alongside the filtered one distinguishes "the
+        // collection itself is empty/stale in this execution context" from "the
+        // predicate is excluding assets that are genuinely there". The unfiltered
+        // fetch is a second PhotoKit query over the whole library on every
+        // discovery pass, so it is only run when the line will actually be written.
+        if NCPreferences().log >= .verbose {
+            let unfilteredCount = collections.reduce(0) { $0 + PHAsset.fetchAssets(in: $1, options: nil).count }
+            nkLog(tag: self.global.logTagBgSync,
+                  message: "getCameraRollAssets: collections=\(collections.count), filteredCount=\(allAssets.count), unfilteredLibraryCount=\(unfilteredCount)",
+                  minimumLogLevel: .verbose)
+        }
         let newAssets = OrderedSet(allAssets)
         let fileNames = newAssets.compactMap { asset -> String? in
             let date = asset.creationDate ?? Date()
