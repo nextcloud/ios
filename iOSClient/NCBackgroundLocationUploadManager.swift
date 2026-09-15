@@ -119,8 +119,22 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+
+        // Logged before any of the guards below, deliberately: every early
+        // return here is silent, so an absent "Triggered by location change"
+        // used to mean either "the OS never delivered an update" or "it was
+        // delivered and then discarded" — with no way to tell which. Since
+        // monitoring has never been observed to fire in the field, that
+        // distinction is the whole question, and it can only be answered if
+        // delivery itself is recorded first.
+        nkLog(tag: self.global.logTagLocation,
+              emoji: .info,
+              message: "Location update delivered: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
+
         // Must work only in background
         guard isAppInBackground else {
+            nkLog(tag: self.global.logTagLocation, emoji: .stop, message: "Location update ignored: the app is in the foreground")
             return
         }
 
@@ -130,7 +144,6 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             return
         }
 
-        let location = locations.last
         nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
