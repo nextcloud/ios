@@ -4,30 +4,30 @@
 
 import UIKit
 import NextcloudKit
+import SwiftUI
 
 class NCMediaNavigationController: NCMainNavigationController {
+    static let photosAddedToAlbumNotification = Notification.Name("NCMediaPhotosAddedToAlbumNotification")
+
+    // MARK: - Right
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePhotosAddedToAlbumNotification(_:)), name: Self.photosAddedToAlbumNotification, object: nil)
+    }
+
     override func setNavigationRightItems() async {
         guard let media = topViewController as? NCMedia else {
             return
         }
 
         if media.isEditMode {
-            let cancel = UIBarButtonItem(
-                title: NSLocalizedString("_cancel_", comment: ""),
-                style: .plain
-            ) {
-                media.setEditMode(false)
-            }
-
-            let group = UIBarButtonItemGroup(
-                barButtonItems: [cancel],
-                representativeItem: nil
-            )
-            media.navigationItem.trailingItemGroups = [group]
             media.tabBarSelect.show()
+            await collectionViewCommonTrailingItemGroups()
         } else {
             media.tabBarSelect.hide()
             await mediaTrailingItemGroups()
+            await collectionViewCommonTrailingItemGroups()
         }
     }
 
@@ -75,17 +75,29 @@ class NCMediaNavigationController: NCMainNavigationController {
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle")) { _ in
             media.setEditMode(true)
+            Task {
+                await self.updateMenuOption()
+            }
         }
 
-        let viewFilterMenu = UIMenu(title: "", options: [.singleSelection, .displayInline], children: [
-        UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
-            media.showOnlyImages = true
-            media.showOnlyVideos = false
+        let cancel = UIAction(title: NSLocalizedString("_cancel_", comment: ""),
+                              image: utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor], size: 24).withTintColor(NCBrandColor.shared.iconImageColor)) { _ in
+            media.setEditMode(false)
             Task {
                 await media.loadDataSource()
                 await media.networkRemoveAll()
             }
-        },
+        }
+
+        let viewFilterMenu = UIMenu(title: "", options: [.singleSelection, .displayInline], children: [
+            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
+                media.showOnlyImages = true
+                media.showOnlyVideos = false
+                Task {
+                    await media.loadDataSource()
+                    await media.networkRemoveAll()
+                }
+            },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 media.showOnlyImages = false
                 media.showOnlyVideos = true
@@ -94,7 +106,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                     await media.networkRemoveAll()
                 }
             },
-        UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle"), state: .on) { _ in
+            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle"), state: .on) { _ in
                 media.showOnlyImages = false
                 media.showOnlyVideos = false
                 Task {
@@ -114,7 +126,6 @@ class NCMediaNavigationController: NCMainNavigationController {
                         self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
                         media.layoutType = self.global.mediaLayoutRatio
                     }
-                    await self.updateMenuOption()
                     media.collectionViewReloadData()
                 }
             }
@@ -178,6 +189,262 @@ class NCMediaNavigationController: NCMainNavigationController {
             self.present(alert, animated: true)
         }
 
-        return UIMenu(title: "", children: [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
+        let selectAll = UIMenu(title: "", options: .displayInline, children: [
+            UIAction(
+                title: NSLocalizedString("_select_all_", comment: ""),
+                image: utility.loadImage(named: "checkmark.circle.fill"),
+                handler: { _ in
+                    // Ensure edit mode is enabled so selection is visible
+                    if !media.isEditMode {
+                        media.setEditMode(true)
+                    }
+
+                    // Toggle select all / clear selection
+                    if !media.fileSelect.isEmpty, media.dataSource.compactMetadatas.count == media.fileSelect.count {
+                        media.fileSelect = []
+                    } else {
+                        media.fileSelect = media.dataSource.compactMetadatas.compactMap { $0.ocId }
+                    }
+
+                    // Update selection count and refresh UI without reloading data source
+                    media.tabBarSelect.selectCount = media.fileSelect.count
+                    media.collectionViewReloadData()
+                }
+            )
+        ])
+
+        let actionsInEditMode: [UIAction] = [
+
+            UIAction(
+                title: NSLocalizedString("_add_to_album", comment: ""),
+                image: utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor], size: 24).withTintColor(NCBrandColor.shared.iconImageColor),
+                handler: { _ in
+                    guard let controller = self.controller else { return }
+                    NCMediaNavigationController.presentExistingAlbums(presentingController: controller, selectedPhotos: media.fileSelect, account: controller.account)
+                }
+            ),
+
+            UIAction(
+                title: NSLocalizedString("_albums_list_new_album_popup_title_", comment: ""),
+                image: utility.loadImage(named: "photo.badge.plus"),
+                handler: { _ in
+                    guard let controller = self.controller else { return }
+                    NCMediaNavigationController.presentInputAlbumNameAlert(on: controller) { albumName in
+                        NCMediaNavigationController.createNewAlbum(for: albumName, selectedPhotos: media.fileSelect, controller: controller, account: controller.account)
+                    } onCancel: {
+
+                    }
+                }
+            )
+        ]
+
+        let editModeMenu = UIMenu(
+            title: "",
+            options: .displayInline,
+            children: actionsInEditMode
+        )
+        return UIMenu(title: "", children: !media.isEditMode ? [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL] : [cancel, selectAll, editModeMenu])
+    }
+
+    // MARK: - Album related handling
+    @objc private func handlePhotosAddedToAlbumNotification(_ notification: Notification) {
+        guard let sourceController = notification.object as? NCMainTabBarController,
+              sourceController === controller,
+              let media = topViewController as? NCMedia else { return }
+        media.setEditMode(false)
+        Task {
+            await media.loadDataSource()
+            await media.networkRemoveAll()
+//            await self.updateMenuOption()
+        }
+    }
+
+    static func presentInputAlbumNameAlert(
+         on viewController: UIViewController,
+         onCreate: @escaping (String) -> Void,
+         onCancel: @escaping () -> Void
+    ) {
+        let alert = UIAlertController(
+         title: NSLocalizedString("_albums_list_new_album_popup_title_", comment: ""),
+         message: NSLocalizedString("_albums_list_new_album_popup_desc_", comment: ""),
+         preferredStyle: .alert
+        )
+
+        alert.addTextField { textField in
+            textField.placeholder = NSLocalizedString("_albums_list_new_album_popup_hint_", comment: "")
+        }
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_albums_list_new_album_popup_negative_btn_", comment: ""), style: .default) { _ in
+            onCancel()
+        })
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_albums_list_new_album_popup_positive_btn_", comment: ""), style: .default) { _ in
+            let text = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if text.isEmpty {
+                let emptyAlert = UIAlertController(
+                    title: NSLocalizedString("_albums_list_new_album_popup_title_", comment: ""),
+                    message: NSLocalizedString("_albums_list_new_album_popup_hint_", comment: ""),
+                    preferredStyle: .alert
+                )
+                emptyAlert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
+                viewController.present(emptyAlert, animated: true)
+            } else {
+                onCreate(text)
+            }
+        })
+
+        alert.view.tintColor = NCBrandColor.shared.customer
+        viewController.present(alert, animated: true)
+    }
+
+     static private func createNewAlbum(for name: String, selectedPhotos: [String], controller: NCMainTabBarController, account: String) {
+
+         // Use the provided account to avoid mismatches between UI and networking
+         // (Do not rely on AppDelegate.account here)
+
+         let loader = NCLoadingAlert.show(on: controller)
+         NextcloudKit.shared.createNewAlbum(for: account, albumName: name) { result in
+             NCLoadingAlert.hide(loader)
+             switch result {
+             case .success:
+                 AlbumsManager.shared.syncAlbums { resultAlbums in
+                     if let newAlbum = resultAlbums.first(where: { $0.name == name }) {
+                         if selectedPhotos.isEmpty {
+                             showAlbumAndNotify(newAlbum, controller: controller, account: account)
+                         } else {
+                             addPhotosToAlbum(album: newAlbum, selectedPhotos: selectedPhotos, account: account, controller: controller)
+                         }
+                     } else {
+                         // Album not yet visible in the sync result; still notify UI to refresh
+                         NotificationCenter.default.post(name: NCMediaNavigationController.photosAddedToAlbumNotification, object: controller)
+                     }
+                 }
+
+             case .failure(let error):
+                 let nkError = NKError(error: error)
+                 if nkError.errorCode == NCGlobal.shared.errorConflict {
+                     let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
+                                                 errorDescription: "_album_already_exists_")
+                     Task { @MainActor in
+                         await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
+                     }
+                 } else if let innerError = nkError.error as? NKError,
+                           innerError.errorCode == NCGlobal.shared.errorConflict {
+                     let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
+                                                 errorDescription: "_album_already_exists_")
+                     Task { @MainActor in
+                         await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
+                     }
+                 } else {
+                     Task { @MainActor in
+                         await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: nkError)
+                     }
+                 }
+             }
+         }
+     }
+
+    static func presentExistingAlbums(presentingController: NCMainTabBarController, selectedPhotos: [String], account: String) {
+        let viewModel = AlbumsListViewModel(account: account)
+        let albumListView = AddToAlbumsListView(viewModel: viewModel, localAccount: account, onFinish: { selectedAlbum in
+            presentingController.dismiss(animated: true) {
+                addPhotosToAlbum(album: selectedAlbum, selectedPhotos: selectedPhotos, account: account, controller: presentingController)
+            }
+        }, onDismiss: {
+            presentingController.dismiss(animated: true)
+        }, onCreateAlbum: {
+            presentingController.dismiss(animated: true) {
+                presentInputAlbumNameAlert(on: presentingController) { albumName in
+                    createNewAlbum(for: albumName, selectedPhotos: selectedPhotos, controller: presentingController, account: account)
+                } onCancel: { }
+            }
+        })
+
+        let hostingController = UIHostingController(rootView: albumListView)
+        if let sheet = hostingController.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 24
+        }
+        presentingController.present(hostingController, animated: true, completion: nil)
+    }
+
+    private static func showAlbumAndNotify(_ album: Album, controller: NCMainTabBarController, account: String) {
+        DispatchQueue.main.async {
+            guard controller.account == account,
+                  controller.viewIfLoaded?.window != nil,
+                  let navigationController = controller.viewControllers?.compactMap({ $0 as? NCMoreNavigationController }).first,
+                  let albumsController = UIStoryboard(name: "NCAlbums", bundle: nil)
+                    .instantiateInitialViewController() as? AlbumsViewController else {
+                return
+            }
+
+            albumsController.initialAlbum = album
+            controller.selectedViewController = navigationController
+            guard let moreController = navigationController.viewControllers.first else { return }
+            navigationController.setViewControllers([moreController, albumsController], animated: true)
+            NotificationCenter.default.post(name: photosAddedToAlbumNotification, object: controller)
+        }
+    }
+
+    static func addPhotosToAlbum(album: Album, selectedPhotos: [String], account: String, controller: NCMainTabBarController) {
+
+        if selectedPhotos.isEmpty {
+            showAlbumAndNotify(album, controller: controller, account: account)
+            return
+        }
+
+        var completed = 0
+        let total = selectedPhotos.count
+        func finishIfDone() {
+            completed += 1
+            if completed >= total {
+                AlbumsManager.shared.syncAlbums()
+                showAlbumAndNotify(album, controller: controller, account: account)
+            }
+        }
+
+        for photo in selectedPhotos {
+
+            let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
+
+            NextcloudKit.shared.copyPhotoToAlbum(
+                account: account,
+                sourcePath: metadata?.serverUrlFileName ?? photo,
+                albumName: album.name,
+                fileName: metadata?.fileName ?? photo
+            ) { result in
+
+                switch result {
+                case .success:
+                    finishIfDone()
+                case .failure(let error):
+                    let nkError = NKError(error: error)
+                    if nkError.errorCode == NCGlobal.shared.errorConflict {
+                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
+                                                    errorDescription: "_album_already_exists_")
+                        Task { @MainActor in
+                            await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
+                        }
+                    } else if let innerError = nkError.error as? NKError,
+                              innerError.errorCode == NCGlobal.shared.errorConflict {
+                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
+                                                    errorDescription: "_album_already_exists_")
+                        Task { @MainActor in
+                            await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
+                        }
+                    } else {
+                        Task { @MainActor in
+                            await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: nkError)
+                        }
+                    }
+                    finishIfDone()
+                }
+            }
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: Self.photosAddedToAlbumNotification, object: nil)
     }
 }

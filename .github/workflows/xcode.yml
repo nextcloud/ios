@@ -30,13 +30,13 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
 
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
 
     - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+      uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
       with:
         xcode-version: ${{ env.XCODE_VERSION }}
 
@@ -50,7 +50,7 @@ jobs:
         | xcbeautify --quieter
 
     - name: Upload Build Products
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Nextcloud for iOS
         path: DerivedData/Build/Products
@@ -64,10 +64,10 @@ jobs:
     if: github.event.pull_request.draft == false
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+      uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
       with:
         xcode-version: ${{ env.XCODE_VERSION }}
 
@@ -82,7 +82,7 @@ jobs:
         ini-values: apc.enable_cli=on, disable_functions=
 
     - name: Checkout Nextcloud Server
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: true
         repository: nextcloud/server
@@ -90,7 +90,7 @@ jobs:
         ref: ${{ env.SERVER_BRANCH }}
 
     - name: Checkout Download Limits App
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: nextcloud/files_downloadlimit
         path: server/apps/files_downloadlimit
@@ -108,7 +108,7 @@ jobs:
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
 
     - name: Download Build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: Nextcloud for iOS
 
@@ -141,7 +141,7 @@ jobs:
         -resultBundlePath "TestResult.xcresult"
 
     - name: Upload Xcode Test Results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: ${{ !cancelled() }}
       with:
         name: TestResult.xcresult

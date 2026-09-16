@@ -35,6 +35,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private var viewController: UIViewController?
     private var sceneIdentifier: String = ""
     private var recommendationsIdentity: [String] = []
+    private var contentRequestID = UUID()
 
 #if !EXTENSION
     @MainActor
@@ -107,6 +108,9 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             self.richWorkspaceText = richWorkspaceText
         }
         setRichWorkspaceColor()
+        let accountChanged = self.recommendations.first?.account != recommendations.first?.account
+        contentRequestID = UUID()
+        let requestID = contentRequestID
         self.recommendations = recommendations
         self.labelSection.text = sectionText
         self.viewController = viewController
@@ -131,6 +135,11 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewSection.isHidden = false
         }
 
+        if accountChanged {
+            recommendationsIdentity = []
+            collectionViewRecommendations.reloadData()
+        }
+
 #if EXTENSION
         self.collectionViewRecommendations.reloadData()
 #else
@@ -141,21 +150,22 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
                 .debouncerReloadDataSource
                 .isPausedNow() ?? false
 
-            guard !isPause else {
+            guard !isPause, self.contentRequestID == requestID else {
                 return
             }
 
             let fileIds = recommendations.map(\.id)
-            let metadatas = await NCManageDatabase.shared.getMetadatasFromFileIdsAsync(fileIds)
+            let metadatas = await NCManageDatabase.shared.getMetadatasFromFileIdsAsync(fileIds, account: recommendations.first?.account ?? "")
             let etagsByFileId = Dictionary(
                 metadatas.map { ($0.fileId, $0.etag) },
                 uniquingKeysWith: { current, _ in current }
             )
             let newRecommendationsIdentity = recommendations.map {
-                "\($0.id)|\($0.reason)|\(etagsByFileId[$0.id] ?? "")"
+                "\($0.account)|\($0.id)|\($0.reason)|\(etagsByFileId[$0.id] ?? "")"
             }
 
-            guard self.recommendationsIdentity != newRecommendationsIdentity else {
+            guard self.contentRequestID == requestID,
+                  self.recommendationsIdentity != newRecommendationsIdentity else {
                 return
             }
 
@@ -195,6 +205,10 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         }
 
         cell.representedFileId = recommendedFile.id
+        cell.representedAccount = recommendedFile.account
+        cell.imageRequestID = UUID()
+        cell.metadata = nil
+        let imageRequestID = cell.imageRequestID
         cell.labelInfo.text = recommendedFile.reason
         cell.delegate = self
         cell.image.image = nil
@@ -202,17 +216,20 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         cell.setImageCorner(withBorder: false)
 
         let fileId = recommendedFile.id
+        let account = recommendedFile.account
 
         Task { [weak self, weak cell] in
             guard let self,
-                  let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId),
+                  let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId, account: account),
                   !Task.isCancelled else {
                 return
             }
 
             await MainActor.run {
                 guard let cell,
-                      cell.representedFileId == fileId else {
+                      cell.representedFileId == fileId,
+                      cell.representedAccount == account,
+                      cell.imageRequestID == imageRequestID else {
                     return
                 }
 
@@ -239,7 +256,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
                 await MainActor.run {
                     guard let cell,
-                          cell.representedFileId == fileId else {
+                          cell.representedFileId == fileId,
+                          cell.representedAccount == account,
+                          cell.imageRequestID == imageRequestID else {
                         return
                     }
 
@@ -259,7 +278,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             ) {
                 await MainActor.run {
                     guard let cell,
-                          cell.representedFileId == fileId else {
+                          cell.representedFileId == fileId,
+                          cell.representedAccount == account,
+                          cell.imageRequestID == imageRequestID else {
                         return
                     }
 
@@ -278,7 +299,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
             await MainActor.run {
                 guard let cell,
-                      cell.representedFileId == fileId else {
+                      cell.representedFileId == fileId,
+                      cell.representedAccount == account,
+                      cell.imageRequestID == imageRequestID else {
                     return
                 }
 
@@ -307,7 +330,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
             await MainActor.run {
                 guard let cell,
-                      cell.representedFileId == fileId else {
+                      cell.representedFileId == fileId,
+                      cell.representedAccount == account,
+                      cell.imageRequestID == imageRequestID else {
                     return
                 }
 
@@ -334,7 +359,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 extension NCSectionFirstHeader: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let recommendedFiles = self.recommendations[indexPath.row]
-        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id),
+        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id, account: recommendedFiles.account),
             let cell = collectionView.cellForItem(at: indexPath) as? NCRecommendationsCell else {
             return
         }
@@ -345,7 +370,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let recommendedFiles = self.recommendations[indexPath.row]
-        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id),
+        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id, account: recommendedFiles.account),
               metadata.classFile != NKTypeClassFile.url.rawValue,
               let viewController else {
             return nil
@@ -378,12 +403,11 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
     func openContextMenu(with metadata: tableMetadata?, button: UIButton, sender: Any) {
 #if !EXTENSION
-        Task {
-            guard let viewController = self.viewController, let metadata else {
-                return
-            }
-            button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, controller: self.controller, sender: sender).viewMenu()
+        guard let viewController = self.viewController, let metadata else {
+            button.menu = nil
+            return
         }
+        button.menu = NCContextMenuMain(metadata: metadata, viewController: viewController, controller: self.controller, sender: sender).viewMenu()
 #endif
     }
 

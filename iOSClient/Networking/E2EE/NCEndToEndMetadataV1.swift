@@ -161,7 +161,6 @@ extension NCEndToEndMetadata {
         let e2ee = E2eeV12(metadata: metadata, files: filesCodable, filedrop: filedropCodable)
         do {
             let data = try encoder.encode(e2ee)
-            data.printJson()
             let jsonString = String(data: data, encoding: .utf8)
             // Updated metadata to 1.2
             if await self.database.getE2eMetadataAsync(account: account, serverUrl: serverUrl) == nil {
@@ -177,7 +176,13 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
+    func decodeMetadataV12(
+        _ json: String,
+        serverUrl: String,
+        ocIdServerUrl: String,
+        session: NCSession.Session,
+        keySet: NCEndToEndKeySet
+    ) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
@@ -185,7 +190,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCPreferences().getEndToEndPrivateKey(account: session.account)
+        let privateKey = keySet.privateKey
         var metadataVersion: Double = 0
         var metadataKey = ""
 
@@ -232,7 +237,6 @@ extension NCEndToEndMetadata {
                     if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
-                            decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV12.Encrypted.self, from: decryptedData)
 
                             if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
@@ -291,7 +295,6 @@ extension NCEndToEndMetadata {
                     if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(filedrop.encrypted, key: metadataKeyFiledrop, initializationVector: filedrop.encryptedInitializationVector, authenticationTag: filedrop.encryptedTag),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
-                            decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
                             if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
@@ -333,7 +336,7 @@ extension NCEndToEndMetadata {
             }
 
             // verify checksum
-            let passphrase = NCPreferences().getEndToEndPassphrase(account: session.account)?.replacingOccurrences(of: " ", with: "") ?? ""
+            let passphrase = keySet.passphrase?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
@@ -351,7 +354,13 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
+    func decodeMetadataV1(
+        _ json: String,
+        serverUrl: String,
+        ocIdServerUrl: String,
+        session: NCSession.Session,
+        keySet: NCEndToEndKeySet
+    ) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon,
@@ -359,7 +368,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCPreferences().getEndToEndPrivateKey(account: session.account)
+        let privateKey = keySet.privateKey
         var metadataVersion: Double = 0
 
         do {

@@ -381,6 +381,10 @@ extension NCShareExtension {
 
     @MainActor
     func uploadAndExit() async {
+        // A Share extension process can be reused by the system. Treat each
+        // explicit share operation as a new server-key validation cycle.
+        await NCNetworkingE2EE.beginNewServerKeyValidationCycle()
+
         var error: NKError?
         guard let window = self.view.window else {
             return

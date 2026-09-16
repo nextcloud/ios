@@ -26,7 +26,7 @@ jobs:
     steps:
     - name: Set env var
       run: echo "DEVELOPER_DIR=$(xcode-select --print-path)" >> $GITHUB_ENV
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Build iOS Share

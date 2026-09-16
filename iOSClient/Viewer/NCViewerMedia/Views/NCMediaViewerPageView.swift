@@ -426,7 +426,23 @@ struct NCMediaViewerPageView: View {
                 topOverlayInset: livePhotoTopOverlayInset,
                 initialZoomState: page.imageZoomState,
                 onZoomChanged: onZoomChanged,
-                onZoomStateChanged: { page.imageZoomState = $0 }
+                onZoomStateChanged: { page.imageZoomState = $0 },
+                requestResources: {
+                    guard let metadata = page.metadata else {
+                        return nil
+                    }
+
+                    return await model.downloadLivePhotoResources(
+                        for: metadata
+                    )
+                },
+                cancelResourceDownload: {
+                    guard let metadata = page.metadata else {
+                        return
+                    }
+
+                    model.cancelLivePhotoResourceDownload(for: metadata)
+                }
             )
             .background(Color.ncViewerBackground(backgroundStyle))
             .contentShape(Rectangle())

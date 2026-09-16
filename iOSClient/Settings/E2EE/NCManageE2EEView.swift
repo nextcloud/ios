@@ -9,6 +9,10 @@ struct NCManageE2EEView: View {
     @ObservedObject var model: NCManageE2EE
     @Environment(\.presentationMode) var presentationMode
 
+    @State private var showPasswordPrompt = false
+    @State private var password = ""
+    @State private var passwordCompletion: (@MainActor (String?) async -> Void)?
+
     var body: some View {
         VStack {
             if model.isEndToEndEnabled {
@@ -130,8 +134,8 @@ struct NCManageE2EEView: View {
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                Task {
-                                    await model.renewCertificate()
+                                requestPassword { password in
+                                    await model.renewCertificate(password: password)
                                 }
                             }
                         } header: {
@@ -188,6 +192,26 @@ struct NCManageE2EEView: View {
                 presentationMode.wrappedValue.dismiss()
             }
         }
+        .alert(NSLocalizedString("_password_", comment: ""), isPresented: $showPasswordPrompt) {
+            SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+
+            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {
+                password = ""
+                passwordCompletion = nil
+            }
+
+            Button(NSLocalizedString("_confirm_", comment: "")) {
+                guard let completion = passwordCompletion else { return }
+                let submittedPassword = password.isEmpty ? nil : password
+
+                password = ""
+                passwordCompletion = nil
+
+                Task {
+                    await completion(submittedPassword)
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -212,9 +236,9 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                Task {
+                requestPassword { password in
                     let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
-                    let results = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: model.session.account, options: options)
+                    let results = await NextcloudKit.shared.deleteE2EEPublicKeyAsync(account: model.session.account, password: password, options: options)
 
                     if results.error == .success {
                         await showInfoBanner(windowScene: model.windowScene,
@@ -244,9 +268,9 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                Task {
+                requestPassword { password in
                     let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
-                    let results = await NextcloudKit.shared.deleteE2EEPrivateKeyAsync(account: model.session.account, options: options)
+                    let results = await NextcloudKit.shared.deleteE2EEPrivateKeyAsync(account: model.session.account, password: password ?? "", options: options)
 
                     if results.error == .success {
                         await showInfoBanner(windowScene: model.windowScene,
@@ -261,7 +285,7 @@ struct NCManageE2EEView: View {
 
             HStack {
                 Label {
-                    Text("Delete Keys from FS")
+                    Text("Delete Keys and files")
                         .cappedFont(.body, maxDynamicType: .accessibility2)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
@@ -276,9 +300,9 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                Task {
+                requestPassword { password in
                     let options = NCNetworkingE2EE().getOptions(account: model.session.account, capabilities: model.capabilities)
-                    let results = await NextcloudKit.shared.deleteE2EEKeysAsync(account: model.session.account, options: options)
+                    let results = await NextcloudKit.shared.deleteE2EEKeysAsync(account: model.session.account, password: password ?? "", options: options)
                     if results.error == .success {
                         await showInfoBanner(windowScene: model.windowScene,
                                              text: "E2E delete Keys from FS")
@@ -300,6 +324,12 @@ struct NCManageE2EEView: View {
         ) ?? expirationDate
 
         return Date() >= warningDate ? .orange : .primary
+    }
+
+    private func requestPassword(action: @escaping @MainActor (String?) async -> Void) {
+        password = ""
+        passwordCompletion = action
+        showPasswordPrompt = true
     }
 }
 

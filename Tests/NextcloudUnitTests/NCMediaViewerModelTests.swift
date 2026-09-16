@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Testing
+import NextcloudKit
 @testable import Nextcloud
 
 @Suite("Media viewer model")
@@ -115,6 +116,77 @@ struct NCMediaViewerModelTests {
         #expect(model.activePageIndex == 0)
     }
 
+    @Test("Regular image previews do not require the original file")
+    func regularImagePreviewDoesNotRequireOriginal() {
+        let metadata = imageMetadata(fileName: "photo.HEIC")
+        let policy = NCMediaViewerLoadingPolicy.standard
+
+        #expect(!policy.shouldDownloadOriginalImage(
+            for: metadata,
+            hasUsablePreview: true
+        ))
+    }
+
+    @Test("GIF and SVG images always require the original file")
+    func specialImageFormatsRequireOriginal() {
+        let policy = NCMediaViewerLoadingPolicy.standard
+
+        #expect(policy.shouldDownloadOriginalImage(
+            for: imageMetadata(fileName: "animation.GIF"),
+            hasUsablePreview: true
+        ))
+        #expect(policy.shouldDownloadOriginalImage(
+            for: imageMetadata(fileName: "drawing.svg"),
+            hasUsablePreview: true
+        ))
+    }
+
+    @Test("A missing preview falls back to the original file")
+    func missingPreviewRequiresOriginal() {
+        let metadata = imageMetadata(fileName: "photo.jpg")
+        let policy = NCMediaViewerLoadingPolicy.standard
+
+        #expect(policy.shouldDownloadOriginalImage(
+            for: metadata,
+            hasUsablePreview: false
+        ))
+    }
+
+    @Test("The internal switch restores automatic original downloads")
+    func internalSwitchEnablesOriginalDownloads() {
+        let metadata = imageMetadata(fileName: "photo.jpg")
+        let policy = NCMediaViewerLoadingPolicy(
+            automaticallyDownloadsOriginalImages: true,
+            automaticallyDownloadsLivePhotoResources: false
+        )
+
+        #expect(policy.shouldDownloadOriginalImage(
+            for: metadata,
+            hasUsablePreview: true
+        ))
+    }
+
+    @Test("Live Photo resources remain on demand unless their switch is enabled")
+    func livePhotoResourcesRespectInternalSwitch() {
+        let metadata = imageMetadata(fileName: "live-photo.heic")
+        metadata.livePhotoFile = "live-photo.mov"
+
+        #expect(!NCMediaViewerLoadingPolicy.standard.shouldDownloadLivePhotoResources(
+            for: metadata
+        ))
+
+        let automaticPolicy = NCMediaViewerLoadingPolicy(
+            automaticallyDownloadsOriginalImages: false,
+            automaticallyDownloadsLivePhotoResources: true
+        )
+
+        #expect(automaticPolicy.shouldDownloadLivePhotoResources(for: metadata))
+        #expect(automaticPolicy.shouldDownloadOriginalImage(
+            for: metadata,
+            hasUsablePreview: true
+        ))
+    }
+
     private func makeViewerModel() -> NCMediaViewerModel {
         let metadata = tableMetadata()
         metadata.ocId = "first"
@@ -125,5 +197,13 @@ struct NCMediaViewerModelTests {
             session: NCSession().getSession(account: ""),
             loader: NCMediaViewerLoader()
         )
+    }
+
+    private func imageMetadata(fileName: String) -> tableMetadata {
+        let metadata = tableMetadata()
+        metadata.classFile = NKTypeClassFile.image.rawValue
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        return metadata
     }
 }

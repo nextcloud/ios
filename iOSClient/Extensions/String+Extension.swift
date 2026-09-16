@@ -59,6 +59,10 @@ extension String {
         let urlAllowedCharSet = CharacterSet.urlQueryAllowed.subtracting(["+", "?", "&"])
         return addingPercentEncoding(withAllowedCharacters: urlAllowedCharSet)
     }
+
+    var isInsecureHTTPURL: Bool {
+        lowercased().hasPrefix("http://")
+    }
 }
 
 extension StringProtocol {

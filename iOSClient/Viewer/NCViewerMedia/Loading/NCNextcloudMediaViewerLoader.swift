@@ -127,10 +127,15 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         return URL(fileURLWithPath: localPath)
     }
 
-    func downloadMedia(for metadata: tableMetadata) async throws -> URL {
+    func downloadMedia(
+        for metadata: tableMetadata,
+        onDownloadStarted: (@Sendable () async -> Void)? = nil
+    ) async throws -> URL {
         if let localURL = await localMediaURL(for: metadata) {
             return localURL
         }
+
+        await onDownloadStarted?()
 
         guard let downloadMetadata = await database.setMetadataSessionInWaitDownloadAsync(
             ocId: metadata.ocId,
@@ -245,6 +250,14 @@ final class NCMediaViewerLoader: NCMediaViewerLoading, @unchecked Sendable {
         await downloadTaskRegistry.cancelTask(for: ocId)
     }
 
+    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async {
+        guard let livePhotoMetadata = database.getMetadataLivePhoto(metadata: metadata) else {
+            return
+        }
+
+        await downloadTaskRegistry.cancelTask(for: livePhotoMetadata.ocId)
+    }
+
     func cancelAllDownloads() async {
         await downloadTaskRegistry.cancelAllTasks()
     }
@@ -301,13 +314,18 @@ protocol NCMediaViewerLoading: Sendable {
 
     func previewURL(for metadata: tableMetadata, ext: String) async -> URL?
 
-    func downloadMedia(for metadata: tableMetadata) async throws -> URL
+    func downloadMedia(
+        for metadata: tableMetadata,
+        onDownloadStarted: (@Sendable () async -> Void)?
+    ) async throws -> URL
 
     func localLivePhotoURL(for metadata: tableMetadata) async -> URL?
 
     func downloadLivePhotoMedia(for metadata: tableMetadata) async -> URL?
 
     func cancelDownload(for ocId: String) async
+
+    func cancelLivePhotoMediaDownload(for metadata: tableMetadata) async
 
     func cancelAllDownloads() async
 }

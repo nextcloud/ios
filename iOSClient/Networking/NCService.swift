@@ -49,6 +49,15 @@ class NCService: NSObject {
     private func requestServerStatus(account: String, controller: NCMainTabBarController?) async -> Bool {
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
         let userId = NCSession.shared.getSession(account: account).userId
+
+        if serverUrl.isInsecureHTTPURL {
+            let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
+            await showWarningBanner(windowScene: windowScene,
+                                    subtitle: "_http_account_insecure_",
+                                    systemImage: "lock.slash.fill",
+                                    imageAnimation: .none)
+        }
+
         let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
             Task {
                 let identifier = serverUrl + "_getServerStatus"
