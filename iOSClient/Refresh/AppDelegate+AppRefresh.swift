@@ -53,6 +53,18 @@ extension AppDelegate {
 
         Task {
             let success = await refreshTask.value
+
+            // Mirrors the processing task's "Stop processing task". Without it a
+            // refresh task that finishes normally logs nothing at all, so
+            // "Refresh task expired" was the only end marker one could ever
+            // write — making a completed run indistinguishable from one still in
+            // flight, or from one whose process was killed mid-pass. That
+            // distinction is exactly what a field log has to answer, since an
+            // expiry can cut a discovery pass off partway.
+            nkLog(tag: self.global.logTagTask,
+                  emoji: success ? .stop : .error,
+                  message: "Stop refresh task")
+
             task.setTaskCompleted(success: success)
         }
 
