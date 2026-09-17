@@ -7,6 +7,15 @@ import NextcloudKit
 import Alamofire
 
 extension NCNetworking {
+    /// Per-transfer state: background suspension must not discard a resumable upload.
+    @MainActor
+    final class ChunkUploadBackgroundContext {
+        private(set) var interruptedByBackground = false
+
+        func interruptForBackground() {
+            interruptedByBackground = true
+        }
+    }
 
     // MARK: - Upload file in foreground
 
@@ -71,6 +80,7 @@ extension NCNetworking {
     func uploadChunkFile(metadata: tableMetadata,
                          performPostProcessing: Bool = true,
                          customHeaders: [String: String]? = nil,
+                         backgroundContext: ChunkUploadBackgroundContext? = nil,
                          chunkProgressHandler: @escaping (_ total: Int, _ counter: Int) -> Void = { _, _ in },
                          uploadStart: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
                          uploadProgressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
@@ -171,22 +181,35 @@ extension NCNetworking {
             }
 
             backupFile = file
-        } catch is CancellationError {
-            backupError = NKError(errorCode: -5, errorDescription: "Transfers was cancelled.")
-            await uploadCancelFile(metadata: metadata, directoryChunks: directory)
-        } catch let error as NKError {
-            backupError = error
-            if error.errorCode == -5 {
-                await uploadCancelFile(metadata: metadata, directoryChunks: directory)
-            } else {
-                if performPostProcessing {
-                    await uploadError(withMetadata: metadata, error: error)
+        } catch {
+            let uploadError = (error as? NKError) ?? NKError(error: error)
+            let wasCancelled = error is CancellationError ||
+                uploadError.errorCode == -5 || uploadError.errorCode == NSURLErrorCancelled
+
+            if wasCancelled {
+                backupError = NKError(errorCode: NSURLErrorCancelled, errorDescription: "Transfer was cancelled.")
+                if await backgroundContext?.interruptedByBackground == true {
+                    // Keep the extracted file, remaining chunks and remote chunk-folder state.
+                    // The foreground pipeline retries UploadError entries after five minutes.
+                    await NCManageDatabase.shared.setMetadataSessionAsync(
+                        ocId: metadata.ocId,
+                        sessionTaskIdentifier: 0,
+                        sessionError: backupError.errorDescription,
+                        status: global.metadataStatusUploadError,
+                        errorCode: backupError.errorCode
+                    )
+                    nkLog(info: "Chunked upload retained for retry after background interruption: \(metadata.fileName)")
+                } else if backgroundContext != nil || error is CancellationError || uploadError.errorCode == -5 {
+                    await uploadCancelFile(metadata: metadata, directoryChunks: directory)
+                } else if performPostProcessing {
+                    // Callers without a context retain their previous URL cancellation policy.
+                    await self.uploadError(withMetadata: metadata, error: uploadError)
                 }
-            }
-        } catch let error {
-            backupError = NKError(error: error)
-            if performPostProcessing {
-                await uploadError(withMetadata: metadata, error: backupError)
+            } else {
+                backupError = uploadError
+                if performPostProcessing {
+                    await self.uploadError(withMetadata: metadata, error: uploadError)
+                }
             }
         }
 

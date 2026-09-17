@@ -26,6 +26,9 @@ actor NCNetworkingProcess {
     @MainActor
     private var currentUploadRequest: UploadRequest?
 
+    @MainActor
+    private var currentChunkUploadBackgroundContext: NCNetworking.ChunkUploadBackgroundContext?
+
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
     private var lastScheduledAndInProgressCount: Int = 0
@@ -118,13 +121,14 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task {
-                let count = await self.scheduledAndInProgressCount()
-                try? await UNUserNotificationCenter.current().setBadgeCount(count)
-
+            Task { @MainActor in
+                // Record the reason and cancel before waiting on database/badge work.
+                await self.cancelCurrentUpload(forBackground: true)
                 await self.stopTimer()
                 await self.cancelCurrentTaskOnBackground()
-                await self.cancelCurrentUpload()
+
+                let count = await self.scheduledAndInProgressCount()
+                try? await UNUserNotificationCenter.current().setBadgeCount(count)
             }
         }
 
@@ -217,7 +221,11 @@ actor NCNetworkingProcess {
     }
 
     @MainActor
-    private func cancelCurrentUpload() async {
+    private func cancelCurrentUpload(forBackground: Bool = false) async {
+        if forBackground {
+            currentChunkUploadBackgroundContext?.interruptForBackground()
+        }
+        currentChunkUploadBackgroundContext = nil
         self.currentUploadTask?.cancel()
         self.currentUploadRequest?.cancel()
         self.currentUploadTask = nil
@@ -568,17 +576,38 @@ actor NCNetworkingProcess {
                         })
                     }
 
+                    let backgroundContext = await MainActor.run {
+                        let backgroundContext = NCNetworking.ChunkUploadBackgroundContext()
+                        self.currentChunkUploadBackgroundContext = backgroundContext
+                        return backgroundContext
+                    }
                     await NCNetworkingE2EEUpload().upload(metadata: metadata,
                                                           controller: controller,
                                                           banner: banner,
                                                           stageBanner: .button,
-                                                          tokenBanner: token) { uploadRequest in
+                                                          tokenBanner: token,
+                                                          backgroundContext: backgroundContext) { uploadRequest in
                         Task {@MainActor in
+                            guard self.currentChunkUploadBackgroundContext === backgroundContext else {
+                                uploadRequest.cancel()
+                                return
+                            }
                             self.currentUploadRequest = uploadRequest
                         }
                     } currentUploadTask: { task in
                         Task {@MainActor in
-                            self.currentUploadTask = task
+                            if self.currentChunkUploadBackgroundContext !== backgroundContext {
+                                task?.cancel()
+                            } else {
+                                self.currentUploadTask = task
+                            }
+                        }
+                    }
+                    await MainActor.run {
+                        if self.currentChunkUploadBackgroundContext === backgroundContext {
+                            self.currentChunkUploadBackgroundContext = nil
+                            self.currentUploadTask = nil
+                            self.currentUploadRequest = nil
                         }
                     }
 
@@ -601,7 +630,9 @@ actor NCNetworkingProcess {
 
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
-        guard let windowScene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene else {
+        guard !Task.isCancelled,
+              UIApplication.shared.applicationState == .active,
+              let windowScene = SceneManager.shared.getWindow(sceneIdentifier: metadata.sceneIdentifier)?.windowScene else {
             return
         }
         var token: Int?
@@ -631,8 +662,18 @@ actor NCNetworkingProcess {
             imageAnimation: .rotate
         ))
 
+        let backgroundContext = NCNetworking.ChunkUploadBackgroundContext()
+        currentChunkUploadBackgroundContext = backgroundContext
+        defer {
+            // An older suspended call must not clear a newer upload's state.
+            if currentChunkUploadBackgroundContext === backgroundContext {
+                currentChunkUploadBackgroundContext = nil
+                currentUploadTask = nil
+            }
+        }
+
         let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata, backgroundContext: backgroundContext) { total, counter in
                 Task {
                     banner?.update(
                         payload: LucidBannerPayload.Update(progress: Double(counter) / Double(total)),
