@@ -31,6 +31,10 @@ actor NCNetworkingProcess {
     private var lastScheduledAndInProgressCount: Int = 0
     private var lastVerifyZombieDate: Date = .distantPast
     private let verifyZombieInterval: TimeInterval = 12
+    private var uploadedAssetsReadySince: Date?
+    private var lastUploadedAssetsRemovalAttempt: Date?
+    private var isRemovingUploadedAssets = false
+    private let uploadedAssetsRemovalInterval: TimeInterval = 5 * 60
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -288,6 +292,12 @@ actor NCNetworkingProcess {
                 metadatas = await NCManageDatabase.shared.getMetadataProcess()
             }
 
+            // Completed assets can be removed even while unrelated transfers remain queued.
+            await removeUploadedAssetsIfNeeded(hasPendingTransfers: !metadatas.isEmpty)
+            guard !Task.isCancelled else { return }
+            // The confirmation may have remained open while transfers completed.
+            metadatas = await NCManageDatabase.shared.getMetadataProcess()
+
             if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
@@ -323,9 +333,6 @@ actor NCNetworkingProcess {
 
                 await updateTimerIntervalIfNeeded(hasPendingTransfers: true)
             } else {
-                // Remove upload asset
-                await removeUploadedAssetsIfNeeded()
-
                 // Set Live Photos on the server
                 let livePhotoAccounts = await NCManageDatabase.shared.getLivePhotoAccounts()
 
@@ -342,14 +349,59 @@ actor NCNetworkingProcess {
         }
     }
 
-    private func removeUploadedAssetsIfNeeded() async {
-        guard NCPreferences().removePhotoCameraRoll,
-              let localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync(),
-              !localIdentifiers.isEmpty else {
+    private func removeUploadedAssetsIfNeeded(hasPendingTransfers: Bool) async {
+        guard !isRemovingUploadedAssets, !Task.isCancelled else { return }
+        guard NCPreferences().removePhotoCameraRoll else {
+            uploadedAssetsReadySince = nil
             return
         }
 
-         _ = await withCheckedContinuation { continuation in
+        // Keep the guard across suspension points, including the Photos confirmation.
+        isRemovingUploadedAssets = true
+        defer { isRemovingUploadedAssets = false }
+
+        guard await MainActor.run(body: { UIApplication.shared.applicationState == .active }),
+              let localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync() else {
+            return
+        }
+        guard !localIdentifiers.isEmpty else {
+            uploadedAssetsReadySince = nil
+            return
+        }
+
+        let now = Date()
+        if uploadedAssetsReadySince == nil {
+            uploadedAssetsReadySince = now
+        }
+        // A failed or declined attempt must not prompt again on every idle timer tick.
+        if let lastAttempt = lastUploadedAssetsRemovalAttempt,
+           now.timeIntervalSince(lastAttempt) < uploadedAssetsRemovalInterval {
+            return
+        }
+        if hasPendingTransfers, let readySince = uploadedAssetsReadySince,
+           now.timeIntervalSince(readySince) < uploadedAssetsRemovalInterval {
+            return
+        }
+
+        guard !Task.isCancelled,
+              let completed = await Self.removeUploadedAssets(localIdentifiers) else {
+            return
+        }
+        lastUploadedAssetsRemovalAttempt = completed ? nil : Date()
+        uploadedAssetsReadySince = nil
+
+        if completed {
+            await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
+        }
+    }
+
+    @MainActor
+    private static func removeUploadedAssets(_ localIdentifiers: [String]) async -> Bool? {
+        // Recheck immediately before presenting, after the database and actor hops.
+        guard !Task.isCancelled, UIApplication.shared.applicationState == .active else {
+            return nil
+        }
+        return await withCheckedContinuation { continuation in
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.deleteAssets(
                     PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration
@@ -358,8 +410,6 @@ actor NCNetworkingProcess {
                 continuation.resume(returning: completed)
             })
         }
-
-        await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
     private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {

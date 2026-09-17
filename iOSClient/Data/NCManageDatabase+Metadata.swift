@@ -1333,8 +1333,34 @@ extension NCManageDatabase {
     func getAssetLocalIdentifiersUploadedAsync() async -> [String]? {
         return await core.performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self).filter("assetLocalIdentifier != ''")
-            return results.map { $0.assetLocalIdentifier }
+            return Self.uploadedAssetLocalIdentifiers(in: Array(results))
         }
+    }
+
+    /// A local asset can only be deleted once every tracked transfer for it is complete.
+    /// Live Photo links contain a filename before server pairing and a file ID afterwards.
+    static func uploadedAssetLocalIdentifiers(in metadatas: [tableMetadata]) -> [String] {
+        let grouped = Dictionary(grouping: metadatas.filter { !$0.assetLocalIdentifier.isEmpty }, by: \.assetLocalIdentifier)
+        return grouped.compactMap { identifier, components in
+            guard components.allSatisfy({
+                $0.status == NCGlobal.shared.metadataStatusNormal && !$0.backgroundUploadCancellationRequested
+            }) else {
+                return nil
+            }
+
+            for component in components where component.isLivePhoto {
+                let hasCompletedCompanion = components.contains { companion in
+                    companion.ocId != component.ocId &&
+                    companion.account == component.account &&
+                    companion.serverUrl == component.serverUrl &&
+                    ((component.isLivePhotoImage && companion.isLivePhotoVideo) ||
+                     (component.isLivePhotoVideo && companion.isLivePhotoImage)) &&
+                    (companion.fileName == component.livePhotoFile || companion.fileId == component.livePhotoFile)
+                }
+                guard hasCompletedCompanion else { return nil }
+            }
+            return identifier
+        }.sorted()
     }
 
     func getMetadataFromFileId(_ fileId: String?, account: String? = nil) -> tableMetadata? {
