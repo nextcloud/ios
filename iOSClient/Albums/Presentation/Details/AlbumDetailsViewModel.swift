@@ -248,47 +248,24 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     func renameAlbum() {
-
         guard !isLoadingPopupVisible else { return }
-
         isLoadingPopupVisible = true
 
         NextcloudKit.shared.renameAlbum(account: account, from: album.name, to: newAlbumName) { [weak self] result in
-
             switch result {
             case .success:
                 self?.reloadAlbumAfterRenaming(albumName: self?.newAlbumName ?? "")
-
             case .failure(let error):
                 self?.isLoadingPopupVisible = false
-                let nkError = NKError(error: error)
-
-                if nkError.errorCode == NCGlobal.shared.errorConflict {
-                    let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                errorDescription: "_album_already_exists_")
-                    Task { @MainActor in
-                        await showInfoBanner(windowScene: self?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                    }
-                } else if let innerError = nkError.error as? NKError,
-                          innerError.errorCode == NCGlobal.shared.errorConflict {
-                    let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                errorDescription: "_album_already_exists_")
-                    Task { @MainActor in
-                        await showInfoBanner(windowScene: self?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                    }
-                } else {
-                    Task { @MainActor in
-                        await showErrorBanner(windowScene: self?.windowScene, error: nkError)
-                    }
+                Task {
+                    await showErrorBanner(windowScene: self?.windowScene, error: error)
                 }
             }
         }
     }
 
     private func reloadAlbumAfterRenaming(albumName: String) {
-
         AlbumsManager.shared.syncAlbums { [weak self] resultAlbums in
-
             self?.isLoadingPopupVisible = false
 
             if let newAlbum = resultAlbums.first(where: { $0.name == albumName }) {
@@ -306,7 +283,6 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     func onPhotosSelected(selectedPhotos: [String]) {
-
         isPhotoSelectionSheetVisible = false
 
         if selectedPhotos.isEmpty {
@@ -325,11 +301,9 @@ class AlbumDetailsViewModel: ObservableObject {
                 albumName: album.name,
                 fileName: metadata?.fileName ?? photo
             ) { [weak self] result in
-
                 DispatchQueue.main.async {
                     self?.isLoadingPopupVisible = false
                 }
-
                 switch result {
                 case .success:
                     DispatchQueue.main.async {
@@ -337,32 +311,8 @@ class AlbumDetailsViewModel: ObservableObject {
                         AlbumsManager.shared.syncAlbums()
                     }
                 case .failure(let error):
-                    let nkError = NKError(error: error)
-
-                    // 1. Log the high-level error (usually 1)
-                    debugPrint("Top-level errorCode:", nkError.errorCode)
-
-                    // 2. Check the nested error for the 409 Conflict
-                    if let innerError = nkError.error as? NKError,
-                       innerError.errorCode == NCGlobal.shared.errorConflict {
-
-                        // This is the "File already exists" case (409)
-                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                    errorDescription: "_file_already_exists_")
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: self?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                        }
-
-                    } else if nkError.errorCode == NCGlobal.shared.errorConflict {
-                        // Fallback check if the top-level error itself is 409
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: self?.windowScene, text: nkError.errorDescription, errorCode: nkError.errorCode)
-                        }
-                    } else {
-                        // Handle all other errors (Network, 404, 500, etc.)
-                        Task { @MainActor in
-                            await showErrorBanner(windowScene: self?.windowScene, error: nkError)
-                        }
+                    Task {
+                        await showErrorBanner(windowScene: self?.windowScene, error: error)
                     }
                 }
             }
@@ -374,7 +324,6 @@ extension AlbumDetailsViewModel: AlbumActionHandler {
     func deleteMetadataFromAlbum(_ selectedMetadatas: [tableMetadata]) {
         Task {
             await self.deletePhotos(with: selectedMetadatas)
-
         }
     }
 }

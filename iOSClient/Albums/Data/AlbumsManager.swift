@@ -24,19 +24,14 @@ final class AlbumsManager {
         self.account = acc
     }
 
-    func syncAlbums(
-        optionalActionOnSuccess: (([NKPhotoAlbum]) -> Void)? = nil
-    ) {
-
+    func syncAlbums(optionalActionOnSuccess: (([NKPhotoAlbum]) -> Void)? = nil) {
         albumsSubject.send(.loading)
 
         NextcloudKit.shared.fetchAllAlbums(for: account) { [weak self] result in
-
             switch result {
             case .success(let albums):
                 self?.albumsSubject.send(.success(albums))
                 optionalActionOnSuccess?(albums)
-
             case .failure(let error):
                 let nkError = NKError(error: error)
                 self?.albumsSubject.send(.failure(nkError))
