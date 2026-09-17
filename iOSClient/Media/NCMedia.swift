@@ -276,6 +276,10 @@ class NCMedia: UIViewController {
         super.viewDidAppear(animated)
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+
+        Task { [weak self] in
+            await self?.loadDataSource()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -346,6 +350,9 @@ class NCMedia: UIViewController {
     }
 
     @objc func enterForeground(_ notification: NSNotification) {
+        Task { [weak self] in
+            await self?.loadDataSource()
+        }
         searchNewMedia()
     }
 
