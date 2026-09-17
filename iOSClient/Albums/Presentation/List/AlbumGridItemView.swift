@@ -126,10 +126,10 @@ struct AlbumGridItemView: View {
                 let photos = (try? result.get()) ?? []
                 var seen = Set<String>()
                 let candidates = photos.filter {
-                    $0.hasPreview && !$0.fileId.isEmpty && $0.fileId != preferredPhotoId
+                    !$0.directory && $0.hasPreview && !$0.fileId.isEmpty && $0.fileId != preferredPhotoId
                 }.sorted {
-                    if $0.lastModified != $1.lastModified {
-                        return $0.lastModified > $1.lastModified
+                    if $0.date != $1.date {
+                        return $0.date > $1.date
                     }
                     return $0.fileId < $1.fileId
                 }.compactMap { photo in

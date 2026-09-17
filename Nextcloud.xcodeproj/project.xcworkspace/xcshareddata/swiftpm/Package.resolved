@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "cf44bf2fa90b1dbba999ee2bb4dce4eaf7bceae8",
-        "version" : "12.19.1"
+        "revision" : "8c29ca981990a32e626c8617544fa65d22b1834f",
+        "version" : "12.19.2"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "8fe40b69bd53241847814422101188465f7ff728",
-        "version" : "12.19.0"
+        "revision" : "b8455dd2ff55cc269fda7a4f9eac6c1e3588c53f",
+        "version" : "12.19.2"
       }
     },
     {
@@ -195,8 +195,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
-        "revision" : "15145557690e8655227583b1461e5c45df9a6c1e",
-        "version" : "7.6.0"
+        "branch" : "albums",
+        "revision" : "3eccea25d66813661212b338f2b0f6cf3f7ab29a"
       }
     },
     {

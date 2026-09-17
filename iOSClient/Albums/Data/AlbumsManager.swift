@@ -12,8 +12,8 @@ final class AlbumsManager {
     private var account: String = ""
 
     // Albums publisher - Central
-    private let albumsSubject = CurrentValueSubject<LoadableState<[Album]>, Never>(.idle)
-    var albumsPublisher: AnyPublisher<LoadableState<[Album]>, Never> {
+    private let albumsSubject = CurrentValueSubject<LoadableState<[NKPhotoAlbum]>, Never>(.idle)
+    var albumsPublisher: AnyPublisher<LoadableState<[NKPhotoAlbum]>, Never> {
         albumsSubject.eraseToAnyPublisher()
     }
 
@@ -25,7 +25,7 @@ final class AlbumsManager {
     }
 
     func syncAlbums(
-        optionalActionOnSuccess: (([Album]) -> Void)? = nil
+        optionalActionOnSuccess: (([NKPhotoAlbum]) -> Void)? = nil
     ) {
 
         albumsSubject.send(.loading)
@@ -33,8 +33,7 @@ final class AlbumsManager {
         NextcloudKit.shared.fetchAllAlbums(for: account) { [weak self] result in
 
             switch result {
-            case .success(let albumDTOs):
-                let albums = albumDTOs.toAlbums()
+            case .success(let albums):
                 self?.albumsSubject.send(.success(albums))
                 optionalActionOnSuccess?(albums)
 
