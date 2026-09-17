@@ -200,24 +200,8 @@ class AlbumsListViewModel: ObservableObject {
                 case .success:
                     hadAnySuccess = true
                 case .failure(let error):
-                    let nkError = NKError(error: error)
-
-                    // Check nested conflict first (409), then top-level, otherwise show error
-                    if let innerError = nkError.error as? NKError,
-                       innerError.errorCode == NCGlobal.shared.errorConflict {
-                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                    errorDescription: "_file_already_exists_")
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: self.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                        }
-                    } else if nkError.errorCode == NCGlobal.shared.errorConflict {
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: self.windowScene, text: nkError.errorDescription, errorCode: nkError.errorCode)
-                        }
-                    } else {
-                        Task { @MainActor in
-                            await showErrorBanner(windowScene: self.windowScene, error: nkError)
-                        }
+                    Task {
+                        await showErrorBanner(windowScene: self.windowScene, error: error)
                     }
                 }
                 group.leave()
