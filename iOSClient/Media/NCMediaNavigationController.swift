@@ -62,16 +62,6 @@ class NCMediaNavigationController: NCMainNavigationController {
         guard let media = topViewController as? NCMedia else {
             return nil
         }
-        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layoutType: global.mediaLayoutRatio)
-        var layout = layoutForView.layout
-        // Overwrite default value
-        if layout == global.layoutList {
-            layout = global.mediaLayoutRatio
-        }
-        //
-        let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
-
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle")) { _ in
             media.setEditMode(true)
@@ -89,48 +79,80 @@ class NCMediaNavigationController: NCMainNavigationController {
             }
         }
 
-        let viewFilterMenu = UIMenu(title: "", options: [.singleSelection, .displayInline], children: [
-            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
-                media.showOnlyImages = true
-                media.showOnlyVideos = false
-                Task {
-                    await media.loadDataSource()
-                    await media.networkRemoveAll()
+        let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
+            UIDeferredMenuElement.uncached { [weak self, weak media] completion in
+                guard let self, let media else {
+                    completion([])
+                    return
                 }
-            },
-            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
-                media.showOnlyImages = false
-                media.showOnlyVideos = true
-                Task {
-                    await media.loadDataSource()
-                    await media.networkRemoveAll()
-                }
-            },
-            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle"), state: .on) { _ in
-                media.showOnlyImages = false
-                media.showOnlyVideos = false
-                Task {
-                    await media.loadDataSource()
-                    await media.networkRemoveAll()
-                }
+                let actions = [
+                    UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: self.utility.loadImage(named: "photo"), state: media.showOnlyImages ? .on : .off) { _ in
+                        media.showOnlyImages = true
+                        media.showOnlyVideos = false
+                        Task {
+                            await media.loadDataSource()
+                            await media.networkRemoveAll()
+                        }
+                    },
+
+                    UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: self.utility.loadImage(named: "video"), state: media.showOnlyVideos ? .on : .off) { _ in
+                        media.showOnlyImages = false
+                        media.showOnlyVideos = true
+                        Task {
+                            await media.loadDataSource()
+                            await media.networkRemoveAll()
+                        }
+                    },
+
+                    UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: self.utility.loadImage(named: "photo.on.rectangle"), state: (!media.showOnlyImages && !media.showOnlyVideos) ? .on : .off) { _ in
+                        media.showOnlyImages = false
+                        media.showOnlyVideos = false
+                        Task {
+                            await media.loadDataSource()
+                            await media.networkRemoveAll()
+                        }
+                    }
+                ]
+
+                completion(actions)
             }
         ])
 
         let viewLayoutMenu = UIMenu(title: "", options: .displayInline, children: [
-            UIAction(title: layoutTitle, image: layoutImage) { _ in
-                Task {
-                    if layout == self.global.mediaLayoutRatio {
-                        self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutSquare)
-                        media.layoutType = self.global.mediaLayoutSquare
-                    } else {
-                        self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
-                        media.layoutType = self.global.mediaLayoutRatio
-                    }
-                    media.collectionViewReloadData()
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                guard let self else {
+                    completion([])
+                    return
                 }
+
+                let layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layoutType: self.global.mediaLayoutRatio)
+                var layout = layoutForView.layout
+
+                // Overwrite default value
+                if layout == self.global.layoutList {
+                    layout = self.global.mediaLayoutRatio
+                }
+
+                let layoutTitle = (layout == self.global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
+                let layoutImage = (layout == self.global.mediaLayoutRatio) ? self.utility.loadImage(named: "square.grid.3x3") : self.utility.loadImage(named: "rectangle.grid.3x2")
+
+                let action = UIAction(title: layoutTitle, image: layoutImage) { _ in
+                    Task {
+                        if layout == self.global.mediaLayoutRatio {
+                            self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutSquare)
+                            media.layoutType = self.global.mediaLayoutSquare
+                        } else {
+                            self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
+                            media.layoutType = self.global.mediaLayoutRatio
+                        }
+
+                        media.collectionViewReloadData()
+                    }
+                }
+
+                completion([action])
             }
         ])
-
         let viewFolderMedia = UIMenu(title: "", options: .displayInline, children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
                 guard let self else {
