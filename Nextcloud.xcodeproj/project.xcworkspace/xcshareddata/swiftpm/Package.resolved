@@ -196,7 +196,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "albums",
-        "revision" : "4b7c3dedc2b7cd9e5d753be26cef8194b0ad24b8"
+        "revision" : "23d611b4ea49bde74e498c0a2f2c543c3ba4dd7a"
       }
     },
     {

@@ -156,16 +156,10 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     func deleteAlbum() {
-
         guard !isLoadingPopupVisible else { return }
-
         isLoadingPopupVisible = true
 
-        NextcloudKit.shared.deleteAlbum(
-            albumName: album.name,
-            account: account
-        ) { [weak self] result in
-
+        NextcloudKit.shared.deleteAlbum(albumName: album.name, account: account) { [weak self] result in
             self?.isLoadingPopupVisible = false
 
             switch result {
@@ -220,11 +214,7 @@ class AlbumDetailsViewModel: ObservableObject {
     func deletePhotoFromAlbum(_ photo: AlbumPhoto, metadata: tableMetadata) async -> NKError {
         do {
             // NKFile.fileName is already decoded; NextcloudKit encodes the album entry once.
-            _ = try await NextcloudKit.shared.deletePhotoFromAlbumAsync(
-                albumName: album.name,
-                fileName: photo.albumFileName,
-                account: account
-            ) { task in
+            _ = try await NextcloudKit.shared.deletePhotoFromAlbumAsync(albumName: album.name, fileName: photo.albumFileName, account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                         account: metadata.account,

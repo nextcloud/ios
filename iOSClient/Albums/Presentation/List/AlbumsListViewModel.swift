@@ -190,12 +190,7 @@ class AlbumsListViewModel: ObservableObject {
             group.enter()
             let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
 
-            NextcloudKit.shared.copyPhotoToAlbum(
-                account: account,
-                sourcePath: metadata?.serverUrlFileName ?? photo,
-                albumName: album.name,
-                fileName: metadata?.fileName ?? photo
-            ) { result in
+            NextcloudKit.shared.copyPhotoToAlbum(account: account, sourcePath: metadata?.serverUrlFileName ?? photo, albumName: album.name, fileName: metadata?.fileName ?? photo) { result in
                 switch result {
                 case .success:
                     hadAnySuccess = true

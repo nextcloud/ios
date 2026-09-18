@@ -33,8 +33,7 @@ final class AlbumsManager {
                 self?.albumsSubject.send(.success(albums))
                 optionalActionOnSuccess?(albums)
             case .failure(let error):
-                let nkError = NKError(error: error)
-                self?.albumsSubject.send(.failure(nkError))
+                self?.albumsSubject.send(.failure(error))
             }
         }
     }
