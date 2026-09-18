@@ -213,27 +213,39 @@ class AlbumDetailsViewModel: ObservableObject {
 
     func deletePhotoFromAlbum(_ photo: AlbumPhoto, metadata: tableMetadata) async -> NKError {
         do {
-            // NKFile.fileName is already decoded; NextcloudKit encodes the album entry once.
-            _ = try await NextcloudKit.shared.deletePhotoFromAlbumAsync(albumName: album.name, fileName: photo.albumFileName, account: account) { task in
+            try await NextcloudKit.shared.deletePhotoFromAlbumAsync(
+                albumName: album.name,
+                fileName: photo.albumFileName,
+                account: account
+            ) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
                         account: metadata.account,
                         path: photo.metadata.serverUrlFileName,
                         name: "deletePhotoFromAlbum"
                     )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    await NCNetworking.shared.networkingTasks.track(
+                        identifier: identifier,
+                        task: task
+                    )
                 }
             }
+
             return .success
-        } catch {
-            let nkError = (error as? NKError) ?? NKError(error: error)
+
+        } catch let nkError as NKError {
             if nkError.errorCode == NCGlobal.shared.errorResourceNotFound {
                 return .success
             }
+
             if nkError.errorCode == NCGlobal.shared.errorForbidden && metadata.isLivePhotoVideo {
                 return .success
             }
+
             return nkError
+
+        } catch {
+            return NKError(error: error)
         }
     }
 
