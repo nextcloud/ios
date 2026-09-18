@@ -253,6 +253,18 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         finalError = resultsSendFile.error
+        if metadata.chunk > 0,
+           backgroundContext?.interruptedByBackground == true,
+           finalError.errorCode == NSURLErrorCancelled {
+            // The previous attempt has finished unlocking before becoming eligible again.
+            await database.setMetadataSessionAsync(
+                ocId: metadata.ocId,
+                sessionTaskIdentifier: 0,
+                sessionError: "",
+                status: global.metadataStatusWaitUpload,
+                errorCode: 0
+            )
+        }
         return finalError
     }
 

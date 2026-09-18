@@ -189,16 +189,18 @@ extension NCNetworking {
             if wasCancelled {
                 backupError = NKError(errorCode: NSURLErrorCancelled, errorDescription: "Transfer was cancelled.")
                 if await backgroundContext?.interruptedByBackground == true {
-                    // Keep the extracted file, remaining chunks and remote chunk-folder state.
-                    // The foreground pipeline retries UploadError entries after five minutes.
-                    await NCManageDatabase.shared.setMetadataSessionAsync(
-                        ocId: metadata.ocId,
-                        sessionTaskIdentifier: 0,
-                        sessionError: backupError.errorDescription,
-                        status: global.metadataStatusUploadError,
-                        errorCode: backupError.errorCode
-                    )
-                    nkLog(info: "Chunked upload retained for retry after background interruption: \(metadata.fileName)")
+                    // Keep the file and chunk state, ready for the next foreground pass.
+                    // E2EE requeues after its outer workflow has unlocked the server folder.
+                    if performPostProcessing {
+                        await NCManageDatabase.shared.setMetadataSessionAsync(
+                            ocId: metadata.ocId,
+                            sessionTaskIdentifier: 0,
+                            sessionError: "",
+                            status: global.metadataStatusWaitUpload,
+                            errorCode: 0
+                        )
+                    }
+                    nkLog(info: "Chunked upload paused by background transition: \(metadata.fileName)")
                 } else if backgroundContext != nil || error is CancellationError || uploadError.errorCode == -5 {
                     await uploadCancelFile(metadata: metadata, directoryChunks: directory)
                 } else if performPostProcessing {
