@@ -11,8 +11,7 @@ struct PhotoGridItemView: View {
 
     let album: Album
     let photo: AlbumPhoto
-    let isVideo: Bool
-    let metadata: tableMetadata?
+    private var metadata: tableMetadata { photo.metadata }
     let iconSize: CGFloat
 
     @State private var thumbnail: UIImage?
@@ -28,7 +27,7 @@ struct PhotoGridItemView: View {
                 Rectangle().fill(Color.gray.opacity(0.15))
                 if isLoading {
                     ProgressView().controlSize(.small)
-                } else if !photo.hasPreview {
+                } else if !metadata.hasPreview {
                     // Show a generic icon if the API says there is no preview
                     Image(systemName: "doc").foregroundColor(.gray)
                 }
@@ -39,7 +38,7 @@ struct PhotoGridItemView: View {
         .clipped()
         .overlay(
             Group {
-                if isVideo {
+                if metadata.isVideo {
                     Image(systemName: "play.fill")
                         .resizable()
                         .frame(width: 10, height: 10)
@@ -57,7 +56,7 @@ struct PhotoGridItemView: View {
 
     private func loadThumbnailFromPhoto() async {
         // 1. Validate: Only load if it has a preview and a valid ID
-        guard photo.hasPreview, !photo.id.isEmpty else {
+        guard metadata.hasPreview, !photo.id.isEmpty else {
             return
         }
 
@@ -69,9 +68,9 @@ struct PhotoGridItemView: View {
 
         // 3. Setup parameters from Photo object and Metadata fallback
         let fileId = photo.id
-        let userId = metadata?.userId ?? ""
-        let urlBase = metadata?.urlBase ?? ""
-        let etag = metadata?.etag ?? ""
+        let userId = metadata.userId
+        let urlBase = metadata.urlBase
+        let etag = metadata.etag
 
         // 4. Try Disk Cache First
         if let cachedImage = NCUtility().getImage(

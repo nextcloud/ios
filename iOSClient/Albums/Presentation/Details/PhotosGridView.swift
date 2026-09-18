@@ -8,7 +8,7 @@ import NextcloudKit
 
 struct PhotosGridView: View {
     let localAccount: String
-    let photos: [AlbumPhoto: tableMetadata?]
+    let photos: [AlbumPhoto]
     let onAddPhotosIntent: () -> Void
     let album: Album
     let onRemovePhoto: (AlbumPhoto) -> Void
@@ -28,22 +28,19 @@ struct PhotosGridView: View {
 
     var body: some View {
         // Sort by filename or date to ensure stability
-        let sortedPhotos = photos.keys.sorted { lhs, rhs in
-            lhs.fileName.localizedCaseInsensitiveCompare(rhs.fileName) == .orderedAscending
+        let sortedPhotos = photos.sorted { lhs, rhs in
+            lhs.metadata.fileNameView.localizedCaseInsensitiveCompare(rhs.metadata.fileNameView) == .orderedAscending
         }
 
         ScrollView {
             LazyVGrid(columns: columns, spacing: 1) {
-                ForEach(sortedPhotos, id: \.self) { photo in
-                    let metadata = photos[photo] ?? nil
+                ForEach(sortedPhotos) { photo in
                     Button {
                         openingPhoto = photo
                     } label: {
                         PhotoGridItemView(
                             album: album,
                             photo: photo,
-                            isVideo: (metadata?.isVideo ?? false),
-                            metadata: metadata,
                             iconSize: calculatedIconSize
                         )
                     }
@@ -121,8 +118,8 @@ struct PhotosGridView: View {
         // Album entries provide numeric file IDs. The selected file supplies the server's
         // instance suffix so the viewer can resolve every other file lazily by its ocId.
         let utility = NCUtility()
-        let ocIds = photos.keys.sorted {
-            $0.fileName.localizedCaseInsensitiveCompare($1.fileName) == .orderedAscending
+        let ocIds = photos.sorted {
+            $0.metadata.fileNameView.localizedCaseInsensitiveCompare($1.metadata.fileNameView) == .orderedAscending
         }.map { albumPhoto in
             albumPhoto.id == photo.id
                 ? selected.ocId
