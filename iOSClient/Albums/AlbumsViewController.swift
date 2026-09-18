@@ -77,8 +77,7 @@ class AlbumsViewController: UIViewController {
             hostingController.didMove(toParent: self)
         }
 
-        AlbumsManager.shared.setAccount(account)
-        AlbumsManager.shared.syncAlbums()
+        AlbumsManager.shared.syncAlbums(for: account)
     }
 }
 

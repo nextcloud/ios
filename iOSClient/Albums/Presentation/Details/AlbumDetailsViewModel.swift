@@ -14,7 +14,6 @@ protocol AlbumActionHandler: AnyObject {
 }
 
 class AlbumDetailsViewModel: ObservableObject {
-
     @Published var account: String
     private var album: Album
 
@@ -163,13 +162,13 @@ class AlbumDetailsViewModel: ObservableObject {
             self?.isLoadingPopupVisible = false
 
             switch result {
-            case .success:
-                AlbumsManager.shared.syncAlbums()
+            case .success(let account):
+                AlbumsManager.shared.syncAlbums(for: account)
                 AlbumsNavigator.shared.pop()
 
             case .failure(let error):
-                Task { @MainActor in
-                    await showErrorBanner(windowScene: self?.windowScene, error: NKError(error: error))
+                Task {
+                    await showErrorBanner(windowScene: self?.windowScene, error: error)
                 }
             }
         }
@@ -188,7 +187,7 @@ class AlbumDetailsViewModel: ObservableObject {
         }
 
         photos.removeAll { $0.id == photo.id }
-        AlbumsManager.shared.syncAlbums()
+        AlbumsManager.shared.syncAlbums(for: account)
     }
 
     @MainActor
@@ -197,7 +196,7 @@ class AlbumDetailsViewModel: ObservableObject {
         isLoadingPopupVisible = true
         defer {
             isLoadingPopupVisible = false
-            AlbumsManager.shared.syncAlbums()
+            AlbumsManager.shared.syncAlbums(for: account)
         }
 
         for metadata in metadatas where metadata.account == account {
@@ -267,7 +266,7 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     private func reloadAlbumAfterRenaming(albumName: String) {
-        AlbumsManager.shared.syncAlbums { [weak self] resultAlbums in
+        AlbumsManager.shared.syncAlbums(for: account) { [weak self] resultAlbums in
             self?.isLoadingPopupVisible = false
 
             if let newAlbum = resultAlbums.first(where: { $0.name == albumName }) {
@@ -307,10 +306,10 @@ class AlbumDetailsViewModel: ObservableObject {
                     self?.isLoadingPopupVisible = false
                 }
                 switch result {
-                case .success:
+                case .success(let account):
                     DispatchQueue.main.async {
                         self?.loadAlbumPhotos()
-                        AlbumsManager.shared.syncAlbums()
+                        AlbumsManager.shared.syncAlbums(for: account)
                     }
                 case .failure(let error):
                     Task {
