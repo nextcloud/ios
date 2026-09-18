@@ -146,15 +146,11 @@ class AlbumsListViewModel: ObservableObject {
     }
 
     private func createNewAlbum(for name: String) {
-
         guard !isLoadingPopupVisible else { return }
-
         isLoadingPopupVisible = true
 
         NextcloudKit.shared.createNewAlbum(for: account, albumName: name) { [weak self] result in
-
             self?.isLoadingPopupVisible = false
-
             switch result {
             case .success:
                 AlbumsManager.shared.syncAlbums { [weak self] resultAlbums in
@@ -163,28 +159,9 @@ class AlbumsListViewModel: ObservableObject {
                         self?.isPhotoSelectionSheetVisible = true
                     }
                 }
-
             case .failure(let error):
-                let nkError = NKError(error: error)
-                // Prefer friendly info alert for duplicate album names (409)
-                if let inner = nkError.error as? NKError, inner.errorCode == NCGlobal.shared.errorConflict {
-                    let message = NSLocalizedString("_album_already_exists_", comment: "Album already exists")
-                    let conflict = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: message)
-                    Task { @MainActor in
-                        await showInfoBanner(windowScene: self?.windowScene, text: conflict.errorDescription, errorCode: conflict.errorCode)
-                    }
-                } else if nkError.errorCode == NCGlobal.shared.errorConflict {
-                    // Top-level conflict
-                    let message = NSLocalizedString("_album_already_exists_", comment: "Album already exists")
-                    let conflict = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: message)
-                    Task { @MainActor in
-                        await showInfoBanner(windowScene: self?.windowScene, text: conflict.errorDescription, errorCode: conflict.errorCode)
-                    }
-                } else {
-                    // Other errors
-                    Task { @MainActor in
-                        await showErrorBanner(windowScene: self?.windowScene, error: nkError)
-                    }
+                Task {
+                    await showErrorBanner(windowScene: self?.windowScene, error: error)
                 }
             }
         }
@@ -223,24 +200,8 @@ class AlbumsListViewModel: ObservableObject {
                 case .success:
                     hadAnySuccess = true
                 case .failure(let error):
-                    let nkError = NKError(error: error)
-
-                    // Check nested conflict first (409), then top-level, otherwise show error
-                    if let innerError = nkError.error as? NKError,
-                       innerError.errorCode == NCGlobal.shared.errorConflict {
-                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                    errorDescription: "_file_already_exists_")
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: self.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                        }
-                    } else if nkError.errorCode == NCGlobal.shared.errorConflict {
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: self.windowScene, text: nkError.errorDescription, errorCode: nkError.errorCode)
-                        }
-                    } else {
-                        Task { @MainActor in
-                            await showErrorBanner(windowScene: self.windowScene, error: nkError)
-                        }
+                    Task {
+                        await showErrorBanner(windowScene: self.windowScene, error: error)
                     }
                 }
                 group.leave()

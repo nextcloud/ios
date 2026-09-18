@@ -8,6 +8,8 @@ import Alamofire
 import SwiftyJSON
 import SwiftyXMLParser
 
+/*
+ 
 fileprivate extension DateFormatter {
     static let httpDate: DateFormatter = {
         let formatter = DateFormatter()
@@ -16,6 +18,7 @@ fileprivate extension DateFormatter {
         return formatter
     }()
 }
+
 
 public extension NextcloudKit {
 
@@ -708,3 +711,4 @@ public extension NextcloudKit {
             }
     }
 }
+*/
