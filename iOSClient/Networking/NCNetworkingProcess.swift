@@ -685,8 +685,7 @@ actor NCNetworkingProcess {
                     banner?.update(payload: LucidBannerPayload.Update(
                         title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                         systemImage: "arrowshape.up.circle",
-                        imageAnimation: .breathe,
-                        progress: 0
+                        imageAnimation: .breathe
                     ), for: token)
                 }
             } uploadProgressHandler: { _, _, progress in
