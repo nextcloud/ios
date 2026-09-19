@@ -76,7 +76,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         Task {
             optionButtonItem.image = UIImage(systemName: "ellipsis")
             optionButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-            optionButtonItem.menu = await createOptionMenu()
+            setOptionMenu(await createOptionMenu())
         }
 
         assistantButtonItem.primaryAction = UIAction(handler: { _ in
@@ -320,7 +320,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         desiredItems.append(transfersButtonItem)
 
         if let optionMenu = await createOptionMenu() {
-            optionButtonItem.menu = optionMenu
+            setOptionMenu(optionMenu)
             desiredItems.append(optionButtonItem)
         }
 
@@ -360,12 +360,25 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        optionButtonItem.menu = await createOptionMenu()
+        setOptionMenu(await createOptionMenu())
 
         // Force refresh of the bar button group if the menu instance changed.
         let currentGroups = topViewController.navigationItem.trailingItemGroups
         if !currentGroups.isEmpty {
             topViewController.navigationItem.trailingItemGroups = currentGroups
+        }
+    }
+
+    /// Configures the options button for both direct toolbar display and UIKit's
+    /// navigation-bar overflow menu.
+    ///
+    /// The button keeps its regular menu when it is displayed in the bar. When
+    /// UIKit moves it into the system overflow, the inline representation avoids
+    /// presenting another ellipsis submenu inside that overflow menu.
+    func setOptionMenu(_ menu: UIMenu?) {
+        optionButtonItem.menu = menu
+        optionButtonItem.menuRepresentation = menu.map {
+            UIMenu(title: "", options: .displayInline, children: $0.children)
         }
     }
 

@@ -46,7 +46,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         desiredItems.append(transfersButtonItem)
 
         if let optionMenu = await self.createOptionMenu() {
-            optionButtonItem.menu = optionMenu
+            setOptionMenu(optionMenu)
             desiredItems.append(optionButtonItem)
         }
 
