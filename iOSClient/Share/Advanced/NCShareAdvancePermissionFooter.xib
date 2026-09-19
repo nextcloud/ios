@@ -41,12 +41,12 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="leading" secondItem="rCI-63-PtL" secondAttribute="trailing" constant="16" id="4Px-cS-Hta"/>
-                <constraint firstItem="sWQ-1v-CIt" firstAttribute="trailing" secondItem="Mg2-Ou-yoX" secondAttribute="trailing" constant="16" id="Jdi-WJ-zVF"/>
+                <constraint firstItem="sWQ-1v-CIt" firstAttribute="trailing" secondItem="Mg2-Ou-yoX" secondAttribute="trailing" id="Jdi-WJ-zVF"/>
                 <constraint firstItem="sWQ-1v-CIt" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="SzT-aI-aUz"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="height" secondItem="rCI-63-PtL" secondAttribute="height" id="bNp-Nf-uMw"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="width" secondItem="rCI-63-PtL" secondAttribute="width" id="dfu-GZ-P99"/>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="hEl-ij-sMX"/>
-                <constraint firstItem="rCI-63-PtL" firstAttribute="leading" secondItem="sWQ-1v-CIt" secondAttribute="leading" constant="16" id="s9t-ud-ofw"/>
+                <constraint firstItem="rCI-63-PtL" firstAttribute="leading" secondItem="sWQ-1v-CIt" secondAttribute="leading" constant="20" id="s9t-ud-ofw"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
