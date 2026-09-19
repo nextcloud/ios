@@ -109,6 +109,20 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         let safeAreaInsets = viewController.view.safeAreaInsets
         viewRecommendationsLeadingConstraint.constant = -safeAreaInsets.left
         viewRecommendationsTrailingConstraint.constant = -safeAreaInsets.right
+
+        // Keep the final recommendation clear of the safe-area overlay when
+        // scrolled all the way to the end of the carousel.
+        if collectionViewRecommendations.contentInset.right != safeAreaInsets.right {
+            var contentInset = collectionViewRecommendations.contentInset
+            contentInset.right = safeAreaInsets.right
+            collectionViewRecommendations.contentInset = contentInset
+        }
+
+        if collectionViewRecommendations.horizontalScrollIndicatorInsets.right != safeAreaInsets.right {
+            var horizontalScrollIndicatorInsets = collectionViewRecommendations.horizontalScrollIndicatorInsets
+            horizontalScrollIndicatorInsets.right = safeAreaInsets.right
+            collectionViewRecommendations.horizontalScrollIndicatorInsets = horizontalScrollIndicatorInsets
+        }
     }
 
     private func setParentCollectionViewClipping(_ clipsToBounds: Bool) {
