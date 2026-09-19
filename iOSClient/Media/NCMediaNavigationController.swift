@@ -62,16 +62,6 @@ class NCMediaNavigationController: NCMainNavigationController {
         guard let media = topViewController as? NCMedia else {
             return nil
         }
-        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layoutType: global.mediaLayoutRatio)
-        var layout = layoutForView.layout
-        // Overwrite default value
-        if layout == global.layoutList {
-            layout = global.mediaLayoutRatio
-        }
-        //
-        let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
-
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle")) { _ in
             media.setEditMode(true)
@@ -89,48 +79,80 @@ class NCMediaNavigationController: NCMainNavigationController {
             }
         }
 
-        let viewFilterMenu = UIMenu(title: "", options: [.singleSelection, .displayInline], children: [
-            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
-                media.showOnlyImages = true
-                media.showOnlyVideos = false
-                Task {
-                    await media.loadDataSource()
-                    await media.networkRemoveAll()
+        let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
+            UIDeferredMenuElement.uncached { [weak self, weak media] completion in
+                guard let self, let media else {
+                    completion([])
+                    return
                 }
-            },
-            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
-                media.showOnlyImages = false
-                media.showOnlyVideos = true
-                Task {
-                    await media.loadDataSource()
-                    await media.networkRemoveAll()
-                }
-            },
-            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle"), state: .on) { _ in
-                media.showOnlyImages = false
-                media.showOnlyVideos = false
-                Task {
-                    await media.loadDataSource()
-                    await media.networkRemoveAll()
-                }
+                let actions = [
+                    UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: self.utility.loadImage(named: "photo"), state: media.showOnlyImages ? .on : .off) { _ in
+                        media.showOnlyImages = true
+                        media.showOnlyVideos = false
+                        Task {
+                            await media.loadDataSource()
+                            await media.networkRemoveAll()
+                        }
+                    },
+
+                    UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: self.utility.loadImage(named: "video"), state: media.showOnlyVideos ? .on : .off) { _ in
+                        media.showOnlyImages = false
+                        media.showOnlyVideos = true
+                        Task {
+                            await media.loadDataSource()
+                            await media.networkRemoveAll()
+                        }
+                    },
+
+                    UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: self.utility.loadImage(named: "photo.on.rectangle"), state: (!media.showOnlyImages && !media.showOnlyVideos) ? .on : .off) { _ in
+                        media.showOnlyImages = false
+                        media.showOnlyVideos = false
+                        Task {
+                            await media.loadDataSource()
+                            await media.networkRemoveAll()
+                        }
+                    }
+                ]
+
+                completion(actions)
             }
         ])
 
         let viewLayoutMenu = UIMenu(title: "", options: .displayInline, children: [
-            UIAction(title: layoutTitle, image: layoutImage) { _ in
-                Task {
-                    if layout == self.global.mediaLayoutRatio {
-                        self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutSquare)
-                        media.layoutType = self.global.mediaLayoutSquare
-                    } else {
-                        self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
-                        media.layoutType = self.global.mediaLayoutRatio
-                    }
-                    media.collectionViewReloadData()
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                guard let self else {
+                    completion([])
+                    return
                 }
+
+                let layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layoutType: self.global.mediaLayoutRatio)
+                var layout = layoutForView.layout
+
+                // Overwrite default value
+                if layout == self.global.layoutList {
+                    layout = self.global.mediaLayoutRatio
+                }
+
+                let layoutTitle = (layout == self.global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
+                let layoutImage = (layout == self.global.mediaLayoutRatio) ? self.utility.loadImage(named: "square.grid.3x3") : self.utility.loadImage(named: "rectangle.grid.3x2")
+
+                let action = UIAction(title: layoutTitle, image: layoutImage) { _ in
+                    Task {
+                        if layout == self.global.mediaLayoutRatio {
+                            self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutSquare)
+                            media.layoutType = self.global.mediaLayoutSquare
+                        } else {
+                            self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
+                            media.layoutType = self.global.mediaLayoutRatio
+                        }
+
+                        media.collectionViewReloadData()
+                    }
+                }
+
+                completion([action])
             }
         ])
-
         let viewFolderMedia = UIMenu(title: "", options: .displayInline, children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
                 guard let self else {
@@ -214,13 +236,12 @@ class NCMediaNavigationController: NCMainNavigationController {
         ])
 
         let actionsInEditMode: [UIAction] = [
-
             UIAction(
                 title: NSLocalizedString("_add_to_album", comment: ""),
                 image: utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor], size: 24).withTintColor(NCBrandColor.shared.iconImageColor),
                 handler: { _ in
                     guard let controller = self.controller else { return }
-                    NCMediaNavigationController.presentExistingAlbums(presentingController: controller, selectedPhotos: media.fileSelect, account: controller.account)
+                    NCMediaNavigationController.presentExistingAlbums(controller: controller, selectedPhotos: media.fileSelect)
                 }
             ),
 
@@ -230,7 +251,7 @@ class NCMediaNavigationController: NCMainNavigationController {
                 handler: { _ in
                     guard let controller = self.controller else { return }
                     NCMediaNavigationController.presentInputAlbumNameAlert(on: controller) { albumName in
-                        NCMediaNavigationController.createNewAlbum(for: albumName, selectedPhotos: media.fileSelect, controller: controller, account: controller.account)
+                        NCMediaNavigationController.createNewAlbum(for: albumName, selectedPhotos: media.fileSelect, controller: controller)
                     } onCancel: {
 
                     }
@@ -297,22 +318,19 @@ class NCMediaNavigationController: NCMainNavigationController {
         viewController.present(alert, animated: true)
     }
 
-     static private func createNewAlbum(for name: String, selectedPhotos: [String], controller: NCMainTabBarController, account: String) {
-
-         // Use the provided account to avoid mismatches between UI and networking
-         // (Do not rely on AppDelegate.account here)
-
+     static private func createNewAlbum(for name: String, selectedPhotos: [String], controller: NCMainTabBarController) {
          let loader = NCLoadingAlert.show(on: controller)
-         NextcloudKit.shared.createNewAlbum(for: account, albumName: name) { result in
+
+         NextcloudKit.shared.createNewAlbum(for: controller.account, albumName: name) { result in
              NCLoadingAlert.hide(loader)
              switch result {
-             case .success:
-                 AlbumsManager.shared.syncAlbums { resultAlbums in
+             case .success(let account):
+                 AlbumsManager.shared.syncAlbums(for: account) { resultAlbums in
                      if let newAlbum = resultAlbums.first(where: { $0.name == name }) {
                          if selectedPhotos.isEmpty {
-                             showAlbumAndNotify(newAlbum, controller: controller, account: account)
+                             showAlbumAndNotify(newAlbum, controller: controller)
                          } else {
-                             addPhotosToAlbum(album: newAlbum, selectedPhotos: selectedPhotos, account: account, controller: controller)
+                             addPhotosToAlbum(album: newAlbum, selectedPhotos: selectedPhotos, controller: controller)
                          }
                      } else {
                          // Album not yet visible in the sync result; still notify UI to refresh
@@ -321,41 +339,25 @@ class NCMediaNavigationController: NCMainNavigationController {
                  }
 
              case .failure(let error):
-                 let nkError = NKError(error: error)
-                 if nkError.errorCode == NCGlobal.shared.errorConflict {
-                     let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                 errorDescription: "_album_already_exists_")
-                     Task { @MainActor in
-                         await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                     }
-                 } else if let innerError = nkError.error as? NKError,
-                           innerError.errorCode == NCGlobal.shared.errorConflict {
-                     let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                 errorDescription: "_album_already_exists_")
-                     Task { @MainActor in
-                         await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                     }
-                 } else {
-                     Task { @MainActor in
-                         await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: nkError)
-                     }
+                 Task {
+                     await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: error)
                  }
              }
          }
      }
 
-    static func presentExistingAlbums(presentingController: NCMainTabBarController, selectedPhotos: [String], account: String) {
-        let viewModel = AlbumsListViewModel(account: account)
-        let albumListView = AddToAlbumsListView(viewModel: viewModel, localAccount: account, onFinish: { selectedAlbum in
-            presentingController.dismiss(animated: true) {
-                addPhotosToAlbum(album: selectedAlbum, selectedPhotos: selectedPhotos, account: account, controller: presentingController)
+    static func presentExistingAlbums(controller: NCMainTabBarController, selectedPhotos: [String]) {
+        let viewModel = AlbumsListViewModel(account: controller.account)
+        let albumListView = AddToAlbumsListView(viewModel: viewModel, localAccount: controller.account, onFinish: { selectedAlbum in
+            controller.dismiss(animated: true) {
+                addPhotosToAlbum(album: selectedAlbum, selectedPhotos: selectedPhotos, controller: controller)
             }
         }, onDismiss: {
-            presentingController.dismiss(animated: true)
+            controller.dismiss(animated: true)
         }, onCreateAlbum: {
-            presentingController.dismiss(animated: true) {
-                presentInputAlbumNameAlert(on: presentingController) { albumName in
-                    createNewAlbum(for: albumName, selectedPhotos: selectedPhotos, controller: presentingController, account: account)
+            controller.dismiss(animated: true) {
+                presentInputAlbumNameAlert(on: controller) { albumName in
+                    createNewAlbum(for: albumName, selectedPhotos: selectedPhotos, controller: controller)
                 } onCancel: { }
             }
         })
@@ -366,13 +368,12 @@ class NCMediaNavigationController: NCMainNavigationController {
             sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 24
         }
-        presentingController.present(hostingController, animated: true, completion: nil)
+        controller.present(hostingController, animated: true, completion: nil)
     }
 
-    private static func showAlbumAndNotify(_ album: Album, controller: NCMainTabBarController, account: String) {
+    private static func showAlbumAndNotify(_ album: Album, controller: NCMainTabBarController) {
         DispatchQueue.main.async {
-            guard controller.account == account,
-                  controller.viewIfLoaded?.window != nil,
+            guard controller.viewIfLoaded?.window != nil,
                   let navigationController = controller.viewControllers?.compactMap({ $0 as? NCMoreNavigationController }).first,
                   let albumsController = UIStoryboard(name: "NCAlbums", bundle: nil)
                     .instantiateInitialViewController() as? AlbumsViewController else {
@@ -387,56 +388,38 @@ class NCMediaNavigationController: NCMainNavigationController {
         }
     }
 
-    static func addPhotosToAlbum(album: Album, selectedPhotos: [String], account: String, controller: NCMainTabBarController) {
-
+    static func addPhotosToAlbum(album: Album, selectedPhotos: [String], controller: NCMainTabBarController) {
         if selectedPhotos.isEmpty {
-            showAlbumAndNotify(album, controller: controller, account: account)
+            showAlbumAndNotify(album, controller: controller)
             return
         }
 
         var completed = 0
+        var succeeded = 0
         let total = selectedPhotos.count
         func finishIfDone() {
             completed += 1
-            if completed >= total {
-                AlbumsManager.shared.syncAlbums()
-                showAlbumAndNotify(album, controller: controller, account: account)
-            }
+            guard completed == total, succeeded > 0 else { return }
+            AlbumsManager.shared.syncAlbums(for: controller.account)
+            showAlbumAndNotify(album, controller: controller)
         }
 
         for photo in selectedPhotos {
-
             let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
 
             NextcloudKit.shared.copyPhotoToAlbum(
-                account: account,
+                account: controller.account,
                 sourcePath: metadata?.serverUrlFileName ?? photo,
                 albumName: album.name,
                 fileName: metadata?.fileName ?? photo
             ) { result in
-
                 switch result {
                 case .success:
+                    succeeded += 1
                     finishIfDone()
                 case .failure(let error):
-                    let nkError = NKError(error: error)
-                    if nkError.errorCode == NCGlobal.shared.errorConflict {
-                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                    errorDescription: "_album_already_exists_")
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                        }
-                    } else if let innerError = nkError.error as? NKError,
-                              innerError.errorCode == NCGlobal.shared.errorConflict {
-                        let conflictError = NKError(errorCode: NCGlobal.shared.errorConflict,
-                                                    errorDescription: "_album_already_exists_")
-                        Task { @MainActor in
-                            await showInfoBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, text: conflictError.errorDescription, errorCode: conflictError.errorCode)
-                        }
-                    } else {
-                        Task { @MainActor in
-                            await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: nkError)
-                        }
+                    Task {
+                        await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: error)
                     }
                     finishIfDone()
                 }

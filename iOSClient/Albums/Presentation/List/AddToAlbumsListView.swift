@@ -101,8 +101,7 @@ struct AddToAlbumsListView: View {
                 content()
             }
             .onAppear {
-                AlbumsManager.shared.setAccount(localAccount)
-                AlbumsManager.shared.syncAlbums()
+                AlbumsManager.shared.syncAlbums(for: localAccount)
             }
         }
     }

@@ -88,11 +88,7 @@ struct PhotoGridItemView: View {
         }
 
         // 5. Download Preview
-        let results = await NextcloudKit.shared.downloadPreviewAsync(
-            fileId: fileId,
-            etag: etag,
-            account: localAccount
-        ) { _ in }
+        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: localAccount) { _ in }
 
         await MainActor.run {
             if results.error == .success,

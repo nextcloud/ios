@@ -9,8 +9,6 @@ import NextcloudKit
 
 final class AlbumsManager {
     static let shared = AlbumsManager()
-    private var account: String = ""
-
     // Albums publisher - Central
     private let albumsSubject = CurrentValueSubject<LoadableState<[NKPhotoAlbum]>, Never>(.idle)
     var albumsPublisher: AnyPublisher<LoadableState<[NKPhotoAlbum]>, Never> {
@@ -19,12 +17,7 @@ final class AlbumsManager {
 
     private init() {}
 
-    // MARK: - Public Methods
-    func setAccount(_ acc: String) {
-        self.account = acc
-    }
-
-    func syncAlbums(optionalActionOnSuccess: (([NKPhotoAlbum]) -> Void)? = nil) {
+    func syncAlbums(for account: String, optionalActionOnSuccess: (([NKPhotoAlbum]) -> Void)? = nil) {
         albumsSubject.send(.loading)
 
         NextcloudKit.shared.fetchAllAlbums(for: account) { [weak self] result in
@@ -33,8 +26,7 @@ final class AlbumsManager {
                 self?.albumsSubject.send(.success(albums))
                 optionalActionOnSuccess?(albums)
             case .failure(let error):
-                let nkError = NKError(error: error)
-                self?.albumsSubject.send(.failure(nkError))
+                self?.albumsSubject.send(.failure(error))
             }
         }
     }

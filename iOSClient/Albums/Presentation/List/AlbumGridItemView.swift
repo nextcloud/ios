@@ -118,11 +118,7 @@ struct AlbumGridItemView: View {
         let account = localAccount
         let preferredPhotoId = album.lastPhotoId
         let candidateIds: [String] = await withCheckedContinuation { continuation in
-            NextcloudKit.shared.fetchAlbumPhotos(
-                for: albumName,
-                account: account,
-                options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-            ) { result in
+            NextcloudKit.shared.fetchAlbumPhotos(for: albumName, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { result in
                 let photos = (try? result.get()) ?? []
                 var seen = Set<String>()
                 let candidates = photos.filter {

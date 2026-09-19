@@ -247,7 +247,6 @@
 		F708B444304EC5F9009D013A /* NoPhotosEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41F304EC5F9009D013A /* NoPhotosEmptyView.swift */; };
 		F708B445304EC5F9009D013A /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B433304EC5F9009D013A /* AlbumsViewController.swift */; };
 		F708B447304EC5F9009D013A /* MediaSelectionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B41E304EC5F9009D013A /* MediaSelectionSheet.swift */; };
-		F708B448304EC5F9009D013A /* Albums+WebDAV.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B40D304EC5F9009D013A /* Albums+WebDAV.swift */; };
 		F708B449304EC5F9009D013A /* NoAlbumsEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B428304EC5F9009D013A /* NoAlbumsEmptyView.swift */; };
 		F708B44A304EC5F9009D013A /* AlbumsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B40F304EC5F9009D013A /* AlbumsManager.swift */; };
 		F708B44B304EC5F9009D013A /* AlbumGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708B424304EC5F9009D013A /* AlbumGridItemView.swift */; };
@@ -1522,7 +1521,6 @@
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
 		F70898662EDDB39300EF85BD /* NCNetworking+TransferDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+TransferDelegate.swift"; sourceTree = "<group>"; };
 		F70898682EDDB51200EF85BD /* NCSelectOpen+SelectDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCSelectOpen+SelectDelegate.swift"; sourceTree = "<group>"; };
-		F708B40D304EC5F9009D013A /* Albums+WebDAV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Albums+WebDAV.swift"; sourceTree = "<group>"; };
 		F708B40F304EC5F9009D013A /* AlbumsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsManager.swift; sourceTree = "<group>"; };
 		F708B410304EC5F9009D013A /* LoadableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableState.swift; sourceTree = "<group>"; };
 		F708B415304EC5F9009D013A /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
@@ -2584,14 +2582,6 @@
 			path = "File Provider Extension UI";
 			sourceTree = "<group>";
 		};
-		F708B40E304EC5F9009D013A /* API */ = {
-			isa = PBXGroup;
-			children = (
-				F708B40D304EC5F9009D013A /* Albums+WebDAV.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
 		F708B411304EC5F9009D013A /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -2608,14 +2598,6 @@
 				F708B416304EC5F9009D013A /* AlbumPhoto.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		F708B418304EC5F9009D013A /* Domain */ = {
-			isa = PBXGroup;
-			children = (
-				F708B417304EC5F9009D013A /* Models */,
-			);
-			path = Domain;
 			sourceTree = "<group>";
 		};
 		F708B41B304EC5F9009D013A /* Alerts */ = {
@@ -2695,9 +2677,8 @@
 		F708B435304EC5F9009D013A /* Albums */ = {
 			isa = PBXGroup;
 			children = (
-				F708B40E304EC5F9009D013A /* API */,
 				F708B411304EC5F9009D013A /* Data */,
-				F708B418304EC5F9009D013A /* Domain */,
+				F708B417304EC5F9009D013A /* Models */,
 				F708B432304EC5F9009D013A /* Presentation */,
 				F708B433304EC5F9009D013A /* AlbumsViewController.swift */,
 				F708B434304EC5F9009D013A /* NCAlbums.storyboard */,
@@ -5541,7 +5522,6 @@
 				F708B444304EC5F9009D013A /* NoPhotosEmptyView.swift in Sources */,
 				F708B445304EC5F9009D013A /* AlbumsViewController.swift in Sources */,
 				F708B447304EC5F9009D013A /* MediaSelectionSheet.swift in Sources */,
-				F708B448304EC5F9009D013A /* Albums+WebDAV.swift in Sources */,
 				F708B449304EC5F9009D013A /* NoAlbumsEmptyView.swift in Sources */,
 				F708B44A304EC5F9009D013A /* AlbumsManager.swift in Sources */,
 				F708B44B304EC5F9009D013A /* AlbumGridItemView.swift in Sources */,
@@ -6758,7 +6738,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
@@ -6826,7 +6806,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;

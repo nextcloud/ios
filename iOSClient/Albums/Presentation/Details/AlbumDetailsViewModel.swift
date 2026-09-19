@@ -14,7 +14,6 @@ protocol AlbumActionHandler: AnyObject {
 }
 
 class AlbumDetailsViewModel: ObservableObject {
-
     @Published var account: String
     private var album: Album
 
@@ -156,26 +155,20 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     func deleteAlbum() {
-
         guard !isLoadingPopupVisible else { return }
-
         isLoadingPopupVisible = true
 
-        NextcloudKit.shared.deleteAlbum(
-            albumName: album.name,
-            account: account
-        ) { [weak self] result in
-
+        NextcloudKit.shared.deleteAlbum(albumName: album.name, account: account) { [weak self] result in
             self?.isLoadingPopupVisible = false
 
             switch result {
-            case .success:
-                AlbumsManager.shared.syncAlbums()
+            case .success(let account):
+                AlbumsManager.shared.syncAlbums(for: account)
                 AlbumsNavigator.shared.pop()
 
             case .failure(let error):
-                Task { @MainActor in
-                    await showErrorBanner(windowScene: self?.windowScene, error: NKError(error: error))
+                Task {
+                    await showErrorBanner(windowScene: self?.windowScene, error: error)
                 }
             }
         }
@@ -194,7 +187,7 @@ class AlbumDetailsViewModel: ObservableObject {
         }
 
         photos.removeAll { $0.id == photo.id }
-        AlbumsManager.shared.syncAlbums()
+        AlbumsManager.shared.syncAlbums(for: account)
     }
 
     @MainActor
@@ -203,7 +196,7 @@ class AlbumDetailsViewModel: ObservableObject {
         isLoadingPopupVisible = true
         defer {
             isLoadingPopupVisible = false
-            AlbumsManager.shared.syncAlbums()
+            AlbumsManager.shared.syncAlbums(for: account)
         }
 
         for metadata in metadatas where metadata.account == account {
@@ -219,8 +212,7 @@ class AlbumDetailsViewModel: ObservableObject {
 
     func deletePhotoFromAlbum(_ photo: AlbumPhoto, metadata: tableMetadata) async -> NKError {
         do {
-            // NKFile.fileName is already decoded; NextcloudKit encodes the album entry once.
-            _ = try await NextcloudKit.shared.deletePhotoFromAlbumAsync(
+            try await NextcloudKit.shared.deletePhotoFromAlbumAsync(
                 albumName: album.name,
                 fileName: photo.albumFileName,
                 account: account
@@ -231,19 +223,28 @@ class AlbumDetailsViewModel: ObservableObject {
                         path: photo.metadata.serverUrlFileName,
                         name: "deletePhotoFromAlbum"
                     )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    await NCNetworking.shared.networkingTasks.track(
+                        identifier: identifier,
+                        task: task
+                    )
                 }
             }
+
             return .success
-        } catch {
-            let nkError = (error as? NKError) ?? NKError(error: error)
+
+        } catch let nkError as NKError {
             if nkError.errorCode == NCGlobal.shared.errorResourceNotFound {
                 return .success
             }
+
             if nkError.errorCode == NCGlobal.shared.errorForbidden && metadata.isLivePhotoVideo {
                 return .success
             }
+
             return nkError
+
+        } catch {
+            return NKError(error: error)
         }
     }
 
@@ -265,7 +266,7 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     private func reloadAlbumAfterRenaming(albumName: String) {
-        AlbumsManager.shared.syncAlbums { [weak self] resultAlbums in
+        AlbumsManager.shared.syncAlbums(for: account) { [weak self] resultAlbums in
             self?.isLoadingPopupVisible = false
 
             if let newAlbum = resultAlbums.first(where: { $0.name == albumName }) {
@@ -305,10 +306,10 @@ class AlbumDetailsViewModel: ObservableObject {
                     self?.isLoadingPopupVisible = false
                 }
                 switch result {
-                case .success:
+                case .success(let account):
                     DispatchQueue.main.async {
                         self?.loadAlbumPhotos()
-                        AlbumsManager.shared.syncAlbums()
+                        AlbumsManager.shared.syncAlbums(for: account)
                     }
                 case .failure(let error):
                     Task {

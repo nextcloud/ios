@@ -142,7 +142,7 @@ class AlbumsListViewModel: ObservableObject {
 
     // MARK: - APIs
     func onPulledToRefresh() {
-        AlbumsManager.shared.syncAlbums()
+        AlbumsManager.shared.syncAlbums(for: self.account)
     }
 
     private func createNewAlbum(for name: String) {
@@ -152,8 +152,8 @@ class AlbumsListViewModel: ObservableObject {
         NextcloudKit.shared.createNewAlbum(for: account, albumName: name) { [weak self] result in
             self?.isLoadingPopupVisible = false
             switch result {
-            case .success:
-                AlbumsManager.shared.syncAlbums { [weak self] resultAlbums in
+            case .success(let account):
+                AlbumsManager.shared.syncAlbums(for: account) { [weak self] resultAlbums in
                     if let newAlbum = resultAlbums.first(where: { $0.name == name }) {
                         self?.newlyCreatedAlbum = newAlbum
                         self?.isPhotoSelectionSheetVisible = true
@@ -190,12 +190,7 @@ class AlbumsListViewModel: ObservableObject {
             group.enter()
             let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
 
-            NextcloudKit.shared.copyPhotoToAlbum(
-                account: account,
-                sourcePath: metadata?.serverUrlFileName ?? photo,
-                albumName: album.name,
-                fileName: metadata?.fileName ?? photo
-            ) { result in
+            NextcloudKit.shared.copyPhotoToAlbum(account: account, sourcePath: metadata?.serverUrlFileName ?? photo, albumName: album.name, fileName: metadata?.fileName ?? photo) { result in
                 switch result {
                 case .success:
                     hadAnySuccess = true
@@ -211,11 +206,10 @@ class AlbumsListViewModel: ObservableObject {
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             if hadAnySuccess {
-                AlbumsManager.shared.syncAlbums { _ in
+                AlbumsManager.shared.syncAlbums(for: self.account) { _ in
                     guard !self.isNavigatingToDetails else { return }
                     self.isNavigatingToDetails = true
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
+                    DispatchQueue.main.async {
                         AlbumsNavigator.shared.push(.albumDetails(album: album))
                         self.isNavigatingToDetails = false
                     }
@@ -223,8 +217,7 @@ class AlbumsListViewModel: ObservableObject {
             } else {
                 guard !self.isNavigatingToDetails else { return }
                 self.isNavigatingToDetails = true
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
+                DispatchQueue.main.async {
                     AlbumsNavigator.shared.push(.albumDetails(album: album))
                     self.isNavigatingToDetails = false
                 }
