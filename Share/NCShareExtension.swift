@@ -52,6 +52,7 @@ class NCShareExtension: UIViewController {
     var token: Int?
     var banner: LucidBanner?
     var sceneIdentifier: String = UUID().uuidString
+    private var isPresentingNoAccountAlert = false
 
     // MARK: - View Life Cycle
 
@@ -101,6 +102,11 @@ class NCShareExtension: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
+            guard !self.maintenanceMode,
+                  self.validateAccount() else {
+                return
+            }
+
             if NCPreferences().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
@@ -139,11 +145,8 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        guard NCShareExtensionData.shared.getTblAccoun() != nil,
-                  !NCPasscode.shared.isPasscodeReset else {
-            return showAlert(description: "_no_active_account_") {
-                self.cancel(with: .noAccount)
-            }
+        guard validateAccount() else {
+            return
         }
 
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
@@ -180,6 +183,58 @@ class NCShareExtension: UIViewController {
     private func updateAppearance() {
         collectionView.visibleCells.forEach { $0.setNeedsLayout() }
         tableView.visibleCells.forEach { $0.setNeedsLayout() }
+    }
+
+    private func validateAccount() -> Bool {
+        guard !NCPasscode.shared.isPasscodeReset else {
+            return showNoAccountAlert()
+        }
+
+        if let account = NCShareExtensionData.shared.getTblAccoun()?.account,
+           NCManageDatabase.shared.getTableAccount(account: account) != nil {
+            return true
+        }
+
+        guard let activeAccount = NCManageDatabase.shared.getActiveTableAccount() else {
+            return showNoAccountAlert()
+        }
+
+        clearAccountView()
+        accountRequestChangeAccount(account: activeAccount.account, controller: nil)
+        return true
+    }
+
+    private func showNoAccountAlert() -> Bool {
+        clearAccountView()
+        if !isPresentingNoAccountAlert {
+            isPresentingNoAccountAlert = true
+            showAlert(description: "_no_active_account_") {
+                self.cancel(with: .noAccount)
+            }
+        }
+        return false
+    }
+
+    private func clearAccountView() {
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
+        dataSource = NCCollectionViewDataSource()
+        metadataFolder = nil
+
+        collectionView.isHidden = true
+        tableView.isHidden = true
+        commandView.isHidden = true
+        separatorView.isHidden = true
+        navigationItem.leftBarButtonItems = nil
+        navigationItem.title = NCBrandOptions.shared.brand
+        view.layoutIfNeeded()
+    }
+
+    func showAccountView() {
+        collectionView.isHidden = false
+        tableView.isHidden = false
+        commandView.isHidden = false
+        separatorView.isHidden = false
     }
 
     // MARK: -
