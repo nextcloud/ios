@@ -291,20 +291,24 @@ class AlbumDetailsViewModel: ObservableObject {
         }
 
         self.isLoadingPopupVisible = true
+        let group = DispatchGroup()
 
         for photo in selectedPhotos {
-
-            let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
+                Task {
+                    await showErrorBanner(windowScene: self.windowScene, error: .invalidData)
+                }
+                continue
+            }
+            group.enter()
 
             NextcloudKit.shared.copyPhotoToAlbum(
                 account: account,
-                sourcePath: metadata?.serverUrlFileName ?? photo,
+                sourcePath: metadata.serverUrlFileName,
                 albumName: album.name,
-                fileName: metadata?.fileName ?? photo
+                fileName: metadata.fileName
             ) { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.isLoadingPopupVisible = false
-                }
+                defer { group.leave() }
                 switch result {
                 case .success(let account):
                     DispatchQueue.main.async {
@@ -317,6 +321,10 @@ class AlbumDetailsViewModel: ObservableObject {
                     }
                 }
             }
+        }
+
+        group.notify(queue: .main) { [weak self] in
+            self?.isLoadingPopupVisible = false
         }
     }
 }
