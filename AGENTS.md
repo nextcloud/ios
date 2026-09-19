@@ -90,4 +90,4 @@ The following details are important when working on the iOS client.
 - UI tests require a Nextcloud server at `http://localhost:8080` (credentials `admin`/`admin`, see `Tests/TestConstants.swift`); start one with `Tests/Server.sh` (requires Docker). CI provisions the same server.
 - `NextcloudIntegrationTests` is currently an empty target: `LoginIntegrationTests.swift` is on disk but excluded from the build and references a nonexistent `EnvVars` type — do not model new tests on it.
 - Verify that all tests are passing and correct them if necessary.
-- Run tests the way CI does (see `.github/workflows/xcode.yml`): `xcodebuild test -scheme Nextcloud -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"` (adjust the simulator to what is installed locally). Without a local test server, restrict to `-only-testing:NextcloudUnitTests`.
+- Run tests the way CI does (see `.github/workflows/xcode.yml`): `xcodebuild test -scheme Nextcloud -destination "platform=iOS Simulator,name=iPhone 17,OS=27.0"` (adjust the simulator to what is installed locally). Without a local test server, restrict to `-only-testing:NextcloudUnitTests`.
