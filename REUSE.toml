@@ -72,9 +72,3 @@ path = ["iOSClient/Utility/NYMnemonic/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2014 Nybex, Inc. <https://nybex.com>"
 SPDX-License-Identifier = "MIT"
-
-[[annotations]]
-path = ["Widget/Assets.xcassets/widget.imageset/icons8-*.png"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Icons8 LLC <https://icons8.com>"
-SPDX-License-Identifier = "LicenseRef-Icons8"

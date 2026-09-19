@@ -67,13 +67,15 @@ struct ToolbarWidgetView: View {
                     })
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
-                        Image("microphone")
+                        Image(systemName: "mic.fill")
                             .resizable()
+                            .renderingMode(.template)
+                            .scaledToFit()
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
+                            .frame(width: sizeButton - 32, height: sizeButton - 32)
+                            .padding(16)
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                             .clipShape(Circle())
-                            .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
