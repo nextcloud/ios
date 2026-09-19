@@ -34,10 +34,15 @@ actor NCNetworkingProcess {
     private var lastScheduledAndInProgressCount: Int = 0
     private var lastVerifyZombieDate: Date = .distantPast
     private let verifyZombieInterval: TimeInterval = 12
-    private var uploadedAssetsReadySince: Date?
+
+    // Time when uploaded assets first became ready for processing.
+    private var postUploadProcessingReadySince: Date?
+    // Last failed or declined camera roll deletion attempt.
     private var lastUploadedAssetsRemovalAttempt: Date?
-    private var isRemovingUploadedAssets = false
-    private let uploadedAssetsRemovalInterval: TimeInterval = 5 * 60
+    // Prevents overlapping Live Photo processing and camera roll deletion.
+    private var isRunningPostUploadTasks = false
+    // Delay during pending transfers and before retrying camera roll deletion.
+    private let postUploadProcessingInterval: TimeInterval = 5 * 60
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -300,8 +305,8 @@ actor NCNetworkingProcess {
                 metadatas = await NCManageDatabase.shared.getMetadataProcess()
             }
 
-            // Completed assets can be removed even while unrelated transfers remain queued.
-            await removeUploadedAssetsIfNeeded(hasPendingTransfers: !metadatas.isEmpty)
+            // Process completed assets even while unrelated transfers remain queued.
+            await runPostUploadTasksIfNeeded(hasPendingTransfers: !metadatas.isEmpty)
             guard !Task.isCancelled else { return }
             // The confirmation may have remained open while transfers completed.
             metadatas = await NCManageDatabase.shared.getMetadataProcess()
@@ -341,62 +346,60 @@ actor NCNetworkingProcess {
 
                 await updateTimerIntervalIfNeeded(hasPendingTransfers: true)
             } else {
-                // Set Live Photos on the server
-                let livePhotoAccounts = await NCManageDatabase.shared.getLivePhotoAccounts()
-
-                for account in livePhotoAccounts {
-                    await NCNetworking.shared.setLivePhoto(account: account)
-
-                    if isAppInBackground {
-                        return
-                    }
-                }
-
                 await updateTimerIntervalIfNeeded(hasPendingTransfers: false)
             }
         }
     }
 
-    private func removeUploadedAssetsIfNeeded(hasPendingTransfers: Bool) async {
-        guard !isRemovingUploadedAssets, !Task.isCancelled else { return }
-        guard NCPreferences().removePhotoCameraRoll else {
-            uploadedAssetsReadySince = nil
+    private func runPostUploadTasksIfNeeded(hasPendingTransfers: Bool) async {
+        guard !isRunningPostUploadTasks, !Task.isCancelled else { return }
+
+        // Keep the guard across server requests and the Photos confirmation.
+        isRunningPostUploadTasks = true
+        defer { isRunningPostUploadTasks = false }
+
+        guard await MainActor.run(body: { UIApplication.shared.applicationState == .active }) else {
             return
         }
-
-        // Keep the guard across suspension points, including the Photos confirmation.
-        isRemovingUploadedAssets = true
-        defer { isRemovingUploadedAssets = false }
-
-        guard await MainActor.run(body: { UIApplication.shared.applicationState == .active }),
-              let localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync() else {
-            return
+        let livePhotoAccounts = await NCManageDatabase.shared.getLivePhotoAccounts()
+        let localIdentifiers: [String]
+        if NCPreferences().removePhotoCameraRoll {
+            localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync() ?? []
+        } else {
+            localIdentifiers = []
         }
-        guard !localIdentifiers.isEmpty else {
-            uploadedAssetsReadySince = nil
+        guard !livePhotoAccounts.isEmpty || !localIdentifiers.isEmpty else {
+            postUploadProcessingReadySince = nil
             return
         }
 
         let now = Date()
-        if uploadedAssetsReadySince == nil {
-            uploadedAssetsReadySince = now
+        if postUploadProcessingReadySince == nil {
+            postUploadProcessingReadySince = now
         }
-        // A failed or declined attempt must not prompt again on every idle timer tick.
-        if let lastAttempt = lastUploadedAssetsRemovalAttempt,
-           now.timeIntervalSince(lastAttempt) < uploadedAssetsRemovalInterval {
+        if hasPendingTransfers, let readySince = postUploadProcessingReadySince,
+           now.timeIntervalSince(readySince) < postUploadProcessingInterval {
             return
         }
-        if hasPendingTransfers, let readySince = uploadedAssetsReadySince,
-           now.timeIntervalSince(readySince) < uploadedAssetsRemovalInterval {
-            return
+        defer { postUploadProcessingReadySince = nil }
+
+        // Set Live Photos on the server before asking to remove local assets.
+        for account in livePhotoAccounts {
+            guard !Task.isCancelled, !isAppInBackground else { return }
+            await NCNetworking.shared.setLivePhoto(account: account)
         }
 
+        guard !localIdentifiers.isEmpty, NCPreferences().removePhotoCameraRoll else { return }
+        // A failed or declined deletion must not block Live Photo processing.
+        if let lastAttempt = lastUploadedAssetsRemovalAttempt,
+           Date().timeIntervalSince(lastAttempt) < postUploadProcessingInterval {
+            return
+        }
         guard !Task.isCancelled,
               let completed = await Self.removeUploadedAssets(localIdentifiers) else {
             return
         }
         lastUploadedAssetsRemovalAttempt = completed ? nil : Date()
-        uploadedAssetsReadySince = nil
 
         if completed {
             await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
