@@ -138,7 +138,7 @@ struct FilesWidgetView: View {
                     .frame(maxWidth: .infinity)
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo) {
-                        Image("microphone")
+                        Image(systemName: "mic.fill")
                             .resizable()
                             .renderingMode(.template)
                             .scaledToFit()
