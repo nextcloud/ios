@@ -15,26 +15,42 @@ class NCAutoUpload: NSObject {
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
-    private var endForAssetToUpload: Bool = false
 
     func initAutoUpload(controller: NCMainTabBarController? = nil) async -> Int {
-        guard self.networking.isOnline else {
+        if #available(iOS 27, *),
+           await NCBackgroundUploadExtensionManager.shared.ensureEnabled() {
+            nkLog(tag: global.logTagBackgroundUpload, message: "Auto upload delegated to Photos extension")
             return 0
         }
-        var counter = 0
 
-        let tblAccounts = await NCManageDatabase.shared.getTableAccountsAsync(predicate: NSPredicate(format: "autoUploadStart == true"))
-        for tblAccount in tblAccounts {
-            let albumIds = NCPreferences().getAutoUploadAlbumIds(account: tblAccount.account)
-            let assetCollections = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
-            let result = await getCameraRollAssets(controller: nil, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
-            if let assets = result.assets, !assets.isEmpty, let fileNames = result.fileNames {
-                let item = await uploadAssets(controller: nil, tblAccount: tblAccount, assets: assets, fileNames: fileNames, filterExistingQueue: true)
-                counter += item
-            }
+        guard networking.isOnline else {
+            return 0
         }
 
-        return counter
+        guard let account = await database.getTableAccountAsync(predicate: NSPredicate(format: "autoUploadStart == true")) else {
+            return 0
+        }
+
+        let albumIds = NCPreferences().getAutoUploadAlbumIds(account: account.account)
+        let assetCollections = PHAssetCollection.allAlbums.filter {
+            albumIds.contains($0.localIdentifier)
+        }
+
+        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: account)
+
+        guard let assets = result.assets,
+              !assets.isEmpty,
+              let fileNames = result.fileNames else {
+            return 0
+        }
+
+        return await uploadAssets(
+            controller: controller,
+            tblAccount: account,
+            assets: assets,
+            fileNames: fileNames,
+            filterExistingQueue: true
+        )
     }
 
     @MainActor
@@ -51,6 +67,12 @@ class NCAutoUpload: NSObject {
         }
 
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
+            return
+        }
+
+        if #available(iOS 27, *),
+           await NCBackgroundUploadExtensionManager.shared.ensureEnabled() {
+            nkLog(tag: global.logTagBackgroundUpload, message: "Manual auto upload delegated to Photos extension")
             return
         }
 
@@ -116,7 +138,9 @@ class NCAutoUpload: NSObject {
 
             let mediaType = asset.mediaType
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
-            let serverUrl = tblAccount.autoUploadCreateSubfolder ? fileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase) : autoUploadServerUrlBase
+            let serverUrl = tblAccount.autoUploadCreateSubfolder
+                ? fileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase, granularity: tblAccount.autoUploadSubfolderGranularity)
+                : autoUploadServerUrlBase
             let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
             let uploadSession = onWWAN ? self.networking.sessionUploadBackgroundWWan : self.networking.sessionUploadBackground
 
@@ -289,6 +313,11 @@ class NCAutoUpload: NSObject {
     //
     // The flow cooperates with Swift task cancellation triggered by BGTask expiration.
     func autoUploadBackgroundSync() async {
+        if #available(iOS 27, *),
+           await NCBackgroundUploadExtensionManager.shared.ensureEnabled() {
+            return
+        }
+
         guard !Task.isCancelled else { return }
 
         // Discover new items for Auto Upload.
@@ -356,6 +385,7 @@ class NCAutoUpload: NSObject {
             metadatas.lazy.filter {
                 $0.status == self.global.metadataStatusWaitUpload &&
                 $0.sessionSelector == self.global.selectorUploadAutoUpload &&
+                $0.backgroundUploadJobIdentifier.isEmpty &&
                 $0.chunk == 0
             }
             .prefix(availableProcess)

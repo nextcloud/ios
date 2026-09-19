@@ -47,7 +47,11 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
                 if let certificate = preference.getEndToEndCertificate(account: session.account) {
                     self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
                 }
-                statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+                if preference.isEndToEndServerKeyStale(account: session.account) {
+                    statusOfService = NSLocalizedString("_e2ee_server_key_changed_", comment: "")
+                } else {
+                    statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+                }
             } else {
                 let options = networkingE2EE.getOptions(account: session.account, capabilities: capabilities)
                 NextcloudKit.shared.getE2EECertificate(account: session.account, options: options) { _ in
@@ -65,10 +69,10 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
     }
 
     @MainActor
-    func renewCertificate() async {
+    func renewCertificate(password: String?) async {
         do {
             let e2ee = NCEndToEndSetup(controller: controller)
-            let certificate = try await e2ee.renewCertificate()
+            let certificate = try await e2ee.renewCertificate(password: password)
             self.certificateValidity = networkingE2EE.getX509CertificateValidity(from: certificate)
             await showInfoBanner(windowScene: windowScene,
                                  text: "_e2e_renew_certificate_success_")
@@ -153,7 +157,6 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, TOPasscode
             }
         case "readPassphrase":
             if let e2ePassphrase = NCPreferences().getEndToEndPassphrase(account: session.account) {
-                print("[INFO]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))

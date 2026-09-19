@@ -25,6 +25,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 banner: LucidBanner?,
                 stageBanner: LucidBanner.Stage?,
                 tokenBanner: Int?,
+                backgroundContext: NCNetworking.ChunkUploadBackgroundContext? = nil,
                 requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
                 currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
     async -> NKError {
@@ -41,8 +42,15 @@ class NCNetworkingE2EEUpload: NSObject {
                            errorDescription: NSLocalizedString("_e2ee_no_session_", comment: ""))
         }
 
+        finalError = await networkingE2EE.validateCurrentServerKey(account: session.account)
+        guard finalError == .success else {
+            return finalError
+        }
+
         defer {
-            if finalError != .success {
+            let interruptedChunkUpload = metadata.chunk > 0 &&
+                backgroundContext?.interruptedByBackground == true && finalError.errorCode == NSURLErrorCancelled
+            if finalError != .success && !interruptedChunkUpload {
                 Task {
                     await self.database.deleteMetadataAsync(id: ocId)
                 }
@@ -80,6 +88,16 @@ class NCNetworkingE2EEUpload: NSObject {
         func sendE2ee(e2eToken: String, fileId: String) async -> NKError {
             var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
             var method = "POST"
+
+            // A new encryption attempt uses fresh keys. Never resume chunks from
+            // the previous ciphertext, even when the queued upload is retained.
+            if metadata.chunk > 0 {
+                await database.deleteChunksAsync(
+                    account: metadata.account,
+                    ocId: metadata.ocId,
+                    directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+                )
+            }
 
             // ENCRYPT FILE
             //
@@ -172,7 +190,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                              controller: controller,
                                              banner: banner,
                                              stageBanner: stageBanner,
-                                             tokenBanner: tokenBanner) { request in
+                                             tokenBanner: tokenBanner,
+                                             backgroundContext: backgroundContext) { request in
                 requestHandle(request)
             } currentUploadTask: { task in
                 currentUploadTask(task)
@@ -234,6 +253,18 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         finalError = resultsSendFile.error
+        if metadata.chunk > 0,
+           backgroundContext?.interruptedByBackground == true,
+           finalError.errorCode == NSURLErrorCancelled {
+            // The previous attempt has finished unlocking before becoming eligible again.
+            await database.setMetadataSessionAsync(
+                ocId: metadata.ocId,
+                sessionTaskIdentifier: 0,
+                sessionError: "",
+                status: global.metadataStatusWaitUpload,
+                errorCode: 0
+            )
+        }
         return finalError
     }
 
@@ -244,6 +275,7 @@ class NCNetworkingE2EEUpload: NSObject {
                           banner: LucidBanner?,
                           stageBanner: LucidBanner.Stage?,
                           tokenBanner: Int?,
+                          backgroundContext: NCNetworking.ChunkUploadBackgroundContext?,
                           requestHandle: @escaping (_ request: UploadRequest) -> Void = { _ in },
                           currentUploadTask: @escaping (_ task: Task<(account: String, file: NKFile?, error: NKError), Never>?) -> Void = { _ in })
     async -> (ocId: String?, etag: String?, date: Date?, ownerId: String?, permissions: String?, error: NKError) {
@@ -258,7 +290,7 @@ class NCNetworkingE2EEUpload: NSObject {
             banner?.update(payload: payload, for: tokenBanner)
 
             let task = Task { () -> (account: String, file: NKFile?, error: NKError) in
-                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { total, counter in
+                let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata, performPostProcessing: false, backgroundContext: backgroundContext) { total, counter in
                     Task {@MainActor in
                         let progress = Double(counter) / Double(total)
                         banner?.update(payload: LucidBannerPayload.Update(progress: progress), for: tokenBanner)
@@ -295,6 +327,9 @@ class NCNetworkingE2EEUpload: NSObject {
                 return results
             }
             currentUploadTask(task)
+            if backgroundContext?.interruptedByBackground == true {
+                task.cancel()
+            }
             let results = await task.value
 
             return (results.file?.ocId,

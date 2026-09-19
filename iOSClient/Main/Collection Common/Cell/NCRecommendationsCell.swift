@@ -18,6 +18,8 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     var delegate: NCRecommendationsCellDelegate?
     var representedFileId: String?
+    var representedAccount: String?
+    var imageRequestID = UUID()
 
     var metadata: tableMetadata? {
         didSet {
@@ -61,6 +63,10 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         buttonMore.layer.shadowOffset = CGSize(width: 2, height: 2)
         buttonMore.layer.shadowRadius = 4
 
+        representedFileId = nil
+        representedAccount = nil
+        imageRequestID = UUID()
+        metadata = nil
         image.image = nil
         labelFilename.text = ""
         labelExtensionFilename.text = ""

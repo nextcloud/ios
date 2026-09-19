@@ -26,6 +26,11 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             }
         }
 
+        let serverKeyError = await NCNetworkingE2EE().validateCurrentServerKey(account: account)
+        guard serverKeyError == .success else {
+            return serverKeyError
+        }
+
         // BANNER
         //
 #if !EXTENSION
@@ -71,7 +76,10 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         await self.database.updateCounterE2eMetadataAsync(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
 
         // upload e2ee metadata
-        error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrlFileName, account: account)
+        error = await NCNetworkingE2EE().createInitialMetadata(
+            serverUrl: serverUrlFileName,
+            account: account
+        )
         guard error == .success else {
             return error
         }

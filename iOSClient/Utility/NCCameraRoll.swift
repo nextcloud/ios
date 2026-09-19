@@ -345,7 +345,7 @@ final class NCCameraRoll: CameraRollExtractor {
                   let jpegData = CIContext().jpegRepresentation(
                     of: ciImage,
                     colorSpace: colorSpace,
-                    options: [compressionQuality: 1.0]
+                    options: [compressionQuality: 0.85]
                   )
             else {
                 throw NSError(domain: "ExtractAssetError", code: 3, userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])

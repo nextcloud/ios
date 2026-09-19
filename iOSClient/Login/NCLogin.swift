@@ -328,15 +328,23 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.isEmpty { return }
 
-        // Check whether baseUrl contain protocol. If not add https:// by default.
-        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
-            url = "https://" + url
-        }
-        self.baseUrlTextField.text = url
-        isUrlValid(url: url)
+        attemptLogin(url: url)
     }
 
-    func isUrlValid(url: String, user: String? = nil) {
+    private func attemptLogin(url: String) {
+        var url = url
+
+        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
+            url = "https://" + url
+        } else if url.isInsecureHTTPURL {
+            url = "https://" + url.dropFirst("http://".count)
+        }
+
+        self.baseUrlTextField.text = url
+        startLogin(url: url)
+    }
+
+    private func startLogin(url: String) {
         loginButton.isEnabled = false
         loginButton.hideButtonAndShowSpinner()
 
@@ -383,6 +391,26 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
                     }))
                     self.present(alertController, animated: true)
+                } else if url.lowercased().hasPrefix("https://") {
+                    let httpUrl = "http://" + url.dropFirst("https://".count)
+
+                    #if DEBUG
+                    self.baseUrlTextField.text = httpUrl
+                    self.startLogin(url: httpUrl)
+                    #else
+                    // Any failed https attempt may fall back to plain http, but only with explicit consent.
+                    let alertController = UIAlertController(title: NSLocalizedString("_warning_", comment: ""),
+                                                            message: NSLocalizedString("_https_failed_try_http_", comment: ""),
+                                                            preferredStyle: .alert)
+
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .destructive) { _ in
+                        self.baseUrlTextField.text = httpUrl
+                        self.startLogin(url: httpUrl)
+                    })
+
+                    self.present(alertController, animated: true)
+                    #endif
                 } else {
                     let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -470,7 +498,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
 extension NCLogin: NCShareAccountsDelegate {
     func selected(url: String, user: String) {
-        isUrlValid(url: url, user: user)
+        attemptLogin(url: url)
     }
 }
 

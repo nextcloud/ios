@@ -76,22 +76,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         Task {
             optionButtonItem.image = UIImage(systemName: "ellipsis")
             optionButtonItem.tintColor = NCBrandColor.shared.iconImageColor
-            optionButtonItem.menu = await createOptionMenu()
+            setOptionMenu(await createOptionMenu())
         }
 
-        assistantButtonItem.image = UIImage(systemName: "sparkles")
-        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
-        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         assistantButtonItem.primaryAction = UIAction(handler: { _ in
             let inputModel = NCAssistantInputModel()
             let assistant = NCAssistant(assistantModel: NCAssistantModel(controller: self.controller, inputModel: inputModel), chatModel: NCAssistantChatModel(controller: self.controller, inputModel: inputModel), conversationsModel: NCAssistantChatConversationsModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             self.present(hostingController, animated: true, completion: nil)
         })
+        assistantButtonItem.image = UIImage(systemName: "sparkles")
+        assistantButtonItem.title = NSLocalizedString("_assistant_", comment: "")
+        assistantButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
-        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
-        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
-        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         notificationsButtonItem.primaryAction = UIAction(handler: { _ in
             if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCNotification {
@@ -100,10 +97,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 self.present(navigationController, animated: true, completion: nil)
             }
         })
+        notificationsButtonItem.image = UIImage(systemName: "bell.fill")
+        notificationsButtonItem.title = NSLocalizedString("_notifications_", comment: "")
+        notificationsButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
-        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
-        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
-        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
         transfersButtonItem.primaryAction = UIAction(handler: { _ in
             let rootView = TransfersView(session: self.session, onClose: { [weak self = self] in
                 self?.dismiss(animated: true)
@@ -113,6 +110,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             self.present(hosting, animated: true)
         })
+        transfersButtonItem.image = UIImage(systemName: "arrow.left.arrow.right.circle.fill")
+        transfersButtonItem.title = NSLocalizedString("_transfers_", comment: "")
+        transfersButtonItem.tintColor = NCBrandColor.shared.iconImageColor
 
         // PLUS BUTTON MENU
         let buttonSize: CGFloat = 44
@@ -286,7 +286,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     @MainActor
-    private func collectionViewCommonTrailingItemGroups() async {
+    func collectionViewCommonTrailingItemGroups() async {
         guard let topViewController else {
             return
         }
@@ -320,7 +320,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         desiredItems.append(transfersButtonItem)
 
         if let optionMenu = await createOptionMenu() {
-            optionButtonItem.menu = optionMenu
+            setOptionMenu(optionMenu)
             desiredItems.append(optionButtonItem)
         }
 
@@ -360,12 +360,25 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        optionButtonItem.menu = await createOptionMenu()
+        setOptionMenu(await createOptionMenu())
 
         // Force refresh of the bar button group if the menu instance changed.
         let currentGroups = topViewController.navigationItem.trailingItemGroups
         if !currentGroups.isEmpty {
             topViewController.navigationItem.trailingItemGroups = currentGroups
+        }
+    }
+
+    /// Configures the options button for both direct toolbar display and UIKit's
+    /// navigation-bar overflow menu.
+    ///
+    /// The button keeps its regular menu when it is displayed in the bar. When
+    /// UIKit moves it into the system overflow, the inline representation avoids
+    /// presenting another ellipsis submenu inside that overflow menu.
+    func setOptionMenu(_ menu: UIMenu?) {
+        optionButtonItem.menu = menu
+        optionButtonItem.menuRepresentation = menu.map {
+            UIMenu(title: "", options: .displayInline, children: $0.children)
         }
     }
 

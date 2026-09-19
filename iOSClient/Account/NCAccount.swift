@@ -219,10 +219,16 @@ class NCAccount: NSObject {
             nkLog(debug: "Set Remote Wipe Completition error code: \(resultsSetWipe.error.errorCode)")
         }
 
+        if account.count > 0 {
+            await switchToFirstAvailableAccount(controller: controller)
+        }
+    }
+
+    /// Presents the login (or intro) screen if no account remains.
+    func switchToFirstAvailableAccount(controller: NCMainTabBarController?) async {
         let accounts = await NCManageDatabase.shared.getAccountsAsync()
 
         if let accounts,
-           account.count > 0,
            let account = accounts.first {
                 await changeAccount(account, userProfile: nil, controller: controller)
         } else {

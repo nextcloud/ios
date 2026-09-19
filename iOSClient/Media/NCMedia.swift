@@ -122,6 +122,13 @@ class NCMedia: UIViewController {
         return self.isViewLoaded && self.view.window != nil
     }
 
+    // Album selection presents Media in a sheet and keeps searching while selecting.
+    var allowsSearchWhileSelecting: Bool { false }
+
+    var isMediaPresentationActive: Bool {
+        isViewActived && tabBarController?.selectedViewController === navigationController
+    }
+
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
@@ -269,6 +276,10 @@ class NCMedia: UIViewController {
         super.viewDidAppear(animated)
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+
+        Task { [weak self] in
+            await self?.loadDataSource()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -339,6 +350,9 @@ class NCMedia: UIViewController {
     }
 
     @objc func enterForeground(_ notification: NSNotification) {
+        Task { [weak self] in
+            await self?.loadDataSource()
+        }
         searchNewMedia()
     }
 
