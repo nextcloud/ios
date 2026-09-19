@@ -17,16 +17,16 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.5
+  DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=27.0
   SCHEME: Nextcloud
-  XCODE_VERSION: '26.0.1'
+  XCODE_VERSION: '27.0'
   SERVER_BRANCH: stable30
   PHP_VERSION: 8.3
 
 jobs:
   build:
     name: Build
-    runs-on: macos-15
+    runs-on: xcode-27
     if: github.event.pull_request.draft == false
 
     steps:
@@ -58,7 +58,7 @@ jobs:
 
   test:
     name: Run Tests
-    runs-on: macos-15
+    runs-on: xcode-27
     needs: [build]
 
     if: github.event.pull_request.draft == false
@@ -117,8 +117,8 @@ jobs:
 
     - name: Boot iOS Simulator
       run: |
-        xcrun simctl boot "iPhone 16"
-        xcrun simctl bootstatus "iPhone 16" || echo "Simulator booted"
+        xcrun simctl boot "iPhone 17"
+        xcrun simctl bootstatus "iPhone 17" || echo "Simulator booted"
 
     - name: Check if Safari is installed
       run: |
