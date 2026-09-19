@@ -18,6 +18,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRecommendationsHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var viewRecommendationsLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var viewRecommendationsTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
@@ -33,6 +35,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
     private var recommendations: [tableRecommendedFiles] = []
     private var viewController: UIViewController?
+    private weak var parentCollectionView: UICollectionView?
     private var sceneIdentifier: String = ""
     private var recommendationsIdentity: [String] = []
     private var contentRequestID = UUID()
@@ -46,6 +49,10 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        // The recommendations carousel is intentionally allowed to extend beyond
+        // the safe-area-sized parent collection view.
+        clipsToBounds = false
 
         //
         // RichWorkspace
@@ -73,6 +80,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         layout.scrollDirection = .horizontal
 
         collectionViewRecommendations.collectionViewLayout = layout
+        collectionViewRecommendations.contentInsetAdjustmentBehavior = .never
         collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
         labelRecommendations.text = NSLocalizedString("_recommended_files_", comment: "")
 
@@ -90,6 +98,23 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         setRichWorkspaceColor()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateRecommendationsLayout()
+    }
+
+    private func updateRecommendationsLayout() {
+        guard let viewController else { return }
+
+        let safeAreaInsets = viewController.view.safeAreaInsets
+        viewRecommendationsLeadingConstraint.constant = -safeAreaInsets.left
+        viewRecommendationsTrailingConstraint.constant = -safeAreaInsets.right
+    }
+
+    private func setParentCollectionViewClipping(_ clipsToBounds: Bool) {
+        parentCollectionView?.clipsToBounds = clipsToBounds
+    }
+
     func setContent(heightHeaderRichWorkspace: CGFloat,
                     richWorkspaceText: String?,
                     heightHeaderRecommendations: CGFloat,
@@ -97,6 +122,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
                     heightHeaderSection: CGFloat,
                     sectionText: String?,
                     viewController: UIViewController?,
+                    parentCollectionView: UICollectionView?,
                     sceneItentifier: String,
                     delegate: NCSectionFirstHeaderDelegate?) {
         viewRichWorkspaceHeightConstraint.constant = heightHeaderRichWorkspace
@@ -114,8 +140,13 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         self.recommendations = recommendations
         self.labelSection.text = sectionText
         self.viewController = viewController
+        self.parentCollectionView = parentCollectionView
         self.sceneIdentifier = sceneItentifier
         self.delegate = delegate
+
+        let recommendationsVisible = heightHeaderRecommendations != 0 && !recommendations.isEmpty
+        setParentCollectionViewClipping(!recommendationsVisible)
+        updateRecommendationsLayout()
 
         if heightHeaderRichWorkspace != 0, let richWorkspaceText, !richWorkspaceText.isEmpty {
             viewRichWorkspace.isHidden = false
@@ -123,7 +154,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewRichWorkspace.isHidden = true
         }
 
-        if heightHeaderRecommendations != 0 && !recommendations.isEmpty {
+        if recommendationsVisible {
             viewRecommendations.isHidden = false
         } else {
             viewRecommendations.isHidden = true

@@ -214,6 +214,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                                   heightHeaderSection: heightHeaderSection,
                                   sectionText: sectionText,
                                   viewController: self,
+                                  parentCollectionView: self.collectionView,
                                   sceneItentifier: self.sceneIdentifier,
                                   delegate: self)
 
