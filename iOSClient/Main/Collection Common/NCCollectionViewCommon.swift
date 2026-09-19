@@ -736,10 +736,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         var height: CGFloat = 0
         let isLandscape = view.bounds.width > view.bounds.height
         let isIphone = UIDevice.current.userInterfaceIdiom == .phone
+        let hasCompactWidth = traitCollection.horizontalSizeClass == .compact
 
         if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset)
-        } else if isEditMode || (isLandscape && isIphone) {
+        } else if isEditMode || (isLandscape && isIphone && hasCompactWidth) {
             return CGSize.zero
         } else {
             let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: section)
