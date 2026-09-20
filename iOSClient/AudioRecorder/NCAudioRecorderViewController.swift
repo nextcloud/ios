@@ -266,42 +266,42 @@ class VoiceRecordHUD: UIView {
         }
     }
 
-    /// `draw(_:)` masks with `image.cgImage`, which symbol images don't provide, so the
-    /// SF Symbol is rasterised once into a square white-on-transparent bitmap.
-    private static let microphoneImage: UIImage = {
-        let side: CGFloat = 400
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: side, height: side))
-        let configuration = UIImage.SymbolConfiguration(pointSize: side, weight: .regular)
-
-        guard let symbol = UIImage(systemName: "mic.fill", withConfiguration: configuration)?
-            .withTintColor(.white, renderingMode: .alwaysOriginal) else {
-            return renderer.image { _ in }
-        }
-
-        // 0.9375 is the old asset's glyph-to-canvas ratio; the square canvas keeps the glyph
-        // undistorted when `draw(_:)` stretches it to the HUD's square bounds.
-        let box = side * 0.9375
-        let scale = min(box / symbol.size.width, box / symbol.size.height)
-        let fitted = CGSize(width: symbol.size.width * scale, height: symbol.size.height * scale)
-
-        return renderer.image { _ in
-            symbol.draw(in: CGRect(x: (side - fitted.width) / 2,
-                                   y: (side - fitted.height) / 2,
-                                   width: fitted.width,
-                                   height: fitted.height))
-        }
-    }()
+//    /// `draw(_:)` masks with `image.cgImage`, which symbol images don't provide, so the
+//    /// SF Symbol is rasterised once into a square white-on-transparent bitmap.
+//    private static let microphoneImage: UIImage = {
+//        let side: CGFloat = 400
+//        let renderer = UIGraphicsImageRenderer(size: CGSize(width: side, height: side))
+//        let configuration = UIImage.SymbolConfiguration(pointSize: side, weight: .regular)
+//
+//        guard let symbol = UIImage(systemName: "mic.fill", withConfiguration: configuration)?
+//            .withTintColor(.white, renderingMode: .alwaysOriginal) else {
+//            return renderer.image { _ in }
+//        }
+//
+//        // 0.9375 is the old asset's glyph-to-canvas ratio; the square canvas keeps the glyph
+//        // undistorted when `draw(_:)` stretches it to the HUD's square bounds.
+//        let box = side * 0.9375
+//        let scale = min(box / symbol.size.width, box / symbol.size.height)
+//        let fitted = CGSize(width: symbol.size.width * scale, height: symbol.size.height * scale)
+//
+//        return renderer.image { _ in
+//            symbol.draw(in: CGRect(x: (side - fitted.width) / 2,
+//                                   y: (side - fitted.height) / 2,
+//                                   width: fitted.width,
+//                                   height: fitted.height))
+//        }
+//    }()
 
     // MARK: - View Life Cycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        image = Self.microphoneImage
+        image = UIImage(systemName: "mic.fill")
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        image = Self.microphoneImage
+        image = UIImage(systemName: "mic.fill")
     }
 
     func update(_ rate: CGFloat) {
@@ -322,6 +322,6 @@ class VoiceRecordHUD: UIView {
     }
 
     override func prepareForInterfaceBuilder() {
-        image = Self.microphoneImage
+        image = UIImage(systemName: "mic.fill") 
     }
 }
