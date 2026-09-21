@@ -19,9 +19,13 @@ struct NCAutoUploadView: View {
     @State private var showFocusedAutoUploadProgress = false
     @State private var openFocusedAutoUploadFinish = false
     @State private var startAutoUpload = false
-    @State private var showAutoUploadActiveOnOtherAccount = false
-    @State private var otherAutoUploadAccountName = ""
+    @State private var isCheckingOtherAutoUploadAccount = true
+    @State private var otherAutoUploadAccountName: String?
     @Environment(NCAutoUploadCounter.self) private var autoUploadCounter
+
+    private var isAutoUploadUnavailable: Bool {
+        isCheckingOtherAutoUploadAccount || otherAutoUploadAccountName != nil
+    }
 
     var body: some View {
         ZStack {
@@ -49,6 +53,7 @@ struct NCAutoUploadView: View {
         }
         .onAppear {
             model.onViewAppear()
+            refreshOtherAutoUploadAccount()
             updateAutoUploadCounterSubscription()
         }
         .onDisappear {
@@ -56,22 +61,10 @@ struct NCAutoUploadView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             model.checkPermission()
+            refreshOtherAutoUploadAccount()
         }
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) {}
-        }
-        .alert(
-            NSLocalizedString("_autoupload_active_other_account_title_", comment: ""),
-            isPresented: $showAutoUploadActiveOnOtherAccount
-        ) {
-            Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) {}
-        } message: {
-            Text(
-                String(
-                    format: NSLocalizedString("_autoupload_active_other_account_message_", comment: ""),
-                    otherAutoUploadAccountName
-                )
-            )
         }
         .sheet(isPresented: $showUploadFolder) {
             SelectView(
@@ -136,6 +129,22 @@ struct NCAutoUploadView: View {
     @ViewBuilder
     var autoUploadOnView: some View {
         Form {
+            if let otherAutoUploadAccountName {
+                Section {
+                    Label(
+                        NSLocalizedString("_autoupload_active_other_account_title_", comment: ""),
+                        systemImage: "lock.fill"
+                    )
+                } footer: {
+                    Text(
+                        String(
+                            format: NSLocalizedString("_autoupload_active_other_account_message_", comment: ""),
+                            otherAutoUploadAccountName
+                        )
+                    )
+                }
+            }
+
             if model.autoUploadStart && autoUploadCounter.hasItemsToUpload {
                 Section(content: {
                     Button {
@@ -443,12 +452,17 @@ struct NCAutoUploadView: View {
                     .font(.footnote)
                 })
             }
-            .disabled(model.autoUploadStart)
+            .disabled(
+                model.autoUploadStart || isAutoUploadUnavailable
+            )
+            .opacity(isAutoUploadUnavailable ? 0.5 : 1)
         }
         .safeAreaInset(edge: .bottom) {
             autoUploadStartButton
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 10)
+                .disabled(isAutoUploadUnavailable)
+                .opacity(isAutoUploadUnavailable ? 0.5 : 1)
         }
     }
 
@@ -511,7 +525,6 @@ struct NCAutoUploadView: View {
                         : account.alias
 
                     model.autoUploadStart = false
-                    showAutoUploadActiveOnOtherAccount = true
                 } else {
                     model.handleAutoUploadChange(
                         newValue: true,
@@ -536,6 +549,19 @@ struct NCAutoUploadView: View {
             userId: model.session.userId,
             autoUploadStart: model.autoUploadStart
         )
+    }
+
+    private func refreshOtherAutoUploadAccount() {
+        isCheckingOtherAutoUploadAccount = true
+
+        Task {
+            let account = await model.getOtherAutoUploadAccount()
+
+            otherAutoUploadAccountName = account.map {
+                $0.alias.isEmpty ? $0.account : $0.alias
+            }
+            isCheckingOtherAutoUploadAccount = false
+        }
     }
 
     private func stopAutoUploadCounterSubscription() {
