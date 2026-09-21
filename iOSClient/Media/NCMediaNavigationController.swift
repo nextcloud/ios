@@ -405,13 +405,19 @@ class NCMediaNavigationController: NCMainNavigationController {
         }
 
         for photo in selectedPhotos {
-            let metadata: tableMetadata? = NCManageDatabase.shared.getMetadataFromOcId(photo)
+            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
+                Task {
+                    await showErrorBanner(windowScene: controller.viewIfLoaded?.window?.windowScene, error: .invalidData)
+                }
+                finishIfDone()
+                continue
+            }
 
             NextcloudKit.shared.copyPhotoToAlbum(
                 account: controller.account,
-                sourcePath: metadata?.serverUrlFileName ?? photo,
+                sourcePath: metadata.serverUrlFileName,
                 albumName: album.name,
-                fileName: metadata?.fileName ?? photo
+                fileName: metadata.fileName
             ) { result in
                 switch result {
                 case .success:
