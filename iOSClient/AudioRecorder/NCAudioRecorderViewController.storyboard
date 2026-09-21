@@ -27,12 +27,9 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ztv-M0-yUI" userLabel="contentContainerView">
                                 <rect key="frame" x="87.5" y="208.5" width="200" height="250"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vr6-IX-Yee" customClass="VoiceRecordHUD" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="55" y="35" width="90" height="180"/>
+                                    <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="vr6-IX-Yee" customClass="VoiceRecordHUD" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="46" y="35" width="108" height="180"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="vr6-IX-Yee" secondAttribute="height" multiplier="0.5" id="c7R-AE-rou"/>
-                                        </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="rate">
                                                 <real key="value" value="0.5"/>
@@ -67,10 +64,12 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="vr6-IX-Yee" secondAttribute="trailing" constant="46" id="0uw-zd-fmR"/>
                                     <constraint firstItem="yIp-rq-klm" firstAttribute="top" secondItem="Ztv-M0-yUI" secondAttribute="top" constant="10" id="1S8-2v-d7k"/>
                                     <constraint firstItem="3Wm-qO-FzJ" firstAttribute="centerX" secondItem="Lnv-LR-qq5" secondAttribute="centerX" id="2UV-Gt-2oO"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="vr6-IX-Yee" secondAttribute="trailing" id="6e6-C9-ZWQ"/>
                                     <constraint firstItem="3Wm-qO-FzJ" firstAttribute="top" secondItem="vr6-IX-Yee" secondAttribute="bottom" constant="10" id="9BH-EE-wqj"/>
+                                    <constraint firstItem="vr6-IX-Yee" firstAttribute="leading" secondItem="Ztv-M0-yUI" secondAttribute="leading" constant="46" id="E9J-Wp-TFI"/>
                                     <constraint firstAttribute="height" constant="250" id="G5W-ie-MCH"/>
                                     <constraint firstItem="Lnv-LR-qq5" firstAttribute="leading" secondItem="Ztv-M0-yUI" secondAttribute="leading" id="JlM-Ww-iut"/>
                                     <constraint firstAttribute="bottom" secondItem="Lnv-LR-qq5" secondAttribute="bottom" id="Kzr-BQ-zK4"/>
@@ -82,7 +81,9 @@
                                     <constraint firstItem="3Wm-qO-FzJ" firstAttribute="top" secondItem="Lnv-LR-qq5" secondAttribute="bottom" constant="-25" id="a8Q-Z1-NFp"/>
                                     <constraint firstAttribute="centerX" secondItem="yIp-rq-klm" secondAttribute="centerX" id="hwa-S6-oPz"/>
                                     <constraint firstAttribute="centerY" secondItem="vr6-IX-Yee" secondAttribute="centerY" id="iqe-Ov-fVD"/>
+                                    <constraint firstItem="vr6-IX-Yee" firstAttribute="top" secondItem="yIp-rq-klm" secondAttribute="bottom" constant="10" id="jQr-os-xLe"/>
                                     <constraint firstItem="Lnv-LR-qq5" firstAttribute="top" secondItem="Ztv-M0-yUI" secondAttribute="top" id="mrG-va-2Su"/>
+                                    <constraint firstItem="3Wm-qO-FzJ" firstAttribute="top" secondItem="vr6-IX-Yee" secondAttribute="bottom" constant="10" id="ySf-3z-9GB"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
