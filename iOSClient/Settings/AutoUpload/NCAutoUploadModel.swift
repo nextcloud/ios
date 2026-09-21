@@ -167,25 +167,16 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
 
             if newValue {
-                let previousAccounts = await database.getTableAccountsAsync(
-                    predicate: NSPredicate(
-                        format: "autoUploadStart == true AND account != %@",
-                        accountIdentifier
-                    )
-                )
-
-                for previousAccount in previousAccounts {
-                    await database.setAutoUploadStartAsync(
-                        false,
-                        account: previousAccount.account
-                    )
-
-                    await cancelAutoUploadTransfers(
-                        account: previousAccount.account
-                    )
-                }
-
                 await database.setAutoUploadStartAsync(true, account: accountIdentifier)
+
+                guard let updatedAccount = await database.getTableAccountAsync(
+                    predicate: NSPredicate(format: "account == %@", accountIdentifier)
+                ), updatedAccount.autoUploadStart else {
+                    await MainActor.run {
+                        self.autoUploadStart = false
+                    }
+                    return
+                }
 
                 _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(
                     controller: controller,

@@ -369,9 +369,16 @@ extension NCManageDatabase {
             let accounts = realm.objects(tableAccount.self)
 
             if enabled {
-                for result in accounts {
-                    result.autoUploadStart = result.account == account
+                guard accounts
+                    .filter("autoUploadStart == true AND account != %@", account)
+                    .isEmpty else {
+                    return
                 }
+
+                accounts
+                    .filter("account == %@", account)
+                    .first?
+                    .autoUploadStart = true
             } else {
                 accounts
                     .filter("account == %@", account)
