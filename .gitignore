@@ -37,6 +37,7 @@ DerivedData
 
 ### SwiftPackageManager ###
 .swiftpm
+Nextcloud.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 ## Claude Code
 .claude/
