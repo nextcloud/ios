@@ -1060,14 +1060,6 @@
 		F7F1FB9D2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9E2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F3E58E2D3BB65600A32B14 /* NCNetworking+Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */; };
-		F7F4F10527ECDBDB008676F9 /* Inconsolata-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */; };
-		F7F4F10627ECDBDB008676F9 /* Inconsolata-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */; };
-		F7F4F10727ECDBDB008676F9 /* Inconsolata-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F0FF27ECDBDB008676F9 /* Inconsolata-Black.ttf */; };
-		F7F4F10827ECDBDB008676F9 /* Inconsolata-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10027ECDBDB008676F9 /* Inconsolata-ExtraLight.ttf */; };
-		F7F4F10927ECDBDB008676F9 /* Inconsolata-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10127ECDBDB008676F9 /* Inconsolata-Bold.ttf */; };
-		F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10227ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf */; };
-		F7F4F10B27ECDBDB008676F9 /* Inconsolata-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10327ECDBDB008676F9 /* Inconsolata-Light.ttf */; };
-		F7F4F10C27ECDBDB008676F9 /* Inconsolata-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7F4F10427ECDBDB008676F9 /* Inconsolata-Regular.ttf */; };
 		F7F563042E15762B00631A11 /* MigrationMultiDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F562FF2E15761500631A11 /* MigrationMultiDomains.swift */; };
 		F7F623B52A5EF4D30022D3D4 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F7F623B42A5EF4D30022D3D4 /* Gzip */; };
 		F7F623B72A5EFA0C0022D3D4 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F7F623B62A5EFA0C0022D3D4 /* Gzip */; };
@@ -2095,14 +2087,6 @@
 		F7EF2AE92E43157B0081B2C9 /* NCNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNotification.swift; sourceTree = "<group>"; };
 		F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerProviderContextMenu.swift; sourceTree = "<group>"; };
 		F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Recommendations.swift"; sourceTree = "<group>"; };
-		F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-SemiBold.ttf"; sourceTree = "<group>"; };
-		F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Medium.ttf"; sourceTree = "<group>"; };
-		F7F4F0FF27ECDBDB008676F9 /* Inconsolata-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Black.ttf"; sourceTree = "<group>"; };
-		F7F4F10027ECDBDB008676F9 /* Inconsolata-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-ExtraLight.ttf"; sourceTree = "<group>"; };
-		F7F4F10127ECDBDB008676F9 /* Inconsolata-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Bold.ttf"; sourceTree = "<group>"; };
-		F7F4F10227ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-ExtraBold.ttf"; sourceTree = "<group>"; };
-		F7F4F10327ECDBDB008676F9 /* Inconsolata-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Light.ttf"; sourceTree = "<group>"; };
-		F7F4F10427ECDBDB008676F9 /* Inconsolata-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Regular.ttf"; sourceTree = "<group>"; };
 		F7F562FF2E15761500631A11 /* MigrationMultiDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationMultiDomains.swift; sourceTree = "<group>"; };
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
@@ -3819,29 +3803,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F7F4F0FB27ECDBDA008676F9 /* Font */ = {
-			isa = PBXGroup;
-			children = (
-				F7F4F0FC27ECDBDB008676F9 /* Inconsolata */,
-			);
-			path = Font;
-			sourceTree = "<group>";
-		};
-		F7F4F0FC27ECDBDB008676F9 /* Inconsolata */ = {
-			isa = PBXGroup;
-			children = (
-				F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */,
-				F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */,
-				F7F4F0FF27ECDBDB008676F9 /* Inconsolata-Black.ttf */,
-				F7F4F10027ECDBDB008676F9 /* Inconsolata-ExtraLight.ttf */,
-				F7F4F10127ECDBDB008676F9 /* Inconsolata-Bold.ttf */,
-				F7F4F10227ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf */,
-				F7F4F10327ECDBDB008676F9 /* Inconsolata-Light.ttf */,
-				F7F4F10427ECDBDB008676F9 /* Inconsolata-Regular.ttf */,
-			);
-			path = Inconsolata;
-			sourceTree = "<group>";
-		};
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
@@ -3938,7 +3899,6 @@
 			children = (
 				F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */,
 				F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */,
-				F7F4F0FB27ECDBDA008676F9 /* Font */,
 				F72B60941A24F04E004EF66F /* Localizations */,
 			);
 			name = "Supporting Files";
@@ -4593,13 +4553,10 @@
 				F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */,
 				F77444F622281649000D5EB0 /* NCMediaCell.xib in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
-				F7F4F10727ECDBDB008676F9 /* Inconsolata-Black.ttf in Resources */,
 				F761856D29E98543006EB3B0 /* NCIntroCollectionViewCell.xib in Resources */,
 				F78ACD4621903D010088454D /* NCGridCell.xib in Resources */,
-				F7F4F10827ECDBDB008676F9 /* Inconsolata-ExtraLight.ttf in Resources */,
 				F72685E727C78E490019EF5E /* InfoPlist.strings in Resources */,
 				F769453C22E9CFFF000A798A /* NCShareUserCell.xib in Resources */,
-				F7F4F10927ECDBDB008676F9 /* Inconsolata-Bold.ttf in Resources */,
 				F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F702F2F125EE5CDB008F8E80 /* NCLogin.storyboard in Resources */,
@@ -4613,15 +4570,12 @@
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
 				AF56C1DC2784856200D8BAE2 /* NCActivityCommentView.xib in Resources */,
-				F7F4F10B27ECDBDB008676F9 /* Inconsolata-Light.ttf in Resources */,
 				F7EF2AEC2E43157B0081B2C9 /* NCNotification.storyboard in Resources */,
 				F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */,
 				AF93471C27E2361E002537EE /* NCShareHeader.xib in Resources */,
 				F75D901F2D2BE12E003E740B /* NCRecommendationsCell.xib in Resources */,
-				F7F4F10527ECDBDB008676F9 /* Inconsolata-SemiBold.ttf in Resources */,
 				F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */,
 				F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */,
-				F7F4F10C27ECDBDB008676F9 /* Inconsolata-Regular.ttf in Resources */,
 				F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */,
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
 				F768822D2C0DD1E7001CF441 /* Acknowledgements.rtf in Resources */,
@@ -4635,12 +4589,10 @@
 				F7CBC1232BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */,
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */,
-				F7F4F10627ECDBDB008676F9 /* Inconsolata-Medium.ttf in Resources */,
 				F7AC934A296193050002BC0F /* Reasons to use Nextcloud.pdf in Resources */,
 				F761856A29E98543006EB3B0 /* NCIntro.storyboard in Resources */,
 				F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */,
 				AA517B802D660EFE00F8D37C /* Localizable.stringsdict in Resources */,
-				F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F7E402292BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,

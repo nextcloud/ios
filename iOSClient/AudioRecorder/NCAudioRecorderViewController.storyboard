@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="9IE-bj-VJb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="25098" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="9IE-bj-VJb">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="25073"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -28,12 +27,9 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ztv-M0-yUI" userLabel="contentContainerView">
                                 <rect key="frame" x="87.5" y="208.5" width="200" height="250"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vr6-IX-Yee" customClass="VoiceRecordHUD" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="2" y="27" width="196" height="196"/>
+                                    <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="vr6-IX-Yee" customClass="VoiceRecordHUD" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="46" y="35" width="108" height="180"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="vr6-IX-Yee" secondAttribute="height" id="c7R-AE-rou"/>
-                                        </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="rate">
                                                 <real key="value" value="0.5"/>
@@ -44,7 +40,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="120″" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yIp-rq-klm">
-                                        <rect key="frame" x="85" y="10" width="30" height="17"/>
+                                        <rect key="frame" x="85" y="10" width="30" height="15"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
@@ -68,21 +64,26 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="vr6-IX-Yee" secondAttribute="trailing" constant="46" id="0uw-zd-fmR"/>
                                     <constraint firstItem="yIp-rq-klm" firstAttribute="top" secondItem="Ztv-M0-yUI" secondAttribute="top" constant="10" id="1S8-2v-d7k"/>
                                     <constraint firstItem="3Wm-qO-FzJ" firstAttribute="centerX" secondItem="Lnv-LR-qq5" secondAttribute="centerX" id="2UV-Gt-2oO"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="vr6-IX-Yee" secondAttribute="trailing" id="6e6-C9-ZWQ"/>
-                                    <constraint firstItem="yIp-rq-klm" firstAttribute="bottom" secondItem="vr6-IX-Yee" secondAttribute="top" id="E3m-Yu-zdJ"/>
+                                    <constraint firstItem="3Wm-qO-FzJ" firstAttribute="top" secondItem="vr6-IX-Yee" secondAttribute="bottom" constant="10" id="9BH-EE-wqj"/>
+                                    <constraint firstItem="vr6-IX-Yee" firstAttribute="leading" secondItem="Ztv-M0-yUI" secondAttribute="leading" constant="46" id="E9J-Wp-TFI"/>
                                     <constraint firstAttribute="height" constant="250" id="G5W-ie-MCH"/>
                                     <constraint firstItem="Lnv-LR-qq5" firstAttribute="leading" secondItem="Ztv-M0-yUI" secondAttribute="leading" id="JlM-Ww-iut"/>
                                     <constraint firstAttribute="bottom" secondItem="Lnv-LR-qq5" secondAttribute="bottom" id="Kzr-BQ-zK4"/>
                                     <constraint firstAttribute="trailing" secondItem="Lnv-LR-qq5" secondAttribute="trailing" id="NNn-Ce-Y8V"/>
                                     <constraint firstAttribute="width" constant="200" id="Qu2-eD-5VF"/>
+                                    <constraint firstItem="vr6-IX-Yee" firstAttribute="top" secondItem="yIp-rq-klm" secondAttribute="bottom" constant="10" id="VLG-W8-VdD"/>
                                     <constraint firstItem="vr6-IX-Yee" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ztv-M0-yUI" secondAttribute="leading" id="Wmx-H6-3OK"/>
                                     <constraint firstAttribute="centerX" secondItem="vr6-IX-Yee" secondAttribute="centerX" id="Zvz-EB-nL6"/>
                                     <constraint firstItem="3Wm-qO-FzJ" firstAttribute="top" secondItem="Lnv-LR-qq5" secondAttribute="bottom" constant="-25" id="a8Q-Z1-NFp"/>
                                     <constraint firstAttribute="centerX" secondItem="yIp-rq-klm" secondAttribute="centerX" id="hwa-S6-oPz"/>
                                     <constraint firstAttribute="centerY" secondItem="vr6-IX-Yee" secondAttribute="centerY" id="iqe-Ov-fVD"/>
+                                    <constraint firstItem="vr6-IX-Yee" firstAttribute="top" secondItem="yIp-rq-klm" secondAttribute="bottom" constant="10" id="jQr-os-xLe"/>
                                     <constraint firstItem="Lnv-LR-qq5" firstAttribute="top" secondItem="Ztv-M0-yUI" secondAttribute="top" id="mrG-va-2Su"/>
+                                    <constraint firstItem="3Wm-qO-FzJ" firstAttribute="top" secondItem="vr6-IX-Yee" secondAttribute="bottom" constant="10" id="ySf-3z-9GB"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">

@@ -1,10 +1,6 @@
-//
-//  ActionViewController.swift
-//  Action Assistant
-//
-//  Created by Marino Faggiana on 14/05/2026.
-//  Copyright © 2026 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2026 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit

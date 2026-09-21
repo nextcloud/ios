@@ -85,16 +85,6 @@
 	</array>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Inconsolata-Light.ttf</string>
-		<string>Inconsolata-Regular.ttf</string>
-		<string>Inconsolata-ExtraLight.ttf</string>
-		<string>Inconsolata-Medium.ttf</string>
-		<string>Inconsolata-Bold.ttf</string>
-		<string>Inconsolata-ExtraBold.ttf</string>
-		<string>Inconsolata-Black.ttf</string>
-	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

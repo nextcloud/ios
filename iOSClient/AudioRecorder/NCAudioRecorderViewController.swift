@@ -266,16 +266,19 @@ class VoiceRecordHUD: UIView {
         }
     }
 
+    private static let microphoneImage = UIImage(systemName: "mic.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 400))?
+        .withTintColor(.white, renderingMode: .alwaysOriginal)
+
     // MARK: - View Life Cycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        image = UIImage(named: "microphone")
+        image = Self.microphoneImage
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        image = UIImage(named: "microphone")
+        image = Self.microphoneImage
     }
 
     func update(_ rate: CGFloat) {
@@ -296,7 +299,6 @@ class VoiceRecordHUD: UIView {
     }
 
     override func prepareForInterfaceBuilder() {
-        let bundle = Bundle(for: type(of: self))
-        image = UIImage(named: "microphone", in: bundle, compatibleWith: self.traitCollection)
+        image = Self.microphoneImage
     }
 }
