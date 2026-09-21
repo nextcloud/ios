@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Based on EzPopup by Huy Nguyen
-// Modified by Marino Faggiana for Nextcloud progect.
+// Modified by Marino Faggiana for Nextcloud project.
 
 import UIKit
 
