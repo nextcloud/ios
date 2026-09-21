@@ -82,6 +82,8 @@ The following details are important when working on the iOS client.
 
 ### Tests
 
+- Do not run builds or tests locally. The user performs all Xcode build and test verification manually.
+
 - When implementing new test suites, prefer Swift Testing over XCTest for implementation. UI tests are the exception — XCUITest requires XCTest, so new UI tests are XCTest classes subclassing `BaseUIXCTestCase` in `Tests/NextcloudUITests`.
 - New unit tests go in `Tests/NextcloudUnitTests` as Swift Testing `@Suite` structs with `@testable import Nextcloud`; they need no server.
 - When implementing test cases using Swift Testing, do not prefix test method names with "test".

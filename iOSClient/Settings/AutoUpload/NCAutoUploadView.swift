@@ -19,10 +19,13 @@ struct NCAutoUploadView: View {
     @State private var showFocusedAutoUploadProgress = false
     @State private var openFocusedAutoUploadFinish = false
     @State private var startAutoUpload = false
-    @State private var showReplaceAutoUploadAccount = false
-    @State private var replaceAutoUploadAccountName = ""
-    @State private var autoUploadAccountReplacementConfirmed = false
+    @State private var isCheckingOtherAutoUploadAccount = true
+    @State private var otherAutoUploadAccountName: String?
     @Environment(NCAutoUploadCounter.self) private var autoUploadCounter
+
+    private var isAutoUploadUnavailable: Bool {
+        isCheckingOtherAutoUploadAccount || otherAutoUploadAccountName != nil
+    }
 
     var body: some View {
         ZStack {
@@ -50,6 +53,7 @@ struct NCAutoUploadView: View {
         }
         .onAppear {
             model.onViewAppear()
+            refreshOtherAutoUploadAccount()
             updateAutoUploadCounterSubscription()
         }
         .onDisappear {
@@ -57,28 +61,10 @@ struct NCAutoUploadView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             model.checkPermission()
+            refreshOtherAutoUploadAccount()
         }
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) {}
-        }
-        .confirmationDialog(
-            NSLocalizedString("_change_autoupload_account_title_", comment: ""),
-            isPresented: $showReplaceAutoUploadAccount,
-            titleVisibility: .visible
-        ) {
-            Button(NSLocalizedString("_continue_", comment: ""), role: .destructive) {
-                autoUploadAccountReplacementConfirmed = true
-                model.autoUploadStart = true
-            }
-
-            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {}
-        } message: {
-            Text(
-                String(
-                    format: NSLocalizedString("_change_autoupload_account_message_", comment: ""),
-                    replaceAutoUploadAccountName
-                )
-            )
         }
         .sheet(isPresented: $showUploadFolder) {
             SelectView(
@@ -143,6 +129,22 @@ struct NCAutoUploadView: View {
     @ViewBuilder
     var autoUploadOnView: some View {
         Form {
+            if let otherAutoUploadAccountName {
+                Section {
+                    Label(
+                        NSLocalizedString("_autoupload_active_other_account_title_", comment: ""),
+                        systemImage: "lock.fill"
+                    )
+                } footer: {
+                    Text(
+                        String(
+                            format: NSLocalizedString("_autoupload_active_other_account_message_", comment: ""),
+                            otherAutoUploadAccountName
+                        )
+                    )
+                }
+            }
+
             if model.autoUploadStart && autoUploadCounter.hasItemsToUpload {
                 Section(content: {
                     Button {
@@ -450,12 +452,17 @@ struct NCAutoUploadView: View {
                     .font(.footnote)
                 })
             }
-            .disabled(model.autoUploadStart)
+            .disabled(
+                model.autoUploadStart || isAutoUploadUnavailable
+            )
+            .opacity(isAutoUploadUnavailable ? 0.5 : 1)
         }
         .safeAreaInset(edge: .bottom) {
             autoUploadStartButton
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 10)
+                .disabled(isAutoUploadUnavailable)
+                .opacity(isAutoUploadUnavailable ? 0.5 : 1)
         }
     }
 
@@ -508,17 +515,16 @@ struct NCAutoUploadView: View {
     private func handleAutoUploadStartChange(_ newValue: Bool) {
         albumModel.populateSelectedAlbums()
 
-        if newValue && !autoUploadAccountReplacementConfirmed {
+        if newValue {
             let assetCollections = albumModel.selectedAlbums
 
             Task {
                 if let account = await model.getOtherAutoUploadAccount() {
-                    replaceAutoUploadAccountName = account.alias.isEmpty
+                    otherAutoUploadAccountName = account.alias.isEmpty
                         ? account.account
                         : account.alias
 
                     model.autoUploadStart = false
-                    showReplaceAutoUploadAccount = true
                 } else {
                     model.handleAutoUploadChange(
                         newValue: true,
@@ -529,8 +535,6 @@ struct NCAutoUploadView: View {
 
             return
         }
-
-        autoUploadAccountReplacementConfirmed = false
 
         model.handleAutoUploadChange(
             newValue: newValue,
@@ -545,6 +549,19 @@ struct NCAutoUploadView: View {
             userId: model.session.userId,
             autoUploadStart: model.autoUploadStart
         )
+    }
+
+    private func refreshOtherAutoUploadAccount() {
+        isCheckingOtherAutoUploadAccount = true
+
+        Task {
+            let account = await model.getOtherAutoUploadAccount()
+
+            otherAutoUploadAccountName = account.map {
+                $0.alias.isEmpty ? $0.account : $0.alias
+            }
+            isCheckingOtherAutoUploadAccount = false
+        }
     }
 
     private func stopAutoUploadCounterSubscription() {
