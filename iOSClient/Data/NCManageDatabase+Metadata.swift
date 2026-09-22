@@ -1363,7 +1363,7 @@ extension NCManageDatabase {
         }.sorted()
     }
 
-    func getMetadataFromFileId(_ fileId: String?, account: String? = nil) -> tableMetadata? {
+    func getMetadataFromFileId(_ fileId: String?, account: String?) -> tableMetadata? {
         guard let fileId else {
             return nil
         }
@@ -1380,7 +1380,7 @@ extension NCManageDatabase {
     /// Asynchronously retrieves a `tableMetadata` object matching the given `fileId`, if available.
     /// - Parameter fileId: The file identifier used to query the Realm database.
     /// - Returns: A detached copy of the `tableMetadata` object, or `nil` if not found.
-    func getMetadataFromFileIdAsync(_ fileId: String?, account: String? = nil) async -> tableMetadata? {
+    func getMetadataFromFileIdAsync(_ fileId: String?, account: String?) async -> tableMetadata? {
         guard let fileId else {
             return nil
         }
