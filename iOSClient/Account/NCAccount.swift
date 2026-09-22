@@ -8,6 +8,7 @@ import NextcloudKit
 
 @MainActor
 class NCAccount: NSObject {
+    private static var accountsCheckingRemoteUser: Set<String> = []
     let database = NCManageDatabase.shared
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let global = NCGlobal.shared
@@ -89,19 +90,9 @@ class NCAccount: NSObject {
 
     func changeAccount(_ account: String, userProfile: NKUserProfile?, controller: NCMainTabBarController?) async {
         if let tblAccount = await database.setAccountActiveAsync(account) {
-            // Set account
-            controller?.account = account
             // Set User Profile
             if let userProfile {
                 await database.setAccountUserProfileAsync(account: account, userProfile: userProfile)
-            }
-            // Networking Certificate
-            NCNetworking.shared.activeAccountCertificate(account: account)
-            // Subscribing Push Notification
-            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
-            // Start the service
-            Task(priority: .utility) {
-                await NCService().startRequestServicesServer(account: account, controller: controller)
             }
             // Capabilities
             if let capabilities = await self.database.getCapabilities(account: account) {
@@ -111,13 +102,24 @@ class NCAccount: NSObject {
             // Networking Process
             await NCNetworkingProcess.shared.setCurrentAccount(account)
 
+            // Update the account and the file context together, before starting network requests.
+            controller?.account = account
+            NCNetworking.shared.activeAccountCertificate(account: account)
+
             // Color
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
             // Notification
             if let controller {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
+                NotificationCenter.default.post(name: Notification.Name(self.global.notificationCenterChangeUser), object: nil, userInfo: ["account": account, "controller": controller])
             } else {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account])
+                NotificationCenter.default.post(name: Notification.Name(self.global.notificationCenterChangeUser), object: nil, userInfo: ["account": account])
+            }
+
+            // Subscribing Push Notification
+            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
+            // Start the service
+            Task(priority: .utility) {
+                await NCService().startRequestServicesServer(account: account, controller: controller)
             }
         }
     }
@@ -189,10 +191,35 @@ class NCAccount: NSObject {
     }
 
     func checkRemoteUser(account: String, controller: NCMainTabBarController?) async {
+        guard Self.accountsCheckingRemoteUser.insert(account).inserted else {
+            return
+        }
+        defer { Self.accountsCheckingRemoteUser.remove(account) }
+
         let token = NCPreferences().getPassword(account: account)
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
+        guard let session = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: account),
+              session.password == token else {
+            return
+        }
+
+        // A stored 401 may belong to an inconsistent or outdated request. Verify with the server.
+        let result = await NextcloudKit.shared.getUserProfileAsync(account: account, options: NKRequestOptions(checkInterceptor: false))
+        guard !Task.isCancelled,
+              remoteUserCredentialsMatch(session, token: token) else {
+            return
+        }
+        if result.error == .success, result.userProfile?.userId == session.userId {
+            NCNetworking.shared.removeUnauthorizedAccount(account)
+            return
+        }
+        guard result.responseData?.response?.statusCode == NCGlobal.shared.errorUnauthorized else {
+            // Network failures and other responses do not confirm invalid credentials.
+            return
+        }
+
         let windowScene = SceneManager.shared.getWindowScene(controller: controller)
         await showErrorBanner(windowScene: windowScene, text: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), errorCode: NCGlobal.shared.errorUnauthorized)
 
@@ -206,6 +233,10 @@ class NCAccount: NSObject {
         }
 
         // REMOVE ACCOUNT
+        guard !Task.isCancelled,
+              remoteUserCredentialsMatch(session, token: token) else {
+            return
+        }
         await NCAccount().deleteAccount(account, wipe: resultsWipe.wipe)
         if resultsWipe.wipe {
             let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tblAccount.urlBase, token: token, account: tblAccount.account) { task in
@@ -219,9 +250,20 @@ class NCAccount: NSObject {
             nkLog(debug: "Set Remote Wipe Completition error code: \(resultsSetWipe.error.errorCode)")
         }
 
-        if account.count > 0 {
+        if !account.isEmpty, controller == nil || controller?.account == account {
             await switchToFirstAvailableAccount(controller: controller)
         }
+    }
+
+    private func remoteUserCredentialsMatch(_ session: NKSession, token: String) -> Bool {
+        guard let currentSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: session.account) else {
+            return false
+        }
+        return currentSession.urlBase == session.urlBase
+            && currentSession.user == session.user
+            && currentSession.userId == session.userId
+            && currentSession.password == session.password
+            && NCPreferences().getPassword(account: session.account) == token
     }
 
     /// Presents the login (or intro) screen if no account remains.
