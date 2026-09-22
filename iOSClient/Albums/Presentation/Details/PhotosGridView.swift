@@ -7,7 +7,8 @@ import SwiftUI
 import NextcloudKit
 
 struct PhotosGridView: View {
-    let localAccount: String
+    private unowned let controller: NCMainTabBarController
+
     let photos: [AlbumPhoto]
     let onAddPhotosIntent: () -> Void
     let album: Album
@@ -15,6 +16,14 @@ struct PhotosGridView: View {
 
     @State private var photoToRemove: AlbumPhoto?
     @State private var openingPhoto: AlbumPhoto?
+
+    init(controller: NCMainTabBarController, photos: [AlbumPhoto], onAddPhotosIntent: @escaping () -> Void, album: Album, onRemovePhoto: @escaping (AlbumPhoto) -> Void) {
+        self.controller = controller
+        self.photos = photos
+        self.onAddPhotosIntent = onAddPhotosIntent
+        self.album = album
+        self.onRemovePhoto = onRemovePhoto
+    }
 
     private var columns: [GridItem] {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -38,11 +47,7 @@ struct PhotosGridView: View {
                     Button {
                         openingPhoto = photo
                     } label: {
-                        PhotoGridItemView(
-                            album: album,
-                            photo: photo,
-                            iconSize: calculatedIconSize
-                        )
+                        PhotoGridItemView(album: album, photo: photo, iconSize: calculatedIconSize)
                     }
                     .disabled(openingPhoto != nil)
                     .contextMenu {
@@ -86,19 +91,19 @@ struct PhotosGridView: View {
     @MainActor
     private func openPhotoViewer(photo: AlbumPhoto) async {
         defer { openingPhoto = nil }
-        let controller = SceneManager.shared.getController(account: localAccount)
+        let account = controller.account
         let database = NCManageDatabase.shared
         var selected = await database.getMetadataAsync(
-            predicate: NSPredicate(format: "account == %@ AND fileId == %@", localAccount, photo.id)
+            predicate: NSPredicate(format: "account == %@ AND fileId == %@", account, photo.id)
         )
         guard !Task.isCancelled else { return }
 
         if selected == nil {
-            let result = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: photo.id, account: localAccount)
+            let result = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: photo.id, account: account)
             guard !Task.isCancelled else { return }
             if result.error == .success, let file = result.file {
                 let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)
-                if metadata.account == localAccount {
+                if metadata.account == account {
                     await database.addMetadataAsync(metadata)
                     selected = metadata
                 }
@@ -128,13 +133,13 @@ struct PhotosGridView: View {
         let model = NCMediaViewerModel(
             currentMetadata: selected,
             ocIds: ocIds,
-            session: NCSession.shared.getSession(account: localAccount),
+            session: NCSession.shared.getSession(account: account),
             loader: NCMediaViewerLoader()
         )
         NCMediaViewerPresenter.shared.show(
             model: model,
             viewerTransitionSource: nil,
-            from: controller?.view,
+            from: controller.view,
             contextMenuController: nil
         )
     }

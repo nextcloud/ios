@@ -8,7 +8,7 @@ import SwiftUI
 /// A reusable SwiftUI sheet that presents the NCMedia selection UI
 /// and returns the selected file identifiers.
 struct MediaSelectionSheet: View {
-    @Environment(\.localAccount) var localAccount: String
+    private unowned let controller: NCMainTabBarController
 
     // MARK: - Callbacks
     let onCancel: () -> Void
@@ -17,9 +17,15 @@ struct MediaSelectionSheet: View {
     // MARK: - State
     @State private var mediaVC: NCMedia?
 
+    init(controller: NCMainTabBarController, onCancel: @escaping () -> Void, onDone: @escaping (_ selectedFiles: [String]) -> Void) {
+        self.controller = controller
+        self.onCancel = onCancel
+        self.onDone = onDone
+    }
+
     var body: some View {
         NavigationView {
-            NCMediaViewRepresentable(ncMedia: $mediaVC)
+            NCMediaViewRepresentable(controller: controller, ncMedia: $mediaVC)
             .navigationTitle(NSLocalizedString("_albums_photo_selection_sheet_title_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -27,13 +33,13 @@ struct MediaSelectionSheet: View {
                     Button(NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: "")) {
                         onCancel()
                     }
-                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
+                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: controller.account)))
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")) {
                         onDone(mediaVC?.fileSelect ?? [])
                     }
-                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
+                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: controller.account)))
                     .disabled(mediaVC == nil)
                     .opacity(mediaVC == nil ? 0.5 : 1.0)
                 }
@@ -41,12 +47,3 @@ struct MediaSelectionSheet: View {
         }
     }
 }
-
-#if DEBUG
-#Preview {
-    MediaSelectionSheet(
-        onCancel: {},
-        onDone: { _ in }
-    )
-}
-#endif

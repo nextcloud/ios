@@ -10,27 +10,33 @@ class AlbumsViewController: UIViewController {
     var initialAlbum: Album?
     private var displayedAccount: String?
     private var hostingController: UIHostingController<AnyView>?
-    @MainActor
-    var session: NCSession.Session {
-        NCSession.shared.getSession(controller: tabBarController)
+    private var controller: NCMainTabBarController? {
+        tabBarController as? NCMainTabBarController
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        showAlbums(for: session.account)
+        if let controller, !controller.account.isEmpty {
+            showAlbums(for: controller)
+        }
 
         // Needed, since we use NCViewerMediaPage to show the media, which expects this!
         navigationController?.navigationBar.prefersLargeTitles = false
 
-        // UI changes
-        UIView.appearance(
-            whenContainedInInstancesOf: [UIAlertController.self]
-        ).tintColor = NCBrandColor.shared.getElement(account: session.account)
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser),
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self,
+                  let sourceController = notification.userInfo?["controller"] as? NCMainTabBarController,
+                  sourceController === self.controller,
+                  let account = notification.userInfo?["account"] as? String,
+                  account == sourceController.account else { return }
 
-        UIBarButtonItem.appearance(
-            whenContainedInInstancesOf: [UINavigationBar.self]
-        ).tintColor = NCBrandColor.shared.getElement(account: session.account)
+            self.updateAlbumsIfNeeded(for: sourceController)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -38,33 +44,39 @@ class AlbumsViewController: UIViewController {
 
         navigationController?.setNavigationBarHidden(true, animated: false)
 
-        let currentAccount = session.account
-
-        guard currentAccount != displayedAccount else {
-            return
-        }
-
-        AlbumsNavigator.shared.pop()
-        initialAlbum = nil
-        showAlbums(for: currentAccount)
+        guard let controller, !controller.account.isEmpty else { return }
+        updateAlbumsIfNeeded(for: controller)
     }
 
-    private func showAlbums(for account: String) {
+    private func updateAlbumsIfNeeded(for controller: NCMainTabBarController) {
+        guard controller.account != displayedAccount else { return }
+
+        initialAlbum = nil
+        showAlbums(for: controller)
+    }
+
+    private func showAlbums(for controller: NCMainTabBarController) {
+        let account = controller.account
         displayedAccount = account
+        let tintColor = NCBrandColor.shared.getElement(account: account)
+        view.tintColor = tintColor
+        navigationController?.navigationBar.tintColor = tintColor
 
         let rootView = AnyView(
-            AlbumsRootView(initialAlbum: initialAlbum)
-                .environment(\.localAccount, account)
+            AlbumsRootView(controller: controller, initialAlbum: initialAlbum)
+                .id(controller.account)
         )
 
         if let hostingController {
             hostingController.rootView = rootView
+            hostingController.view.tintColor = tintColor
         } else {
             let hostingController = UIHostingController(rootView: rootView)
             self.hostingController = hostingController
 
             addChild(hostingController)
             hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+            hostingController.view.tintColor = tintColor
             view.addSubview(hostingController.view)
 
             NSLayoutConstraint.activate([

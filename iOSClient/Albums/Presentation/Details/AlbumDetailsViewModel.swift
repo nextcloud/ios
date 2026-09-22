@@ -14,35 +14,34 @@ protocol AlbumActionHandler: AnyObject {
 }
 
 class AlbumDetailsViewModel: ObservableObject {
-    @Published var account: String
+    private weak var controller: NCMainTabBarController?
     private var album: Album
+    private let navigator: AlbumsNavigator
 
+    @Published var account: String
     @Published private(set) var screenTitle: String
-
     @Published private(set) var photos: [AlbumPhoto] = []
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var errorMessage: String?
-
     @Published var isLoadingPopupVisible: Bool = false
-
     @Published var isDeleteAlbumPopupVisible: Bool = false
-
     @Published var isRenameAlbumPopupVisible: Bool = false
     @Published var newAlbumName: String = ""
     @Published private(set) var newAlbumNameError: String?
-
     @Published var isPhotoSelectionSheetVisible: Bool = false
 
     @MainActor
     private var windowScene: UIWindowScene? {
-        SceneManager.shared.getWindowScene(controller: SceneManager.shared.getController(account: account))
+        SceneManager.shared.getWindowScene(controller: controller)
     }
 
     private var cancellables: Set<AnyCancellable> = []
 
-    init(account: String, album: Album) {
-        self.account = account
+    init(controller: NCMainTabBarController, album: Album, navigator: AlbumsNavigator) {
+        self.account = controller.account
+        self.controller = controller
         self.album = album
+        self.navigator = navigator
         self.screenTitle = album.name
         registerPublishers()
         loadAlbumPhotos()
@@ -164,7 +163,7 @@ class AlbumDetailsViewModel: ObservableObject {
             switch result {
             case .success(let account):
                 AlbumsManager.shared.syncAlbums(for: account)
-                AlbumsNavigator.shared.pop()
+                self?.navigator.pop()
 
             case .failure(let error):
                 Task {

@@ -7,16 +7,22 @@ import SwiftUI
 import NextcloudKit
 
 struct AddToAlbumsListView: View {
+    private unowned let controller: NCMainTabBarController
+
     @StateObject private var viewModel: AlbumsListViewModel
     @State private var selectedAlbum: Album?
-    var localAccount: String
+
     var onFinish: (Album) -> Void
     var onDismiss: () -> Void
     var onCreateAlbum: () -> Void
 
-    init(viewModel: AlbumsListViewModel, localAccount: String, onFinish: @escaping (Album) -> Void, onDismiss: @escaping () -> Void, onCreateAlbum: @escaping () -> Void) {
+    private var localAccount: String {
+        controller.account
+    }
+
+    init(viewModel: AlbumsListViewModel, controller: NCMainTabBarController, onFinish: @escaping (Album) -> Void, onDismiss: @escaping () -> Void, onCreateAlbum: @escaping () -> Void) {
+        self.controller = controller
         self._viewModel = StateObject(wrappedValue: viewModel)
-        self.localAccount = localAccount
         self.onFinish = onFinish
         self.onDismiss = onDismiss
         self.onCreateAlbum = onCreateAlbum

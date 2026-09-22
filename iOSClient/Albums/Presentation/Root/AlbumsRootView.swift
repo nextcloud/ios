@@ -6,10 +6,16 @@
 import SwiftUI
 
 struct AlbumsRootView: View {
+    private unowned let controller: NCMainTabBarController
     var initialAlbum: Album?
     @State private var didApplyInitialRoute = false
-    @Environment(\.localAccount) var localAccount: String
-    @StateObject private var navigator = AlbumsNavigator.shared
+    @StateObject private var navigator: AlbumsNavigator
+
+    init(controller: NCMainTabBarController, initialAlbum: Album? = nil) {
+        self.controller = controller
+        self.initialAlbum = initialAlbum
+        _navigator = StateObject(wrappedValue: AlbumsNavigator())
+    }
 
     var body: some View {
         NavigationStack(path: Binding(
@@ -22,15 +28,19 @@ struct AlbumsRootView: View {
                 if path.isEmpty { navigator.pop() }
             }
         )) {
-            AlbumsListScreen(viewModel: .init(account: localAccount))
+            AlbumsListScreen(
+                controller: controller,
+                viewModel: .init(controller: controller, navigator: navigator)
+            )
                 // Explicitly use 'AlbumsRoutes.self' here to solve the inference error
                 .navigationDestination(for: AlbumsRoutes.self) { route in
                     switch route {
                     case .albumDetails(let album):
-                        AlbumDetailsScreen(account: localAccount, album: album)
+                        AlbumDetailsScreen(controller: controller, album: album, navigator: navigator)
                     }
                 }
         }
+        .environment(\.localAccount, controller.account)
         .onAppear {
             guard !didApplyInitialRoute else { return }
             didApplyInitialRoute = true

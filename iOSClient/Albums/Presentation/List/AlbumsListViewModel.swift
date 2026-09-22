@@ -8,43 +8,41 @@ import Combine
 import NextcloudKit
 
 class AlbumsListViewModel: ObservableObject {
-    private var account: String
+    private let account: String
+    private(set) weak var controller: NCMainTabBarController?
+    let navigator: AlbumsNavigator
+    private var thumbnailsTask: Task<Void, Never>?
 
     @Published private(set) var albums: [Album] = []
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var errorMessage: String?
-
-    private var thumbnailsTask: Task<Void, Never>?
     @Published private(set) var albumThumbnails: [String: UIImage] = [:]
-
     @Published var isLoadingPopupVisible: Bool = false
-
     @Published var isNewAlbumCreationPopupVisible: Bool = false
     @Published var newAlbumName: String = ""
     @Published private(set) var newAlbumNameError: String?
-
     @Published var isPhotoSelectionSheetVisible: Bool = false
     @Published var newlyCreatedAlbum: Album?
 
-    @Published var navigationDestination: AlbumsListScreen.NavigationDestination?
-
     @MainActor
     private var windowScene: UIWindowScene? {
-        SceneManager.shared.getWindowScene(controller: SceneManager.shared.getController(account: account))
+        SceneManager.shared.getWindowScene(controller: controller)
     }
 
     private var cancellables: Set<AnyCancellable> = []
     private var isNavigatingToDetails: Bool = false
 
-    init(account: String) {
-        self.account = account
+    init(controller: NCMainTabBarController, navigator: AlbumsNavigator = AlbumsNavigator()) {
+        self.account = controller.account
+        self.controller = controller
+        self.navigator = navigator
         observeAlbums()
         registerPublishers()
     }
 
     // MARK: - Subscriptions
     private func observeAlbums() {
-        AlbumsManager.shared.albumsPublisher
+        AlbumsManager.shared.albumsPublisher(for: account)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 switch state {
@@ -97,7 +95,7 @@ class AlbumsListViewModel: ObservableObject {
         guard !isNavigatingToDetails else { return }
         isNavigatingToDetails = true
         DispatchQueue.main.async { [weak self] in
-            AlbumsNavigator.shared.push(.albumDetails(album: album))
+            self?.navigator.push(.albumDetails(album: album))
             self?.isNavigatingToDetails = false
         }
     }
@@ -176,7 +174,7 @@ class AlbumsListViewModel: ObservableObject {
             guard !isNavigatingToDetails else { return }
             isNavigatingToDetails = true
             DispatchQueue.main.async { [weak self] in
-                AlbumsNavigator.shared.push(.albumDetails(album: album))
+                self?.navigator.push(.albumDetails(album: album))
                 self?.isNavigatingToDetails = false
             }
             return
@@ -215,7 +213,7 @@ class AlbumsListViewModel: ObservableObject {
                     guard !self.isNavigatingToDetails else { return }
                     self.isNavigatingToDetails = true
                     DispatchQueue.main.async {
-                        AlbumsNavigator.shared.push(.albumDetails(album: album))
+                        self.navigator.push(.albumDetails(album: album))
                         self.isNavigatingToDetails = false
                     }
                 }
@@ -223,7 +221,7 @@ class AlbumsListViewModel: ObservableObject {
                 guard !self.isNavigatingToDetails else { return }
                 self.isNavigatingToDetails = true
                 DispatchQueue.main.async {
-                    AlbumsNavigator.shared.push(.albumDetails(album: album))
+                    self.navigator.push(.albumDetails(album: album))
                     self.isNavigatingToDetails = false
                 }
             }
