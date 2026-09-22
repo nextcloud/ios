@@ -91,12 +91,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         // QR code button
         qrCode.tintColor = NCBrandColor.shared.customer.isTooLight() ? .black : .white
 
+        urlBase = NCBrandOptions.shared.loginBaseUrl
+
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
             baseUrlTextField.isEnabled = false
             baseUrlTextField.isUserInteractionEnabled = false
             baseUrlTextField.alpha = 0.5
-            urlBase = NCBrandOptions.shared.loginBaseUrl
         }
 
         // certificate

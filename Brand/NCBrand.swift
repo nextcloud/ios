@@ -64,7 +64,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var brandUserAgent: String = ""
     var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2026"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
-    var loginBaseUrl: String = "https://cloud.nextcloud.com"
+    var loginBaseUrl: String = ""
     var pushNotificationServerProxy: String = ""
     var linkLoginHost: String = "https://nextcloud.com/install"
     var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
@@ -82,16 +82,17 @@ final class NCBrandOptions: @unchecked Sendable {
     var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // BRAND ONLY
-    var use_AppConfig: Bool = false                                                         // Don't touch me !!
+    var use_AppConfig: Bool = false
 
     // Use server theming color
     var use_themingColor: Bool = true
 
+    // MDM settings
     var disable_intro: Bool = false
     var disable_request_login_url: Bool = false
     var disable_multiaccount: Bool = false
     var disable_more_external_site: Bool = false
-    var disable_openin_file: Bool = false                                                       // Don't touch me !!
+    var disable_openin_file: Bool = false
     var disable_crash_service: Bool = false
     var disable_log: Bool = false
     var disable_mobileconfig: Bool = false  
