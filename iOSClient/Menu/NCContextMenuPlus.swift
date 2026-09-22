@@ -42,7 +42,9 @@ class NCContextMenuPlus: NSObject {
     }
 
     func create(session: NCSession.Session) async {
-        guard let controller, let menuPlusButton else {
+        guard let controller,
+              let menuPlusButton,
+              controller.account == session.account else {
             return
         }
         let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
@@ -53,6 +55,7 @@ class NCContextMenuPlus: NSObject {
 
         let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+        guard controller.account == session.account else { return }
         let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
