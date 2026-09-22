@@ -22,6 +22,15 @@ extension NCNetworking {
         return true
     }
 
+    func removeUnauthorizedAccount(_ account: String) {
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) else {
+            return
+        }
+        var accounts = groupDefaults.array(forKey: nkComm.groupDefaultsUnauthorized) as? [String] ?? []
+        accounts.removeAll { $0 == account }
+        groupDefaults.set(accounts, forKey: nkComm.groupDefaultsUnauthorized)
+    }
+
     func removeServerErrorAccount(_ account: String) {
         guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) else {
             return
