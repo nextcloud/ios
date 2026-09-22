@@ -6,10 +6,7 @@
 import SwiftUI
 
 final class AlbumsNavigator: ObservableObject {
-    static let shared = AlbumsNavigator()
     @Published var current: AlbumsRoutes?
-
-    private init() {}
 
     func push(_ route: AlbumsRoutes) {
         current = route

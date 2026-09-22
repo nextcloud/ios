@@ -347,8 +347,8 @@ class NCMediaNavigationController: NCMainNavigationController {
      }
 
     static func presentExistingAlbums(controller: NCMainTabBarController, selectedPhotos: [String]) {
-        let viewModel = AlbumsListViewModel(account: controller.account)
-        let albumListView = AddToAlbumsListView(viewModel: viewModel, localAccount: controller.account, onFinish: { selectedAlbum in
+        let viewModel = AlbumsListViewModel(controller: controller)
+        let albumListView = AddToAlbumsListView(viewModel: viewModel, controller: controller, onFinish: { selectedAlbum in
             controller.dismiss(animated: true) {
                 addPhotosToAlbum(album: selectedAlbum, selectedPhotos: selectedPhotos, controller: controller)
             }

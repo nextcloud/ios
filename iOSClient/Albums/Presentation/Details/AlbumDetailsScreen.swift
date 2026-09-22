@@ -6,14 +6,16 @@
 import SwiftUI
 
 struct AlbumDetailsScreen: View {
+    private unowned let controller: NCMainTabBarController
     private let album: Album
     @StateObject private var viewModel: AlbumDetailsViewModel
     @State private var showMedia = false
 
-    init(account: String, album: Album) {
+    init(controller: NCMainTabBarController, album: Album, navigator: AlbumsNavigator = AlbumsNavigator()) {
+        self.controller = controller
         self.album = album
         _viewModel = StateObject(
-            wrappedValue: AlbumDetailsViewModel(account: account, album: album)
+            wrappedValue: AlbumDetailsViewModel(controller: controller, album: album, navigator: navigator)
         )
     }
 
@@ -68,9 +70,7 @@ struct AlbumDetailsScreen: View {
         .sheet(
             isPresented: $viewModel.isPhotoSelectionSheetVisible
         ) {
-            PhotoSelectionSheet(
-                onPhotosSelected: viewModel.onPhotosSelected
-            )
+            PhotoSelectionSheet(controller: controller, onPhotosSelected: viewModel.onPhotosSelected)
         }
         .inputAlbumNameAlert(
             isPresented: $viewModel.isRenameAlbumPopupVisible,
@@ -110,7 +110,7 @@ struct AlbumDetailsScreen: View {
         .onDisappear {
             NotificationCenter.default.post(name: Notification.Name("NCSelectionModeDidEnd"), object: nil)
         }
-        .onChange(of: viewModel.isPhotoSelectionSheetVisible) { isPresented in
+        .onChange(of: viewModel.isPhotoSelectionSheetVisible) { _, isPresented in
             if isPresented == false {
                 NotificationCenter.default.post(name: Notification.Name("NCSelectionModeDidEnd"), object: nil)
             }
@@ -135,7 +135,7 @@ struct AlbumDetailsScreen: View {
             }
         } else {
             PhotosGridView(
-                localAccount: viewModel.account,
+                controller: controller,
                 photos: viewModel.photos,
                 onAddPhotosIntent: handleAddPhotosIntent,
                 album: album,

@@ -7,15 +7,22 @@ import SwiftUI
 import UIKit
 
 struct NCMediaViewRepresentable: UIViewControllerRepresentable {
-    @Environment(\.localAccount) private var account
+    private unowned let controller: NCMainTabBarController
+
     @Binding var ncMedia: NCMedia?
+
+    init(controller: NCMainTabBarController, ncMedia: Binding<NCMedia?>) {
+        self.controller = controller
+        _ncMedia = ncMedia
+    }
 
     func makeCoordinator() -> Coordinator {
         let storyboard = UIStoryboard(name: "NCMedia", bundle: nil)
         let media = storyboard.instantiateViewController(identifier: "NCMedia.storyboard") { coder in
             Coordinator(coder: coder)
         }
-        media.albumAccount = account
+        media.albumAccount = controller.account
+        media.albumsController = controller
         return media
     }
 
@@ -39,6 +46,7 @@ struct NCMediaViewRepresentable: UIViewControllerRepresentable {
     // Keeps the album-specific session and selection lifecycle outside NCMedia.
     final class Coordinator: NCMedia {
         var albumAccount = ""
+        weak var albumsController: NCMainTabBarController?
         var onReady: (() -> Void)?
         var prepareTask: Task<Void, Never>?
         private var selectionReady = false
@@ -48,7 +56,7 @@ struct NCMediaViewRepresentable: UIViewControllerRepresentable {
         }
 
         override var controller: NCMainTabBarController? {
-            SceneManager.shared.getController(account: albumAccount)
+            albumsController
         }
 
         override var sceneIdentifier: String {
