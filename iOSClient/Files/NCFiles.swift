@@ -53,8 +53,8 @@ class NCFiles: NCCollectionViewCommon {
             self.serverUrl = utilityFileSystem.getHomeServer(session: session)
             self.titleCurrentFolder = getNavigationTitle()
 
-            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                Task { @MainActor in
+            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: .main) { notification in
+                MainActor.assumeIsolated {
                     guard let userInfo = notification.userInfo,
                           let account = userInfo["account"] as? String,
                           self.controller?.account == account else {
@@ -69,8 +69,8 @@ class NCFiles: NCCollectionViewCommon {
                     self.mainNavigationController?.menuPlusButton.menu = nil
                     self.mainNavigationController?.menuPlusButton.isEnabled = false
 
-                    self.navigationController?.popToRootViewController(animated: false)
                     self.serverUrl = self.utilityFileSystem.getHomeServer(session: session)
+                    self.navigationController?.popToRootViewController(animated: false)
                     self.isSearchingMode = false
                     self.isEditMode = false
                     self.fileSelect.removeAll()
@@ -87,10 +87,12 @@ class NCFiles: NCCollectionViewCommon {
                     self.titleCurrentFolder = self.getNavigationTitle()
                     self.navigationItem.title = self.titleCurrentFolder
 
-                    await self.mainNavigationController?.menuPlus?.create(session: session)
-                    await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-                    await self.reloadDataSource()
-                    await self.getServerData()
+                    Task { @MainActor in
+                        await self.mainNavigationController?.menuPlus?.create(session: session)
+                        await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+                        await self.reloadDataSource()
+                        await self.getServerData()
+                    }
                 }
             }
         }

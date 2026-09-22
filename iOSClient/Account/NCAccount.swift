@@ -90,19 +90,9 @@ class NCAccount: NSObject {
 
     func changeAccount(_ account: String, userProfile: NKUserProfile?, controller: NCMainTabBarController?) async {
         if let tblAccount = await database.setAccountActiveAsync(account) {
-            // Set account
-            controller?.account = account
             // Set User Profile
             if let userProfile {
                 await database.setAccountUserProfileAsync(account: account, userProfile: userProfile)
-            }
-            // Networking Certificate
-            NCNetworking.shared.activeAccountCertificate(account: account)
-            // Subscribing Push Notification
-            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
-            // Start the service
-            Task(priority: .utility) {
-                await NCService().startRequestServicesServer(account: account, controller: controller)
             }
             // Capabilities
             if let capabilities = await self.database.getCapabilities(account: account) {
@@ -112,13 +102,24 @@ class NCAccount: NSObject {
             // Networking Process
             await NCNetworkingProcess.shared.setCurrentAccount(account)
 
+            // Update the account and the file context together, before starting network requests.
+            controller?.account = account
+            NCNetworking.shared.activeAccountCertificate(account: account)
+
             // Color
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
             // Notification
             if let controller {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
+                NotificationCenter.default.post(name: Notification.Name(self.global.notificationCenterChangeUser), object: nil, userInfo: ["account": account, "controller": controller])
             } else {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account])
+                NotificationCenter.default.post(name: Notification.Name(self.global.notificationCenterChangeUser), object: nil, userInfo: ["account": account])
+            }
+
+            // Subscribing Push Notification
+            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
+            // Start the service
+            Task(priority: .utility) {
+                await NCService().startRequestServicesServer(account: account, controller: controller)
             }
         }
     }
