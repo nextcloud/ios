@@ -23,6 +23,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
     private var isNavigatingMetadata = false
+    private var collectionViewLayoutSize: CGSize = .zero
 
     internal var autoUploadFileName = ""
     internal var autoUploadDirectory = ""
@@ -358,6 +359,16 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let layoutSize = collectionView.bounds.size
+        guard layoutSize != collectionViewLayoutSize else { return }
+
+        collectionViewLayoutSize = layoutSize
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         dismissTip()
@@ -384,6 +395,9 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView?.collectionViewLayout.invalidateLayout()
+        }, completion: { _ in
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+            self.collectionView?.layoutIfNeeded()
         })
 
         self.dismissTip()
