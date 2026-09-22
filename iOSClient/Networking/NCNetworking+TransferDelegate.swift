@@ -205,7 +205,7 @@ extension NCNetworking: NCTransferDelegate {
     @MainActor
     func viewerFile(account: String, fileId: String, viewController: UIViewController) async {
         let windowScene = SceneManager.shared.getWindowScene(controller: viewController.tabBarController)
-        if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId) {
+        if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId, account: account) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(
                     metadata.ocId,

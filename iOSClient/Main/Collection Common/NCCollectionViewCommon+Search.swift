@@ -244,7 +244,7 @@ extension NCCollectionViewCommon {
         case "files":
             for entry in searchResult.entries {
                 if let fileId = utilityFileSystem.extractFileIdFromFPath(from: entry.resourceURL),
-                   let metadata = database.getMetadataFromFileId(fileId) {
+                   let metadata = database.getMetadataFromFileId(fileId, account: session.account) {
                     metadata.section = provider.name
                     metadatas.append(metadata)
                 } else {
@@ -283,6 +283,20 @@ extension NCCollectionViewCommon {
 
         default:
             for entry in searchResult.entries {
+                if let fileId = entry.fileId,
+                   let metadata = database.getMetadataFromFileId(String(fileId), account: session.account) {
+                    metadata.section = provider.name
+                    metadatas.append(metadata)
+                }
+
+                if let filePath = entry.filePath,
+                   let metadata = await loadMetadata(session: session,
+                                                     provider: provider,
+                                                     filePath: filePath) {
+                    metadatas.append(metadata)
+                    continue
+                }
+
                 let metadata = await NCManageDatabaseCreateMetadata().createMetadataAsync(
                     fileName: entry.title,
                     ocId: NSUUID().uuidString,
