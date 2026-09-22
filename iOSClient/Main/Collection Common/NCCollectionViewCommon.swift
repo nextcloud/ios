@@ -753,12 +753,11 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
     // MARK: - Footer size
 
     func sizeForFooterInSection(section: Int) -> CGSize {
-        guard let controller else {
+        guard controller != nil else {
             return CGSize.zero
         }
         let sections = dataSource.numberOfSections()
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-        let height = controller.tabBar.frame.height + bottomAreaInsets
+        let height = NCCollectionViewCommonSelectTabBar.height
 
         if isEditMode {
             return CGSize(width: collectionView.frame.width, height: 90 + height)

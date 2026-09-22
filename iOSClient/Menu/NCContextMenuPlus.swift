@@ -16,8 +16,9 @@ class NCContextMenuPlus: NSObject {
     }
 
     let menuPlusButton: UIButton?
-    let controller: NCMainTabBarController?
+    weak var controller: NCMainTabBarController?
     private var menuSignature: String?
+    private var creationID = UUID()
 
     internal var windowScene: UIWindowScene? {
         SceneManager.shared.getWindowScene(controller: controller)
@@ -42,10 +43,24 @@ class NCContextMenuPlus: NSObject {
     }
 
     func create(session: NCSession.Session) async {
-        guard let controller, let menuPlusButton else {
+        guard let controller,
+              let menuPlusButton,
+              controller.account == session.account else {
             return
         }
-        let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
+        let creationID = UUID()
+        self.creationID = creationID
+
+        let cachedCapabilities = await NCManageDatabase.shared.getCapabilities(account: session.account)
+        let capabilities: NKCapabilities.Capabilities
+        if let cachedCapabilities {
+            capabilities = cachedCapabilities
+        } else {
+            capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        }
+        guard self.creationID == creationID,
+              controller.account == session.account else { return }
+
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
         let global = NCGlobal.shared
@@ -53,6 +68,8 @@ class NCContextMenuPlus: NSObject {
 
         let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+        guard self.creationID == creationID,
+              controller.account == session.account else { return }
         let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let isEndToEndEnabled = NCPreferences().isEndToEndEnabled(account: session.account)
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")

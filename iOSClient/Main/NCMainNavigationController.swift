@@ -156,20 +156,27 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         // CAPABILITIES UPDATE
         //
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { [weak self] notification in
             guard let userInfo = notification.userInfo,
                   let account = userInfo["account"] as? String else {
                 return
             }
 
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
+                guard let self,
+                      let controller = self.controller,
+                      controller.account == account else {
+                    return
+                }
+
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+                guard controller.account == account else { return }
                 let session = NCSession.shared.getSession(account: account)
 
                 // Notification
                 //
                 if capabilities.notification.count == 0 {
-                    self.controller?.availableNotifications = false
+                    controller.availableNotifications = false
                 } else {
                     _ = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
                         Task {
@@ -180,8 +187,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
-                    self.controller?.availableNotifications = true
+                    guard controller.account == account else { return }
+                    controller.availableNotifications = true
                 }
+                guard controller.account == account else { return }
                 await self.collectionViewCommonTrailingItemGroups()
                 // (+)
                 await self.menuPlus?.create(session: session)

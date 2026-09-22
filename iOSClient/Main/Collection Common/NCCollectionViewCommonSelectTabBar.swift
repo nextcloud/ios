@@ -17,6 +17,8 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
+    static let height: CGFloat = 83
+
     var controller: NCMainTabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
@@ -41,8 +43,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
             return
         }
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-        let height = controller.tabBar.frame.height + bottomAreaInsets
         hostingController = UIHostingController(rootView: rootView)
         guard let hostingController else {
             return
@@ -61,7 +61,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
             hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
-            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+            hostingController.view.heightAnchor.constraint(equalToConstant: Self.height)
         ])
     }
 
