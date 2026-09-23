@@ -113,27 +113,21 @@ struct AlbumGridItemView: View {
         }
         guard !Task.isCancelled else { return }
 
-        // Fetch album entries only when the server's preferred cover is unavailable.
-        let albumName = album.name
-        let account = localAccount
         let preferredPhotoId = album.lastPhotoId
-        let candidateIds: [String] = await withCheckedContinuation { continuation in
-            NextcloudKit.shared.fetchAlbumPhotos(for: albumName, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { result in
-                let photos = (try? result.get()) ?? []
-                var seen = Set<String>()
-                let candidates = photos.filter {
-                    !$0.directory && $0.hasPreview && !$0.fileId.isEmpty && $0.fileId != preferredPhotoId
-                }.sorted {
-                    if $0.date != $1.date {
-                        return $0.date > $1.date
-                    }
-                    return $0.fileId < $1.fileId
-                }.compactMap { photo in
-                    seen.insert(photo.fileId).inserted ? photo.fileId : nil
-                }
-                continuation.resume(returning: Array(candidates.prefix(5)))
-            }
+        let photos: [AlbumPhoto]
+        if let cached = NCManageDatabase.shared.getAlbumPhotos(album: album) {
+            photos = cached.map { AlbumPhoto(metadata: $0) }
+        } else {
+            photos = (try? await AlbumsManager.shared.refreshAlbumPhotos(album)) ?? []
         }
+        let candidateIds = photos.filter {
+            $0.metadata.hasPreview && $0.id != preferredPhotoId
+        }.sorted {
+            if $0.metadata.date != $1.metadata.date {
+                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedDescending
+            }
+            return $0.id < $1.id
+        }.prefix(5).map(\.id)
         guard !Task.isCancelled else { return }
 
         for photoId in candidateIds {

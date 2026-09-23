@@ -3,10 +3,9 @@
 // SPDX-FileCopyrightText: 2026 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Album metadata is kept in memory; its DAV path must not replace the original file in Realm.
+// Album membership resolves the original metadata by ocId.
 struct AlbumPhoto: Identifiable {
     let metadata: tableMetadata
-    let albumFileName: String
 
     var id: String { metadata.fileId }
 }

@@ -12,6 +12,7 @@
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
 		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		370D26AF248A3D7A00121797 /* NCCellMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellMain.swift */; };
+		63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */; };
 		A1B2C3D430B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D330B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift */; };
 		A1E2EE010000000000000002 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
 		A1E2EE010000000000000003 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
@@ -616,6 +617,11 @@
 		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
 		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */; };
+		F76D84AB3063B6220081F798 /* NCManageDatabase+Albums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */; };
+		F76D84B43063C2170081F798 /* NCManageDatabase+Albums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */; };
+		F76D84B63063C2170081F798 /* NCManageDatabase+Albums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */; };
+		F76D84BC3063C26F0081F798 /* NCManageDatabase+Albums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */; };
+		F76D84BD3063C2810081F798 /* NCManageDatabase+Albums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */; };
 		F76DA969277B77EA0082465B /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA968277B77EA0082465B /* DropDown */; };
 		F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */; };
 		F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */; };
@@ -1304,6 +1310,7 @@
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
 		370D26AE248A3D7A00121797 /* NCCellMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCellMain.swift; sourceTree = "<group>"; };
+		439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAlbumsPersistenceTests.swift; sourceTree = "<group>"; };
 		8932E90EC4278026D86CCCC9 /* NCContextMenuComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenuComment.swift; sourceTree = "<group>"; };
 		A1B2C3D330B0000100ABCDEF /* NCMediaViewerLoadingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaViewerLoadingPolicy.swift; sourceTree = "<group>"; };
 		A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndKeySet.swift; sourceTree = "<group>"; };
@@ -1731,6 +1738,7 @@
 		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
 		F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerPDFSearchCell.xib; sourceTree = "<group>"; };
 		F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCViewerPDF.storyboard; sourceTree = "<group>"; };
+		F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Albums.swift"; sourceTree = "<group>"; };
 		F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockscreenData.swift; sourceTree = "<group>"; };
 		F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockscreenWidgetProvider.swift; sourceTree = "<group>"; };
 		F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockscreenWidgetView.swift; sourceTree = "<group>"; };
@@ -2336,6 +2344,7 @@
 				F0A1B2C330B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift */,
 				F0A1B2C530B6000100D4E5F6 /* NCImageZoomViewTests.swift */,
 				F34BDB3B2F574A58007A222C /* BidiSafeFilenameTests.swift */,
+				439616AAA50F4360A761E5EF /* NCAlbumsPersistenceTests.swift */,
 				C0DECA012F65000100C0D001 /* NCCameraRollTests.swift */,
 				CA1700013000000000000002 /* NCUploadedAssetsCleanupTests.swift */,
 			);
@@ -3403,6 +3412,7 @@
 				AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */,
 				F7D7A76B2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift */,
 				F749B650297B0F2400087535 /* NCManageDatabase+Avatar.swift */,
+				F76D84AA3063B6200081F798 /* NCManageDatabase+Albums.swift */,
 				F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */,
 				F74B6D942A7E239A00F03C5F /* NCManageDatabase+Chunk.swift */,
 				F73EF7A62B0223900087E6E9 /* NCManageDatabase+Comments.swift */,
@@ -4703,6 +4713,7 @@
 				F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */,
 				F77E8C1F2E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift in Sources */,
 				F7D7A7712DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
+				F76D84BD3063C2810081F798 /* NCManageDatabase+Albums.swift in Sources */,
 				AF4BF62127562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
 				F702F2D225EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F7BDC1D3300F440A00C5D9FA /* NCManageDatabase+MediaPreviewBackfill.swift in Sources */,
@@ -4764,6 +4775,7 @@
 				F0A1B2C430B5000100D4E5F6 /* NCMediaViewerFloatingTitleViewTests.swift in Sources */,
 				F0A1B2C630B6000100D4E5F6 /* NCImageZoomViewTests.swift in Sources */,
 				F34BDB3C2F574A58007A222C /* BidiSafeFilenameTests.swift in Sources */,
+				63563FE53573412998852DD3 /* NCAlbumsPersistenceTests.swift in Sources */,
 				C0DECA022F65000100C0D001 /* NCCameraRollTests.swift in Sources */,
 				CA1700013000000000000001 /* NCUploadedAssetsCleanupTests.swift in Sources */,
 				F372087D2BAB4C0F006B5430 /* TestConstants.swift in Sources */,
@@ -4875,6 +4887,7 @@
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
+				F76D84B63063C2170081F798 /* NCManageDatabase+Albums.swift in Sources */,
 				F76340F82EBDE9760056F538 /* NCManageDatabaseCore.swift in Sources */,
 				F79ED0F12D2FCA5B00A389D9 /* NCSectionFirstHeader.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
@@ -5047,6 +5060,7 @@
 				F75F4BC02FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F7D496FD2EBFA6D9004F9823 /* String+Extension.swift in Sources */,
 				F7D7A7702DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
+				F76D84B43063C2170081F798 /* NCManageDatabase+Albums.swift in Sources */,
 				F72EA95828B7BC4F00C88F0C /* FilesData.swift in Sources */,
 				F78302FF28B4C45000B84583 /* NCUtilityFileSystem.swift in Sources */,
 				F73EF7B82B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
@@ -5312,6 +5326,7 @@
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				A1E2EE020000000000000004 /* NCEndToEndKeySetAccess.swift in Sources */,
 				A1E2EE020000000000000006 /* NCEndToEndKeySetResolver.swift in Sources */,
+				F76D84AB3063B6220081F798 /* NCManageDatabase+Albums.swift in Sources */,
 				F7A7FDDD2C2DBD6200E9A93A /* NCDeepLinkHandler.swift in Sources */,
 				F778231E2C42C07C001BB94F /* NCCollectionViewCommon+MediaLayout.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
@@ -5592,6 +5607,7 @@
 				F7A8D73728F17E1E008BBE1C /* NCManageDatabase+Account.swift in Sources */,
 				F77E8C202E79717D00EAE68F /* NCManageDatabase+LivePhoto.swift in Sources */,
 				F7BF9D842934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
+				F76D84BC3063C26F0081F798 /* NCManageDatabase+Albums.swift in Sources */,
 				F73EF7A92B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7A8D73C28F181BC008BBE1C /* NCBrand.swift in Sources */,
 				F711A4DE2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,

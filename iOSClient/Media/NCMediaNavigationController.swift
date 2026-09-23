@@ -400,6 +400,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         func finishIfDone() {
             completed += 1
             guard completed == total, succeeded > 0 else { return }
+            AlbumsManager.shared.invalidatePhotoRequest(for: album)
             AlbumsManager.shared.syncAlbums(for: controller.account)
             showAlbumAndNotify(album, controller: controller)
         }

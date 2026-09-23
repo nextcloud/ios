@@ -214,6 +214,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableRecommendedFiles.self)
         self.clearTable(tableShare.self)
         self.clearTable(tableTrash.self)
+        self.clearTable(TableAlbum.self)
     }
 
     func clearDatabase(account: String) {
@@ -250,6 +251,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableVideo.self, account: account)
         self.clearTable(NCKeyValue.self)
+        self.clearTable(TableAlbum.self, account: account)
     }
 
     func clearTablesE2EE(account: String?) {

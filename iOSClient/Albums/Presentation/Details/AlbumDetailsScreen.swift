@@ -119,7 +119,7 @@ struct AlbumDetailsScreen: View {
 
     @ViewBuilder
     private func content() -> some View {
-        if viewModel.isLoading {
+        if viewModel.isLoading && !viewModel.hasCachedPhotos {
             ProgressView(NSLocalizedString("_albums_photos_loading_msg_", comment: ""))
         } else if let error = viewModel.errorMessage {
             Text(error)
