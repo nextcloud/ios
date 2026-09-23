@@ -57,7 +57,9 @@ struct AlbumsGridView: View {
                                     Text(subtitle)
                                         .font(.system(size: 13))
                                         .foregroundColor(Color(UIColor.systemGray))
-                                        .lineLimit(1)
+                                        .lineLimit(2)
+                                        .multilineTextAlignment(.leading)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
                         }
@@ -70,16 +72,34 @@ struct AlbumsGridView: View {
 
     private func makeSubtitle(for album: Album) -> String? {
         guard let count = album.itemCount else { return nil }
-        var parts: [String] = ["\(count) \(NSLocalizedString("_albums_list_entities_", comment: ""))"]
+        var parts: [String] = []
         let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("MMMM yyyy")
+
         if count > 0, let end = album.endDate {
-            formatter.dateStyle = .medium
-            parts.append(formatter.string(from: end))
+            if let start = album.startDate,
+               !Calendar.current.isDate(start, equalTo: end, toGranularity: .month) {
+                parts.append(
+                    String.localizedStringWithFormat(
+                        NSLocalizedString("_albums_list_date_range_", comment: ""),
+                        formatter.string(from: start),
+                        formatter.string(from: end)
+                    )
+                )
+            } else {
+                parts.append(formatter.string(from: end))
+            }
         } else if count == 0, let created = album.startDate {
-            formatter.dateFormat = "MMMM yyyy" // "MMMM" for full month name, "yyyy" for year
             parts.append(formatter.string(from: created))
         }
-        return parts.joined(separator: " - ")
+
+        parts.append(
+            String.localizedStringWithFormat(
+                NSLocalizedString("_albums_list_photos_and_videos_count_", comment: ""),
+                count
+            )
+        )
+        return parts.joined(separator: " · ")
     }
 }
 

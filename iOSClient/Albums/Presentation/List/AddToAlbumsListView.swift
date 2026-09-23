@@ -170,7 +170,12 @@ struct AlbumRow: View {
 
     private func makeSubtitle(for album: Album) -> String? {
         guard let count = album.itemCount else { return nil }
-        var parts: [String] = ["\(count) \(NSLocalizedString("_albums_list_entities_", comment: ""))"]
+        var parts: [String] = [
+            String.localizedStringWithFormat(
+                NSLocalizedString("_albums_list_photos_and_videos_count_", comment: ""),
+                count
+            )
+        ]
         let formatter = DateFormatter()
         if count > 0, let end = album.endDate {
             formatter.dateStyle = .medium
