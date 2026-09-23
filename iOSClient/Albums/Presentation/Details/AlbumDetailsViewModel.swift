@@ -185,7 +185,7 @@ class AlbumDetailsViewModel: ObservableObject {
 
         let error = await deletePhotoFromAlbum(photo, metadata: photo.metadata)
         guard error == .success else {
-            await showErrorBanner(windowScene: windowScene, error: error)
+            await showErrorBanner(windowScene: windowScene, text: error.errorDescription)
             return
         }
 
@@ -207,7 +207,7 @@ class AlbumDetailsViewModel: ObservableObject {
             guard let photo = photos.first(where: { $0.metadata.fileId == metadata.fileId }) else { continue }
             let error = await deletePhotoFromAlbum(photo, metadata: metadata)
             guard error == .success else {
-                await showErrorBanner(windowScene: windowScene, error: error)
+                await showErrorBanner(windowScene: windowScene, text: error.errorDescription)
                 return
             }
             photos.removeAll { $0.id == photo.id }
@@ -313,7 +313,10 @@ class AlbumDetailsViewModel: ObservableObject {
         for photo in selectedPhotos {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
                 Task {
-                    await showErrorBanner(windowScene: self.windowScene, error: .invalidData)
+                    await showErrorBanner(
+                        windowScene: self.windowScene,
+                        text: NKError.invalidData.errorDescription
+                    )
                 }
                 continue
             }
@@ -331,7 +334,7 @@ class AlbumDetailsViewModel: ObservableObject {
                     case .success:
                         hadAnySuccess = true
                     case .failure(let error):
-                        await showErrorBanner(windowScene: self?.windowScene, error: error)
+                        await showErrorBanner(windowScene: self?.windowScene, text: error.errorDescription)
                     }
                 }
             }
