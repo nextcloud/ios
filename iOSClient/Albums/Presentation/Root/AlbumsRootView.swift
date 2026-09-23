@@ -39,7 +39,6 @@ struct AlbumsRootView: View {
                         AlbumDetailsScreen(
                             controller: controller,
                             album: album,
-                            coverImage: navigator.coverImage,
                             navigator: navigator
                         )
                     }
