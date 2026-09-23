@@ -83,24 +83,22 @@ struct AddToAlbumsListView: View {
                 .navigationTitle(NSLocalizedString("_add_to_album", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(placement: .cancellationAction) {
                         Button(action: onDismiss) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text(NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: ""))
-                            }.foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
+                            Image(systemName: "xmark")
                         }
-                        .foregroundColor(.pink)
+                        .accessibilityLabel(NSLocalizedString("_cancel_", comment: ""))
                     }
 
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")) {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button {
                             if let selected = selectedAlbum {
                                 onFinish(selected)
                             }
+                        } label: {
+                            Image(systemName: "checkmark")
                         }
-                        .foregroundColor(Color(NCBrandColor.shared.getElement(account: localAccount)))
-                        .opacity(selectedAlbum == nil ? 0.4 : 1.0)
+                        .accessibilityLabel(NSLocalizedString("_done_", comment: ""))
                         .disabled(selectedAlbum == nil)
                     }
                 }

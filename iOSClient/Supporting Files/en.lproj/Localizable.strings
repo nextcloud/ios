@@ -918,5 +918,4 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_albums_delete_album_popup_negative_btn_"          = "Cancel";
 "_add_to_album"                                     = "Add to Album";
 "_remove_from_album_"                               = "Remove from Album";
-"_album_already_exists_"                            = "Could not complete the operation, album with the same name exists";
 "_want_remove_from_album_"                          = "Do you really want to remove from Album?";

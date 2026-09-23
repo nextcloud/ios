@@ -36,7 +36,7 @@ struct MediaSelectionSheet: View {
                         Image(systemName: "xmark")
                     }
                     .accessibilityLabel(
-                        NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: "")
+                        NSLocalizedString("_cancel_", comment: "")
                     )
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -46,7 +46,7 @@ struct MediaSelectionSheet: View {
                         Image(systemName: "checkmark")
                     }
                     .accessibilityLabel(
-                        NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")
+                        NSLocalizedString("_done_", comment: "")
                     )
                     .disabled(mediaVC == nil)
                 }
