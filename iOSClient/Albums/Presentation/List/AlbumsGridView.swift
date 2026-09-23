@@ -10,7 +10,8 @@ import UIKit
 struct AlbumsGridView: View {
     @Environment(\.localAccount) var localAccount: String
     let albums: [Album]
-    let onAlbumClicked: (Album) -> Void
+    let onAlbumClicked: (Album, UIImage?) -> Void
+    @State private var coverImages: [String: UIImage] = [:]
 
     private func columnCount(for width: CGFloat) -> Int {
         width >= 600 ? 3 : 2
@@ -32,10 +33,12 @@ struct AlbumsGridView: View {
                     LazyVGrid(columns: columns(count: columnCount), spacing: 20) {
                         ForEach(albums, id: \.id) { album in
                             Button {
-                                onAlbumClicked(album)
+                                onAlbumClicked(album, coverImages[album.id])
                             } label: {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    AlbumGridItemView(album: album)
+                                    AlbumGridItemView(album: album) { image in
+                                        coverImages[album.id] = image
+                                    }
 
                                     Text(album.name)
                                         .font(.system(size: 15, weight: .medium))

@@ -36,7 +36,12 @@ struct AlbumsRootView: View {
                 .navigationDestination(for: AlbumsRoutes.self) { route in
                     switch route {
                     case .albumDetails(let album):
-                        AlbumDetailsScreen(controller: controller, album: album, navigator: navigator)
+                        AlbumDetailsScreen(
+                            controller: controller,
+                            album: album,
+                            coverImage: navigator.coverImage,
+                            navigator: navigator
+                        )
                     }
                 }
         }

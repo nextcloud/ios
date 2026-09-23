@@ -8,12 +8,19 @@ import SwiftUI
 struct AlbumDetailsScreen: View {
     private unowned let controller: NCMainTabBarController
     private let album: Album
+    private let coverImage: UIImage?
     @StateObject private var viewModel: AlbumDetailsViewModel
     @State private var showMedia = false
 
-    init(controller: NCMainTabBarController, album: Album, navigator: AlbumsNavigator = AlbumsNavigator()) {
+    init(
+        controller: NCMainTabBarController,
+        album: Album,
+        coverImage: UIImage? = nil,
+        navigator: AlbumsNavigator = AlbumsNavigator()
+    ) {
         self.controller = controller
         self.album = album
+        self.coverImage = coverImage
         _viewModel = StateObject(
             wrappedValue: AlbumDetailsViewModel(controller: controller, album: album, navigator: navigator)
         )
@@ -139,6 +146,7 @@ struct AlbumDetailsScreen: View {
                 photos: viewModel.photos,
                 onAddPhotosIntent: handleAddPhotosIntent,
                 album: album,
+                coverImage: coverImage,
                 onRemovePhoto: { photo in
                     Task { @MainActor in
                         await viewModel.removePhoto(photo)

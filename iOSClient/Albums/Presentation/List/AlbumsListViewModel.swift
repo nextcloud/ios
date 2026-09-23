@@ -6,6 +6,7 @@
 import Foundation
 import Combine
 import NextcloudKit
+import UIKit
 
 class AlbumsListViewModel: ObservableObject {
     private let account: String
@@ -90,11 +91,11 @@ class AlbumsListViewModel: ObservableObject {
     }
 
     // MARK: - Events
-    func onAlbumClicked(_ album: Album) {
+    func onAlbumClicked(_ album: Album, coverImage: UIImage? = nil) {
         guard !isNavigatingToDetails else { return }
         isNavigatingToDetails = true
         DispatchQueue.main.async { [weak self] in
-            self?.navigator.push(.albumDetails(album: album))
+            self?.navigator.push(.albumDetails(album: album), coverImage: coverImage)
             self?.isNavigatingToDetails = false
         }
     }

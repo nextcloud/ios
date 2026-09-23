@@ -12,18 +12,9 @@ struct PhotoGridItemView: View {
     let album: Album
     let photo: AlbumPhoto
     private var metadata: tableMetadata { photo.metadata }
-    let iconSize: CGFloat
-    let aspectRatio: CGFloat
 
     @State private var thumbnail: UIImage?
     @State private var isLoading = false
-
-    init(album: Album, photo: AlbumPhoto, iconSize: CGFloat, aspectRatio: CGFloat = 1) {
-        self.album = album
-        self.photo = photo
-        self.iconSize = iconSize
-        self.aspectRatio = aspectRatio
-    }
 
     var body: some View {
         ZStack {
@@ -42,7 +33,7 @@ struct PhotoGridItemView: View {
             }
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-        .aspectRatio(aspectRatio, contentMode: .fill)
+        .aspectRatio(1, contentMode: .fill)
         .clipped()
         .overlay(
             Group {
