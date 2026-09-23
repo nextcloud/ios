@@ -40,11 +40,12 @@ struct AlbumDetailsScreen: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if !viewModel.isLoading {
                     Button(action: handleAddPhotosIntent) {
-                        Image(systemName: "plus")
-                            .imageScale(.large)
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus")
+                            Text(NSLocalizedString("_albums_photos_add_photos_btn_", comment: ""))
+                        }
+                        .fixedSize()
                     }
-                    .buttonStyle(.plain)
-                    .tint(Color(NCBrandColor.shared.iconImageColor))
 
                     Menu {
                         Button {

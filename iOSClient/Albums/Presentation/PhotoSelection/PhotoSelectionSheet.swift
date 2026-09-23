@@ -25,20 +25,27 @@ struct PhotoSelectionSheet: View {
             .navigationTitle(NSLocalizedString("_albums_photo_selection_sheet_title_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: "")) {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
                         onPhotosSelected([])
+                    } label: {
+                        Image(systemName: "xmark")
                     }
-                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: controller.account)))
+                    .accessibilityLabel(
+                        NSLocalizedString("_albums_photo_selection_sheet_back_btn_", comment: "")
+                    )
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")) {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
                         onPhotosSelected(mediaVC?.fileSelect ?? [])
+                    } label: {
+                        Image(systemName: "checkmark")
                     }
-                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: controller.account)))
+                    .accessibilityLabel(
+                        NSLocalizedString("_albums_photo_selection_sheet_done_btn_", comment: "")
+                    )
                     .disabled(mediaVC == nil)
                 }
-
             }
         }
     }

@@ -107,6 +107,13 @@ class AlbumDetailsViewModel: ObservableObject {
     }
 
     func onRenameAlbumPopupConfirm() {
+        let trimmedName = newAlbumName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let errors = validateAlbumName(trimmedName)
+        if let firstError = errors.first {
+            newAlbumNameError = firstError
+            return
+        }
+
         isRenameAlbumPopupVisible = false
         renameAlbum()
     }

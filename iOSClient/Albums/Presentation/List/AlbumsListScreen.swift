@@ -27,14 +27,12 @@ struct AlbumsListScreen: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button(action: { viewModel.onNewAlbumClick() }) {
-                    Text(NSLocalizedString("_albums_list_new_album_btn_", comment: ""))
-                        .font(.body)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .contentShape(Rectangle())
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus")
+                        Text(NSLocalizedString("_albums_list_new_album_btn_", comment: ""))
+                    }
+                    .fixedSize()
                 }
-                .buttonStyle(.plain)
-                .tint(Color(NCBrandColor.shared.iconImageColor))
             }
         }
         .sheet(
