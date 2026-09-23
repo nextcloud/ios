@@ -57,7 +57,7 @@ struct PhotosGridView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 1) {
+            VStack(spacing: 16) {
                 if let coverPhoto {
                     Button {
                         openingPhoto = coverPhoto

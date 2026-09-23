@@ -8,25 +8,14 @@ import NextcloudKit
 
 struct AlbumGridItemView: View {
     let album: Album
-    let iconSize: CGFloat // Receive the calculated size
     @Environment(\.localAccount) var localAccount: String
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-
-    private let fixedThumbnailHeight: CGFloat = 160
-
-    private var dynamicHeight: CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return 260
-        } else {
-            // iPhone logic
-            return fixedThumbnailHeight
-        }
-    }
     private enum ImageState { case loading, empty, thumbnail(UIImage) }
     @State private var imageState: ImageState = .empty
 
     var body: some View {
         GeometryReader { geo in
+            let side = geo.size.width
+
             ZStack {
                 switch imageState {
                 case .loading:
@@ -43,27 +32,22 @@ struct AlbumGridItemView: View {
                         .foregroundStyle(
                             Color(NCBrandColor.shared.getElement(account: localAccount))
                         )
-                        .frame(
-                            width: geo.size.width,
-                            height: dynamicHeight,
-                            alignment: .center
-                        )
                         .padding()
                 case .thumbnail(let img):
                     Image(uiImage: img)
                         .resizable()
-                        .scaledToFill() // Ensures the image fills the area (cropping excess)
-                        .frame(width: geo.size.width, height: dynamicHeight) // Matches the grid item size
-                        .clipped() // Prevents the image from bleeding outside the 8pt corner radius
+                        .scaledToFill()
+                        .frame(width: side, height: side)
+                        .clipped()
 
                 }
             }
-            .frame(width: geo.size.width, height: dynamicHeight)
+            .frame(width: side, height: side)
             .clipped()
             .overlay(frame)
             .cornerRadius(8)
         }
-        .frame(height: dynamicHeight)
+        .aspectRatio(1, contentMode: .fit)
         .task(id: coverCacheId) {
             await loadThumbnail()
         }
