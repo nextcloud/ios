@@ -82,5 +82,37 @@
 			<string>%d zlyhaní</string>
 		</dict>
 	</dict>
+	<key>_albums_photos_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@photos@</string>
+		<key>photos</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d photo</string>
+			<key>other</key>
+			<string>%d photos</string>
+		</dict>
+	</dict>
+	<key>_albums_list_photos_and_videos_count_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@media@</string>
+		<key>media</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d photo or video</string>
+			<key>other</key>
+			<string>%d photos and videos</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
