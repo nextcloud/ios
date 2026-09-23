@@ -8,12 +8,19 @@ import SwiftUI
 struct AlbumDetailsScreen: View {
     private unowned let controller: NCMainTabBarController
     private let album: Album
+    private let coverImage: UIImage?
     @StateObject private var viewModel: AlbumDetailsViewModel
     @State private var showMedia = false
 
-    init(controller: NCMainTabBarController, album: Album, navigator: AlbumsNavigator = AlbumsNavigator()) {
+    init(
+        controller: NCMainTabBarController,
+        album: Album,
+        coverImage: UIImage? = nil,
+        navigator: AlbumsNavigator = AlbumsNavigator()
+    ) {
         self.controller = controller
         self.album = album
+        self.coverImage = coverImage
         _viewModel = StateObject(
             wrappedValue: AlbumDetailsViewModel(controller: controller, album: album, navigator: navigator)
         )
@@ -33,11 +40,12 @@ struct AlbumDetailsScreen: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if !viewModel.isLoading {
                     Button(action: handleAddPhotosIntent) {
-                        Image(systemName: "plus")
-                            .imageScale(.large)
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus")
+                            Text(NSLocalizedString("_albums_photos_add_photos_btn_", comment: ""))
+                        }
+                        .fixedSize()
                     }
-                    .buttonStyle(.plain)
-                    .tint(Color(NCBrandColor.shared.iconImageColor))
 
                     Menu {
                         Button {
@@ -119,7 +127,7 @@ struct AlbumDetailsScreen: View {
 
     @ViewBuilder
     private func content() -> some View {
-        if viewModel.isLoading {
+        if viewModel.isLoading && !viewModel.hasCachedPhotos {
             ProgressView(NSLocalizedString("_albums_photos_loading_msg_", comment: ""))
         } else if let error = viewModel.errorMessage {
             Text(error)
@@ -139,6 +147,7 @@ struct AlbumDetailsScreen: View {
                 photos: viewModel.photos,
                 onAddPhotosIntent: handleAddPhotosIntent,
                 album: album,
+                coverImage: coverImage,
                 onRemovePhoto: { photo in
                     Task { @MainActor in
                         await viewModel.removePhoto(photo)

@@ -148,7 +148,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
         }
 
         let closeBtn = UIBarButtonItem(
-            barButtonSystemItem: .stop,
+            image: UIImage(systemName: "xmark"),
+            style: .plain,
             target: self,
             action: #selector(customAction)
         )

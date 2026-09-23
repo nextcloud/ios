@@ -17,10 +17,6 @@ class AlbumsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let controller, !controller.account.isEmpty {
-            showAlbums(for: controller)
-        }
-
         // Needed, since we use NCViewerMediaPage to show the media, which expects this!
         navigationController?.navigationBar.prefersLargeTitles = false
 
@@ -45,7 +41,11 @@ class AlbumsViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         guard let controller, !controller.account.isEmpty else { return }
-        updateAlbumsIfNeeded(for: controller)
+        if controller.account == displayedAccount {
+            AlbumsManager.shared.syncAlbums(for: controller.account)
+        } else {
+            updateAlbumsIfNeeded(for: controller)
+        }
     }
 
     private func updateAlbumsIfNeeded(for controller: NCMainTabBarController) {

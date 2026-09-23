@@ -12,7 +12,6 @@ struct PhotoGridItemView: View {
     let album: Album
     let photo: AlbumPhoto
     private var metadata: tableMetadata { photo.metadata }
-    let iconSize: CGFloat
 
     @State private var thumbnail: UIImage?
     @State private var isLoading = false

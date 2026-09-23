@@ -8,25 +8,27 @@ import NextcloudKit
 
 struct AlbumGridItemView: View {
     let album: Album
-    let iconSize: CGFloat // Receive the calculated size
+    let aspectRatio: CGFloat
+    private let onImageLoaded: ((UIImage) -> Void)?
     @Environment(\.localAccount) var localAccount: String
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-
-    private let fixedThumbnailHeight: CGFloat = 160
-
-    private var dynamicHeight: CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return 260
-        } else {
-            // iPhone logic
-            return fixedThumbnailHeight
-        }
-    }
     private enum ImageState { case loading, empty, thumbnail(UIImage) }
     @State private var imageState: ImageState = .empty
 
+    init(
+        album: Album,
+        aspectRatio: CGFloat = 1,
+        onImageLoaded: ((UIImage) -> Void)? = nil
+    ) {
+        self.album = album
+        self.aspectRatio = aspectRatio
+        self.onImageLoaded = onImageLoaded
+    }
+
     var body: some View {
         GeometryReader { geo in
+            let width = geo.size.width
+            let height = width / aspectRatio
+
             ZStack {
                 switch imageState {
                 case .loading:
@@ -43,27 +45,22 @@ struct AlbumGridItemView: View {
                         .foregroundStyle(
                             Color(NCBrandColor.shared.getElement(account: localAccount))
                         )
-                        .frame(
-                            width: geo.size.width,
-                            height: dynamicHeight,
-                            alignment: .center
-                        )
                         .padding()
                 case .thumbnail(let img):
                     Image(uiImage: img)
                         .resizable()
-                        .scaledToFill() // Ensures the image fills the area (cropping excess)
-                        .frame(width: geo.size.width, height: dynamicHeight) // Matches the grid item size
-                        .clipped() // Prevents the image from bleeding outside the 8pt corner radius
+                        .scaledToFill()
+                        .frame(width: width, height: height)
+                        .clipped()
 
                 }
             }
-            .frame(width: geo.size.width, height: dynamicHeight)
+            .frame(width: width, height: height)
             .clipped()
             .overlay(frame)
             .cornerRadius(8)
         }
-        .frame(height: dynamicHeight)
+        .aspectRatio(aspectRatio, contentMode: .fit)
         .task(id: coverCacheId) {
             await loadThumbnail()
         }
@@ -98,7 +95,7 @@ struct AlbumGridItemView: View {
         }
 
         if let image = cachedThumbnail {
-            imageState = .thumbnail(image)
+            showThumbnail(image)
             return
         }
 
@@ -108,43 +105,43 @@ struct AlbumGridItemView: View {
            photoId != "-1",
            let image = await downloadThumbnail(fileId: photoId) {
             guard !Task.isCancelled else { return }
-            imageState = .thumbnail(image)
+            showThumbnail(image)
             return
         }
         guard !Task.isCancelled else { return }
 
-        // Fetch album entries only when the server's preferred cover is unavailable.
-        let albumName = album.name
-        let account = localAccount
         let preferredPhotoId = album.lastPhotoId
-        let candidateIds: [String] = await withCheckedContinuation { continuation in
-            NextcloudKit.shared.fetchAlbumPhotos(for: albumName, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { result in
-                let photos = (try? result.get()) ?? []
-                var seen = Set<String>()
-                let candidates = photos.filter {
-                    !$0.directory && $0.hasPreview && !$0.fileId.isEmpty && $0.fileId != preferredPhotoId
-                }.sorted {
-                    if $0.date != $1.date {
-                        return $0.date > $1.date
-                    }
-                    return $0.fileId < $1.fileId
-                }.compactMap { photo in
-                    seen.insert(photo.fileId).inserted ? photo.fileId : nil
-                }
-                continuation.resume(returning: Array(candidates.prefix(5)))
-            }
+        let photos: [AlbumPhoto]
+        if let cached = NCManageDatabase.shared.getAlbumPhotos(album: album) {
+            photos = cached.map { AlbumPhoto(metadata: $0) }
+        } else {
+            photos = (try? await AlbumsManager.shared.refreshAlbumPhotos(album)) ?? []
         }
+        let candidateIds = photos.filter {
+            $0.metadata.hasPreview && $0.id != preferredPhotoId
+        }.sorted {
+            if $0.metadata.date != $1.metadata.date {
+                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedDescending
+            }
+            return $0.id < $1.id
+        }.prefix(5).map(\.id)
         guard !Task.isCancelled else { return }
 
         for photoId in candidateIds {
             if let image = await downloadThumbnail(fileId: photoId) {
                 guard !Task.isCancelled else { return }
-                imageState = .thumbnail(image)
+                showThumbnail(image)
                 return
             }
             guard !Task.isCancelled else { return }
         }
         imageState = .empty
+    }
+
+    @MainActor
+    private func showThumbnail(_ image: UIImage) {
+        imageState = .thumbnail(image)
+        onImageLoaded?(image)
     }
 
     @MainActor

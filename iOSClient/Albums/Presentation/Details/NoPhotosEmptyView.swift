@@ -39,7 +39,7 @@ struct NoPhotosEmptyView: View {
                         Button(action: onAddPhotosIntent) {
                             Label(
                                 NSLocalizedString(
-                                    "_albums_photos_empty_add_photos_btn_",
+                                    "_albums_photos_add_photos_btn_",
                                     comment: ""
                                 ),
                                 systemImage: "plus"

@@ -6,17 +6,16 @@
 import Foundation
 import Combine
 import NextcloudKit
+import UIKit
 
 class AlbumsListViewModel: ObservableObject {
     private let account: String
     private(set) weak var controller: NCMainTabBarController?
     let navigator: AlbumsNavigator
-    private var thumbnailsTask: Task<Void, Never>?
 
     @Published private(set) var albums: [Album] = []
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var errorMessage: String?
-    @Published private(set) var albumThumbnails: [String: UIImage] = [:]
     @Published var isLoadingPopupVisible: Bool = false
     @Published var isNewAlbumCreationPopupVisible: Bool = false
     @Published var newAlbumName: String = ""
@@ -52,6 +51,7 @@ class AlbumsListViewModel: ObservableObject {
                     self?.isLoading = true
                     self?.errorMessage = nil
                 case .success(let albums):
+                    self?.errorMessage = nil
                     self?.isLoading = false
                     self?.albums = albums
                 case .failure:
@@ -91,11 +91,11 @@ class AlbumsListViewModel: ObservableObject {
     }
 
     // MARK: - Events
-    func onAlbumClicked(_ album: Album) {
+    func onAlbumClicked(_ album: Album, coverImage: UIImage? = nil) {
         guard !isNavigatingToDetails else { return }
         isNavigatingToDetails = true
         DispatchQueue.main.async { [weak self] in
-            self?.navigator.push(.albumDetails(album: album))
+            self?.navigator.push(.albumDetails(album: album), coverImage: coverImage)
             self?.isNavigatingToDetails = false
         }
     }
@@ -159,7 +159,7 @@ class AlbumsListViewModel: ObservableObject {
                 }
             case .failure(let error):
                 Task {
-                    await showErrorBanner(windowScene: self?.windowScene, error: error)
+                    await showErrorBanner(windowScene: self?.windowScene, text: error.errorDescription)
                 }
             }
         }
@@ -171,12 +171,7 @@ class AlbumsListViewModel: ObservableObject {
         guard let album = newlyCreatedAlbum else { return }
 
         if selectedPhotos.isEmpty {
-            guard !isNavigatingToDetails else { return }
-            isNavigatingToDetails = true
-            DispatchQueue.main.async { [weak self] in
-                self?.navigator.push(.albumDetails(album: album))
-                self?.isNavigatingToDetails = false
-            }
+            onAlbumClicked(album)
             return
         }
 
@@ -187,7 +182,10 @@ class AlbumsListViewModel: ObservableObject {
         for photo in selectedPhotos {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(photo) else {
                 Task {
-                    await showErrorBanner(windowScene: self.windowScene, error: .invalidData)
+                    await showErrorBanner(
+                        windowScene: self.windowScene,
+                        text: NKError.invalidData.errorDescription
+                    )
                 }
                 continue
             }
@@ -199,7 +197,7 @@ class AlbumsListViewModel: ObservableObject {
                     hadAnySuccess = true
                 case .failure(let error):
                     Task {
-                        await showErrorBanner(windowScene: self.windowScene, error: error)
+                        await showErrorBanner(windowScene: self.windowScene, text: error.errorDescription)
                     }
                 }
                 group.leave()
@@ -209,21 +207,14 @@ class AlbumsListViewModel: ObservableObject {
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             if hadAnySuccess {
-                AlbumsManager.shared.syncAlbums(for: self.account) { _ in
-                    guard !self.isNavigatingToDetails else { return }
-                    self.isNavigatingToDetails = true
-                    DispatchQueue.main.async {
-                        self.navigator.push(.albumDetails(album: album))
-                        self.isNavigatingToDetails = false
+                Task { @MainActor in
+                    AlbumsManager.shared.invalidatePhotoRequest(for: album)
+                    AlbumsManager.shared.syncAlbums(for: self.account) { [weak self] _ in
+                        self?.onAlbumClicked(album)
                     }
                 }
             } else {
-                guard !self.isNavigatingToDetails else { return }
-                self.isNavigatingToDetails = true
-                DispatchQueue.main.async {
-                    self.navigator.push(.albumDetails(album: album))
-                    self.isNavigatingToDetails = false
-                }
+                onAlbumClicked(album)
             }
         }
     }

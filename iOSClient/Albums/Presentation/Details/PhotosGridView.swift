@@ -12,49 +12,126 @@ struct PhotosGridView: View {
     let photos: [AlbumPhoto]
     let onAddPhotosIntent: () -> Void
     let album: Album
+    let coverImage: UIImage?
     let onRemovePhoto: (AlbumPhoto) -> Void
 
     @State private var photoToRemove: AlbumPhoto?
     @State private var openingPhoto: AlbumPhoto?
 
-    init(controller: NCMainTabBarController, photos: [AlbumPhoto], onAddPhotosIntent: @escaping () -> Void, album: Album, onRemovePhoto: @escaping (AlbumPhoto) -> Void) {
+    init(
+        controller: NCMainTabBarController,
+        photos: [AlbumPhoto],
+        onAddPhotosIntent: @escaping () -> Void,
+        album: Album,
+        coverImage: UIImage? = nil,
+        onRemovePhoto: @escaping (AlbumPhoto) -> Void
+    ) {
         self.controller = controller
         self.photos = photos
         self.onAddPhotosIntent = onAddPhotosIntent
         self.album = album
+        self.coverImage = coverImage
         self.onRemovePhoto = onRemovePhoto
     }
 
-    private var columns: [GridItem] {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return Array(repeating: GridItem(.flexible(), spacing: 1), count: 3)
-        } else {
-            return [GridItem(.adaptive(minimum: 100, maximum: 300), spacing: 1)]
+    private func columns(for width: CGFloat) -> [GridItem] {
+        let count = width >= 600 ? 4 : 3
+        return Array(repeating: GridItem(.flexible(), spacing: 1), count: count)
+    }
+
+    private var sortedPhotos: [AlbumPhoto] {
+        photos.sorted { lhs, rhs in
+            lhs.metadata.fileNameView.localizedCaseInsensitiveCompare(rhs.metadata.fileNameView) == .orderedAscending
         }
     }
 
-    private let calculatedIconSize: CGFloat = 30
-
-    var body: some View {
-        // Sort by filename or date to ensure stability
-        let sortedPhotos = photos.sorted { lhs, rhs in
-            lhs.metadata.fileNameView.localizedCaseInsensitiveCompare(rhs.metadata.fileNameView) == .orderedAscending
+    private var coverPhoto: AlbumPhoto? {
+        let serverCover = photos.first { $0.id == album.lastPhotoId }
+        if serverCover?.metadata.hasPreview == true {
+            return serverCover
         }
 
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 1) {
-                ForEach(sortedPhotos) { photo in
-                    Button {
-                        openingPhoto = photo
-                    } label: {
-                        PhotoGridItemView(album: album, photo: photo, iconSize: calculatedIconSize)
-                    }
-                    .disabled(openingPhoto != nil)
-                    .contextMenu {
-                        Button(role: .destructive) {
-                            photoToRemove = photo
+        let mostRecentWithPreview = photos
+            .filter(\.metadata.hasPreview)
+            .reduce(nil as AlbumPhoto?) { newest, photo in
+                guard let newest else { return photo }
+                return photo.metadata.date.compare(newest.metadata.date as Date) == .orderedDescending
+                    ? photo
+                    : newest
+            }
+
+        return mostRecentWithPreview ?? serverCover
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 16) {
+                    if let coverPhoto {
+                        Button {
+                            openingPhoto = coverPhoto
                         } label: {
-                            Label(NSLocalizedString("_remove_from_album_", comment: ""), systemImage: "minus.circle")
+                            ZStack(alignment: .bottomLeading) {
+                                if let coverImage {
+                                    GeometryReader { geometry in
+                                        Image(uiImage: coverImage)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(
+                                                width: geometry.size.width,
+                                                height: geometry.size.height
+                                            )
+                                            .clipped()
+                                    }
+                                    .aspectRatio(16.0 / 7.0, contentMode: .fit)
+                                } else {
+                                    AlbumGridItemView(album: album, aspectRatio: 16.0 / 7.0)
+                                }
+
+                                LinearGradient(
+                                    colors: [.clear, .black.opacity(0.7)],
+                                    startPoint: .center,
+                                    endPoint: .bottom
+                                )
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(album.name)
+                                        .font(.title2.bold())
+
+                                    Text(
+                                        String.localizedStringWithFormat(
+                                            NSLocalizedString("_albums_photos_count_", comment: ""),
+                                            photos.count
+                                        )
+                                    )
+                                        .font(.subheadline)
+                                }
+                                .foregroundStyle(.white)
+                                .padding()
+                            }
+                        }
+                        .disabled(openingPhoto != nil)
+                        .buttonStyle(.plain)
+                    }
+
+                    LazyVGrid(columns: columns(for: geometry.size.width), spacing: 1) {
+                        ForEach(sortedPhotos) { photo in
+                            Button {
+                                openingPhoto = photo
+                            } label: {
+                                PhotoGridItemView(album: album, photo: photo)
+                            }
+                            .disabled(openingPhoto != nil)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    photoToRemove = photo
+                                } label: {
+                                    Label(
+                                        NSLocalizedString("_remove_from_album_", comment: ""),
+                                        systemImage: "minus.circle"
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -123,9 +200,7 @@ struct PhotosGridView: View {
         // Album entries provide numeric file IDs. The selected file supplies the server's
         // instance suffix so the viewer can resolve every other file lazily by its ocId.
         let utility = NCUtility()
-        let ocIds = photos.sorted {
-            $0.metadata.fileNameView.localizedCaseInsensitiveCompare($1.metadata.fileNameView) == .orderedAscending
-        }.map { albumPhoto in
+        let ocIds = sortedPhotos.map { albumPhoto in
             albumPhoto.id == photo.id
                 ? selected.ocId
                 : utility.paddedFileId(albumPhoto.id) + instanceId

@@ -85,7 +85,9 @@ private struct NCInputAlbumNameAlertModifier: ViewModifier {
                 Button(positiveButtonText) {
                     onCreate()
                 }
-                .disabled(error != nil)
+                .disabled(
+                    albumName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || error != nil
+                )
             } message: {
                 Text(description)
                     .foregroundColor(.secondary)

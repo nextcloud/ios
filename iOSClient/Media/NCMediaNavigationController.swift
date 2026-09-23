@@ -238,7 +238,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         let actionsInEditMode: [UIAction] = [
             UIAction(
                 title: NSLocalizedString("_add_to_album", comment: ""),
-                image: utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor], size: 24).withTintColor(NCBrandColor.shared.iconImageColor),
+                image: utility.loadImage(named: "photo.badge.plus.fill"),
                 handler: { _ in
                     guard let controller = self.controller else { return }
                     NCMediaNavigationController.presentExistingAlbums(controller: controller, selectedPhotos: media.fileSelect)
@@ -247,14 +247,12 @@ class NCMediaNavigationController: NCMainNavigationController {
 
             UIAction(
                 title: NSLocalizedString("_albums_list_new_album_popup_title_", comment: ""),
-                image: utility.loadImage(named: "photo.badge.plus"),
+                image: utility.loadImage(named: "photo.stack.fill"),
                 handler: { _ in
                     guard let controller = self.controller else { return }
                     NCMediaNavigationController.presentInputAlbumNameAlert(on: controller) { albumName in
                         NCMediaNavigationController.createNewAlbum(for: albumName, selectedPhotos: media.fileSelect, controller: controller)
-                    } onCancel: {
-
-                    }
+                    } onCancel: { }
                 }
             )
         ]
@@ -400,6 +398,7 @@ class NCMediaNavigationController: NCMainNavigationController {
         func finishIfDone() {
             completed += 1
             guard completed == total, succeeded > 0 else { return }
+            AlbumsManager.shared.invalidatePhotoRequest(for: album)
             AlbumsManager.shared.syncAlbums(for: controller.account)
             showAlbumAndNotify(album, controller: controller)
         }
