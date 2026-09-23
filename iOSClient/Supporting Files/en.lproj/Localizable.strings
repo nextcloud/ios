@@ -909,7 +909,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_albums_photos_error_msg_"                         = "Unable to load photos. Please try again later!";
 "_albums_photos_empty_heading_"                     = "All that's missing are your photos";
 "_albums_photos_empty_subheading_"                  = "You can add as many photos as you like. A photo can also belong to more than one album.";
-"_albums_photos_add_photos_btn_"                    = "Add photos to this album";
+"_albums_photos_add_photos_btn_"                    = "Add photos";
 "_albums_photos_rename_album_btn_"                  = "Rename Album";
 "_albums_photos_delete_album_btn_"                  = "Delete Album";
 "_albums_delete_album_popup_title_"                 = "Delete Album?";

@@ -8,26 +8,14 @@ import NextcloudKit
 
 struct AlbumGridItemView: View {
     let album: Album
-    let aspectRatio: CGFloat
-    private let onImageLoaded: ((UIImage) -> Void)?
     @Environment(\.localAccount) var localAccount: String
     private enum ImageState { case loading, empty, thumbnail(UIImage) }
     @State private var imageState: ImageState = .empty
 
-    init(
-        album: Album,
-        aspectRatio: CGFloat = 1,
-        onImageLoaded: ((UIImage) -> Void)? = nil
-    ) {
-        self.album = album
-        self.aspectRatio = aspectRatio
-        self.onImageLoaded = onImageLoaded
-    }
-
     var body: some View {
         GeometryReader { geo in
             let width = geo.size.width
-            let height = width / aspectRatio
+            let height = width
 
             ZStack {
                 switch imageState {
@@ -60,7 +48,7 @@ struct AlbumGridItemView: View {
             .overlay(frame)
             .cornerRadius(8)
         }
-        .aspectRatio(aspectRatio, contentMode: .fit)
+        .aspectRatio(1, contentMode: .fit)
         .task(id: coverCacheId) {
             await loadThumbnail()
         }
@@ -95,7 +83,7 @@ struct AlbumGridItemView: View {
         }
 
         if let image = cachedThumbnail {
-            showThumbnail(image)
+            imageState = .thumbnail(image)
             return
         }
 
@@ -105,7 +93,7 @@ struct AlbumGridItemView: View {
            photoId != "-1",
            let image = await downloadThumbnail(fileId: photoId) {
             guard !Task.isCancelled else { return }
-            showThumbnail(image)
+            imageState = .thumbnail(image)
             return
         }
         guard !Task.isCancelled else { return }
@@ -130,18 +118,12 @@ struct AlbumGridItemView: View {
         for photoId in candidateIds {
             if let image = await downloadThumbnail(fileId: photoId) {
                 guard !Task.isCancelled else { return }
-                showThumbnail(image)
+                imageState = .thumbnail(image)
                 return
             }
             guard !Task.isCancelled else { return }
         }
         imageState = .empty
-    }
-
-    @MainActor
-    private func showThumbnail(_ image: UIImage) {
-        imageState = .thumbnail(image)
-        onImageLoaded?(image)
     }
 
     @MainActor

@@ -12,7 +12,6 @@ struct PhotosGridView: View {
     let photos: [AlbumPhoto]
     let onAddPhotosIntent: () -> Void
     let album: Album
-    let coverImage: UIImage?
     let onRemovePhoto: (AlbumPhoto) -> Void
 
     @State private var photoToRemove: AlbumPhoto?
@@ -23,14 +22,12 @@ struct PhotosGridView: View {
         photos: [AlbumPhoto],
         onAddPhotosIntent: @escaping () -> Void,
         album: Album,
-        coverImage: UIImage? = nil,
         onRemovePhoto: @escaping (AlbumPhoto) -> Void
     ) {
         self.controller = controller
         self.photos = photos
         self.onAddPhotosIntent = onAddPhotosIntent
         self.album = album
-        self.coverImage = coverImage
         self.onRemovePhoto = onRemovePhoto
     }
 
@@ -72,21 +69,13 @@ struct PhotosGridView: View {
                             openingPhoto = coverPhoto
                         } label: {
                             ZStack(alignment: .bottomLeading) {
-                                if let coverImage {
-                                    GeometryReader { geometry in
-                                        Image(uiImage: coverImage)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(
-                                                width: geometry.size.width,
-                                                height: geometry.size.height
-                                            )
-                                            .clipped()
-                                    }
-                                    .aspectRatio(16.0 / 7.0, contentMode: .fit)
-                                } else {
-                                    AlbumGridItemView(album: album, aspectRatio: 16.0 / 7.0)
-                                }
+                                PhotoGridItemView(
+                                    album: album,
+                                    photo: coverPhoto,
+                                    aspectRatio: 16.0 / 7.0,
+                                    showsMediaTypeIcon: false
+                                )
+                                .id(coverPhoto.id)
 
                                 LinearGradient(
                                     colors: [.clear, .black.opacity(0.7)],

@@ -11,10 +11,33 @@ struct PhotoGridItemView: View {
 
     let album: Album
     let photo: AlbumPhoto
+    let aspectRatio: CGFloat
+    let showsMediaTypeIcon: Bool
     private var metadata: tableMetadata { photo.metadata }
+
+    private var mediaTypeIconName: String? {
+        if metadata.isVideo {
+            return "play.fill"
+        } else if metadata.isLivePhoto {
+            return "livephoto"
+        }
+        return nil
+    }
 
     @State private var thumbnail: UIImage?
     @State private var isLoading = false
+
+    init(
+        album: Album,
+        photo: AlbumPhoto,
+        aspectRatio: CGFloat = 1,
+        showsMediaTypeIcon: Bool = true
+    ) {
+        self.album = album
+        self.photo = photo
+        self.aspectRatio = aspectRatio
+        self.showsMediaTypeIcon = showsMediaTypeIcon
+    }
 
     var body: some View {
         ZStack {
@@ -33,16 +56,16 @@ struct PhotoGridItemView: View {
             }
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-        .aspectRatio(1, contentMode: .fill)
+        .aspectRatio(aspectRatio, contentMode: .fill)
         .clipped()
         .overlay(
             Group {
-                if metadata.isVideo {
-                    Image(systemName: "play.fill")
+                if showsMediaTypeIcon, let mediaTypeIconName {
+                    Image(systemName: mediaTypeIconName)
                         .resizable()
                         .frame(width: 10, height: 10)
                         .foregroundColor(.white)
-                        .padding(8)
+                        .padding(5)
                 }
             },
             alignment: .bottomLeading
@@ -54,24 +77,25 @@ struct PhotoGridItemView: View {
     }
 
     private func loadThumbnailFromPhoto() async {
+        // Clear the previous image before validating the new photo. Otherwise a
+        // reused cover view could keep showing a removed photo with no replacement.
+        await MainActor.run {
+            self.thumbnail = nil
+            self.isLoading = metadata.hasPreview && !photo.id.isEmpty
+        }
+
         // 1. Validate: Only load if it has a preview and a valid ID
         guard metadata.hasPreview, !photo.id.isEmpty else {
             return
         }
 
-        // 2. Clear previous state for reused cells
-        await MainActor.run {
-            self.thumbnail = nil
-            self.isLoading = true
-        }
-
-        // 3. Setup parameters from Photo object and Metadata fallback
+        // 2. Setup parameters from Photo object and Metadata fallback
         let fileId = photo.id
         let userId = metadata.userId
         let urlBase = metadata.urlBase
         let etag = metadata.etag
 
-        // 4. Try Disk Cache First
+        // 3. Try Disk Cache First
         if let cachedImage = NCUtility().getImage(
             ocId: fileId,
             etag: etag,
@@ -86,7 +110,7 @@ struct PhotoGridItemView: View {
             return
         }
 
-        // 5. Download Preview
+        // 4. Download Preview
         let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: localAccount) { _ in }
 
         await MainActor.run {
@@ -95,7 +119,7 @@ struct PhotoGridItemView: View {
                let image = UIImage(data: data) {
                 self.thumbnail = image
 
-                // 6. Save to cache (optional but recommended)
+                // 5. Save to cache (optional but recommended)
                 Task.detached(priority: .background) {
                     NCUtility().createImageFileFrom(
                         data: data, ocId: fileId, etag: etag, userId: userId, urlBase: urlBase
