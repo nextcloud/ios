@@ -4,7 +4,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
-import NextcloudKit
 
 struct AlbumGridItemView: View {
     let album: Album
@@ -77,7 +76,7 @@ struct AlbumGridItemView: View {
 
         guard let coverPhoto = await coverPhoto(),
               !Task.isCancelled,
-              let image = await loadImage(for: coverPhoto),
+              let image = await PhotoGridItemView.loadPreview(for: coverPhoto, account: localAccount),
               !Task.isCancelled else {
             return
         }
@@ -107,49 +106,6 @@ struct AlbumGridItemView: View {
             }
             return $0.id < $1.id
         }
-    }
-
-    @MainActor
-    private func loadImage(for photo: AlbumPhoto) async -> UIImage? {
-        guard !Task.isCancelled else { return nil }
-
-        let metadata = photo.metadata
-        let utility = NCUtility()
-        let previewExt = NCGlobal.shared.previewExt512
-
-        if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: previewExt, userId: metadata.userId, urlBase: metadata.urlBase) {
-            return image
-        }
-
-        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-            utility.createImageFileFrom(metadata: metadata)
-            if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: previewExt, userId: metadata.userId, urlBase: metadata.urlBase) {
-                return image
-            }
-        }
-
-        guard metadata.hasPreview else { return nil }
-        return await downloadThumbnail(metadata: metadata)
-    }
-
-    @MainActor
-    private func downloadThumbnail(metadata: tableMetadata) async -> UIImage? {
-        guard !Task.isCancelled else { return nil }
-        let fileId = metadata.fileId
-        let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: metadata.etag, account: localAccount) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: localAccount, path: fileId, name: "DownloadPreview")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
-        // A cancelled request must not overwrite a newer album cover.
-        guard !Task.isCancelled else { return nil }
-        guard resultsPreview.error == .success,
-              let data = resultsPreview.responseData?.data else {
-            return nil
-        }
-
-        return NCUtility().createImageFileFrom(data: data, metadata: metadata, ext: NCGlobal.shared.previewExt512)
     }
 
     private var frame: some View {

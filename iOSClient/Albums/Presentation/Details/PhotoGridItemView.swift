@@ -81,12 +81,20 @@ struct PhotoGridItemView: View {
         isLoading = !photo.id.isEmpty
         defer { isLoading = false }
 
-        // 1. Validate the photo ID.
         guard !photo.id.isEmpty else {
             return
         }
 
-        // 2. Setup parameters from Photo object and Metadata fallback.
+        let image = await Self.loadPreview(for: photo, account: localAccount)
+        guard !Task.isCancelled else { return }
+        thumbnail = image
+    }
+
+    @MainActor
+    static func loadPreview(for photo: AlbumPhoto, account: String) async -> UIImage? {
+        guard !Task.isCancelled, !photo.id.isEmpty else { return nil }
+
+        let metadata = photo.metadata
         let fileId = photo.id
         let ocId = metadata.ocId
         let userId = metadata.userId
@@ -95,36 +103,34 @@ struct PhotoGridItemView: View {
         let previewExt = NCGlobal.shared.previewExt512
         let utility = NCUtility()
 
-        // 3. Look in the preview cache first.
         if let cachedImage = utility.getImage(ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase) {
-            thumbnail = cachedImage
-            return
+            return cachedImage
         }
 
-        // 4. If the original file is local, generate its preview locally.
-        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-            utility.createImageFileFrom(metadata: metadata)
-            if let localImage = utility.getImage(ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase) {
-                thumbnail = localImage
-                return
+        guard metadata.hasPreview else { return nil }
+
+        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: account,
+                    path: fileId,
+                    name: "DownloadPreview"
+                )
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
+        guard !Task.isCancelled else { return nil }
 
-        // 5. Download the server preview only as the final fallback.
-        guard metadata.hasPreview else { return }
-
-        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: localAccount) { _ in }
-        guard !Task.isCancelled else { return }
-
-        if results.error == .success,
-           let data = results.responseData?.data,
-           let image = UIImage(data: data) {
-            thumbnail = image
-
-            // 6. Save the downloaded preview to the cache.
-            Task.detached(priority: .background) {
-                NCUtility().createImageFileFrom(data: data, ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase)
-            }
+        guard results.error == .success,
+              let data = results.responseData?.data,
+              let image = UIImage(data: data) else {
+            return nil
         }
+
+        Task.detached(priority: .background) {
+            NCUtility().createImageFileFrom(data: data, ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase)
+        }
+
+        return image
     }
 }
