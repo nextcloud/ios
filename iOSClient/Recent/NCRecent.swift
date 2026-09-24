@@ -6,6 +6,8 @@ import UIKit
 import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
+    private var dataSourceTask: URLSessionTask?
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -39,9 +41,8 @@ class NCRecent: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCRecent")
-        }
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
     }
 
     // MARK: - DataSource
@@ -77,7 +78,7 @@ class NCRecent: NCCollectionViewCommon {
         }
 
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCRecent") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
@@ -173,9 +174,7 @@ class NCRecent: NCCollectionViewCommon {
                                                                              requestBody: requestBody,
                                                                              showHiddenFiles: showHiddenFiles,
                                                                              account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCRecent", task: task)
-            }
+            self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
