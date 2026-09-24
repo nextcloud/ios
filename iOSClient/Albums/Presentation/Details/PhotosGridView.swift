@@ -12,6 +12,7 @@ struct PhotosGridView: View {
     let photos: [AlbumPhoto]
     let onAddPhotosIntent: () -> Void
     let album: Album
+    let albumTitle: String
     let onRemovePhoto: (AlbumPhoto) -> Void
 
     @State private var photoToRemove: AlbumPhoto?
@@ -22,12 +23,14 @@ struct PhotosGridView: View {
         photos: [AlbumPhoto],
         onAddPhotosIntent: @escaping () -> Void,
         album: Album,
+        albumTitle: String,
         onRemovePhoto: @escaping (AlbumPhoto) -> Void
     ) {
         self.controller = controller
         self.photos = photos
         self.onAddPhotosIntent = onAddPhotosIntent
         self.album = album
+        self.albumTitle = albumTitle
         self.onRemovePhoto = onRemovePhoto
     }
 
@@ -84,7 +87,7 @@ struct PhotosGridView: View {
                                 )
 
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(album.name)
+                                    Text(albumTitle)
                                         .font(.title2.bold())
 
                                     Text(

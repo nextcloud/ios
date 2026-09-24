@@ -144,6 +144,7 @@ struct AlbumDetailsScreen: View {
                 photos: viewModel.photos,
                 onAddPhotosIntent: handleAddPhotosIntent,
                 album: album,
+                albumTitle: viewModel.screenTitle,
                 onRemovePhoto: { photo in
                     Task { @MainActor in
                         await viewModel.removePhoto(photo)
