@@ -136,14 +136,13 @@ struct AddToAlbumsListView: View {
 
 struct AlbumRow: View {
     let album: Album
-    private enum ImageState { case loading, empty, thumbnail(UIImage) }
-    @State private var imageState: ImageState = .loading
     var localAccount: String
 
     var body: some View {
         HStack {
-            thumbnailView()
-                .frame(width: 80, height: 60)
+            AlbumGridItemView(album: album)
+                .environment(\.localAccount, localAccount)
+                .frame(width: 60, height: 60)
                 .cornerRadius(6)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -161,9 +160,6 @@ struct AlbumRow: View {
             }
         }
         .padding(.horizontal, 8)
-        .task(id: album.lastPhotoId) {
-            await loadThumbnail()
-        }
     }
 
     private func makeSubtitle(for album: Album) -> String? {
@@ -183,69 +179,5 @@ struct AlbumRow: View {
             parts.append(formatter.string(from: created))
         }
         return parts.joined(separator: " - ")
-    }
-
-    /// Renders the thumbnail image based on the current state
-    @ViewBuilder
-    private func thumbnailView() -> some View {
-        switch imageState {
-        case .loading:
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.gray.opacity(0.1))
-        case .empty:
-            Image(systemName: "photo.stack.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(
-                    Color(NCBrandColor.shared.getElement(account: localAccount))
-                )
-                .frame(maxWidth: .infinity, maxHeight: 180)
-        case .thumbnail(let uiImage):
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFill()
-                .clipped()
-        }
-    }
-
-    private func loadThumbnail() async {
-        if album.lastPhotoId == "-1" || (album.itemCount ?? 0) == 0 {
-            imageState = .empty
-            return
-        }
-        guard let photoId = album.lastPhotoId else {
-            imageState = .empty
-            return
-        }
-
-        Task {
-            let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: photoId, etag: "", account: localAccount) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: localAccount,
-                        path: photoId,
-                        name: "DownloadPreview")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-            if resultsPreview.error == .success, let data = resultsPreview.responseData?.data {
-                let session = NCSession.shared.getSession(account: localAccount)
-                if let image = NCUtility().createImageFileFrom(
-                    data: data,
-                    ocId: photoId,
-                    etag: "",
-                    ext: NCGlobal.shared.previewExt512,
-                    userId: session.userId,
-                    urlBase: session.urlBase
-                ) {
-                    Task { @MainActor in
-                        await MainActor.run { imageState = .thumbnail(image) }
-                    }
-                } else {
-                    await MainActor.run { imageState = .empty }
-                }
-            }
-        }
     }
 }
