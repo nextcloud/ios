@@ -342,7 +342,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         self.tableView.reloadData()
 
         let results = await NextcloudKit.shared.getNotificationsAsync(account: session.account) { task in
-            self.dataSourceTask = task
+            Task { @MainActor in
+                self.dataSourceTask = task
+            }
         }
         guard results.error == .success, let notifications = results.notifications else {
             return

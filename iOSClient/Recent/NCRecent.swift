@@ -174,9 +174,12 @@ class NCRecent: NCCollectionViewCommon {
                                                                              requestBody: requestBody,
                                                                              showHiddenFiles: showHiddenFiles,
                                                                              account: session.account) { task in
-            self.dataSourceTask = task
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             }
         }
 

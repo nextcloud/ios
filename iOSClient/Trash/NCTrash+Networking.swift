@@ -13,14 +13,14 @@ extension NCTrash {
         }
 
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCTrash") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCTrash", task: task)
-                await self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+                self.collectionView.reloadData()
             }
         }
 

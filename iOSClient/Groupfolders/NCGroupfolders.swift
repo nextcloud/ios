@@ -83,9 +83,12 @@ class NCGroupfolders: NCCollectionViewCommon {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
 
         let resultsGroupfolders = await NextcloudKit.shared.getGroupfoldersAsync(account: session.account) { task in
-            self.dataSourceTask = task
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             }
         }
 
@@ -101,7 +104,9 @@ class NCGroupfolders: NCCollectionViewCommon {
             let resultsReadFile = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
                                                                                   depth: "0", showHiddenFiles: showHiddenFiles,
                                                                                   account: session.account) { task in
-                self.dataSourceTask = task
+                Task { @MainActor in
+                    self.dataSourceTask = task
+                }
             }
 
             guard resultsReadFile.error == .success, let file = resultsReadFile.files?.first else {

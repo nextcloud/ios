@@ -86,9 +86,12 @@ class NCFavorite: NCCollectionViewCommon {
 
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: session.account) { task in
-            self.dataSourceTask = task
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             }
         }
 

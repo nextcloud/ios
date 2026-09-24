@@ -9,6 +9,7 @@ import RealmSwift
 class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
 
+    internal var dataSourceTask: URLSessionTask?
     var filePath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
@@ -106,9 +107,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCTrash")
-        }
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
     }
 
     // MARK: TAP EVENT
