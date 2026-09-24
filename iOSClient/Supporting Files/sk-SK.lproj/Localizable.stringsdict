@@ -93,9 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d fotka</string>
+			<key>few</key>
+			<string>%d fotky</string>
+			<key>many</key>
+			<string>%d fotiek</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d fotiek</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -109,9 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d fotka alebo video</string>
+			<key>few</key>
+			<string>%d fotky alebo videá</string>
+			<key>many</key>
+			<string>%d fotiek alebo videí</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d fotiek alebo videí</string>
 		</dict>
 	</dict>
 </dict>

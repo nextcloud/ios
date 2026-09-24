@@ -86,6 +86,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%d photo</string>
+			<key>many</key>
+			<string>%d photos</string>
 			<key>other</key>
 			<string>%d photos</string>
 		</dict>
@@ -101,9 +103,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d photo ou vidéo</string>
+			<key>many</key>
+			<string>%d photos et vidéos</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d photos et vidéos</string>
 		</dict>
 	</dict>
 </dict>

@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d fotoğraf</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d fotoğraf</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d fotoğraf ve görüntü</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d fotoğraf ve görüntü</string>
 		</dict>
 	</dict>
 </dict>
