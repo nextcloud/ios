@@ -91,7 +91,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // Actors
     let transferDispatcher = NCTransferDelegateDispatcher()
-    let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
 
 #if !EXTENSION
