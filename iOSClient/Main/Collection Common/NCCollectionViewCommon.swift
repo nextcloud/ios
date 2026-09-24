@@ -58,6 +58,7 @@ class NCCollectionViewCommon: UIViewController, NCAccountSettingsModelDelegate, 
 
     internal var tipViewAccounts: EasyTipView?
     internal var syncMetadatasTask: Task<Void, Never>?
+    internal var syncMetadataNetworkTask: URLSessionTask?
 
     // Edit Menu
     //
