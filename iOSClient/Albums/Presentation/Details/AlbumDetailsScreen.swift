@@ -7,17 +7,10 @@ import SwiftUI
 
 struct AlbumDetailsScreen: View {
     private unowned let controller: NCMainTabBarController
-    private let album: Album
     @StateObject private var viewModel: AlbumDetailsViewModel
-    @State private var showMedia = false
 
-    init(
-        controller: NCMainTabBarController,
-        album: Album,
-        navigator: AlbumsNavigator = AlbumsNavigator()
-    ) {
+    init(controller: NCMainTabBarController, album: Album, navigator: AlbumsNavigator = AlbumsNavigator()) {
         self.controller = controller
-        self.album = album
         _viewModel = StateObject(
             wrappedValue: AlbumDetailsViewModel(controller: controller, album: album, navigator: navigator)
         )
@@ -142,8 +135,6 @@ struct AlbumDetailsScreen: View {
             PhotosGridView(
                 controller: controller,
                 photos: viewModel.photos,
-                onAddPhotosIntent: handleAddPhotosIntent,
-                album: album,
                 albumTitle: viewModel.screenTitle,
                 onRemovePhoto: { photo in
                     Task { @MainActor in
@@ -159,6 +150,5 @@ struct AlbumDetailsScreen: View {
 
     private func handleAddPhotosIntent() {
         viewModel.onAddPhotosIntent()
-        showMedia = true
     }
 }

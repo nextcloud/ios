@@ -10,8 +10,6 @@ struct PhotosGridView: View {
     private unowned let controller: NCMainTabBarController
 
     let photos: [AlbumPhoto]
-    let onAddPhotosIntent: () -> Void
-    let album: Album
     let albumTitle: String
     let onRemovePhoto: (AlbumPhoto) -> Void
 
@@ -21,15 +19,11 @@ struct PhotosGridView: View {
     init(
         controller: NCMainTabBarController,
         photos: [AlbumPhoto],
-        onAddPhotosIntent: @escaping () -> Void,
-        album: Album,
         albumTitle: String,
         onRemovePhoto: @escaping (AlbumPhoto) -> Void
     ) {
         self.controller = controller
         self.photos = photos
-        self.onAddPhotosIntent = onAddPhotosIntent
-        self.album = album
         self.albumTitle = albumTitle
         self.onRemovePhoto = onRemovePhoto
     }
@@ -46,21 +40,12 @@ struct PhotosGridView: View {
     }
 
     private var coverPhoto: AlbumPhoto? {
-        let serverCover = photos.first { $0.id == album.lastPhotoId }
-        if serverCover?.metadata.hasPreview == true {
-            return serverCover
-        }
-
-        let mostRecentWithPreview = photos
-            .filter(\.metadata.hasPreview)
-            .reduce(nil as AlbumPhoto?) { newest, photo in
-                guard let newest else { return photo }
-                return photo.metadata.date.compare(newest.metadata.date as Date) == .orderedDescending
-                    ? photo
-                    : newest
+        photos.filter(\.metadata.hasPreview).max {
+            if $0.metadata.date != $1.metadata.date {
+                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedAscending
             }
-
-        return mostRecentWithPreview ?? serverCover
+            return $0.id < $1.id
+        }
     }
 
     var body: some View {
@@ -73,7 +58,6 @@ struct PhotosGridView: View {
                         } label: {
                             ZStack(alignment: .bottomLeading) {
                                 PhotoGridItemView(
-                                    album: album,
                                     photo: coverPhoto,
                                     aspectRatio: 16.0 / 7.0,
                                     showsMediaTypeIcon: false
@@ -111,7 +95,7 @@ struct PhotosGridView: View {
                             Button {
                                 openingPhoto = photo
                             } label: {
-                                PhotoGridItemView(album: album, photo: photo)
+                                PhotoGridItemView(photo: photo)
                             }
                             .disabled(openingPhoto != nil)
                             .contextMenu {

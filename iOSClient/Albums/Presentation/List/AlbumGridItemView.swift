@@ -60,15 +60,6 @@ struct AlbumGridItemView: View {
         return key.md5()
     }
 
-    private var preferredPhotoId: String? {
-        guard let photoId = album.lastPhotoId,
-              !photoId.isEmpty,
-              photoId != "-1" else {
-            return nil
-        }
-        return photoId
-    }
-
     @MainActor
     private func loadThumbnail() async {
         guard !Task.isCancelled else { return }
@@ -84,63 +75,38 @@ struct AlbumGridItemView: View {
             }
         }
 
-        let preferredPhoto = preferredPhoto()
-        if let preferredPhoto {
-            if let image = await loadImage(for: preferredPhoto) {
-                guard !Task.isCancelled else { return }
-                imageState = .thumbnail(image)
-                return
-            }
+        guard let coverPhoto = await coverPhoto(),
+              !Task.isCancelled,
+              let image = await loadImage(for: coverPhoto),
+              !Task.isCancelled else {
+            return
         }
-
-        for photo in await alternativePhotos(excluding: preferredPhoto?.id) {
-            guard !Task.isCancelled else { return }
-            if let image = await loadImage(for: photo) {
-                imageState = .thumbnail(image)
-                return
-            }
-        }
-
-        guard !Task.isCancelled else { return }
-        imageState = .empty
-    }
-
-    private func preferredPhoto() -> AlbumPhoto? {
-        guard let preferredPhotoId,
-              let metadata = NCManageDatabase.shared.getMetadataFromFileId(preferredPhotoId, account: localAccount) else {
-            return nil
-        }
-        return AlbumPhoto(metadata: metadata)
+        imageState = .thumbnail(image)
     }
 
     @MainActor
-    private func alternativePhotos(excluding photoId: String?) async -> [AlbumPhoto] {
+    private func coverPhoto() async -> AlbumPhoto? {
         let cached = NCManageDatabase.shared.getAlbumPhotos(album: album)
-        var photos: [AlbumPhoto]
-        if let cached {
-            photos = cached.map { AlbumPhoto(metadata: $0) }
+        let cachedPhotos = cached?.map { AlbumPhoto(metadata: $0) }
+        let cacheIsCurrent: Bool
+        if let lastPhotoId = album.lastPhotoId, !lastPhotoId.isEmpty, lastPhotoId != "-1" {
+            cacheIsCurrent = cached?.contains(where: { $0.fileId == lastPhotoId }) == true
         } else {
-            photos = (try? await AlbumsManager.shared.refreshAlbumPhotos(album)) ?? []
+            cacheIsCurrent = true
+        }
+        let photos: [AlbumPhoto]
+        if let cachedPhotos, cacheIsCurrent {
+            photos = cachedPhotos
+        } else {
+            photos = (try? await AlbumsManager.shared.refreshAlbumPhotos(album)) ?? cachedPhotos ?? []
         }
 
-        if cached != nil,
-           let preferredPhotoId,
-           !photos.contains(where: { $0.id == preferredPhotoId }),
-           let refreshed = try? await AlbumsManager.shared.refreshAlbumPhotos(album) {
-            photos = refreshed
-        }
-
-        return Array(photos.filter {
-            $0.metadata.isImageOrVideo && $0.id != photoId
-        }.sorted {
-            let lhsIsPreferred = $0.id == preferredPhotoId
-            let rhsIsPreferred = $1.id == preferredPhotoId
-            if lhsIsPreferred != rhsIsPreferred { return lhsIsPreferred }
+        return photos.filter(\.metadata.hasPreview).max {
             if $0.metadata.date != $1.metadata.date {
-                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedDescending
+                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedAscending
             }
             return $0.id < $1.id
-        }.prefix(1))
+        }
     }
 
     @MainActor

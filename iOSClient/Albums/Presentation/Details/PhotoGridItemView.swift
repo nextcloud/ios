@@ -9,7 +9,6 @@ import NextcloudKit
 struct PhotoGridItemView: View {
     @Environment(\.localAccount) var localAccount: String
 
-    let album: Album
     let photo: AlbumPhoto
     let aspectRatio: CGFloat
     let showsMediaTypeIcon: Bool
@@ -28,12 +27,10 @@ struct PhotoGridItemView: View {
     @State private var isLoading = false
 
     init(
-        album: Album,
         photo: AlbumPhoto,
         aspectRatio: CGFloat = 1,
         showsMediaTypeIcon: Bool = true
     ) {
-        self.album = album
         self.photo = photo
         self.aspectRatio = aspectRatio
         self.showsMediaTypeIcon = showsMediaTypeIcon
