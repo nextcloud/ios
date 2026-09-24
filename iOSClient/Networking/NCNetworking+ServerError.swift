@@ -62,12 +62,8 @@ extension NCNetworking {
         // Unavailable (503)
         if unavailableArray.contains(account) {
             let serverUrl = NCSession.shared.getSession(account: account).urlBase
-            let resultsServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
-                Task {
-                    let identifier = serverUrl + "_getServerStatus"
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let resultsServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl)
+
             switch resultsServerStatus.result {
             case .success(let serverInfo):
                 // Always remove the (503) error for the account from groupDefaults.

@@ -306,14 +306,8 @@ extension NCUtility {
         let pathPNG = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
 
         if !FileManager.default.fileExists(atPath: pathPNG) || rewrite {
-            let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: serverUrl, account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                path: serverUrl,
-                                                                                                name: "downloadContent")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let results = await NextcloudKit.shared.downloadContentAsync(serverUrl: serverUrl, account: account)
+
             guard results.error == .success,
                   let data = results.responseData?.data else {
                 return(nil, id)

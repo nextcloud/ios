@@ -58,12 +58,8 @@ class NCService: NSObject {
                                     imageAnimation: .none)
         }
 
-        let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
-            Task {
-                let identifier = serverUrl + "_getServerStatus"
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl)
+
         switch resultServerStatus.result {
         case .success(let serverInfo):
             let windowScene = await SceneManager.shared.getWindowScene(controller: controller)
@@ -85,14 +81,8 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: userId,
-                                                                                            name: "getUserMetadata")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+
         if resultUserProfile.error == .success,
            let userProfile = resultUserProfile.userProfile,
            userId == userProfile.userId {
@@ -112,14 +102,7 @@ class NCService: NSObject {
                                                                     fileNameLocalPath: fileNameLocalPath,
                                                                     sizeImage: NCGlobal.shared.avatarSize,
                                                                     etagResource: etagResource,
-                                                                    account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: session.userId,
-                                                                                            name: "downloadAvatar")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+                                                                    account: account)
 
         if results.error == .success,
             let etag = results.etag,
@@ -164,13 +147,8 @@ class NCService: NSObject {
     }
 
     private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) async {
-        let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "getCapabilities")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account)
+
         guard resultsCapabilities.error == .success,
               let data = resultsCapabilities.responseData?.data else {
             return
@@ -179,13 +157,8 @@ class NCService: NSObject {
         await self.database.setDataCapabilities(data: data, account: account)
 
         // Direct Editing capabilities
-        let resultsDirectEditingCapabilities = await NextcloudKit.shared.getDirectEditingCapabilitiesAsync(account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "getDirectEditingCapabilities")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsDirectEditingCapabilities = await NextcloudKit.shared.getDirectEditingCapabilitiesAsync(account: account)
+
         let directEditingData = resultsDirectEditingCapabilities.error == .success
             ? resultsDirectEditingCapabilities.responseData?.data
             : nil
@@ -207,13 +180,8 @@ class NCService: NSObject {
 
         // External file Server
         if capabilities.externalSites {
-            let results = await NextcloudKit.shared.getExternalSiteAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: "getExternalSite")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let results = await NextcloudKit.shared.getExternalSiteAsync(account: account)
+
             if results.error == .success {
                 await self.database.deleteExternalSitesAsync(account: account)
                 for site in results.externalSite {
@@ -226,13 +194,8 @@ class NCService: NSObject {
 
         // User Status
         if capabilities.userStatusEnabled {
-            let results = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: "getUserStatus")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let results = await NextcloudKit.shared.getUserStatusAsync(account: account)
+
             if results.error == .success {
                 await self.database.setAccountUserStatusAsync(userStatusClearAt: results.clearAt,
                                                               userStatusIcon: results.icon,
@@ -258,13 +221,7 @@ class NCService: NSObject {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
-        let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "listingFavorites")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
 
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
             let (_, metadatas) = await NCManageDatabaseCreateMetadata().convertFilesToMetadatasAsync(files)
@@ -426,13 +383,8 @@ class NCService: NSObject {
                 let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
                 let data = try JSONEncoder().encode(issues)
                 data.printJson()
-                let results = await NextcloudKit.shared.sendClientDiagnosticsRemoteOperationAsync(data: data, account: account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                    name: "sendClientDiagnosticsRemoteOperation")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
+                let results = await NextcloudKit.shared.sendClientDiagnosticsRemoteOperationAsync(data: data, account: account)
+
                 if results.error == .success {
                     await self.database.deleteDiagnosticsAsync(account: account, ids: ids)
                 }

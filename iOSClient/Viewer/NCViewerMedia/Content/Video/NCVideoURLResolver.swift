@@ -52,19 +52,7 @@ struct NCVideoURLResolver {
             NextcloudKit.shared.getDirectDownload(
                 fileId: metadata.fileId,
                 account: metadata.account
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: metadata.account,
-                        path: metadata.fileId,
-                        name: "getDirectDownload"
-                    )
-
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task
-                    )
-                }
+            ) { _ in
             } completion: { _, urlString, _, error in
                 guard error == .success,
                       let urlString,

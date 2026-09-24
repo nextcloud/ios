@@ -43,12 +43,7 @@ import NextcloudKit
 
     func getStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account, name: "getUserStatus")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account)
 
             if result.error == .success {
                 selectedStatus = result.status
@@ -61,9 +56,7 @@ import NextcloudKit
     func setStatus(account: String) {
         Task {
             let result = await NextcloudKit.shared.setUserStatusAsync(status: selectedStatus ?? "", account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account, name: "setUserStatus")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                Task { @MainActor in
                     self.canDismiss = true
                 }
             }
@@ -76,12 +69,7 @@ import NextcloudKit
 
     func setAccountUserStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account, name: "getUserStatus")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account)
 
             if result.error != .success {
                 await showErrorBanner(windowScene: windowScene, error: result.error)

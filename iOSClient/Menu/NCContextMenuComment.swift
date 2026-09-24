@@ -53,15 +53,7 @@ class NCContextMenuComment: NSObject {
                     messageId: self.tableComments.messageId,
                     message: message,
                     account: self.metadata.account
-                ) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: self.metadata.account,
-                            path: self.metadata.fileId,
-                            name: "updateComments"
-                        )
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
+                ) { _ in
                 } completion: { _, _, error in
                     if error == .success {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
@@ -87,15 +79,7 @@ class NCContextMenuComment: NSObject {
                 fileId: self.metadata.fileId,
                 messageId: self.tableComments.messageId,
                 account: self.metadata.account
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: self.metadata.account,
-                        path: self.metadata.fileId,
-                        name: "deleteComments"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
+            ) { _ in
             } completion: { _, _, error in
                 if error == .success {
                     (self.viewController as? NCActivity)?.loadComments()

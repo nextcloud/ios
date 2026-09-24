@@ -77,13 +77,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(account: metadata.account) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: metadata.fileId,
-                                                                                                name: "putComments")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { _ in
             } completion: { _, _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
@@ -445,13 +439,7 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.fileId,
-                                                                                            name: "getComments")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { _ in
         } completion: { _, comments, _, error in
             if error == .success, let comments = comments {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)

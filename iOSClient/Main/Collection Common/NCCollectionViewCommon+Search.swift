@@ -54,13 +54,7 @@ extension NCCollectionViewCommon {
             showHiddenFiles: showHiddenFiles,
             account: self.session.account
         ) { task in
-            Task {
-                let identifier = await self.networking.networkingTasks.createIdentifier(
-                    account: self.session.account,
-                    path: urlBase,
-                    name: "searchLiteral"
-                )
-                await self.networking.networkingTasks.track(identifier: identifier, task: task)
+            Task { @MainActor in
                 self.searchTask = task
             }
         }

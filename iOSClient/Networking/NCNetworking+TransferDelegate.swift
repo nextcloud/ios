@@ -225,16 +225,8 @@ extension NCNetworking: NCTransferDelegate {
             }
         }
 
-        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: account,
-                    path: fileId,
-                    name: "getFileFromFileId"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
+
         guard resultsFile.error == .success, let file = resultsFile.file else {
             Task {
                 await showErrorBanner(windowScene: windowScene,
@@ -267,11 +259,6 @@ extension NCNetworking: NCTransferDelegate {
             account: account) { _ in
         } taskHandler: { task in
             Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.serverUrlFileName,
-                                                                                            name: "download")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-
                 let ocId = metadata.ocId
                 await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
                                                                       sessionTaskIdentifier: task.taskIdentifier,

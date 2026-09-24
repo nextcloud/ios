@@ -226,11 +226,6 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
                             }, taskHandler: { task in
                                 Task {
-                                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
-                                                                                                                path: url.absoluteString,
-                                                                                                                name: "download")
-                                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-
                                     let ocId = self.metadata.ocId
                                     await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                                 sessionTaskIdentifier: task.taskIdentifier,
@@ -340,13 +335,7 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
         if let serverUrl, let metadata {
             let path = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
 
-            NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: path,
-                                                                                                name: "createRichdocumentsAssetURL")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
+            NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { _ in
             } completion: { _, url, _, error in
                 if error == .success, let url {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
@@ -364,13 +353,7 @@ class NCViewerRichdocuments: UIViewController, WKNavigationDelegate, WKScriptMes
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         let path = utilityFileSystem.getRelativeFilePath(metadata!.fileName, serverUrl: serverUrl!, session: session)
 
-        NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: path,
-                                                                                            name: "createRichdocumentsAssetURL")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { _ in
         } completion: { _, url, _, error in
             if error == .success, let url {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"

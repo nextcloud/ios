@@ -37,11 +37,6 @@ extension NCNetworking {
             requestHandler(request)
         } taskHandler: { task in
             Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.serverUrlFileName,
-                                                                                            name: "download")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-
                 await NCManageDatabase.shared.setMetadataSessionAsync(
                     ocId: metadata.ocId,
                     session: self.sessionDownload,
@@ -237,15 +232,7 @@ extension NCNetworking {
             depth: "infinity",
             showHiddenFiles: NCPreferences().getShowHiddenFiles(account: account),
             account: account
-        ) { task in
-            Task {
-                let identifier = await self.networkingTasks.createIdentifier(
-                    account: account,
-                    name: "synchronizationDownload"
-                )
-                await self.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         guard results.error == .success, let files = results.files else {
             nkLog(tag: self.global.logTagSync,

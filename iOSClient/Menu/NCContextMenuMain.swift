@@ -236,20 +236,7 @@ class NCContextMenuMain: NSObject {
                     return
                 }
 
-                let results = await NextcloudKit.shared.markE2EEFolderAsync(
-                    fileId: metadata.fileId,
-                    delete: true,
-                    account: metadata.account
-                ) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: metadata.account,
-                            path: metadata.fileId,
-                            name: "markE2EEFolder"
-                        )
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
+                let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
 
                 if results.error == .success {
                     await NCManageDatabase.shared.deleteE2eEncryptionAsync(

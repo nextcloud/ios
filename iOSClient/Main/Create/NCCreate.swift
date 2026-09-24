@@ -56,16 +56,7 @@ class NCCreate: NSObject {
             templateId: templateId,
             account: session.account,
             options: options
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: session.account,
-                    path: fileNamePath,
-                    name: "createFileForDirectEditing"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         guard results.error == .success,
               let editorURL = results.url,
@@ -102,16 +93,7 @@ class NCCreate: NSObject {
             filePath: fileNamePath,
             templateId: templateId,
             account: session.account
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: session.account,
-                    path: fileNamePath,
-                    name: "createRichdocumentsFileFromTemplate"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         guard results.error == .success,
               let editorURL = results.url,
@@ -146,15 +128,7 @@ class NCCreate: NSObject {
             editorId: editorId,
             creatorId: creatorId,
             options: options
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: account,
-                    name: "getDirectEditingTemplates"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         let templates = results.error == .success ? results.templates ?? [] : []
         if let selectedTemplate = templates.first(where: { $0.preview?.isEmpty ?? true }) ?? templates.first {
@@ -174,16 +148,7 @@ class NCCreate: NSObject {
         let results = await NextcloudKit.shared.getRichdocumentsTemplatesAsync(
             templateType: templateType,
             account: account
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: account,
-                    path: templateType,
-                    name: "getRichdocumentsTemplates"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         let templates = results.error == .success ? results.templates ?? [] : []
         let selectedTemplate = templates.first(where: { $0.preview.isEmpty }) ?? templates.first
