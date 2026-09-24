@@ -29,6 +29,7 @@ class AlbumsListViewModel: ObservableObject {
 
     private var cancellables: Set<AnyCancellable> = []
     private var isNavigatingToDetails: Bool = false
+    private var didHandlePhotoSelectionResult: Bool = false
 
     init(controller: NCMainTabBarController, navigator: AlbumsNavigator = AlbumsNavigator()) {
         self.account = controller.account
@@ -153,6 +154,7 @@ class AlbumsListViewModel: ObservableObject {
                 AlbumsManager.shared.syncAlbums(for: account) { [weak self] resultAlbums in
                     if let newAlbum = resultAlbums.first(where: { $0.name == name }) {
                         self?.newlyCreatedAlbum = newAlbum
+                        self?.didHandlePhotoSelectionResult = false
                         self?.isPhotoSelectionSheetVisible = true
                     }
                 }
@@ -165,6 +167,10 @@ class AlbumsListViewModel: ObservableObject {
     }
 
     func onPhotosSelected(selectedPhotos: [String]) {
+        // Closing the sheet also invokes this method through `onDismiss`.
+        // Handle either the toolbar action or the dismissal, never both.
+        guard !didHandlePhotoSelectionResult else { return }
+        didHandlePhotoSelectionResult = true
         isPhotoSelectionSheetVisible = false
 
         guard let album = newlyCreatedAlbum else { return }
@@ -208,8 +214,8 @@ class AlbumsListViewModel: ObservableObject {
             if hadAnySuccess {
                 Task { @MainActor in
                     AlbumsManager.shared.invalidatePhotoRequest(for: album)
-                    AlbumsManager.shared.syncAlbums(for: self.account) { [weak self] _ in
-                        self?.onAlbumClicked(album)
+                    AlbumsManager.shared.syncAlbums(for: self.account) { _ in
+                        self.onAlbumClicked(album)
                     }
                 }
             } else {

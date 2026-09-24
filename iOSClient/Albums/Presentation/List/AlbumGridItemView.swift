@@ -4,7 +4,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
-import NextcloudKit
 
 struct AlbumGridItemView: View {
     let album: Album
@@ -49,29 +48,15 @@ struct AlbumGridItemView: View {
             .cornerRadius(8)
         }
         .aspectRatio(1, contentMode: .fit)
-        .task(id: coverCacheId) {
+        .task(id: coverRequestId) {
             await loadThumbnail()
         }
     }
 
-    // Keep the successful cover across view recreation and app launches. Changes to
-    // the album's cover or item count select a fresh cache entry.
-    private var coverCacheId: String {
+    private var coverRequestId: String {
         let components = [localAccount, album.id, album.lastPhotoId ?? "", album.itemCount.map { String($0) } ?? "unknown"]
         let key = components.map { "\($0.utf8.count):\($0)" }.joined()
-        return "album-cover-" + key.md5()
-    }
-
-    private var cachedThumbnail: UIImage? {
-        guard album.itemCount != 0 else { return nil }
-        let session = NCSession.shared.getSession(account: localAccount)
-        return NCUtility().getImage(
-            ocId: coverCacheId,
-            etag: "",
-            ext: NCGlobal.shared.previewExt512,
-            userId: session.userId,
-            urlBase: session.urlBase
-        )
+        return key.md5()
     }
 
     @MainActor
@@ -82,78 +67,45 @@ struct AlbumGridItemView: View {
             return
         }
 
-        if let image = cachedThumbnail {
-            imageState = .thumbnail(image)
-            return
-        }
-
         imageState = .loading
-        if let photoId = album.lastPhotoId,
-           !photoId.isEmpty,
-           photoId != "-1",
-           let image = await downloadThumbnail(fileId: photoId) {
-            guard !Task.isCancelled else { return }
-            imageState = .thumbnail(image)
+        defer {
+            if case .loading = imageState {
+                imageState = .empty
+            }
+        }
+
+        guard let coverPhoto = await coverPhoto(),
+              !Task.isCancelled,
+              let image = await PhotoGridItemView.loadPreview(for: coverPhoto, account: localAccount),
+              !Task.isCancelled else {
             return
         }
-        guard !Task.isCancelled else { return }
-
-        let preferredPhotoId = album.lastPhotoId
-        let photos: [AlbumPhoto]
-        if let cached = NCManageDatabase.shared.getAlbumPhotos(album: album) {
-            photos = cached.map { AlbumPhoto(metadata: $0) }
-        } else {
-            photos = (try? await AlbumsManager.shared.refreshAlbumPhotos(album)) ?? []
-        }
-        let candidateIds = photos.filter {
-            $0.metadata.hasPreview && $0.id != preferredPhotoId
-        }.sorted {
-            if $0.metadata.date != $1.metadata.date {
-                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedDescending
-            }
-            return $0.id < $1.id
-        }.prefix(5).map(\.id)
-        guard !Task.isCancelled else { return }
-
-        for photoId in candidateIds {
-            if let image = await downloadThumbnail(fileId: photoId) {
-                guard !Task.isCancelled else { return }
-                imageState = .thumbnail(image)
-                return
-            }
-            guard !Task.isCancelled else { return }
-        }
-        imageState = .empty
+        imageState = .thumbnail(image)
     }
 
     @MainActor
-    private func downloadThumbnail(fileId photoId: String) async -> UIImage? {
-        guard !Task.isCancelled else { return nil }
-        let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: photoId, etag: "", account: localAccount) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: localAccount,
-                    path: photoId,
-                    name: "DownloadPreview")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+    private func coverPhoto() async -> AlbumPhoto? {
+        let cached = NCManageDatabase.shared.getAlbumPhotos(album: album)
+        let cachedPhotos = cached?.map { AlbumPhoto(metadata: $0) }
+        let cacheIsCurrent: Bool
+        if let lastPhotoId = album.lastPhotoId, !lastPhotoId.isEmpty, lastPhotoId != "-1" {
+            cacheIsCurrent = cached?.contains(where: { $0.fileId == lastPhotoId }) == true
+        } else {
+            cacheIsCurrent = true
         }
-        // A cancelled request must not overwrite a newer album cover.
-        guard !Task.isCancelled else { return nil }
-        guard resultsPreview.error == .success,
-              let data = resultsPreview.responseData?.data else {
-            return nil
+        let photos: [AlbumPhoto]
+        if let cachedPhotos, cacheIsCurrent {
+            photos = cachedPhotos
+        } else {
+            photos = (try? await AlbumsManager.shared.refreshAlbumPhotos(album)) ?? cachedPhotos ?? []
         }
 
-        let session = NCSession.shared.getSession(account: localAccount)
-        return NCUtility().createImageFileFrom(
-            data: data,
-            ocId: coverCacheId,
-            etag: "",
-            ext: NCGlobal.shared.previewExt512,
-            userId: session.userId,
-            urlBase: session.urlBase
-        )
+        return photos.filter(\.metadata.hasPreview).max {
+            if $0.metadata.date != $1.metadata.date {
+                return $0.metadata.date.compare($1.metadata.date as Date) == .orderedAscending
+            }
+            return $0.id < $1.id
+        }
     }
 
     private var frame: some View {

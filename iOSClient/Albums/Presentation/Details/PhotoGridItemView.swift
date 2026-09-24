@@ -9,7 +9,6 @@ import NextcloudKit
 struct PhotoGridItemView: View {
     @Environment(\.localAccount) var localAccount: String
 
-    let album: Album
     let photo: AlbumPhoto
     let aspectRatio: CGFloat
     let showsMediaTypeIcon: Bool
@@ -28,12 +27,10 @@ struct PhotoGridItemView: View {
     @State private var isLoading = false
 
     init(
-        album: Album,
         photo: AlbumPhoto,
         aspectRatio: CGFloat = 1,
         showsMediaTypeIcon: Bool = true
     ) {
-        self.album = album
         self.photo = photo
         self.aspectRatio = aspectRatio
         self.showsMediaTypeIcon = showsMediaTypeIcon
@@ -76,57 +73,64 @@ struct PhotoGridItemView: View {
         }
     }
 
+    @MainActor
     private func loadThumbnailFromPhoto() async {
         // Clear the previous image before validating the new photo. Otherwise a
         // reused cover view could keep showing a removed photo with no replacement.
-        await MainActor.run {
-            self.thumbnail = nil
-            self.isLoading = metadata.hasPreview && !photo.id.isEmpty
-        }
+        thumbnail = nil
+        isLoading = !photo.id.isEmpty
+        defer { isLoading = false }
 
-        // 1. Validate: Only load if it has a preview and a valid ID
-        guard metadata.hasPreview, !photo.id.isEmpty else {
+        guard !photo.id.isEmpty else {
             return
         }
 
-        // 2. Setup parameters from Photo object and Metadata fallback
+        let image = await Self.loadPreview(for: photo, account: localAccount)
+        guard !Task.isCancelled else { return }
+        thumbnail = image
+    }
+
+    @MainActor
+    static func loadPreview(for photo: AlbumPhoto, account: String) async -> UIImage? {
+        guard !Task.isCancelled, !photo.id.isEmpty else { return nil }
+
+        let metadata = photo.metadata
         let fileId = photo.id
+        let ocId = metadata.ocId
         let userId = metadata.userId
         let urlBase = metadata.urlBase
         let etag = metadata.etag
+        let previewExt = NCGlobal.shared.previewExt512
+        let utility = NCUtility()
 
-        // 3. Try Disk Cache First
-        if let cachedImage = NCUtility().getImage(
-            ocId: fileId,
-            etag: etag,
-            ext: NCGlobal.shared.previewExt512,
-            userId: userId,
-            urlBase: urlBase
-        ) {
-            await MainActor.run {
-                self.thumbnail = cachedImage
-                self.isLoading = false
-            }
-            return
+        if let cachedImage = utility.getImage(ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase) {
+            return cachedImage
         }
 
-        // 4. Download Preview
-        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: localAccount) { _ in }
+        guard metadata.hasPreview else { return nil }
 
-        await MainActor.run {
-            if results.error == .success,
-               let data = results.responseData?.data,
-               let image = UIImage(data: data) {
-                self.thumbnail = image
-
-                // 5. Save to cache (optional but recommended)
-                Task.detached(priority: .background) {
-                    NCUtility().createImageFileFrom(
-                        data: data, ocId: fileId, etag: etag, userId: userId, urlBase: urlBase
-                    )
-                }
+        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
+                    account: account,
+                    path: fileId,
+                    name: "DownloadPreview"
+                )
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
-            self.isLoading = false
         }
+        guard !Task.isCancelled else { return nil }
+
+        guard results.error == .success,
+              let data = results.responseData?.data,
+              let image = UIImage(data: data) else {
+            return nil
+        }
+
+        Task.detached(priority: .background) {
+            NCUtility().createImageFileFrom(data: data, ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase)
+        }
+
+        return image
     }
 }
