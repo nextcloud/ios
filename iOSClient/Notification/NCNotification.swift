@@ -7,6 +7,7 @@ import NextcloudKit
 import SwiftyJSON
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate {
+    private var dataSourceTask: URLSessionTask?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
@@ -65,9 +66,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCNotification")
-        }
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
     }
 
     @objc func viewClose() {
@@ -335,16 +335,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     @MainActor
     func getNetwokingNotification() async {
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCNotification") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
         self.tableView.reloadData()
 
         let results = await NextcloudKit.shared.getNotificationsAsync(account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCNotification", task: task)
-            }
+            self.dataSourceTask = task
         }
         guard results.error == .success, let notifications = results.notifications else {
             return
