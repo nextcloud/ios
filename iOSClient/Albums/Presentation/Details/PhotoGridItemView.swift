@@ -76,13 +76,13 @@ struct PhotoGridItemView: View {
         }
     }
 
+    @MainActor
     private func loadThumbnailFromPhoto() async {
         // Clear the previous image before validating the new photo. Otherwise a
         // reused cover view could keep showing a removed photo with no replacement.
-        await MainActor.run {
-            self.thumbnail = nil
-            self.isLoading = !photo.id.isEmpty
-        }
+        thumbnail = nil
+        isLoading = !photo.id.isEmpty
+        defer { isLoading = false }
 
         // 1. Validate the photo ID.
         guard !photo.id.isEmpty else {
@@ -99,67 +99,35 @@ struct PhotoGridItemView: View {
         let utility = NCUtility()
 
         // 3. Look in the preview cache first.
-        if let cachedImage = utility.getImage(
-            ocId: ocId,
-            etag: etag,
-            ext: previewExt,
-            userId: userId,
-            urlBase: urlBase
-        ) {
-            await MainActor.run {
-                self.thumbnail = cachedImage
-                self.isLoading = false
-            }
+        if let cachedImage = utility.getImage(ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase) {
+            thumbnail = cachedImage
             return
         }
 
         // 4. If the original file is local, generate its preview locally.
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             utility.createImageFileFrom(metadata: metadata)
-            if let localImage = utility.getImage(
-                ocId: ocId,
-                etag: etag,
-                ext: previewExt,
-                userId: userId,
-                urlBase: urlBase
-            ) {
-                await MainActor.run {
-                    self.thumbnail = localImage
-                    self.isLoading = false
-                }
+            if let localImage = utility.getImage(ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase) {
+                thumbnail = localImage
                 return
             }
         }
 
         // 5. Download the server preview only as the final fallback.
-        guard metadata.hasPreview else {
-            await MainActor.run {
-                self.isLoading = false
-            }
-            return
-        }
+        guard metadata.hasPreview else { return }
 
         let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: localAccount) { _ in }
+        guard !Task.isCancelled else { return }
 
-        await MainActor.run {
-            if results.error == .success,
-               let data = results.responseData?.data,
-               let image = UIImage(data: data) {
-                self.thumbnail = image
+        if results.error == .success,
+           let data = results.responseData?.data,
+           let image = UIImage(data: data) {
+            thumbnail = image
 
-                // 6. Save the downloaded preview to the cache.
-                Task.detached(priority: .background) {
-                    NCUtility().createImageFileFrom(
-                        data: data,
-                        ocId: ocId,
-                        etag: etag,
-                        ext: previewExt,
-                        userId: userId,
-                        urlBase: urlBase
-                    )
-                }
+            // 6. Save the downloaded preview to the cache.
+            Task.detached(priority: .background) {
+                NCUtility().createImageFileFrom(data: data, ocId: ocId, etag: etag, ext: previewExt, userId: userId, urlBase: urlBase)
             }
-            self.isLoading = false
         }
     }
 }
