@@ -8,6 +8,7 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
+    private var dataSourceTask: URLSessionTask?
     internal var lastOffsetY: CGFloat = 0
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
@@ -123,9 +124,11 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
+
         Task {
             await stopSyncMetadata()
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
     }
 
@@ -165,7 +168,8 @@ class NCFiles: NCCollectionViewCommon {
             startSyncMetadata(metadatas: self.dataSource.getMetadatas())
         }
 
-        await networking.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
 
         guard !isSearchingMode else {
             await self.search()
@@ -220,11 +224,12 @@ class NCFiles: NCCollectionViewCommon {
         var reloadRequired: Bool = false
         let account = session.account
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "\(self.serverUrl)_NCFiles", task: task)
-            }
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             }
         }
         guard resultsReadFile.error == .success,
@@ -261,11 +266,12 @@ class NCFiles: NCCollectionViewCommon {
             account: account,
             options: options
         ) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "\(self.serverUrl)_NCFiles", task: task)
-            }
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             }
         }
 
