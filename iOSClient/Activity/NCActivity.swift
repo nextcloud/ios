@@ -64,6 +64,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
         tableView.backgroundColor = usesGroupedBackground ? .systemGroupedBackground : .systemBackground
+        tableView.hideTopScrollEdgeEffect()
 
         if showComments {
             setupComments()
@@ -112,7 +113,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         tableView.tableHeaderView = commentView
         commentView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         commentView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        viewContainerConstraint.constant = height - 10
+        viewContainerConstraint.constant = height
     }
 
     func makeTableFooterView() -> UIView {

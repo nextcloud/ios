@@ -35,3 +35,11 @@ extension UIView {
         }
     }
 }
+
+extension UIScrollView {
+    func hideTopScrollEdgeEffect() {
+        if #available(iOS 27.0, *) {
+            topEdgeEffect.isHidden = true
+        }
+    }
+}

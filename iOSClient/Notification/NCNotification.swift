@@ -37,6 +37,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
         tableView.backgroundColor = .systemBackground
+        tableView.hideTopScrollEdgeEffect()
 
         refreshControl?.action(for: .valueChanged) { _ in
             Task {

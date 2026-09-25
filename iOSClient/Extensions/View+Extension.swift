@@ -19,6 +19,15 @@ extension View {
         isHidden ? AnyView(self.hidden()) : AnyView(self)
     }
 
+    @ViewBuilder
+    func hideTopScrollEdgeEffect() -> some View {
+        if #available(iOS 27.0, *) {
+            scrollEdgeEffectHidden(for: .top)
+        } else {
+            self
+        }
+    }
+
     /// Applies the given transform if the given condition evaluates to `true`.
     /// - Parameters:
     ///   - condition: The condition to evaluate.

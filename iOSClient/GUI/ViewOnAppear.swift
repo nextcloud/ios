@@ -24,8 +24,9 @@ struct DefaultViewModifier<ViewModel: ViewOnAppearHandling>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-        .onAppear {
-            viewModel.onViewAppear()        // Call onViewAppear on view appearance
-        }
+            .hideTopScrollEdgeEffect()
+            .onAppear {
+                viewModel.onViewAppear()        // Call onViewAppear on view appearance
+            }
     }
 }

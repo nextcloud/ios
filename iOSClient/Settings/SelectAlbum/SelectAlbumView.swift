@@ -24,6 +24,7 @@ struct SelectAlbumView: View {
                 AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.userAlbums, sectionTitle: "_albums_")
             }
         }
+        .hideTopScrollEdgeEffect()
         .safeAreaInset(edge: .bottom, content: {
             Spacer().frame(height: 30)
         })
