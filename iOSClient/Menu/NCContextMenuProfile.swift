@@ -55,19 +55,7 @@ class NCContextMenuProfile: NSObject {
     // MARK: - Private Async Loading
 
     private func loadProfileMenu() async -> [UIMenuElement] {
-        let results = await NextcloudKit.shared.getHovercardAsync(
-            for: userId,
-            account: session.account
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.session.account,
-                    path: self.userId,
-                    name: "getHovercard"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let results = await NextcloudKit.shared.getHovercardAsync(for: userId, account: session.account)
 
         guard let card = results.result, results.account == session.account else {
             return []

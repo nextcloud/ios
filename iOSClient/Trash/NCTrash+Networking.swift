@@ -13,14 +13,14 @@ extension NCTrash {
         }
 
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCTrash") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCTrash", task: task)
-                await self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+                self.collectionView.reloadData()
             }
         }
 
@@ -38,14 +38,7 @@ extension NCTrash {
         let serverUrlFileNameSource = result.filePath + result.fileName
         let serverUrlFileNameDestination = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + result.fileName
 
-        let resultsMoveFileOrFolder = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, account: self.session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                            path: serverUrlFileNameSource,
-                                                                                            name: "moveFileOrFolder")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsMoveFileOrFolder = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, account: self.session.account)
 
         guard resultsMoveFileOrFolder.error == .success else {
             return
@@ -57,14 +50,7 @@ extension NCTrash {
 
     func emptyTrash() async {
         let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
-        let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                            path: serverUrlFileName,
-                                                                                            name: "deleteFileOrFolder")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
 
         if results.error != .success {
             await showErrorBanner(windowScene: self.windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
@@ -79,14 +65,8 @@ extension NCTrash {
                 continue
             }
             let serverUrlFileName = result.filePath + result.fileName
-            let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                path: serverUrlFileName,
-                                                                                                name: "deleteFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+
             if results.error != .success {
                 await showErrorBanner(windowScene: self.windowScene, text: results.error.errorDescription, errorCode: results.error.errorCode)
             }

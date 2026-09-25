@@ -41,12 +41,7 @@ import NextcloudKit
 
     func getStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "getUserStatus")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account)
 
             if result.error == .success {
                 emojiText = result.icon ?? "😀"
@@ -58,12 +53,7 @@ import NextcloudKit
 
     func clearStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.clearMessageAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "clearMessage")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.clearMessageAsync(account: account)
 
             if result.error != .success {
                 await showErrorBanner(windowScene: self.windowScene, error: result.error)
@@ -73,12 +63,7 @@ import NextcloudKit
 
     func getPredefinedStatusTexts(account: String) {
         Task {
-            let result = await NextcloudKit.shared.getUserStatusPredefinedStatusesAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "getUserStatusPredefinedStatuses")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.getUserStatusPredefinedStatusesAsync(account: account)
 
             if result.error == .success {
                 predefinedStatuses = isXcodeRunningForPreviews ? createStatusesForPreview() : result.userStatuses ?? []
@@ -90,12 +75,7 @@ import NextcloudKit
 
     func submitStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.setCustomMessageUserDefinedAsync(statusIcon: emojiText, message: statusText, clearAt: getClearAt(clearAfterString), account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account, name: "setCustomMessageUserDefined")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.setCustomMessageUserDefinedAsync(statusIcon: emojiText, message: statusText, clearAt: getClearAt(clearAfterString), account: account)
 
             if result.error != .success {
                 await showErrorBanner(windowScene: self.windowScene, error: result.error)
@@ -105,13 +85,7 @@ import NextcloudKit
 
     func setAccountUserStatus(account: String) {
         Task {
-            let result = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: "getUserStatus")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.getUserStatusAsync(account: account)
 
             if result.error == .success {
                 await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: result.clearAt,

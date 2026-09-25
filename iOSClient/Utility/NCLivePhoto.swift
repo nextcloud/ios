@@ -734,16 +734,7 @@ extension NCLivePhoto {
                     serverUrlfileNamePath: serverUrlfileNamePath,
                     livePhotoFile: metadata2.fileName,
                     account: metadata1.account
-                ) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: metadata1.account,
-                            path: serverUrlfileNamePath,
-                            name: "setLivephoto"
-                        )
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
+                )
             }
 
             if metadata2.livePhotoFile.isEmpty, !metadata1.fileName.isEmpty {
@@ -753,16 +744,7 @@ extension NCLivePhoto {
                     serverUrlfileNamePath: serverUrlfileNamePath,
                     livePhotoFile: metadata1.fileName,
                     account: metadata2.account
-                ) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                            account: metadata2.account,
-                            path: serverUrlfileNamePath,
-                            name: "setLivephoto"
-                        )
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
+                )
             }
         }
     }

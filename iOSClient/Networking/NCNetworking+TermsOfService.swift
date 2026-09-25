@@ -22,13 +22,8 @@ extension NCNetworking {
         var tosArray = groupDefaults.array(forKey: nkComm.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
-        let resultsGetToS = await NextcloudKit.shared.getTermsOfServiceAsync(account: account, options: options, taskHandler: { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            name: "getTermsOfService")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        })
+        let resultsGetToS = await NextcloudKit.shared.getTermsOfServiceAsync(account: account, options: options)
+
         guard resultsGetToS.error == .success, let tos = resultsGetToS.tos, !tos.hasUserSigned() else {
             tosArray.removeAll { $0 == account }
             groupDefaults.set(tosArray, forKey: nkComm.groupDefaultsToS)
@@ -52,14 +47,8 @@ extension NCNetworking {
         var tosArray = groupDefaults.array(forKey: nkComm.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
-        let resultsSignToS = await  NextcloudKit.shared.signTermsOfServiceAsync(termId: "\(termId)", account: account, options: options) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: "\(termId)",
-                                                                                            name: "signTermsOfService")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsSignToS = await  NextcloudKit.shared.signTermsOfServiceAsync(termId: "\(termId)", account: account, options: options)
+
         if resultsSignToS.error == .success {
             tosArray.removeAll { $0 == account }
             groupDefaults.set(tosArray, forKey: nkComm.groupDefaultsToS)

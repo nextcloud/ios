@@ -26,13 +26,7 @@ class NCRichWorkspaceCoordinator: NSObject {
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = utilityFileSystem.getRelativeFilePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
-        NextcloudKit.shared.createFileForDirectEditing(fileNamePath: fileNamePath, editorId: textCreator.editor, creatorId: textCreator.identifier, templateId: "", account: session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                            path: fileNamePath,
-                                                                                            name: "createFileForDirectEditing")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.createFileForDirectEditing(fileNamePath: fileNamePath, editorId: textCreator.editor, creatorId: textCreator.identifier, templateId: "", account: session.account) { _ in
         } completion: { _, url, _, error in
             NCActivityIndicator.shared.stop()
             guard error == .success, let url else {
@@ -70,13 +64,7 @@ class NCRichWorkspaceCoordinator: NSObject {
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-                NextcloudKit.shared.openFileForDirectEditing(fileNamePath: fileNamePath, fileId: metadata.fileId, editorId: global.editorText, account: metadata.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                    path: fileNamePath,
-                                                                                                    name: "openFileForDirectEditing")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
+                NextcloudKit.shared.openFileForDirectEditing(fileNamePath: fileNamePath, fileId: metadata.fileId, editorId: global.editorText, account: metadata.account) { _ in
                 } completion: { _, url, _, error in
                     NCActivityIndicator.shared.stop()
                     guard error == .success, let url else {

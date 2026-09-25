@@ -109,16 +109,7 @@ struct PhotoGridItemView: View {
 
         guard metadata.hasPreview else { return nil }
 
-        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: account,
-                    path: fileId,
-                    name: "DownloadPreview"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let results = await NextcloudKit.shared.downloadPreviewAsync(fileId: fileId, etag: etag, account: account)
         guard !Task.isCancelled else { return nil }
 
         guard results.error == .success,

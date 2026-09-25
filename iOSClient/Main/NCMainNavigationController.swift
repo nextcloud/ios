@@ -178,15 +178,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 if capabilities.notification.count == 0 {
                     controller.availableNotifications = false
                 } else {
-                    _ = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                                account: account,
-                                name: "getNotifications"
-                            )
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
+                    _ = await NextcloudKit.shared.getNotificationsAsync(account: account)
                     guard controller.account == account else { return }
                     controller.availableNotifications = true
                 }

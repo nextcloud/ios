@@ -353,13 +353,6 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             requestHandler: { _ in },
             taskHandler: { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: self.metadata.account,
-                        path: url.absoluteString,
-                        name: "download"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-
                     await self.database.setMetadataSessionAsync(
                         ocId: self.metadata.ocId,
                         sessionTaskIdentifier: task.taskIdentifier,
@@ -510,15 +503,7 @@ extension NCViewerDirectEditing: NCSelectDelegate {
         }
 
         let path = utilityFileSystem.getRelativeFilePath(metadata.fileName, serverUrl: serverUrl, session: session)
-        NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: metadata.account,
-                    path: path,
-                    name: "createRichdocumentsAssetURL"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.createRichdocumentsAssetURL(filePath: path, account: metadata.account) { _ in
         } completion: { _, url, _, error in
             if error == .success, let url {
                 self.postRichDocumentsAsset(fileName: metadata.fileNameView, url: url)

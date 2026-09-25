@@ -289,19 +289,8 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         if metadata.isDirectoryE2EE {
             deleteError = await NCNetworkingE2EEDelete().delete(metadata: metadata)
         } else {
-            let result = await NextcloudKit.shared.deleteFileOrFolderAsync(
-                serverUrlFileName: metadata.serverUrlFileName,
-                account: metadata.account
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: metadata.account,
-                        path: metadata.serverUrlFileName,
-                        name: "deleteFileOrFolder"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
+            let result = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+
             deleteError = result.error
         }
 

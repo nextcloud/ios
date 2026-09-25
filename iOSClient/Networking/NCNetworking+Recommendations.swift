@@ -15,27 +15,15 @@ extension NCNetworking {
 
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         var recommendationsToInsert: [NKRecommendation] = []
-        let results = await NextcloudKit.shared.getRecommendedFilesAsync(account: session.account, taskHandler: { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                            name: "getRecommendedFiles")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        })
         var serverUrlFileName = ""
+
+        let results = await NextcloudKit.shared.getRecommendedFilesAsync(account: session.account)
 
         if results.error == .success, let recommendations = results.recommendations {
             for recommendation in recommendations {
                 serverUrlFileName = self.utilityFileSystem.createServerUrl(serverUrl: home + recommendation.directory, fileName: recommendation.name)
 
-                let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
-                                                                                                    path: serverUrlFileName,
-                                                                                                    name: "readFileOrFolder")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
+                let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
                     let metadata = await NCManageDatabaseCreateMetadata().convertFileToMetadataAsync(file)

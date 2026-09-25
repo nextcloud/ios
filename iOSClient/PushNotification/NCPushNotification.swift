@@ -42,14 +42,7 @@ class NCPushNotification {
         let responsePN = await NextcloudKit.shared.subscribingPushNotificationAsync(serverUrl: urlBase,
                                                                                     pushTokenHash: pushTokenHash,
                                                                                     devicePublicKey: devicePublicKey,
-                                                                                    proxyServerUrl: proxyServerUrl, account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: urlBase,
-                                                                                            name: "subscribingPushNotification")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+                                                                                    proxyServerUrl: proxyServerUrl, account: account)
 
         guard responsePN.error == .success,
               let deviceIdentifier = responsePN.deviceIdentifier,
@@ -69,14 +62,7 @@ class NCPushNotification {
                                                                                     signature: signature,
                                                                                     publicKey: subscribingPublicKey,
                                                                                     account: account,
-                                                                                    options: options, taskHandler: { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: proxyServerUrl,
-                                                                                            name: "subscribingPushProxy")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        })
+                                                                                    options: options)
 
         guard responsePushProxy.error == .success else {
             nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responsePushProxy.error.errorDescription)")
@@ -96,15 +82,7 @@ class NCPushNotification {
             return
         }
 
-        let responsePN = await NextcloudKit.shared.unsubscribingPushNotificationAsync(serverUrl: urlBase,
-                                                                                      account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: urlBase,
-                                                                                            name: "unsubscribingPushNotification")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let responsePN = await NextcloudKit.shared.unsubscribingPushNotificationAsync(serverUrl: urlBase, account: account)
 
         let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
         let options = NKRequestOptions(customUserAgent: userAgent)
@@ -114,14 +92,7 @@ class NCPushNotification {
                                                                                   signature: signature,
                                                                                   publicKey: subscribingPublicKey,
                                                                                   account: account,
-                                                                                  options: options) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: NCBrandOptions.shared.pushNotificationServerProxy,
-                                                                                            name: "unsubscribingPushProxy")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+                                                                                  options: options)
 
         nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server \(urlBase) with error \(responsePN.error.errorDescription)")
         nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responseProxy.error.errorDescription)")

@@ -40,16 +40,8 @@ extension UIAlertController {
                     }
 #endif
                     let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
-                    let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                                account: session.account,
-                                path: serverUrlFileName,
-                                name: "createFolder"
-                            )
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
+                    let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId, sceneIdentifier: nil)
                         if let banner, let token {

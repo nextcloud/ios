@@ -51,6 +51,9 @@ extension NCCollectionViewCommon {
             }
         }
 
+        syncMetadataNetworkTask?.cancel()
+        syncMetadataNetworkTask = nil
+
         syncMetadatasTask?.cancel()
         syncMetadatasTask = nil
     }
@@ -58,10 +61,7 @@ extension NCCollectionViewCommon {
     /// Accelerates metadata synchronization by:
     /// 1) Reading the top item (`readFileAsync`) to validate state and skip E2EE,
     /// 2) Iterating directories and triggering `readFolderAsync` where ETag changed,
-    /// 3) Tracking all spawned requests for centralized cancellation/cleanup.
-    ///
-    /// The method cooperates with task cancellation (`Task.isCancelled`) and guarantees that
-    /// all tracked `URLSessionTask` are cancelled on any exit path via `defer`.
+    /// 3) Retaining the current network task so `stopSyncMetadata()` can cancel it.
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     private func networkSyncMetadata(metadatas: [tableMetadata]) async {
@@ -73,21 +73,7 @@ extension NCCollectionViewCommon {
         if Task.isCancelled {
             return
         }
-        let identifier = self.serverUrl + "_syncMetadata"
         nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
-
-        // Always cancel and clear all tracked URLSessionTask on any exit path
-        defer {
-            Task {
-                await networking.networkingTasks.cancel(identifier: identifier)
-            }
-        }
-
-        // If a readFile for this serverUrl is already in-flight, do nothing
-        if await networking.networkingTasks.isReading(identifier: identifier) {
-            nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .debug, message: "ReadFile for this \(self.serverUrl) is already in-flight.", consoleOnly: true)
-            return
-        }
 
         // Get account for the first metadata, to be safe, it is better to take the account here and not from the session
         // since it can cause problems if you change users in the meantime.
@@ -99,8 +85,8 @@ extension NCCollectionViewCommon {
 
         if !serverUrl.isEmpty {
             let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
-                Task {
-                    await self.networking.networkingTasks.track(identifier: identifier, task: task)
+                Task { @MainActor in
+                    self.syncMetadataNetworkTask = task
                 }
             }
 
@@ -144,8 +130,8 @@ extension NCCollectionViewCommon {
 
             let serverUrl = metadata.serverUrlFileName
             let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: metadata.account) { task in
-                Task {
-                    await self.networking.networkingTasks.track(identifier: identifier, task: task)
+                Task { @MainActor in
+                    self.syncMetadataNetworkTask = task
                 }
             }
 
@@ -156,9 +142,6 @@ extension NCCollectionViewCommon {
                 nkLog(tag: global.logTagSpeedUpSyncMetadata, emoji: .error, message: "Read failed for \(serverUrl) with error: \(resultsReadFolder.error.errorDescription)")
                 return
             }
-
-            // Keep the in-memory list tight by removing completed tasks
-            await networking.networkingTasks.cleanup()
         }
     }
 }

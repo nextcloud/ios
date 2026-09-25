@@ -9,6 +9,7 @@ class NCShares: NCCollectionViewCommon {
     @MainActor private var fileIds: Set<String> = []
 
     private var backgroundTask: Task<Void, Never>?
+    private var dataSourceTask: URLSessionTask?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -43,10 +44,14 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
+
+        backgroundTask?.cancel()
+        backgroundTask = nil
+
         Task {
             await stopSyncMetadata()
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCShares")
-            backgroundTask?.cancel()
         }
     }
 
@@ -70,18 +75,19 @@ class NCShares: NCCollectionViewCommon {
 
     override func getServerData(forced: Bool = false) async {
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCShares") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
         startGUIGetServerData()
 
         let resultsReadShares = await NextcloudKit.shared.readSharesAsync(parameters: NKShareParameter(), account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCShares", task: task)
-            }
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
+            Task { @MainActor in
+                self.dataSourceTask = task
+
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             }
         }
 

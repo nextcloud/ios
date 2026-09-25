@@ -7,6 +7,7 @@ import NextcloudKit
 import SwiftyJSON
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate {
+    private var dataSourceTask: URLSessionTask?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
@@ -65,9 +66,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCNotification")
-        }
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
     }
 
     @objc func viewClose() {
@@ -259,13 +259,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     // MARK: - tap Action
 
     func tapRemove(with notification: NKNotifications, sender: Any?) {
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                            path: "\(notification.idNotification)",
-                                                                                            name: "setNotification")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { _ in
         } completion: { _, _, error in
             if error == .success {
                 if let index = self.notifications
@@ -305,12 +299,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             return
         }
 
-        NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                            name: "setNotification")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _ in
         } completion: { _, _, error in
             if error == .success {
                 if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
@@ -335,15 +324,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     @MainActor
     func getNetwokingNotification() async {
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCNotification") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
         self.tableView.reloadData()
 
         let results = await NextcloudKit.shared.getNotificationsAsync(account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCNotification", task: task)
+            Task { @MainActor in
+                self.dataSourceTask = task
             }
         }
         guard results.error == .success, let notifications = results.notifications else {

@@ -16,6 +16,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
     var usesGroupedBackground: Bool = false
+    private var activityTasks: [URLSessionTask] = []
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -76,13 +77,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(account: metadata.account) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: metadata.fileId,
-                                                                                                name: "putComments")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { _ in
             } completion: { _, _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
@@ -107,9 +102,8 @@ class NCActivity: UIViewController, NCSharePagingContent {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCActivity")
-        }
+        activityTasks.forEach { $0.cancel() }
+        activityTasks.removeAll()
     }
 
     override func viewWillLayoutSubviews() {
@@ -445,13 +439,7 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            path: metadata.fileId,
-                                                                                            name: "getComments")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
+        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { _ in
         } completion: { _, comments, _, error in
             if error == .success, let comments = comments {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
@@ -473,11 +461,14 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        Task {
-            // If is already in-flight, do nothing
-            if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCActivity") {
-                return
-            }
+        activityTasks.removeAll {
+            $0.state == .completed || $0.state == .canceling
+        }
+
+        if activityTasks.contains(where: {
+            $0.state == .running || $0.state == .suspended
+        }) {
+            return
         }
 
         guard let result = database.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
@@ -493,8 +484,11 @@ extension NCActivity {
                                         objectType: objectType,
                                         previews: true,
                                         account: session.account) { task in
-                Task {
-                    await NCNetworking.shared.networkingTasks.track(identifier: "NCActivity", task: task)
+                Task { @MainActor in
+                    self.activityTasks.removeAll {
+                        $0.state == .completed || $0.state == .canceling
+                    }
+                    self.activityTasks.append(task)
                 }
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
@@ -525,8 +519,11 @@ extension NCActivity {
                                         objectType: objectType,
                                         previews: true,
                                         account: session.account) { task in
-                Task {
-                    await NCNetworking.shared.networkingTasks.track(identifier: "NCActivity", task: task)
+                Task { @MainActor in
+                    self.activityTasks.removeAll {
+                        $0.state == .completed || $0.state == .canceling
+                    }
+                    self.activityTasks.append(task)
                 }
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }

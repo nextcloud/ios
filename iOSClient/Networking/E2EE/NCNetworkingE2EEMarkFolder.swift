@@ -40,28 +40,16 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         }
 #endif
 
-        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: serverUrlFileName,
-                                                                                            name: "readFileOrFolder")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
+
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
             error = resultsReadFileOrFolder.error
             return error
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                            path: file.fileId,
-                                                                                            name: "markE2EEFolder")
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities))
+
         guard resultsMarkE2EEFolder.error == .success else {
             error = resultsMarkE2EEFolder.error
             return error

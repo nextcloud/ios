@@ -170,9 +170,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCSelect")
-        }
+        dataSourceTask?.cancel()
+        dataSourceTask = nil
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -523,13 +522,13 @@ extension NCSelect {
 
     func getServerData() async {
         // If is already in-flight, do nothing
-        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCSelect") {
+        if dataSourceTask?.state == .running || dataSourceTask?.state == .suspended {
             return
         }
 
         let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
-            Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: "NCSelect", task: task)
+            Task { @MainActor in
+                self.dataSourceTask = task
             }
         }
         if resultsReadFolder.error == .success {

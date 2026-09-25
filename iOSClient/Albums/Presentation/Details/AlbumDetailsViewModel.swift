@@ -235,24 +235,7 @@ class AlbumDetailsViewModel: ObservableObject {
             }) else {
                 return .success // Already removed from this album on the server.
             }
-            try await NextcloudKit.shared.deletePhotoFromAlbumAsync(
-                albumName: album.name,
-                fileName: membership.fileName,
-                account: account
-            ) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: metadata.account,
-                        path: photo.metadata.serverUrlFileName,
-                        name: "deletePhotoFromAlbum"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task
-                    )
-                }
-            }
-
+            try await NextcloudKit.shared.deletePhotoFromAlbumAsync(albumName: album.name, fileName: membership.fileName, account: account)
             return .success
 
         } catch let nkError as NKError {

@@ -137,16 +137,7 @@ final class NCDocumentEditorCoordinator {
             editorId: editorId,
             account: metadata.account,
             options: options
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.metadata.account,
-                    path: fileNamePath,
-                    name: "openFileForDirectEditing"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         guard results.error == .success,
               let generatedURL = results.url,
@@ -193,16 +184,7 @@ final class NCDocumentEditorCoordinator {
         let results = await NextcloudKit.shared.createRichdocumentsEditorURLAsync(
             fileId: metadata.fileId,
             account: metadata.account
-        ) { task in
-            Task {
-                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                    account: self.metadata.account,
-                    path: self.metadata.fileId,
-                    name: "createRichdocumentsEditorURL"
-                )
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        }
+        )
 
         guard results.error == .success,
               let generatedURL = results.url,

@@ -372,15 +372,7 @@ extension NCMedia {
             lastDate: lastDate,
             account: account,
             paginate: false,
-            limit: limit) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: account,
-                        name: "searchMedia")
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task)
-                }
+            limit: limit) { _ in
             } update: { files in
                 guard !Task.isCancelled,
                       self.session.account == account else {
@@ -421,16 +413,7 @@ extension NCMedia {
             lastDate: lastDate,
             account: account,
             paginate: true,
-            limit: limit) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(
-                        account: account,
-                        name: "verifyNetworkMedia"
-                    )
-                    await NCNetworking.shared.networkingTasks.track(
-                        identifier: identifier,
-                        task: task)
-                }
+            limit: limit) { _ in
             } update: { files in
                 guard !Task.isCancelled,
                       self.session.account == account else {
