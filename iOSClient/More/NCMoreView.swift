@@ -61,6 +61,7 @@ struct NCMoreView: View {
                     .frame(height: 32)
                     .allowsHitTesting(false)
             }
+            .hideTopScrollEdgeEffect()
 
             quotaSection
         }

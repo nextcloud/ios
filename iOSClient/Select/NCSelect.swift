@@ -75,6 +75,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
+        collectionView.hideTopScrollEdgeEffect()
 
         selectCommandViewSelect?.separatorView.backgroundColor = .separator
 

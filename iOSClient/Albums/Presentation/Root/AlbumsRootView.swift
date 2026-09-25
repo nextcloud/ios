@@ -44,6 +44,7 @@ struct AlbumsRootView: View {
                     }
                 }
         }
+        .hideTopScrollEdgeEffect()
         .environment(\.localAccount, controller.account)
         .onAppear {
             guard !didApplyInitialRoute else { return }

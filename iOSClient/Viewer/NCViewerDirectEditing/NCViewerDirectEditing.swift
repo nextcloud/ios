@@ -260,7 +260,12 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
             print(mobileMessage.command)
 
         case "paste":
-            paste(self)
+            UIApplication.shared.sendAction(
+                #selector(UIResponderStandardEditActions.paste(_:)),
+                to: nil,
+                from: self,
+                for: nil
+            )
 
         case "insertGraphic":
             presentImageSelector()

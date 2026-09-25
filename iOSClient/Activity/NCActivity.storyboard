@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="20" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="X49-xg-JXO">
-                                <rect key="frame" x="0.0" y="48" width="414" height="848"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableCell" rowHeight="50" id="ggj-aE-fnh" customClass="NCActivityTableViewCell" customModule="Nextcloud" customModuleProvider="target">
@@ -79,7 +79,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="X49-xg-JXO" firstAttribute="trailing" secondItem="USa-eR-a1s" secondAttribute="trailing" id="5we-Fh-GVu"/>
-                            <constraint firstItem="X49-xg-JXO" firstAttribute="top" secondItem="USa-eR-a1s" secondAttribute="top" id="E1U-4Q-6uu"/>
+                            <constraint firstItem="X49-xg-JXO" firstAttribute="top" secondItem="vOO-VC-ekK" secondAttribute="top" id="E1U-4Q-6uu"/>
                             <constraint firstAttribute="bottom" secondItem="X49-xg-JXO" secondAttribute="bottom" id="aHq-g4-dUG"/>
                             <constraint firstItem="X49-xg-JXO" firstAttribute="leading" secondItem="USa-eR-a1s" secondAttribute="leading" id="pfF-ag-f7x"/>
                         </constraints>
