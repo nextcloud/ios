@@ -85,9 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d foto</string>
+			<key>many</key>
+			<string>%d de fotos</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d fotos</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -101,9 +103,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d foto e vídeo</string>
+			<key>many</key>
+			<string>%d de fotos e vídeos</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d fotos e vídeos</string>
 		</dict>
 	</dict>
 </dict>
