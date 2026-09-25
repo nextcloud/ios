@@ -68,10 +68,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%d photo</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d 張照片</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -84,10 +82,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%d photo or video</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d 個照片與視像</string>
 		</dict>
 	</dict>
 </dict>
