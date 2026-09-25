@@ -3831,6 +3831,7 @@
 				F78DB20E3040239E00E6FE24 /* BackgroundUploadExtension */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F30A962A2A27A9C800D7BCFE /* Tests */,
+				F7F1FBA62E27D13700C79E20 /* Frameworks */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
 				2C33C47F23E2C475005F963B /* Notification Service Extension.appex */,
 				AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */,
@@ -3839,7 +3840,6 @@
 				F70716E32987F81500E72C1D /* File Provider Extension UI.appex */,
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
-				F7F1FBA62E27D13700C79E20 /* Frameworks */,
 				F31165012F9674A1009A1E37 /* AppIcon.icon */,
 				F7C55C7A2FB5AEF7004A974F /* Action Assistant.appex */,
 				F7FB188030401D0D00EB0AE6 /* BackgroundUploadExtension.appex */,
@@ -4184,8 +4184,8 @@
 				F77B0F981D118A16002130FE /* Embed Foundation Extensions */,
 				AFBFD01327551A54002244BC /* ShellScript */,
 				F76DA934277B75710082465B /* Embed Frameworks */,
-				F76995F02F99EF6C00291FA7 /* Crashlytics dSYM Upload */,
 				F721C7FE3040345700DD9D36 /* CopyFiles */,
+				F76995F02F99EF6C00291FA7 /* Crashlytics dSYM Upload */,
 			);
 			buildRules = (
 			);
@@ -6826,7 +6826,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand//BackgroundUploadExtension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/BackgroundUploadExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -6841,7 +6841,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include";
-				INFOPLIST_FILE = "$(SRCROOT)/Brand//BackgroundUploadExtension.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/BackgroundUploadExtension.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6877,7 +6877,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand//BackgroundUploadExtension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/BackgroundUploadExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -6891,8 +6891,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include";
-				INFOPLIST_FILE = "$(SRCROOT)/Brand//BackgroundUploadExtension.plist";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILD_DIR)/../../SourcePackages/checkouts/realm-swift/include",
+					"$(BUILD_DIR)/../../../../../SourcePackages/checkouts/realm-swift/include",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/BackgroundUploadExtension.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BackgroundUploadExtension;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
