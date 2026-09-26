@@ -122,7 +122,18 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
         }
 
         if metadata.backgroundUploadJobIdentifier == "pending" {
+            let resumesQueue = metadata.status == global.metadataStatusUploadError
+
+            if resumesQueue {
+                // Discarding the blocking error is an explicit request to continue with the other files.
+                NCPreferences().setBackgroundUploadSuspended(false, account: metadata.account)
+            }
+
             await database.deleteMetadataAsync(id: metadata.ocId)
+
+            if resumesQueue, #available(iOS 27, *) {
+                _ = await NCBackgroundUploadExtensionManager.shared.ensureEnabled()
+            }
             return
         }
 
@@ -151,6 +162,9 @@ final class TransfersViewModel: ObservableObject, NCMetadataDownloadTransfersSuc
         ) != nil else {
             return
         }
+
+        // Retrying one failed item explicitly resumes the background queue for its account.
+        NCPreferences().setBackgroundUploadSuspended(false, account: metadata.account)
 
         guard await NCBackgroundUploadExtensionManager.shared.ensureEnabled() else {
             return

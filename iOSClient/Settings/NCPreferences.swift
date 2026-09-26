@@ -695,6 +695,48 @@ final class NCPreferences: NSObject {
         return arrayValue
     }
 
+    // MARK: - Background Upload Extension
+
+    /// Reports whether automatic background uploads are suspended for the account.
+    /// The value is shared between the host app and its background upload extension.
+    func isBackgroundUploadSuspended(account: String) -> Bool {
+        getBoolPreference(key: "BackgroundUploadSuspended", account: account, defaultValue: false)
+    }
+
+    /// Suspends or resumes automatic background uploads for the account.
+    /// Resuming also clears the consecutive-failure circuit breaker for a fresh queue attempt.
+    func setBackgroundUploadSuspended(_ suspended: Bool, account: String) {
+        let key = "Preferences_BackgroundUploadSuspended_\(account)"
+
+        if suspended {
+            userDefaults.set(true, forKey: key)
+        } else {
+            userDefaults.removeObject(forKey: key)
+            resetBackgroundUploadConsecutiveFailures(account: account)
+        }
+    }
+
+    /// Records one terminal failure per distinct Photos asset and returns the consecutive count.
+    /// Repeated processing of the same failed asset does not advance the account circuit breaker.
+    func recordBackgroundUploadFailure(account: String, assetIdentifier: String) -> Int {
+        let failedAssetsKey = "Preferences_BackgroundUploadFailedAssets_\(account)"
+        var failedAssetIdentifiers = userDefaults.stringArray(forKey: failedAssetsKey) ?? []
+
+        guard !failedAssetIdentifiers.contains(assetIdentifier) else {
+            return failedAssetIdentifiers.count
+        }
+
+        failedAssetIdentifiers.append(assetIdentifier)
+        userDefaults.set(failedAssetIdentifiers, forKey: failedAssetsKey)
+        return failedAssetIdentifiers.count
+    }
+
+    /// Clears consecutive terminal failures after a successful upload.
+    /// This intentionally leaves an existing suspension flag unchanged until explicit user action.
+    func resetBackgroundUploadConsecutiveFailures(account: String) {
+        userDefaults.removeObject(forKey: "Preferences_BackgroundUploadFailedAssets_\(account)")
+    }
+
     // MARK: - Upload Asset (autoupload folder)
 
     func setUploadUseAutoUploadFolder(account: String, value: Bool) {

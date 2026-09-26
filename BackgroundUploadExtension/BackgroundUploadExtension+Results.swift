@@ -7,6 +7,30 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Reports whether another automatic upload attempt is available for the metadata.
+    /// The stored retry count excludes the initial upload, so the limit reserves one attempt for it.
+    func canAutomaticallyRetry(metadata: tableMetadata) -> Bool {
+        metadata.backgroundUploadRetryCount < maximumBackgroundUploadAttempts - 1
+    }
+
+    /// Records a terminal asset failure and suspends the account after three distinct failures.
+    /// Returns `true` when this failure opens the account-level circuit breaker.
+    @discardableResult
+    func recordTerminalUploadFailure(metadata: tableMetadata) -> Bool {
+        let assetIdentifier = metadata.assetLocalIdentifier.isEmpty ? metadata.ocIdTransfer : metadata.assetLocalIdentifier
+        let failureCount = preferences.recordBackgroundUploadFailure(
+            account: metadata.account,
+            assetIdentifier: assetIdentifier
+        )
+        let shouldSuspend = failureCount >= maximumConsecutiveBackgroundUploadFailures
+
+        if shouldSuspend {
+            preferences.setBackgroundUploadSuspended(true, account: metadata.account)
+        }
+
+        return shouldSuspend
+    }
+
     /// Detects authentication failures from normalized response headers or the sanitized URL error.
     /// The shared classification keeps retry and acknowledgement behavior consistent.
     func isAuthenticationFailure(job: PHAssetResourceUploadJob) -> Bool {
@@ -41,6 +65,8 @@ extension BackgroundUploadExtension {
         let headers = job.responseHeaderFields ?? [:]
 
         guard let ocId = headers["oc-fileid"], !ocId.isEmpty else {
+            // A successful response without Nextcloud metadata is a server-level compatibility error.
+            preferences.setBackgroundUploadSuspended(true, account: metadata.account)
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionDate = Date()
@@ -54,6 +80,9 @@ extension BackgroundUploadExtension {
 
             return false
         }
+
+        // Any confirmed upload breaks the sequence of consecutive asset failures.
+        preferences.resetBackgroundUploadConsecutiveFailures(account: metadata.account)
 
         let etag = nkComm.normalizedETag(
             headers["oc-etag"] ?? headers["etag"]

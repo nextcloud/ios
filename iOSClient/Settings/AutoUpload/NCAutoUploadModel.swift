@@ -168,6 +168,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
             if newValue {
                 await database.setAutoUploadStartAsync(true, account: accountIdentifier)
+                // Enabling Auto Upload is an explicit request to resume a previously suspended queue.
+                NCPreferences().setBackgroundUploadSuspended(false, account: accountIdentifier)
 
                 guard let updatedAccount = await database.getTableAccountAsync(
                     predicate: NSPredicate(format: "account == %@", accountIdentifier)

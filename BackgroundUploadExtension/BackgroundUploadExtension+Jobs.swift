@@ -199,21 +199,39 @@ extension BackgroundUploadExtension {
             logInfo("Retryable job \(jobIdentifier), error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0), description: \(error?.localizedDescription ?? "<nil>"), headers: \(job.responseHeaderFields ?? [:])")
 
             let authenticationRequired = isAuthenticationFailure(job: job)
+            let retryLimitReached = !canAutomaticallyRetry(metadata: metadata)
+            let queueSuspended = preferences.isBackgroundUploadSuspended(account: metadata.account)
 
-            if authenticationRequired {
+            // Stop before a fourth upload, invalid credentials, or work on a suspended account queue.
+            if authenticationRequired || retryLimitReached || queueSuspended {
+                if authenticationRequired {
+                    // Invalid credentials affect every file, so suspend the account immediately.
+                    preferences.setBackgroundUploadSuspended(true, account: metadata.account)
+                } else if retryLimitReached,
+                          !queueSuspended,
+                          recordTerminalUploadFailure(metadata: metadata) {
+                    logError("Suspended background upload after \(maximumConsecutiveBackgroundUploadFailures) consecutive asset failures for account \(metadata.account)")
+                }
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
 
                 guard try acknowledge(job: job, library: library) else {
-                    logError("Unable to acknowledge authentication-failed job \(jobIdentifier)")
+                    logError("Unable to acknowledge stopped job \(jobIdentifier)")
                     continue
                 }
 
+                // Keep the failed transfer available for an explicit retry from the host app.
                 metadata.backgroundUploadJobIdentifier = "pending"
                 metadata.backgroundUploadNextRetryDate = nil
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
                 madeProgress = true
-                logError("Stopped background upload after authentication failure for \(metadata.fileName), job: \(jobIdentifier)")
+                if authenticationRequired {
+                    logError("Stopped background upload after authentication failure for \(metadata.fileName), job: \(jobIdentifier)")
+                } else if retryLimitReached {
+                    logError("Stopped background upload after \(maximumBackgroundUploadAttempts) failed attempts for \(metadata.fileName), job: \(jobIdentifier)")
+                } else {
+                    logInfo("Stopped background upload because the account queue is suspended for \(metadata.fileName), job: \(jobIdentifier)")
+                }
                 continue
             }
 
@@ -245,6 +263,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
+            // PhotoKit is about to perform the next upload attempt for the same job.
             if metadata.backgroundUploadRetryCount < Int.max {
                 metadata.backgroundUploadRetryCount += 1
             }
@@ -308,9 +327,21 @@ extension BackgroundUploadExtension {
 
             case .failed:
                 let authenticationRequired = isAuthenticationFailure(job: job)
+                let retryLimitReached = !canAutomaticallyRetry(metadata: metadata)
+                let queueSuspended = preferences.isBackgroundUploadSuspended(account: metadata.account)
+
+                if authenticationRequired {
+                    // Invalid credentials affect every file, so suspend the account immediately.
+                    preferences.setBackgroundUploadSuspended(true, account: metadata.account)
+                } else if retryLimitReached,
+                          !queueSuspended,
+                          recordTerminalUploadFailure(metadata: metadata) {
+                    logError("Suspended background upload after \(maximumConsecutiveBackgroundUploadFailures) consecutive asset failures for account \(metadata.account)")
+                }
+
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
                 uploadSucceeded = false
-                createNewJob = !authenticationRequired
+                createNewJob = !authenticationRequired && !retryLimitReached && !queueSuspended
 
             default:
                 logError("Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
@@ -329,6 +360,7 @@ extension BackgroundUploadExtension {
 
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
             } else if createNewJob {
+                // A PhotoKit job can be retried only once; create a fresh job for the remaining attempt.
                 if metadata.backgroundUploadRetryCount < Int.max {
                     metadata.backgroundUploadRetryCount += 1
                 }
@@ -343,6 +375,7 @@ extension BackgroundUploadExtension {
 
                 logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
             } else {
+                // `uploadError` prevents automatic scheduling while `pending` enables manual retry.
                 metadata.backgroundUploadJobIdentifier = "pending"
                 metadata.backgroundUploadNextRetryDate = nil
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)

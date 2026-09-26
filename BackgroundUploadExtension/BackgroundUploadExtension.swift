@@ -13,7 +13,12 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     let database = NCManageDatabase.shared
     let utilityFileSystem = NCUtilityFileSystem()
     let nkComm = NextcloudKit.shared.nkCommonInstance
+    let preferences = NCPreferences()
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
+    // One initial upload followed by at most two automatic retry attempts.
+    let maximumBackgroundUploadAttempts = 3
+    // Suspend the account after this many distinct assets fail without an intervening success.
+    let maximumConsecutiveBackgroundUploadFailures = 3
     private let isDatabaseAvailable: Bool
 
     /// Opens the shared Realm database and configures NextcloudKit for extension use.
@@ -58,18 +63,22 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             }
 
             if let account {
-                if try await createUploadJobs(account: account) {
-                    madeProgress = true
-                }
-
-                let availableJobs = availableUploadJobSlots()
-
-                if availableJobs > 0,
-                   await createPendingMetadatas(account: account, limit: availableJobs) {
-                    madeProgress = true
-
+                if preferences.isBackgroundUploadSuspended(account: account.account) {
+                    logDebug("Background upload queue is suspended for account \(account.account)")
+                } else {
                     if try await createUploadJobs(account: account) {
                         madeProgress = true
+                    }
+
+                    let availableJobs = availableUploadJobSlots()
+
+                    if availableJobs > 0,
+                       await createPendingMetadatas(account: account, limit: availableJobs) {
+                        madeProgress = true
+
+                        if try await createUploadJobs(account: account) {
+                            madeProgress = true
+                        }
                     }
                 }
             }

@@ -801,6 +801,8 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
 "_auto_upload_no_new_items_to_upload_" = "No new items to upload";
+"_auto_upload_suspended_" = "Automatic upload paused due to an error";
+"_auto_upload_suspended_error_" = "Automatic upload paused: %@";
 "_focused_auto_upload_" = "Focused Auto Upload";
 "_focused_auto_upload_settings_footer_" = "Keep the app open and darken the screen while auto upload is backing up at higher speed.";
 "_focused_auto_upload_intro_heading_" = "Keep backing up with the screen darkened.";
