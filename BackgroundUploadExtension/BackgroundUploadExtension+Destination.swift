@@ -7,6 +7,8 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Builds the authenticated WebDAV PUT request that PhotoKit uses as an upload destination.
+    /// Applies network policy and asset timestamps, returning `nil` when URL or session data is invalid.
     func buildDestination(metadata: tableMetadata, asset: PHAsset) -> URLRequest? {
         guard let url = metadata.serverUrlFileName.encodedToUrl as? URL else {
             logError("Invalid destination URL: \(metadata.serverUrlFileName)")

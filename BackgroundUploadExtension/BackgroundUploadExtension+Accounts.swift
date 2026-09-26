@@ -7,6 +7,8 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Validates Photos access, feature settings, the active auto-upload account, and server support.
+    /// Configures the account's NextcloudKit session and returns `nil` when processing must be skipped.
     func setupAccount() async -> tableAccount? {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized else {
             logDebug("Background upload account setup skipped: Photos authorization is not granted")

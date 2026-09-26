@@ -7,9 +7,20 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Detects authentication failures from normalized response headers or the sanitized URL error.
+    /// The shared classification keeps retry and acknowledgement behavior consistent.
+    func isAuthenticationFailure(job: PHAssetResourceUploadJob) -> Bool {
+        let error = job.error.map { $0 as NSError }
+
+        return job.responseHeaderFields?["www-authenticate"] != nil ||
+            (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
+    }
+
+    /// Stores the terminal upload error and resets transient task state on the associated metadata.
+    /// Authentication failures receive a stable error code so the host app can require manual retry.
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {
         let error = job.error.map { $0 as NSError }
-        let authenticationRequired = job.responseHeaderFields?["www-authenticate"] != nil
+        let authenticationRequired = isAuthenticationFailure(job: job)
 
         metadata.sessionTaskIdentifier = 0
         metadata.sessionDate = Date()
@@ -24,6 +35,8 @@ extension BackgroundUploadExtension {
         logError("Background upload failed for \(metadata.fileName), account: \(metadata.account), job: \(job.localIdentifier), error: \(metadata.errorCode) \(metadata.sessionError)")
     }
 
+    /// Applies Nextcloud response metadata and records the asset as successfully auto-uploaded.
+    /// A missing `oc-fileid` converts the result to an upload error and requires manual recovery.
     func processUploadSuccess(metadata: tableMetadata, job: PHAssetResourceUploadJob) async -> Bool {
         let headers = job.responseHeaderFields ?? [:]
 

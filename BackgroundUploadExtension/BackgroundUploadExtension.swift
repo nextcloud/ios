@@ -16,6 +16,8 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
     private let isDatabaseAvailable: Bool
 
+    /// Opens the shared Realm database and configures NextcloudKit for extension use.
+    /// A schema mismatch is retained as initialization state so job processing can fail safely.
     required init() {
         isDatabaseAvailable = database.openRealm()
 
@@ -29,6 +31,8 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         }
     }
 
+    /// Reconciles cancellations, retries, completed jobs, and newly discovered assets in that order.
+    /// Returns whether PhotoKit should continue processing, stop, or report an unrecoverable failure.
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
         guard isDatabaseAvailable else {
             return .failure
@@ -84,14 +88,20 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         }
     }
 
+    /// Receives the PhotoKit notification that the extension process is about to terminate.
+    /// It currently records the lifecycle event without interrupting an active processing pass.
     func willTerminate() async {
         logDebug("BackgroundUploadExtension will terminate")
     }
 
+    /// Writes diagnostic information to the extension's unified logging category.
+    /// Debug messages are not copied to the persistent Nextcloud log.
     func logDebug(_ message: String) {
         logger.debug("\(message, privacy: .public)")
     }
 
+    /// Writes an informational message and optionally adds it to the persistent Nextcloud log.
+    /// Persistence is reserved for events that need to remain visible after the extension exits.
     func logInfo(_ message: String, persist: Bool = false) {
         logger.info("\(message, privacy: .public)")
 
@@ -100,6 +110,8 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         }
     }
 
+    /// Writes an error to unified logging and to the persistent Nextcloud log.
+    /// Use this for failures that require later diagnosis from the host app.
     func logError(_ message: String) {
         logger.error("\(message, privacy: .public)")
         nkLog(tag: global.logTagBackgroundUpload, emoji: .error, message: message)

@@ -14,6 +14,8 @@ final class NCManageDatabase {
     internal let databaseURL: URL?
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
 
+    /// Creates the extension database facade and resolves the Realm file inside the shared app group.
+    /// A missing app-group container leaves `databaseURL` unset and causes `openRealm()` to fail safely.
     private init() {
         self.core = NCManageDatabaseCore()
 
@@ -26,6 +28,8 @@ final class NCManageDatabase {
         }
     }
 
+    /// Validates the shared Realm schema before installing and opening the extension configuration.
+    /// Returns `false` without migrating when the database is unavailable, incompatible, or cannot open.
     @discardableResult
     func openRealm() -> Bool {
         guard let databaseURL,

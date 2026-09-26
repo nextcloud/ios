@@ -7,6 +7,8 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Converts pending metadata records into PhotoKit upload jobs until the job limit is reached.
+    /// Persists each PhotoKit identifier so later invocations can reconcile the job with Realm state.
     func createUploadJobs(account: tableAccount) async throws -> Bool {
         let availableJobs = availableUploadJobSlots()
 
@@ -84,6 +86,8 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
+    /// Cancels active jobs requested by the app and cleans up terminal or orphaned jobs.
+    /// Associated metadata is deleted only after PhotoKit accepts the cancellation or acknowledgement.
     func cancelRequestedUploadJobs() async throws -> Bool {
         let library = PHPhotoLibrary.shared()
         var madeProgress = false
@@ -157,6 +161,8 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
+    /// Retries PhotoKit jobs eligible for one system retry using freshly built credentials and settings.
+    /// Authentication failures are acknowledged and left in Realm for an explicit manual retry.
     func retryUploadJobs() async throws -> Bool {
         let jobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
 
@@ -192,7 +198,7 @@ extension BackgroundUploadExtension {
 
             logInfo("Retryable job \(jobIdentifier), error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0), description: \(error?.localizedDescription ?? "<nil>"), headers: \(job.responseHeaderFields ?? [:])")
 
-            let authenticationRequired = job.responseHeaderFields?["www-authenticate"] != nil || (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
+            let authenticationRequired = isAuthenticationFailure(job: job)
 
             if authenticationRequired {
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
@@ -259,6 +265,8 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
+    /// Records terminal job results in Realm before acknowledging them to free PhotoKit capacity.
+    /// Successful uploads are finalized; retryable failures create pending work for a new job.
     func acknowledgeUploadJobs() async throws -> Bool {
         let jobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
 
@@ -299,9 +307,10 @@ extension BackgroundUploadExtension {
                 createNewJob = false
 
             case .failed:
+                let authenticationRequired = isAuthenticationFailure(job: job)
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
                 uploadSucceeded = false
-                createNewJob = true
+                createNewJob = !authenticationRequired
 
             default:
                 logError("Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
@@ -338,7 +347,7 @@ extension BackgroundUploadExtension {
                 metadata.backgroundUploadNextRetryDate = nil
                 await database.replaceMetadataAsync(ocId: metadata.ocId, metadata: metadata)
 
-                logInfo("Prepared new background upload job for \(metadata.fileName), retry: \(metadata.backgroundUploadRetryCount)")
+                logInfo("Background upload requires a manual retry for \(metadata.fileName)")
             }
 
             madeProgress = true
@@ -349,6 +358,8 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
+    /// Resolves the Photos resource represented by a metadata record, including Live Photo components.
+    /// It prefers an exact filename match before falling back to the asset's primary resource type.
     private func uploadResource(for asset: PHAsset, metadata: tableMetadata) -> PHAssetResource? {
         let resources = PHAssetResource.assetResources(for: asset)
 
@@ -394,6 +405,8 @@ extension BackgroundUploadExtension {
         }
     }
 
+    /// Requests acknowledgement of a terminal PhotoKit job inside a synchronous library transaction.
+    /// Returns `false` if PhotoKit cannot create a change request for the supplied job.
     private func acknowledge(job: PHAssetResourceUploadJob, library: PHPhotoLibrary) throws -> Bool {
         var acknowledged = false
 
@@ -409,6 +422,8 @@ extension BackgroundUploadExtension {
         return acknowledged
     }
 
+    /// Requests cancellation of a registered or pending PhotoKit job inside a library transaction.
+    /// Returns `false` if the job is no longer mutable by the time the change block executes.
     private func cancel(job: PHAssetResourceUploadJob, library: PHPhotoLibrary) throws -> Bool {
         var cancelled = false
 
@@ -424,6 +439,8 @@ extension BackgroundUploadExtension {
         return cancelled
     }
 
+    /// Computes free PhotoKit capacity by deduplicating jobs exposed through all actionable states.
+    /// The extension intentionally caps its own queue at 20 jobs even if the system limit is higher.
     func availableUploadJobSlots() -> Int {
         let actions: [PHAssetResourceUploadJob.Action] = [.process, .retry, .acknowledge]
         var jobIdentifiers = Set<String>()
@@ -440,6 +457,8 @@ extension BackgroundUploadExtension {
         return max(0, jobLimit - jobIdentifiers.count)
     }
 
+    /// Reports whether PhotoKit still exposes jobs requiring processing, retry, or acknowledgement.
+    /// This keeps the extension scheduled while system-managed upload work remains outstanding.
     func hasActiveUploadJobs() -> Bool {
         PHAssetResourceUploadJob.fetchJobs(action: .process, options: nil).count > 0 ||
         PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil).count > 0 ||

@@ -7,6 +7,8 @@ import Photos
 import NextcloudKit
 
 extension BackgroundUploadExtension {
+    /// Finds eligible assets and creates up to `limit` pending metadata records for their resources.
+    /// Existing transfers are skipped and the account discovery cursor advances only after queuing work.
     func createPendingMetadatas(account: tableAccount, limit: Int) async -> Bool {
         guard limit > 0,
               account.autoUploadImage || account.autoUploadVideo else {
@@ -148,6 +150,8 @@ extension BackgroundUploadExtension {
         return madeProgress
     }
 
+    /// Creates and stores the transfer metadata that connects a Photos resource to its server path.
+    /// The record remains marked as pending until a PhotoKit upload job receives its identifier.
     private func createPendingMetadata(asset: PHAsset, resource: PHAssetResource, fileName: String, classFile: String, livePhotoFile: String, account: tableAccount) async -> tableMetadata? {
         let session = NCSession.Session(
             account: account.account,
@@ -211,6 +215,8 @@ extension BackgroundUploadExtension {
         return metadata
     }
 
+    /// Selects the full-size primary resource for an image or video asset when available.
+    /// Falls back to the standard photo or video resource and rejects unsupported media types.
     private func primaryUploadResource(for asset: PHAsset) -> PHAssetResource? {
         let resources = PHAssetResource.assetResources(for: asset)
 
@@ -234,6 +240,8 @@ extension BackgroundUploadExtension {
         }
     }
 
+    /// Selects the motion component of a Live Photo, preferring its full-size representation.
+    /// Returns `nil` when the asset does not expose a paired video resource.
     private func pairedVideoResource(for asset: PHAsset) -> PHAssetResource? {
         let resources = PHAssetResource.assetResources(for: asset)
 
@@ -244,6 +252,8 @@ extension BackgroundUploadExtension {
         }
     }
 
+    /// Resolves the explicitly selected albums or, when none are configured, the Camera Roll.
+    /// An unavailable explicit selection returns no collections to avoid uploading unintended assets.
     private func autoUploadCollections(for account: tableAccount) -> [PHAssetCollection] {
         let albumIds = NCPreferences().getAutoUploadAlbumIds(account: account.account)
 
@@ -255,9 +265,11 @@ extension BackgroundUploadExtension {
                 collections.append(collection)
             }
 
-            if !collections.isEmpty {
-                return collections
+            if collections.isEmpty {
+                logInfo("Background upload skipped because the selected albums are no longer available")
             }
+
+            return collections
         }
 
         let result = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
