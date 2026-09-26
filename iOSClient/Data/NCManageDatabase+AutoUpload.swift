@@ -91,20 +91,57 @@ extension NCManageDatabase {
         return result ?? []
     }
 
-    func fetchSkipAssetLocalIdentifiersAsync(account: String,
-                                             autoUploadServerUrlBase: String) async -> Set<String> {
+    func fetchSkipAssetLocalIdentifiersAsync(account: String, autoUploadServerUrlBase: String, createdOnOrAfter startDate: Date? = nil) async -> Set<String> {
         let result: Set<String>? = await core.performRealmReadAsync { realm in
-            let metadataIdentifiers = realm.objects(tableMetadata.self)
+            var metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND assetLocalIdentifier != ''",
                         account, autoUploadServerUrlBase)
-                .map(\.assetLocalIdentifier)
-
-            let transferIdentifiers = realm.objects(tableAutoUploadTransfer.self)
+            var transfers = realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@ AND assetLocalIdentifier != ''",
                         account, autoUploadServerUrlBase)
-                .map(\.assetLocalIdentifier)
+
+            if let startDate {
+                metadatas = metadatas.filter("creationDate >= %@", startDate as NSDate)
+                transfers = transfers.filter("date >= %@", startDate as NSDate)
+            }
+
+            let metadataIdentifiers = metadatas.map(\.assetLocalIdentifier)
+            let transferIdentifiers = transfers.map(\.assetLocalIdentifier)
 
             return Set(metadataIdentifiers).union(transferIdentifiers)
+        }
+
+        return result ?? []
+    }
+
+    /// Returns active auto-upload file names that must not be queued a second time.
+    /// This bounded set is fetched once per discovery pass instead of once for every candidate.
+    func fetchActiveAutoUploadFileNamesAsync(account: String, autoUploadServerUrlBase: String) async -> Set<String> {
+        let result: Set<String>? = await core.performRealmReadAsync { realm in
+            let fileNames = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
+                .map(\.fileNameView)
+
+            return Set(fileNames)
+        }
+
+        return result ?? []
+    }
+
+    /// Returns candidate file names found in completed auto-upload history.
+    /// Primary-key lookups keep the check proportional to the current asset's one or two resources.
+    func fetchTransferredAutoUploadFileNamesAsync(account: String, autoUploadServerUrlBase: String, fileNames: [String]) async -> Set<String> {
+        guard !fileNames.isEmpty else {
+            return []
+        }
+
+        let result: Set<String>? = await core.performRealmReadAsync { realm in
+            let transferredFileNames = fileNames.compactMap { fileName in
+                let primaryKey = account + autoUploadServerUrlBase + fileName
+                return realm.object(ofType: tableAutoUploadTransfer.self, forPrimaryKey: primaryKey)?.fileName
+            }
+
+            return Set(transferredFileNames)
         }
 
         return result ?? []

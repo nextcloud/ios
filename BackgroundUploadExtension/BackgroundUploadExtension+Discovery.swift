@@ -21,13 +21,6 @@ extension BackgroundUploadExtension {
             userId: account.userId
         )
 
-        var skipFileNames = await database.fetchSkipFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
-
-        var skipAssetLocalIdentifiers = await database.fetchSkipAssetLocalIdentifiersAsync(
-            account: account.account,
-            autoUploadServerUrlBase: autoUploadServerUrlBase
-        )
-
         let livePhotoEnabled = NCPreferences().livePhoto
         let fetchOptions = PHFetchOptions()
         var mediaPredicates: [NSPredicate] = []
@@ -42,41 +35,46 @@ extension BackgroundUploadExtension {
 
         var predicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)]
 
+        let discoveryStartDate: Date?
+
         if let sinceDate = account.autoUploadSinceDate {
-            predicates.append(NSPredicate(format: "creationDate >= %@", sinceDate as NSDate))
-        } else if let lastDate = await database.fetchLastAutoUploadedDateAsync(
-            account: account.account,
-            autoUploadServerUrlBase: autoUploadServerUrlBase
-        ) {
-            predicates.append(NSPredicate(format: "creationDate >= %@", lastDate as NSDate))
+            discoveryStartDate = sinceDate
+        } else {
+            discoveryStartDate = await database.fetchLastAutoUploadedDateAsync(
+                account: account.account,
+                autoUploadServerUrlBase: autoUploadServerUrlBase
+            )
+        }
+
+        if let discoveryStartDate {
+            predicates.append(NSPredicate(format: "creationDate >= %@", discoveryStartDate as NSDate))
         }
 
         fetchOptions.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
 
-        var assetsByIdentifier: [String: PHAsset] = [:]
-
-        for collection in autoUploadCollections(for: account) {
-            let assets = PHAsset.fetchAssets(in: collection, options: fetchOptions)
-
-            assets.enumerateObjects { asset, _, _ in
-                assetsByIdentifier[asset.localIdentifier] = asset
-            }
+        let fetchResults = autoUploadCollections(for: account).map {
+            PHAsset.fetchAssets(in: $0, options: fetchOptions)
         }
-
-        let assets = assetsByIdentifier.values.sorted {
-            ($0.creationDate ?? .distantPast) <
-            ($1.creationDate ?? .distantPast)
-        }
+        var fetchIndexes = Array(repeating: 0, count: fetchResults.count)
+        var yieldedAssetIdentifiers = Set<String>()
+        var skipAssetLocalIdentifiers = await database.fetchSkipAssetLocalIdentifiersAsync(
+            account: account.account,
+            autoUploadServerUrlBase: autoUploadServerUrlBase,
+            createdOnOrAfter: discoveryStartDate
+        )
+        var trackedMetadataFileNames = await database.fetchActiveAutoUploadFileNamesAsync(
+            account: account.account,
+            autoUploadServerUrlBase: autoUploadServerUrlBase
+        )
 
         var remaining = limit
         var madeProgress = false
         var lastQueuedDate: Date?
 
-        for asset in assets {
-            guard remaining > 0 else {
-                break
-            }
+        // PhotoKit already sorts every result; merge them lazily and stop as soon as the job slots are full.
+        while remaining > 0,
+              let asset = nextAsset(from: fetchResults, indexes: &fetchIndexes, yieldedIdentifiers: &yieldedAssetIdentifiers) {
 
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && livePhotoEnabled
 
@@ -115,8 +113,10 @@ extension BackgroundUploadExtension {
                 ]
             }
 
+            let fileNames = uploadResources.map(\.fileName)
+            let transferredFileNames = await database.fetchTransferredAutoUploadFileNamesAsync(account: account.account, autoUploadServerUrlBase: autoUploadServerUrlBase, fileNames: fileNames)
             let resourcesToUpload = uploadResources.filter {
-                !skipFileNames.contains($0.fileName)
+                !trackedMetadataFileNames.contains($0.fileName) && !transferredFileNames.contains($0.fileName)
             }
 
             guard resourcesToUpload.count <= remaining else {
@@ -135,7 +135,7 @@ extension BackgroundUploadExtension {
                     continue
                 }
 
-                skipFileNames.insert(uploadResource.fileName)
+                trackedMetadataFileNames.insert(uploadResource.fileName)
                 skipAssetLocalIdentifiers.insert(asset.localIdentifier)
                 lastQueuedDate = creationDate
                 remaining -= 1
@@ -148,6 +148,43 @@ extension BackgroundUploadExtension {
         }
 
         return madeProgress
+    }
+
+    /// Returns the next oldest unique asset across already sorted PhotoKit fetch results.
+    /// Only one candidate per selected collection is retained, keeping discovery memory bounded.
+    private func nextAsset(from fetchResults: [PHFetchResult<PHAsset>], indexes: inout [Int], yieldedIdentifiers: inout Set<String>) -> PHAsset? {
+        var selectedResultIndex: Int?
+        var selectedAsset: PHAsset?
+
+        for resultIndex in fetchResults.indices {
+            let result = fetchResults[resultIndex]
+
+            while indexes[resultIndex] < result.count {
+                let candidate = result.object(at: indexes[resultIndex])
+
+                if yieldedIdentifiers.contains(candidate.localIdentifier) {
+                    indexes[resultIndex] += 1
+                    continue
+                }
+
+                if let selectedAsset,
+                   (candidate.creationDate ?? .distantPast) >= (selectedAsset.creationDate ?? .distantPast) {
+                    break
+                }
+
+                selectedResultIndex = resultIndex
+                selectedAsset = candidate
+                break
+            }
+        }
+
+        guard let selectedResultIndex, let selectedAsset else {
+            return nil
+        }
+
+        indexes[selectedResultIndex] += 1
+        yieldedIdentifiers.insert(selectedAsset.localIdentifier)
+        return selectedAsset
     }
 
     /// Creates and stores the transfer metadata that connects a Photos resource to its server path.
