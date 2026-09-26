@@ -14,17 +14,26 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     let utilityFileSystem = NCUtilityFileSystem()
     let nkComm = NextcloudKit.shared.nkCommonInstance
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "BackgroundUploadExtension", category: NCGlobal.shared.logTagBackgroundUpload)
+    private let isDatabaseAvailable: Bool
 
     required init() {
-        database.openRealm()
+        isDatabaseAvailable = database.openRealm()
 
         NextcloudKit.configureLogger(logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log)
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        logInfo("BackgroundUploadExtension initialized, bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")")
+        if isDatabaseAvailable {
+            logInfo("BackgroundUploadExtension initialized, bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")")
+        } else {
+            logError("BackgroundUploadExtension initialization stopped because the database schema version does not match")
+        }
     }
 
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
+        guard isDatabaseAvailable else {
+            return .failure
+        }
+
         logDebug("processJobs begin")
 
         let account = await setupAccount()

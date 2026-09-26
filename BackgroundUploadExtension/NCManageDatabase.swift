@@ -26,7 +26,15 @@ final class NCManageDatabase {
         }
     }
 
-    func openRealm() {
+    @discardableResult
+    func openRealm() -> Bool {
+        guard let databaseURL,
+              let schemaVersion = try? schemaVersionAtURL(databaseURL),
+              schemaVersion == databaseSchemaVersion else {
+            logger.error("Realm was not opened because its schema version does not match the extension")
+            return false
+        }
+
         do {
             let configuration = Realm.Configuration(
                 fileURL: databaseURL,
@@ -42,10 +50,12 @@ final class NCManageDatabase {
             if let url = realm.configuration.fileURL {
                 logger.debug("Realm is located at: \(url.path, privacy: .public)")
             }
+            return true
         } catch let error {
             logger.error("Realm error: \(error.localizedDescription, privacy: .public)")
             nkLog(tag: NCGlobal.shared.logTagBackgroundUpload, emoji: .error, message: "Realm error: \(error)")
             isSuspendingDatabaseOperation = true
+            return false
         }
     }
 }
