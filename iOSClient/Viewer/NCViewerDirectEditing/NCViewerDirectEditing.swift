@@ -24,6 +24,7 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
     var items: [UIBarButtonItem] = []
+    private var isClosingTextEditor = false
 
     @MainActor
     var session: NCSession.Session {
@@ -89,6 +90,19 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
         )
         navigationItem.trailingItemGroups = [group]
         navigationItem.leftBarButtonItems = nil
+
+        // Text releases its lock on the file only when its own close runs (the in-page close
+        // button). Leaving with the system back button skipped that and left the file locked
+        // for everyone else, so for Text the back button runs the same close first.
+        if editor == global.editorText {
+            navigationItem.hidesBackButton = true
+            navigationItem.leftBarButtonItem = UIBarButtonItem(
+                image: UIImage(systemName: "chevron.backward"),
+                style: .plain,
+                target: self,
+                action: #selector(closeTextEditor)
+            )
+        }
 
         // Prevent back navigation gesture of iOS >= 26 as that can cause unintended swipe backs
         if #available(iOS 26.0, *) {
@@ -203,6 +217,42 @@ final class NCViewerDirectEditing: UIViewController, WKNavigationDelegate, WKScr
 
     @objc func viewUnload() {
         navigationController?.popViewController(animated: true)
+    }
+
+    /// Leaves the Text editor the same way its own close button does: Text saves, closes its
+    /// session (which releases the file lock) and then posts "close", which calls viewUnload().
+    @objc private func closeTextEditor() {
+        guard !isClosingTextEditor else {
+            return
+        }
+        isClosingTextEditor = true
+
+        let pressClose = """
+            (function () {
+                const button = document.querySelector('#direct-editor .icon-close');
+                if (!button) { return false; }
+                button.click();
+                return true;
+            })();
+            """
+        webView.evaluateJavaScript(pressClose) { [weak self] result, _ in
+            guard let self else {
+                return
+            }
+            // The editor has not loaded yet: there is no session to close.
+            guard (result as? Bool) == true else {
+                self.viewUnload()
+                return
+            }
+            // Text waits up to 2 seconds for a save. Never leave the user stuck if "close"
+            // does not arrive.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                guard let self, self.navigationController?.topViewController === self else {
+                    return
+                }
+                self.viewUnload()
+            }
+        }
     }
 
     // MARK: - NotificationCenter
