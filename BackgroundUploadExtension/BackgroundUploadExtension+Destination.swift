@@ -36,6 +36,7 @@ extension BackgroundUploadExtension {
         request.setValue("Basic \(loginData.base64EncodedString())", forHTTPHeaderField: "Authorization")
         request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
         request.setValue("1", forHTTPHeaderField: "X-NC-WebDAV-Auto-Mkcol")
+        request.setValue("1", forHTTPHeaderField: "X-NC-PhotoKit-Upload")
 
         if let creationDate = asset.creationDate,
            creationDate.timeIntervalSince1970 > 0 {
