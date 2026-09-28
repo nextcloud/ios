@@ -40,6 +40,58 @@ extension BackgroundUploadExtension {
             (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
     }
 
+    /// Logs every diagnostic value PhotoKit exposes for a terminal upload job.
+    /// Request headers are intentionally excluded because they contain account credentials.
+    func logUploadJobDiagnostics(job: PHAssetResourceUploadJob, action: String) {
+        let error = job.error.map { $0 as NSError }
+        let state: String
+        let type: String
+
+        switch job.state {
+        case .registered:
+            state = "registered"
+        case .pending:
+            state = "pending"
+        case .failed:
+            state = "failed"
+        case .succeeded:
+            state = "succeeded"
+        case .cancelled:
+            state = "cancelled"
+        @unknown default:
+            state = "unknown"
+        }
+
+        switch job.type {
+        case .upload:
+            type = "upload"
+        case .downloadOnly:
+            type = "downloadOnly"
+        @unknown default:
+            type = "unknown"
+        }
+
+        var destinationComponents = job.destination.url.flatMap {
+            URLComponents(url: $0, resolvingAgainstBaseURL: false)
+        }
+        destinationComponents?.user = nil
+        destinationComponents?.password = nil
+        destinationComponents?.query = nil
+        destinationComponents?.fragment = nil
+
+        logInfo(
+            "PhotoKit job diagnostics, action: \(action), job: \(job.localIdentifier), " +
+            "state: \(state) (\(job.state.rawValue)), type: \(type) (\(job.type.rawValue)), " +
+            "method: \(job.destination.httpMethod ?? "<nil>"), " +
+            "destination: \(destinationComponents?.string ?? "<nil>"), " +
+            "error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0), " +
+            "description: \(error?.localizedDescription ?? "<nil>"), " +
+            "failure reason: \(error?.localizedFailureReason ?? "<nil>"), " +
+            "recovery suggestion: \(error?.localizedRecoverySuggestion ?? "<nil>"), " +
+            "userInfo: \(error?.userInfo ?? [:]), headers: \(job.responseHeaderFields ?? [:])"
+        )
+    }
+
     /// Stores the terminal upload error and resets transient task state on the associated metadata.
     /// Authentication failures receive a stable error code so the host app can require manual retry.
     func updateMetadataForUploadFailure(metadata: tableMetadata, job: PHAssetResourceUploadJob) async {

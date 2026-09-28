@@ -125,11 +125,18 @@ extension BackgroundUploadExtension {
 
         let retryJobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
         let acknowledgeJobs = PHAssetResourceUploadJob.fetchJobs(action: .acknowledge, options: nil)
+        var handledTerminalJobIdentifiers = Set<String>()
 
         for jobs in [retryJobs, acknowledgeJobs] {
             for index in 0..<jobs.count {
                 let job = jobs.object(at: index)
                 let jobIdentifier = job.localIdentifier
+
+                // Failed jobs can appear in both collections; acknowledge each one only once.
+                guard handledTerminalJobIdentifiers.insert(jobIdentifier).inserted else {
+                    continue
+                }
+
                 let metadata = await database.getMetadataAsync(backgroundUploadJobIdentifier: jobIdentifier)
 
                 guard let metadata else {
@@ -194,9 +201,7 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            let error = job.error.map { $0 as NSError }
-
-            logInfo("Retryable job \(jobIdentifier), error domain: \(error?.domain ?? "<nil>"), code: \(error?.code ?? 0), description: \(error?.localizedDescription ?? "<nil>"), headers: \(job.responseHeaderFields ?? [:])")
+            logUploadJobDiagnostics(job: job, action: "retry")
 
             let authenticationRequired = isAuthenticationFailure(job: job)
             let retryLimitReached = !canAutomaticallyRetry(metadata: metadata)
@@ -316,6 +321,8 @@ extension BackgroundUploadExtension {
                 logDebug("Skipping normal acknowledgement for cancellation-requested job \(jobIdentifier)")
                 continue
             }
+
+            logUploadJobDiagnostics(job: job, action: "acknowledge")
 
             let uploadSucceeded: Bool
             let createNewJob: Bool

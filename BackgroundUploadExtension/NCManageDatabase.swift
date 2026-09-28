@@ -52,7 +52,7 @@ final class NCManageDatabase {
 
             let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
-                logger.debug("Realm is located at: \(url.path, privacy: .public)")
+                logger.notice("Realm is located at: \(url.path, privacy: .public)")
             }
             return true
         } catch let error {

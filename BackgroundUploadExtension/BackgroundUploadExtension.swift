@@ -46,6 +46,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
         logDebug("processJobs begin")
 
         let account = await setupAccount()
+        var processingStage = "cancelRequestedUploadJobs"
 
         do {
             var madeProgress = false
@@ -54,10 +55,12 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 madeProgress = true
             }
 
+            processingStage = "retryUploadJobs"
             if try await retryUploadJobs() {
                 madeProgress = true
             }
 
+            processingStage = "acknowledgeUploadJobs"
             if try await acknowledgeUploadJobs() {
                 madeProgress = true
             }
@@ -66,6 +69,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                 if preferences.isBackgroundUploadSuspended(account: account.account) {
                     logDebug("Background upload queue is suspended for account \(account.account)")
                 } else {
+                    processingStage = "createUploadJobs(existing metadata)"
                     if try await createUploadJobs(account: account) {
                         madeProgress = true
                     }
@@ -76,6 +80,7 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
                        await createPendingMetadatas(account: account, limit: availableJobs) {
                         madeProgress = true
 
+                        processingStage = "createUploadJobs(new metadata)"
                         if try await createUploadJobs(account: account) {
                             madeProgress = true
                         }
@@ -89,10 +94,11 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
             logDebug("processJobs end, madeProgress: \(madeProgress), hasActiveJobs: \(hasActiveJobs)")
             return result
         } catch let error as NSError where error.domain == PHPhotosErrorDomain && error.code == PHPhotosError.limitExceeded.rawValue {
-            logInfo("Job limit reached")
+            logInfo("Job limit reached during \(processingStage)")
             return .processing
         } catch {
-            logError("processJobs error: \(error)")
+            let error = error as NSError
+            logError("processJobs error during \(processingStage): " + "domain: \(error.domain), code: \(error.code), " + "description: \(error.localizedDescription), userInfo: \(error.userInfo)")
             return .failure
         }
     }
@@ -104,15 +110,15 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     }
 
     /// Writes diagnostic information to the extension's unified logging category.
-    /// Debug messages are not copied to the persistent Nextcloud log.
+    /// Notice level keeps experimental extension diagnostics visible in Console.app.
     func logDebug(_ message: String) {
-        logger.debug("\(message, privacy: .public)")
+        logger.notice("\(message, privacy: .public)")
     }
 
     /// Writes an informational message and optionally adds it to the persistent Nextcloud log.
     /// Persistence is reserved for events that need to remain visible after the extension exits.
     func logInfo(_ message: String, persist: Bool = false) {
-        logger.info("\(message, privacy: .public)")
+        logger.notice("\(message, privacy: .public)")
 
         if persist {
             nkLog(tag: global.logTagBackgroundUpload, emoji: .info, message: message)
