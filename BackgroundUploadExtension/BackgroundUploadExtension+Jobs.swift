@@ -45,12 +45,21 @@ extension BackgroundUploadExtension {
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
-                logError("Asset not found: \(metadata.assetLocalIdentifier), file: \(metadata.fileName)")
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                madeProgress = true
+                logInfo("Deleted pending background upload metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)", persist: true)
                 continue
             }
 
             guard let resource = uploadResource(for: asset, metadata: metadata) else {
-                logError("Upload resource not found for asset \(metadata.assetLocalIdentifier)")
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                madeProgress = true
+
+                logInfo(
+                    "Deleted pending background upload metadata because the resource is no longer available for asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)",
+                    persist: true
+                )
+
                 continue
             }
 
@@ -217,6 +226,7 @@ extension BackgroundUploadExtension {
                           recordTerminalUploadFailure(metadata: metadata) {
                     logError("Suspended background upload after \(maximumConsecutiveBackgroundUploadFailures) consecutive asset failures for account \(metadata.account)")
                 }
+
                 await updateMetadataForUploadFailure(metadata: metadata, job: job)
 
                 guard try acknowledge(job: job, library: library) else {
@@ -243,7 +253,14 @@ extension BackgroundUploadExtension {
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
 
             guard let asset = assets.firstObject else {
-                logError("Retry asset not found for job \(jobIdentifier), asset: \(metadata.assetLocalIdentifier)")
+                guard try acknowledge(job: job, library: library) else {
+                    logError("Unable to acknowledge retry job for missing asset \(jobIdentifier)")
+                    continue
+                }
+
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                madeProgress = true
+                logInfo("Acknowledged retry job and deleted metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)", persist: true)
                 continue
             }
 
