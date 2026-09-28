@@ -101,9 +101,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo</string>
+			<string>%d grianghraf</string>
+			<key>two</key>
+			<string>%d grianghraf</string>
+			<key>few</key>
+			<string>%d grianghraf</string>
+			<key>many</key>
+			<string>%d grianghraf</string>
 			<key>other</key>
-			<string>%d photos</string>
+			<string>%d grianghraf</string>
 		</dict>
 	</dict>
 	<key>_albums_list_photos_and_videos_count_</key>
@@ -117,9 +123,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d photo or video</string>
+			<string>%d grianghraf nó físeán</string>
+			<key>two</key>
+			<string>%d grianghraf agus físeán</string>
+			<key>few</key>
+			<string>%d grianghraf agus físeán</string>
+			<key>many</key>
+			<string>%d grianghraf agus físeán</string>
 			<key>other</key>
-			<string>%d photos and videos</string>
+			<string>%d grianghraf agus físeán</string>
 		</dict>
 	</dict>
 </dict>
