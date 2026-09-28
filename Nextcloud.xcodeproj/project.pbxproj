@@ -577,6 +577,7 @@
 		F76882232C0DD1E7001CF441 /* NCCapabilitiesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882082C0DD1E7001CF441 /* NCCapabilitiesModel.swift */; };
 		F76882242C0DD1E7001CF441 /* NCSettingsAdvancedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882092C0DD1E7001CF441 /* NCSettingsAdvancedView.swift */; };
 		F76882252C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */; };
+		B601AA012F10000100C0D3E5 /* NCLogFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B601AA002F10000100C0D3E5 /* NCLogFilesView.swift */; };
 		F76882262C0DD1E7001CF441 /* NCSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */; };
 		F76882272C0DD1E7001CF441 /* NCManageE2EEView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */; };
 		F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */; };
@@ -1706,6 +1707,7 @@
 		F76882082C0DD1E7001CF441 /* NCCapabilitiesModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCapabilitiesModel.swift; sourceTree = "<group>"; };
 		F76882092C0DD1E7001CF441 /* NCSettingsAdvancedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvancedView.swift; sourceTree = "<group>"; };
 		F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsAdvancedModel.swift; sourceTree = "<group>"; };
+		B601AA002F10000100C0D3E5 /* NCLogFilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLogFilesView.swift; sourceTree = "<group>"; };
 		F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCSettingsView.swift; sourceTree = "<group>"; };
 		F768820E2C0DD1E7001CF441 /* NCManageE2EEView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageE2EEView.swift; sourceTree = "<group>"; };
 		F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageE2EEModel.swift; sourceTree = "<group>"; };
@@ -3039,6 +3041,7 @@
 				F76882062C0DD1E7001CF441 /* Capabilities */,
 				F76882092C0DD1E7001CF441 /* NCSettingsAdvancedView.swift */,
 				F768820A2C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift */,
+				B601AA002F10000100C0D3E5 /* NCLogFilesView.swift */,
 			);
 			path = Advanced;
 			sourceTree = "<group>";
@@ -5509,6 +5512,7 @@
 				F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
 				F76882242C0DD1E7001CF441 /* NCSettingsAdvancedView.swift in Sources */,
+				B601AA012F10000100C0D3E5 /* NCLogFilesView.swift in Sources */,
 				F785129C2D7989B30087DDD0 /* NCNetworking+TermsOfService.swift in Sources */,
 				F77C3F5B2D9BF8CD00F3C471 /* UITabBar+Extension.swift in Sources */,
 				F7D7A76E2DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,

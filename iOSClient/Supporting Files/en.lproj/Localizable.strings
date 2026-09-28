@@ -293,7 +293,8 @@
 "_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
 "_diagnostics_footer_"          = "Changing log level requires a restart of the app to take effect";
-"_view_log_"                    = "View log file";
+"_view_log_"                    = "View log files";
+"_no_log_files_"                = "No log files available";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
 "_log_file_clear_alert_"        = "Log file cleared!";

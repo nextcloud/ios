@@ -29,6 +29,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     @Published var crashReporter: Bool = false
     // State variable for indicating whether the log file has been cleared.
     @Published var logFileCleared: Bool = false
+    // Log files shared by the app and its extensions.
+    @Published private(set) var logFiles: [URL] = []
     // Properties for log level and cache deletion
     // State variable for storing the selected log level.
     @Published var selectedLogLevel: NKLogLevel = .normal
@@ -112,6 +114,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
                 .appendingPathComponent("Logs", isDirectory: true)
         try? FileManager.default.removeItem(at: logsFolder)
         NKLogFileManager.createLogsFolder()
+        logFiles = []
     }
 
     /// Updates the value of `selectedInterval` in the keychain.
@@ -164,15 +167,52 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         } else { }
     }
 
-    /// Presents the log file viewer.
-    func viewLogFile() {
+    /// Loads the active and rotated log files from the shared App Group directory.
+    func loadLogFiles() {
+        NextcloudKit.flushLogger()
+        guard let logsFolder = NCPreferences.sharedLogDirectory,
+              let files = try? FileManager.default.contentsOfDirectory(
+                at: logsFolder,
+                includingPropertiesForKeys: [.contentModificationDateKey, .fileSizeKey],
+                options: [.skipsHiddenFiles]
+              ) else {
+            logFiles = []
+            return
+        }
+
+        logFiles = files
+            .filter { file in
+                file.lastPathComponent == "log.txt"
+                    || (file.lastPathComponent.hasPrefix("log-") && file.pathExtension == "txt")
+            }
+            .sorted { lhs, rhs in
+                let lhsDate = try? lhs.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+                let rhsDate = try? rhs.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+                return (lhsDate ?? .distantPast) > (rhsDate ?? .distantPast)
+            }
+    }
+
+    /// Returns the localized modification date and size shown below a log file name.
+    func logFileDetails(for url: URL) -> String {
+        guard let values = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey]) else {
+            return ""
+        }
+
+        var details: [String] = []
+        if let date = values.contentModificationDate {
+            details.append(date.formatted(date: .abbreviated, time: .shortened))
+        }
+        if let fileSize = values.fileSize {
+            details.append(ByteCountFormatter.string(fromByteCount: Int64(fileSize), countStyle: .file))
+        }
+        return details.joined(separator: " · ")
+    }
+
+    /// Presents the selected active or rotated log file.
+    func viewLogFile(at url: URL) {
         NextcloudKit.flushLogger()
 
-        // Path of the current (active) log file
-        let currentLogURL = NKLogFileManager.shared.currentLogFileURL()
-
-        // Create NCViewerQuickLook with the current log file
-        let viewerQuickLook = NCViewerQuickLook(with: currentLogURL, isEditingEnabled: false, metadata: nil)
+        let viewerQuickLook = NCViewerQuickLook(with: url, isEditingEnabled: false, metadata: nil)
 
         controller?.present(viewerQuickLook, animated: true, completion: nil)
     }

@@ -338,8 +338,6 @@ extension BackgroundUploadExtension {
                 continue
             }
 
-            logUploadJobDiagnostics(job: job, action: "acknowledge")
-
             let uploadSucceeded: Bool
             let createNewJob: Bool
 
@@ -349,6 +347,8 @@ extension BackgroundUploadExtension {
                 createNewJob = false
 
             case .failed:
+                logUploadJobDiagnostics(job: job, action: "acknowledge")
+
                 let authenticationRequired = isAuthenticationFailure(job: job)
                 let retryLimitReached = !canAutomaticallyRetry(metadata: metadata)
                 let queueSuspended = preferences.isBackgroundUploadSuspended(account: metadata.account)
@@ -367,6 +367,7 @@ extension BackgroundUploadExtension {
                 createNewJob = !authenticationRequired && !retryLimitReached && !queueSuspended
 
             default:
+                logUploadJobDiagnostics(job: job, action: "acknowledge")
                 logError("Unexpected state \(job.state.rawValue) for job \(jobIdentifier)")
                 continue
             }

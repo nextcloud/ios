@@ -196,7 +196,7 @@
       "location" : "https://github.com/nextcloud/NextcloudKit",
       "state" : {
         "branch" : "main",
-        "revision" : "5d546e68876c0697ad18590d7460539fd1e78ff8"
+        "revision" : "d78592903eee0dec11fd6e91a21c0e95662fce96"
       }
     },
     {
@@ -249,8 +249,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-swift",
       "state" : {
-        "revision" : "ca03df491ec5e4bb8af0bca1e9957d08c10ec2da",
-        "version" : "20.0.5"
+        "revision" : "a40ced79265b644a896e393b0f3a37e7916e7de3",
+        "version" : "20.0.6"
       }
     },
     {

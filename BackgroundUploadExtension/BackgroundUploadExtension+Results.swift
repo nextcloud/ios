@@ -40,10 +40,16 @@ extension BackgroundUploadExtension {
             (error?.domain == NSURLErrorDomain && error?.code == URLError.userAuthenticationRequired.rawValue)
     }
 
-    /// Logs every diagnostic value PhotoKit exposes for a terminal upload job.
-    /// Request headers are intentionally excluded because they contain account credentials.
+    /// Logs the diagnostic values PhotoKit exposes for a failed or otherwise unexpected upload job.
+    /// Request headers are excluded and sensitive response header values are redacted.
     func logUploadJobDiagnostics(job: PHAssetResourceUploadJob, action: String) {
         let error = job.error.map { $0 as NSError }
+        let sensitiveHeaderNames = Set(["authorization", "cookie", "proxy-authorization", "set-cookie"])
+        let responseHeaders = job.responseHeaderFields?.reduce(into: [String: String]()) { result, header in
+            result[header.key] = sensitiveHeaderNames.contains(header.key.lowercased())
+                ? "<redacted>"
+                : header.value
+        } ?? [:]
         let state: String
         let type: String
 
@@ -88,7 +94,7 @@ extension BackgroundUploadExtension {
             "description: \(error?.localizedDescription ?? "<nil>"), " +
             "failure reason: \(error?.localizedFailureReason ?? "<nil>"), " +
             "recovery suggestion: \(error?.localizedRecoverySuggestion ?? "<nil>"), " +
-            "userInfo: \(error?.userInfo ?? [:]), headers: \(job.responseHeaderFields ?? [:])"
+            "userInfo: \(error?.userInfo ?? [:]), headers: \(responseHeaders)"
         )
     }
 
