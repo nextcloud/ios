@@ -42,7 +42,10 @@ class FileProviderData: NSObject {
         let tblAccounts = NCManageDatabase.shared.getAllTableAccount()
         var matchAccount: tableAccount?
 
-        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
+        NextcloudKit.configureLogger(
+            logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log,
+            logDirectory: NCPreferences.sharedLogDirectory
+        )
 
         if let domain {
             self.domain = domain

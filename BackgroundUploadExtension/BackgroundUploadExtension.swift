@@ -24,10 +24,12 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     /// Opens the shared Realm database and configures NextcloudKit for extension use.
     /// A schema mismatch is retained as initialization state so job processing can fail safely.
     required init() {
-        isDatabaseAvailable = database.openRealm()
-
-        NextcloudKit.configureLogger(logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log)
+        NextcloudKit.configureLogger(
+            logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log,
+            logDirectory: NCPreferences.sharedLogDirectory
+        )
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        isDatabaseAvailable = NCManageDatabase.shared.openRealm()
 
         if isDatabaseAvailable {
             logInfo("BackgroundUploadExtension initialized, bundle: \(Bundle.main.bundleIdentifier ?? "<nil>")")
@@ -39,6 +41,8 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     /// Reconciles cancellations, retries, completed jobs, and newly discovered assets in that order.
     /// Returns whether PhotoKit should continue processing, stop, or report an unrecoverable failure.
     func processJobs() async -> PHBackgroundResourceUploadProcessingResult {
+        defer { NextcloudKit.flushLogger() }
+
         guard isDatabaseAvailable else {
             return .failure
         }
@@ -107,16 +111,13 @@ final class BackgroundUploadExtension: PHBackgroundResourceUploadJobExtension {
     /// It currently records the lifecycle event without interrupting an active processing pass.
     func willTerminate() async {
         logInfo("BackgroundUploadExtension will terminate")
+        NextcloudKit.flushLogger()
     }
 
-    /// Writes an informational message and optionally adds it to the persistent Nextcloud log.
-    /// Persistence is reserved for events that need to remain visible after the extension exits.
-    func logInfo(_ message: String, persist: Bool = false) {
+    /// Writes an informational message to unified logging and the persistent shared log.
+    func logInfo(_ message: String) {
         logger.notice("\(message, privacy: .public)")
-
-       // if persist {
-            nkLog(tag: global.logTagBackgroundUpload, emoji: .info, message: message)
-       // }
+        nkLog(tag: global.logTagBackgroundUpload, emoji: .info, message: message)
     }
 
     /// Writes an error to unified logging and to the persistent Nextcloud log.

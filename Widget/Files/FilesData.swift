@@ -162,7 +162,12 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     // LOG
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
-    NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
+    NextcloudKit.configureLogger(
+        logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log,
+        logDirectory: NCPreferences.sharedLogDirectory
+    )
+    defer { NextcloudKit.flushLogger() }
+
     nkLog(debug: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)

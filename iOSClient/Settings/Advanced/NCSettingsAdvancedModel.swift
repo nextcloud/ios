@@ -106,9 +106,12 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Remove directory LOG
     func clearLogFile() {
-        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let logsFolder = documents.appendingPathComponent("Logs", isDirectory: true)
+        NextcloudKit.flushLogger()
+        let logsFolder = NCPreferences.sharedLogDirectory
+            ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                .appendingPathComponent("Logs", isDirectory: true)
         try? FileManager.default.removeItem(at: logsFolder)
+        NKLogFileManager.createLogsFolder()
     }
 
     /// Updates the value of `selectedInterval` in the keychain.
@@ -163,15 +166,13 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Presents the log file viewer.
     func viewLogFile() {
+        NextcloudKit.flushLogger()
+
         // Path of the current (active) log file
         let currentLogURL = NKLogFileManager.shared.currentLogFileURL()
 
         // Create NCViewerQuickLook with the current log file
-        let viewerQuickLook = NCViewerQuickLook(
-            with: currentLogURL,
-            isEditingEnabled: false,
-            metadata: nil
-        )
+        let viewerQuickLook = NCViewerQuickLook(with: currentLogURL, isEditingEnabled: false, metadata: nil)
 
         controller?.present(viewerQuickLook, animated: true, completion: nil)
     }

@@ -99,7 +99,12 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     // LOG
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
-    NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
+    NextcloudKit.configureLogger(
+        logLevel: NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log,
+        logDirectory: NCPreferences.sharedLogDirectory
+    )
+    defer { NextcloudKit.flushLogger() }
+
     nkLog(debug: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + versionNextcloudiOS)
 
     // Widget

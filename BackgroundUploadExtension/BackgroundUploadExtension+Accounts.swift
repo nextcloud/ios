@@ -47,7 +47,7 @@ extension BackgroundUploadExtension {
             capabilities,
             greaterOrEqualTo: .v35
         ) else {
-            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 35", persist: true)
+            logInfo("Background upload extension stopped because account \(account.account) uses a server lower than version 35")
             return nil
         }
 

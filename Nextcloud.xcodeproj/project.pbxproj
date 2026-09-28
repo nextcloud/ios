@@ -351,6 +351,10 @@
 		F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */; };
 		F72944F62A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72944F42A8424F800246839 /* NCEndToEndMetadataV1.swift */; };
 		F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */; };
+		F72A493A306AA8B600A49375 /* NCPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCPreferences.swift */; };
+		F72A493B306AA8DC00A49375 /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F72A493C306AA8EE00A49375 /* NCEndToEndKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2EE010000000000000001 /* NCEndToEndKeySet.swift */; };
+		F72A493E306AAA6100A49375 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F72A493D306AAA6100A49375 /* KeychainAccess */; };
 		F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72AD70C28C24B93006CB92D /* NextcloudKit */; };
 		F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72AD70E28C24BA1006CB92D /* NextcloudKit */; };
 		F72AD71128C24BBB006CB92D /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72AD71028C24BBB006CB92D /* NextcloudKit */; };
@@ -2251,6 +2255,7 @@
 			files = (
 				F7C55C9F2FB5B83A004A974F /* NextcloudKit in Frameworks */,
 				F7C55C7C2FB5AEF7004A974F /* UniformTypeIdentifiers.framework in Frameworks */,
+				F72A493E306AAA6100A49375 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4237,6 +4242,7 @@
 			name = "Action Assistant";
 			packageProductDependencies = (
 				F7C55C9E2FB5B83A004A974F /* NextcloudKit */,
+				F72A493D306AAA6100A49375 /* KeychainAccess */,
 			);
 			productName = "Action Assistant";
 			productReference = F7C55C7A2FB5AEF7004A974F /* Action Assistant.appex */;
@@ -5555,9 +5561,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7C55C8F2FB5B045004A974F /* NCBrand.swift in Sources */,
+				F72A493A306AA8B600A49375 /* NCPreferences.swift in Sources */,
 				F7C55C8E2FB5B03D004A974F /* NCGlobal.swift in Sources */,
+				F72A493B306AA8DC00A49375 /* AwakeMode.swift in Sources */,
 				F7C55CC92FB5CE74004A974F /* ActionViewController.swift in Sources */,
 				F7C55C9B2FB5B1A7004A974F /* UIColor+Extension.swift in Sources */,
+				F72A493C306AA8EE00A49375 /* NCEndToEndKeySet.swift in Sources */,
 				F75F4BC32FD008D7009E55ED /* Optional+Extension.swift in Sources */,
 				F7C55C8D2FB5B02C004A974F /* NCAssistantSharedTextStore.swift in Sources */,
 				F7C55C9A2FB5B127004A974F /* ThreadSafeDictionary.swift in Sources */,
@@ -7416,6 +7425,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		F72A493D306AAA6100A49375 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F760DE012AE66E860027D78A /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 		F72AD70C28C24B93006CB92D /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;

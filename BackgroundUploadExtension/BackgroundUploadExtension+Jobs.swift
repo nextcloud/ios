@@ -47,7 +47,7 @@ extension BackgroundUploadExtension {
             guard let asset = assets.firstObject else {
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 madeProgress = true
-                logInfo("Deleted pending background upload metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)", persist: true)
+                logInfo("Deleted pending background upload metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)")
                 continue
             }
 
@@ -56,8 +56,7 @@ extension BackgroundUploadExtension {
                 madeProgress = true
 
                 logInfo(
-                    "Deleted pending background upload metadata because the resource is no longer available for asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)",
-                    persist: true
+                    "Deleted pending background upload metadata because the resource is no longer available for asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)"
                 )
 
                 continue
@@ -114,7 +113,7 @@ extension BackgroundUploadExtension {
                 }
 
                 madeProgress = true
-                logInfo("Cancelled orphan background upload job \(jobIdentifier)", persist: true)
+                logInfo("Cancelled orphan background upload job \(jobIdentifier)")
                 continue
             }
 
@@ -129,7 +128,7 @@ extension BackgroundUploadExtension {
 
             await database.deleteMetadataAsync(id: metadata.ocId)
             madeProgress = true
-            logInfo("Cancelled background upload job \(jobIdentifier), file: \(metadata.fileName)", persist: true)
+            logInfo("Cancelled background upload job \(jobIdentifier), file: \(metadata.fileName)")
         }
 
         let retryJobs = PHAssetResourceUploadJob.fetchJobs(action: .retry, options: nil)
@@ -155,7 +154,7 @@ extension BackgroundUploadExtension {
                     }
 
                     madeProgress = true
-                    logInfo("Acknowledged orphan background upload job \(jobIdentifier)", persist: true)
+                    logInfo("Acknowledged orphan background upload job \(jobIdentifier)")
                     continue
                 }
 
@@ -170,7 +169,7 @@ extension BackgroundUploadExtension {
 
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 madeProgress = true
-                logInfo("Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)", persist: true)
+                logInfo("Acknowledged cancelled background upload job \(jobIdentifier), state: \(job.state.rawValue)")
             }
         }
 
@@ -201,7 +200,7 @@ extension BackgroundUploadExtension {
 
                 madeProgress = true
 
-                logInfo("Acknowledged orphan retry job \(jobIdentifier)", persist: true)
+                logInfo("Acknowledged orphan retry job \(jobIdentifier)")
                 continue
             }
 
@@ -260,7 +259,7 @@ extension BackgroundUploadExtension {
 
                 await database.deleteMetadataAsync(id: metadata.ocId)
                 madeProgress = true
-                logInfo("Acknowledged retry job and deleted metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)", persist: true)
+                logInfo("Acknowledged retry job and deleted metadata for missing asset \(metadata.assetLocalIdentifier), file: \(metadata.fileName)")
                 continue
             }
 
@@ -330,7 +329,7 @@ extension BackgroundUploadExtension {
 
                 madeProgress = true
 
-                logInfo("Acknowledged orphan job \(jobIdentifier)", persist: true)
+                logInfo("Acknowledged orphan job \(jobIdentifier)")
                 continue
             }
 

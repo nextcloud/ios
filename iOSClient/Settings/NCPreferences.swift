@@ -12,6 +12,13 @@ final class NCPreferences: NSObject {
     private static let userDefaultsMigrationKey = "NCPreferencesUserDefaultsMigrationVersion"
     private static let userDefaultsMigrationVersion = 1
 
+    /// Shared directory used by the app and its extensions for the persistent NextcloudKit log.
+    static var sharedLogDirectory: URL? {
+        FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?
+            .appendingPathComponent("Logs", isDirectory: true)
+    }
+
     let keychain = Keychain(service: "com.nextcloud.keychain")
     private let userDefaults: UserDefaults
 

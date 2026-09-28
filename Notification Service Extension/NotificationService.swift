@@ -18,7 +18,10 @@ class NotificationService: UNNotificationServiceExtension {
         self.request = request
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
 
-        NextcloudKit.configureLogger(logLevel: .verbose)
+        NextcloudKit.configureLogger(
+            logLevel: .verbose,
+            logDirectory: NCPreferences.sharedLogDirectory
+        )
 
         guard let bestAttemptContent else { return }
 
@@ -107,6 +110,8 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     private func deliver() {
+        NextcloudKit.flushLogger()
+
         let handler = deliveryLock.withLock {
             let handler = contentHandler
             contentHandler = nil
